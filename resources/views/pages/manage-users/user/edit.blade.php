@@ -1,0 +1,139 @@
+﻿@extends('layouts.template')
+@section('page-title', 'Ubah User')
+@section('content')
+    <div x-data="updateUser">
+        <div class="card p-10">
+            <div class="card-header border-0 pt-10">
+                <a class="btn btn-info btn-sm mb-6" href="{{ url('/manage-users/users/') }}">Kembali</a>
+            </div>
+            <div class="card-body py-3">
+                <form id="form" @submit.prevent="save()">
+                    @csrf
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-lg-6">
+                                <label class="col-form-label required fw-bold fs-6">Cabang</label>
+                                <select name="branch_id" id="selectedBranch"
+                                        class="form-select form-select-solid branchSelect2">
+                                    <option value="0">Pilih Cabang</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="col-form-label required fw-bold fs-6">Nama</label>
+                                <input type="text" name="name"
+                                       class="form-control form-control-lg form-control-solid"
+                                       placeholder="Nama" value="{{ $user->name }}"/>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-lg-6">
+                                <label class="col-form-label required fw-bold fs-6">Email</label>
+                                <input type="text" name="email"
+                                       class="form-control form-control-lg form-control-solid"
+                                       placeholder="email" value="{{ $user->email }}"/>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="col-form-label required fw-bold fs-6">
+                                    (NIP) Nomor Induk Pegawai
+                                </label>
+                                <input type="text" name="nip"
+                                       class="form-control form-control-lg form-control-solid"
+                                       placeholder="nip" value="{{ $user->nip }}"/>
+                            </div>
+                        </div>
+                        <div class="form-group row mb-6">
+                            <label class="col-lg-1 col-form-label required fw-bold fs-6">Role</label>
+                            <div class="col-lg-12 fv-row">
+                                <div class="row">
+                                    <template x-for="role in roles" :key="role.id">
+                                        <div class="col-md-4 mt-2">
+                                            <input class="form-check-input" type="checkbox"
+                                                   :checked="users?.roles[0].id === role.id" :value="role.name" multiple
+                                                   name="role[]"/>
+                                            <label class="form-check-label" for="flexCheckChecked">
+                                                <span x-text="role.name"></span>
+                                            </label>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="separator py-2"></div>
+                    <div class="float-end d-flex py-6 px-9">
+                        <button type="reset" class="btn btn-light btn-active-light-primary me-2 btn-sm">Reset</button>
+                        <button type="submit" class="btn btn-primary btn-sm" id="kt_account_profile_details_submit"
+                                :disabled="buttonLoading" x-text="buttonLoading ? 'Loading...' : 'Simpan'">
+
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @include('components.toast')
+@endsection
+@push('script')
+    <script>
+        function updateUser() {
+            return {
+                buttonLoading: false,
+                roles: null,
+                users: null,
+                id: "{{ $user->id }}",
+                form: document.getElementById('form'),
+                async init() {
+                    await this.getUserData();
+                    await this.getRoleData();
+                    await this.getBranchData();
+                    await this.selectedBranch();
+                },
+                async save() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/manage-users/users/update/${this.id}`, new FormData(this.form))
+                        await showAlert('success', 'Data sukses disimpan').then(() => {
+                            window.location.href = '/manage-users/users/';
+                        });
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async getUserData() {
+                    const users = await axios.get(`/manage-users/users/show/${this.id}`);
+                    this.users = users.data
+                    console.log(this.users)
+                },
+                async getRoleData() {
+                    const roles = await axios.get('/manage-users/users/roles/data');
+                    this.roles = roles.data;
+                },
+                async selectedBranch() {
+                    const selectedBranch = $('#selectedBranch');
+                    const response = await axios.get(`/manage-users/users/get-selected-branch/${this.id}`);
+                    const option = new Option(response.data.name, response.data.id, true, true);
+                    selectedBranch.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response.data}
+                    });
+                },
+                async getBranchData() {
+                    $(".branchSelect2").select2({
+                        ajax: {
+                            url: '/manage-users/users/branch/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+            }
+        }
+    </script>
+@endpush

@@ -1,0 +1,362 @@
+<div id="kt_aside" class="aside" data-kt-drawer="true" data-kt-drawer-name="aside"
+     data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true"
+     data-kt-drawer-width="{default:'200px', '300px': '250px'}" data-kt-drawer-direction="start"
+     data-kt-drawer-toggle="#kt_aside_mobile_toggle">
+    <div class="aside-toolbar flex-column-auto" id="kt_aside_toolbar">
+        <div class="aside-user d-flex align-items-sm-center justify-content-center py-5">
+            @if(isset(Auth::user()->profile_pic) && Auth::user()->profile_pic)
+                <div class="symbol symbol-50px">
+                    <img src="{{ Storage::url(Auth::user()->profile_pic) }}" alt="">
+                </div>
+            @else
+                <div class="symbol symbol-50px">
+                    <img src="{{ asset('assets/media/dummy/dummy-picture.png') }}" alt="">
+                </div>
+            @endif
+
+            <div class="aside-user-info flex-row-fluid flex-wrap ms-5">
+                <div class="d-flex">
+                    <div class="flex-grow-1 me-2">
+                        <a href="#"
+                           class="text-white text-hover-primary fs-6 fw-bold">{{ Auth::user()->name }}</a>
+                        <div class="d-flex align-items-center text-success fs-9">
+                            <span class="bullet bullet-dot bg-success me-1"></span>online
+                        </div>
+                    </div>
+                    <div class="me-n2">
+                        <a href="#" class="btn btn-icon btn-sm btn-active-color-primary mt-n2"
+                           data-kt-menu-trigger="click" data-kt-menu-placement="bottom-start"
+                           data-kt-menu-overflow="true">
+                            <span class="svg-icon svg-icon-muted svg-icon-1">
+                                <i class="bi bi-gear-fill"></i>
+                            </span>
+                        </a>
+                        <div
+                            class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-275px"
+                            data-kt-menu="true">
+                            <div class="menu-item px-3">
+                                <div class="menu-content d-flex align-items-center px-3">
+
+                                    <div class="d-flex flex-column">
+                                        <div
+                                            class="fw-bolder d-flex align-items-center fs-5">{{ Auth::user()->name }}
+                                            <span
+                                                class="badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2">Pro</span>
+                                        </div>
+                                        <a href="#"
+                                           class="fw-bold text-muted text-hover-primary fs-7">{{ Auth::user()->email }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="separator my-2"></div>
+                            <div class="menu-item px-5">
+                                <a href="{{ url('utility/user-profile/profile-detail') }}"
+                                   class="menu-link px-5">
+                                    My Profile
+                                </a>
+                            </div>
+                            <div class="separator my-2"></div>
+                            <div class="menu-item px-5 my-1">
+                                <a href="#" class="menu-link px-5">Account Settings</a>
+                            </div>
+                            <div class="menu-item px-5">
+                                <a href="{{ route('logout') }}"
+                                   onclick="event.preventDefault();
+                                            document.getElementById('logout-form').submit();"
+                                   class="menu-link px-5">Sign Out</a>
+
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                      class="d-none">
+                                    @csrf
+                                </form>
+                            </div>
+                            <div class="separator my-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="aside-menu flex-column-fluid">
+        <div class="hover-scroll-overlay-y px-2 my-5 my-lg-5" id="kt_aside_menu_wrapper" data-kt-scroll="true"
+             data-kt-scroll-height="auto"
+             data-kt-scroll-dependencies="{default: '#kt_aside_toolbar, #kt_aside_footer', lg: '#kt_header, #kt_aside_toolbar, #kt_aside_footer'}"
+             data-kt-scroll-wrappers="#kt_aside_menu" data-kt-scroll-offset="5px">
+            <div
+                class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
+                id="#kt_aside_menu" data-kt-menu="true">
+                <x-menu-sections>Dashboard</x-menu-sections>
+                <x-single-menu-item :active="request()->segment(1) === 'home'"
+                                    href="{{ url('home') }}">
+                    @slot('parentIcon')
+                        <i class="bi bi-house fs-1"></i>
+                    @endslot
+                    @slot('menuTitle')
+                        Dashboard
+                    @endslot
+                </x-single-menu-item>
+                <x-menu-sections>Master Data</x-menu-sections>
+                <x-dropdown-menu :active="request()->segment(1) === 'master'">
+                    @slot('parentIcon')
+                        <i class="bi bi-speedometer2 fs-1"></i>
+                    @endslot
+                    @slot('menuTitle')
+                        Master
+                    @endslot
+                    @slot('menuItem')
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'branch'"
+                            href="{{ url('master/branch') }}">
+                            Cabang
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'contact'"
+                            href="{{ url('master/contact') }}">
+                            Contact
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'product'"
+                            href="{{ url('master/product') }}">
+                            Produk
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'service-categories'"
+                            href="{{ url('master/service-categories') }}">
+                            Kategori Layanan
+                        </x-dropdown-menu-item>
+                            <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'department'"
+                                href="{{ url('master/department') }}">
+                                Department
+                            </x-dropdown-menu-item>
+                            <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'user-placement'"
+                                href="{{ url('master/user-placement') }}">
+                                Penempatan
+                            </x-dropdown-menu-item>
+                            <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'roles'"
+                                href="{{ url('master/roles') }}">
+                                Role
+                            </x-dropdown-menu-item>
+                            <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'attendance-machine-info'"
+                                href="{{ url('master/attendance-machine-info') }}">
+                                Mesin Absen
+                            </x-dropdown-menu-item>
+                    @endslot
+                </x-dropdown-menu>
+
+                <x-menu-sections>Akun Management</x-menu-sections>
+
+                <x-dropdown-menu :active="request()->segment(1) === 'account-master'">
+                    @slot('parentIcon')
+                        <i class="bi bi-app-indicator"></i>
+                    @endslot
+                    @slot('menuTitle')
+                        Manajemen Akun
+                    @endslot
+                    @slot('menuItem')
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'account'"
+                            href="{{ url('account-master/account') }}">
+                            Akun
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'sub-account'"
+                            href="{{ url('account-master/sub-account') }}">
+                            Sub-Akun
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'account-transaction'"
+                            href="{{ url('account-master/account-transaction') }}">
+                            Riwayat Transaksi Akun
+                        </x-dropdown-menu-item>
+                    @endslot
+                </x-dropdown-menu>
+
+                <x-menu-sections>Jurnal</x-menu-sections>
+
+                <x-dropdown-menu :active="request()->segment(1) === 'journals'">
+                    @slot('parentIcon')
+                        <i class="bi bi-book-fill fs-1"></i>
+                    @endslot
+                    @slot('menuTitle')
+                        Penjurnalan
+                    @endslot
+                    @slot('menuItem')
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'general-journal'"
+                            href="{{ url('/journals/general-journal/') }}">
+                            Jurnal Umum
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'general-ledger'"
+                            href="{{ url('/journals/general-ledger/') }}">
+                            Buku Besar
+                        </x-dropdown-menu-item>
+                    @endslot
+                </x-dropdown-menu>
+
+                <x-menu-sections>Transaksi</x-menu-sections>
+
+                <x-dropdown-menu :active="request()->segment(1) === 'income-transactions'">
+                    @slot('parentIcon')
+                        <i class="bi bi-cash fs-1"></i>
+                    @endslot
+                    @slot('menuTitle')
+                        Pendapatan
+                    @endslot
+                    @slot('menuItem')
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'offering-letters'"
+                            href="{{ url('/income-transactions/offering-letters') }}">
+                            Penawaran
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'fab'"
+                            href="{{ url('/income-transactions/fab') }}">
+                            FAB
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'bast'"
+                            href="{{ url('/income-transactions/bast') }}">
+                            BAST
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'invoice'"
+                            href="{{ url('/income-transactions/invoice') }}">
+                            Invoice
+                        </x-dropdown-menu-item>
+                    @endslot
+                </x-dropdown-menu>
+
+                <x-dropdown-menu :active="request()->segment(1) === 'expenditure-transactions'">
+                    @slot('parentIcon')
+                        <i class="bi bi-wallet2 fs-1"></i>
+                    @endslot
+                    @slot('menuTitle')
+                        Pengeluaran
+                    @endslot
+                    @slot('menuItem')
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'expenditure'"
+                            href="{{ url('/expenditure-transactions/expenditure') }}">
+                            Pengeluaran
+                        </x-dropdown-menu-item>
+                    @endslot
+                </x-dropdown-menu>
+
+                <x-menu-sections>Inventaris</x-menu-sections>
+
+                <x-dropdown-menu :active="request()->segment(1) === 'inventory'">
+                    @slot('parentIcon')
+                        <i class="bi bi-bag fs-1"></i>
+                    @endslot
+                    @slot('menuTitle')
+                        Inventaris
+                    @endslot
+                    @slot('menuItem')
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'goods'"
+                            href="{{ url('inventory/goods') }}">
+                            Barang
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'unit-types'"
+                            href="{{ url('inventory/unit-types') }}">
+                            Satuan
+                        </x-dropdown-menu-item>
+                    @endslot
+                </x-dropdown-menu>
+
+                <x-menu-sections>Penyesuaian Jurnal</x-menu-sections>
+
+                <x-dropdown-menu :active="request()->segment(1) === 'journal-adjustment'">
+                    @slot('parentIcon')
+                        <i class="bi bi-tag-fill fs-1"></i>
+                    @endslot
+                    @slot('menuTitle')
+                        Penyesuaian Jurnal
+                    @endslot
+                    @slot('menuItem')
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'initial-journal'"
+                            href="{{ url('journal-adjustment/initial-journal') }}">
+                            Jurnal Awal
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'adjustment'"
+                            href="{{ url('journal-adjustment/adjustment') }}">
+                            Penyesuaian
+                        </x-dropdown-menu-item>
+                    @endslot
+                </x-dropdown-menu>
+
+                <x-menu-sections>Utilitas</x-menu-sections>
+
+                <x-dropdown-menu :active="request()->segment(1) === 'utility'">
+                    @slot('parentIcon')
+                        <i class="bi bi-people-fill fs-1"></i>
+                    @endslot
+                    @slot('menuTitle')
+                        Utilitas
+                    @endslot
+                    @slot('menuItem')
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'company-profile'"
+                            href="{{ url('utility/company-profile') }}">
+                            Profil Perusahaan
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'letter-head'"
+                            href="{{ url('utility/letter-head') }}">
+                            Kop Surat
+                        </x-dropdown-menu-item>
+                    @endslot
+                </x-dropdown-menu>
+
+                <x-menu-sections>Manajemen Karyawan</x-menu-sections>
+
+                <x-dropdown-menu :active="request()->segment(1) === 'manage-users'">
+                    @slot('parentIcon')
+                        <i class="bi bi-people-fill fs-1"></i>
+                    @endslot
+                    @slot('menuTitle')
+                        Manajemen Karyawan
+                    @endslot
+                    @slot('menuItem')
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'users'"
+                            href="{{ url('manage-users/users') }}">
+                            User
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'permissions'"
+                            href="{{ url('manage-users/permissions') }}">
+                            Permission
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'attendance'"
+                            href="{{ url('manage-users/attendance') }}">
+                            Absen
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'payroll'"
+                            href="{{ url('manage-users/payroll') }}">
+                            Payroll
+                        </x-dropdown-menu-item>
+                    @endslot
+                </x-dropdown-menu>
+            </div>
+        </div>
+        <div class="aside-footer flex-column-auto py-5" id="kt_aside_footer">
+            <a href="../../demo8/dist/documentation/getting-started.html"
+               class="btn btn-custom btn-primary w-100" data-bs-toggle="tooltip" data-bs-trigger="hover"
+               data-bs-dismiss-="click" title=""
+               data-bs-original-title="Cek untuk petunjuk penggunaan aplikasi">
+                <span class="btn-label">Dokumentasi aplikasi</span>
+            </a>
+        </div>
+    </div>
+</div>
