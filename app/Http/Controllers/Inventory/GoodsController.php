@@ -18,19 +18,24 @@ use Illuminate\View\View;
 class GoodsController extends Controller
 {
     public int $perPage = 10;
+
     private GoodsServices $goodsService;
+
     private Goods $goods;
+
     private UnitType $unitType;
+
     private SubAccount $subAccount;
+
     private Branch $branch;
 
     public function __construct()
     {
-        $this->unitType = new UnitType();
-        $this->goodsService = new GoodsServices();
-        $this->goods = new Goods();
-        $this->subAccount = new SubAccount();
-        $this->branch = new Branch();
+        $this->unitType = new UnitType;
+        $this->goodsService = new GoodsServices;
+        $this->goods = new Goods;
+        $this->subAccount = new SubAccount;
+        $this->branch = new Branch;
     }
 
     public function index(): View
@@ -89,7 +94,7 @@ class GoodsController extends Controller
             'status' => $request->status,
             'file' => $file,
             'type' => $request->type,
-            'created_by' => Auth::id()
+            'created_by' => Auth::id(),
         ]);
 
         return response()->json([
@@ -97,12 +102,10 @@ class GoodsController extends Controller
         ], 200);
     }
 
-
     public function edit(Goods $goods): View
     {
         return view('pages.inventory.goods.edit', compact('goods'));
     }
-
 
     public function getSelectedUnitType(Goods $goods): JsonResponse
     {
@@ -113,7 +116,6 @@ class GoodsController extends Controller
     {
         return response()->json($this->subAccount->getSelectedSubAccount($request, $goods->account_id));
     }
-
 
     public function show(Goods $goods): JsonResponse
     {
@@ -141,24 +143,22 @@ class GoodsController extends Controller
             'status' => $request->status,
             'file' => $file,
             'type' => $request->type,
-            'created_by' => Auth::id()
+            'created_by' => Auth::id(),
         ]);
-
 
         return response()->json([
             'message' => 'data berhasil disimpan',
         ], 200);
     }
 
-
     public function confirm(Goods $goods): JsonResponse
     {
         $this->goodsService->confirm($goods);
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
-
 
     public function useItemDetail(Goods $goods): View
     {
@@ -168,10 +168,9 @@ class GoodsController extends Controller
     public function destroy(Goods $goods): JsonResponse
     {
         $goods->delete();
+
         return response()->json([
             'message' => 'data berhasil dihapus',
         ], 204);
     }
-
-
 }

@@ -9,8 +9,6 @@ class RoleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -19,8 +17,6 @@ class RoleRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
@@ -29,11 +25,10 @@ class RoleRequest extends FormRequest
                 'required',
                 'string',
                 Rule::unique('roles', 'name')
-                    ->ignore(request()->route('role'))
+                    ->ignore(request()->route('role')),
             ],
         ];
     }
-
 
     public function messages(): array
     {

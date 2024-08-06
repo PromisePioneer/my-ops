@@ -9,8 +9,6 @@ class ExpenditureRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -19,8 +17,6 @@ class ExpenditureRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
@@ -31,7 +27,7 @@ class ExpenditureRequest extends FormRequest
             'credit_account_id' => ['required'],
             'file' => ['mimes:jpg,png,jpeg', 'max:2048', Rule::requiredIf(static function () {
                 request()->route('expenditure') === null;
-            })]
+            })],
         ];
     }
 }

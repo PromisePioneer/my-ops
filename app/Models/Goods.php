@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 class Goods extends Model
 {
     protected $table = 'goods';
+
     protected $fillable = [
         'account_id',
         'branch_id',
@@ -23,9 +24,8 @@ class Goods extends Model
         'file',
         'confirmation_status',
         'type',
-        'created_by'
+        'created_by',
     ];
-
 
     public function branch(): BelongsTo
     {
@@ -40,8 +40,9 @@ class Goods extends Model
     public function searchDataBasedOnUserBranch(Request $request): Collection
     {
         $search = $request->input('search');
-        return self::where('serial_number', 'like', '%' . $search . '%')
-            ->orWhere('name', 'like', '%' . $search . '%')
+
+        return self::where('serial_number', 'like', '%'.$search.'%')
+            ->orWhere('name', 'like', '%'.$search.'%')
             ->get();
     }
 
@@ -49,5 +50,4 @@ class Goods extends Model
     {
         return self::where('branch_id', $branchId)->paginate($perPage);
     }
-
 }

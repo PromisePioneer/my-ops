@@ -11,8 +11,6 @@ class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run(): void
     {
@@ -22,9 +20,8 @@ class UserSeeder extends Seeder
             'name' => 'Kepala Cabang',
             'email' => 'kacab@mayatama.com',
             'password' => Hash::make('12345678'),
-            'branch_id' => 1
+            'branch_id' => 1,
         ]);
-
 
         User::factory()->create([
             'nip' => 456,
@@ -32,7 +29,7 @@ class UserSeeder extends Seeder
             'department_id' => 2,
             'email' => 'akuntan@mayatama.com',
             'password' => Hash::make('12345678'),
-            'branch_id' => 1
+            'branch_id' => 1,
         ]);
 
         User::factory()->create([
@@ -40,7 +37,7 @@ class UserSeeder extends Seeder
             'name' => 'Manager Keuangan',
             'email' => 'manager-keuangan@mayatama.com',
             'password' => Hash::make('12345678'),
-            'branch_id' => 1
+            'branch_id' => 1,
         ]);
 
         User::factory()->create([
@@ -48,16 +45,15 @@ class UserSeeder extends Seeder
             'name' => 'Direktur',
             'email' => 'direktur@mayatama.com',
             'password' => Hash::make('12345678'),
-            'branch_id' => 2
+            'branch_id' => 2,
         ]);
-
 
         User::factory()->create([
             'nip' => 112,
             'name' => 'Super Admin',
             'email' => 'superadmin@mayatama.com',
             'password' => Hash::make('12345678'),
-            'branch_id' => 1
+            'branch_id' => 1,
         ]);
 
         User::factory()->create([
@@ -66,7 +62,7 @@ class UserSeeder extends Seeder
             'email' => 'stocker@mayatama.com',
             'password' => Hash::make('12345678'),
             'department_id' => 2,
-            'branch_id' => 1
+            'branch_id' => 1,
         ]);
 
         for ($i = 0; $i < 10; $i++) {
@@ -75,7 +71,7 @@ class UserSeeder extends Seeder
                 'name' => 'KCA',
                 'email' => $faker->unique()->email,
                 'password' => Hash::make('12345678'),
-                'branch_id' => 1
+                'branch_id' => 1,
             ]);
 
             User::factory()->create([
@@ -83,7 +79,7 @@ class UserSeeder extends Seeder
                 'name' => 'WKCA',
                 'email' => $faker->unique()->email,
                 'password' => Hash::make('12345678'),
-                'branch_id' => 1
+                'branch_id' => 1,
             ]);
         }
 
@@ -93,9 +89,8 @@ class UserSeeder extends Seeder
             'email' => 'noc@mayatama.com',
             'password' => Hash::make('12345678'),
             'department_id' => 2,
-            'branch_id' => 1
+            'branch_id' => 1,
         ]);
-
 
         for ($i = 0; $i < 10; $i++) {
             User::factory()->create([
@@ -104,7 +99,7 @@ class UserSeeder extends Seeder
                 'department_id' => 2,
                 'email' => $faker->unique()->email,
                 'password' => Hash::make('12345678'),
-                'branch_id' => 1
+                'branch_id' => 1,
             ]);
         }
 
@@ -115,7 +110,7 @@ class UserSeeder extends Seeder
                 'name' => 'Customer Service',
                 'email' => $faker->unique()->email,
                 'password' => Hash::make('12345678'),
-                'branch_id' => 1
+                'branch_id' => 1,
             ]);
         }
     }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
@@ -15,7 +16,9 @@ use Maatwebsite\Excel\Facades\Excel;
 class AccountController extends Controller
 {
     private Branch $branch;
+
     private Account $account;
+
     public int $perPage = 10;
 
     public function __construct()
@@ -25,8 +28,8 @@ class AccountController extends Controller
         $this->middleware('permission:update akun', ['only' => ['edit', 'update']]);
         $this->middleware('permission:hapus akun', ['only' => ['destroy']]);
 
-        $this->account = new Account();
-        $this->branch = new Branch();
+        $this->account = new Account;
+        $this->branch = new Branch;
     }
 
     public function index(): View
@@ -37,30 +40,35 @@ class AccountController extends Controller
     public function data(): JsonResponse
     {
         $accounts = $this->account->getAccountsBasedOnUserBranch($this->perPage);
+
         return response()->json($accounts);
     }
 
     public function branchData(Request $request): JsonResponse
     {
         $response = $this->branch->getData($request);
+
         return response()->json($response);
     }
 
     public function search(Request $request): JsonResponse
     {
         $accounts = $this->account->searchAccounts($request, $this->perPage);
+
         return response()->json($accounts);
     }
 
     public function filter(Branch $branch): JsonResponse
     {
         $filter = $this->account->filteringAccountBasedOnBranch($branch->id, $this->perPage);
+
         return response()->json($filter);
     }
 
     public function store(AccountRequest $request): JsonResponse
     {
         Account::create($request->validated());
+
         return response()->json([
             'message' => 'Data berhasil disimpan',
         ]);
@@ -69,6 +77,7 @@ class AccountController extends Controller
     public function getSelectedBranch(Account $account): JsonResponse
     {
         $selectedBranch = $this->branch->getSelectedData($account->branch_id);
+
         return response()->json($selectedBranch);
     }
 
@@ -80,8 +89,9 @@ class AccountController extends Controller
     public function update(AccountRequest $request, Account $account): JsonResponse
     {
         $account->update($request->validated());
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ], 200);
     }
 
@@ -93,7 +103,8 @@ class AccountController extends Controller
     public function import(AccountImportRequest $request): JsonResponse
     {
         $file = $request->file('file_import');
-        Excel::import(new AccountImport(), $file);
+        Excel::import(new AccountImport, $file);
+
         return response()->json([
             'message' => 'Data berhasil diimport',
         ]);

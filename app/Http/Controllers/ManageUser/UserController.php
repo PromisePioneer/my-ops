@@ -23,16 +23,24 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-
     public int $perPage = 10;
+
     private IdentityInformationService $identityInformationService;
+
     private UserJobInformation $jobInformation;
+
     private UserIdentityInformation $identityInformation;
+
     private Branch $branch;
+
     private User $user;
+
     private UserAttendance $attendance;
+
     private Department $department;
+
     private JobInformationService $jobInformationService;
+
     private UserPlacement $userPlacement;
 
     public function __construct()
@@ -42,15 +50,15 @@ class UserController extends Controller
         $this->middleware('permission:update user', ['only' => ['edit', 'update']]);
         $this->middleware('permission:hapus user', ['only' => ['destroy']]);
 
-        $this->user = new User();
-        $this->branch = new Branch();
-        $this->department = new Department();
-        $this->identityInformationService = new IdentityInformationService();
-        $this->jobInformation = new userJobInformation();
-        $this->identityInformation = new UserIdentityInformation();
-        $this->attendance = new UserAttendance();
-        $this->jobInformationService = new JobInformationService();
-        $this->userPlacement = new UserPlacement();
+        $this->user = new User;
+        $this->branch = new Branch;
+        $this->department = new Department;
+        $this->identityInformationService = new IdentityInformationService;
+        $this->jobInformation = new userJobInformation;
+        $this->identityInformation = new UserIdentityInformation;
+        $this->attendance = new UserAttendance;
+        $this->jobInformationService = new JobInformationService;
+        $this->userPlacement = new UserPlacement;
     }
 
     public function index(): View
@@ -61,6 +69,7 @@ class UserController extends Controller
     public function usersData(): JsonResponse
     {
         $user = $this->user->getDataWithPagination($this->perPage);
+
         return response()->json($user);
     }
 
@@ -87,6 +96,7 @@ class UserController extends Controller
     public function rolesData(): JsonResponse
     {
         $role = Role::all();
+
         return response()->json($role);
     }
 
@@ -96,8 +106,9 @@ class UserController extends Controller
         $data['password'] = Hash::make('MayatamaPekanbaru2024');
         $user = User::create($data);
         $user->assignRole($request->role);
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
 
@@ -105,12 +116,14 @@ class UserController extends Controller
     {
         $roles = Role::pluck('name', 'name')->all();
         $userRole = $user->roles->pluck('name', 'name')->all();
+
         return view('pages.manage-users.user.edit', compact('user', 'userRole', 'roles'));
     }
 
     public function getSelectedBranch(User $user): JsonResponse
     {
         $branch = $this->branch->getSelectedData($user->branch_id);
+
         return response()->json($branch);
     }
 
@@ -127,8 +140,9 @@ class UserController extends Controller
     public function identityInformationUpdate(IdentityInformationRequest $request, User $user): JsonResponse
     {
         $this->identityInformationService->update($request, $user);
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
 
@@ -140,17 +154,18 @@ class UserController extends Controller
     public function jobInformationUpdate(JobInformationRequest $request, User $user): JsonResponse
     {
         $this->jobInformationService->update($request, $user);
+
         return response()->json([
-            'message' => 'Data berhasil disimpan'
+            'message' => 'Data berhasil disimpan',
         ]);
     }
 
     public function viewFileJobInformation(User $user): View
     {
         $user = UserJobInformation::where('user_id', $user->id)->first();
+
         return view('pages.manage-users.user.partials.detail.job-information.view-file', compact('user'));
     }
-
 
     public function getDepartmentData(Request $request): JsonResponse
     {
@@ -165,9 +180,9 @@ class UserController extends Controller
     public function show(User $user): JsonResponse
     {
         $users = $user->with('roles')->find($user->id);
+
         return response()->json($users);
     }
-
 
     public function getPlacementData(Request $request): JsonResponse
     {
@@ -180,20 +195,21 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'nip' => $request->nip,
-            'password' => Hash::make('mayatamapekanbaru')
+            'password' => Hash::make('mayatamapekanbaru'),
         ]);
         $user->syncRoles($request->role);
 
         return response()->json([
-            'message' => "data sukses diupdate!"
+            'message' => 'data sukses diupdate!',
         ]);
     }
 
     public function destroy(User $user): JsonResponse
     {
         $user->delete();
+
         return response()->json([
-            'message' => "data sukses dihapus!",
+            'message' => 'data sukses dihapus!',
             'data' => $user,
         ]);
     }

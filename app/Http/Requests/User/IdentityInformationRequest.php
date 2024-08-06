@@ -9,8 +9,6 @@ class IdentityInformationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -19,31 +17,28 @@ class IdentityInformationRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
         return [
             'nik' => [
                 'required',
-                Rule::unique('user_identity_informations', 'nik')->ignore(request()->route('user'))
+                Rule::unique('user_identity_informations', 'nik')->ignore(request()->route('user')),
             ],
             'date_of_birth' => ['required', 'date'],
             'place_of_birth' => ['required'],
             'gender' => [
                 'required',
-                Rule::in('Laki Laki', 'Perempuan')
+                Rule::in('Laki Laki', 'Perempuan'),
             ],
             'home_address' => ['required'],
             'married_status' => [
                 'required',
-                Rule::in('TK/0', 'TK/1', 'TK/2', 'TK/3', 'K/0', 'K/1', 'K/2', 'K/3')
+                Rule::in('TK/0', 'TK/1', 'TK/2', 'TK/3', 'K/0', 'K/1', 'K/2', 'K/3'),
             ],
             'ktp_attachment' => ['required', 'mimes:jpeg,jpg,png', 'max:2048'],
         ];
     }
-
 
     public function messages(): array
     {

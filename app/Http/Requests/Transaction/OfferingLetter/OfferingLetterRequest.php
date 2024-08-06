@@ -9,8 +9,6 @@ class OfferingLetterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -19,8 +17,6 @@ class OfferingLetterRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
@@ -28,11 +24,11 @@ class OfferingLetterRequest extends FormRequest
         return [
             'contact_id' => [
                 'required',
-                Rule::exists('contacts', 'id')
+                Rule::exists('contacts', 'id'),
             ],
             'offering_number' => [
                 'required',
-                Rule::unique('offering_letters', 'offering_number')->ignore(request()->route('offeringLetter'))
+                Rule::unique('offering_letters', 'offering_number')->ignore(request()->route('offeringLetter')),
             ],
             'date' => ['required', 'date'],
             'attachment' => ['required'],
@@ -45,17 +41,16 @@ class OfferingLetterRequest extends FormRequest
                 'mimes:pdf',
                 Rule::requiredIf(static function () {
                     return request()->route('offeringLetter') === null;
-                })
+                }),
             ],
             'data.*.service_category_id' => [
                 'required',
-                Rule::exists('services_categories', 'id')
+                Rule::exists('services_categories', 'id'),
             ],
             'data.*.qty' => ['required', 'numeric'],
             'data.*.unit_price' => ['required'],
         ];
     }
-
 
     public function messages(): array
     {

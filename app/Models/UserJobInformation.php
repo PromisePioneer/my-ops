@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class UserJobInformation extends Model
 {
     protected $table = 'user_jobs_informations';
+
     protected $fillable = [
         'user_id',
         'department_id',
@@ -19,9 +20,8 @@ class UserJobInformation extends Model
         'bpjs_kes',
         'bpjs_ket',
         'sk_file',
-        'contract_file'
+        'contract_file',
     ];
-
 
     public function user(): BelongsTo
     {

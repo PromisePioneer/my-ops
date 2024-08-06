@@ -8,8 +8,6 @@ class UserProfileRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -18,15 +16,13 @@ class UserProfileRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
         return [
             'profile_pic' => [
                 'mimes:jpeg,jpg,png',
-                'max:4000'
+                'max:4000',
             ],
         ];
     }
@@ -35,7 +31,7 @@ class UserProfileRequest extends FormRequest
     {
         return [
             'profile_pic.mimes' => 'File harus berekstensi jpeg, jpg, png',
-            'profile_pic.max' => 'Ukuran file terlalu besar, Maks: 4MB'
+            'profile_pic.max' => 'Ukuran file terlalu besar, Maks: 4MB',
         ];
     }
 }

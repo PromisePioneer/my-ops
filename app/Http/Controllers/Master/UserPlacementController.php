@@ -19,21 +19,24 @@ class UserPlacementController extends Controller
     public function data(): JsonResponse
     {
         $placement = UserPlacement::paginate(10);
+
         return response()->json($placement);
     }
 
     public function search(Request $request): JsonResponse
     {
         $search = $request->input('search');
-        $searchQuery = UserPlacement::where('name', 'like', '%' . $search . '%')->orWhere('code', 'like', '%' . $search . '%')->get();
+        $searchQuery = UserPlacement::where('name', 'like', '%'.$search.'%')->orWhere('code', 'like', '%'.$search.'%')->get();
+
         return response()->json($searchQuery);
     }
 
     public function store(UserPlacementRequest $request): JsonResponse
     {
         UserPlacement::create($request->validated());
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
 
@@ -45,16 +48,18 @@ class UserPlacementController extends Controller
     public function update(UserPlacementRequest $request, UserPlacement $userPlacement): JsonResponse
     {
         $userPlacement->update($request->validated());
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
 
     public function destroy(UserPlacement $userPlacement): JsonResponse
     {
         $userPlacement->delete();
+
         return response()->json([
-            'message' => 'data berhasil dihapus'
+            'message' => 'data berhasil dihapus',
         ]);
     }
 }

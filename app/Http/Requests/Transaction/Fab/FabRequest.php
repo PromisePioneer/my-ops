@@ -9,8 +9,6 @@ class FabRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -19,8 +17,6 @@ class FabRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
@@ -28,7 +24,7 @@ class FabRequest extends FormRequest
         return [
             'contact_id' => [
                 'required',
-                Rule::exists('contacts', 'id')
+                Rule::exists('contacts', 'id'),
             ],
             'fab_number' => [
                 'required',
@@ -36,7 +32,7 @@ class FabRequest extends FormRequest
             ],
             'subscription_status' => [
                 'required',
-                Rule::in('baru', 'perubahan jenis layanan', 'daftar ulang')
+                Rule::in('baru', 'perubahan jenis layanan', 'daftar ulang'),
             ],
             'date' => ['required', 'date'],
             'billing_address' => ['required', 'string'],
@@ -58,7 +54,6 @@ class FabRequest extends FormRequest
 
         ];
     }
-
 
     public function messages(): array
     {

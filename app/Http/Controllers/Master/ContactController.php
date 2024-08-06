@@ -13,6 +13,7 @@ use Illuminate\View\View;
 class ContactController extends Controller
 {
     public int $perPage = 10;
+
     private Contact $contact;
 
     public function __construct()
@@ -21,8 +22,8 @@ class ContactController extends Controller
         $this->middleware('permission:tambah contact', ['only' => ['create', 'store']]);
         $this->middleware('permission:update contact', ['only' => ['edit', 'update']]);
         $this->middleware('permission:hapus contact', ['only' => ['destroy']]);
-        $this->contact = new Contact();
-        $this->branch = new Branch();
+        $this->contact = new Contact;
+        $this->branch = new Branch;
     }
 
     public function index(): View
@@ -58,6 +59,7 @@ class ContactController extends Controller
     public function store(ContactRequest $request): JsonResponse
     {
         Contact::create($request->validated());
+
         return response()->json([
             'message' => 'data berhasil disimpan',
         ], 200);
@@ -68,25 +70,23 @@ class ContactController extends Controller
         return response()->json($contact);
     }
 
-
     public function update(ContactRequest $request, Contact $contact): JsonResponse
     {
         $contact->update($request->validated());
+
         return response()->json([
             'message' => 'data berhasil disimpan',
         ], 200);
     }
 
-
     public function destroy(Request $request, Contact $contact): JsonResponse
     {
-        $implodeID = implode(",", $request->get('id'));
-        $explodeID = explode(",", $implodeID);
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
         $contact->whereIn('id', $explodeID)->delete();
+
         return response()->json([
             'message' => 'data berhasil dihapus',
         ], 200);
     }
-
-
 }

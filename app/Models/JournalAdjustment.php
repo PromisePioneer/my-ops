@@ -9,12 +9,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class JournalAdjustment extends Model
 {
     use HasFactory;
+
     protected $table = 'journal_adjustment';
+
     protected $fillable = [
         'initial_journal_id',
         'description',
         'payment_date',
-        'total_payment_per_month'
+        'total_payment_per_month',
     ];
 
     public function initialJournal(): BelongsTo

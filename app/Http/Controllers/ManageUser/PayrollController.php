@@ -16,12 +16,14 @@ use Illuminate\View\View;
 class PayrollController extends Controller
 {
     private static int $perPage = 10;
+
     protected Payroll $payroll;
 
     public function __construct()
     {
-        $this->payroll = new Payroll();
+        $this->payroll = new Payroll;
     }
+
     public function index(): View
     {
         return view('pages.manage-users.payroll.index');
@@ -30,6 +32,7 @@ class PayrollController extends Controller
     public function data(): JsonResponse
     {
         $payroll = Payroll::with('user', 'user.jobInformation')->paginate(self::$perPage);
+
         return response()->json($payroll);
     }
 
@@ -49,16 +52,17 @@ class PayrollController extends Controller
             $user = User::with('jobInformation')
                 ->orderby('name', 'asc')
                 ->select('id', 'name')
-                ->where('name', 'like', '%' . $search . '%')
+                ->where('name', 'like', '%'.$search.'%')
                 ->get();
         }
-        $response = array();
+        $response = [];
         foreach ($user as $c) {
-            $response[] = array(
-                "id" => $c->id,
-                "text" => $c->name
-            );
+            $response[] = [
+                'id' => $c->id,
+                'text' => $c->name,
+            ];
         }
+
         return response()->json($response);
     }
 
@@ -70,6 +74,7 @@ class PayrollController extends Controller
     public function store(PayrollRequest $request): JsonResponse
     {
         $payroll = Payroll::create($request->validated());
+
         return response()->json($payroll);
     }
 
@@ -88,7 +93,6 @@ class PayrollController extends Controller
         return response()->json($payroll->delete());
     }
 
-
     public function exportToPDF(Payroll $payroll): Response
     {
         $slipSalary = $payroll->with('user', 'user.branch', 'user.jobInformation')->first();
@@ -98,9 +102,8 @@ class PayrollController extends Controller
 
         $netSalaryReceived = $slipSalary->user->jobInformation->fixed_salary - $dues - $allowanceAndBonusSum;
 
-
         $companyProfile = CompanyProfile::where('id', 1)->first();
-        $pdf = Pdf::loadView('pages.manage-users.payroll.export-pdf', compact('slipSalary', 'companyProfile', 'allowanceAndBonusSum', 'dues', 'netSalaryReceived'))->setPaper("A4", 'portrait');
+        $pdf = Pdf::loadView('pages.manage-users.payroll.export-pdf', compact('slipSalary', 'companyProfile', 'allowanceAndBonusSum', 'dues', 'netSalaryReceived'))->setPaper('A4', 'portrait');
 
         return $pdf->stream();
     }

@@ -19,19 +19,24 @@ use Illuminate\View\View;
 class FabController extends Controller
 {
     public int $perPage = 10;
+
     private ServiceCategory $serviceCategory;
+
     private FabServices $fabServices;
+
     private Fab $fab;
+
     private Contact $contact;
+
     private Branch $branch;
 
     public function __construct()
     {
-        $this->fabServices = new FabServices();
-        $this->serviceCategory = new ServiceCategory();
-        $this->fab = new Fab();
-        $this->contact = new Contact();
-        $this->branch = new Branch();
+        $this->fabServices = new FabServices;
+        $this->serviceCategory = new ServiceCategory;
+        $this->fab = new Fab;
+        $this->contact = new Contact;
+        $this->branch = new Branch;
     }
 
     public function index()
@@ -43,7 +48,6 @@ class FabController extends Controller
     {
         return response()->json($this->fab->getDataBasedOnUserBranch($request, $this->perPage));
     }
-
 
     public function search(Request $request): JsonResponse
     {
@@ -65,32 +69,33 @@ class FabController extends Controller
         return view('pages.transaction.fab.create');
     }
 
-
     public function contactData(Request $request): JsonResponse
     {
         $contact = $this->contact->getData($request);
+
         return response()->json($contact);
     }
 
     public function getServicesCategoriesData(Request $request): JsonResponse
     {
         $services = $this->serviceCategory->getData($request);
+
         return response()->json($services);
     }
-
 
     public function store(FabRequest $request): JsonResponse
     {
         $this->fabServices->store($request);
+
         return response()->json([
-            'message' => 'Data berhasil disimpan'
+            'message' => 'Data berhasil disimpan',
         ]);
     }
-
 
     public function detail(Fab $fab): View
     {
         $fabServices = FabService::where('fab_id', $fab->id)->get();
+
         return view('pages.transaction.fab.detail', compact('fabServices', 'fab'));
     }
 
@@ -98,7 +103,6 @@ class FabController extends Controller
     {
         return view('pages.transaction.fab.view-file', compact('fab'));
     }
-
 
     public function edit(Fab $fab): View
     {
@@ -108,25 +112,25 @@ class FabController extends Controller
     public function selectedContact(Fab $fab): JsonResponse
     {
         $selectedContact = $this->contact->getSelectedData($fab->contact_id);
+
         return response()->json($selectedContact);
     }
-
 
     public function selectedServices(Fab $fab): JsonResponse
     {
         $fabServices = FabService::where('fab_id', $fab->id)->get();
+
         return response()->json($fabServices);
     }
-
 
     public function update(FabRequest $request, Fab $fab): JsonResponse
     {
         $this->fabServices->update($request, $fab);
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
-
 
     public function confirm(Fab $fab): JsonResponse
     {
@@ -134,31 +138,31 @@ class FabController extends Controller
         $this->fabServices->confirm($fab, $fabService);
 
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
-
 
     public function jurnalEntry(Fab $fab): JsonResponse
     {
         $response = $this->fabServices->jurnalEntry($fab);
+
         return response()->json($response);
     }
 
     public function destroy(Fab $fab): JsonResponse
     {
         $fab->delete();
+
         return response()->json([
-            'message' => 'data berhasil dihapus'
+            'message' => 'data berhasil dihapus',
         ]);
     }
-
 
     public function exportPDF(Fab $fab): Response
     {
         $fabServices = FabService::where('fab_id', $fab->id)->get();
 
-        $pdf = Pdf::loadView('pages.transaction.fab.export-pdf', compact('fab', 'fabServices'))->setPaper("A4", 'portrait');
+        $pdf = Pdf::loadView('pages.transaction.fab.export-pdf', compact('fab', 'fabServices'))->setPaper('A4', 'portrait');
 
         return $pdf->stream();
     }

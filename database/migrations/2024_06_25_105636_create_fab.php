@@ -8,8 +8,6 @@ class CreateFab extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up(): void
     {
@@ -27,7 +25,6 @@ class CreateFab extends Migration
             $table->boolean('status_confirmation')->default(false);
             $table->unsignedBigInteger('created_by');
             $table->timestamps();
-
 
             $table->foreign('branch_id')
                 ->references('id')
@@ -50,8 +47,6 @@ class CreateFab extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down(): void
     {

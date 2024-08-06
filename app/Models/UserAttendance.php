@@ -13,14 +13,14 @@ class UserAttendance extends Model
     use HasFactory;
 
     protected $table = 'user_attendance';
+
     protected $fillable = [
+        'absen_location_id',
         'date',
-        'clock_in',
         'clock_out',
         'user_id',
-        'status_if_not_present'
+        'status_if_not_present',
     ];
-
 
     public function user(): BelongsTo
     {

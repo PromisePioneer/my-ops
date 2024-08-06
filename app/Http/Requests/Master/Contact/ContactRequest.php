@@ -8,12 +8,10 @@ use Illuminate\Validation\Rule;
 
 class ContactRequest extends FormRequest
 {
-
     public function authorize(): bool
     {
         return true;
     }
-
 
     public function rules(Request $request): array
     {
@@ -24,25 +22,24 @@ class ContactRequest extends FormRequest
                 'required',
                 'email',
                 Rule::unique('contacts', 'email')
-                    ->ignore($request->route('contact'))
+                    ->ignore($request->route('contact')),
             ],
             'phone_number' => ['required'],
             'identity_type' => [
                 'required',
-                Rule::in('ktp', 'sim', 'passport')
+                Rule::in('ktp', 'sim', 'passport'),
             ],
             'identity_number' => [
                 'required',
                 Rule::unique('contacts', 'identity_number')
-                    ->ignore($request->route('contact'))
+                    ->ignore($request->route('contact')),
             ],
             'fax' => ['required'],
             'npwp' => ['required'],
             'complete_address' => ['required'],
-            'other_info' => ['required']
+            'other_info' => ['required'],
         ];
     }
-
 
     public function messages(): array
     {
@@ -59,7 +56,7 @@ class ContactRequest extends FormRequest
             'fax.required' => 'Kolom fax wajib diisi.',
             'npwp.required' => 'Kolom NPWP wajib diisi.',
             'complete_address.required' => 'Kolom alamat lengkap wajib diisi.',
-            'other_info.required' => 'Kolom informasi lainnya wajib diisi.'
+            'other_info.required' => 'Kolom informasi lainnya wajib diisi.',
         ];
     }
 }

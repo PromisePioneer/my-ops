@@ -12,15 +12,15 @@ use Illuminate\Support\Facades\Auth;
 class Account extends Model
 {
     protected $table = 'accounts';
+
     protected $fillable = [
         'branch_id',
         'name',
         'code',
         'debit_balance',
         'credit_balance',
-        'balance'
+        'balance',
     ];
-
 
     // relationship
     public function subAccount(): HasMany
@@ -84,6 +84,7 @@ class Account extends Model
             ];
         });
         $accounts->setCollection($formattedAccounts);
+
         return $accounts;
     }
 
@@ -94,10 +95,10 @@ class Account extends Model
             $query->orderBy('code', 'ASC');
         }])->where('branch_id', Auth::user()->branch_id);
 
-        if (!empty($searchTerm)) {
+        if (! empty($searchTerm)) {
             $query->where(function ($query) use ($searchTerm) {
-                $query->where('code', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('name', 'like', '%' . $searchTerm . '%');
+                $query->where('code', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('name', 'like', '%'.$searchTerm.'%');
             });
         }
         $accounts = $query->paginate($perPage);
@@ -132,7 +133,6 @@ class Account extends Model
         );
     }
 
-
     public function getAccountDataAndSpecificBranchWithoutPagination(Request $request): array
     {
         $search = $request->search;
@@ -143,30 +143,27 @@ class Account extends Model
             ->limit(5);
 
         if ($search !== '') {
-            $query->where('name', 'like', '%' . $search . '%');
+            $query->where('name', 'like', '%'.$search.'%');
         }
         $account = $query->get();
+
         return $account->map(function ($c) {
             return [
-                "id" => $c->id,
-                "text" => $c->name
+                'id' => $c->id,
+                'text' => $c->name,
             ];
         })->toArray();
     }
-
 
     public function getSelectedAccount(int $accountId): array
     {
         $account = self::where('id', $accountId)->first();
 
-        return array(
-            "id" => $account->id,
-            "name" => $account->name
-        );
+        return [
+            'id' => $account->id,
+            'name' => $account->name,
+        ];
     }
-
-
-
 
     public function getAssetAccount(Request $request)
     {
@@ -176,15 +173,14 @@ class Account extends Model
         if ($search !== '') {
             $account->where('branch_id', $request->user()->branch_id)
                 ->whereBetween('code', ['121', '126'])
-                ->where('name', 'like', '%' . $search . '%');
+                ->where('name', 'like', '%'.$search.'%');
         }
 
         return $account->get()->map(function ($item) {
             return [
-                "id" => $item->id,
-                "text" => $item->name
+                'id' => $item->id,
+                'text' => $item->name,
             ];
         })->toArray();
     }
-
 }

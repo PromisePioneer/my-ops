@@ -9,8 +9,6 @@ class SubAccountRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -19,15 +17,13 @@ class SubAccountRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
         return [
             'code' => [
                 'required',
-                Rule::unique('sub_accounts', 'code')->ignore(request()->route('subAccount'))
+                Rule::unique('sub_accounts', 'code')->ignore(request()->route('subAccount')),
             ],
             'account_id' => [
                 'required',

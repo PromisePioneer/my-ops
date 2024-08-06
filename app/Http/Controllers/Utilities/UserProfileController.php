@@ -17,14 +17,16 @@ use Illuminate\View\View;
 class UserProfileController extends Controller
 {
     private UserIdentityInformation $identityInformation;
+
     private UserJobInformation $jobInformation;
+
     private HandleFileUploadService $handleFileUpload;
 
     public function __construct()
     {
-        $this->identityInformation = new UserIdentityInformation();
-        $this->jobInformation = new UserJobInformation();
-        $this->handleFileUpload = new HandleFileUploadService();
+        $this->identityInformation = new UserIdentityInformation;
+        $this->jobInformation = new UserJobInformation;
+        $this->handleFileUpload = new HandleFileUploadService;
     }
 
     public function index()
@@ -45,16 +47,16 @@ class UserProfileController extends Controller
     public function updatePassword(UpdatePasswordRequest $request, User $user): JsonResponse
     {
         $user->update([
-            'password' => Hash::make($request->get('password'))
+            'password' => Hash::make($request->get('password')),
         ]);
+
         return response()->json(['message' => 'Password telah di update.']);
     }
-
 
     public function updateProfilePic(UserProfileRequest $request, User $user): JsonResponse
     {
         $user->update([
-            'profile_pic' => $this->handleFileUpload->upload($request, 'profile_pic', $user->profile_pic)
+            'profile_pic' => $this->handleFileUpload->upload($request, 'profile_pic', $user->profile_pic),
         ]);
 
         return response()->json(['message' => 'foto profile telah di update']);

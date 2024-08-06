@@ -19,19 +19,24 @@ use Illuminate\View\View;
 class BastController extends Controller
 {
     public int $perPage = 10;
+
     private Contact $contact;
+
     private BastServices $bastService;
+
     private Bast $bast;
+
     private BastProduct $bastProduct;
+
     private Branch $branch;
 
     public function __construct()
     {
-        $this->contact = new Contact();
-        $this->bastService = new BastServices();
-        $this->bast = new Bast();
-        $this->bastProduct = new BastProduct();
-        $this->branch = new Branch();
+        $this->contact = new Contact;
+        $this->bastService = new BastServices;
+        $this->bast = new Bast;
+        $this->bastProduct = new BastProduct;
+        $this->branch = new Branch;
     }
 
     public function index(): View
@@ -42,12 +47,14 @@ class BastController extends Controller
     public function data(Request $request): JsonResponse
     {
         $bast = $this->bast->getDataWithPagination($request, $this->perPage);
+
         return response()->json($bast);
     }
 
     public function search(Request $request): JsonResponse
     {
         $searchQuery = $this->bast->searchDataBasedOnUserBranch($request);
+
         return response()->json($searchQuery);
     }
 
@@ -64,6 +71,7 @@ class BastController extends Controller
     public function contactData(Request $request): JsonResponse
     {
         $contact = $this->contact->getData($request);
+
         return response()->json($contact);
     }
 
@@ -77,7 +85,7 @@ class BastController extends Controller
         $this->bastService->store($request);
 
         return response()->json([
-            'message' => 'Data berhasil disimpan'
+            'message' => 'Data berhasil disimpan',
         ]);
     }
 
@@ -89,23 +97,23 @@ class BastController extends Controller
     public function update(BastRequest $request, Bast $bast): JsonResponse
     {
         $this->bastService->update($request, $bast);
+
         return response()->json([
-            'message' => 'Data berhasil disimpan'
+            'message' => 'Data berhasil disimpan',
         ]);
     }
 
     public function detail(Bast $bast): View
     {
         $bastProducts = $this->bastProduct->getData($bast->id);
+
         return view('pages.transaction.bast.detail', compact('bast', 'bastProducts'));
     }
-
 
     public function getProductBast(Bast $bast): JsonResponse
     {
         return response()->json($this->bastProduct->getData($bast->id));
     }
-
 
     public function getSelectedContact(Bast $bast): JsonResponse
     {
@@ -123,7 +131,6 @@ class BastController extends Controller
         ], 201);
     }
 
-
     public function destroy(Bast $bast): JsonResponse
     {
         Storage::delete($bast->file);
@@ -139,12 +146,11 @@ class BastController extends Controller
         return view('pages.transaction.bast.view-file', compact('bast'));
     }
 
-
     public function exportToPDF(Bast $bast): Response
     {
         $bastProducts = $this->bastProduct->getData($bast->id);
 
-        $pdf = PDF::loadView('pages.transaction.bast.export-pdf', compact('bastProducts', 'bast'))->setPaper("A4", 'portrait');
+        $pdf = PDF::loadView('pages.transaction.bast.export-pdf', compact('bastProducts', 'bast'))->setPaper('A4', 'portrait');
 
         return $pdf->stream();
     }

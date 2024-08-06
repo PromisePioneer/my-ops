@@ -9,8 +9,6 @@ class UserPlacementRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -19,20 +17,17 @@ class UserPlacementRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
         return [
             'code' => [
                 'required',
-                Rule::unique('user_placements', 'code')->ignore(request()->route('userPlacement'))
+                Rule::unique('user_placements', 'code')->ignore(request()->route('userPlacement')),
             ],
-            'name' => ['required']
+            'name' => ['required'],
         ];
     }
-
 
     public function messages(): array
     {

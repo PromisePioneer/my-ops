@@ -11,14 +11,16 @@ use Illuminate\View\View;
 class AccountTransactionsController extends Controller
 {
     private AccountTransaction $accountTransaction;
+
     public int $perPage = 10;
+
     public function __construct()
     {
         $this->middleware('permission:lihat transaksi akun', ['only' => ['index']]);
         $this->middleware('permission:tambah transaksi akun', ['only' => ['create', 'store']]);
         $this->middleware('permission:update transaksi akun', ['only' => ['edit', 'update']]);
         $this->middleware('permission:hapus transaksi akun', ['only' => ['destroy']]);
-        $this->accountTransaction = new AccountTransaction();
+        $this->accountTransaction = new AccountTransaction;
     }
 
     public function index(): View
@@ -34,6 +36,7 @@ class AccountTransactionsController extends Controller
     public function search(Request $request): JsonResponse
     {
         $accountTransaction = $this->accountTransaction->searchAccountTransactionBasedOnUserBranch($request, $this->perPage);
+
         return response()->json($accountTransaction);
     }
 }

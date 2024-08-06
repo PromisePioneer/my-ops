@@ -11,7 +11,6 @@ class SubAccountSeeder extends Seeder
     public function run()
     {
 
-
         $id1 = Account::where('id', 1)->first();
         $id2 = Account::where('id', 2)->first();
         $id3 = Account::where('id', 3)->first();
@@ -58,415 +57,391 @@ class SubAccountSeeder extends Seeder
         $id44 = Account::where('id', 44)->first();
         $id45 = Account::where('id', 45)->first();
 
-
         //1
         SubAccount::create([
             'name' => 'Kas Tunai',
-            'code' => $id1->code . '-' . "01",
-            'account_id' => 1
+            'code' => $id1->code.'-'.'01',
+            'account_id' => 1,
         ]);
 
         SubAccount::create([
             'name' => 'Rekening Cabang',
-            'code' => $id1->code . '-' . "02",
-            'account_id' => 1
+            'code' => $id1->code.'-'.'02',
+            'account_id' => 1,
         ]);
 
         SubAccount::create([
             'name' => 'Rekening Pendapatan',
-            'code' => $id1->code . '-' . "03",
-            'account_id' => 1
+            'code' => $id1->code.'-'.'03',
+            'account_id' => 1,
         ]);
-
 
         SubAccount::create([
             'name' => 'Rekening Mayatama Pusat',
-            'code' => $id1->code . '-' . "04",
-            'account_id' => 1
+            'code' => $id1->code.'-'.'04',
+            'account_id' => 1,
         ]);
-
 
         //2
         SubAccount::create([
             'name' => 'Persediaan Perlengkapan Jaringan',
-            'code' => $id2->code . '-' . "01",
-            'account_id' => 2
+            'code' => $id2->code.'-'.'01',
+            'account_id' => 2,
         ]);
 
         SubAccount::create([
             'name' => 'Persediaan Lainnya',
-            'code' => $id2->code . '-' . "02",
-            'account_id' => 2
+            'code' => $id2->code.'-'.'02',
+            'account_id' => 2,
         ]);
-
 
         //3
         SubAccount::create([
             'name' => 'Piutang Pelanggan',
-            'code' => $id3->code . '-' . "01",
-            'account_id' => 3
+            'code' => $id3->code.'-'.'01',
+            'account_id' => 3,
         ]);
 
         SubAccount::create([
             'name' => 'Piutang Lainnya',
-            'code' => $id3->code . '-' . "02",
-            'account_id' => 3
+            'code' => $id3->code.'-'.'02',
+            'account_id' => 3,
         ]);
 
         //4
         SubAccount::create([
             'name' => 'Sewa dibayar dimuka',
-            'code' => $id4->code . '-' . "01",
-            'account_id' => 4
+            'code' => $id4->code.'-'.'01',
+            'account_id' => 4,
         ]);
 
         SubAccount::create([
             'name' => 'Sewa dibayar dimuka lainnya',
-            'code' => $id4->code . '-' . "02",
-            'account_id' => 4
+            'code' => $id4->code.'-'.'02',
+            'account_id' => 4,
         ]);
 
         //5
         SubAccount::create([
             'name' => 'PPn Masukan',
-            'code' => $id5->code . '-' . "01",
-            'account_id' => 5
+            'code' => $id5->code.'-'.'01',
+            'account_id' => 5,
         ]);
 
         SubAccount::create([
             'name' => 'Kredit PPh 23',
-            'code' => $id5->code . '-' . "02",
-            'account_id' => 5
+            'code' => $id5->code.'-'.'02',
+            'account_id' => 5,
         ]);
 
         SubAccount::create([
             'name' => 'Kredit Angsuran PPh 25',
-            'code' => $id5->code . '-' . "03",
-            'account_id' => 5
+            'code' => $id5->code.'-'.'03',
+            'account_id' => 5,
         ]);
-
 
         //6
         SubAccount::create([
             'name' => 'Utang PPn',
-            'code' => $id15->code . '-' . "01",
-            'account_id' => 15
+            'code' => $id15->code.'-'.'01',
+            'account_id' => 15,
         ]);
 
         SubAccount::create([
             'name' => 'Utang PPh Pasal 21',
-            'code' => $id15->code . '-' . "02",
-            'account_id' => 15
+            'code' => $id15->code.'-'.'02',
+            'account_id' => 15,
         ]);
 
         SubAccount::create([
             'name' => 'Utang PPh Pasal 23',
-            'code' => $id15->code . '-' . "03",
-            'account_id' => 15
+            'code' => $id15->code.'-'.'03',
+            'account_id' => 15,
         ]);
 
         SubAccount::create([
             'name' => 'Utang PPh Pasal 29',
-            'code' => $id15->code . '-' . "04",
-            'account_id' => 15
+            'code' => $id15->code.'-'.'04',
+            'account_id' => 15,
         ]);
 
         SubAccount::create([
             'name' => 'Utang PPh Pasal 4 ayat (2)',
-            'code' => $id15->code . '-' . "05",
-            'account_id' => 15
+            'code' => $id15->code.'-'.'05',
+            'account_id' => 15,
         ]);
-
 
         SubAccount::create([
             'name' => 'Utang Gaji',
-            'code' => $id17->code . '-' . "01",
-            'account_id' => 17
+            'code' => $id17->code.'-'.'01',
+            'account_id' => 17,
         ]);
 
         SubAccount::create([
             'name' => 'BHP Telekomunikasi',
-            'code' => $id17->code . '-' . "02",
-            'account_id' => 17
+            'code' => $id17->code.'-'.'02',
+            'account_id' => 17,
         ]);
-
 
         SubAccount::create([
             'name' => 'Kontribusi KPU/USO',
-            'code' => $id17->code . '-' . "03",
-            'account_id' => 17
+            'code' => $id17->code.'-'.'03',
+            'account_id' => 17,
         ]);
-
 
         SubAccount::create([
             'name' => 'Pendapatan Layanan Internet Broadband',
-            'code' => $id28->code . '-' . "01",
-            'account_id' => 28
+            'code' => $id28->code.'-'.'01',
+            'account_id' => 28,
         ]);
 
         SubAccount::create([
             'name' => 'Pendapatan Layanan Internet Dedicated',
-            'code' => $id28->code . '-' . "02",
-            'account_id' => 28
+            'code' => $id28->code.'-'.'02',
+            'account_id' => 28,
         ]);
 
         SubAccount::create([
             'name' => 'Pendapatan Layanan Jartaplok',
-            'code' => $id29->code . '-' . "01",
-            'account_id' => 29
+            'code' => $id29->code.'-'.'01',
+            'account_id' => 29,
         ]);
 
         SubAccount::create([
             'name' => 'Pendapatan Layanan Jartup',
-            'code' => $id29->code . '-' . "02",
-            'account_id' => 29
+            'code' => $id29->code.'-'.'02',
+            'account_id' => 29,
         ]);
-
 
         SubAccount::create([
             'name' => 'Pendapatan Administrasi Pendaftaran',
-            'code' => $id30->code . '-' . "01",
-            'account_id' => 30
+            'code' => $id30->code.'-'.'01',
+            'account_id' => 30,
         ]);
 
         SubAccount::create([
             'name' => 'Penjualan Alat dan Perangkat',
-            'code' => $id30->code . '-' . "02",
-            'account_id' => 30
+            'code' => $id30->code.'-'.'02',
+            'account_id' => 30,
         ]);
 
         SubAccount::create([
             'name' => 'Pendapatan Bunga Bank',
-            'code' => $id30->code . '-' . "03",
-            'account_id' => 30
+            'code' => $id30->code.'-'.'03',
+            'account_id' => 30,
         ]);
 
         SubAccount::create([
             'name' => 'Pendapatan/Penjualan Jasa Lainnya',
-            'code' => $id30->code . '-' . "04",
-            'account_id' => 30
+            'code' => $id30->code.'-'.'04',
+            'account_id' => 30,
         ]);
 
         SubAccount::create([
             'name' => 'Beban Uplink',
-            'code' => $id31->code . '-' . "01",
-            'account_id' => 31
+            'code' => $id31->code.'-'.'01',
+            'account_id' => 31,
         ]);
-
 
         SubAccount::create([
             'name' => 'Beban Interkoneksi',
-            'code' => $id31->code . '-' . "02",
-            'account_id' => 31
+            'code' => $id31->code.'-'.'02',
+            'account_id' => 31,
         ]);
 
         SubAccount::create([
             'name' => 'Beban Pokok Lainnya',
-            'code' => $id31->code . '-' . "03",
-            'account_id' => 31
+            'code' => $id31->code.'-'.'03',
+            'account_id' => 31,
         ]);
-
 
         SubAccount::create([
             'name' => 'Perlengkapan Jaringan',
-            'code' => $id32->code . '-' . "01",
-            'account_id' => 32
+            'code' => $id32->code.'-'.'01',
+            'account_id' => 32,
         ]);
 
         SubAccount::create([
             'name' => 'Jasa Vendor',
-            'code' => $id32->code . '-' . "02",
-            'account_id' => 32
+            'code' => $id32->code.'-'.'02',
+            'account_id' => 32,
         ]);
-
 
         SubAccount::create([
             'name' => 'BHP Tel & KPU/USO',
-            'code' => $id32->code . '-' . "03",
-            'account_id' => 32
+            'code' => $id32->code.'-'.'03',
+            'account_id' => 32,
         ]);
 
         SubAccount::create([
             'name' => 'Beban Gaji Karyawan',
-            'code' => $id33->code . '-' . "01",
-            'account_id' => 33
+            'code' => $id33->code.'-'.'01',
+            'account_id' => 33,
         ]);
 
         SubAccount::create([
             'name' => 'Beban BPJS Ketenagakerjaan',
-            'code' => $id33->code . '-' . "02",
-            'account_id' => 33
+            'code' => $id33->code.'-'.'02',
+            'account_id' => 33,
         ]);
 
         SubAccount::create([
             'name' => 'Beban BPJS Kesehatan',
-            'code' => $id33->code . '-' . "03",
-            'account_id' => 33
+            'code' => $id33->code.'-'.'03',
+            'account_id' => 33,
         ]);
-
 
         SubAccount::create([
             'name' => 'Beban Listrik',
-            'code' => $id34->code . '-' . "01",
-            'account_id' => 34
+            'code' => $id34->code.'-'.'01',
+            'account_id' => 34,
         ]);
-
 
         SubAccount::create([
             'name' => 'Beban Telpon',
-            'code' => $id34->code . '-' . "02",
-            'account_id' => 34
+            'code' => $id34->code.'-'.'02',
+            'account_id' => 34,
         ]);
-
 
         SubAccount::create([
             'name' => 'Beban Air',
-            'code' => $id34->code . '-' . "03",
-            'account_id' => 34
+            'code' => $id34->code.'-'.'03',
+            'account_id' => 34,
         ]);
-
 
         SubAccount::create([
             'name' => 'Beban Gas',
-            'code' => $id34->code . '-' . "04",
-            'account_id' => 34
+            'code' => $id34->code.'-'.'04',
+            'account_id' => 34,
         ]);
-
 
         SubAccount::create([
             'name' => 'Beban Perlengkapan Kantor',
-            'code' => $id35->code . '-' . "01",
-            'account_id' => 35
+            'code' => $id35->code.'-'.'01',
+            'account_id' => 35,
         ]);
 
         SubAccount::create([
             'name' => 'Beban Perlengkapan Lainnya',
-            'code' => $id35->code . '-' . "02",
-            'account_id' => 35
+            'code' => $id35->code.'-'.'02',
+            'account_id' => 35,
         ]);
-
 
         SubAccount::create([
             'name' => ' Beban Angkut Barang',
-            'code' => $id36->code . '-' . "01",
-            'account_id' => 36
+            'code' => $id36->code.'-'.'01',
+            'account_id' => 36,
         ]);
 
         SubAccount::create([
             'name' => ' Beban Kirim Dokumen',
-            'code' => $id36->code . '-' . "02",
-            'account_id' => 36
+            'code' => $id36->code.'-'.'02',
+            'account_id' => 36,
         ]);
 
         SubAccount::create([
             'name' => ' Beban Angkut/Kirim Lainnya',
-            'code' => $id36->code . '-' . "03",
-            'account_id' => 36
+            'code' => $id36->code.'-'.'03',
+            'account_id' => 36,
         ]);
-
 
         SubAccount::create([
             'name' => ' Beban Transportasi',
-            'code' => $id37->code . '-' . "01",
-            'account_id' => 37
+            'code' => $id37->code.'-'.'01',
+            'account_id' => 37,
         ]);
 
         SubAccount::create([
             'name' => ' Beban Penginapan',
-            'code' => $id37->code . '-' . "02",
-            'account_id' => 37
+            'code' => $id37->code.'-'.'02',
+            'account_id' => 37,
         ]);
 
         SubAccount::create([
             'name' => 'Beban Perjalanan Dinas Lainnya',
-            'code' => $id37->code . '-' . "03",
-            'account_id' => 37
+            'code' => $id37->code.'-'.'03',
+            'account_id' => 37,
         ]);
-
 
         SubAccount::create([
             'name' => ' BBM Kendaraan R4 Kantor',
-            'code' => $id38->code . '-' . "01",
-            'account_id' => 38
+            'code' => $id38->code.'-'.'01',
+            'account_id' => 38,
         ]);
         SubAccount::create([
             'name' => 'BBM Kendaraan R4 Kantor Operasional Lapangan',
-            'code' => $id38->code . '-' . "02",
-            'account_id' => 38
+            'code' => $id38->code.'-'.'02',
+            'account_id' => 38,
         ]);
         SubAccount::create([
             'name' => 'BBM Kendaraan R3 Kantor Operasional Lapangan',
-            'code' => $id38->code . '-' . "03",
-            'account_id' => 38
+            'code' => $id38->code.'-'.'03',
+            'account_id' => 38,
         ]);
         SubAccount::create([
             'name' => 'BBM Kendaraan R2 Operasional',
-            'code' => $id38->code . '-' . "04",
-            'account_id' => 38
+            'code' => $id38->code.'-'.'04',
+            'account_id' => 38,
         ]);
         SubAccount::create([
             'name' => 'Beban Mesin Genset',
-            'code' => $id38->code . '-' . "05",
-            'account_id' => 38
+            'code' => $id38->code.'-'.'05',
+            'account_id' => 38,
         ]);
-
 
         SubAccount::create([
             'name' => ' Beban Pemeliharaan Bangunan',
-            'code' => $id39->code . '-' . "01",
-            'account_id' => 39
+            'code' => $id39->code.'-'.'01',
+            'account_id' => 39,
         ]);
 
         SubAccount::create([
             'name' => 'Beban Pemeliharaan Kendaraan',
-            'code' => $id39->code . '-' . "02",
-            'account_id' => 39
+            'code' => $id39->code.'-'.'02',
+            'account_id' => 39,
         ]);
 
         SubAccount::create([
             'name' => 'Beban Pemeliharaan Mesin',
-            'code' => $id39->code . '-' . "03",
-            'account_id' => 39
+            'code' => $id39->code.'-'.'03',
+            'account_id' => 39,
         ]);
 
         SubAccount::create([
             'name' => 'Beban Pemeliharaan Aset Kantor',
-            'code' => $id39->code . '-' . "04",
-            'account_id' => 39
+            'code' => $id39->code.'-'.'04',
+            'account_id' => 39,
         ]);
 
         SubAccount::create([
             'name' => 'Beban Pemeliharaan Jaringan',
-            'code' => $id39->code . '-' . "05",
-            'account_id' => 39
+            'code' => $id39->code.'-'.'05',
+            'account_id' => 39,
         ]);
-
 
         SubAccount::create([
             'name' => 'Retribusi',
-            'code' => $id41->code . '-' . "01",
-            'account_id' => 41
+            'code' => $id41->code.'-'.'01',
+            'account_id' => 41,
         ]);
 
         SubAccount::create([
             'name' => 'Beban Pelatihan & Pengembangan SDM',
-            'code' => $id41->code . '-' . "02",
-            'account_id' => 41
+            'code' => $id41->code.'-'.'02',
+            'account_id' => 41,
         ]);
 
         SubAccount::create([
             'name' => 'Beban Entertainment',
-            'code' => $id41->code . '-' . "03",
-            'account_id' => 41
+            'code' => $id41->code.'-'.'03',
+            'account_id' => 41,
         ]);
-
 
         SubAccount::create([
             'name' => 'Beban Diluar Usaha Lainnya',
-            'code' => $id41->code . '-' . "04",
-            'account_id' => 41
+            'code' => $id41->code.'-'.'04',
+            'account_id' => 41,
         ]);
-
 
     }
 }

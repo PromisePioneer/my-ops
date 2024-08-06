@@ -11,7 +11,6 @@ use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
-
     public int $perPage = 10;
 
     public function __construct()
@@ -22,7 +21,6 @@ class PermissionController extends Controller
         $this->middleware('permission:hapus permission', ['only' => ['destroy']]);
     }
 
-
     public function index(): View
     {
         return view('pages.manage-users.permission.index');
@@ -31,13 +29,15 @@ class PermissionController extends Controller
     public function permissionData(): JsonResponse
     {
         $permission = Permission::paginate($this->perPage);
+
         return response()->json($permission);
     }
 
     public function search(Request $request): JsonResponse
     {
         $search = $request->input('search');
-        $query = Permission::where('name', 'like', '%' . $search . '%')->get();
+        $query = Permission::where('name', 'like', '%'.$search.'%')->get();
+
         return response()->json($query);
     }
 
@@ -51,7 +51,7 @@ class PermissionController extends Controller
         $permission = Permission::create($request->validated());
 
         return response()->json([
-            'message' => "data sukses disimpan!",
+            'message' => 'data sukses disimpan!',
             'data' => $permission,
         ]);
     }
@@ -61,23 +61,22 @@ class PermissionController extends Controller
         return response()->json($permission);
     }
 
-
     public function update(Permission $permission, PermissionRequest $request): JsonResponse
     {
         $permission->update($request->validated());
 
         return response()->json([
-            'message' => "data sukses diupdate!",
+            'message' => 'data sukses diupdate!',
             'data' => $permission,
         ]);
     }
 
-
     public function destroy(Permission $permission): JsonResponse
     {
         $permission->delete();
+
         return response()->json([
-            'message' => "data sukses dihapus!",
+            'message' => 'data sukses dihapus!',
             'data' => $permission,
         ]);
     }

@@ -29,22 +29,25 @@ class ServicesCategoryController extends Controller
     public function data(): JsonResponse
     {
         $services = ServiceCategory::orderBy('capacity', 'ASC')->paginate(self::$perPage);
+
         return response()->json($services);
     }
 
     public function search(Request $request): JsonResponse
     {
-        $servicesCategory = ServiceCategory::where('name', 'like', '%' . $request->search . '%')
-            ->orWhere('capacity', 'like', '%' . $request->search . '%')
+        $servicesCategory = ServiceCategory::where('name', 'like', '%'.$request->search.'%')
+            ->orWhere('capacity', 'like', '%'.$request->search.'%')
             ->orderBy('capacity', 'ASC')
             ->limit(25)
             ->get();
+
         return response()->json($servicesCategory);
     }
 
     public function store(ServicesCategoryRequest $request): JsonResponse
     {
         $services = ServiceCategory::create($request->validated());
+
         return response()->json([
             'message' => 'data berhasil disimpan',
         ]);
@@ -58,11 +61,11 @@ class ServicesCategoryController extends Controller
     public function update(ServicesCategoryRequest $request, ServiceCategory $serviceCategory): JsonResponse
     {
         $serviceCategory->update($request->validated());
+
         return response()->json([
             'message' => 'data berhasil di update',
         ]);
     }
-
 
     public function destroy(Request $request): JsonResponse
     {
@@ -70,7 +73,6 @@ class ServicesCategoryController extends Controller
 
         $convertToString = implode(',', $cabangId['data']);
         $integerIDs = array_map('intval', explode(',', $convertToString));
-
 
         foreach ($integerIDs as $id) {
             $users = DB::table('users')->whereIn('id', $integerIDs)->get();
@@ -84,9 +86,7 @@ class ServicesCategoryController extends Controller
 
         return response()->json([
             'message' => 'data berhasil di hapus',
-            'data' => $services
+            'data' => $services,
         ]);
     }
-
-
 }

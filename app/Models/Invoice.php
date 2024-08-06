@@ -13,6 +13,7 @@ class Invoice extends Model
     use Notifiable;
 
     protected $table = 'invoices';
+
     protected $fillable = [
         'fab_id',
         'contact_id',
@@ -27,7 +28,6 @@ class Invoice extends Model
         'payment_status',
         'created_by',
     ];
-
 
     public function branch(): BelongsTo
     {
@@ -55,18 +55,19 @@ class Invoice extends Model
     public function searchDataBasedOnUserBranch($request)
     {
         $search = $request->input('search');
-        return self::where('invoice_number', 'like', '%' . $search . '%')
+
+        return self::where('invoice_number', 'like', '%'.$search.'%')
             ->where('branch_id', $request->user()->branch_id)
             ->orWhereHas('contact', function ($query) use ($search) {
-                $query->where('company_name', 'like', '%' . $search . '%');
+                $query->where('company_name', 'like', '%'.$search.'%');
             })
             ->orWhereHas('branch', function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%');
+                $query->where('name', 'like', '%'.$search.'%');
             })
-            ->orWhere('due_date', 'like', '%' . $search . '%')
-            ->orWhere('description', 'like', '%' . $search . '%')
-            ->orWhere('grand_total', 'like', '%' . $search . '%')
-            ->orWhere('created_by', 'like', '%' . $search . '%')
+            ->orWhere('due_date', 'like', '%'.$search.'%')
+            ->orWhere('description', 'like', '%'.$search.'%')
+            ->orWhere('grand_total', 'like', '%'.$search.'%')
+            ->orWhere('created_by', 'like', '%'.$search.'%')
             ->get();
     }
 
@@ -74,6 +75,4 @@ class Invoice extends Model
     {
         return self::with('contact', 'user')->where('branch_id', $branchId)->paginate($perPage);
     }
-
-
 }

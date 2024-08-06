@@ -16,19 +16,19 @@ class BastSeeder extends Seeder
      */
     public function run()
     {
-        $faker =  Faker::create('id_ID');
+        $faker = Faker::create('id_ID');
 
         Bast::create([
             'branch_id' => 1,
             'fab_id' => null,
-            'bast_number' => "061/MY-PKUAA/III/2024",
+            'bast_number' => '061/MY-PKUAA/III/2024',
             'contact_id' => $faker->numberBetween(1, 10),
             'date' => Carbon::now(),
-            'first_party_identity_name' => "Muhammad Rizki",
+            'first_party_identity_name' => 'Muhammad Rizki',
             'first_party_position' => 'Fullstack Developer',
             'objective' => $faker->text(),
             'file' => null,
-            'created_by' => 1
+            'created_by' => 1,
         ]);
     }
 }

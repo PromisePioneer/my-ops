@@ -12,17 +12,21 @@ use Illuminate\Support\Facades\DB;
 class FabServices
 {
     private const FAB_SENT_DESCRIPTION = 'FAB telah terbit ke %s No. Fab %s';
+
     private HandleFileUploadService $handleFileUploadService;
+
     private Contact $contact;
+
     private AccountTransactionService $accountTransactionService;
+
     private SubAccount $subAccount;
 
     public function __construct()
     {
-        $this->handleFileUploadService = new HandleFileUploadService();
-        $this->accountTransactionService = new AccountTransactionService();
-        $this->subAccount = new SubAccount();
-        $this->contact = new Contact();
+        $this->handleFileUploadService = new HandleFileUploadService;
+        $this->accountTransactionService = new AccountTransactionService;
+        $this->subAccount = new SubAccount;
+        $this->contact = new Contact;
     }
 
     public function store($request): void
@@ -52,7 +56,6 @@ class FabServices
         });
     }
 
-
     private function fabServiceStoreOrUpdate($request, $fab): void
     {
         foreach ($request['data'] as $key => $value) {
@@ -80,7 +83,7 @@ class FabServices
     {
         $jurnalEntry = DB::table('account_transactions')
             ->join('sub_accounts', 'sub_accounts.id', '=', 'account_transactions.sub_account_id')
-            ->where('account_transactions.description', 'like', '%' . $fab->fab_number . '%')
+            ->where('account_transactions.description', 'like', '%'.$fab->fab_number.'%')
             ->select('account_transactions.*', 'sub_accounts.name', 'sub_accounts.code', 'sub_accounts.id as sub_account_id')
             ->get();
 

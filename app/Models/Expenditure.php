@@ -10,13 +10,14 @@ use Illuminate\Http\Request;
 class Expenditure extends Model
 {
     protected $table = 'expenditure';
+
     protected $fillable = [
         'branch_id',
         'description',
         'credit_account_id',
         'debit_account_id',
         'amount',
-        'file'
+        'file',
     ];
 
     public function branch(): BelongsTo
@@ -34,7 +35,6 @@ class Expenditure extends Model
         return $this->belongsTo(SubAccount::class, 'credit_account_id');
     }
 
-
     public function getDataWithPaginationBasedOnUserBranch(int $branchId, int $perPage): LengthAwarePaginator
     {
         $expenditure = self::with('debitAccount', 'creditAccount')
@@ -49,11 +49,11 @@ class Expenditure extends Model
     {
         $search = $request->input('search');
         $expenditure = self::with('debitAccount', 'creditAccount')
-            ->where('description', 'like', '%' . $search . '%')
+            ->where('description', 'like', '%'.$search.'%')
             ->orWhereHas('debitAccount', function ($query) use ($search) {
-                $query->where('code', 'like', '%' . $search . '%');
-                $query->where('name', 'like', '%' . $search . '%');
-            })->orWhere('amount', 'like', '%' . $search . '%')
+                $query->where('code', 'like', '%'.$search.'%');
+                $query->where('name', 'like', '%'.$search.'%');
+            })->orWhere('amount', 'like', '%'.$search.'%')
             ->where('branch_id', $request->user()->branch_id)
             ->paginate($perPage);
 
@@ -84,6 +84,7 @@ class Expenditure extends Model
     {
         $expenditure = self::with('debitAccount', 'creditAccount')->where('branch_id', $branchId)->paginate($perPage);
         self::formattedData($expenditure);
+
         return $expenditure;
     }
 
@@ -98,21 +99,21 @@ class Expenditure extends Model
         })->orderby('code', 'asc')->select('id', 'name', 'code');
 
         if ($search !== '') {
-            $query->where('name', 'like', '%' . $search . '%');
-            $query->where('code', 'like', '%' . $search . '%');
+            $query->where('name', 'like', '%'.$search.'%');
+            $query->where('code', 'like', '%'.$search.'%');
         }
 
         $debitAccount = $query->get();
 
         return $debitAccount->map(function ($c) {
-            $nameAndCode = $c->code . '-' . $c->name;
+            $nameAndCode = $c->code.'-'.$c->name;
+
             return [
-                "id" => $c->id,
-                "text" => $nameAndCode
+                'id' => $c->id,
+                'text' => $nameAndCode,
             ];
         })->toArray();
     }
-
 
     public function getCreditAccountForExpenditure(Request $request)
     {
@@ -126,17 +127,18 @@ class Expenditure extends Model
             ->limit(5);
 
         if ($search !== '') {
-            $query->where('name', 'like', '%' . $search . '%');
-            $query->where('code', 'like', '%' . $search . '%');
+            $query->where('name', 'like', '%'.$search.'%');
+            $query->where('code', 'like', '%'.$search.'%');
         }
 
         $creditAccount = $query->get();
 
         return $creditAccount->map(function ($c) {
-            $nameAndCode = $c->code . '-' . $c->name;
+            $nameAndCode = $c->code.'-'.$c->name;
+
             return [
-                "id" => $c->id,
-                "text" => $nameAndCode
+                'id' => $c->id,
+                'text' => $nameAndCode,
             ];
         })->toArray();
     }

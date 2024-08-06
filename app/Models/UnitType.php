@@ -9,10 +9,10 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class UnitType extends Model
 {
     protected $table = 'unit_types';
-    protected $fillable = [
-        'name'
-    ];
 
+    protected $fillable = [
+        'name',
+    ];
 
     //eloquent
     public function getDataWithPagination(int $perPage): LengthAwarePaginator
@@ -23,9 +23,9 @@ class UnitType extends Model
     public function searchData(Request $request)
     {
         $search = $request->input('search');
-        return self::where('name', 'like', '%' . $search . '%')->get();
-    }
 
+        return self::where('name', 'like', '%'.$search.'%')->get();
+    }
 
     public function getData(Request $request): array
     {
@@ -35,8 +35,8 @@ class UnitType extends Model
         $query = self::orderby('name', 'asc')->select('id', 'name');
 
         if ($search !== '') {
-            $query->where('name', 'like', '%' . $search . '%')
-                ->where('name', 'like', '%' . $search . '%');
+            $query->where('name', 'like', '%'.$search.'%')
+                ->where('name', 'like', '%'.$search.'%');
         }
 
         return $query->get()->map(function ($item) {
@@ -47,18 +47,13 @@ class UnitType extends Model
         })->toArray();
     }
 
-
     public function getSelectedData(int $unitTypeId): array
     {
         $unitType = self::where('id', $unitTypeId)->first();
 
         return [
-            "id" => $unitType->id,
-            "name" => $unitType->name
+            'id' => $unitType->id,
+            'name' => $unitType->name,
         ];
     }
-
-
-
-
 }

@@ -15,7 +15,7 @@ class UnitTypesSeeder extends Seeder
     public function run()
     {
         DB::table('unit_types')->insert([
-            'name' => "Kg",
+            'name' => 'Kg',
         ]);
     }
 }

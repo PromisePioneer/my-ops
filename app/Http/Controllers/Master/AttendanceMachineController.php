@@ -9,16 +9,19 @@ use App\Models\Branch;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use JetBrains\PhpStorm\NoReturn;
+use Jmrashed\Zkteco\Lib\ZKTeco;
 
 class AttendanceMachineController extends Controller
 {
     public int $perPage = 10;
+
     private AttendanceMachineInformation $attendanceMachineInformation;
 
     public function __construct()
     {
-        $this->attendanceMachineInformation = new AttendanceMachineInformation();
-        $this->branch = new Branch();
+        $this->attendanceMachineInformation = new AttendanceMachineInformation;
+        $this->branch = new Branch;
     }
 
     public function index(): View
@@ -44,11 +47,11 @@ class AttendanceMachineController extends Controller
     public function store(AttendanceMachineInformationRequest $request): JsonResponse
     {
         AttendanceMachineInformation::create($request->validated());
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
-
 
     public function getSelectedBranch(AttendanceMachineInformation $attendanceMachineInformation): JsonResponse
     {
@@ -65,58 +68,27 @@ class AttendanceMachineController extends Controller
         return view('pages.master.attendance-machine-info.detail', compact('attendanceMachineInformation'));
     }
 
-    public function tarikDataAbsen(AttendanceMachineInformation $attendanceMachineInformation): void
+    #[NoReturn] public function tarikDataAbsen(AttendanceMachineInformation $attendanceMachineInformation): void
     {
-        $ip = $attendanceMachineInformation->ip_address;
-        $port = $attendanceMachineInformation->port;
-        $key = $attendanceMachineInformation->key;
+        $zk = new ZKTeco('160.22.177.248', '4370');
+        $zk->connect();
 
-        $Connect = fsockopen($ip, $port, $errno, $errstr, 1);
-        if ($Connect) {
-            $soap_request = "<GetAttLog>
-                                <ArgComKey xsi:type=\"xsd:integer\">" . $key . "</ArgComKey>
-                                <Arg><PIN xsi:type=\"xsd:integer\">All</PIN></Arg>
-                              </GetAttLog>";
-
-            $newLine = "\r\n";
-            fwrite($Connect, "POST /iWsService HTTP/1.0" . $newLine);
-            fwrite($Connect, "Content-Type: text/xml" . $newLine);
-            fwrite($Connect, "Content-Length: " . strlen($soap_request) . $newLine . $newLine);
-            fwrite($Connect, $soap_request . $newLine);
-            $buffer = "";
-            while ($Response = fgets($Connect, 1024)) {
-                $buffer .= $Response;
-            }
-        } else {
-            echo "Koneksi Gagal";
-        }
-
-        $buffer = $this->parseData($buffer, "<GetAttLogResponse>", "</GetAttLogResponse>");
-        $buffer = explode("\r\n", $buffer);
-
-        for ($a = 0, $aMax = count($buffer); $a < $aMax; $a++) {
-            $data = $this->parseData($buffer[$a], "<Row>", "</Row>");
-
-            $export[$a]['pin'] = $this->parseData($data, "<PIN>", "</PIN>");
-            $export[$a]['waktu'] = $this->parseData($data, "<DateTime>", "</DateTime>");
-            $export[$a]['status'] = $this->parseData($data, "<Status>", "</Status>");
-        }
-
-        echo '<pre>';
-        print_r($export);
+        $attendanceLog = $zk->getAttendance();
+        dd($attendanceLog);
     }
 
-    function parseData($data, $p1, $p2)
+    private function parseData($data, $p1, $p2): string
     {
-        $data = " " . $data;
-        $hasil = "";
+        $data = ' ' . $data;
+        $hasil = '';
         $awal = strpos($data, $p1);
-        if ($awal != "") {
+        if ($awal != '') {
             $akhir = strpos(strstr($data, $p1), $p2);
-            if ($akhir != "") {
-                $hasil = substr($data, $awal + strlen($p1), $akhir - strlen($p1));
+            if ($akhir != '') {
+                $hasil = substr($data, ($awal + strlen($p1)), ($akhir - strlen($p1)));
             }
         }
+
         return $hasil;
     }
 
@@ -125,16 +97,16 @@ class AttendanceMachineController extends Controller
         $attendanceMachineInformation->update($request->validated());
 
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
-
 
     public function destroy(AttendanceMachineInformation $attendanceMachineInformation): JsonResponse
     {
         $attendanceMachineInformation->delete();
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
 }

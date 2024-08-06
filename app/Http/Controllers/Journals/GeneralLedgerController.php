@@ -17,21 +17,20 @@ class GeneralLedgerController extends Controller
         return view('pages.journals.general-ledger.index');
     }
 
-
     public function data(): JsonResponse
     {
         $account = Account::all();
+
         return response()->json($account);
     }
-
 
     public function detail(Account $account)
     {
 
         $accountTransaction = AccountTransaction::with('account')->get();
+
         return view('pages.journals.general-ledger.detail', compact('accountTransaction', 'account'));
     }
-
 
     public function detailAkunData(Account $account): JsonResponse
     {

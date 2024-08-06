@@ -14,6 +14,7 @@ class OfferingLetter extends Model
     use HasFactory;
 
     protected $table = 'offering_letters';
+
     protected $fillable = [
         'branch_id',
         'contact_id',
@@ -26,7 +27,7 @@ class OfferingLetter extends Model
         'marketing_agent_contact',
         'status',
         'file',
-        'created_by'
+        'created_by',
     ];
 
     public function contact(): BelongsTo
@@ -44,12 +45,10 @@ class OfferingLetter extends Model
         return $this->belongsTo(ServiceCategory::class, 'offering_letter_id');
     }
 
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
-
 
     //eloquent
     public function getOfferingLettersBasedOnUserBranch($perPage): LengthAwarePaginator
@@ -59,28 +58,29 @@ class OfferingLetter extends Model
             ->select('id', 'offering_number', 'status', 'created_at', 'created_by', 'contact_id', 'branch_id')
             ->paginate($perPage);
 
-
         self::formatOfferingLettersData($offeringLetters);
+
         return $offeringLetters;
     }
 
     public function searchOfferingLettersBasedOnUserBranch(Request $request, $perPage): LengthAwarePaginator
     {
-        $offeringLetter = self::where('offering_number', 'like', '%' . $request->search . '%')
+        $offeringLetter = self::where('offering_number', 'like', '%'.$request->search.'%')
             ->orWhereHas('contact', function ($query) use ($request) {
-                $query->where('full_name', 'like', '%' . $request->search . '%');
-                $query->orWhere('company_name', 'like', '%' . $request->search . '%');
+                $query->where('full_name', 'like', '%'.$request->search.'%');
+                $query->orWhere('company_name', 'like', '%'.$request->search.'%');
             })
-            ->orWhere('date', 'like', '%' . $request->search . '%')
-            ->orWhere('attachment', 'like', '%' . $request->search . '%')
-            ->orWhere('foreword', 'like', '%' . $request->search . '%')
-            ->orWhere('notes', 'like', '%' . $request->search . '%')
-            ->orWhere('marketing_agent_name', 'like', '%' . $request->search . '%')
-            ->orWhere('marketing_agent_contact', 'like', '%' . $request->search . '%')
+            ->orWhere('date', 'like', '%'.$request->search.'%')
+            ->orWhere('attachment', 'like', '%'.$request->search.'%')
+            ->orWhere('foreword', 'like', '%'.$request->search.'%')
+            ->orWhere('notes', 'like', '%'.$request->search.'%')
+            ->orWhere('marketing_agent_name', 'like', '%'.$request->search.'%')
+            ->orWhere('marketing_agent_contact', 'like', '%'.$request->search.'%')
             ->where('branch_id', Auth::user()->branch_id)
             ->paginate($perPage);
 
         self::formatOfferingLettersData($offeringLetter);
+
         return $offeringLetter;
     }
 
@@ -98,12 +98,14 @@ class OfferingLetter extends Model
             ];
         });
         $offeringLetter->setCollection($formattedData);
+
         return $offeringLetter;
     }
 
     public function filteringDataBasedOnBranch(int $branchId, int $perPage): LengthAwarePaginator
     {
         $query = self::where('branch_id', $branchId)->paginate($perPage);
+
         return self::formatOfferingLettersData($query);
     }
 }

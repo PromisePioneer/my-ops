@@ -16,18 +16,18 @@ class ProductServices
         } else {
             $product = Product::orderby('name', 'asc')
                 ->select('id', 'name', 'unit_price')
-                ->where('name', 'like', '%' . $request->search . '%')
+                ->where('name', 'like', '%'.$request->search.'%')
                 ->limit(5)
                 ->get();
         }
 
-        $response = array();
+        $response = [];
         foreach ($product as $c) {
-            $response[] = array(
-                "id" => $c->id,
-                "text" => $c->name,
-                "price" => $c->unit_price
-            );
+            $response[] = [
+                'id' => $c->id,
+                'text' => $c->name,
+                'price' => $c->unit_price,
+            ];
         }
 
         return $response;

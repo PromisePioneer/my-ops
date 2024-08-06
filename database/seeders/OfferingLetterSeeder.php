@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\OfferingLetter;
 use Illuminate\Database\Seeder;
 
 class OfferingLetterSeeder extends Seeder
@@ -12,8 +11,5 @@ class OfferingLetterSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
-    {
-
-    }
+    public function run() {}
 }

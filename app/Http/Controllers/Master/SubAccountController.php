@@ -18,6 +18,7 @@ use Maatwebsite\Excel\Facades\Excel;
 class SubAccountController extends Controller
 {
     private SubAccount $subAccount;
+
     private Account $account;
 
     public function __construct()
@@ -27,8 +28,8 @@ class SubAccountController extends Controller
         $this->middleware('permission:update kategori akun', ['only' => ['edit', 'update']]);
         $this->middleware('permission:hapus kategori akun', ['only' => ['destroy']]);
 
-        $this->subAccount = new SubAccount();
-        $this->account = new Account();
+        $this->subAccount = new SubAccount;
+        $this->account = new Account;
     }
 
     public function index(): View
@@ -39,26 +40,30 @@ class SubAccountController extends Controller
     public function data(): JsonResponse
     {
         $subAccounts = $this->subAccount->getSubAccountBasedOnUserBranch();
+
         return response()->json($subAccounts);
     }
 
     public function search(Request $request): JsonResponse
     {
         $search = $this->subAccount->searchSubAccountBasedOnUserBranch($request);
+
         return response()->json($search);
     }
 
     public function accountData(Request $request): JsonResponse
     {
         $accounts = $this->account->getAccountDataAndSpecificBranchWithoutPagination($request);
+
         return response()->json($accounts);
     }
 
     public function store(SubAccountRequest $request): JsonResponse
     {
         SubAccount::create($request->validated());
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
 
@@ -75,6 +80,7 @@ class SubAccountController extends Controller
     public function update(SubAccountRequest $request, SubAccount $subAccount): JsonResponse
     {
         $subAccount->update($request->validated());
+
         return response()->json([
             'message' => 'Data berhasil diupdate',
         ]);
@@ -83,6 +89,7 @@ class SubAccountController extends Controller
     public function destroy(SubAccount $subAccount): JsonResponse
     {
         $subAccount->delete();
+
         return response()->json([
             'message' => 'Data berhasil dihapus',
         ]);
@@ -97,16 +104,18 @@ class SubAccountController extends Controller
                 ->delete();
 
             $file = $request->file('file_import');
-            Excel::import(new SubAccountImport(), $file);
+            Excel::import(new SubAccountImport, $file);
 
             DB::commit();
+
             return response()->json([
                 'message' => 'Data berhasil diimport',
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

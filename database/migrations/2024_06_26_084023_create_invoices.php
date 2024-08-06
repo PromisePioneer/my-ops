@@ -8,8 +8,6 @@ class CreateInvoices extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up(): void
     {
@@ -28,7 +26,6 @@ class CreateInvoices extends Migration
             $table->boolean('status')->default('0');
             $table->unsignedBigInteger('created_by');
             $table->timestamps();
-
 
             $table->foreign('account_id')
                 ->references('id')
@@ -54,8 +51,6 @@ class CreateInvoices extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down(): void
     {

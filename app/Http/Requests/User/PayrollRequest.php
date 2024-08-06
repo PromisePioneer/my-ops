@@ -8,8 +8,6 @@ class PayrollRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -18,8 +16,6 @@ class PayrollRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
@@ -36,7 +32,7 @@ class PayrollRequest extends FormRequest
             'project_bonus' => ['nullable'],
             'other_bonus' => ['nullable'],
             'bpjs_tek_dues' => ['nullable'],
-            'bpjs_kes_dues' => ['nullable']
+            'bpjs_kes_dues' => ['nullable'],
         ];
     }
 }

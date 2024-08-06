@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class FabService extends Model
 {
     protected $table = 'fab_services';
+
     protected $fillable = [
         'fab_id',
         'service_category_id',
@@ -15,7 +16,6 @@ class FabService extends Model
         'unit_price',
         'total_price',
     ];
-
 
     public function fab(): BelongsTo
     {

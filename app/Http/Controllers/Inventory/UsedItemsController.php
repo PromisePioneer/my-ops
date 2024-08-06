@@ -14,20 +14,20 @@ use Illuminate\Http\Request;
 class UsedItemsController extends Controller
 {
     public int $perPage = 10;
+
     protected UsedItemServices $usedItemsServices;
 
     public function __construct()
     {
-        $this->usedItemsServices = new UsedItemServices();
-        $this->usedItem = new UsedItems();
-        $this->account = new Account();
+        $this->usedItemsServices = new UsedItemServices;
+        $this->usedItem = new UsedItems;
+        $this->account = new Account;
     }
 
     public function getUsedItems(Goods $goods): JsonResponse
     {
         return response()->json($this->usedItem->getDataWithPaginationBasedOnGoods($goods->id, $this->perPage));
     }
-
 
     public function getAssetAccount(Request $request): JsonResponse
     {
@@ -37,8 +37,9 @@ class UsedItemsController extends Controller
     public function usedItems(UsedItemsRequest $request, Goods $goods): JsonResponse
     {
         $this->usedItemsServices->store($request, $goods);
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
 }

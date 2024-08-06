@@ -9,8 +9,6 @@ class GoodsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -19,15 +17,13 @@ class GoodsRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
         return [
             'unit_type_id' => [
                 'required',
-                Rule::exists('unit_types', 'id')
+                Rule::exists('unit_types', 'id'),
             ],
             'serial_number' => ['required',
                 Rule::unique('goods', 'serial_number')->ignore(request()->route('goods'))],
@@ -36,17 +32,16 @@ class GoodsRequest extends FormRequest
             'unit_price' => ['required'],
             'type' => [
                 'required',
-                Rule::in('aset', 'bukan aset')
+                Rule::in('aset', 'bukan aset'),
             ],
             'file' => [
                 'mimes:jpeg,jpg,png',
                 Rule::requiredIf(function () {
                     return request()->route('goods') === null;
-                })
-            ]
+                }),
+            ],
         ];
     }
-
 
     public function messages(): array
     {

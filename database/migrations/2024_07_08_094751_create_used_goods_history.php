@@ -21,7 +21,6 @@ class CreateUsedGoodsHistory extends Migration
             $table->unsignedBigInteger('total_used');
             $table->timestamps();
 
-
             $table->foreign('goods_id')
                 ->references('id')
                 ->on('goods')

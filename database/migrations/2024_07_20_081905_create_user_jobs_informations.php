@@ -8,8 +8,6 @@ class CreateUserJobsInformations extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up(): void
     {
@@ -20,7 +18,7 @@ class CreateUserJobsInformations extends Migration
             $table->date('join_date');
             $table->double('fixed_salary');
             $table->enum('contract_status', [
-                'Tetap', 'Kontrak', 'Vendor', 'Training', 'Magang', 'Freelance', 'Non Karyawan'
+                'Tetap', 'Kontrak', 'Vendor', 'Training', 'Magang', 'Freelance', 'Non Karyawan',
             ]);
             $table->string('bank_account_number');
             $table->enum('bpjs_kes', ['ya', 'tidak'])->default('tidak');
@@ -35,8 +33,6 @@ class CreateUserJobsInformations extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down(): void
     {

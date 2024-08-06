@@ -9,8 +9,6 @@ class UserAttendanceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -19,8 +17,6 @@ class UserAttendanceRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
@@ -31,7 +27,7 @@ class UserAttendanceRequest extends FormRequest
             'clock_out' => ['required', 'date_format:H:i', 'after:clock_in'],
             'status_if_not_present' => [
                 'nullable',
-                Rule::in('Absen', 'Izin', 'Sakit', 'Cuti')
+                Rule::in('Absen', 'Izin', 'Sakit', 'Cuti'),
             ],
         ];
     }

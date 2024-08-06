@@ -19,20 +19,18 @@ class ServicesCategoriesSeeder extends Seeder
             'Internet SOHO',
             'Metro-E',
             'Local Loop',
-            'Internet Broadband'
+            'Internet Broadband',
         ];
 
         $capacities = [
-            1, 5, 10, 15, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000, 2000, 3000, 4000, 5000, 10000, 50000
+            1, 5, 10, 15, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000, 2000, 3000, 4000, 5000, 10000, 50000,
         ];
 
-
-
-        foreach ($services as $service){
+        foreach ($services as $service) {
             foreach ($capacities as $capacity) {
                 ServiceCategory::create([
                     'name' => $service,
-                    'capacity' => $capacity
+                    'capacity' => $capacity,
                 ]);
             }
         }

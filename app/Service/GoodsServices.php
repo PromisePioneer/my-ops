@@ -12,14 +12,16 @@ use Illuminate\Support\Facades\Storage;
 class GoodsServices
 {
     public const INSERT_ACCOUNT_TRANSACTION_DESCRIPTION = 'Pembelian Barang %s, %s %s senilai Rp.%s';
+
     private AccountTransactionService $accountTransactionService;
+
     private UnitType $unitType;
 
     public function __construct()
     {
-        $this->accountTransactionService = new AccountTransactionService();
-        $this->unitType = new UnitType();
-        $this->subAccount = new SubAccount();
+        $this->accountTransactionService = new AccountTransactionService;
+        $this->unitType = new UnitType;
+        $this->subAccount = new SubAccount;
     }
 
     public function store(GoodsRequest $request): void
@@ -37,12 +39,12 @@ class GoodsServices
         $goods->update($data);
     }
 
-
     private static function handleFileUpload(GoodsRequest $request, ?Goods $goods = null): string
     {
         if ($goods) {
             Storage::delete($goods->file);
         }
+
         return $request->file('file')->store('goods/image', 'public');
     }
 

@@ -9,8 +9,6 @@ class BastRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -19,17 +17,15 @@ class BastRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
         return [
             'contact_id' => [
                 'required',
-                Rule::exists('contacts', 'id')
+                Rule::exists('contacts', 'id'),
             ],
-            'bast_number' => ['required',],
+            'bast_number' => ['required'],
             'date' => ['required', 'date'],
             'first_party_identity_name' => ['required'],
             'first_party_position' => ['required'],
@@ -39,7 +35,7 @@ class BastRequest extends FormRequest
                     return request()->route('bast') === null;
                 }),
                 'mimes:pdf',
-                'max:2048'
+                'max:2048',
             ],
             'data.*.product_name' => ['required'],
             'data.*.qty' => ['required', 'string'],

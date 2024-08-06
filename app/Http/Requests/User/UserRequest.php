@@ -9,8 +9,6 @@ class UserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -19,8 +17,6 @@ class UserRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
@@ -28,7 +24,7 @@ class UserRequest extends FormRequest
             'branch_id' => [
                 'required',
                 'integer',
-                Rule::exists('branches', 'id')
+                Rule::exists('branches', 'id'),
             ],
             'name' => ['required', 'string', 'max:255'],
             'email' => [
@@ -42,11 +38,10 @@ class UserRequest extends FormRequest
             ],
             'roles.*' => ['required',
                 'integer',
-                Rule::exists('roles', 'id')
+                Rule::exists('roles', 'id'),
             ],
         ];
     }
-
 
     public function messages(): array
     {

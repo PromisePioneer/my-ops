@@ -13,12 +13,11 @@ use Illuminate\View\View;
 
 class InitialJournalController extends Controller
 {
-
     private InitialJournalServices $initialJournal;
 
     public function __construct()
     {
-        $this->initialJournal = new InitialJournalServices();
+        $this->initialJournal = new InitialJournalServices;
     }
 
     public function index(): View
@@ -34,26 +33,25 @@ class InitialJournalController extends Controller
     public function selectAccountDebit(Request $request): JsonResponse
     {
         $account = $this->initialJournal->selectAccountDebit($request);
+
         return response()->json($account);
     }
-
 
     public function selectAccountCredit(Request $request): JsonResponse
     {
         $account = $this->initialJournal->selectAccountCredit($request);
+
         return response()->json($account);
     }
 
-
     public function search(Request $request): JsonResponse
     {
-        $query = InitialJournal::with('subAccountDebit', 'subAccountCredit')->where('description', 'like', '%' . $request->search . '%')
-            ->orWhere('initial_payment', 'like', '%' . $request->search . '%')
+        $query = InitialJournal::with('subAccountDebit', 'subAccountCredit')->where('description', 'like', '%'.$request->search.'%')
+            ->orWhere('initial_payment', 'like', '%'.$request->search.'%')
             ->get();
 
         return response()->json($query);
     }
-
 
     public function store(InitialJournalRequest $request): JsonResponse
     {
@@ -64,38 +62,35 @@ class InitialJournalController extends Controller
             'initial_payment' => $request->initial_payment,
         ]);
 
-
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
-
 
     public function edit(InitialJournal $initialJournal): JsonResponse
     {
         return response()->json($initialJournal);
     }
 
-    public function selectedDebitAccount(InitialJournal  $initialJournal): array
+    public function selectedDebitAccount(InitialJournal $initialJournal): array
     {
         $subAccount = SubAccount::where('id', $initialJournal->sub_account_debit)->first();
 
-        return array(
-            "id" => $subAccount->id,
-            "name" => $subAccount->name
-        );
+        return [
+            'id' => $subAccount->id,
+            'name' => $subAccount->name,
+        ];
     }
 
     public function selectedCreditAccount(InitialJournal $initialJournal): array
     {
         $subAccount = SubAccount::where('id', $initialJournal->sub_account_credit)->first();
 
-        return array(
-            "id" => $subAccount->id,
-            "name" => $subAccount->name
-        );
+        return [
+            'id' => $subAccount->id,
+            'name' => $subAccount->name,
+        ];
     }
-
 
     public function update(InitialJournalRequest $request, InitialJournal $initialJournal): JsonResponse
     {
@@ -107,10 +102,9 @@ class InitialJournalController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'data berhasil diubah'
+            'message' => 'data berhasil diubah',
         ]);
     }
-
 
     public function confirm(InitialJournal $initialJournal): JsonResponse
     {
@@ -127,17 +121,14 @@ class InitialJournalController extends Controller
         ], 500);
     }
 
-
     public function destroy(InitialJournal $initialJournal): JsonResponse
     {
-        if ($initialJournal->status_confirmation === 0){
+        if ($initialJournal->status_confirmation === 0) {
             return response()->json($initialJournal->delete());
         }
 
         return response()->json([
-            'message' => 'data gagal dihapus'
+            'message' => 'data gagal dihapus',
         ], 500);
     }
-
-
 }

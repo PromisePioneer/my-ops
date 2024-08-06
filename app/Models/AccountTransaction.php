@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 class AccountTransaction extends Model
 {
     use HasFactory;
+
     protected $table = 'account_transactions';
 
     protected $fillable = [
@@ -26,19 +27,18 @@ class AccountTransaction extends Model
 
     public function account(): BelongsTo
     {
-        return $this->belongsTo(Account::class, 'account_id' , 'id');
+        return $this->belongsTo(Account::class, 'account_id', 'id');
     }
 
     public function subAccount(): BelongsTo
     {
-        return $this->belongsTo(SubAccount::class, 'sub_account_id' , 'id');
+        return $this->belongsTo(SubAccount::class, 'sub_account_id', 'id');
     }
 
     public function branch(): BelongsTo
     {
-        return  $this->belongsTo(Branch::class, 'branch_id');
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
-
 
     //eloquent
     public function getAccountTransactionBasedOnUserBranch(): LengthAwarePaginator
@@ -51,9 +51,9 @@ class AccountTransaction extends Model
             })->paginate(10);
 
         self::formattedAccounTransactionData($accountTransaction);
+
         return $accountTransaction;
     }
-
 
     public function searchAccountTransactionBasedOnUserBranch(Request $request, int $perPage): LengthAwarePaginator
     {
@@ -63,12 +63,12 @@ class AccountTransaction extends Model
                 $query->where('branch_id', Auth::user()->branch_id);
             })->orWhereHas('subAccount.account', function ($query) {
                 $query->where('branch_id', Auth::user()->branch_id);
-            })->where('description', 'like', '%' . $search . '%')->paginate($perPage);
+            })->where('description', 'like', '%'.$search.'%')->paginate($perPage);
 
         self::formattedAccounTransactionData($accountTransaction);
+
         return $accountTransaction;
     }
-
 
     private static function formattedAccounTransactionData(LengthAwarePaginator $accountTransaction): LengthAwarePaginator
     {
@@ -85,9 +85,9 @@ class AccountTransaction extends Model
         });
 
         $accountTransaction->setCollection($formattedAccountTransaction);
+
         return $accountTransaction;
     }
-
 
     public function getGeneralJournalPeriodBasedOnUserBranch(int $perPage): LengthAwarePaginator
     {
@@ -100,7 +100,6 @@ class AccountTransaction extends Model
             ->paginate($perPage);
     }
 
-
     public function getGeneralJournalDataBasedOnUserBranchAndPeriod(string $month, string $year): LengthAwarePaginator
     {
         return self::with('account', 'subAccount')->whereHas('account', static function ($query) {
@@ -112,7 +111,6 @@ class AccountTransaction extends Model
             ->orderBy('date')
             ->paginate($this->perPage);
     }
-
 
     public function getGeneralJournalDataDetails($month, $year)
     {
@@ -134,20 +132,19 @@ class AccountTransaction extends Model
                         return [
                             'code' => $transaction->account_code ?? $transaction->sub_account_code,
                             'account_name' => $transaction->account_name ?? $transaction->sub_account_name,
-                            'amount' => number_format($transaction->debit)
+                            'amount' => number_format($transaction->debit),
                         ];
                     }),
                     'credit' => $group->where('credit', '>', 0)->map(function ($transaction) {
                         return [
                             'code' => $transaction->account_code ?? $transaction->sub_account_code,
                             'account_name' => $transaction->account_name ?? $transaction->sub_account_name,
-                            'amount' => number_format($transaction->credit)
+                            'amount' => number_format($transaction->credit),
                         ];
-                    })->values()
+                    })->values(),
                 ];
             })->values();
     }
-
 
     public function getCurrentPPNOnInvoice($branchId, $description): self
     {
@@ -157,5 +154,4 @@ class AccountTransaction extends Model
             $query->where('code', '213-01');
         })->where('description', $description)->first();
     }
-
 }

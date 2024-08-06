@@ -9,8 +9,6 @@ class JobInformationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -19,8 +17,6 @@ class JobInformationRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
@@ -30,36 +26,35 @@ class JobInformationRequest extends FormRequest
             'fixed_salary' => ['required'],
             'contract_status' => [
                 'required',
-                Rule::in('Tetap', 'Kontrak', 'Vendor', 'Training', 'Magang', 'Freelance', 'Non Karyawan')
+                Rule::in('Tetap', 'Kontrak', 'Vendor', 'Training', 'Magang', 'Freelance', 'Non Karyawan'),
             ],
             'bank_account_number' => ['required'],
             'bpjs_kes' => [
                 'required',
-                Rule::in('ya', 'tidak')
+                Rule::in('ya', 'tidak'),
             ],
             'no_kis' => [
                 Rule::requiredIf(static function () {
                     return request()->bpjs_kes === 'ya';
-                })
+                }),
             ],
             'bpjs_ket' => [
                 'required',
-                Rule::in('ya', 'tidak')
+                Rule::in('ya', 'tidak'),
             ],
             'no_kpj' => [
                 Rule::requiredIf(static function () {
                     return request()->bpjs_ket === 'ya';
-                })
+                }),
             ],
             'placement_id' => [
                 'required',
-                Rule::exists('user_placements', 'id')
+                Rule::exists('user_placements', 'id'),
             ],
             'sk_file' => ['required', 'mimes:pdf', 'max:2048'],
             'contract_file' => ['required', 'mimes:pdf', 'max:2048'],
         ];
     }
-
 
     public function messages(): array
     {

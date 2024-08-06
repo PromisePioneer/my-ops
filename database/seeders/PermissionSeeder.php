@@ -11,19 +11,15 @@ class PermissionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run(): void
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-
         $kacabRole = Role::where('name', 'Kepala Cabang')->firstOrFail();
         $accountant = Role::where('name', 'Accountant')->firstOrFail();
         $directorRole = Role::where('name', 'Direktur')->firstOrFail();
         $financeManagerRole = Role::where('name', 'Manager Keuangan')->firstOrFail();
-
 
         $branches = [
             'lihat cabang',
@@ -38,7 +34,6 @@ class PermissionSeeder extends Seeder
             $directorRole->givePermissionTo($permission);
 
         }
-
 
         $beginningBalances = [
             'lihat saldo awal',
@@ -68,7 +63,6 @@ class PermissionSeeder extends Seeder
             $accountant->givePermissionTo($permission);
         }
 
-
         $product = [
             'lihat produk',
             'tambah produk',
@@ -83,7 +77,6 @@ class PermissionSeeder extends Seeder
             $financeManagerRole->givePermissionTo($permission);
             $accountant->givePermissionTo($permission);
         }
-
 
         $serviceCategories = [
             'lihat kategori layanan',
@@ -101,7 +94,6 @@ class PermissionSeeder extends Seeder
             $accountant->givePermissionTo($permission);
         }
 
-
         $accountCategory = [
             'lihat kategori akun',
             'tambah kategori akun',
@@ -109,12 +101,10 @@ class PermissionSeeder extends Seeder
             'hapus kategori akun',
         ];
 
-
         foreach ($accountCategory as $permission) {
             Permission::create(['name' => $permission]);
             $financeManagerRole->givePermissionTo($permission);
         }
-
 
         $account = [
             'lihat akun',
@@ -128,7 +118,6 @@ class PermissionSeeder extends Seeder
             $financeManagerRole->givePermissionTo($permission);
         }
 
-
         $accountTransaction = [
             'lihat transaksi akun',
             'tambah transaksi akun',
@@ -140,7 +129,6 @@ class PermissionSeeder extends Seeder
             Permission::create(['name' => $permission]);
             $financeManagerRole->givePermissionTo($permission);
         }
-
 
         $offeringLetter = [
             'lihat penawaran',
@@ -157,13 +145,11 @@ class PermissionSeeder extends Seeder
             $kacabRole->givePermissionTo($permission);
         }
 
-
         $companyProfile = [
             'lihat profil perusahaan',
             'update profil perusahaan',
             'hapus profil perusahaan',
         ];
-
 
         foreach ($companyProfile as $permission) {
             Permission::create(['name' => $permission]);
@@ -172,7 +158,6 @@ class PermissionSeeder extends Seeder
             $financeManagerRole->givePermissionTo($permission);
             $directorRole->givePermissionTo($permission);
         }
-
 
         $user = [
             'lihat user',
@@ -188,7 +173,6 @@ class PermissionSeeder extends Seeder
             $financeManagerRole->givePermissionTo($permission);
         }
 
-
         $roles = [
             'lihat role',
             'tambah role',
@@ -202,7 +186,6 @@ class PermissionSeeder extends Seeder
             $directorRole->givePermissionTo($permission);
             $financeManagerRole->givePermissionTo($permission);
         }
-
 
         $permissions = [
             'lihat permission',

@@ -9,8 +9,6 @@ class AdjustmentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -19,8 +17,6 @@ class AdjustmentRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
@@ -33,7 +29,6 @@ class AdjustmentRequest extends FormRequest
             'total_payment_per_month' => ['required'],
         ];
     }
-
 
     public function messages(): array
     {

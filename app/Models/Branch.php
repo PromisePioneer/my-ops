@@ -8,9 +8,10 @@ use Illuminate\Http\Request;
 class Branch extends Model
 {
     protected $table = 'branches';
+
     protected $fillable = [
         'name',
-        'code'
+        'code',
     ];
 
     //eloquent
@@ -20,15 +21,15 @@ class Branch extends Model
         $query = self::orderby('name', 'asc')->select('id', 'name');
 
         if ($search !== '') {
-            $query->where('name', 'like', '%' . $search . '%');
+            $query->where('name', 'like', '%'.$search.'%');
         }
 
         $branches = $query->get();
 
         return $branches->map(function ($c) {
             return [
-                "id" => $c->id,
-                "text" => $c->name
+                'id' => $c->id,
+                'text' => $c->name,
             ];
         })->toArray();
     }
@@ -36,9 +37,10 @@ class Branch extends Model
     public function getSelectedData($branchId): array
     {
         $branch = self::where('id', $branchId)->first();
-        return array(
-            "id" => $branch->id,
-            "name" => $branch->name
-        );
+
+        return [
+            'id' => $branch->id,
+            'name' => $branch->name,
+        ];
     }
 }

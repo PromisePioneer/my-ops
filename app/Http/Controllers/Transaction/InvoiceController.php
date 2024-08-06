@@ -23,23 +23,30 @@ use Illuminate\View\View;
 class InvoiceController extends Controller
 {
     public int $perPage = 10;
+
     private InvoiceProductService $invoiceProductService;
+
     private Invoice $invoice;
+
     private Contact $contact;
+
     private CompanyProfileServices $companyProfileServices;
+
     private SubAccount $subAccount;
+
     private InvoiceService $invoiceService;
+
     private Branch $branch;
 
     public function __construct()
     {
-        $this->invoiceProductServices = new InvoiceProductService();
-        $this->invoiceService = new InvoiceService();
-        $this->invoice = new Invoice();
-        $this->subAccount = new SubAccount();
-        $this->contact = new Contact();
-        $this->companyProfileServices = new CompanyProfileServices();
-        $this->branch = new Branch();
+        $this->invoiceProductServices = new InvoiceProductService;
+        $this->invoiceService = new InvoiceService;
+        $this->invoice = new Invoice;
+        $this->subAccount = new SubAccount;
+        $this->contact = new Contact;
+        $this->companyProfileServices = new CompanyProfileServices;
+        $this->branch = new Branch;
     }
 
     public function index(): View
@@ -75,6 +82,7 @@ class InvoiceController extends Controller
     public function getContact(Request $request): JsonResponse
     {
         $contact = $this->contact->getData($request);
+
         return response()->json($contact);
     }
 
@@ -83,15 +91,14 @@ class InvoiceController extends Controller
         return $this->subAccount->getSubAccountForInvoiceStore($request);
     }
 
-
     public function store(InvoiceRequest $request): JsonResponse
     {
         $this->invoiceService->store($request);
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
-
 
     public function edit(Invoice $invoice)
     {
@@ -101,6 +108,7 @@ class InvoiceController extends Controller
     public function getSelectedContact(Invoice $invoice): JsonResponse
     {
         $contact = $this->contact->getSelectedData($invoice->contact_id);
+
         return response()->json($contact);
     }
 
@@ -109,8 +117,8 @@ class InvoiceController extends Controller
         $subAccount = $this->subAccount->getSelectedSubAccount($request, $invoice->account_id);
 
         return [
-            "id" => $subAccount->id,
-            "name" => $subAccount->name
+            'id' => $subAccount->id,
+            'name' => $subAccount->name,
         ];
     }
 
@@ -122,20 +130,20 @@ class InvoiceController extends Controller
     public function update(InvoiceRequest $request, Invoice $invoice): JsonResponse
     {
         $this->invoiceService->update($request, $invoice);
+
         return response()->json([
-            'message' => 'data berhasil diubah'
+            'message' => 'data berhasil diubah',
         ]);
     }
-
 
     public function confirm(Invoice $invoice): JsonResponse
     {
         $this->invoiceService->confirm($invoice);
+
         return response()->json([
-            'message' => 'data berhasil diubah'
+            'message' => 'data berhasil diubah',
         ]);
     }
-
 
     public function detail(Invoice $invoice)
     {
@@ -149,21 +157,20 @@ class InvoiceController extends Controller
         return view('pages.transaction.invoice.detail', compact('invoice', 'invoiceServiceList', 'letterHead', 'companyProfile'));
     }
 
-
     public function updatePaymentStatus(Request $request, Invoice $invoice): JsonResponse
     {
         $this->invoiceService->updatePaymentStatus($request, $invoice);
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
-
 
     public function jurnalEntry(Invoice $invoice): JsonResponse
     {
         $jurnalEntry = DB::table('account_transactions')
             ->join('sub_accounts', 'sub_accounts.id', '=', 'account_transactions.sub_account_id')
-            ->where('account_transactions.description', 'like', '%' . $invoice->invoice_number . '%')
+            ->where('account_transactions.description', 'like', '%'.$invoice->invoice_number.'%')
             ->select('account_transactions.*', 'sub_accounts.name', 'sub_accounts.code', 'sub_accounts.id as sub_account_id')
             ->get();
 
@@ -183,18 +190,17 @@ class InvoiceController extends Controller
 
         $companyProfile = CompanyProfile::where('id', 1)->first();
 
-
-        $pdf = Pdf::loadView('pages.transaction.invoice.export-pdf', compact('invoice', 'invoiceServiceList', 'companyProfile'))->setPaper("A4", 'portrait');
+        $pdf = Pdf::loadView('pages.transaction.invoice.export-pdf', compact('invoice', 'invoiceServiceList', 'companyProfile'))->setPaper('A4', 'portrait');
 
         return $pdf->stream();
     }
 
-
     public function destroy(Invoice $invoice): JsonResponse
     {
         $invoice->delete();
+
         return response()->json([
-            'message' => 'data berhasil dihapus'
+            'message' => 'data berhasil dihapus',
         ]);
     }
 }

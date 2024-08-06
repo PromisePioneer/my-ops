@@ -33,7 +33,6 @@ class LetterHeadController extends Controller
             $footerFile = $request->file('footer')->store('images/letter-head', 'public');
         }
 
-
         $letterHead->update([
             'header' => $headerFile ?? null,
             'footer' => $footerFile ?? null,
@@ -41,8 +40,7 @@ class LetterHeadController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ], 200);
     }
-
 }

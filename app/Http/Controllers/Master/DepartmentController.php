@@ -20,26 +20,26 @@ class DepartmentController extends Controller
     public function data(): JsonResponse
     {
         $departments = Department::paginate(self::$perPage);
+
         return response()->json($departments);
     }
 
     public function search(Request $request): JsonResponse
     {
         $search = $request->input('search');
-        $departments = Department::where('code', 'like', '%' . $search . '%')
-            ->orWhere('name', 'like', '%' . $search . '%')
+        $departments = Department::where('code', 'like', '%'.$search.'%')
+            ->orWhere('name', 'like', '%'.$search.'%')
             ->get();
 
         return response()->json($departments);
     }
-
 
     public function store(DepartmentRequest $request): JsonResponse
     {
         Department::create($request->validated());
 
         return response()->json([
-            'message' => 'Data sukses disimpan'
+            'message' => 'Data sukses disimpan',
         ]);
     }
 
@@ -53,7 +53,7 @@ class DepartmentController extends Controller
         $department->update($request->validated());
 
         return response()->json([
-            'message' => 'data berhasil diubah'
+            'message' => 'data berhasil diubah',
         ]);
     }
 
@@ -62,7 +62,7 @@ class DepartmentController extends Controller
         $department->delete();
 
         return response()->json([
-            'message' => 'data berhasil dihapus'
+            'message' => 'data berhasil dihapus',
         ]);
     }
 }

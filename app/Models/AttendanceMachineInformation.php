@@ -10,20 +10,19 @@ use Illuminate\Http\Request;
 class AttendanceMachineInformation extends Model
 {
     protected $table = 'attendance_machine_information';
+
     protected $fillable = [
         'branch_id',
         'version',
         'ip_address',
         'port',
-        'key'
+        'key',
     ];
-
 
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
     }
-
 
     public function getDataWithPagination(int $perPage): LengthAwarePaginator
     {
@@ -33,11 +32,12 @@ class AttendanceMachineInformation extends Model
     public function searchData(Request $request)
     {
         $search = $request->input('search');
+
         return self::with('branch')
-            ->where('ip_address', 'like', '%' . $search . '%')
-            ->where('version', 'like', '%' . $search . '%')
-            ->where('ip_address', 'like', '%' . $search . '%')
-            ->where('key', 'like', '%' . $search . '%')
+            ->where('ip_address', 'like', '%'.$search.'%')
+            ->where('version', 'like', '%'.$search.'%')
+            ->where('ip_address', 'like', '%'.$search.'%')
+            ->where('key', 'like', '%'.$search.'%')
             ->get();
     }
 }

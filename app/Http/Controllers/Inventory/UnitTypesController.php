@@ -11,13 +11,13 @@ use Illuminate\View\View;
 
 class UnitTypesController extends Controller
 {
-
     public int $perPage = 10;
+
     private UnitType $unitType;
 
     public function __construct()
     {
-        $this->unitType = new UnitType();
+        $this->unitType = new UnitType;
     }
 
     public function index(): View
@@ -38,9 +38,9 @@ class UnitTypesController extends Controller
     public function store(UnitTypeRequest $request): JsonResponse
     {
         $unitType = UnitType::create($request->validated());
+
         return response()->json($unitType);
     }
-
 
     public function edit(UnitType $unitType): JsonResponse
     {
@@ -56,5 +56,4 @@ class UnitTypesController extends Controller
     {
         return response()->json($unitType->delete());
     }
-
 }

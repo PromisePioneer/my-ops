@@ -13,7 +13,6 @@ use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
-
     private static int $perPage = 10;
 
     public function __construct()
@@ -32,6 +31,7 @@ class RoleController extends Controller
     public function rolesData(): JsonResponse
     {
         $roles = Role::paginate(self::$perPage);
+
         return response()->json($roles);
     }
 
@@ -40,20 +40,19 @@ class RoleController extends Controller
         return view('pages.master.role.create');
     }
 
-
     public function getPermission(): JsonResponse
     {
         $permission = Permission::paginate(self::$perPage);
+
         return response()->json($permission);
     }
 
-
     public function searchRole(Request $request): JsonResponse
     {
-        $query = Role::where('name', 'like', '%' . $request->search . '%')->get();
+        $query = Role::where('name', 'like', '%'.$request->search.'%')->get();
+
         return response()->json($query);
     }
-
 
     public function edit(Role $role): View
     {
@@ -63,7 +62,8 @@ class RoleController extends Controller
     public function search(Request $request): JsonResponse
     {
         $search = $request->input('search');
-        $query = Role::where('name', 'like', '%' . $search . '%')->get();
+        $query = Role::where('name', 'like', '%'.$search.'%')->get();
+
         return response()->json($query);
     }
 
@@ -73,41 +73,40 @@ class RoleController extends Controller
         $role->givePermissionTo($request->permission);
 
         return response()->json([
-            'message' => "data sukses disimpan!",
+            'message' => 'data sukses disimpan!',
             'data' => $role,
         ]);
     }
 
     public function show(Role $role): JsonResponse
     {
-        $associatedPermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $role->id)
+        $associatedPermissions = DB::table('role_has_permissions')->where('role_has_permissions.role_id', $role->id)
             ->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')
             ->all();
 
         return response()->json($associatedPermissions);
     }
 
-
     public function update(Role $role, RoleRequest $request): JsonResponse
     {
 
         $role->update([
-            'name' => $request->input('name')
+            'name' => $request->input('name'),
         ]);
         $role->syncPermissions($request->input('permission'));
 
         return response()->json([
-            'message' => "data sukses diupdate!",
+            'message' => 'data sukses diupdate!',
             'data' => $role,
         ]);
     }
 
-
     public function destroy(Role $role): JsonResponse
     {
         $role->delete();
+
         return response()->json([
-            'message' => "data sukses dihapus!",
+            'message' => 'data sukses dihapus!',
             'data' => $role,
         ]);
     }

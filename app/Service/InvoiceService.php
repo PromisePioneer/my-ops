@@ -11,29 +11,38 @@ use App\Models\SubAccount;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 use function App\Helper\convertToRoman;
 
 class InvoiceService
 {
     private const INVOICE_SENT_DESCRIPTION = 'Invoice dikirim ke %s No. Inv %s';
+
     private const CALCULATE_PPN_AFTER_INVOICE_SENT_DESCRIPTION = 'PPN Keluaran Invoice %s No. Inv %s';
+
     private const INCLUDE_PPH23_AFTER_INVOICE_PAID_DESCRIPTION = 'Diterima Bupot dari %s No. Inv %s Bupot';
+
     private const PPN_RATE = 0.11;
+
     private const PAID_STATUS = 'Lunas';
 
     private SubAccount $subAccount;
+
     private Contact $contact;
+
     private AccountTransaction $accountTransaction;
+
     private AccountTransactionService $accountTransactionService;
+
     private HandleFileUploadService $handleFileUploadService;
 
     public function __construct()
     {
-        $this->subAccount = new SubAccount();
-        $this->contact = new Contact();
-        $this->accountTransaction = new AccountTransaction();
-        $this->accountTransactionService = new AccountTransactionService();
-        $this->handleFileUploadService = new HandleFileUploadService();
+        $this->subAccount = new SubAccount;
+        $this->contact = new Contact;
+        $this->accountTransaction = new AccountTransaction;
+        $this->accountTransactionService = new AccountTransactionService;
+        $this->handleFileUploadService = new HandleFileUploadService;
     }
 
     private static function generateInvoiceNumber(Request $request): string
@@ -43,27 +52,28 @@ class InvoiceService
         $invoiceDate = convertToRoman(Carbon::parse($request->due_date)->format('m'));
         $invoiceYear = convertToRoman(Carbon::parse($request->due_date)->format('Y'));
 
-        $abbr = explode(" ", $findCompanyName);
+        $abbr = explode(' ', $findCompanyName);
         array_shift($abbr);
 
-        $acronym = "";
+        $acronym = '';
 
         foreach ($abbr as $value) {
             $acronym .= mb_substr($value, 0, 1);
         }
 
         if ($invoice) {
-            $convertInvNumberToArray = explode("/", $invoice->invoice_number);
+            $convertInvNumberToArray = explode('/', $invoice->invoice_number);
             $startingNumber = $convertInvNumberToArray[0];
-            $startValue = str_pad((int)$startingNumber + 1, 3, "0", STR_PAD_LEFT);
-            return $startValue . '/' . 'INV/' . 'MYT-' . $acronym . '/' . $invoiceDate . '/' . $invoiceYear;
+            $startValue = str_pad((int) $startingNumber + 1, 3, '0', STR_PAD_LEFT);
+
+            return $startValue.'/'.'INV/'.'MYT-'.$acronym.'/'.$invoiceDate.'/'.$invoiceYear;
         }
 
-        $startingNumber = "000";
-        $startValue = str_pad((int)$startingNumber + 1, 3, "0", STR_PAD_LEFT);
-        return $startValue . '/' . 'INV/' . 'MYT-' . $acronym . '/' . $invoiceDate . '/' . $invoiceYear;
-    }
+        $startingNumber = '000';
+        $startValue = str_pad((int) $startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
+        return $startValue.'/'.'INV/'.'MYT-'.$acronym.'/'.$invoiceDate.'/'.$invoiceYear;
+    }
 
     public function store(InvoiceRequest $request): void
     {
@@ -79,7 +89,6 @@ class InvoiceService
             self::invoiceProductServiceUpdateOrCreate($request, $invoice);
         });
     }
-
 
     public function update(InvoiceRequest $request, Invoice $invoice): void
     {
@@ -116,7 +125,6 @@ class InvoiceService
         });
     }
 
-
     public function accountTransactionAfterInvoiceSent(Invoice $invoice): void
     {
         $piutangPelanggan = $this->subAccount->findPiutangPelangganSubAccount($invoice->branch_id);
@@ -128,7 +136,6 @@ class InvoiceService
             $this->accountTransactionService->createCreditTransaction($description, $invoice->grand_total, null, $invoice->account_id);
         });
     }
-
 
     public function calculatePPNAccountTransactionAfterInvoiceSent(Invoice $invoice): void
     {
@@ -143,7 +150,6 @@ class InvoiceService
             $this->accountTransactionService->createCreditTransaction($description, $totalPlusTax, null, $ppn->id);
         });
     }
-
 
     public function updatePaymentStatus(Request $request, Invoice $invoice): void
     {
@@ -165,7 +171,6 @@ class InvoiceService
         });
     }
 
-
     public function includePPh23AfterInvoicePaid(Request $request, Invoice $invoice, string $companyName): void
     {
         $pph23Account = $this->subAccount->findPPH23SubAccount($invoice->branch_id);
@@ -177,6 +182,4 @@ class InvoiceService
             $this->accountTransactionService->createCreditTransaction($description, $request->pph23_form, null, $piutangPelanggan->id);
         });
     }
-
-
 }

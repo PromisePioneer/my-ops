@@ -13,7 +13,7 @@ class ExpenditureServices
 
     public function __construct()
     {
-        $this->accountTransactionService = new AccountTransactionService();
+        $this->accountTransactionService = new AccountTransactionService;
     }
 
     public function store(ExpenditureRequest $request): void
@@ -24,14 +24,12 @@ class ExpenditureServices
         Expenditure::create($data);
     }
 
-
     public function update(ExpenditureRequest $request, Expenditure $expenditure): void
     {
         $data = $request->validated();
         $data['file'] = $request->file('file') ? self::handleFileUpload($request, $expenditure) : $expenditure->file;
         $expenditure->update($data);
     }
-
 
     private static function handleFileUpload(ExpenditureRequest $request, ?Expenditure $expenditure = null): string
     {

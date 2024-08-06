@@ -8,12 +8,11 @@ use App\Models\UserJobInformation;
 
 class JobInformationService
 {
-
     private HandleFileUploadService $handleUploadService;
 
     public function __construct()
     {
-        $this->handleUploadService = new HandleFileUploadService();
+        $this->handleUploadService = new HandleFileUploadService;
     }
 
     public function update(JobInformationRequest $request, User $user): void
@@ -33,7 +32,7 @@ class JobInformationService
             'no_kis' => $request->no_kis,
             'placement_id' => $request->placement_id,
             'sk_file' => $this->handleUploadService->upload($request, 'documents/sk', 'sk_file', $currentJobInfoId ? $currentJobInfoId->sk_file : null),
-            'contract_file' => $this->handleUploadService->upload($request, 'documents/contract-file', 'contract_file', $currentJobInfoId ? $currentJobInfoId->contract_file : null)
+            'contract_file' => $this->handleUploadService->upload($request, 'documents/contract-file', 'contract_file', $currentJobInfoId ? $currentJobInfoId->contract_file : null),
         ]);
     }
 }

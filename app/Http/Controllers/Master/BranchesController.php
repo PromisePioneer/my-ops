@@ -31,13 +31,14 @@ class BranchesController extends Controller
     public function data(): JsonResponse
     {
         $branches = Branch::select('id', 'code', 'name')->paginate(10);
+
         return response()->json($branches);
     }
 
     public function search(Request $request): JsonResponse
     {
-        $branchSearch = Branch::where('name', 'like', '%' . $request->search . '%')
-            ->Orwhere('code', 'like', '%' . $request->search . '%')
+        $branchSearch = Branch::where('name', 'like', '%'.$request->search.'%')
+            ->Orwhere('code', 'like', '%'.$request->search.'%')
             ->select('id', 'code', 'name')
             ->limit(25)
             ->get();
@@ -107,13 +108,12 @@ class BranchesController extends Controller
         return response()->json($branch);
     }
 
-
     public function update(BranchRequest $request, Branch $branch): JsonResponse
     {
         $branch->update($request->validated());
 
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
 
@@ -123,8 +123,8 @@ class BranchesController extends Controller
     public function destroy(Request $request, Branch $branch): JsonResponse
     {
 
-        $implodeID = implode(",", $request->get('id'));
-        $explodeID = explode(",", $implodeID);
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
         $branch->whereIn('id', $explodeID)->delete();
 
         return response()->json([
@@ -136,7 +136,7 @@ class BranchesController extends Controller
     {
         $file = $request->file('file_import');
 
-        Excel::import(new BranchesImport(), $file);
+        Excel::import(new BranchesImport, $file);
 
         return response()->json([
             'message' => 'Data berhasil diimport',

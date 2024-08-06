@@ -37,8 +37,6 @@ class RentPaymentAutomation extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return void
      */
     public function handle(): void
     {
@@ -55,7 +53,6 @@ class RentPaymentAutomation extends Command
                     $sewaDibayarDimukaAccount = Account::join('sub_accounts', 'accounts.id', '=', 'sub_accounts.account_id')
                         ->where('sub_accounts.code', '114-01')->get();
 
-
                     foreach ($bebanSewaAccount as $beban) {
 
                         AccountTransaction::create([
@@ -63,18 +60,18 @@ class RentPaymentAutomation extends Command
                             'account_id' => $beban->id,
                             'description' => $payment->description,
                             'debit' => $payment->total_payment_per_month,
-                            'credit' => 0
+                            'credit' => 0,
                         ]);
                     }
 
                     foreach ($sewaDibayarDimukaAccount as $sewaDibayar) {
-                    AccountTransaction::create([
-                        'date' => date('Y-m-d'),
-                        'sub_account_id' => $sewaDibayar->id,
-                        'description' => $payment->description,
-                        'debit' => 0,
-                        'credit' => $payment->total_payment_per_month
-                    ]);
+                        AccountTransaction::create([
+                            'date' => date('Y-m-d'),
+                            'sub_account_id' => $sewaDibayar->id,
+                            'description' => $payment->description,
+                            'debit' => 0,
+                            'credit' => $payment->total_payment_per_month,
+                        ]);
 
                     }
 
@@ -83,15 +80,17 @@ class RentPaymentAutomation extends Command
                     $initialJournal->save();
 
                     DB::commit();
+
                     return [
                         'success' => true,
-                        'message' => 'data berhasil disimpan'
+                        'message' => 'data berhasil disimpan',
                     ];
                 } catch (\Exception $e) {
                     DB::rollBack();
+
                     return [
                         'success' => false,
-                        'message' => $e->getMessage()
+                        'message' => $e->getMessage(),
                     ];
                 }
             });

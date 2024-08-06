@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Account;
-use App\Models\SubAccount;
 use Illuminate\Database\Seeder;
 
 class AccountSeeder extends Seeder
@@ -39,7 +38,6 @@ class AccountSeeder extends Seeder
             'code' => '114',
             'name' => 'Biaya dibayar dimuka',
         ]);
-
 
         Account::create([
             'branch_id' => 1,
@@ -89,200 +87,196 @@ class AccountSeeder extends Seeder
             'name' => 'Akumulasi Penyusutan Aset Tetap',
         ]);
 
-
         Account::create([
             'branch_id' => 1,
             'code' => '211',
-            'name' => 'Utang Usaha'
+            'name' => 'Utang Usaha',
         ]);
-
 
         Account::create([
             'branch_id' => 1,
             'code' => '212',
-            'name' => 'Utang Deposit Alat'
+            'name' => 'Utang Deposit Alat',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '213',
-            'name' => 'Utang Pajak'
+            'name' => 'Utang Pajak',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '214',
-            'name' => 'Pendapatan Diterima Dimuka'
+            'name' => 'Pendapatan Diterima Dimuka',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '215',
-            'name' => 'Biaya yang masih harus dibayar'
+            'name' => 'Biaya yang masih harus dibayar',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '216',
-            'name' => 'Utang lancar lainnya'
+            'name' => 'Utang lancar lainnya',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '221',
-            'name' => 'Utang Bank'
+            'name' => 'Utang Bank',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '222',
-            'name' => 'Utang Kendaraan'
+            'name' => 'Utang Kendaraan',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '223',
-            'name' => 'Utang Jangka panjang lainnya'
+            'name' => 'Utang Jangka panjang lainnya',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '300',
-            'name' => 'Modal'
+            'name' => 'Modal',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '310',
-            'name' => 'Modal Saham'
+            'name' => 'Modal Saham',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '311',
-            'name' => 'Modal Lainnya'
+            'name' => 'Modal Lainnya',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '312',
-            'name' => 'Saldo laba ditahan'
+            'name' => 'Saldo laba ditahan',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '313',
-            'name' => 'Laba bersih periode berjalan'
+            'name' => 'Laba bersih periode berjalan',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '320',
-            'name' => 'Dividen'
+            'name' => 'Dividen',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '401',
-            'name' => 'Pendapatan Jasa Layanan Internet'
+            'name' => 'Pendapatan Jasa Layanan Internet',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '402',
-            'name' => 'Pendapatan Jasa Layanan Jaringan Telekomunikasi'
+            'name' => 'Pendapatan Jasa Layanan Jaringan Telekomunikasi',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '403',
-            'name' => 'Pendapatan Lainnya'
+            'name' => 'Pendapatan Lainnya',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '500',
-            'name' => 'Beban Pokok Pendapatan'
+            'name' => 'Beban Pokok Pendapatan',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '501',
-            'name' => 'Beban Penjualan'
+            'name' => 'Beban Penjualan',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '502',
-            'name' => 'Beban Karyawan'
+            'name' => 'Beban Karyawan',
         ]);
-
 
         Account::create([
             'branch_id' => 1,
             'code' => '503',
-            'name' => 'Beban Utilitas'
+            'name' => 'Beban Utilitas',
         ]);
-
 
         Account::create([
             'branch_id' => 1,
             'code' => '504',
-            'name' => 'Beban Supplies Kantor'
+            'name' => 'Beban Supplies Kantor',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '505',
-            'name' => 'Beban Angkut/Kirim'
+            'name' => 'Beban Angkut/Kirim',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '506',
-            'name' => 'Beban Perjalanan Dinas'
+            'name' => 'Beban Perjalanan Dinas',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '507',
-            'name' => 'Beban Transportasi Kendaraan/Mesin'
+            'name' => 'Beban Transportasi Kendaraan/Mesin',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '508',
-            'name' => 'Beban Pemeliharaan Aset'
+            'name' => 'Beban Pemeliharaan Aset',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '510',
-            'name' => 'Beban Sewa'
+            'name' => 'Beban Sewa',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '511',
-            'name' => 'Beban Lain-lain'
+            'name' => 'Beban Lain-lain',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '512',
-            'name' => 'Beban Penyusutan'
+            'name' => 'Beban Penyusutan',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '513',
-            'name' => 'Beban Bunga'
+            'name' => 'Beban Bunga',
         ]);
 
         Account::create([
             'branch_id' => 1,
             'code' => '514',
-            'name' => 'Beban Pajak Penghasilan'
+            'name' => 'Beban Pajak Penghasilan',
         ]);
 
     }

@@ -14,6 +14,6 @@ class CompanyProfile extends Model
         'npwp',
         'bank',
         'bank_account_number',
-        'bank_account_name'
+        'bank_account_name',
     ];
 }

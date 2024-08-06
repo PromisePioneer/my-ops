@@ -10,8 +10,6 @@ class UpdatePasswordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -20,21 +18,20 @@ class UpdatePasswordRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
         $user = Auth::user();
+
         return [
             'current_password' => [
                 'required',
                 function ($attribute, $value, $fail) use ($user) {
-                    if (!Hash::check($value, $user->password)) {
+                    if (! Hash::check($value, $user->password)) {
                         return $fail(__('The current password is incorrect.'));
                     }
-                    return;
-                }
+
+                },
             ],
             'password' => 'required|string|min:6',
             'confirm_password' => 'required|string|same:password',

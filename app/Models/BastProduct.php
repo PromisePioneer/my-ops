@@ -8,12 +8,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class BastProduct extends Model
 {
     protected $table = 'bast_products';
+
     protected $fillable = [
         'bast_id',
         'product_name',
         'qty',
         'serial_number',
-        'description'
+        'description',
     ];
 
     public function bast(): BelongsTo

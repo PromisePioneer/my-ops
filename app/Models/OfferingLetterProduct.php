@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class OfferingLetterProduct extends Model
 {
     use HasFactory;
+
     protected $table = 'offering_letter_product_services';
+
     protected $fillable = [
         'offering_letter_id',
         'service_category_id',
@@ -27,7 +29,6 @@ class OfferingLetterProduct extends Model
     {
         return $this->belongsTo(ServiceCategory::class, 'service_category_id');
     }
-
 
     //eloquent
     public function getOfferingLetterProductServiceAttribute(int $offeringLetterId)

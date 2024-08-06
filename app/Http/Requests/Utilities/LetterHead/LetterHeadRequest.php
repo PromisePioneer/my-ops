@@ -8,8 +8,6 @@ class LetterHeadRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -18,8 +16,6 @@ class LetterHeadRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
@@ -28,7 +24,6 @@ class LetterHeadRequest extends FormRequest
             'footer' => ['mimes:jpg,jpeg,png', 'max:2048'],
         ];
     }
-
 
     public function messages(): array
     {

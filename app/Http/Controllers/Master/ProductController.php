@@ -11,8 +11,8 @@ use Illuminate\View\View;
 
 class ProductController extends Controller
 {
-
     public int $perPage = 10;
+
     private Product $product;
 
     public function __construct()
@@ -22,7 +22,7 @@ class ProductController extends Controller
         $this->middleware('permission:update product', ['only' => ['edit', 'update']]);
         $this->middleware('permission:hapus product', ['only' => ['destroy']]);
 
-        $this->product = new Product();
+        $this->product = new Product;
     }
 
     public function index(): View
@@ -46,7 +46,7 @@ class ProductController extends Controller
         Product::create($request->validated());
 
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ], 200);
     }
 
@@ -60,7 +60,7 @@ class ProductController extends Controller
         $product->update($request->validated());
 
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ], 200);
     }
 
@@ -70,14 +70,12 @@ class ProductController extends Controller
     public function destroy(Request $request, Product $product): JsonResponse
     {
 
-        $implodeID = implode(",", $request->get('id'));
-        $explodeID = explode(",", $implodeID);
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
         $product->whereIn('id', $explodeID)->delete();
 
         return response()->json([
             'message' => 'data berhasil dihapus',
         ], 204);
     }
-
-
 }

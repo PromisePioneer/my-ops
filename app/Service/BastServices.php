@@ -8,12 +8,11 @@ use Illuminate\Support\Facades\DB;
 
 class BastServices
 {
-
     private HandleFileUploadService $handleFileUploadService;
 
     public function __construct()
     {
-        $this->handleFileUploadService = new HandleFileUploadService();
+        $this->handleFileUploadService = new HandleFileUploadService;
     }
 
     public function store($request): void
@@ -42,7 +41,6 @@ class BastServices
         });
     }
 
-
     public function bastProductCreateOrUpdate($request, $bast): void
     {
         foreach ($request['data'] as $key => $value) {
@@ -50,5 +48,4 @@ class BastServices
             BastProduct::create($value);
         }
     }
-
 }

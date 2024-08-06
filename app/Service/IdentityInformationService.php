@@ -12,8 +12,9 @@ class IdentityInformationService
 
     public function __construct()
     {
-        $this->handleFileUploadService = new HandleFileUploadService();
+        $this->handleFileUploadService = new HandleFileUploadService;
     }
+
     public function update(IdentityInformationRequest $request, User $user): void
     {
         $userIdentityInfoId = UserIdentityInformation::where('user_id', $user->id)->first();
@@ -26,7 +27,7 @@ class IdentityInformationService
             'gender' => $request->gender,
             'home_address' => $request->home_address,
             'ktp_attachment' => $this->handleFileUploadService->upload($request, 'documents/user/ktp', 'ktp_attachment', $userIdentityInfoId ? $userIdentityInfoId->sk_file : 'null'),
-            'married_status' => $request->married_status
+            'married_status' => $request->married_status,
         ]);
     }
 }

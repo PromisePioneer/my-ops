@@ -19,21 +19,27 @@ use Illuminate\View\View;
 class OfferingLettersController extends Controller
 {
     public int $perPage = 10;
+
     protected OfferingLetterService $OfferingLetterService;
+
     private OfferingLetter $offeringLetter;
+
     private Contact $contact;
+
     private serviceCategory $serviceCategory;
+
     private OfferingLetterProduct $offeringLetterProduct;
+
     private Branch $branch;
 
     public function __construct()
     {
-        $this->OfferingLetterService = new OfferingLetterService();
-        $this->offeringLetter = new OfferingLetter();
-        $this->contact = new Contact();
-        $this->serviceCategory = new ServiceCategory();
-        $this->offeringLetterProduct = new OfferingLetterProduct();
-        $this->branch = new Branch();
+        $this->OfferingLetterService = new OfferingLetterService;
+        $this->offeringLetter = new OfferingLetter;
+        $this->contact = new Contact;
+        $this->serviceCategory = new ServiceCategory;
+        $this->offeringLetterProduct = new OfferingLetterProduct;
+        $this->branch = new Branch;
     }
 
     public function index(): View
@@ -41,10 +47,10 @@ class OfferingLettersController extends Controller
         return view('pages.transaction.offering-letter.index');
     }
 
-
     public function data(): JsonResponse
     {
         $offeringLetters = $this->offeringLetter->getOfferingLettersBasedOnUserBranch($this->perPage);
+
         return response()->json($offeringLetters);
     }
 
@@ -56,15 +62,16 @@ class OfferingLettersController extends Controller
     public function filterByBranch(Branch $branch): JsonResponse
     {
         $filter = $this->offeringLetter->filteringDataBasedOnBranch($branch->id, $this->perPage);
+
         return response()->json($filter);
     }
 
     public function search(Request $request): JsonResponse
     {
         $query = $this->offeringLetter->searchOfferingLettersBasedOnUserBranch($request, $this->perPage);
+
         return response()->json($query);
     }
-
 
     public function create(): View
     {
@@ -74,24 +81,25 @@ class OfferingLettersController extends Controller
     public function getContactData(Request $request): JsonResponse
     {
         $contactData = $this->contact->getData($request);
+
         return response()->json($contactData);
     }
 
     public function getServicesCategoriesData(Request $request): JsonResponse
     {
         $servicesCategory = $this->serviceCategory->getData($request);
+
         return response()->json($servicesCategory);
     }
-
 
     public function store(OfferingLetterRequest $request): JsonResponse
     {
         $this->OfferingLetterService->store($request);
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
-
 
     public function show(OfferingLetter $offeringLetter): View
     {
@@ -104,7 +112,6 @@ class OfferingLettersController extends Controller
             'offeringLetterServices'
         ));
     }
-
 
     public function viewFile(OfferingLetter $offeringLetter): View
     {
@@ -119,9 +126,9 @@ class OfferingLettersController extends Controller
     public function getSelectedContact(OfferingLetter $offeringLetter): JsonResponse
     {
         $selected = $this->contact->getSelectedData($offeringLetter->contact_id);
+
         return response()->json($selected);
     }
-
 
     public function getOfferingLetterProductServices(OfferingLetter $offeringLetter): JsonResponse
     {
@@ -130,21 +137,21 @@ class OfferingLettersController extends Controller
         );
     }
 
-
     public function update(OfferingLetterRequest $request, OfferingLetter $offeringLetter): JsonResponse
     {
         $this->OfferingLetterService->update($request, $offeringLetter);
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
-
 
     public function confirm(OfferingLetter $offeringLetter): JsonResponse
     {
         $offeringLetter->update([
-            'status' => 1
+            'status' => 1,
         ]);
+
         return response()->json([
             'message' => 'data berhasil di konfirmasi',
         ], 200);
@@ -153,18 +160,18 @@ class OfferingLettersController extends Controller
     public function destroy(OfferingLetter $offeringLetter): JsonResponse
     {
         $offeringLetter->delete();
+
         return response()->json([
             'message' => 'data berhasil di hapus',
         ]);
     }
 
-
     public function exportToPDF(OfferingLetter $offeringLetter): \Illuminate\Http\Response
     {
         $offeringLetterProduct = $this->offeringLetterProduct->getOfferingLetterProductServiceAttribute($offeringLetter->id);
         $pdf = Pdf::loadView('pages.transaction.offering-letter.export-pdf', compact('offeringLetter', 'offeringLetterProduct'))
-            ->setPaper("A4", 'portrait');
+            ->setPaper('A4', 'portrait');
+
         return $pdf->stream();
     }
-
 }

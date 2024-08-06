@@ -9,8 +9,6 @@ class ProductRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -19,22 +17,19 @@ class ProductRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
         return [
             'code' => [
                 'required',
-                Rule::unique('products', 'name')->ignore(request()->route('product'))
-                ],
+                Rule::unique('products', 'name')->ignore(request()->route('product')),
+            ],
             'name' => 'required',
             'category' => 'required',
             'unit_price' => 'required',
         ];
     }
-
 
     public function messages(): array
     {

@@ -10,8 +10,6 @@ class RoleSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
     public function run(): void
     {
@@ -31,11 +29,10 @@ class RoleSeeder extends Seeder
         $kepalaCabang = User::where('name', 'Kepala Cabang')->first();
         $kepalaCabang->assignRole($kacabRole);
 
-
         $admin = User::where('name', 'Accountant')->first();
         $admin->assignRole($accountantRole);
 
-        $director =  User::where('name', 'Direktur')->first();
+        $director = User::where('name', 'Direktur')->first();
         $director->assignRole($directorRole);
 
         $financeManager = User::where('name', 'Manager Keuangan')->first();
@@ -48,7 +45,6 @@ class RoleSeeder extends Seeder
         foreach ($technician as $tech) {
             $tech->assignRole($technicianRole);
         }
-
 
         $kca = User::where('name', 'KCA')->get();
         foreach ($kca as $kc) {
@@ -67,7 +63,6 @@ class RoleSeeder extends Seeder
         foreach ($cs as $c) {
             $c->assignRole($customerServiceRole);
         }
-
 
         $noc = User::where('name', 'NOC')->get();
         foreach ($noc as $n) {

@@ -8,8 +8,6 @@ class AccountImportRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -18,13 +16,11 @@ class AccountImportRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
         return [
-            'file_import' => ['required', 'file', 'mimes:xlsx,xls']
+            'file_import' => ['required', 'file', 'mimes:xlsx,xls'],
         ];
     }
 

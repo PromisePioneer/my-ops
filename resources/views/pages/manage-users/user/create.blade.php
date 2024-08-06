@@ -35,10 +35,10 @@
                             </div>
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">
-                                    (NIP) Nomor Induk Pegawai</label>
+                                    (NIK) Nomor Induk Pegawai</label>
                                 <input type="text" name="nip"
                                        class="form-control form-control-lg form-control-solid"
-                                       placeholder="nip"/>
+                                       placeholder="NIK"/>
                             </div>
                         </div>
                         <div class="form-group row mb-6">

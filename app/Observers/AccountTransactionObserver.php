@@ -11,7 +11,6 @@ class AccountTransactionObserver
     /**
      * Handle the AccountTransaction "created" event.
      *
-     * @param \App\Models\AccountTransaction $accountTransaction
      * @return void
      */
     public function created(AccountTransaction $accountTransaction)
@@ -26,7 +25,6 @@ class AccountTransactionObserver
             $account->save();
         }
 
-
         if ($accountTransaction->sub_account_id) {
             $subAccount = SubAccount::where('id', $accountTransaction->sub_account_id)->first();
 
@@ -34,7 +32,6 @@ class AccountTransactionObserver
             $subAccount->credit_balance += $accountTransaction->credit;
             $subAccount->balance = $subAccount->debit_balance - $subAccount->credit_balance;
             $subAccount->save();
-
 
             $parentAccount = $subAccount->account;
 
@@ -48,7 +45,6 @@ class AccountTransactionObserver
     /**
      * Handle the AccountTransaction "updated" event.
      *
-     * @param \App\Models\AccountTransaction $accountTransaction
      * @return void
      */
     public function updated(AccountTransaction $accountTransaction)
@@ -59,7 +55,6 @@ class AccountTransactionObserver
     /**
      * Handle the AccountTransaction "deleted" event.
      *
-     * @param \App\Models\AccountTransaction $accountTransaction
      * @return void
      */
     public function deleted(AccountTransaction $accountTransaction)
@@ -70,7 +65,6 @@ class AccountTransactionObserver
     /**
      * Handle the AccountTransaction "restored" event.
      *
-     * @param \App\Models\AccountTransaction $accountTransaction
      * @return void
      */
     public function restored(AccountTransaction $accountTransaction)
@@ -81,7 +75,6 @@ class AccountTransactionObserver
     /**
      * Handle the AccountTransaction "force deleted" event.
      *
-     * @param \App\Models\AccountTransaction $accountTransaction
      * @return void
      */
     public function forceDeleted(AccountTransaction $accountTransaction)

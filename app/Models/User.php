@@ -14,7 +14,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -28,7 +28,7 @@ class User extends Authenticatable
         'nip',
         'branch_id',
         'last_login',
-        'profile_pic'
+        'profile_pic',
     ];
 
     /**
@@ -48,7 +48,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
 
     public function branch(): BelongsTo
     {
@@ -71,17 +70,17 @@ class User extends Authenticatable
         return self::with([
             'branch' => function ($query) {
                 $query->select('id', 'name');
-            }
+            },
         ])->with('roles')->paginate($perPage);
     }
-
 
     public function searchData(Request $request): Collection
     {
         $search = $request->input('search');
+
         return self::with('roles')
-            ->where('name', 'like', '%' . $search . '%')
-            ->orWhere('email', 'like', '%' . $search . '%')
+            ->where('name', 'like', '%'.$search.'%')
+            ->orWhere('email', 'like', '%'.$search.'%')
             ->get();
     }
 

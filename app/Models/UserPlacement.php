@@ -11,11 +11,11 @@ class UserPlacement extends Model
     use HasFactory;
 
     protected $table = 'user_placements';
+
     protected $fillable = [
         'code',
-        'name'
+        'name',
     ];
-
 
     //eloquent
     public function getData(Request $request)
@@ -24,7 +24,7 @@ class UserPlacement extends Model
         $data = self::orderBy('name');
 
         if ($search !== '') {
-            $data = $data->where('name', 'like', '%' . $search . '%');
+            $data = $data->where('name', 'like', '%'.$search.'%');
         }
 
         return $data->get()->map(function ($item) {

@@ -27,6 +27,7 @@ use App\Http\Controllers\Transaction\ExpenditureController;
 use App\Http\Controllers\Transaction\FabController;
 use App\Http\Controllers\Transaction\InvoiceController;
 use App\Http\Controllers\Transaction\OfferingLettersController;
+use App\Http\Controllers\UserProfile\LeaveAndPermissionController;
 use App\Http\Controllers\Utilities\CompanyProfileController;
 use App\Http\Controllers\Utilities\LetterHeadController;
 use App\Http\Controllers\Utilities\NotificationsController;
@@ -82,7 +83,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::delete('/{user}', [UserController::class, 'destroy']);
         });
 
-
         Route::prefix('/permissions')->group(function () {
             Route::get('/', [PermissionController::class, 'index']);
             Route::get('/data', [PermissionController::class, 'permissionData']);
@@ -92,7 +92,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/update/{permission}', [PermissionController::class, 'update']);
             Route::delete('/{permission}', [PermissionController::class, 'destroy']);
         });
-
 
         Route::prefix('attendance')->group(function () {
             Route::get('/', [UserAttendanceController::class, 'index']);
@@ -124,6 +123,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/detail', [NotificationsController::class, 'detail']);
         Route::post('/mark-as-read', [NotificationsController::class, 'markAsRead']);
     });
+
 
     // account
     Route::prefix('/account-master')->group(function () {
@@ -164,9 +164,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('detail/{account}', [AccountTransactionsController::class, 'detail']);
         });
 
-
     });
-
 
     // branch
     Route::prefix('master')->group(function () {
@@ -287,9 +285,20 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/identity-information/data', [UserProfileController::class, 'identityInformation']);
             Route::get('/job-information', [UserProfileController::class, 'jobInformationPage']);
             Route::get('/job-information/data', [UserProfileController::class, 'jobInformation']);
+
+
+            Route::prefix('leaves-and-permission')->group(function () {
+                Route::get('/', [LeaveAndPermissionController::class, 'index']);
+                Route::get('/data', [LeaveAndPermissionController::class, 'data']);
+                Route::get('/search', [LeaveAndPermissionController::class, 'search']);
+                Route::get('/create', [LeaveAndPermissionController::class, 'create']);
+                Route::post('/', [LeaveAndPermissionController::class, 'store']);
+                Route::get('/{leaveAndPermission}', [LeaveAndPermissionController::class, 'edit']);
+                Route::post('/{leaveAndPermission}', [LeaveAndPermissionController::class, 'update']);
+                Route::delete('/{leaveAndPermission}', [LeaveAndPermissionController::class, 'destroy']);
+            });
         });
     });
-
 
     Route::prefix('/journals')->group(function () {
         Route::controller(GeneralJournalController::class)
@@ -301,7 +310,6 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/search', 'search');
             });
 
-
         Route::controller(GeneralLedgerController::class)
             ->prefix('general-ledger')->group(function () {
                 Route::get('/', 'index');
@@ -310,7 +318,6 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('detail-akun/{account}', 'detailAkunData');
             });
     });
-
 
     Route::prefix('inventory')->group(function () {
         Route::prefix('goods')->group(function () {
@@ -333,7 +340,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::delete('/{goods}', [GoodsController::class, 'destroy']);
         });
 
-
         Route::prefix('used-items')->group(function () {
             Route::get('/get-used-items/{goods}', [UsedItemsController::class, 'getUsedItems']);
             Route::post('/save-used-items/{goods}', [UsedItemsController::class, 'usedItems']);
@@ -350,7 +356,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::delete('/{unitType}', [UnitTypesController::class, 'destroy']);
         });
     });
-
 
     Route::prefix('journal-adjustment')->group(function () {
         Route::prefix('initial-journal')->group(function () {
@@ -379,7 +384,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::delete('/{journalAdjustment}', [JournalAdjustmentController::class, 'destroy']);
         });
     });
-
 
     Route::prefix('income-transactions')->group(function () {
         Route::prefix('offering-letters')->group(function () {
@@ -467,7 +471,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::delete('/{invoice}', [InvoiceController::class, 'destroy']);
         });
     });
-
 
     Route::prefix('/expenditure-transactions/expenditure')->group(function () {
         Route::get('/', [ExpenditureController::class, 'index']);

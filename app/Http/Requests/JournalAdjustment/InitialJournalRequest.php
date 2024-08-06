@@ -9,8 +9,6 @@ class InitialJournalRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -19,8 +17,6 @@ class InitialJournalRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
@@ -28,15 +24,14 @@ class InitialJournalRequest extends FormRequest
             'description' => ['required'],
             'sub_account_debit' => [
                 'required',
-                Rule::exists('sub_accounts', 'id')
+                Rule::exists('sub_accounts', 'id'),
             ],
             'sub_account_credit' => [
                 'required',
-                Rule::exists('sub_accounts', 'id')
+                Rule::exists('sub_accounts', 'id'),
             ],
         ];
     }
-
 
     public function messages(): array
     {

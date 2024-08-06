@@ -8,11 +8,8 @@ class AddPlacementIdToUserJobsInformations extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up(): void
-
     {
         Schema::table('user_jobs_informations', static function (Blueprint $table) {
             $table->foreignId('placement_id')->constrained('user_placements')->after('user_id');
@@ -21,8 +18,6 @@ class AddPlacementIdToUserJobsInformations extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down(): void
     {

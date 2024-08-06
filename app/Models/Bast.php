@@ -9,7 +9,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class Bast extends Model
 {
-
     protected $table = 'bast';
 
     protected $fillable = [
@@ -23,9 +22,8 @@ class Bast extends Model
         'objective',
         'file',
         'status',
-        'created_by'
+        'created_by',
     ];
-
 
     protected $with = [
         'contact',
@@ -58,21 +56,21 @@ class Bast extends Model
     public function searchDataBasedOnUserBranch(Request $request)
     {
         $search = $request->input('search');
-        return self::where('bast_number', 'like', '%' . $search . '%')
+
+        return self::where('bast_number', 'like', '%'.$search.'%')
             ->where('branch_id', $request->user()->branch_id)
             ->orWhereHas('contact', function ($query) use ($search) {
-                $query->where('full_name', 'like', '%' . $search . '%');
-                $query->orWhere('company_name', 'like', '%' . $search . '%');
+                $query->where('full_name', 'like', '%'.$search.'%');
+                $query->orWhere('company_name', 'like', '%'.$search.'%');
             })
-            ->orWhere('date', 'like', '%' . $search . '%')
-            ->orWhere('first_party_identity_name', 'like', '%' . $search . '%')
-            ->orWhere('first_party_position', 'like', '%' . $search . '%')
-            ->orWhere('objective', 'like', '%' . $search . '%')
-            ->orWhere('file', 'like', '%' . $search . '%')
-            ->orWhere('status', 'like', '%' . $search . '%')
+            ->orWhere('date', 'like', '%'.$search.'%')
+            ->orWhere('first_party_identity_name', 'like', '%'.$search.'%')
+            ->orWhere('first_party_position', 'like', '%'.$search.'%')
+            ->orWhere('objective', 'like', '%'.$search.'%')
+            ->orWhere('file', 'like', '%'.$search.'%')
+            ->orWhere('status', 'like', '%'.$search.'%')
             ->get();
     }
-
 
     public function filterDataBasedOnBranch(int $branchId, int $perPage): LengthAwarePaginator
     {

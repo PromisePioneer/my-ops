@@ -12,17 +12,17 @@ class NotificationsController extends Controller
     public function index(): JsonResponse
     {
         $user = Auth::user()->unreadNotifications;
+
         return response()->json($user);
     }
-
 
     public function detail(): JsonResponse
     {
 
         $notification = Auth::user()->unreadnotifications()->whereDate('created_at', Carbon::today())->get();
+
         return response()->json($notification);
     }
-
 
     public function markAsRead(): JsonResponse
     {

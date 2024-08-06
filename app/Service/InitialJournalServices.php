@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Service;
 
 use App\Models\Account;
@@ -10,7 +9,6 @@ use Illuminate\Support\Facades\DB;
 
 class InitialJournalServices
 {
-
     public function selectAccountDebit($request): array
     {
         if ($request->search === '') {
@@ -24,8 +22,8 @@ class InitialJournalServices
         } else {
             $account = Account::where('branch_id', $request->user()->branch_id)
                 ->join('sub_accounts', 'accounts.id', '=', 'sub_accounts.account_id')
-                ->where('sub_accounts.code', 'like', '%' . $request->search . '%')
-                ->orWhere('sub_accounts.name', 'like', '%' . $request->search . '%')
+                ->where('sub_accounts.code', 'like', '%'.$request->search.'%')
+                ->orWhere('sub_accounts.name', 'like', '%'.$request->search.'%')
                 ->where('accounts.code', '114')
                 ->orderBy('sub_accounts.name', 'asc')
                 ->select('sub_accounts.id', 'sub_accounts.name')
@@ -33,17 +31,16 @@ class InitialJournalServices
                 ->get();
         }
 
-        $response = array();
+        $response = [];
         foreach ($account as $c) {
-            $response[] = array(
-                "id" => $c->id,
-                "text" => $c->name
-            );
+            $response[] = [
+                'id' => $c->id,
+                'text' => $c->name,
+            ];
         }
 
         return $response;
     }
-
 
     public function selectAccountCredit($request): array
     {
@@ -58,8 +55,8 @@ class InitialJournalServices
         } else {
             $account = Account::where('branch_id', $request->user()->branch_id)
                 ->join('sub_accounts', 'accounts.id', '=', 'sub_accounts.account_id')
-                ->where('sub_accounts.code', 'like', '%' . $request->search . '%')
-                ->orWhere('sub_accounts.name', 'like', '%' . $request->search . '%')
+                ->where('sub_accounts.code', 'like', '%'.$request->search.'%')
+                ->orWhere('sub_accounts.name', 'like', '%'.$request->search.'%')
                 ->where('accounts.code', '111')
                 ->orderBy('sub_accounts.name', 'asc')
                 ->select('sub_accounts.id', 'sub_accounts.name')
@@ -67,17 +64,16 @@ class InitialJournalServices
                 ->get();
         }
 
-        $response = array();
+        $response = [];
         foreach ($account as $c) {
-            $response[] = array(
-                "id" => $c->id,
-                "text" => $c->name
-            );
+            $response[] = [
+                'id' => $c->id,
+                'text' => $c->name,
+            ];
         }
 
         return $response;
     }
-
 
     public function confirm($initialJournal): array
     {
@@ -90,20 +86,20 @@ class InitialJournalServices
             $this->accountTransaction($initialJournal);
 
             DB::commit();
+
             return [
                 'success' => true,
-                'message' => 'data berhasil dikonfirmasi'
+                'message' => 'data berhasil dikonfirmasi',
             ];
         } catch (Exception $e) {
             DB::rollBack();
 
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ];
         }
     }
-
 
     public function accountTransaction($initialJournal): array
     {
@@ -114,7 +110,7 @@ class InitialJournalServices
                 'sub_account_id' => $initialJournal->sub_account_debit,
                 'description' => $initialJournal->description,
                 'debit' => $initialJournal->initial_payment,
-                'credit' => 0
+                'credit' => 0,
             ]);
 
             AccountTransaction::create([
@@ -122,18 +118,20 @@ class InitialJournalServices
                 'sub_account_id' => $initialJournal->sub_account_credit,
                 'description' => $initialJournal->description,
                 'debit' => 0,
-                'credit' => $initialJournal->initial_payment
+                'credit' => $initialJournal->initial_payment,
             ]);
             DB::commit();
+
             return [
                 'success' => true,
-                'message' => 'Data berhasil disimpan'
+                'message' => 'Data berhasil disimpan',
             ];
         } catch (Exception $e) {
             DB::rollBack();
+
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ];
         }
     }

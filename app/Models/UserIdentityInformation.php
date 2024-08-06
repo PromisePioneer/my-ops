@@ -11,6 +11,7 @@ class UserIdentityInformation extends Model
     use HasFactory;
 
     protected $table = 'user_identity_informations';
+
     protected $fillable = [
         'user_id',
         'nik',
@@ -19,14 +20,13 @@ class UserIdentityInformation extends Model
         'gender',
         'home_address',
         'ktp_attachment',
-        'married_status'
+        'married_status',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-
 
     //eloquent
     public function getRelatedUserIdentityInformation(int $userId)

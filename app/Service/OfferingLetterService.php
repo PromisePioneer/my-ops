@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\DB;
 
 class OfferingLetterService
 {
-
     private HandleFileUploadService $handleFileUploadService;
 
     public function __construct()
     {
-        $this->handleFileUploadService = new HandleFileUploadService();
+        $this->handleFileUploadService = new HandleFileUploadService;
     }
+
     public function store($request): void
     {
         DB::transaction(function () use ($request) {

@@ -9,6 +9,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class UsedItems extends Model
 {
     protected $table = 'used_goods_history';
+
     protected $fillable = [
         'account_id',
         'goods_id',
@@ -16,16 +17,14 @@ class UsedItems extends Model
         'total_used',
     ];
 
-
     protected $with = [
-        'goods'
+        'goods',
     ];
 
     public function goods(): BelongsTo
     {
         return $this->belongsTo(Goods::class, 'goods_id');
     }
-
 
     //eloquent
     public function getDataWithPaginationBasedOnGoods(int $goodsId, int $perPage): LengthAwarePaginator

@@ -25,8 +25,7 @@ class InvoiceDueDate extends Notification
     /**
      * Get the notification's delivery channels.
      *
-     * @param mixed $notifiable
-     * @return array
+     * @param  mixed  $notifiable
      */
     public function via($notifiable): array
     {
@@ -36,8 +35,7 @@ class InvoiceDueDate extends Notification
     /**
      * Get the mail representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @param  mixed  $notifiable
      */
     public function toMail($notifiable): MailMessage
     {
@@ -50,8 +48,7 @@ class InvoiceDueDate extends Notification
     /**
      * Get the array representation of the notification.
      *
-     * @param mixed $notifiable
-     * @return array
+     * @param  mixed  $notifiable
      */
     public function toArray($notifiable): array
     {
@@ -61,7 +58,7 @@ class InvoiceDueDate extends Notification
             'due_date' => $this->invoice->due_date,
             'invoice_number' => $this->invoice->invoice_number,
             'branch_id' => $this->invoice->branch_id,
-            'message' => "Invoice No. " . $this->invoice->invoice_number . " sudah dekat dengan jatuh tempo",
+            'message' => 'Invoice No. '.$this->invoice->invoice_number.' sudah dekat dengan jatuh tempo',
         ];
     }
 }

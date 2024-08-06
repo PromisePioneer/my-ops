@@ -9,8 +9,6 @@ class PermissionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -19,8 +17,6 @@ class PermissionRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
@@ -28,11 +24,10 @@ class PermissionRequest extends FormRequest
             'name' => [
                 'required',
                 Rule::unique('permissions', 'name')
-                    ->ignore(request()->route('permission'))
+                    ->ignore(request()->route('permission')),
             ],
         ];
     }
-
 
     public function messages(): array
     {

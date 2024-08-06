@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class SubAccount extends Model
 {
     protected $table = 'sub_accounts';
+
     protected $fillable = [
         'code',
         'name',
@@ -42,22 +43,22 @@ class SubAccount extends Model
             $query->where('branch_id', Auth::user()->branch_id);
         })->orderBy('code', 'ASC')->paginate(10);
 
-
         self::formattedData($query);
+
         return $query;
     }
 
-
     public function searchSubAccountBasedOnUserBranch(Request $request)
     {
-        $subAccount = self::whereHas('account', static function ($query) use ($request) {
+        $subAccount = self::whereHas('account', static function ($query) {
             $query->where('branch_id', Auth::user()->branch_id);
-        })->where('name', 'like', '%' . $request->search . '%')
-            ->orWhere('code', 'like', '%' . $request->search . '%')
+        })->where('name', 'like', '%'.$request->search.'%')
+            ->orWhere('code', 'like', '%'.$request->search.'%')
             ->orderBy('code', 'ASC')
             ->paginate(10);
 
         self::formattedData($subAccount);
+
         return $subAccount;
     }
 
@@ -90,7 +91,6 @@ class SubAccount extends Model
             ];
         })->toArray();
     }
-
 
     public function getSelectedSubAccount(Request $request, int $subAccountId): self
     {
@@ -138,7 +138,7 @@ class SubAccount extends Model
         });
 
         if ($search !== '') {
-            $query->where('name', 'like', '%' . $search . '%');
+            $query->where('name', 'like', '%'.$search.'%');
         }
 
         return $query->get()->map(function ($item) {
@@ -153,7 +153,6 @@ class SubAccount extends Model
     {
         return self::where('code', '111-01')->first();
     }
-
 
     public function getPenjualanAtauPendapatanJasaLainnyaSubAccount(int $branchId)
     {

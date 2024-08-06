@@ -10,11 +10,12 @@ use Illuminate\Support\Facades\DB;
 class UsedItemServices
 {
     private const ACCOUNT_TRANSACTIONS_IF_ITEM_IS_ASSET_DESCRIPTION = 'Pemakaian barang %s %s';
+
     private AccountTransactionService $accountTransactionService;
 
     public function __construct()
     {
-        $this->accountTransactionService = new AccountTransactionService();
+        $this->accountTransactionService = new AccountTransactionService;
     }
 
     public function store(Request $request, Goods $goods): void
@@ -34,11 +35,10 @@ class UsedItemServices
                 'account_id' => $goods->account_id,
                 'goods_id' => $goods->id,
                 'total_used' => $request->total_used,
-                'created_by' => $request->user()->id
+                'created_by' => $request->user()->id,
             ]);
         });
     }
-
 
     private function isQtyGreaterThanZero(Goods $goods, Request $request): void
     {
@@ -48,17 +48,15 @@ class UsedItemServices
         }
     }
 
-
     /**
      * @throws \Exception
      */
     public function isQtyLessThanZero(Goods $goods): void
     {
         if ($goods->qty < 0) {
-            throw new \Exception("Stok sudah habis");
+            throw new \Exception('Stok sudah habis');
         }
     }
-
 
     /**
      * @throws \Exception
@@ -66,7 +64,7 @@ class UsedItemServices
     public function isQtyLessThanTotalUsedItems(Goods $goods, Request $request): void
     {
         if ($goods->qty < $request->total_used) {
-            throw new \Exception("Stok tidak mencukupi");
+            throw new \Exception('Stok tidak mencukupi');
         }
     }
 }

@@ -28,7 +28,6 @@ class CreateBast extends Migration
             $table->unsignedBigInteger('created_by');
             $table->timestamps();
 
-
             $table->foreign('contact_id')
                 ->references('id')
                 ->on('contacts')

@@ -10,12 +10,14 @@ use Illuminate\Http\Request;
 class GeneralJournalController extends Controller
 {
     public int $perPage = 10;
+
     private AccountTransaction $accountTransaction;
 
     public function __construct()
     {
-        $this->accountTransaction = new AccountTransaction();
+        $this->accountTransaction = new AccountTransaction;
     }
+
     public function index()
     {
         return view('pages.journals.general-journal.index');
@@ -24,6 +26,7 @@ class GeneralJournalController extends Controller
     public function period(): JsonResponse
     {
         $generalJournal = $this->accountTransaction->getGeneralJournalPeriodBasedOnUserBranch($this->perPage);
+
         return response()->json($generalJournal);
     }
 
@@ -33,9 +36,9 @@ class GeneralJournalController extends Controller
         $year = date('Y', strtotime($time));
 
         $generalJournal = $this->accountTransaction->getGeneralJournalDataBasedOnUserBranchAndPeriod($month, $year);
+
         return view('pages.journals.general-journal.detail', compact('generalJournal', 'time'));
     }
-
 
     public function detailJournal($time): JsonResponse
     {
@@ -43,6 +46,7 @@ class GeneralJournalController extends Controller
         $year = date('Y', strtotime($time));
 
         $generalJournal = $this->accountTransaction->getGeneralJournalDataDetails($month, $year);
+
         return response()->json($generalJournal);
     }
 }

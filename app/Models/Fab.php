@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 class Fab extends Model
 {
     protected $table = 'fab';
+
     protected $fillable = [
         'branch_id',
         'contact_id',
@@ -23,9 +24,8 @@ class Fab extends Model
         'status_bast',
         'status_invoice',
         'file',
-        'created_by'
+        'created_by',
     ];
-
 
     protected $with = [
         'contact',
@@ -48,7 +48,6 @@ class Fab extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-
     //eloquent
     public function getDataBasedOnUserBranch(Request $request, int $perPage): LengthAwarePaginator
     {
@@ -60,16 +59,15 @@ class Fab extends Model
     public function searchDataBasedOnUserBranch(Request $request): Collection
     {
         return self::with('contact', 'branch')
-            ->where('subscription_status', 'like', '%' . $request->input('search') . '%')
+            ->where('subscription_status', 'like', '%'.$request->input('search').'%')
             ->orWhereHas('branch', function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->input('search') . '%');
+                $query->where('name', 'like', '%'.$request->input('search').'%');
             })
             ->orWhereHas('contact', function ($query) use ($request) {
-                $query->where('full_name', 'like', '%' . $request->input('search') . '%');
-                $query->where('company_name', 'like', '%' . $request->input('search') . '%');
+                $query->where('full_name', 'like', '%'.$request->input('search').'%');
+                $query->where('company_name', 'like', '%'.$request->input('search').'%');
             })->get();
     }
-
 
     public function filterDataBasedOnBranch(int $branchId, int $perPage): LengthAwarePaginator
     {

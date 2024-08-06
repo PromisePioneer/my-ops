@@ -21,6 +21,7 @@ class UserAttendanceController extends Controller
     {
         $attendance = UserAttendance::with('user', 'user.roles', 'jobInformation', 'jobInformation.department')
             ->paginate(10);
+
         return response()->json($attendance);
     }
 
@@ -28,14 +29,14 @@ class UserAttendanceController extends Controller
     {
         $search = $request->input('search');
         $query = UserAttendance::with('user', 'user.roles', 'jobInformation', 'jobInformation.department')
-            ->where('date', 'like', '%' . $search . '%')
+            ->where('date', 'like', '%'.$search.'%')
             ->whereHas('user', static function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%');
-                $query->where('nip', 'like', '%' . $search . '%');
+                $query->where('name', 'like', '%'.$search.'%');
+                $query->where('nip', 'like', '%'.$search.'%');
             })->get();
+
         return response()->json($query);
     }
-
 
     public function getUserData(Request $request): JsonResponse
     {
@@ -48,22 +49,24 @@ class UserAttendanceController extends Controller
             $user = User::with('roles')
                 ->orderby('name', 'asc')
                 ->select('id', 'name')
-                ->where('name', 'like', '%' . $search . '%')
+                ->where('name', 'like', '%'.$search.'%')
                 ->get();
         }
-        $response = array();
+        $response = [];
         foreach ($user as $u) {
-            $response[] = array(
-                "id" => $u->id,
-                "text" => $u->name
-            );
+            $response[] = [
+                'id' => $u->id,
+                'text' => $u->name,
+            ];
         }
+
         return response()->json($response);
     }
 
     public function store(UserAttendanceRequest $request): JsonResponse
     {
         $attendance = UserAttendance::create($request->validated());
+
         return response()->json($attendance);
     }
 
@@ -72,10 +75,7 @@ class UserAttendanceController extends Controller
         return response()->json($userAttendance);
     }
 
-    public function update(): JsonResponse
-    {
-
-    }
+    public function update(): JsonResponse {}
 
     public function destroy(UserAttendance $userAttendance): JsonResponse
     {

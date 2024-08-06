@@ -8,8 +8,6 @@ class CreateContacts extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up(): void
     {
@@ -20,7 +18,7 @@ class CreateContacts extends Migration
             $table->string('company_name')->nullable();
             $table->string('email');
             $table->string('phone_number');
-            $table->enum('identity_type', ['ktp','sim','passport']);
+            $table->enum('identity_type', ['ktp', 'sim', 'passport']);
             $table->string('identity_number');
             $table->string('fax')->nullable();
             $table->string('npwp');
@@ -32,8 +30,6 @@ class CreateContacts extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down(): void
     {

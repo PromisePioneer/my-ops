@@ -17,10 +17,10 @@ class AccountRequest extends FormRequest
         return [
             'branch_id' => [
                 'required',
-                Rule::exists('branches', 'id')
+                Rule::exists('branches', 'id'),
             ],
             'name' => [
-                'required'
+                'required',
             ],
             'code' => [
                 'required',
@@ -28,11 +28,10 @@ class AccountRequest extends FormRequest
                     ->where(function ($query) {
                         return $query->where('branch_id', $this->branch_id);
                     })
-                    ->ignore(request()->route('account'))
+                    ->ignore(request()->route('account')),
             ],
         ];
     }
-
 
     public function messages(): array
     {
