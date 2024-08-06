@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\UserProfile;
 
+use App\Http\Rule\LeavesAndPermissionRules;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -24,12 +25,12 @@ class LeaveAndPermissionRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
-            'start_date' => ['required', 'date', 'after:today'],
-            'end_date' => ['required', 'date', 'after:start_date'],
+            'start_date' => ['required', 'date', 'after:today', new LeavesAndPermissionRules()],
+            'end_date' => ['required', 'date', 'after:start_date', new LeavesAndPermissionRules()],
             'reason' => ['required'],
             'leaves_status' => ['required'],
-            'sick_letter' => [Rule::requiredIf(static function () {
-                return request()->leaves_status === 'Sakit';
+            'sick_letter' => [Rule::requiredIf(static function () use ($request) {
+                return $request->leaves_status === 'Sakit';
             })],
         ];
     }

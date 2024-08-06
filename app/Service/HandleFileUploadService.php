@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 class HandleFileUploadService
 {
-    public function upload(Request $request, string $fileType, string $fileName, ?string $currentFilePath = null): string
+    public function upload(Request $request, string $fileType, string $fileName, ?string $currentFilePath = null): string|bool|null
     {
         if ($currentFilePath && $request->file($fileName)) {
             Storage::disk('public')->delete($currentFilePath);

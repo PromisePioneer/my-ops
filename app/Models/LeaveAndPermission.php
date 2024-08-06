@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,8 +22,7 @@ class LeaveAndPermission extends Model
         'leaves_status',
         'confirmation_status',
         'sick_letter',
-        'approved_reason',
-        'rejected_reason',
+        'confirmation_reason',
         'acc_by',
     ];
 
@@ -43,12 +43,34 @@ class LeaveAndPermission extends Model
         return self::where('user_id', $userId)->paginate($perPage);
     }
 
-    public function searchData(Request $request)
+    public function searchDataBasedOnUserId(Request $request)
     {
         $search = $request->input('search');
 
         return self::where('user_id', $request->user()->id)
             ->where('date', 'like', '%' . $search . '%')
+            ->orWhere('reason', 'like', '%' . $search . '%')
+            ->orWhere('leaves_status', 'like', '%' . $search . '%')
+            ->orWhere('confirmation_status', 'like', '%' . $search . '%')
+            ->get();
+    }
+
+
+    public function getDataWithPaginationBasedOnBranch(int $branchId, int $perPage): LengthAwarePaginator
+    {
+        return self::with('user')->whereHas('user', function ($query) use ($branchId) {
+            $query->where('branch_id', $branchId);
+        })->paginate($perPage);
+    }
+
+    public function searchDataWithPaginationBasedOnBranch(Request $request): Collection
+    {
+        $search = $request->input('search');
+        return self::with('user')->whereHas('user', function ($query) use ($request, $search) {
+            $query->where('branch_id', $request->user()->branch_id);
+            $query->orWhere('name', 'like', '%' . $search . '%');
+        })->where('start_date', 'like', '%' . $search . '%')
+            ->orWhere('end_date', 'like', '%' . $search . '%')
             ->orWhere('reason', 'like', '%' . $search . '%')
             ->orWhere('leaves_status', 'like', '%' . $search . '%')
             ->orWhere('confirmation_status', 'like', '%' . $search . '%')

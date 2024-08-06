@@ -29,8 +29,8 @@ class LeaveAndPermissionController extends Controller
 
     public function index(Request $request): View
     {
-        dd($this->calculateUserLeaves->calculate($request));
-        return view('pages.utilities.user-profile.leaves-and-permission.index');
+        $totalLeavesAllowance = $this->calculateUserLeaves->calculate($request);
+        return view('pages.utilities.user-profile.leaves-and-permission.index', compact('totalLeavesAllowance'));
     }
 
     public function data(Request $request): JsonResponse
@@ -40,7 +40,7 @@ class LeaveAndPermissionController extends Controller
 
     public function search(Request $request): JsonResponse
     {
-        return response()->json($this->leavesAndPermission->searchData($request));
+        return response()->json($this->leavesAndPermission->searchDataBasedOnUserId($request));
     }
 
     public function create(): View
@@ -66,9 +66,12 @@ class LeaveAndPermissionController extends Controller
         return response()->json($leaveAndPermission);
     }
 
-    public function update(LeaveAndPermissionRequest $request): JsonResponse
+    public function update(LeaveAndPermissionRequest $request, LeaveAndPermission $leaveAndPermission): JsonResponse
     {
-        return response()->json(LeaveAndPermission::update($request->validated()));
+        $leaveAndPermission->update($request->validated());
+        return response()->json([
+            'message' => 'data berhasil disimpan'
+        ]);
     }
 
     public function destroy(LeaveAndPermission $leaveAndPermission): JsonResponse

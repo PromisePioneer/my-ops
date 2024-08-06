@@ -19,8 +19,7 @@ return new class extends Migration {
             $table->enum('leaves_status', ['Sakit', 'Cuti', 'Izin']);
             $table->enum('confirmation_status', ['Diproses', 'Diterima', 'Ditolak'])->default('Diproses');
             $table->string('sick_letter')->nullable();
-            $table->string('approved_reason')->nullable();
-            $table->string('rejected_reason')->nullable();
+            $table->string('confirmation_reason')->nullable();
             $table->foreignId('acc_by')->nullable()->constrained('users');
             $table->timestamps();
         });

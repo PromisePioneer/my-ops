@@ -2,22 +2,26 @@
 
 namespace App\Http\Rule;
 
-use App\Models\UserJobInformation;
-use Carbon\Carbon;
+use App\Service\CalculateUserLeaves;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Http\Request;
 
 class LeavesAndPermissionRules implements ValidationRule
 {
-    public function passes(string $attribute, mixed $value, Closure $fail, Request $request): void
+    public function __construct()
     {
-
+        $this->calculateUserLeaves = new CalculateUserLeaves();
     }
 
-    public function message()
+    public function passes(string $attribute, mixed $value, Closure $fail, Request $request): bool
     {
-        // TODO: Implement message() method.
+        return $value < $this->calculateUserLeaves->calculate($request);
+    }
+
+    public function message(): string
+    {
+        return 'jatah cuti anda habis';
     }
 
     public function validate(string $attribute, mixed $value, Closure $fail): void

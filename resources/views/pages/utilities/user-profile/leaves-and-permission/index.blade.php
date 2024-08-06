@@ -13,8 +13,7 @@
                         <span class="svg-icon svg-icon-1 position-absolute ms-6">
                            <i class="bi bi-search"></i>
                         </span>
-                        <input type="text" name="search" x-model="search" @input.debounce="searchData()"
-                               class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
+                        <h3>Sisa Cuti : {{ $totalLeavesAllowance }}</h3>
                     </div>
                 </div>
                 <div class="card-toolbar">
@@ -66,6 +65,17 @@
                                     <td x-text="`${leavesAndPermission.start_date} - ${leavesAndPermission.end_date}`"></td>
                                     <td x-text="leavesAndPermission.leaves_status"></td>
                                     <td x-text="leavesAndPermission.confirmation_status"></td>
+                                    <template x-if="leavesAndPermission.confirmation_status === 'Diterima'">
+                                        <td>
+                                            <i class="fas fa-check-double" style="color: #63E6BE;"></i>
+                                        </td>
+                                    </template>
+                                    <template x-if="leavesAndPermission.confirmation_status === 'Ditolak'">
+                                        <td>
+                                            <i class="fas fa-times-circle" style="color: #cc0000;"></i>
+                                        </td>
+                                    </template>
+                                    <template x-if="leavesAndPermission.confirmation_status === 'Ditolak'">
                                     <td>
                                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(leavesAndPermission.id)">
@@ -75,6 +85,7 @@
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </td>
+                                    </template>
                                 </tr>
                             </template>
                             </tbody>
@@ -115,9 +126,6 @@
                     await this.getLeavePermissionData();
                     this.isLoading = false;
                 },
-                async searchData() {
-
-                },
                 async nextPage() {
 
                 },
@@ -143,8 +151,20 @@
                     const resp = await axios.get(`/utility/user-profile/leaves-and-permission/${id}`)
                     this.editVal = resp.data;
                 },
-                async update() {
-
+                async update(id) {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/utility/user-profile/leaves-and-permission/${id}`, new FormData(this.formEdit))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.formEdit.reset();
+                        this.modalEdit.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
                 },
                 async destroy() {
 

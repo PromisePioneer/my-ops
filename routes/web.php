@@ -7,6 +7,7 @@ use App\Http\Controllers\JournalAdjustment\InitialJournalController;
 use App\Http\Controllers\JournalAdjustment\JournalAdjustmentController;
 use App\Http\Controllers\Journals\GeneralJournalController;
 use App\Http\Controllers\Journals\GeneralLedgerController;
+use App\Http\Controllers\ManageUser\ManageUserLeavesController;
 use App\Http\Controllers\ManageUser\PayrollController;
 use App\Http\Controllers\ManageUser\PermissionController;
 use App\Http\Controllers\ManageUser\UserAttendanceController;
@@ -116,12 +117,21 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::delete('/{payroll}', [PayrollController::class, 'destroy']);
             Route::get('/export-pdf/{payroll}', [PayrollController::class, 'exportToPDF']);
         });
+        Route::prefix('leaves')->group(function () {
+            Route::get('/', [ManageUserLeavesController::class, 'index']);
+            Route::get('/data', [ManageUserLeavesController::class, 'data']);
+            Route::get('/search', [ManageUserLeavesController::class, 'search']);
+            Route::get('/{leaveAndPermission}', [ManageUserLeavesController::class, 'detail']);
+            Route::post('/{leaveAndPermission}', [ManageUserLeavesController::class, 'changeStatus']);
+        });
     });
+
 
     Route::prefix('notifications')->group(function () {
         Route::get('/', [NotificationsController::class, 'index']);
         Route::get('/detail', [NotificationsController::class, 'detail']);
         Route::post('/mark-as-read', [NotificationsController::class, 'markAsRead']);
+
     });
 
 
