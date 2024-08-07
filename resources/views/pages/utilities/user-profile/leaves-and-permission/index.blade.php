@@ -13,7 +13,7 @@
                         <span class="svg-icon svg-icon-1 position-absolute ms-6">
                            <i class="bi bi-search"></i>
                         </span>
-                        <h3>Sisa Cuti : {{ $totalLeavesAllowance }}</h3>
+                        <h3>Sisa Cuti : <span x-text="totalLeavesAllowance"></span> </h3>
                     </div>
                 </div>
                 <div class="card-toolbar">
@@ -75,13 +75,13 @@
                                             <i class="fas fa-times-circle" style="color: #cc0000;"></i>
                                         </td>
                                     </template>
-                                    <template x-if="leavesAndPermission.confirmation_status === 'Ditolak'">
+                                    <template x-if="leavesAndPermission.confirmation_status === 'Diproses'">
                                     <td>
                                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(leavesAndPermission.id)">
                                             <i class="bi bi-pencil"></i>
                                         </button>
-                                        <button class="btn btn-danger btn-sm" @click="edit(leavesAndPermission.id)">
+                                        <button class="btn btn-danger btn-sm" @click="destroy(leavesAndPermission.id)">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </td>
@@ -113,6 +113,7 @@
                 isLoading: false,
                 buttonLoading: false,
                 leavesAndPermissions: [],
+                totalLeavesAllowance: null,
                 startIndex: null,
                 editVal: {},
                 search: '',
@@ -166,12 +167,22 @@
                         this.buttonLoading = false;
                     }
                 },
-                async destroy() {
-
+                async destroy(id) {
+                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                        try {
+                            await axios.delete(`/utility/user-profile/leaves-and-permission/${id}`);
+                            await showAlert('success', 'Data sukses dihapus');
+                            await this.init();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
                 },
                 async getLeavePermissionData() {
                     const resp = await axios.get('/utility/user-profile/leaves-and-permission/data');
-                    this.leavesAndPermissions = resp.data;
+                    this.leavesAndPermissions = resp.data.leaves;
+                    this.totalLeavesAllowance = resp.data.totalLeavesAllowance
                     this.startIndex = this.leavesAndPermissions.from;
                 }
             }

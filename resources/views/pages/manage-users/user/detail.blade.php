@@ -171,7 +171,7 @@
                 bpjsKesStatus: false,
                 bpjsKetStatus: false,
                 attendance: [],
-                marriedStatus: false,
+                marriedStatus: null,
                 marriedData: [{name: "K/1"}, {name: "K/2"}, {name: "K/3"}],
                 noMarriedData: [{name: "TK/1"}, {name: "TK/2"}, {name: "TK/3"}],
                 identityInformationForm: document.getElementById('form-identity-information-update'),
@@ -186,6 +186,11 @@
                 async add() {
                     await this.getDepartmentData();
                     await this.getUserPlacementData();
+
+                    if (Object.keys(this.jobInformation).length > 0) {
+                        await this.selectedPlacement();
+                        await this.selectedDepartment();
+                    }
                 },
                 async identityInformationUpdate() {
                     this.buttonLoading = true;
@@ -230,10 +235,15 @@
                 async getIdentityInformation() {
                     const resp = await axios.get(`/manage-users/users/identity-information/${this.userId}`);
                     this.identityInformation = resp.data;
+
+                    this.marriedStatus = this.identityInformation.marital_status === 'menikah' ? 'menikah' : 'tidak menikah';
                 },
                 async getJobInformation() {
                     const resp = await axios.get(`/manage-users/users/job-information/${this.userId}`);
                     this.jobInformation = resp.data;
+
+                    this.bpjsKesStatus = this.jobInformation.no_kis ? 'ya' : 'tidak';
+                    this.bpjsKetStatus = this.jobInformation.no_kpj ? 'ya' : 'tidak';
                 },
                 async getAbsentData() {
                     const resp = await axios.get(`/manage-users/users/absent/data/${this.userId}`);
@@ -249,6 +259,42 @@
                             processResults: data => ({results: data}),
                             cache: true
                         }
+                    });
+                },
+                selectedDepartment() {
+                    const selectedDepartment = $('#selectedDepartment');
+                    $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/manage-users/users/job-information/department/selected/${this.userId}`,
+                    }).then(function (response) {
+                        const option = new Option(response.name, response.id, true, true);
+                        selectedDepartment.append(option).trigger('change');
+
+                        selectedDepartment.trigger({
+                            type: 'select2:select',
+                            params: {
+                                results: response
+                            }
+                        });
+                    });
+                },
+                selectedPlacement() {
+                    const selectedPlacement = $('#selectedPlacement');
+                    $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/manage-users/users/job-information/placement/selected/${this.userId}`,
+                    }).then(function (response) {
+                        const option = new Option(response.name, response.id, true, true);
+                        selectedPlacement.append(option).trigger('change');
+
+                        selectedPlacement.trigger({
+                            type: 'select2:select',
+                            params: {
+                                results: response
+                            }
+                        });
                     });
                 },
                 getImageURL(imagePath) {

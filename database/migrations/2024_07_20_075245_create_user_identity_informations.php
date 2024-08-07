@@ -20,6 +20,7 @@ class CreateUserIdentityInformations extends Migration
             $table->enum('gender', ['Laki Laki', 'Perempuan']);
             $table->text('home_address');
             $table->string('ktp_attachment');
+            $table->enum('marital_status', ['Menikah', 'Tidak Menikah']);
             $table->enum('married_status', ['TK/0', 'TK/1', 'TK/2', 'TK/3', 'K/0', 'K/1', 'K/2', 'K/3'])->default('TK/0');
             $table->timestamps();
         });

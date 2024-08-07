@@ -20,6 +20,7 @@ class UserIdentityInformation extends Model
         'gender',
         'home_address',
         'ktp_attachment',
+        'marital_status',
         'married_status',
     ];
 

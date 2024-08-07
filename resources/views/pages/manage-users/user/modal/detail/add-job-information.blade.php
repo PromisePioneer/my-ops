@@ -14,7 +14,8 @@
                     <div class="row mb-7">
                         <div class="col-md-6">
                             <label for="department_id" class="required form-label">Departemen</label>
-                            <select name="department_id" class="form-select form-select-solid department-select2">
+                            <select name="department_id" id="selectedDepartment"
+                                    class="form-select form-select-solid department-select2">
                                 <option value="0">Pilih Departemen</option>
                             </select>
                         </div>
@@ -27,35 +28,48 @@
                     </div>
 
                     <div class="row mb-7">
-                        <div class="col-md-6">
-                            <label for="bpjs_kes" class="required form-label">BPJS Kesehatan</label>
-                            <select class="form-select form-select-solid" name="bpjs_kes" id="bpjs_kes"
-                                    x-model="bpjsKesStatus">
-                                <option value="0" selected>Pilih</option>
-                                <option value="ya" :selected="jobInformation.bpjs_kes === 'ya'">Ya</option>
-                                <option value="tidak" :selected="jobInformation.bpjs_kes === 'tidak'">Tidak
-                                </option>
-                            </select>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">BPJS KES Status</label>
+                            <div class="mb-2">
+                                <input class="form-check-input" type="radio" id="bpjs_kes_ya" name="bpjs_kes" value="ya"
+                                       x-model="bpjsKesStatus">
+                                <span class="form-check-label">Ya</span>
+                            </div>
+                            <div>
+                                <input class="form-check-input" type="radio" id="bpjs_kes_tidak" name="bpjs_kes"
+                                       value="tidak"
+                                       x-model="bpjsKesStatus">
+                                <label for="bpjs_kes_tidak">Tidak</label>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <label for="bpjs_ket" class="required form-label">BPJS Ketenagakerjaan</label>
-                            <select class="form-select form-select-solid" name="bpjs_ket" id="bpjs_ket"
-                                    x-model="bpjsKetStatus">
-                                <option value="0" selected>Pilih</option>
-                                <option value="ya" :selected="jobInformation.bpjs_ket === 'ya'">Ya</option>
-                                <option value="tidak" :selected="jobInformation.bpjs_ket === 'tidak'">Tidak
-                                </option>
-                            </select>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">BPJS KET Status</label>
+
+                            <div class="mb-2">
+                                <input class="form-check-input" type="radio" id="bpjs_ket_ya" name="bpjs_ket" value="ya"
+                                       x-model="bpjsKetStatus">
+                                <span class="form-check-label">Ya</span>
+                            </div>
+                            <div>
+                                <input class="form-check-input" type="radio" id="bpjs_ket_tidak" name="bpjs_ket"
+                                       value="tidak"
+                                       x-model="bpjsKetStatus">
+                                <label for="bpjs_kes_tidak">Tidak</label>
+                            </div>
                         </div>
                     </div>
                     <div class="row mb-7">
                         <div class="col-md-6" x-show="bpjsKesStatus === 'ya'" x-transition>
                             <label for="bpjs_ket" class="required form-label">No. KIS</label>
-                            <input type="text" class="form-control form-control-solid" name="no_kis" id="no_kis">
+                            <input type="text" class="form-control form-control-solid"
+                                   :name="bpjsKesStatus === 'ya' ? 'no_kis' : ''" id="no_kis"
+                                   :value="jobInformation.no_kis">
                         </div>
                         <div class="col-md-6" x-show="bpjsKetStatus === 'ya'" x-transition>
                             <label for="bpjs_ket" class="required form-label">No. KPJ</label>
-                            <input type="text" class="form-control form-control-solid" name="no_kpj" id="no_kpj">
+                            <input type="text" class="form-control form-control-solid"
+                                   :name="bpjsKetStatus === 'ya' ? 'no_kpj' : ''" id="no_kpj"
+                                   :value="jobInformation.no_kpj">
                         </div>
                     </div>
                     <div class="row mb-7">
@@ -103,7 +117,8 @@
                         </div>
                         <div class="col-md-6">
                             <label for="bank_account_number" class="required form-label">Penempatan</label>
-                            <select name="placement_id" id="placement_id" class="form-select form-select-solid user-placement-select2">
+                            <select name="placement_id" id="selectedPlacement"
+                                    class="form-select form-select-solid user-placement-select2">
                                 <option value="0" selected>Pilih</option>
                             </select>
                         </div>

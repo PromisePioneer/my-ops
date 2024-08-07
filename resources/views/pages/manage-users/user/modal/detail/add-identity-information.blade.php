@@ -48,19 +48,27 @@
                         </div>
                     </div>
                     <div class="row my-10">
-                        <div class="col-md-6">
-                            <label for="married_status" class="required form-label">Status Perkawinan</label>
-                            <select class="form-select form-select-solid" name="" id="" x-model="marriedStatus"
-                                    x-on:change="openMarriedStatus">
-                                <option value="0" selected>Pilih</option>
-                                <option value="menikah">Menikah</option>
-                                <option value="tidak menikah">Tidak Menikah</option>
-                            </select>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Status Perkawinan</label>
+                            <div class="mb-2">
+                                <input class="form-check-input" type="radio" id="married_status_menikah"
+                                       name="marital_status"
+                                       value="Menikah"
+                                       x-model="identityInformation.marital_status">
+                                <span class="form-check-label">Menikah</span>
+                            </div>
+                            <div>
+                                <input class="form-check-input" type="radio" id="married_status_tidak_menikah"
+                                       name="marital_status"
+                                       value="Tidak Menikah"
+                                       x-model="identityInformation.marital_status">
+                                <label for="married_status_tidak_menikah">Tidak Menikah</label>
+                            </div>
                         </div>
                         <div class="col-md-6">
-                            <div x-show="marriedStatus" x-transition>
+                            <div x-show="identityInformation.marital_status" x-transition>
                                 <label for="married_status" class="required form-label">Status Perkawinan</label>
-                                <template x-if="marriedStatus === 'menikah'">
+                                <template x-if="identityInformation.marital_status === 'Menikah'">
                                     <select class="form-select form-select-solid" name="married_status"
                                             id="married_status">
                                         <template x-for="(married, index) in marriedData" :key="index">
@@ -68,7 +76,7 @@
                                         </template>
                                     </select>
                                 </template>
-                                <template x-if="marriedStatus === 'tidak menikah'">
+                                <template x-if="identityInformation.marital_status === 'Tidak Menikah'">
                                     <select class="form-select form-select-solid" name="married_status"
                                             id="married_status">
                                         <template x-for="(married, index) in noMarriedData" :key="index">

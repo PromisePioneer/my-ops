@@ -3,6 +3,7 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class IdentityInformationRequest extends FormRequest
@@ -18,7 +19,7 @@ class IdentityInformationRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      */
-    public function rules(): array
+    public function rules(Request $request): array
     {
         return [
             'nik' => [
@@ -36,7 +37,13 @@ class IdentityInformationRequest extends FormRequest
                 'required',
                 Rule::in('TK/0', 'TK/1', 'TK/2', 'TK/3', 'K/0', 'K/1', 'K/2', 'K/3'),
             ],
-            'ktp_attachment' => ['required', 'mimes:jpeg,jpg,png', 'max:2048'],
+            'ktp_attachment' => [
+                'mimes:jpeg,jpg,png',
+                'max:2048',
+                Rule::requiredIf(static function () use ($request) {
+                    return $request->route('user') === null;
+                })
+            ],
         ];
     }
 
@@ -51,7 +58,7 @@ class IdentityInformationRequest extends FormRequest
             'home_address.required' => 'alamat tidak boleh kosong',
             'married_status.required' => 'Status perkawinan tidak boleh kosong',
             'married_status.in' => 'Status perkawinan tidak valid',
-            'ktp_attachment.required' => 'ktp tidak boleh kosong',
+            'ktp_attachment.required_if' => 'ktp tidak boleh kosong',
         ];
     }
 }

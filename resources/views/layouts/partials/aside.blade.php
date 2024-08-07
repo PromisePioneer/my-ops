@@ -329,17 +329,17 @@
                         <x-dropdown-menu-item
                             :active="request()->segment(2) === 'users'"
                             href="{{ url('manage-users/users') }}">
-                            User
+                            Data Karyawan
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                             :active="request()->segment(2) === 'permissions'"
                             href="{{ url('manage-users/permissions') }}">
-                            Permission
+                            Hak Akses
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                             :active="request()->segment(2) === 'attendance'"
                             href="{{ url('manage-users/attendance') }}">
-                            Absen
+                            Absensi
                         </x-dropdown-menu-item>
                             <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'leaves'"
@@ -349,7 +349,7 @@
                         <x-dropdown-menu-item
                             :active="request()->segment(2) === 'payroll'"
                             href="{{ url('manage-users/payroll') }}">
-                            Payroll
+                                Payroll
                         </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>

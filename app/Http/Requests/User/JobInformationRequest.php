@@ -3,6 +3,7 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class JobInformationRequest extends FormRequest
@@ -18,7 +19,7 @@ class JobInformationRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      */
-    public function rules(): array
+    public function rules(Request $request): array
     {
         return [
             'department_id' => ['required', 'exists:departments,id'],
@@ -51,8 +52,20 @@ class JobInformationRequest extends FormRequest
                 'required',
                 Rule::exists('user_placements', 'id'),
             ],
-            'sk_file' => ['required', 'mimes:pdf', 'max:2048'],
-            'contract_file' => ['required', 'mimes:pdf', 'max:2048'],
+            'sk_file' => [
+                'mimes:pdf',
+                'max:2048',
+                Rule::requiredIf(static function () use ($request) {
+                    return $request->route('user') === null;
+                })
+            ],
+            'contract_file' => [
+                'mimes:pdf',
+                'max:2048',
+                Rule::requiredIf(static function () use ($request) {
+                    return $request->route('user') === null;
+                })
+            ],
         ];
     }
 

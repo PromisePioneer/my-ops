@@ -75,6 +75,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/identity-information/{user}', [UserController::class, 'identityInformation']);
             Route::post('/identity-information/{user}', [UserController::class, 'identityInformationUpdate']);
             Route::get('/job-information/{user}', [UserController::class, 'jobInformation']);
+            Route::get('/job-information/department/selected/{user}', [UserController::class, 'getSelectedDepartment']);
+            Route::get('/job-information/placement/selected/{user}', [UserController::class, 'getSelectedPlacement']);
             Route::get('/department/data', [UserController::class, 'getDepartmentData']);
             Route::get('/absent/data/{user}', [UserController::class, 'getAbsentData']);
             Route::post('/job-information/{user}', [UserController::class, 'jobInformationUpdate']);

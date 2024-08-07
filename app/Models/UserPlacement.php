@@ -34,4 +34,14 @@ class UserPlacement extends Model
             ];
         });
     }
+
+    public function getSelectedData(int $placementId): array
+    {
+        $placement = self::where('id', $placementId)->first();
+
+        return [
+            'id' => $placement->id,
+            'name' => $placement->name,
+        ];
+    }
 }

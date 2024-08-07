@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -40,7 +41,27 @@ class LeaveAndPermission extends Model
 
     public function getDataWithPagination(int $userId, int $perPage): LengthAwarePaginator
     {
-        return self::where('user_id', $userId)->paginate($perPage);
+        $leaves = self::where('user_id', $userId)->paginate($perPage);
+
+        self::formattedData($leaves);
+        return $leaves;
+    }
+
+
+    private static function formattedData(LengthAwarePaginator $data)
+    {
+        $formattedData = $data->getCollection()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'start_date' => Carbon::parse($item->start_date)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                'end_date' => Carbon::parse($item->end_date)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                'leaves_status' => $item->leaves_status,
+                'confirmation_status' => $item->confirmation_status,
+            ];
+        });
+
+        $data->setCollection($formattedData);
+        return $data;
     }
 
     public function searchDataBasedOnUserId(Request $request)

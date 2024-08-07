@@ -42,6 +42,7 @@ class UserController extends Controller
     private JobInformationService $jobInformationService;
 
     private UserPlacement $userPlacement;
+    private UserPlacement $placement;
 
     public function __construct()
     {
@@ -102,7 +103,6 @@ class UserController extends Controller
 
     public function store(UserRequest $request): JsonResponse
     {
-        $data = $request->validated();
         $data['password'] = Hash::make('MayatamaPekanbaru2024');
         $user = User::create($data);
         $user->assignRole($request->role);
@@ -123,7 +123,6 @@ class UserController extends Controller
     public function getSelectedBranch(User $user): JsonResponse
     {
         $branch = $this->branch->getSelectedData($user->branch_id);
-
         return response()->json($branch);
     }
 
@@ -150,6 +149,24 @@ class UserController extends Controller
     {
         return response()->json($this->jobInformation->getRelatedUserJobInformation($user->id));
     }
+
+
+    public function getSelectedDepartment(User $user): JsonResponse
+    {
+
+        $users = $user->whereHas('jobInformation')->first();
+        return response()->json($this->department->getSelectedData($users->jobInformation?->department_id));
+    }
+
+
+    public function getSelectedPlacement(User $user): JsonResponse
+    {
+        $user->whereHas('jobInformation')->first();
+        return response()->json($this->userPlacement->getSelectedData($user->jobInformation?->placement_id));
+    }
+
+
+
 
     public function jobInformationUpdate(JobInformationRequest $request, User $user): JsonResponse
     {

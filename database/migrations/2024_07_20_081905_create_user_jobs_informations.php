@@ -13,6 +13,8 @@ class CreateUserJobsInformations extends Migration
     {
         Schema::create('user_jobs_informations', static function (Blueprint $table) {
             $table->id();
+            $table->string('emp_code');
+            $table->string('absent_id');
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('department_id')->constrained('departments');
             $table->date('join_date');

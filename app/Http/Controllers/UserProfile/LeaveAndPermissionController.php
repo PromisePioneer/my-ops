@@ -18,6 +18,7 @@ class LeaveAndPermissionController extends Controller
 
     private LeaveAndPermission $leavesAndPermission;
     private HandleFileUploadService $handleUploadFileService;
+    private CalculateUserLeaves $calculateUserLeaves;
 
     public function __construct()
     {
@@ -29,13 +30,17 @@ class LeaveAndPermissionController extends Controller
 
     public function index(Request $request): View
     {
-        $totalLeavesAllowance = $this->calculateUserLeaves->calculate($request);
-        return view('pages.utilities.user-profile.leaves-and-permission.index', compact('totalLeavesAllowance'));
+        return view('pages.utilities.user-profile.leaves-and-permission.index');
     }
 
     public function data(Request $request): JsonResponse
     {
-        return response()->json($this->leavesAndPermission->getDataWithPagination($request->user()->id, $this->perPage));
+        $totalLeavesAllowance = $this->calculateUserLeaves->calculate($request);
+        $leaves = $this->leavesAndPermission->getDataWithPagination($request->user()->id, $this->perPage);
+        return response()->json([
+            'totalLeavesAllowance' => $totalLeavesAllowance,
+            'leaves' => $leaves,
+        ]);
     }
 
     public function search(Request $request): JsonResponse

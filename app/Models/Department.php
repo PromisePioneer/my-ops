@@ -32,4 +32,15 @@ class Department extends Model
             ];
         })->toArray();
     }
+
+    public function getSelectedData(int $departmentId): array
+    {
+        $department = self::where('id', $departmentId)->first();
+
+
+        return [
+            'id' => $department->id,
+            'name' => $department->name,
+        ];
+    }
 }

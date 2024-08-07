@@ -10,6 +10,8 @@ class UserJobInformation extends Model
     protected $table = 'user_jobs_informations';
 
     protected $fillable = [
+        'emp_code',
+        'absent_id',
         'user_id',
         'department_id',
         'join_date',
@@ -18,7 +20,9 @@ class UserJobInformation extends Model
         'contract_status',
         'bank_account_number',
         'bpjs_kes',
+        'no_kis',
         'bpjs_ket',
+        'no_kpj',
         'sk_file',
         'contract_file',
     ];

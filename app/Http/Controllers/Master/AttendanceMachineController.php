@@ -70,10 +70,10 @@ class AttendanceMachineController extends Controller
 
     #[NoReturn] public function tarikDataAbsen(AttendanceMachineInformation $attendanceMachineInformation): void
     {
-        $zk = new ZKTeco('160.22.177.248', '4370');
+        $zk = new ZKTeco('160.22.177.248');
         $zk->connect();
 
-        $attendanceLog = $zk->getAttendance();
+        $attendanceLog = $zk->getTime();
         dd($attendanceLog);
     }
 

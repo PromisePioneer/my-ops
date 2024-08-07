@@ -18,7 +18,7 @@ class Branch extends Model
     public function getData(Request $request): array
     {
         $search = $request->search;
-        $query = self::orderby('name', 'asc')->select('id', 'name');
+        $query = self::orderby('name', 'asc')->select('id', 'name', 'code');
 
         if ($search !== '') {
             $query->where('name', 'like', '%'.$search.'%');
@@ -40,6 +40,7 @@ class Branch extends Model
 
         return [
             'id' => $branch->id,
+            'code' => $branch->code,
             'name' => $branch->name,
         ];
     }
