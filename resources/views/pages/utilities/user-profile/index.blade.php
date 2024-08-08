@@ -36,7 +36,7 @@
             <div class="row mb-7">
                 <label class="col-lg-4 fw-bold text-muted">Cabang</label>
                 <div class="col-lg-8">
-                    <span class="fw-bolder fs-6 text-gray-800">{{ Auth::user()->branch->name }}</span>
+                    <span class="fw-bolder fs-6 text-gray-800">{{ Auth::user()->branch->name ?? '-' }}</span>
                 </div>
             </div>
         </div>

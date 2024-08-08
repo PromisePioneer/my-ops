@@ -29,23 +29,23 @@
                                              style="background-image: url({{ asset('assets/media/dummy/dummy-picture.png')}})"></div>
                                     @endif
                                     <label
-                                        class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                                        data-kt-image-input-action="change" data-bs-toggle="tooltip"
-                                        title="Change avatar">
+                                            class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                            data-kt-image-input-action="change" data-bs-toggle="tooltip"
+                                            title="Change avatar">
                                         <i class="bi bi-pencil-fill fs-7"></i>
                                         <input type="file" name="profile_pic" accept=".png, .jpg, .jpeg"/>
                                         <input type="hidden" name="avatar_remove"/>
                                     </label>
                                     <span
-                                        class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                                        data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
-                                        title="Cancel avatar">
+                                            class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                            data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
+                                            title="Cancel avatar">
 																<i class="bi bi-x fs-2"></i>
 															</span>
                                     <span
-                                        class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                                        data-kt-image-input-action="remove" data-bs-toggle="tooltip"
-                                        title="Remove avatar">
+                                            class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
+                                            data-kt-image-input-action="remove" data-bs-toggle="tooltip"
+                                            title="Remove avatar">
 																<i class="bi bi-x fs-2"></i>
 															</span>
                                 </div>
@@ -70,7 +70,7 @@
 
                             <div class="col-lg-8 fv-row">
                                 <input type="tel" class="form-control form-control-lg form-control-solid"
-                                       value="{{ Auth::user()->branch->name }}" disabled/>
+                                       value="{{ Auth::user()->branch->name ?? 'Pusat' }}" disabled/>
                             </div>
                         </div>
                         <div class="card-footer d-flex justify-content-end py-6 px-9">

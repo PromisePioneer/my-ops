@@ -11,7 +11,7 @@
                     @csrf
                     <div class="card-body">
                         <div class="row mb-4">
-                            <div class="col-md-6" x-model="users?.placement">
+                            <div class="col-md-6" x-model="users.placement">
                                 <label class="col-form-label required fw-bold fs-6">Penempatan</label>
                                 <select name="placement" id="selectedPlacement"
                                         class="form-select form-select-solid user-placement-select2">
