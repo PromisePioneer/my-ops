@@ -3,6 +3,7 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class UserRequest extends FormRequest
@@ -18,7 +19,7 @@ class UserRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      */
-    public function rules(): array
+    public function rules(Request $request): array
     {
         return [
             'branch_id' => [
@@ -26,15 +27,16 @@ class UserRequest extends FormRequest
                 'integer',
                 Rule::exists('branches', 'id'),
             ],
+            'absent_id' => [
+                'required',
+                Rule::unique('users', 'absent_id')->ignore($request->route('user') === null),
+            ],
+            'join_date' => ['required', 'date'],
             'name' => ['required', 'string', 'max:255'],
             'email' => [
                 'required',
                 'email',
                 Rule::unique('users', 'email')->ignore(request()->route('user')),
-            ],
-            'nip' => [
-                'required',
-                Rule::unique('users', 'nip')->ignore(request()->route('user')),
             ],
             'roles.*' => ['required',
                 'integer',

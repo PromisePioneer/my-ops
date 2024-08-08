@@ -19,7 +19,7 @@ class BranchSeeder extends Seeder
 
         for ($i = 0; $i < 10; $i++) {
             Branch::create([
-                'code' => $faker->unique()->randomNumber(6),
+                'code' => $faker->unique()->randomNumber(3),
                 'name' => $faker->city,
             ]);
         }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -43,7 +44,7 @@ class UserJobInformation extends Model
     }
 
     //eloquent
-    public function getRelatedUserJobInformation(int $userId)
+    public function getRelatedUserJobInformation(int $userId): Model|Builder|null
     {
         return self::with('department', 'placement')->where('user_id', $userId)->first();
     }

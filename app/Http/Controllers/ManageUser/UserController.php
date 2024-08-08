@@ -15,6 +15,7 @@ use App\Models\UserJobInformation;
 use App\Models\UserPlacement;
 use App\Service\IdentityInformationService;
 use App\Service\JobInformationService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -103,7 +104,13 @@ class UserController extends Controller
 
     public function store(UserRequest $request): JsonResponse
     {
+        $branch = $this->branch->getSelectedData($request->branch_id);
+        $date = Carbon::parse($request->join_date)->format('d-m-y');
+
+        $format = $branch['code'] . $date . $request->absent_id;
+        $data = $request->validated();
         $data['password'] = Hash::make('MayatamaPekanbaru2024');
+        $data['nip'] = str_replace("-", "", $format);
         $user = User::create($data);
         $user->assignRole($request->role);
 

@@ -17,7 +17,6 @@ class CreateUserJobsInformations extends Migration
             $table->string('absent_id');
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('department_id')->constrained('departments');
-            $table->date('join_date');
             $table->double('fixed_salary');
             $table->enum('contract_status', [
                 'Tetap', 'Kontrak', 'Vendor', 'Training', 'Magang', 'Freelance', 'Non Karyawan',

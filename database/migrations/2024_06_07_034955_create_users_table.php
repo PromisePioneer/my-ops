@@ -13,9 +13,11 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', static function (Blueprint $table) {
             $table->id();
+            $table->string('absent_id', 4)->unique();
             $table->unsignedBigInteger('branch_id');
             $table->string('nip')->unique();
             $table->string('name');
+            $table->date('join_date');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

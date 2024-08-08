@@ -10,6 +10,13 @@
                 <form id="form" @submit.prevent="save()">
                     @csrf
                     <div class="card-body">
+
+                        <div class="row mb-4">
+                            <div class="col-lg-6">
+                                <label class="col-form-label required fw-bold fs-6">Absen ID</label>
+                                <input type="number" class="form-control form-control-solid" name="absent_id">
+                            </div>
+                        </div>
                         <div class="row mb-4">
                             <div class="col-lg-6">
                                     <label class="col-form-label required fw-bold fs-6">Cabang</label>
@@ -34,11 +41,9 @@
                                            placeholder="email" value=""/>
                             </div>
                             <div class="col-lg-6">
-                                <label class="col-form-label required fw-bold fs-6">
-                                    (NIK) Nomor Induk Pegawai</label>
-                                <input type="text" name="nip"
-                                       class="form-control form-control-lg form-control-solid"
-                                       placeholder="NIK"/>
+                                <label class="col-form-label required fw-bold fs-6">Tanggal Masuk</label>
+                                <input type="date" name="join_date"
+                                       class="form-control form-control-lg form-control-solid"/>
                             </div>
                         </div>
                         <div class="form-group row mb-6">

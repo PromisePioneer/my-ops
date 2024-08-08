@@ -52,18 +52,15 @@
                             <div class="menu-item px-5">
                                 <a href="{{ url('utility/user-profile/profile-detail') }}"
                                    class="menu-link px-5">
-                                    My Profile
+                                    Profil Saya
                                 </a>
                             </div>
                             <div class="separator my-2"></div>
-                            <div class="menu-item px-5 my-1">
-                                <a href="#" class="menu-link px-5">Account Settings</a>
-                            </div>
                             <div class="menu-item px-5">
                                 <a href="{{ route('logout') }}"
                                    onclick="event.preventDefault();
                                             document.getElementById('logout-form').submit();"
-                                   class="menu-link px-5">Sign Out</a>
+                                   class="menu-link px-5">Keluar</a>
 
                                 <form id="logout-form" action="{{ route('logout') }}" method="POST"
                                       class="d-none">
