@@ -13,18 +13,19 @@ use Illuminate\View\View;
 
 class LeaveAndPermissionController extends Controller
 {
-
     public readonly int $perPage;
 
     private LeaveAndPermission $leavesAndPermission;
+
     private HandleFileUploadService $handleUploadFileService;
+
     private CalculateUserLeaves $calculateUserLeaves;
 
     public function __construct()
     {
-        $this->leavesAndPermission = new LeaveAndPermission();
-        $this->handleUploadFileService = new HandleFileUploadService();
-        $this->calculateUserLeaves = new CalculateUserLeaves();
+        $this->leavesAndPermission = new LeaveAndPermission;
+        $this->handleUploadFileService = new HandleFileUploadService;
+        $this->calculateUserLeaves = new CalculateUserLeaves;
         $this->perPage = 10;
     }
 
@@ -37,6 +38,7 @@ class LeaveAndPermissionController extends Controller
     {
         $totalLeavesAllowance = $this->calculateUserLeaves->calculate($request);
         $leaves = $this->leavesAndPermission->getDataWithPagination($request->user()->id, $this->perPage);
+
         return response()->json([
             'totalLeavesAllowance' => $totalLeavesAllowance,
             'leaves' => $leaves,
@@ -61,10 +63,9 @@ class LeaveAndPermissionController extends Controller
         LeaveAndPermission::create($data);
 
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
-
 
     public function edit(LeaveAndPermission $leaveAndPermission): JsonResponse
     {
@@ -74,8 +75,9 @@ class LeaveAndPermissionController extends Controller
     public function update(LeaveAndPermissionRequest $request, LeaveAndPermission $leaveAndPermission): JsonResponse
     {
         $leaveAndPermission->update($request->validated());
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
 

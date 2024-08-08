@@ -15,6 +15,7 @@ class LeaveAndPermission extends Model
     use HasFactory;
 
     protected $table = 'leaves_and_permissions';
+
     protected $fillable = [
         'start_date',
         'end_date',
@@ -27,7 +28,6 @@ class LeaveAndPermission extends Model
         'acc_by',
     ];
 
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -38,15 +38,14 @@ class LeaveAndPermission extends Model
         return $this->belongsTo(User::class, 'acc_by');
     }
 
-
     public function getDataWithPagination(int $userId, int $perPage): LengthAwarePaginator
     {
         $leaves = self::where('user_id', $userId)->paginate($perPage);
 
         self::formattedData($leaves);
+
         return $leaves;
     }
-
 
     private static function formattedData(LengthAwarePaginator $data)
     {
@@ -61,6 +60,7 @@ class LeaveAndPermission extends Model
         });
 
         $data->setCollection($formattedData);
+
         return $data;
     }
 
@@ -69,15 +69,14 @@ class LeaveAndPermission extends Model
         $search = $request->input('search');
 
         return self::where('user_id', $request->user()->id)
-            ->where('date', 'like', '%' . $search . '%')
-            ->orWhere('reason', 'like', '%' . $search . '%')
-            ->orWhere('leaves_status', 'like', '%' . $search . '%')
-            ->orWhere('confirmation_status', 'like', '%' . $search . '%')
+            ->where('date', 'like', '%'.$search.'%')
+            ->orWhere('reason', 'like', '%'.$search.'%')
+            ->orWhere('leaves_status', 'like', '%'.$search.'%')
+            ->orWhere('confirmation_status', 'like', '%'.$search.'%')
             ->get();
     }
 
-
-    public function getDataWithPaginationBasedOnBranch(int|null $branchId, int $perPage): LengthAwarePaginator
+    public function getDataWithPaginationBasedOnBranch(?int $branchId, int $perPage): LengthAwarePaginator
     {
         return self::with('user')->whereHas('user', function ($query) use ($branchId) {
             $query->where('branch_id', $branchId);
@@ -87,14 +86,15 @@ class LeaveAndPermission extends Model
     public function searchDataWithPaginationBasedOnBranch(Request $request): Collection
     {
         $search = $request->input('search');
+
         return self::with('user')->whereHas('user', function ($query) use ($request, $search) {
             $query->where('branch_id', $request->user()->branch_id);
-            $query->orWhere('name', 'like', '%' . $search . '%');
-        })->where('start_date', 'like', '%' . $search . '%')
-            ->orWhere('end_date', 'like', '%' . $search . '%')
-            ->orWhere('reason', 'like', '%' . $search . '%')
-            ->orWhere('leaves_status', 'like', '%' . $search . '%')
-            ->orWhere('confirmation_status', 'like', '%' . $search . '%')
+            $query->orWhere('name', 'like', '%'.$search.'%');
+        })->where('start_date', 'like', '%'.$search.'%')
+            ->orWhere('end_date', 'like', '%'.$search.'%')
+            ->orWhere('reason', 'like', '%'.$search.'%')
+            ->orWhere('leaves_status', 'like', '%'.$search.'%')
+            ->orWhere('confirmation_status', 'like', '%'.$search.'%')
             ->get();
     }
 }

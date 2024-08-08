@@ -2,7 +2,4 @@
 
 namespace App\Traits;
 
-trait ResponseTraits
-{
-
-}
+trait ResponseTraits {}

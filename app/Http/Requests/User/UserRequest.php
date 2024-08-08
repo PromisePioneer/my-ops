@@ -24,14 +24,14 @@ class UserRequest extends FormRequest
         return [
             'placement' => [
                 'required',
-                Rule::in('Pusat', 'Cabang')
+                Rule::in('Pusat', 'Cabang'),
             ],
             'branch_id' => [
                 'integer',
                 Rule::exists('branches', 'id'),
                 Rule::requiredIf(static function () use ($request) {
                     return $request->branch_id;
-                })
+                }),
             ],
             'absent_id' => [
                 'required',

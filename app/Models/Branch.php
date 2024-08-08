@@ -34,12 +34,13 @@ class Branch extends Model
         })->toArray();
     }
 
-    public function getSelectedData(?int $branchId = null): array|null
+    public function getSelectedData(?int $branchId = null): ?array
     {
         $branch = self::where('id', $branchId)->first();
         if ($branchId === null) {
             return null;
         }
+
         return [
             'id' => $branch->id,
             'code' => $branch->code,

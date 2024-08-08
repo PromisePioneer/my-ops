@@ -32,9 +32,13 @@ class UserController extends Controller
     private UserIdentityInformation $identityInformation;
 
     private Branch $branch;
+
     private User $user;
+
     private UserAttendance $attendance;
+
     private Department $department;
+
     private JobInformationService $jobInformationService;
 
     public function __construct()
@@ -83,12 +87,30 @@ class UserController extends Controller
 
     public function create(): View
     {
-        return view('pages.manage-users.user.create');
+        $randomAbsentId = $this->random_digits();
+
+        while (User::where('absent_id', $randomAbsentId)->count() > 0) {
+            $randomAbsentId = mt_rand();
+        }
+
+        return view('pages.manage-users.user.create', compact('randomAbsentId'));
+    }
+
+    private function random_digits(): string
+    {
+        $result = '';
+
+        for ($i = 0; $i < 3; $i++) {
+            $result .= random_int(0, 9);
+        }
+
+        return $result;
     }
 
     public function rolesData(): JsonResponse
     {
         $role = Role::all();
+
         return response()->json($role);
     }
 
@@ -97,12 +119,11 @@ class UserController extends Controller
         $branch = $this->branch->getSelectedData($request->branch_id);
         $date = Carbon::parse($request->join_date)->format('d-m-y');
 
-
         $handlingBranchIfDataNull = $branch['code'] ?? '100';
-        $format = $handlingBranchIfDataNull . $date . $request->absent_id;
+        $format = $handlingBranchIfDataNull.$date.$request->absent_id;
         $data = $request->validated();
         $data['password'] = Hash::make('MayatamaPekanbaru2024');
-        $data['nip'] = str_replace("-", "", $format);
+        $data['nip'] = str_replace('-', '', $format);
         $user = User::create($data);
         $user->assignRole($request->role);
 
@@ -119,8 +140,6 @@ class UserController extends Controller
         return view('pages.manage-users.user.edit', compact('user', 'userRole', 'roles'));
     }
 
-
-
     public function update(User $user, UserRequest $request): JsonResponse
     {
 
@@ -129,8 +148,8 @@ class UserController extends Controller
         $date = Carbon::parse($request->join_date)->format('d-m-y');
         $data['password'] = Hash::make('MayatamaPekanbaru2024');
         $handlingBranchIfDataNull = $branch['code'] ?? '100';
-        $format = $handlingBranchIfDataNull . $date . $request->absent_id;
-        $data['nip'] = str_replace("-", "", $format);
+        $format = $handlingBranchIfDataNull.$date.$request->absent_id;
+        $data['nip'] = str_replace('-', '', $format);
         $user->update($data);
         $user->syncRoles($request->role);
 
@@ -152,6 +171,7 @@ class UserController extends Controller
     public function getSelectedBranch(User $user): JsonResponse
     {
         $branch = $this->branch->getSelectedData($user->branch_id);
+
         return response()->json($branch);
     }
 
@@ -179,16 +199,13 @@ class UserController extends Controller
         return response()->json($this->jobInformation->getRelatedUserJobInformation($user->id));
     }
 
-
     public function getSelectedDepartment(User $user): JsonResponse
     {
 
         $users = $user->whereHas('jobInformation')->first();
+
         return response()->json($this->department->getSelectedData($users->jobInformation?->department_id));
     }
-
-
-
 
     public function jobInformationUpdate(JobInformationRequest $request, User $user): JsonResponse
     {
@@ -222,5 +239,4 @@ class UserController extends Controller
 
         return response()->json($users);
     }
-
 }

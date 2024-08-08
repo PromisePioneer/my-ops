@@ -43,7 +43,7 @@ class IdentityInformationRequest extends FormRequest
                 'max:2048',
                 Rule::requiredIf(static function () use ($request) {
                     return $request->route('user') === null;
-                })
+                }),
             ],
         ];
     }

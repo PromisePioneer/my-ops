@@ -35,7 +35,7 @@ class Expenditure extends Model
         return $this->belongsTo(SubAccount::class, 'credit_account_id');
     }
 
-    public function getDataWithPaginationBasedOnUserBranch(int|null $branchId, int $perPage): LengthAwarePaginator
+    public function getDataWithPaginationBasedOnUserBranch(?int $branchId, int $perPage): LengthAwarePaginator
     {
         $expenditure = self::with('debitAccount', 'creditAccount')
             ->where('branch_id', $branchId)
@@ -115,22 +115,17 @@ class Expenditure extends Model
         return $this->extracted($search, $query);
     }
 
-    /**
-     * @param mixed $search
-     * @param $query
-     * @return mixed
-     */
     public function extracted(mixed $search, $query): mixed
     {
         if ($search !== '') {
-            $query->where('name', 'like', '%' . $search . '%');
-            $query->where('code', 'like', '%' . $search . '%');
+            $query->where('name', 'like', '%'.$search.'%');
+            $query->where('code', 'like', '%'.$search.'%');
         }
 
         $debitAccount = $query->get();
 
         return $debitAccount->map(function ($c) {
-            $nameAndCode = $c->code . '-' . $c->name;
+            $nameAndCode = $c->code.'-'.$c->name;
 
             return [
                 'id' => $c->id,

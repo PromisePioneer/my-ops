@@ -32,22 +32,22 @@
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">ID Absen</label>
                                 <input type="number" class="form-control form-control-solid" name="absent_id"
-                                       placeholder="ID Absen">
+                                       placeholder="ID Absen" value="{{$randomAbsentId }}">
                             </div>
                             <div class="col-lg-6">
-                                    <label class="col-form-label required fw-bold fs-6">Nama</label>
-                                    <input type="text" name="name"
-                                           class="form-control form-control-lg form-control-solid"
-                                           placeholder="Nama" value=""/>
+                                <label class="col-form-label required fw-bold fs-6">Nama</label>
+                                <input type="text" name="name"
+                                       class="form-control form-control-lg form-control-solid"
+                                       placeholder="Nama" value=""/>
                             </div>
                         </div>
 
                         <div class="row mb-4">
                             <div class="col-lg-6">
-                                    <label class="col-form-label required fw-bold fs-6">Email</label>
-                                    <input type="text" name="email"
-                                           class="form-control form-control-lg form-control-solid"
-                                           placeholder="email" value=""/>
+                                <label class="col-form-label required fw-bold fs-6">Email</label>
+                                <input type="text" name="email"
+                                       class="form-control form-control-lg form-control-solid"
+                                       placeholder="email" value=""/>
                             </div>
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">Tanggal Masuk</label>

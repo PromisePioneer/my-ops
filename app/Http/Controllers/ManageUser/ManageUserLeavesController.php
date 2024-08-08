@@ -12,12 +12,13 @@ use Illuminate\View\View;
 class ManageUserLeavesController extends Controller
 {
     public readonly int $perPage;
+
     private LeaveAndPermission $leavesAndPermission;
 
     public function __construct()
     {
         $this->perPage = 10;
-        $this->leavesAndPermission = new LeaveAndPermission();
+        $this->leavesAndPermission = new LeaveAndPermission;
     }
 
     public function index(): View
@@ -45,6 +46,7 @@ class ManageUserLeavesController extends Controller
         $data = $request->validated();
         $data['acc_by'] = $request->user()->id;
         $leaveAndPermission->update($data);
+
         return response()->json([
             'message' => 'Data berhasil di simpan',
         ]);

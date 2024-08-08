@@ -39,7 +39,7 @@ class Account extends Model
     }
 
     // eloquent
-    public function getAccountsBasedOnUserBranch(int|null $branchId, int $perPage): LengthAwarePaginator
+    public function getAccountsBasedOnUserBranch(?int $branchId, int $perPage): LengthAwarePaginator
     {
         $accounts = self::with(['subAccount' => static function ($query) {
             $query->orderBy('code', 'ASC');

@@ -39,7 +39,7 @@ class AccountController extends Controller
 
     public function data(Request $request): JsonResponse
     {
-        $accounts = $this->account->getAccountsBasedOnUserBranch( $request->branch_id,$this->perPage);
+        $accounts = $this->account->getAccountsBasedOnUserBranch($request->branch_id, $this->perPage);
 
         return response()->json($accounts);
     }

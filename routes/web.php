@@ -22,7 +22,6 @@ use App\Http\Controllers\Master\ProductController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\ServicesCategoryController;
 use App\Http\Controllers\Master\SubAccountController;
-use App\Http\Controllers\Master\UserPlacementController;
 use App\Http\Controllers\Transaction\BastController;
 use App\Http\Controllers\Transaction\ExpenditureController;
 use App\Http\Controllers\Transaction\FabController;
@@ -128,14 +127,12 @@ Route::group(['middleware' => ['auth']], static function () {
         });
     });
 
-
     Route::prefix('notifications')->group(function () {
         Route::get('/', [NotificationsController::class, 'index']);
         Route::get('/detail', [NotificationsController::class, 'detail']);
         Route::post('/mark-as-read', [NotificationsController::class, 'markAsRead']);
 
     });
-
 
     // account
     Route::prefix('/account-master')->group(function () {
@@ -287,7 +284,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/identity-information/data', [UserProfileController::class, 'identityInformation']);
             Route::get('/job-information', [UserProfileController::class, 'jobInformationPage']);
             Route::get('/job-information/data', [UserProfileController::class, 'jobInformation']);
-
 
             Route::prefix('leaves-and-permission')->group(function () {
                 Route::get('/', [LeaveAndPermissionController::class, 'index']);
@@ -490,6 +486,5 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::post('/confirm/{expenditure}', [ExpenditureController::class, 'confirm']);
         Route::delete('/{expenditure}', [ExpenditureController::class, 'destroy']);
     });
-
 
 });

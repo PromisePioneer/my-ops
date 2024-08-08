@@ -52,14 +52,14 @@ class JobInformationRequest extends FormRequest
                 'max:2048',
                 Rule::requiredIf(static function () use ($request) {
                     return $request->route('user') === null;
-                })
+                }),
             ],
             'contract_file' => [
                 'mimes:pdf',
                 'max:2048',
                 Rule::requiredIf(static function () use ($request) {
                     return $request->route('user') === null;
-                })
+                }),
             ],
         ];
     }

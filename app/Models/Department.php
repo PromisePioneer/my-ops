@@ -37,7 +37,6 @@ class Department extends Model
     {
         $department = self::where('id', $departmentId)->first();
 
-
         return [
             'id' => $department->id,
             'name' => $department->name,

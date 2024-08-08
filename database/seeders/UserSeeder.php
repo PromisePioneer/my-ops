@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
             'email' => 'superadmin@mayatama.com',
             'password' => Hash::make('12345678'),
             'branch_id' => null,
-            'placement' => 'Pusat'
+            'placement' => 'Pusat',
         ]);
 
     }

@@ -91,7 +91,7 @@
                                     <div class="d-flex flex-column">
                                         <a :href="`/manage-users/users/detail/${user.id}`" class="text-gray-800 text-hover-primary mb-1"
                                            x-text="user.name"></a>
-                                        <span x-text="user.email"></span>
+                                        <span x-text="user.nip"></span>
                                     </div>
                                 </td>
                                 <td>

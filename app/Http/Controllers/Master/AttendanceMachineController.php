@@ -68,7 +68,8 @@ class AttendanceMachineController extends Controller
         return view('pages.master.attendance-machine-info.detail', compact('attendanceMachineInformation'));
     }
 
-    #[NoReturn] public function tarikDataAbsen(AttendanceMachineInformation $attendanceMachineInformation): void
+    #[NoReturn]
+    public function tarikDataAbsen(AttendanceMachineInformation $attendanceMachineInformation): void
     {
         $zk = new ZKTeco('210.87.122.240');
         $zk->connect();
@@ -79,7 +80,7 @@ class AttendanceMachineController extends Controller
 
     private function parseData($data, $p1, $p2): string
     {
-        $data = ' ' . $data;
+        $data = ' '.$data;
         $hasil = '';
         $awal = strpos($data, $p1);
         if ($awal != '') {
