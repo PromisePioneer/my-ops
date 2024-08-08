@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -154,7 +155,7 @@ class SubAccount extends Model
         return self::where('code', '111-01')->first();
     }
 
-    public function getPenjualanAtauPendapatanJasaLainnyaSubAccount(int $branchId)
+    public function getPenjualanAtauPendapatanJasaLainnyaSubAccount(int|null $branchId): Model|Builder|null
     {
         return self::with('account')->whereHas('account', static function ($query) use ($branchId) {
             $query->where('branch_id', $branchId);

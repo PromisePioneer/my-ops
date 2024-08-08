@@ -35,7 +35,7 @@ class Expenditure extends Model
         return $this->belongsTo(SubAccount::class, 'credit_account_id');
     }
 
-    public function getDataWithPaginationBasedOnUserBranch(int $branchId, int $perPage): LengthAwarePaginator
+    public function getDataWithPaginationBasedOnUserBranch(int|null $branchId, int $perPage): LengthAwarePaginator
     {
         $expenditure = self::with('debitAccount', 'creditAccount')
             ->where('branch_id', $branchId)
@@ -93,26 +93,12 @@ class Expenditure extends Model
         $search = $request->input('search');
 
         $query = SubAccount::whereHas('account', static function ($query) use ($request) {
-            $query->where('branch_id', $request->user()->branch_id);
+            $query->where('branch_id', $request->user()->branch_id ?? null);
             $query->where('code', '<', '400');
             $query->orWhere('code', '>=', '500');
-        })->orderby('code', 'asc')->select('id', 'name', 'code');
+        })->orderby('code', 'asc');
 
-        if ($search !== '') {
-            $query->where('name', 'like', '%'.$search.'%');
-            $query->where('code', 'like', '%'.$search.'%');
-        }
-
-        $debitAccount = $query->get();
-
-        return $debitAccount->map(function ($c) {
-            $nameAndCode = $c->code.'-'.$c->name;
-
-            return [
-                'id' => $c->id,
-                'text' => $nameAndCode,
-            ];
-        })->toArray();
+        return $this->extracted($search, $query);
     }
 
     public function getCreditAccountForExpenditure(Request $request)
@@ -126,15 +112,25 @@ class Expenditure extends Model
             ->select('id', 'name', 'code')
             ->limit(5);
 
+        return $this->extracted($search, $query);
+    }
+
+    /**
+     * @param mixed $search
+     * @param $query
+     * @return mixed
+     */
+    public function extracted(mixed $search, $query): mixed
+    {
         if ($search !== '') {
-            $query->where('name', 'like', '%'.$search.'%');
-            $query->where('code', 'like', '%'.$search.'%');
+            $query->where('name', 'like', '%' . $search . '%');
+            $query->where('code', 'like', '%' . $search . '%');
         }
 
-        $creditAccount = $query->get();
+        $debitAccount = $query->get();
 
-        return $creditAccount->map(function ($c) {
-            $nameAndCode = $c->code.'-'.$c->name;
+        return $debitAccount->map(function ($c) {
+            $nameAndCode = $c->code . '-' . $c->name;
 
             return [
                 'id' => $c->id,
