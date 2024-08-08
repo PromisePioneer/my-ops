@@ -65,11 +65,11 @@ class LeaveAndPermissionRequest extends FormRequest
                 if ($value < $date && $request->leaves_status === 'Cuti') {
                     return $fail('Pengajuan cuti minimal 7 hari sebelum tanggal mulai cuti');
                 }
-                if ($this->calculateUserLeaves->calculate($request) <= 0) {
+                if ($request->leaves_status === 'Cuti' && $this->calculateUserLeaves->calculate($request) <= 0) {
                     return $fail('Jatah cuti anda telah habis');
                 }
 
-                if ($getDiproses) {
+                if ($getDiproses && $request->leaves_status === 'Cuti') {
                     return $fail('cuti anda masih ada yang di proses!');
                 }
 
@@ -81,11 +81,11 @@ class LeaveAndPermissionRequest extends FormRequest
                     return $fail('Pengajuan cuti maksimal 6 hari');
                 }
 
-                if ($getDiffDaysBetweenStartDateAndEndDate + 1 > 6) {
+                if ($getDiffDaysBetweenStartDateAndEndDate + 1 > 6 && $request->leaves_status === 'Cuti') {
                     return $fail('Jatah cuti bulan ini telah habis');
                 }
 
-                if ($getLeavesDaysInThisMonth + $getDiffDaysBetweenStartDateAndEndDate + 1 > 6 && Carbon::parse($value)->month === Carbon::now()->month) {
+                if ($getLeavesDaysInThisMonth + $getDiffDaysBetweenStartDateAndEndDate + 1 > 6 && $request->leaves_status === 'Cuti' && Carbon::parse($value)->month === Carbon::now()->month) {
                     return $fail('Jatah cuti bulan ini telah habis');
                 }
                 return null;
