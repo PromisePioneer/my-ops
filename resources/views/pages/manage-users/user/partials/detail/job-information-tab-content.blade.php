@@ -41,11 +41,6 @@
         <span class="fw-bolder fs-5 text-gray-800"
               x-text="`${jobInformation.contract_status ?? '-'}`"></span>
     </div>
-    <div class="col-md-6">
-        <label class="col-lg-4 fw-bold fs-5 text-muted">Penempatan</label>
-        <span class="fw-bolder fs-5 text-gray-800"
-              x-text="`${jobInformation.placement?.name ?? '-'}`"></span>
-    </div>
 </div>
 
 

@@ -14,7 +14,7 @@ class CreateInvoices extends Migration
         Schema::create('invoices', static function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('contact_id');
-            $table->unsignedBigInteger('branch_id');
+            $table->unsignedBigInteger('branch_id')->nullable();
             $table->string('invoice_number')->unique();
             $table->unsignedBigInteger('account_id');
             $table->date('due_date');

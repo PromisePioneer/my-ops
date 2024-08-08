@@ -1,5 +1,5 @@
 <div class="modal fade" tabindex="-1" id="identity-information-update-modal">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Form Identitas Karyawan</h5>
@@ -12,10 +12,22 @@
             <form id="form-identity-information-update" @submit.prevent="identityInformationUpdate()">
                 <div class="modal-body">
                     <div class="row mb-4">
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <label for="nik" class="required form-label">No. Identitas</label>
                             <input type="text" id="nik" name="nik" class="form-control form-control-solid"
                                    placeholder="NIK" :value="identityInformation.nik ?? '-'"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="place_of_birth" class="required form-label">Jenis Kelamin</label>
+                            <select name="gender" id="gender" class="form-select form-select-solid">
+                                <option value="0" selected>Pilih Jenis Kelamin</option>
+                                <option value="Laki Laki" :selected="identityInformation.gender === 'Laki Laki'">Laki
+                                    Laki
+                                </option>
+                                <option value="Perempuan" :selected="identityInformation.gender === 'Perempuan'">
+                                    Perempuan
+                                </option>
+                            </select>
                         </div>
                     </div>
                     <div class="row mb-4">
@@ -30,21 +42,6 @@
                             <input type="date" id="date_of_birth" name="date_of_birth"
                                    class="form-control form-control-solid"
                                    placeholder="Tanggal Lahir" :value="identityInformation.date_of_birth ?? '' "/>
-                        </div>
-                    </div>
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label for="place_of_birth" class="required form-label">Jenis Kelamin</label>
-                            <select name="gender" id="gender" class="form-select form-select-solid">
-                                <option value="0" selected>Pilih Jenis Kelamin</option>
-                                <option value="Laki Laki" :selected="identityInformation.gender === 'Laki Laki'">Laki Laki</option>
-                                <option value="Perempuan" :selected="identityInformation.gender === 'Perempuan'">Perempuan</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="ktp_attachment" class="required form-label">KTP</label>
-                            <input type="file" id="ktp_attachment" name="ktp_attachment"
-                                   class="form-control form-control-solid" accept=".jpg,.png,.jpeg"/>
                         </div>
                     </div>
                     <div class="row my-10">
@@ -86,6 +83,18 @@
                                 </template>
                             </div>
 
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="ktp_attachment" class="required form-label">No. Telepon</label>
+                            <input type="number" id="phone_number" name="phone_number"
+                                   class="form-control form-control-solid" placeholder="No. Telepon" :value="identityInformation.phone_number"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="ktp_attachment" class="required form-label">KTP</label>
+                            <input type="file" id="ktp_attachment" name="ktp_attachment"
+                                   class="form-control form-control-solid" accept=".jpg,.png,.jpeg"/>
                         </div>
                     </div>
                     <div class="mb-4">

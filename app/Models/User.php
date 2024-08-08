@@ -31,6 +31,7 @@ class User extends Authenticatable
         'nip',
         'last_login',
         'profile_pic',
+        'placement'
     ];
 
     /**
@@ -56,15 +57,11 @@ class User extends Authenticatable
         return $this->belongsTo(Branch::class, 'branch_id');
     }
 
-    public function department(): BelongsTo
-    {
-        return $this->belongsTo(Department::class, 'department_id');
-    }
-
     public function jobInformation(): HasOne
     {
         return $this->hasOne(UserJobInformation::class);
     }
+
 
     //eloquent
     public function getDataWithPagination(int $perPage): LengthAwarePaginator

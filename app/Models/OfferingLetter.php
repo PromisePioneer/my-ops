@@ -51,10 +51,10 @@ class OfferingLetter extends Model
     }
 
     //eloquent
-    public function getOfferingLettersBasedOnUserBranch($perPage): LengthAwarePaginator
+    public function getOfferingLettersBasedOnUserBranch(Request $request, int $perPage): LengthAwarePaginator
     {
         $offeringLetters = self::with('contact', 'user', 'branch')
-            ->where('branch_id', Auth::user()->branch_id)
+            ->where('branch_id', $request->user()->branch_id)
             ->select('id', 'offering_number', 'status', 'created_at', 'created_by', 'contact_id', 'branch_id')
             ->paginate($perPage);
 
@@ -94,7 +94,7 @@ class OfferingLetter extends Model
                 'created_at' => $offeringLetter->created_at,
                 'created_by' => $offeringLetter->user->name,
                 'company_name' => $offeringLetter->contact->company_name,
-                'branch' => $offeringLetter->branch->name,
+                'branch' => $offeringLetter->branch?->name,
             ];
         });
         $offeringLetter->setCollection($formattedData);

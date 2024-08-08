@@ -15,7 +15,6 @@ class UserJobInformation extends Model
         'absent_id',
         'user_id',
         'department_id',
-        'join_date',
         'fixed_salary',
         'placement_id',
         'contract_status',
@@ -38,14 +37,9 @@ class UserJobInformation extends Model
         return $this->belongsTo(Department::class, 'department_id');
     }
 
-    public function placement(): BelongsTo
-    {
-        return $this->belongsTo(UserPlacement::class, 'placement_id');
-    }
-
     //eloquent
     public function getRelatedUserJobInformation(int $userId): Model|Builder|null
     {
-        return self::with('department', 'placement')->where('user_id', $userId)->first();
+        return self::with('department')->where('user_id', $userId)->first();
     }
 }

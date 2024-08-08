@@ -15,7 +15,7 @@ class CreateOfferingLetters extends Migration
     {
         Schema::create('offering_letters', static function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('branch_id');
+            $table->unsignedBigInteger('branch_id')->nullable();
             $table->unsignedBigInteger('contact_id');
             $table->string('offering_number');
             $table->date('date');

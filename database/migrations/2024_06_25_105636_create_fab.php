@@ -13,7 +13,7 @@ class CreateFab extends Migration
     {
         Schema::create('fab', static function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('branch_id');
+            $table->unsignedBigInteger('branch_id')->nullable();
             $table->unsignedBigInteger('contact_id');
             $table->string('fab_number');
             $table->enum('subscription_status', ['baru', 'perubahan jenis layanan', 'daftar ulang']);

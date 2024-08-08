@@ -10,26 +10,35 @@
                 <form id="form" @submit.prevent="save()">
                     @csrf
                     <div class="card-body">
-
                         <div class="row mb-4">
-                            <div class="col-lg-6">
-                                <label class="col-form-label required fw-bold fs-6">Absen ID</label>
-                                <input type="number" class="form-control form-control-solid" name="absent_id">
+                            <div class="col-md-6" x-model="placement">
+                                <label class="col-form-label required fw-bold fs-6">Penempatan</label>
+                                <select name="placement" id="selectedPlacement"
+                                        class="form-select form-select-solid user-placement-select2">
+                                    <option value="0" selected>Pilih</option>
+                                    <option value="Cabang">Cabang</option>
+                                    <option value="Pusat">Pusat</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-6" x-show="placement === 'Cabang'" x-transition x-cloak>
+                                <label class="col-form-label required fw-bold fs-6">Cabang</label>
+                                <select :name="`${placement === 'Cabang' ? 'branch_id' : ''}`"
+                                        class="form-select form-select-solid branchSelect2">
+                                    <option value="0">Pilih Cabang</option>
+                                </select>
                             </div>
                         </div>
                         <div class="row mb-4">
                             <div class="col-lg-6">
-                                    <label class="col-form-label required fw-bold fs-6">Cabang</label>
-                                    <select name="branch_id" class="form-select form-select-solid branchSelect2">
-                                        <option value="0">Pilih Cabang</option>
-                                    </select>
+                                <label class="col-form-label required fw-bold fs-6">ID Absen</label>
+                                <input type="number" class="form-control form-control-solid" name="absent_id"
+                                       placeholder="ID Absen">
                             </div>
                             <div class="col-lg-6">
                                     <label class="col-form-label required fw-bold fs-6">Nama</label>
                                     <input type="text" name="name"
                                            class="form-control form-control-lg form-control-solid"
                                            placeholder="Nama" value=""/>
-
                             </div>
                         </div>
 
@@ -85,6 +94,7 @@
                 role: null,
                 buttonLoading: false,
                 form: document.getElementById('form'),
+                placement: false,
                 async init() {
                     await this.getBranchData();
                     await this.getRoleData();

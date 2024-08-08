@@ -47,9 +47,9 @@ class OfferingLettersController extends Controller
         return view('pages.transaction.offering-letter.index');
     }
 
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
-        $offeringLetters = $this->offeringLetter->getOfferingLettersBasedOnUserBranch($this->perPage);
+        $offeringLetters = $this->offeringLetter->getOfferingLettersBasedOnUserBranch($request, $this->perPage);
 
         return response()->json($offeringLetters);
     }

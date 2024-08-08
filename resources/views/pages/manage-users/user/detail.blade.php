@@ -40,8 +40,12 @@
                     <div class="separator"></div>
                     <div id="kt_user_view_details" class="collapse show">
                         <div class="pb-5 fs-6">
-                            <div class="fw-bolder mt-5">Cabang</div>
-                            <div class="text-gray-600">{{ $user->branch->name }}</div>
+                            <div class="fw-bolder mt-5">Penempatan</div>
+                            <div class="text-gray-600">{{ $user->placement }}</div>
+                            @if($user->placement !== 'Pusat')
+                                <div class="fw-bolder mt-5">Cabang</div>
+                                <div class="text-gray-600">{{ $user->branch?->name }}</div>
+                            @endif
                             <div class="fw-bolder mt-5">NIK</div>
                             <div class="text-gray-600">{{ $user->nip }}</div>
                             <div class="fw-bolder mt-5">Email</div>
@@ -185,10 +189,8 @@
                 },
                 async add() {
                     await this.getDepartmentData();
-                    await this.getUserPlacementData();
 
                     if (Object.keys(this.jobInformation).length > 0) {
-                        await this.selectedPlacement();
                         await this.selectedDepartment();
                     }
                 },
@@ -249,18 +251,6 @@
                     const resp = await axios.get(`/manage-users/users/absent/data/${this.userId}`);
                     this.attendance = resp.data;
                 },
-                async getUserPlacementData() {
-                    $(".user-placement-select2").select2({
-                        ajax: {
-                            url: '/manage-users/users/job-information/placement/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
                 selectedDepartment() {
                     const selectedDepartment = $('#selectedDepartment');
                     $.ajax({
@@ -272,24 +262,6 @@
                         selectedDepartment.append(option).trigger('change');
 
                         selectedDepartment.trigger({
-                            type: 'select2:select',
-                            params: {
-                                results: response
-                            }
-                        });
-                    });
-                },
-                selectedPlacement() {
-                    const selectedPlacement = $('#selectedPlacement');
-                    $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/manage-users/users/job-information/placement/selected/${this.userId}`,
-                    }).then(function (response) {
-                        const option = new Option(response.name, response.id, true, true);
-                        selectedPlacement.append(option).trigger('change');
-
-                        selectedPlacement.trigger({
                             type: 'select2:select',
                             params: {
                                 results: response

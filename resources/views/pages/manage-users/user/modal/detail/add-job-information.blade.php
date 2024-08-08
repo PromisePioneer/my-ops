@@ -115,13 +115,6 @@
                                    class="form-control form-control-solid"
                                    placeholder="Tempat Lahir" :value="jobInformation.bank_account_number ?? 0"/>
                         </div>
-                        <div class="col-md-6">
-                            <label for="bank_account_number" class="required form-label">Penempatan</label>
-                            <select name="placement_id" id="selectedPlacement"
-                                    class="form-select form-select-solid user-placement-select2">
-                                <option value="0" selected>Pilih</option>
-                            </select>
-                        </div>
                     </div>
                     <div class="row mb-7">
                         <div class="col-md-6">

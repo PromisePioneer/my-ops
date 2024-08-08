@@ -11,12 +11,30 @@
                     @csrf
                     <div class="card-body">
                         <div class="row mb-4">
-                            <div class="col-lg-6">
+                            <div class="col-md-6" x-model="placement">
+                                <label class="col-form-label required fw-bold fs-6">Penempatan</label>
+                                <select name="placement" id="selectedPlacement"
+                                        class="form-select form-select-solid user-placement-select2">
+                                    <option value="0" selected>Pilih</option>
+                                    <option value="Cabang" :selected="users?.placement === 'Cabang'">Cabang</option>
+                                    <option value="Pusat" :selected="users?.placement === 'Pusat'">Pusat</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-6" x-show="users?.placement === 'Cabang'" x-transition x-cloak>
                                 <label class="col-form-label required fw-bold fs-6">Cabang</label>
-                                <select name="branch_id" id="selectedBranch"
+                                <select :name="`${users?.placement === 'Cabang' ? 'branch_id' : ''}`"
+                                        id="selectedBranch"
                                         class="form-select form-select-solid branchSelect2">
                                     <option value="0">Pilih Cabang</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-lg-6">
+                                <label class="col-form-label required fw-bold fs-6">ID Absen</label>
+                                <input type="text" name="absent_id"
+                                       class="form-control form-control-lg form-control-solid"
+                                       placeholder="Nama" value="{{ $user->absent_id }}"/>
                             </div>
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">Nama</label>
@@ -34,12 +52,10 @@
                                        placeholder="email" value="{{ $user->email }}"/>
                             </div>
                             <div class="col-lg-6">
-                                <label class="col-form-label required fw-bold fs-6">
-                                    (NIP) Nomor Induk Pegawai
-                                </label>
-                                <input type="text" name="nip"
+                                <label class="col-form-label required fw-bold fs-6">Tanggal Masuk</label>
+                                <input type="date" name="join_date"
                                        class="form-control form-control-lg form-control-solid"
-                                       placeholder="nip" value="{{ $user->nip }}"/>
+                                       value="{{ $user->join_date }}"/>
                             </div>
                         </div>
                         <div class="form-group row mb-6">
@@ -83,6 +99,7 @@
                 users: null,
                 id: "{{ $user->id }}",
                 form: document.getElementById('form'),
+                placement: "{{ $user->placement === 'Pusat' }}",
                 async init() {
                     await this.getUserData();
                     await this.getRoleData();
@@ -105,8 +122,7 @@
                 },
                 async getUserData() {
                     const users = await axios.get(`/manage-users/users/show/${this.id}`);
-                    this.users = users.data
-                    console.log(this.users)
+                    this.users = users.data;
                 },
                 async getRoleData() {
                     const roles = await axios.get('/manage-users/users/roles/data');

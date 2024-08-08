@@ -40,11 +40,6 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-end" data-kt-product-table-toolbar="base">
-                        <button type="button" class="btn btn-light-primary btn-sm me-3" data-kt-menu-trigger="click"
-                                data-kt-menu-placement="bottom-end">
-                            <i class="bi bi-funnel-fill"></i>
-                            Filter
-                        </button>
                         <a href="{{ url('/income-transactions/bast/create') }}"
                            class="btn btn-primary btn-sm">Tambah</a>
                     </div>

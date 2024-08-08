@@ -13,7 +13,7 @@ class CreateContacts extends Migration
     {
         Schema::create('contacts', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('branch_id')->constrained('branches');
+            $table->foreignId('branch_id')->nullable()->constrained('branches');
             $table->string('full_name');
             $table->string('company_name')->nullable();
             $table->string('email');

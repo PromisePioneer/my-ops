@@ -32,7 +32,7 @@ class Contact extends Model
     }
 
     //eloquent
-    public function getDataWithPaginationBasedOnUserBranch(int $branchId, int $perPage): LengthAwarePaginator
+    public function getDataWithPaginationBasedOnUserBranch(int|null $branchId, int $perPage): LengthAwarePaginator
     {
         return self::where('branch_id', $branchId)->paginate($perPage);
     }

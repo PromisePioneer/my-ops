@@ -66,6 +66,8 @@ Route::group(['middleware' => ['auth']], static function () {
 
             Route::get('/filter/branch/data/{branch}', [UserController::class, 'filterByBranch']);
             Route::get('/search', [UserController::class, 'search']);
+            Route::get('/placement/data', [UserController::class, 'getPlacementData']);
+            Route::get('/placement/selected/{user}', [UserController::class, 'getSelectedPlacement']);
             Route::get('/create', [UserController::class, 'create']);
             Route::post('/', [UserController::class, 'store']);
             Route::get('/edit/{user}', [UserController::class, 'edit']);
@@ -76,12 +78,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/identity-information/{user}', [UserController::class, 'identityInformationUpdate']);
             Route::get('/job-information/{user}', [UserController::class, 'jobInformation']);
             Route::get('/job-information/department/selected/{user}', [UserController::class, 'getSelectedDepartment']);
-            Route::get('/job-information/placement/selected/{user}', [UserController::class, 'getSelectedPlacement']);
             Route::get('/department/data', [UserController::class, 'getDepartmentData']);
             Route::get('/absent/data/{user}', [UserController::class, 'getAbsentData']);
             Route::post('/job-information/{user}', [UserController::class, 'jobInformationUpdate']);
             Route::get('/job-information/view-file/{user}', [UserController::class, 'viewFileJobInformation']);
-            Route::get('job-information/placement/data', [UserController::class, 'getPlacementData']);
             Route::post('/update/{user}', [UserController::class, 'update']);
             Route::delete('/{user}', [UserController::class, 'destroy']);
         });
@@ -224,16 +224,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/show/{serviceCategory}', [ServicesCategoryController::class, 'show']);
             Route::post('/update/{serviceCategory}', [ServicesCategoryController::class, 'update']);
             Route::post('/destroy', [ServicesCategoryController::class, 'destroy']);
-        });
-
-        Route::prefix('user-placement')->group(function () {
-            Route::get('/', [UserPlacementController::class, 'index']);
-            Route::get('/data', [UserPlacementController::class, 'data']);
-            Route::get('/search', [UserPlacementController::class, 'search']);
-            Route::post('/', [UserPlacementController::class, 'store']);
-            Route::get('/{userPlacement}', [UserPlacementController::class, 'edit']);
-            Route::post('/{userPlacement}', [UserPlacementController::class, 'update']);
-            Route::delete('/{userPlacement}', [UserPlacementController::class, 'destroy']);
         });
 
         Route::prefix('department')->group(function () {

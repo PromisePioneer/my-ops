@@ -24,7 +24,7 @@ class IdentityInformationRequest extends FormRequest
         return [
             'nik' => [
                 'required',
-                Rule::unique('user_identity_informations', 'nik')->ignore(request()->route('user')),
+                Rule::unique('user_identity_informations', 'nik')->ignore($request->route('user')),
             ],
             'date_of_birth' => ['required', 'date'],
             'place_of_birth' => ['required'],
@@ -37,6 +37,7 @@ class IdentityInformationRequest extends FormRequest
                 'required',
                 Rule::in('TK/0', 'TK/1', 'TK/2', 'TK/3', 'K/0', 'K/1', 'K/2', 'K/3'),
             ],
+            'phone_number' => ['required'],
             'ktp_attachment' => [
                 'mimes:jpeg,jpg,png',
                 'max:2048',

@@ -127,11 +127,6 @@
                                 Department
                             </x-dropdown-menu-item>
                             <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'user-placement'"
-                                href="{{ url('master/user-placement') }}">
-                                Penempatan
-                            </x-dropdown-menu-item>
-                            <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'roles'"
                                 href="{{ url('master/roles') }}">
                                 Role

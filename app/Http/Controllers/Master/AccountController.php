@@ -37,9 +37,9 @@ class AccountController extends Controller
         return view('pages.account-master.account.index');
     }
 
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
-        $accounts = $this->account->getAccountsBasedOnUserBranch($this->perPage);
+        $accounts = $this->account->getAccountsBasedOnUserBranch( $request->branch_id,$this->perPage);
 
         return response()->json($accounts);
     }

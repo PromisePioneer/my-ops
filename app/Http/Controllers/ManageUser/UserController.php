@@ -12,7 +12,6 @@ use App\Models\User;
 use App\Models\UserAttendance;
 use App\Models\UserIdentityInformation;
 use App\Models\UserJobInformation;
-use App\Models\UserPlacement;
 use App\Service\IdentityInformationService;
 use App\Service\JobInformationService;
 use Carbon\Carbon;
@@ -33,17 +32,10 @@ class UserController extends Controller
     private UserIdentityInformation $identityInformation;
 
     private Branch $branch;
-
     private User $user;
-
     private UserAttendance $attendance;
-
     private Department $department;
-
     private JobInformationService $jobInformationService;
-
-    private UserPlacement $userPlacement;
-    private UserPlacement $placement;
 
     public function __construct()
     {
@@ -60,7 +52,6 @@ class UserController extends Controller
         $this->identityInformation = new UserIdentityInformation;
         $this->attendance = new UserAttendance;
         $this->jobInformationService = new JobInformationService;
-        $this->userPlacement = new UserPlacement;
     }
 
     public function index(): View
@@ -98,7 +89,6 @@ class UserController extends Controller
     public function rolesData(): JsonResponse
     {
         $role = Role::all();
-
         return response()->json($role);
     }
 
@@ -107,7 +97,9 @@ class UserController extends Controller
         $branch = $this->branch->getSelectedData($request->branch_id);
         $date = Carbon::parse($request->join_date)->format('d-m-y');
 
-        $format = $branch['code'] . $date . $request->absent_id;
+
+        $handlingBranchIfDataNull = $branch['code'] ?? '100';
+        $format = $handlingBranchIfDataNull . $date . $request->absent_id;
         $data = $request->validated();
         $data['password'] = Hash::make('MayatamaPekanbaru2024');
         $data['nip'] = str_replace("-", "", $format);
@@ -125,6 +117,36 @@ class UserController extends Controller
         $userRole = $user->roles->pluck('name', 'name')->all();
 
         return view('pages.manage-users.user.edit', compact('user', 'userRole', 'roles'));
+    }
+
+
+
+    public function update(User $user, UserRequest $request): JsonResponse
+    {
+
+        $data = $request->validated();
+        $branch = $this->branch->getSelectedData($request->branch_id);
+        $date = Carbon::parse($request->join_date)->format('d-m-y');
+        $data['password'] = Hash::make('MayatamaPekanbaru2024');
+        $handlingBranchIfDataNull = $branch['code'] ?? '100';
+        $format = $handlingBranchIfDataNull . $date . $request->absent_id;
+        $data['nip'] = str_replace("-", "", $format);
+        $user->update($data);
+        $user->syncRoles($request->role);
+
+        return response()->json([
+            'message' => 'data sukses diupdate!',
+        ]);
+    }
+
+    public function destroy(User $user): JsonResponse
+    {
+        $user->delete();
+
+        return response()->json([
+            'message' => 'data sukses dihapus!',
+            'data' => $user,
+        ]);
     }
 
     public function getSelectedBranch(User $user): JsonResponse
@@ -166,13 +188,6 @@ class UserController extends Controller
     }
 
 
-    public function getSelectedPlacement(User $user): JsonResponse
-    {
-        $user->whereHas('jobInformation')->first();
-        return response()->json($this->userPlacement->getSelectedData($user->jobInformation?->placement_id));
-    }
-
-
 
 
     public function jobInformationUpdate(JobInformationRequest $request, User $user): JsonResponse
@@ -208,33 +223,4 @@ class UserController extends Controller
         return response()->json($users);
     }
 
-    public function getPlacementData(Request $request): JsonResponse
-    {
-        return response()->json($this->userPlacement->getData($request));
-    }
-
-    public function update(User $user, UserRequest $request): JsonResponse
-    {
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'nip' => $request->nip,
-            'password' => Hash::make('mayatamapekanbaru'),
-        ]);
-        $user->syncRoles($request->role);
-
-        return response()->json([
-            'message' => 'data sukses diupdate!',
-        ]);
-    }
-
-    public function destroy(User $user): JsonResponse
-    {
-        $user->delete();
-
-        return response()->json([
-            'message' => 'data sukses dihapus!',
-            'data' => $user,
-        ]);
-    }
 }

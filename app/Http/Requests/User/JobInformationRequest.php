@@ -23,7 +23,6 @@ class JobInformationRequest extends FormRequest
     {
         return [
             'department_id' => ['required', 'exists:departments,id'],
-            'join_date' => ['required', 'date'],
             'fixed_salary' => ['required'],
             'contract_status' => [
                 'required',
@@ -48,10 +47,6 @@ class JobInformationRequest extends FormRequest
                     return request()->bpjs_ket === 'ya';
                 }),
             ],
-            'placement_id' => [
-                'required',
-                Rule::exists('user_placements', 'id'),
-            ],
             'sk_file' => [
                 'mimes:pdf',
                 'max:2048',
@@ -74,7 +69,6 @@ class JobInformationRequest extends FormRequest
         return [
             'department_id.required' => 'Department tidak boleh kosong.',
             'department_id.exists' => 'Department tidak ditemukan.',
-            'join_date.required' => 'tanggal mulai bekerja tidak boleh kosong.',
             'fixed_salary.required' => 'Gaji pokok tidak boleh kosong.',
             'contract_status.required' => 'Status kontrak tidak boleh kosong.',
             'bank_account_number.required' => 'No. rekening tidak boleh kosong',

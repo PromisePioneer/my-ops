@@ -22,21 +22,27 @@ class UserRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
-            'branch_id' => [
+            'placement' => [
                 'required',
+                Rule::in('Pusat', 'Cabang')
+            ],
+            'branch_id' => [
                 'integer',
                 Rule::exists('branches', 'id'),
+                Rule::requiredIf(static function () use ($request) {
+                    return $request->branch_id;
+                })
             ],
             'absent_id' => [
                 'required',
-                Rule::unique('users', 'absent_id')->ignore($request->route('user') === null),
+                Rule::unique('users', 'absent_id')->ignore($request->route('user')),
             ],
             'join_date' => ['required', 'date'],
             'name' => ['required', 'string', 'max:255'],
             'email' => [
                 'required',
                 'email',
-                Rule::unique('users', 'email')->ignore(request()->route('user')),
+                Rule::unique('users', 'email')->ignore($request->route('user')),
             ],
             'roles.*' => ['required',
                 'integer',

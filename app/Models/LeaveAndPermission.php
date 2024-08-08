@@ -77,7 +77,7 @@ class LeaveAndPermission extends Model
     }
 
 
-    public function getDataWithPaginationBasedOnBranch(int $branchId, int $perPage): LengthAwarePaginator
+    public function getDataWithPaginationBasedOnBranch(int|null $branchId, int $perPage): LengthAwarePaginator
     {
         return self::with('user')->whereHas('user', function ($query) use ($branchId) {
             $query->where('branch_id', $branchId);

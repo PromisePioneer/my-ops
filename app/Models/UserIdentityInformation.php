@@ -19,6 +19,7 @@ class UserIdentityInformation extends Model
         'place_of_birth',
         'gender',
         'home_address',
+        'phone_number',
         'ktp_attachment',
         'marital_status',
         'married_status',

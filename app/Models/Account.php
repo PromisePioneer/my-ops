@@ -39,11 +39,11 @@ class Account extends Model
     }
 
     // eloquent
-    public function getAccountsBasedOnUserBranch(int $perPage): LengthAwarePaginator
+    public function getAccountsBasedOnUserBranch(int|null $branchId, int $perPage): LengthAwarePaginator
     {
         $accounts = self::with(['subAccount' => static function ($query) {
             $query->orderBy('code', 'ASC');
-        }])->where('branch_id', Auth::user()->branch_id)
+        }])->where('branch_id', $branchId)
             ->paginate($perPage);
 
         return self::formatAccounts($accounts);
