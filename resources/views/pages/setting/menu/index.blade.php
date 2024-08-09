@@ -67,7 +67,7 @@
                                     <td x-text="menu.name"></td>
                                     <td x-text="menu.icon"></td>
                                     <td x-text="menu.serial_number"></td>
-
+                                    saas
                                     <td>
                                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(department.id)">
