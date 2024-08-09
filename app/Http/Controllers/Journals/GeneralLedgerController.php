@@ -9,10 +9,11 @@ use App\Models\SubAccount;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class GeneralLedgerController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         return view('pages.journals.general-ledger.index');
     }
@@ -24,9 +25,8 @@ class GeneralLedgerController extends Controller
         return response()->json($account);
     }
 
-    public function detail(Account $account)
+    public function detail(Account $account): View
     {
-
         $accountTransaction = AccountTransaction::with('account')->get();
 
         return view('pages.journals.general-ledger.detail', compact('accountTransaction', 'account'));
@@ -36,7 +36,7 @@ class GeneralLedgerController extends Controller
     {
         $currentYear = date('Y');
 
-        $subAccounts = SubAccount::where('account_id', $account->id)->get()->pluck('id')->toArray();
+        $subAccounts = SubAccount::where('account_id', $account->id)->pluck('id')->toArray();
 
         $period = CarbonPeriod::create("$currentYear-01-01", '1 month', "$currentYear-12-31");
         $months = collect($period)->map(function ($date) {

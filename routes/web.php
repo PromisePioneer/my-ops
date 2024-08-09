@@ -22,6 +22,7 @@ use App\Http\Controllers\Master\ProductController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\ServicesCategoryController;
 use App\Http\Controllers\Master\SubAccountController;
+use App\Http\Controllers\Setting\MenuController;
 use App\Http\Controllers\Transaction\BastController;
 use App\Http\Controllers\Transaction\ExpenditureController;
 use App\Http\Controllers\Transaction\FabController;
@@ -131,7 +132,6 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/', [NotificationsController::class, 'index']);
         Route::get('/detail', [NotificationsController::class, 'detail']);
         Route::post('/mark-as-read', [NotificationsController::class, 'markAsRead']);
-
     });
 
     // account
@@ -172,7 +172,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/search', [AccountTransactionsController::class, 'search']);
             Route::get('detail/{account}', [AccountTransactionsController::class, 'detail']);
         });
-
     });
 
     // branch
@@ -183,7 +182,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/search', [BranchesController::class, 'search']);
             Route::post('/', [BranchesController::class, 'store']);
             Route::get('/structure-orgranization/{branch}', [BranchesController::class, 'structureOrgranization']);
-            Route::get('/structure-orgranization/data/{branch}', [BranchesController::class, 'structureOrgranizationData']);
+            Route::get(
+                '/structure-orgranization/data/{branch}',
+                [BranchesController::class, 'structureOrgranizationData']
+            );
             Route::get('/show/{branch}', [BranchesController::class, 'show']);
             Route::post('/update/{branch}', [BranchesController::class, 'update']);
             Route::post('/destroy/', [BranchesController::class, 'destroy']);
@@ -250,16 +252,21 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [AttendanceMachineController::class, 'index']);
             Route::get('/data', [AttendanceMachineController::class, 'data']);
             Route::get('/branch/data', [AttendanceMachineController::class, 'getBranchData']);
-            Route::get('/selected/branch/data/{attendanceMachineInformation}', [AttendanceMachineController::class, 'getSelectedBranch']);
+            Route::get(
+                '/selected/branch/data/{attendanceMachineInformation}',
+                [AttendanceMachineController::class, 'getSelectedBranch']
+            );
             Route::get('/search', [AttendanceMachineController::class, 'search']);
             Route::post('/', [AttendanceMachineController::class, 'store']);
             Route::get('/detail/{attendanceMachineInformation}', [AttendanceMachineController::class, 'detail']);
-            Route::get('/tarik-data-absen/{attendanceMachineInformation}', [AttendanceMachineController::class, 'tarikDataAbsen']);
+            Route::get(
+                '/tarik-data-absen/{attendanceMachineInformation}',
+                [AttendanceMachineController::class, 'tarikDataAbsen']
+            );
             Route::get('/{attendanceMachineInformation}', [AttendanceMachineController::class, 'edit']);
             Route::post('/{attendanceMachineInformation}', [AttendanceMachineController::class, 'update']);
             Route::delete('/{attendanceMachineInformation}', [AttendanceMachineController::class, 'destroy']);
         });
-
     });
 
     //utility
@@ -364,8 +371,14 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('account/credit/data', [InitialJournalController::class, 'selectAccountCredit']);
             Route::post('/', [InitialJournalController::class, 'store']);
             Route::get('edit/{initialJournal}', [InitialJournalController::class, 'edit']);
-            Route::get('/debit-account/selected/{initialJournal}', [InitialJournalController::class, 'selectedDebitAccount']);
-            Route::get('/credit-account/selected/{initialJournal}', [InitialJournalController::class, 'selectedCreditAccount']);
+            Route::get(
+                '/debit-account/selected/{initialJournal}',
+                [InitialJournalController::class, 'selectedDebitAccount']
+            );
+            Route::get(
+                '/credit-account/selected/{initialJournal}',
+                [InitialJournalController::class, 'selectedCreditAccount']
+            );
             Route::post('/update/{initialJournal}', [InitialJournalController::class, 'update']);
             Route::post('/confirm/{initialJournal}', [InitialJournalController::class, 'confirm']);
             Route::delete('/{initialJournal}', [InitialJournalController::class, 'destroy']);
@@ -377,7 +390,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('initial-journal/data', [JournalAdjustmentController::class, 'initialJournalData']);
             Route::post('/', [JournalAdjustmentController::class, 'store']);
             Route::get('/{journalAdjustment}', [JournalAdjustmentController::class, 'edit']);
-            Route::get('/initial-journal/selected/{journalAdjustment}', [JournalAdjustmentController::class, 'selectedInitialJournal']);
+            Route::get(
+                '/initial-journal/selected/{journalAdjustment}',
+                [JournalAdjustmentController::class, 'selectedInitialJournal']
+            );
             Route::post('/{journalAdjustment}', [JournalAdjustmentController::class, 'update']);
             Route::delete('/{journalAdjustment}', [JournalAdjustmentController::class, 'destroy']);
         });
@@ -398,8 +414,14 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/view-file/{offeringLetter}', [OfferingLettersController::class, 'viewFile']);
             Route::get('/detail/{offeringLetter}', [OfferingLettersController::class, 'show']);
             Route::get('/edit/{offeringLetter}', [OfferingLettersController::class, 'edit']);
-            Route::get('/get-selected-contact/{offeringLetter}', [OfferingLettersController::class, 'getSelectedContact']);
-            Route::get('/get-selected-services/{offeringLetter}', [OfferingLettersController::class, 'getOfferingLetterProductServices']);
+            Route::get(
+                '/get-selected-contact/{offeringLetter}',
+                [OfferingLettersController::class, 'getSelectedContact']
+            );
+            Route::get(
+                '/get-selected-services/{offeringLetter}',
+                [OfferingLettersController::class, 'getOfferingLetterProductServices']
+            );
             Route::post('/confirm/{offeringLetter}', [OfferingLettersController::class, 'confirm']);
             Route::delete('/{offeringLetter}', [OfferingLettersController::class, 'destroy']);
             Route::get('/export-pdf/{offeringLetter}', [OfferingLettersController::class, 'exportToPDF']);
@@ -487,4 +509,10 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::delete('/{expenditure}', [ExpenditureController::class, 'destroy']);
     });
 
+    Route::prefix('/setting')->group(function () {
+        Route::prefix('/menu')->group(function () {
+            Route::get('/', [MenuController::class, 'index']);
+            Route::get('/data', [MenuController::class, 'data']);
+        });
+    });
 });

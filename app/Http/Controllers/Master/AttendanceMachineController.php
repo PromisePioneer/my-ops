@@ -9,7 +9,6 @@ use App\Models\Branch;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use JetBrains\PhpStorm\NoReturn;
 use Jmrashed\Zkteco\Lib\ZKTeco;
 
 class AttendanceMachineController extends Controller
@@ -18,10 +17,12 @@ class AttendanceMachineController extends Controller
 
     private AttendanceMachineInformation $attendanceMachineInformation;
 
+    private Branch $branch;
+
     public function __construct()
     {
-        $this->attendanceMachineInformation = new AttendanceMachineInformation;
-        $this->branch = new Branch;
+        $this->attendanceMachineInformation = new AttendanceMachineInformation();
+        $this->branch = new Branch();
     }
 
     public function index(): View
@@ -68,33 +69,18 @@ class AttendanceMachineController extends Controller
         return view('pages.master.attendance-machine-info.detail', compact('attendanceMachineInformation'));
     }
 
-    #[NoReturn]
-    public function tarikDataAbsen(AttendanceMachineInformation $attendanceMachineInformation): void
+    public function tarikDataAbsen(AttendanceMachineInformation $attendanceMachineInformation): array
     {
-        $zk = new ZKTeco('210.87.122.240');
+        $zk = new ZKTeco('160.22.177.248');
         $zk->connect();
 
-        $attendanceLog = $zk->getAttendance();
-        dd($attendanceLog);
+        return $zk->getAttendance();
     }
 
-    private function parseData($data, $p1, $p2): string
-    {
-        $data = ' '.$data;
-        $hasil = '';
-        $awal = strpos($data, $p1);
-        if ($awal != '') {
-            $akhir = strpos(strstr($data, $p1), $p2);
-            if ($akhir != '') {
-                $hasil = substr($data, ($awal + strlen($p1)), ($akhir - strlen($p1)));
-            }
-        }
-
-        return $hasil;
-    }
-
-    public function update(AttendanceMachineInformationRequest $request, AttendanceMachineInformation $attendanceMachineInformation): JsonResponse
-    {
+    public function update(
+        AttendanceMachineInformationRequest $request,
+        AttendanceMachineInformation $attendanceMachineInformation
+    ): JsonResponse {
         $attendanceMachineInformation->update($request->validated());
 
         return response()->json([

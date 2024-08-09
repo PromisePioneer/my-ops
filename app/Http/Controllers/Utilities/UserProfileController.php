@@ -29,7 +29,7 @@ class UserProfileController extends Controller
         $this->handleFileUpload = new HandleFileUploadService;
     }
 
-    public function index()
+    public function index(): View
     {
         return view('pages.utilities.user-profile.index');
     }

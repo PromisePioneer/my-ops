@@ -7,6 +7,45 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
+/**
+ * 
+ *
+ * @property int $id
+ * @property int|null $branch_id
+ * @property int|null $fab_id
+ * @property string $bast_number
+ * @property int $contact_id
+ * @property string $date
+ * @property string $first_party_identity_name
+ * @property string $first_party_position
+ * @property string $objective
+ * @property string|null $file
+ * @property int $status
+ * @property int $created_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Contact $contact
+ * @property-read \App\Models\Fab|null $fab
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Bast newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Bast newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Bast query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Bast whereBastNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bast whereBranchId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bast whereContactId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bast whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bast whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bast whereDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bast whereFabId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bast whereFile($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bast whereFirstPartyIdentityName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bast whereFirstPartyPosition($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bast whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bast whereObjective($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bast whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bast whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Bast extends Model
 {
     protected $table = 'bast';

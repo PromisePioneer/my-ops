@@ -35,6 +35,7 @@ class UserRequest extends FormRequest
             ],
             'absent_id' => [
                 'required',
+                'max:3',
                 Rule::unique('users', 'absent_id')->ignore($request->route('user')),
             ],
             'join_date' => ['required', 'date'],
@@ -68,6 +69,7 @@ class UserRequest extends FormRequest
             'branch_id.required' => 'Branch tidak boleh kosong',
             'branch_id.integer' => 'Branch tidak valid',
             'branch_id.exists' => 'Branch tidak valid',
+            'absent_id.max' => 'Absent tidak boleh lebih dari 3 karakter',
         ];
     }
 }

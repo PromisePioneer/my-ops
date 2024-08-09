@@ -9,6 +9,48 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * 
+ *
+ * @property int $id
+ * @property int|null $branch_id
+ * @property int $contact_id
+ * @property string $offering_number
+ * @property string $date
+ * @property string $attachment
+ * @property string $foreword
+ * @property string $notes
+ * @property string $marketing_agent_name
+ * @property string $marketing_agent_contact
+ * @property string $file
+ * @property int $status
+ * @property int $created_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Branch|null $branch
+ * @property-read \App\Models\Contact $contact
+ * @property-read \App\Models\ServiceCategory|null $serviceCategory
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter query()
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereAttachment($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereBranchId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereContactId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereFile($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereForeword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereMarketingAgentContact($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereMarketingAgentName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereNotes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereOfferingNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class OfferingLetter extends Model
 {
     use HasFactory;

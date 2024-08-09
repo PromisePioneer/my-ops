@@ -31,7 +31,6 @@ class BranchesController extends Controller
     public function data(): JsonResponse
     {
         $branches = Branch::select('id', 'code', 'name')->paginate(10);
-
         return response()->json($branches);
     }
 
@@ -122,7 +121,6 @@ class BranchesController extends Controller
      */
     public function destroy(Request $request, Branch $branch): JsonResponse
     {
-
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
         $branch->whereIn('id', $explodeID)->delete();

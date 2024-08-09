@@ -38,6 +38,8 @@ class InvoiceController extends Controller
 
     private Branch $branch;
 
+    private InvoiceProductService $invoiceProductServices;
+
     public function __construct()
     {
         $this->invoiceProductServices = new InvoiceProductService;

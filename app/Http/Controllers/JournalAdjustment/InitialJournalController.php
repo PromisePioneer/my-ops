@@ -46,7 +46,11 @@ class InitialJournalController extends Controller
 
     public function search(Request $request): JsonResponse
     {
-        $query = InitialJournal::with('subAccountDebit', 'subAccountCredit')->where('description', 'like', '%'.$request->search.'%')
+        $query = InitialJournal::with('subAccountDebit', 'subAccountCredit')->where(
+            'description',
+            'like',
+            '%'.$request->search.'%'
+        )
             ->orWhere('initial_payment', 'like', '%'.$request->search.'%')
             ->get();
 

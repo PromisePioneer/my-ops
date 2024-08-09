@@ -17,6 +17,8 @@ class GoodsServices
 
     private UnitType $unitType;
 
+    private SubAccount $subAccount;
+
     public function __construct()
     {
         $this->accountTransactionService = new AccountTransactionService;

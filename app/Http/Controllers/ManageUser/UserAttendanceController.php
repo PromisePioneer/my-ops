@@ -75,7 +75,14 @@ class UserAttendanceController extends Controller
         return response()->json($userAttendance);
     }
 
-    public function update(): JsonResponse {}
+    public function update(UserAttendanceRequest $request, UserAttendance $userAttendance): JsonResponse
+    {
+        $userAttendance->update($request->validated());
+
+        return response()->json([
+            'message' => 'Data berhasil disimpan',
+        ]);
+    }
 
     public function destroy(UserAttendance $userAttendance): JsonResponse
     {

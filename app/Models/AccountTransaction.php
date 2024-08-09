@@ -10,6 +10,35 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * 
+ *
+ * @property int $id
+ * @property string $date
+ * @property int|null $account_id
+ * @property int|null $sub_account_id
+ * @property string $description
+ * @property float $debit
+ * @property float $credit
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Account|null $account
+ * @property-read \App\Models\Branch|null $branch
+ * @property-read \App\Models\SubAccount|null $subAccount
+ * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction query()
+ * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereCredit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereDebit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereSubAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class AccountTransaction extends Model
 {
     use HasFactory;

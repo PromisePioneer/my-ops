@@ -9,6 +9,37 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * 
+ *
+ * @property int $id
+ * @property string $code
+ * @property string $name
+ * @property int $account_id
+ * @property float $debit_balance
+ * @property float $credit_balance
+ * @property float $balance
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Account $account
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AccountTransaction> $accountTransactions
+ * @property-read int|null $account_transactions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AccountTransaction> $subAccount
+ * @property-read int|null $sub_account_count
+ * @method static Builder|SubAccount newModelQuery()
+ * @method static Builder|SubAccount newQuery()
+ * @method static Builder|SubAccount query()
+ * @method static Builder|SubAccount whereAccountId($value)
+ * @method static Builder|SubAccount whereBalance($value)
+ * @method static Builder|SubAccount whereCode($value)
+ * @method static Builder|SubAccount whereCreatedAt($value)
+ * @method static Builder|SubAccount whereCreditBalance($value)
+ * @method static Builder|SubAccount whereDebitBalance($value)
+ * @method static Builder|SubAccount whereId($value)
+ * @method static Builder|SubAccount whereName($value)
+ * @method static Builder|SubAccount whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class SubAccount extends Model
 {
     protected $table = 'sub_accounts';

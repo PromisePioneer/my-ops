@@ -10,6 +10,40 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 
+/**
+ * 
+ *
+ * @property int $id
+ * @property string $start_date
+ * @property string $end_date
+ * @property int $user_id
+ * @property string $reason
+ * @property string $leaves_status
+ * @property string $confirmation_status
+ * @property string|null $sick_letter
+ * @property string|null $confirmation_reason
+ * @property int|null $acc_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User|null $accBy
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission query()
+ * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereAccBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereConfirmationReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereConfirmationStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereLeavesStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereSickLetter($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereUserId($value)
+ * @mixin \Eloquent
+ */
 class LeaveAndPermission extends Model
 {
     use HasFactory;

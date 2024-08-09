@@ -2,13 +2,48 @@
 
 namespace App\Models;
 
+use Eloquent;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * @property int $id
+ * @property int|null $branch_id
+ * @property string $code
+ * @property string $name
+ * @property float $debit_balance
+ * @property float $credit_balance
+ * @property float $balance
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, AccountTransaction> $accountTransaction
+ * @property-read int|null $account_transaction_count
+ * @property-read Branch|null $branch
+ * @property-read Collection<int, SubAccount> $subAccount
+ * @property-read int|null $sub_account_count
+ *
+ * @method static Builder|Account newModelQuery()
+ * @method static Builder|Account newQuery()
+ * @method static Builder|Account query()
+ * @method static Builder|Account whereBalance($value)
+ * @method static Builder|Account whereBranchId($value)
+ * @method static Builder|Account whereCode($value)
+ * @method static Builder|Account whereCreatedAt($value)
+ * @method static Builder|Account whereCreditBalance($value)
+ * @method static Builder|Account whereDebitBalance($value)
+ * @method static Builder|Account whereId($value)
+ * @method static Builder|Account whereName($value)
+ * @method static Builder|Account whereUpdatedAt($value)
+ *
+ * @mixin Eloquent
+ */
 class Account extends Model
 {
     protected $table = 'accounts';
@@ -49,16 +84,6 @@ class Account extends Model
         return self::formatAccounts($accounts);
     }
 
-    public function filteringAccountBasedOnBranch(int $branchId, int $perPage): LengthAwarePaginator
-    {
-        $accounts = self::with(['subAccount' => static function ($query) {
-            $query->orderBy('code', 'ASC');
-        }])->where('branch_id', $branchId)
-            ->paginate($perPage);
-
-        return self::formatAccounts($accounts);
-    }
-
     private static function formatAccounts(LengthAwarePaginator $accounts): LengthAwarePaginator
     {
         $formattedAccounts = $accounts->getCollection()->map(static function ($account) {
@@ -86,6 +111,16 @@ class Account extends Model
         $accounts->setCollection($formattedAccounts);
 
         return $accounts;
+    }
+
+    public function filteringAccountBasedOnBranch(int $branchId, int $perPage): LengthAwarePaginator
+    {
+        $accounts = self::with(['subAccount' => static function ($query) {
+            $query->orderBy('code', 'ASC');
+        }])->where('branch_id', $branchId)
+            ->paginate($perPage);
+
+        return self::formatAccounts($accounts);
     }
 
     public function searchAccounts(Request $request, int $perPage): LengthAwarePaginator
@@ -135,7 +170,7 @@ class Account extends Model
 
     public function getAccountDataAndSpecificBranchWithoutPagination(Request $request): array
     {
-        $search = $request->search;
+        $search = $request->input('search');
 
         $query = self::orderby('name', 'asc')
             ->select('id', 'name')
@@ -165,7 +200,7 @@ class Account extends Model
         ];
     }
 
-    public function getAssetAccount(Request $request)
+    public function getAssetAccount(Request $request): array
     {
         $search = $request->input('search');
         $account = self::where('branch_id', $request->user()->branch_id)->whereBetween('code', ['121', '126']);

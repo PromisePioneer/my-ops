@@ -5,6 +5,47 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * 
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property string $period_start
+ * @property string $period_end
+ * @property string $salary_date
+ * @property float|null $positional_allowance
+ * @property float|null $meal_allowance
+ * @property float|null $transportation_allowance
+ * @property float|null $overtime_allowance
+ * @property float|null $sales_bonus
+ * @property float|null $project_bonus
+ * @property float|null $other_bonus
+ * @property float|null $bpjs_tek_dues
+ * @property float|null $bpjs_kes_dues
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll whereBpjsKesDues($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll whereBpjsTekDues($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll whereMealAllowance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll whereOtherBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll whereOvertimeAllowance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll wherePeriodEnd($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll wherePeriodStart($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll wherePositionalAllowance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll whereProjectBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll whereSalaryDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll whereSalesBonus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll whereTransportationAllowance($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Payroll whereUserId($value)
+ * @mixin \Eloquent
+ */
 class Payroll extends Model
 {
     protected $table = 'user_payroll';

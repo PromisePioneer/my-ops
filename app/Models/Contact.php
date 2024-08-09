@@ -8,6 +8,43 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 
+/**
+ * 
+ *
+ * @property int $id
+ * @property int|null $branch_id
+ * @property string $full_name
+ * @property string|null $company_name
+ * @property string $email
+ * @property string $phone_number
+ * @property string $identity_type
+ * @property string $identity_number
+ * @property string|null $fax
+ * @property string $npwp
+ * @property string $complete_address
+ * @property string|null $other_info
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Branch|null $branch
+ * @method static \Illuminate\Database\Eloquent\Builder|Contact newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Contact newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Contact query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Contact whereBranchId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contact whereCompanyName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contact whereCompleteAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contact whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contact whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contact whereFax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contact whereFullName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contact whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contact whereIdentityNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contact whereIdentityType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contact whereNpwp($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contact whereOtherInfo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contact wherePhoneNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Contact whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Contact extends Model
 {
     protected $table = 'contacts';

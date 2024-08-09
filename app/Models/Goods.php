@@ -8,6 +8,45 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 
+/**
+ * 
+ *
+ * @property int $id
+ * @property int $account_id
+ * @property int $branch_id
+ * @property int $unit_type_id
+ * @property string $serial_number
+ * @property string $name
+ * @property float $unit_price
+ * @property float $total_price
+ * @property int $qty
+ * @property string $file
+ * @property int $confirmation_status
+ * @property string $type
+ * @property int $created_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Branch $branch
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods whereAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods whereBranchId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods whereConfirmationStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods whereFile($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods whereQty($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods whereSerialNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods whereTotalPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods whereUnitPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods whereUnitTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Goods whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Goods extends Model
 {
     protected $table = 'goods';

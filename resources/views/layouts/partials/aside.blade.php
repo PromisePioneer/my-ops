@@ -32,16 +32,16 @@
                             </span>
                         </a>
                         <div
-                            class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-275px"
-                            data-kt-menu="true">
+                                class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-275px"
+                                data-kt-menu="true">
                             <div class="menu-item px-3">
                                 <div class="menu-content d-flex align-items-center px-3">
 
                                     <div class="d-flex flex-column">
                                         <div
-                                            class="fw-bolder d-flex align-items-center fs-5">{{ Auth::user()->name }}
+                                                class="fw-bolder d-flex align-items-center fs-5">{{ Auth::user()->name }}
                                             <span
-                                                class="badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2">Pro</span>
+                                                    class="badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2">Pro</span>
                                         </div>
                                         <a href="#"
                                            class="fw-bold text-muted text-hover-primary fs-7">{{ Auth::user()->email }}</a>
@@ -80,8 +80,8 @@
              data-kt-scroll-dependencies="{default: '#kt_aside_toolbar, #kt_aside_footer', lg: '#kt_header, #kt_aside_toolbar, #kt_aside_footer'}"
              data-kt-scroll-wrappers="#kt_aside_menu" data-kt-scroll-offset="5px">
             <div
-                class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
-                id="#kt_aside_menu" data-kt-menu="true">
+                    class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
+                    id="#kt_aside_menu" data-kt-menu="true">
                 <x-menu-sections>Dashboard</x-menu-sections>
                 <x-single-menu-item :active="request()->segment(1) === 'home'"
                                     href="{{ url('home') }}">
@@ -102,40 +102,40 @@
                     @endslot
                     @slot('menuItem')
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'branch'"
-                            href="{{ url('master/branch') }}">
+                                :active="request()->segment(2) === 'branch'"
+                                href="{{ url('master/branch') }}">
                             Cabang
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'contact'"
-                            href="{{ url('master/contact') }}">
+                                :active="request()->segment(2) === 'contact'"
+                                href="{{ url('master/contact') }}">
                             Contact
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'product'"
-                            href="{{ url('master/product') }}">
+                                :active="request()->segment(2) === 'product'"
+                                href="{{ url('master/product') }}">
                             Produk
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'service-categories'"
-                            href="{{ url('master/service-categories') }}">
+                                :active="request()->segment(2) === 'service-categories'"
+                                href="{{ url('master/service-categories') }}">
                             Kategori Layanan
                         </x-dropdown-menu-item>
-                            <x-dropdown-menu-item
+                        <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'department'"
                                 href="{{ url('master/department') }}">
-                                Department
-                            </x-dropdown-menu-item>
-                            <x-dropdown-menu-item
+                            Department
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'roles'"
                                 href="{{ url('master/roles') }}">
-                                Role
-                            </x-dropdown-menu-item>
-                            <x-dropdown-menu-item
+                            Role
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'attendance-machine-info'"
                                 href="{{ url('master/attendance-machine-info') }}">
-                                Mesin Absen
-                            </x-dropdown-menu-item>
+                            Mesin Absen
+                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
 
@@ -150,18 +150,18 @@
                     @endslot
                     @slot('menuItem')
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'account'"
-                            href="{{ url('account-master/account') }}">
+                                :active="request()->segment(2) === 'account'"
+                                href="{{ url('account-master/account') }}">
                             Akun
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'sub-account'"
-                            href="{{ url('account-master/sub-account') }}">
+                                :active="request()->segment(2) === 'sub-account'"
+                                href="{{ url('account-master/sub-account') }}">
                             Sub-Akun
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'account-transaction'"
-                            href="{{ url('account-master/account-transaction') }}">
+                                :active="request()->segment(2) === 'account-transaction'"
+                                href="{{ url('account-master/account-transaction') }}">
                             Riwayat Transaksi Akun
                         </x-dropdown-menu-item>
                     @endslot
@@ -178,13 +178,13 @@
                     @endslot
                     @slot('menuItem')
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'general-journal'"
-                            href="{{ url('/journals/general-journal/') }}">
+                                :active="request()->segment(2) === 'general-journal'"
+                                href="{{ url('/journals/general-journal/') }}">
                             Jurnal Umum
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'general-ledger'"
-                            href="{{ url('/journals/general-ledger/') }}">
+                                :active="request()->segment(2) === 'general-ledger'"
+                                href="{{ url('/journals/general-ledger/') }}">
                             Buku Besar
                         </x-dropdown-menu-item>
                     @endslot
@@ -201,23 +201,23 @@
                     @endslot
                     @slot('menuItem')
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'offering-letters'"
-                            href="{{ url('/income-transactions/offering-letters') }}">
+                                :active="request()->segment(2) === 'offering-letters'"
+                                href="{{ url('/income-transactions/offering-letters') }}">
                             Penawaran
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'fab'"
-                            href="{{ url('/income-transactions/fab') }}">
+                                :active="request()->segment(2) === 'fab'"
+                                href="{{ url('/income-transactions/fab') }}">
                             FAB
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'bast'"
-                            href="{{ url('/income-transactions/bast') }}">
+                                :active="request()->segment(2) === 'bast'"
+                                href="{{ url('/income-transactions/bast') }}">
                             BAST
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'invoice'"
-                            href="{{ url('/income-transactions/invoice') }}">
+                                :active="request()->segment(2) === 'invoice'"
+                                href="{{ url('/income-transactions/invoice') }}">
                             Invoice
                         </x-dropdown-menu-item>
                     @endslot
@@ -232,8 +232,8 @@
                     @endslot
                     @slot('menuItem')
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'expenditure'"
-                            href="{{ url('/expenditure-transactions/expenditure') }}">
+                                :active="request()->segment(2) === 'expenditure'"
+                                href="{{ url('/expenditure-transactions/expenditure') }}">
                             Pengeluaran
                         </x-dropdown-menu-item>
                     @endslot
@@ -250,13 +250,13 @@
                     @endslot
                     @slot('menuItem')
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'goods'"
-                            href="{{ url('inventory/goods') }}">
+                                :active="request()->segment(2) === 'goods'"
+                                href="{{ url('inventory/goods') }}">
                             Barang
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'unit-types'"
-                            href="{{ url('inventory/unit-types') }}">
+                                :active="request()->segment(2) === 'unit-types'"
+                                href="{{ url('inventory/unit-types') }}">
                             Satuan
                         </x-dropdown-menu-item>
                     @endslot
@@ -273,13 +273,13 @@
                     @endslot
                     @slot('menuItem')
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'initial-journal'"
-                            href="{{ url('journal-adjustment/initial-journal') }}">
+                                :active="request()->segment(2) === 'initial-journal'"
+                                href="{{ url('journal-adjustment/initial-journal') }}">
                             Jurnal Awal
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'adjustment'"
-                            href="{{ url('journal-adjustment/adjustment') }}">
+                                :active="request()->segment(2) === 'adjustment'"
+                                href="{{ url('journal-adjustment/adjustment') }}">
                             Penyesuaian
                         </x-dropdown-menu-item>
                     @endslot
@@ -296,13 +296,13 @@
                     @endslot
                     @slot('menuItem')
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'company-profile'"
-                            href="{{ url('utility/company-profile') }}">
+                                :active="request()->segment(2) === 'company-profile'"
+                                href="{{ url('utility/company-profile') }}">
                             Profil Perusahaan
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'letter-head'"
-                            href="{{ url('utility/letter-head') }}">
+                                :active="request()->segment(2) === 'letter-head'"
+                                href="{{ url('utility/letter-head') }}">
                             Kop Surat
                         </x-dropdown-menu-item>
                     @endslot
@@ -319,29 +319,44 @@
                     @endslot
                     @slot('menuItem')
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'users'"
-                            href="{{ url('manage-users/users') }}">
+                                :active="request()->segment(2) === 'users'"
+                                href="{{ url('manage-users/users') }}">
                             Data Karyawan
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'permissions'"
-                            href="{{ url('manage-users/permissions') }}">
+                                :active="request()->segment(2) === 'permissions'"
+                                href="{{ url('manage-users/permissions') }}">
                             Hak Akses
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'attendance'"
-                            href="{{ url('manage-users/attendance') }}">
+                                :active="request()->segment(2) === 'attendance'"
+                                href="{{ url('manage-users/attendance') }}">
                             Absensi
                         </x-dropdown-menu-item>
-                            <x-dropdown-menu-item
+                        <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'leaves'"
                                 href="{{ url('manage-users/leaves') }}">
-                                Manajemen Cuti
-                            </x-dropdown-menu-item>
+                            Manajemen Cuti
+                        </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'payroll'"
-                            href="{{ url('manage-users/payroll') }}">
-                                Payroll
+                                :active="request()->segment(2) === 'payroll'"
+                                href="{{ url('manage-users/payroll') }}">
+                            Payroll
+                        </x-dropdown-menu-item>
+                    @endslot
+                </x-dropdown-menu>
+                <x-dropdown-menu :active="request()->segment(1) === 'journals'">
+                    @slot('parentIcon')
+                        <i class="bi bi-book-fill fs-1"></i>
+                    @endslot
+                    @slot('menuTitle')
+                        Setting
+                    @endslot
+                    @slot('menuItem')
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'general-journal'"
+                                href="{{ url('/setting/menu/') }}">
+                            Menu Management
                         </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>

@@ -7,6 +7,37 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 
+/**
+ * 
+ *
+ * @property int $id
+ * @property int $branch_id
+ * @property string $description
+ * @property int $debit_account_id
+ * @property int $credit_account_id
+ * @property string $amount
+ * @property int $status_confirmation
+ * @property string $file
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Branch $branch
+ * @property-read \App\Models\SubAccount $creditAccount
+ * @property-read \App\Models\SubAccount $debitAccount
+ * @method static \Illuminate\Database\Eloquent\Builder|Expenditure newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Expenditure newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Expenditure query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Expenditure whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Expenditure whereBranchId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Expenditure whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Expenditure whereCreditAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Expenditure whereDebitAccountId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Expenditure whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Expenditure whereFile($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Expenditure whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Expenditure whereStatusConfirmation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Expenditure whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Expenditure extends Model
 {
     protected $table = 'expenditure';

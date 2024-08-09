@@ -17,6 +17,10 @@ class UsedItemsController extends Controller
 
     protected UsedItemServices $usedItemsServices;
 
+    private Account $account;
+
+    private UsedItems $usedItem;
+
     public function __construct()
     {
         $this->usedItemsServices = new UsedItemServices;

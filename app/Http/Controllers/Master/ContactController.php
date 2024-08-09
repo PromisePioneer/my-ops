@@ -16,6 +16,8 @@ class ContactController extends Controller
 
     private Contact $contact;
 
+    private Branch $branch;
+
     public function __construct()
     {
         $this->middleware('permission:lihat contact', ['only' => ['index']]);
