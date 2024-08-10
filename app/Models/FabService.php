@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * 
- *
  * @property int $id
  * @property int $fab_id
  * @property int $service_category_id
@@ -18,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Fab $fab
  * @property-read \App\Models\ServiceCategory $service
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|FabService newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|FabService newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|FabService query()
@@ -29,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|FabService whereTotalPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|FabService whereUnitPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|FabService whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class FabService extends Model

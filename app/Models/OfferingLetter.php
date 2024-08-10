@@ -10,8 +10,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * 
- *
  * @property int $id
  * @property int|null $branch_id
  * @property int $contact_id
@@ -31,6 +29,7 @@ use Illuminate\Support\Facades\Auth;
  * @property-read \App\Models\Contact $contact
  * @property-read \App\Models\ServiceCategory|null $serviceCategory
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter query()
@@ -49,6 +48,7 @@ use Illuminate\Support\Facades\Auth;
  * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereOfferingNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class OfferingLetter extends Model

@@ -23,9 +23,9 @@ class LeaveAndPermissionController extends Controller
 
     public function __construct()
     {
-        $this->leavesAndPermission = new LeaveAndPermission;
-        $this->handleUploadFileService = new HandleFileUploadService;
-        $this->calculateUserLeaves = new CalculateUserLeaves;
+        $this->leavesAndPermission = new LeaveAndPermission();
+        $this->handleUploadFileService = new HandleFileUploadService();
+        $this->calculateUserLeaves = new CalculateUserLeaves();
         $this->perPage = 10;
     }
 
@@ -50,21 +50,24 @@ class LeaveAndPermissionController extends Controller
         return response()->json($this->leavesAndPermission->searchDataBasedOnUserId($request));
     }
 
-    public function create(): View
-    {
-        return view('pages.utilities.user-profile.leaves-and-permission.create');
-    }
-
     public function store(LeaveAndPermissionRequest $request): JsonResponse
     {
         $data = $request->validated();
         $data['user_id'] = $request->user()->id;
-        $data['file'] = $this->handleUploadFileService->upload($request, 'documents/leave-and-permission/sick-letter', 'sick_letter');
+        $data['file'] = $this->handleUploadFileService->upload($request, 'documents/leave-and-permission/sick-letter',
+            'sick_letter');
+
+
         LeaveAndPermission::create($data);
 
         return response()->json([
             'message' => 'data berhasil disimpan',
         ]);
+    }
+
+    public function create(): View
+    {
+        return view('pages.utilities.user-profile.leaves-and-permission.create');
     }
 
     public function edit(LeaveAndPermission $leaveAndPermission): JsonResponse

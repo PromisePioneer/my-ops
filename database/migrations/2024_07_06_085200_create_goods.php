@@ -14,7 +14,7 @@ class CreateGoods extends Migration
         Schema::create('goods', static function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('account_id');
-            $table->unsignedBigInteger('branch_id');
+            $table->unsignedBigInteger('branch_id')->nullable();
             $table->unsignedBigInteger('unit_type_id');
             $table->string('serial_number')->unique();
             $table->string('name');

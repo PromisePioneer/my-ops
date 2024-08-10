@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * 
- *
  * @property int $id
  * @property int $user_id
  * @property string $period_start
@@ -25,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Payroll newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Payroll newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Payroll query()
@@ -44,6 +43,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Payroll whereTransportationAllowance($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payroll whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Payroll whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class Payroll extends Model

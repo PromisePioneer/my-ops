@@ -12,7 +12,7 @@ class JobInformationService
 
     public function __construct()
     {
-        $this->handleUploadService = new HandleFileUploadService;
+        $this->handleUploadService = new HandleFileUploadService();
     }
 
     public function update(JobInformationRequest $request, User $user): void
@@ -31,8 +31,10 @@ class JobInformationService
             'no_kpj' => $request->bpjs_ket === 'ya' ? $request->no_kpj : null,
             'bpjs_ket' => $request->bpjs_ket,
             'no_kis' => $request->bpjs_kes === 'ya' ? $request->no_kis : null,
-            'sk_file' => $this->handleUploadService->upload($request, 'documents/sk', 'sk_file', $currentJobInfoId ? $currentJobInfoId->sk_file : null),
-            'contract_file' => $this->handleUploadService->upload($request, 'documents/contract-file', 'contract_file', $currentJobInfoId ? $currentJobInfoId->contract_file : null),
+            'sk_file' => $this->handleUploadService->upload($request, 'documents/sk', 'sk_file',
+                $currentJobInfoId ? $currentJobInfoId->sk_file : null),
+            'contract_file' => $this->handleUploadService->upload($request, 'documents/contract-file', 'contract_file',
+                $currentJobInfoId ? $currentJobInfoId->contract_file : null),
         ]);
     }
 }

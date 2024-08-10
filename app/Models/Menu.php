@@ -13,12 +13,12 @@ class Menu extends Model
 
     protected $fillable = [
         'parent_id',
-        'name',
+        'nama_menu',
         'link_menu',
-        'description',
-        'icon',
-        'level',
-        'serial_number',
+        'deskripsi_menu',
+        'icon_menu',
+        'level_menu',
+        'no_urut',
         'class_active',
     ];
 }

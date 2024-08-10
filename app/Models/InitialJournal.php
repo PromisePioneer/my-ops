@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * 
- *
  * @property int $id
  * @property string $description
  * @property int $sub_account_debit
@@ -19,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\SubAccount $subAccountCredit
  * @property-read \App\Models\SubAccount $subAccountDebit
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|InitialJournal newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|InitialJournal newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|InitialJournal query()
@@ -30,6 +29,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|InitialJournal whereSubAccountCredit($value)
  * @method static \Illuminate\Database\Eloquent\Builder|InitialJournal whereSubAccountDebit($value)
  * @method static \Illuminate\Database\Eloquent\Builder|InitialJournal whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class InitialJournal extends Model

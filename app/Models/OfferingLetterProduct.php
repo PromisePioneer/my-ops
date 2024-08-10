@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * 
- *
  * @property int $id
  * @property int $offering_letter_id
  * @property int $service_category_id
@@ -20,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read mixed $offering_letter_product_service
  * @property-read \App\Models\OfferingLetter $offeringLetter
  * @property-read \App\Models\ServiceCategory $serviceCategory
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetterProduct newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetterProduct newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetterProduct query()
@@ -31,6 +30,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetterProduct whereTotalPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetterProduct whereUnitPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetterProduct whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class OfferingLetterProduct extends Model

@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * 
- *
  * @property int $id
  * @property string $payment_date
  * @property int $initial_journal_id
@@ -17,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\InitialJournal $initialJournal
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|JournalAdjustment newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|JournalAdjustment newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|JournalAdjustment query()
@@ -27,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|JournalAdjustment wherePaymentDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|JournalAdjustment whereTotalPaymentPerMonth($value)
  * @method static \Illuminate\Database\Eloquent\Builder|JournalAdjustment whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class JournalAdjustment extends Model

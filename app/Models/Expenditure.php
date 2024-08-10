@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 
 /**
- * 
- *
  * @property int $id
  * @property int $branch_id
  * @property string $description
@@ -23,6 +21,7 @@ use Illuminate\Http\Request;
  * @property-read \App\Models\Branch $branch
  * @property-read \App\Models\SubAccount $creditAccount
  * @property-read \App\Models\SubAccount $debitAccount
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Expenditure newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Expenditure newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Expenditure query()
@@ -36,6 +35,7 @@ use Illuminate\Http\Request;
  * @method static \Illuminate\Database\Eloquent\Builder|Expenditure whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Expenditure whereStatusConfirmation($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Expenditure whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Expenditure extends Model

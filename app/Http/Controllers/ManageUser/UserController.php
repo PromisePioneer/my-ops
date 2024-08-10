@@ -4,7 +4,6 @@ namespace App\Http\Controllers\ManageUser;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\IdentityInformationRequest;
-use App\Http\Requests\User\JobInformationRequest;
 use App\Http\Requests\User\UserRequest;
 use App\Models\Branch;
 use App\Models\Department;
@@ -48,14 +47,14 @@ class UserController extends Controller
         $this->middleware('permission:update user', ['only' => ['edit', 'update']]);
         $this->middleware('permission:hapus user', ['only' => ['destroy']]);
 
-        $this->user = new User;
-        $this->branch = new Branch;
-        $this->department = new Department;
-        $this->identityInformationService = new IdentityInformationService;
-        $this->jobInformation = new userJobInformation;
-        $this->identityInformation = new UserIdentityInformation;
-        $this->attendance = new UserAttendance;
-        $this->jobInformationService = new JobInformationService;
+        $this->user = new User();
+        $this->branch = new Branch();
+        $this->department = new Department();
+        $this->identityInformationService = new IdentityInformationService();
+        $this->jobInformation = new userJobInformation();
+        $this->identityInformation = new UserIdentityInformation();
+        $this->attendance = new UserAttendance();
+        $this->jobInformationService = new JobInformationService();
     }
 
     public function index(): View
@@ -85,28 +84,6 @@ class UserController extends Controller
         return response()->json($this->user->filterBasedOnUserBranch($branch->id, $this->perPage));
     }
 
-    public function create(): View
-    {
-        $randomAbsentId = $this->random_digits();
-
-        while (User::where('absent_id', $randomAbsentId)->count() > 0) {
-            $randomAbsentId = mt_rand();
-        }
-
-        return view('pages.manage-users.user.create', compact('randomAbsentId'));
-    }
-
-    private function random_digits(): string
-    {
-        $result = '';
-
-        for ($i = 0; $i < 3; $i++) {
-            $result .= random_int(0, 9);
-        }
-
-        return $result;
-    }
-
     public function rolesData(): JsonResponse
     {
         $role = Role::all();
@@ -132,30 +109,34 @@ class UserController extends Controller
         ]);
     }
 
+    public function create(): View
+    {
+        $randomAbsentId = $this->random_digits();
+
+        while (User::where('absent_id', $randomAbsentId)->count() > 0) {
+            $randomAbsentId = mt_rand();
+        }
+
+        return view('pages.manage-users.user.create', compact('randomAbsentId'));
+    }
+
+    private function random_digits(): string
+    {
+        $result = '';
+
+        for ($i = 0; $i < 3; $i++) {
+            $result .= random_int(0, 9);
+        }
+
+        return $result;
+    }
+
     public function edit(User $user): View
     {
         $roles = Role::pluck('name', 'name')->all();
         $userRole = $user->roles->pluck('name', 'name')->all();
 
         return view('pages.manage-users.user.edit', compact('user', 'userRole', 'roles'));
-    }
-
-    public function update(User $user, UserRequest $request): JsonResponse
-    {
-
-        $data = $request->validated();
-        $branch = $this->branch->getSelectedData($request->branch_id);
-        $date = Carbon::parse($request->join_date)->format('d-m-y');
-        $data['password'] = Hash::make('MayatamaPekanbaru2024');
-        $handlingBranchIfDataNull = $branch['code'] ?? '100';
-        $format = $handlingBranchIfDataNull.$date.$request->absent_id;
-        $data['nip'] = str_replace('-', '', $format);
-        $user->update($data);
-        $user->syncRoles($request->role);
-
-        return response()->json([
-            'message' => 'data sukses diupdate!',
-        ]);
     }
 
     public function destroy(User $user): JsonResponse
@@ -194,33 +175,21 @@ class UserController extends Controller
         ]);
     }
 
-    public function jobInformation(User $user): JsonResponse
+    public function update(User $user, UserRequest $request): JsonResponse
     {
-        return response()->json($this->jobInformation->getRelatedUserJobInformation($user->id));
-    }
-
-    public function getSelectedDepartment(User $user): JsonResponse
-    {
-
-        $users = $user->whereHas('jobInformation')->first();
-
-        return response()->json($this->department->getSelectedData($users->jobInformation?->department_id));
-    }
-
-    public function jobInformationUpdate(JobInformationRequest $request, User $user): JsonResponse
-    {
-        $this->jobInformationService->update($request, $user);
+        $data = $request->validated();
+        $branch = $this->branch->getSelectedData($request->branch_id);
+        $date = Carbon::parse($request->join_date)->format('d-m-y');
+        $data['password'] = Hash::make('MayatamaPekanbaru2024');
+        $handlingBranchIfDataNull = $branch['code'] ?? '100';
+        $format = $handlingBranchIfDataNull.$date.$request->absent_id;
+        $data['nip'] = str_replace('-', '', $format);
+        $user->update($data);
+        $user->syncRoles($request->role);
 
         return response()->json([
-            'message' => 'Data berhasil disimpan',
+            'message' => 'data sukses diupdate!',
         ]);
-    }
-
-    public function viewFileJobInformation(User $user): View
-    {
-        $user = UserJobInformation::where('user_id', $user->id)->first();
-
-        return view('pages.manage-users.user.partials.detail.job-information.view-file', compact('user'));
     }
 
     public function getDepartmentData(Request $request): JsonResponse

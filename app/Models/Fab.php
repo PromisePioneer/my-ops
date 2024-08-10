@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 
 /**
- * 
- *
  * @property int $id
  * @property int|null $branch_id
  * @property int $contact_id
@@ -28,6 +26,7 @@ use Illuminate\Http\Request;
  * @property-read \App\Models\Branch|null $branch
  * @property-read \App\Models\Contact $contact
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Fab newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Fab newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Fab query()
@@ -45,6 +44,7 @@ use Illuminate\Http\Request;
  * @method static \Illuminate\Database\Eloquent\Builder|Fab whereSubscriptionStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Fab whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Fab whereZipCode($value)
+ *
  * @mixin \Eloquent
  */
 class Fab extends Model

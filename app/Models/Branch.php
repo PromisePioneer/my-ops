@@ -6,13 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
 /**
- * 
- *
  * @property int $id
  * @property string $code
  * @property string $name
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Branch newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Branch newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Branch query()
@@ -21,6 +20,7 @@ use Illuminate\Http\Request;
  * @method static \Illuminate\Database\Eloquent\Builder|Branch whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Branch whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Branch whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Branch extends Model

@@ -8,8 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
- * 
- *
  * @property int $id
  * @property int|null $branch_id
  * @property int|null $fab_id
@@ -27,6 +25,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
  * @property-read \App\Models\Contact $contact
  * @property-read \App\Models\Fab|null $fab
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Bast newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Bast newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Bast query()
@@ -44,6 +43,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
  * @method static \Illuminate\Database\Eloquent\Builder|Bast whereObjective($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Bast whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Bast whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Bast extends Model

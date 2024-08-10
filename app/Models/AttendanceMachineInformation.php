@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 
 /**
- * 
- *
  * @property int $id
  * @property int $branch_id
  * @property string $version
@@ -19,6 +17,7 @@ use Illuminate\Http\Request;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Branch $branch
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceMachineInformation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceMachineInformation newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceMachineInformation query()
@@ -30,6 +29,7 @@ use Illuminate\Http\Request;
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceMachineInformation wherePort($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceMachineInformation whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AttendanceMachineInformation whereVersion($value)
+ *
  * @mixin \Eloquent
  */
 class AttendanceMachineInformation extends Model

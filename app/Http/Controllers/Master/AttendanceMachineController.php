@@ -64,7 +64,7 @@ class AttendanceMachineController extends Controller
         return response()->json($attendanceMachineInformation);
     }
 
-    public function detail(AttendanceMachineInformation $attendanceMachineInformation)
+    public function detail(AttendanceMachineInformation $attendanceMachineInformation): View
     {
         return view('pages.master.attendance-machine-info.detail', compact('attendanceMachineInformation'));
     }

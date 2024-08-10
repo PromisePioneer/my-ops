@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * 
- *
  * @property int $id
  * @property int $bast_id
  * @property string $product_name
@@ -17,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Bast $bast
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|BastProduct newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|BastProduct newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|BastProduct query()
@@ -28,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|BastProduct whereQty($value)
  * @method static \Illuminate\Database\Eloquent\Builder|BastProduct whereSerialNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|BastProduct whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class BastProduct extends Model

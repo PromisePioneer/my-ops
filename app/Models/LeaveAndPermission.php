@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Eloquent;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,8 +13,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 
 /**
- * 
- *
  * @property int $id
  * @property string $start_date
  * @property string $end_date
@@ -25,24 +25,26 @@ use Illuminate\Http\Request;
  * @property int|null $acc_by
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User|null $accBy
- * @property-read \App\Models\User $user
- * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission query()
- * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereAccBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereConfirmationReason($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereConfirmationStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereEndDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereLeavesStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereReason($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereSickLetter($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereStartDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LeaveAndPermission whereUserId($value)
- * @mixin \Eloquent
+ * @property-read User|null $accBy
+ * @property-read User $user
+ *
+ * @method static Builder|LeaveAndPermission newModelQuery()
+ * @method static Builder|LeaveAndPermission newQuery()
+ * @method static Builder|LeaveAndPermission query()
+ * @method static Builder|LeaveAndPermission whereAccBy($value)
+ * @method static Builder|LeaveAndPermission whereConfirmationReason($value)
+ * @method static Builder|LeaveAndPermission whereConfirmationStatus($value)
+ * @method static Builder|LeaveAndPermission whereCreatedAt($value)
+ * @method static Builder|LeaveAndPermission whereEndDate($value)
+ * @method static Builder|LeaveAndPermission whereId($value)
+ * @method static Builder|LeaveAndPermission whereLeavesStatus($value)
+ * @method static Builder|LeaveAndPermission whereReason($value)
+ * @method static Builder|LeaveAndPermission whereSickLetter($value)
+ * @method static Builder|LeaveAndPermission whereStartDate($value)
+ * @method static Builder|LeaveAndPermission whereUpdatedAt($value)
+ * @method static Builder|LeaveAndPermission whereUserId($value)
+ *
+ * @mixin Eloquent
  */
 class LeaveAndPermission extends Model
 {
@@ -62,11 +64,6 @@ class LeaveAndPermission extends Model
         'acc_by',
     ];
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
-
     public function accBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'acc_by');
@@ -81,7 +78,7 @@ class LeaveAndPermission extends Model
         return $leaves;
     }
 
-    private static function formattedData(LengthAwarePaginator $data)
+    private static function formattedData(LengthAwarePaginator $data): LengthAwarePaginator
     {
         $formattedData = $data->getCollection()->map(function ($item) {
             return [
@@ -98,7 +95,7 @@ class LeaveAndPermission extends Model
         return $data;
     }
 
-    public function searchDataBasedOnUserId(Request $request)
+    public function searchDataBasedOnUserId(Request $request): Collection|array
     {
         $search = $request->input('search');
 
@@ -108,6 +105,11 @@ class LeaveAndPermission extends Model
             ->orWhere('leaves_status', 'like', '%'.$search.'%')
             ->orWhere('confirmation_status', 'like', '%'.$search.'%')
             ->get();
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function getDataWithPaginationBasedOnBranch(?int $branchId, int $perPage): LengthAwarePaginator

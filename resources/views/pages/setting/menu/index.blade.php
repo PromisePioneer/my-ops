@@ -3,8 +3,8 @@
 @section('content')
     <div x-data="departmentsData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.master.department.modal.create')
-            @include('pages.master.department.modal.edit')
+            @include('pages.setting.menu.modal.create')
+            @include('pages.setting.menu.modal.edit')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -32,13 +32,12 @@
                         <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="w-10px pe-2">
-                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                        <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
-                                    </div>
-                                </th>
-                                <th class="min-w-125px">Kode</th>
+                                <th class="w-10px pe-2">No</th>
                                 <th class="min-w-125px">Nama</th>
+                                <th class="min-w-125px">Link</th>
+                                <th class="min-w-125px">Deskripsi</th>
+                                <th class="min-w-125px">Icon</th>
+                                <th class="min-w-125px">Urutan</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
@@ -60,21 +59,23 @@
                                     </td>
                                 </tr>
                             </template>
-                            <template x-for="(menu, index) in menus?.data" :key="department.id">
+                            <template x-for="(menu, index) in menus?.data" :key="menu.id">
                                 <tr>
                                     <td x-text="startIndex + index++"></td>
-                                    <td x-text="menu.parent_id"></td>
-                                    <td x-text="menu.name"></td>
-                                    <td x-text="menu.icon"></td>
-                                    <td x-text="menu.serial_number"></td>
-                                    saas
+                                    <td x-text="menu.nama_menu"></td>
+                                    <td x-text="menu.link_menu"></td>
+                                    <td x-text="menu.deskripsi_menu"></td>
+                                    <td>
+                                        <i :class="menu.icon_menu"></i>
+                                    </td>
+                                    <td x-text="menu.no_urut"></td>
                                     <td>
                                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(department.id)">
+                                                data-bs-target="#modal-edit" @click="edit(menu.id)">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <button class="btn btn-danger btn-sm"
-                                                @click="destroy(department.id)">
+                                                @click="destroy(menu.id)">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </td>
@@ -85,10 +86,10 @@
                     </div>
                     <ul class="pagination float-end mb-4">
                         <li class="page-item previous">
-                            <button class="btn btn-light btn-sm" @click="previousPage">Previous</button>
+                            <button class="btn btn-light btn-sm" @click="previousPage()">Previous</button>
                         </li>
                         <li class="page-item next">
-                            <button class="btn btn-light btn-sm" @click="nextPage">Next</button>
+                            <button class="btn btn-light btn-sm" @click="nextPage()">Next</button>
                         </li>
                     </ul>
                 </div>

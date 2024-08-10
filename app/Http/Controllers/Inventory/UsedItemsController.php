@@ -23,9 +23,9 @@ class UsedItemsController extends Controller
 
     public function __construct()
     {
-        $this->usedItemsServices = new UsedItemServices;
-        $this->usedItem = new UsedItems;
-        $this->account = new Account;
+        $this->usedItemsServices = new UsedItemServices();
+        $this->usedItem = new UsedItems();
+        $this->account = new Account();
     }
 
     public function getUsedItems(Goods $goods): JsonResponse

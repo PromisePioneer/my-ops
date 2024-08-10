@@ -8,7 +8,8 @@
             <div class="card-title m-0">
                 <h3 class="fw-bolder m-0">Detail Profil</h3>
             </div>
-            <a href="{{ url('utility/user-profile/change-profile') }}" class="btn btn-primary align-self-center btn-sm">Ubah Password</a>
+            <a href="{{ url('utility/user-profile/change-profile') }}" class="btn btn-primary align-self-center btn-sm">Ubah
+                Password</a>
         </div>
         <div class="card-body p-9">
             <div class="row mb-7">

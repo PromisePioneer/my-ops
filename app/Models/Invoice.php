@@ -9,8 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 
 /**
- * 
- *
  * @property int $id
  * @property int $contact_id
  * @property int|null $branch_id
@@ -31,6 +29,7 @@ use Illuminate\Notifications\Notifiable;
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice query()
@@ -49,6 +48,7 @@ use Illuminate\Notifications\Notifiable;
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice wherePaymentStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Invoice whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Invoice extends Model

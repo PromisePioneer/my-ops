@@ -5,8 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string $address
@@ -16,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $bank_account_name
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|CompanyProfile newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CompanyProfile newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CompanyProfile query()
@@ -28,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|CompanyProfile whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CompanyProfile whereNpwp($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CompanyProfile whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class CompanyProfile extends Model

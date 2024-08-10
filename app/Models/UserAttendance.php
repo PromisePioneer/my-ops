@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
- * 
- *
  * @property int $id
  * @property int $absen_location_id
  * @property string $date
@@ -20,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\UserJobInformation|null $jobInformation
  * @property-read \App\Models\User $user
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UserAttendance newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserAttendance newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserAttendance query()
@@ -30,6 +29,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder|UserAttendance whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserAttendance whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserAttendance whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class UserAttendance extends Model

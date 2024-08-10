@@ -345,25 +345,10 @@
                         </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
-                <x-dropdown-menu :active="request()->segment(1) === 'journals'">
-                    @slot('parentIcon')
-                        <i class="bi bi-book-fill fs-1"></i>
-                    @endslot
-                    @slot('menuTitle')
-                        Setting
-                    @endslot
-                    @slot('menuItem')
-                        <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'general-journal'"
-                                href="{{ url('/setting/menu/') }}">
-                            Menu Management
-                        </x-dropdown-menu-item>
-                    @endslot
-                </x-dropdown-menu>
             </div>
         </div>
         <div class="aside-footer flex-column-auto py-5" id="kt_aside_footer">
-            <a href="../../demo8/dist/documentation/getting-started.html"
+            <a href="#"
                class="btn btn-custom btn-primary w-100" data-bs-toggle="tooltip" data-bs-trigger="hover"
                data-bs-dismiss-="click" title=""
                data-bs-original-title="Cek untuk petunjuk penggunaan aplikasi">

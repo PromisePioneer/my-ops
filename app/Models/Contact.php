@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 
 /**
- * 
- *
  * @property int $id
  * @property int|null $branch_id
  * @property string $full_name
@@ -26,6 +24,7 @@ use Illuminate\Http\Request;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Branch|null $branch
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Contact newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Contact newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Contact query()
@@ -43,6 +42,7 @@ use Illuminate\Http\Request;
  * @method static \Illuminate\Database\Eloquent\Builder|Contact whereOtherInfo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Contact wherePhoneNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Contact whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Contact extends Model

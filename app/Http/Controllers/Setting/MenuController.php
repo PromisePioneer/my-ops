@@ -9,6 +9,13 @@ use Illuminate\View\View;
 
 class MenuController extends Controller
 {
+    private Menu $menu;
+
+    public function __construct()
+    {
+        $this->menu = new Menu;
+    }
+
     public function index(): View
     {
         return view('pages.setting.menu.index');
@@ -16,14 +23,14 @@ class MenuController extends Controller
 
     public function data(): JsonResponse
     {
-        $menu = Menu::orderBy('name')->paginate(10);
+        $menu = Menu::paginate(10);
 
         return response()->json($menu);
     }
 
-    public function store(): JsonResponse {}
-
-    public function edit(): JsonResponse {}
-
-    public function destroy(): JsonResponse {}
+    //    public function store(): JsonResponse {}
+    //
+    //    public function edit(): JsonResponse {}
+    //
+    //    public function destroy(): JsonResponse {}
 }

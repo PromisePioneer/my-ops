@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
- * 
- *
  * @property int $id
  * @property int $user_id
  * @property string $nik
@@ -20,26 +21,28 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $married_status
  * @property string|null $home_address
  * @property string $phone_number
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User $user
- * @method static \Illuminate\Database\Eloquent\Builder|UserIdentityInformation newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|UserIdentityInformation newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|UserIdentityInformation query()
- * @method static \Illuminate\Database\Eloquent\Builder|UserIdentityInformation whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserIdentityInformation whereDateOfBirth($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserIdentityInformation whereGender($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserIdentityInformation whereHomeAddress($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserIdentityInformation whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserIdentityInformation whereKtpAttachment($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserIdentityInformation whereMaritalStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserIdentityInformation whereMarriedStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserIdentityInformation whereNik($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserIdentityInformation wherePhoneNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserIdentityInformation wherePlaceOfBirth($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserIdentityInformation whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserIdentityInformation whereUserId($value)
- * @mixin \Eloquent
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User $user
+ *
+ * @method static Builder|UserIdentityInformation newModelQuery()
+ * @method static Builder|UserIdentityInformation newQuery()
+ * @method static Builder|UserIdentityInformation query()
+ * @method static Builder|UserIdentityInformation whereCreatedAt($value)
+ * @method static Builder|UserIdentityInformation whereDateOfBirth($value)
+ * @method static Builder|UserIdentityInformation whereGender($value)
+ * @method static Builder|UserIdentityInformation whereHomeAddress($value)
+ * @method static Builder|UserIdentityInformation whereId($value)
+ * @method static Builder|UserIdentityInformation whereKtpAttachment($value)
+ * @method static Builder|UserIdentityInformation whereMaritalStatus($value)
+ * @method static Builder|UserIdentityInformation whereMarriedStatus($value)
+ * @method static Builder|UserIdentityInformation whereNik($value)
+ * @method static Builder|UserIdentityInformation wherePhoneNumber($value)
+ * @method static Builder|UserIdentityInformation wherePlaceOfBirth($value)
+ * @method static Builder|UserIdentityInformation whereUpdatedAt($value)
+ * @method static Builder|UserIdentityInformation whereUserId($value)
+ *
+ * @mixin Eloquent
  */
 class UserIdentityInformation extends Model
 {
@@ -66,7 +69,7 @@ class UserIdentityInformation extends Model
     }
 
     //eloquent
-    public function getRelatedUserIdentityInformation(int $userId)
+    public function getRelatedUserIdentityInformation(int $userId): Model|Builder|UserIdentityInformation|null
     {
         return self::where('user_id', $userId)->first();
     }

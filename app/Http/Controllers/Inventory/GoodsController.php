@@ -20,22 +20,18 @@ class GoodsController extends Controller
     public int $perPage = 10;
 
     private GoodsServices $goodsService;
-
     private Goods $goods;
-
     private UnitType $unitType;
-
     private SubAccount $subAccount;
-
     private Branch $branch;
 
     public function __construct()
     {
-        $this->unitType = new UnitType;
-        $this->goodsService = new GoodsServices;
-        $this->goods = new Goods;
-        $this->subAccount = new SubAccount;
-        $this->branch = new Branch;
+        $this->unitType = new UnitType();
+        $this->goodsService = new GoodsServices();
+        $this->goods = new Goods();
+        $this->subAccount = new SubAccount();
+        $this->branch = new Branch();
     }
 
     public function index(): View
@@ -63,11 +59,6 @@ class GoodsController extends Controller
         return response()->json($this->goods->filterDataBasedOnBranch($branch->id, $this->perPage));
     }
 
-    public function create(): View
-    {
-        return view('pages.inventory.goods.create');
-    }
-
     public function getUnitTypesData(Request $request): JsonResponse
     {
         return response()->json($this->unitType->getData($request));
@@ -76,30 +67,6 @@ class GoodsController extends Controller
     public function getRelatedAccounts(Request $request): array
     {
         return $this->subAccount->getAllPersediaanSubAccount($request);
-    }
-
-    public function store(GoodsRequest $request): JsonResponse
-    {
-        $file = $request->file('file')->store('goods/image', 'public');
-
-        Goods::create([
-            'account_id' => $request->account_id,
-            'branch_id' => Auth::user()->branch_id,
-            'unit_type_id' => $request->unit_type_id,
-            'serial_number' => $request->serial_number,
-            'qty' => $request->qty,
-            'name' => $request->name,
-            'unit_price' => $request->unit_price,
-            'total_price' => $request->qty * $request->unit_price,
-            'status' => $request->status,
-            'file' => $file,
-            'type' => $request->type,
-            'created_by' => Auth::id(),
-        ]);
-
-        return response()->json([
-            'messaage' => 'data berhasil disimpan',
-        ], 200);
     }
 
     public function edit(Goods $goods): View
@@ -149,6 +116,35 @@ class GoodsController extends Controller
         return response()->json([
             'message' => 'data berhasil disimpan',
         ], 200);
+    }
+
+    public function store(GoodsRequest $request): JsonResponse
+    {
+        $file = $request->file('file')->store('goods/image', 'public');
+
+        Goods::create([
+            'account_id' => $request->account_id,
+            'branch_id' => Auth::user()->branch_id,
+            'unit_type_id' => $request->unit_type_id,
+            'serial_number' => $request->serial_number,
+            'qty' => $request->qty,
+            'name' => $request->name,
+            'unit_price' => $request->unit_price,
+            'total_price' => $request->qty * $request->unit_price,
+            'status' => $request->status,
+            'file' => $file,
+            'type' => $request->type,
+            'created_by' => Auth::id(),
+        ]);
+
+        return response()->json([
+            'messaage' => 'data berhasil disimpan',
+        ], 200);
+    }
+
+    public function create(): View
+    {
+        return view('pages.inventory.goods.create');
     }
 
     public function confirm(Goods $goods): JsonResponse

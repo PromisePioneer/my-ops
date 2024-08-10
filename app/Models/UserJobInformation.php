@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * 
- *
  * @property int $id
  * @property string $emp_code
  * @property string $absent_id
@@ -27,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Department $department
  * @property-read \App\Models\User $user
+ *
  * @method static Builder|UserJobInformation newModelQuery()
  * @method static Builder|UserJobInformation newQuery()
  * @method static Builder|UserJobInformation query()
@@ -46,6 +45,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder|UserJobInformation whereSkFile($value)
  * @method static Builder|UserJobInformation whereUpdatedAt($value)
  * @method static Builder|UserJobInformation whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class UserJobInformation extends Model

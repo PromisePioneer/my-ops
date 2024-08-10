@@ -17,7 +17,7 @@ class UnitTypesController extends Controller
 
     public function __construct()
     {
-        $this->unitType = new UnitType;
+        $this->unitType = new UnitType();
     }
 
     public function index(): View

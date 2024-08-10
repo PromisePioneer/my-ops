@@ -1,8 +1,13 @@
 @extends('layouts.template')
 @section('content')
     <div class="d-flex flex-column flex-xl-row" x-data="userDetailInformation()">
-        @include('pages.manage-users.user.modal.detail.add-identity-information')
-        @include('pages.manage-users.user.modal.detail.add-job-information')
+        @include('pages.manage-users.user.partials.employee-data.identity-information.modal.create')
+        @include('pages.manage-users.user.partials.employee-data.job-information.modal.create')
+        @include('pages.manage-users.user.partials.education-and-experiences.education.modal.create')
+        @include('pages.manage-users.user.partials.education-and-experiences.education-certificates.modal.create')
+        @include('pages.manage-users.user.partials.education-and-experiences.education-certificates.modal.edit')
+        @include('pages.manage-users.user.partials.education-and-experiences.job-experience.modal.create')
+        @include('pages.manage-users.user.partials.education-and-experiences.job-experience.modal.edit')
         <div class="flex-column flex-lg-row-auto w-100 w-xl-350px mb-10">
             <div class="card mb-5 mb-xl-8">
                 <div class="card-body">
@@ -26,13 +31,7 @@
                              role="button" aria-expanded="false" aria-controls="kt_user_view_details">Details
                             <span class="ms-2 rotate-180">
                                 <span class="svg-icon svg-icon-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                         height="24" viewBox="0 0 24 24" fill="none">
-                                        <path
-                                            d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z"
-                                            fill="black">
-                                        </path>
-                                    </svg>
+                                   <i class="bi bi-chevron-up"></i>
                                 </span>
                             </span>
                         </div>
@@ -52,8 +51,6 @@
                             <div class="text-gray-600">
                                 <a href="#" class="text-gray-600 text-hover-primary">{{ $user->email }}</a>
                             </div>
-                            <div class="fw-bolder mt-5">Terakhir Login</div>
-                            <div class="text-gray-600">{{ $user->last_login }}</div>
                         </div>
                     </div>
                 </div>
@@ -64,53 +61,19 @@
             <ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-bold mb-8">
                 <li class="nav-item">
                     <a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab"
-                       href="#identity_information">Informasi Identitas</a>
+                       href="#employee_data">Data Karyawan</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-active-primary pb-4" data-kt-countup-tabs="true" data-bs-toggle="tab"
-                       href="#job_information">Informasi Pekerjaan</a>
+                       href="#education_and_experiences">Pengalaman & Pendidikan</a>
                 </li>
             </ul>
             <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="identity_information" role="tabpanel">
-                    <div class="card card-flush mb-6 mb-xl-9">
-                        <div class="card-header mt-6">
-                            <div class="card-title flex-column">
-                                <h2 class="mb-1">Informasi Identitas</h2>
-                            </div>
-                            <div class="card-toolbar">
-                                <button type="button" class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#identity-information-update-modal">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body p-9 pt-4">
-                            <div class="tab-content">
-                                @include('pages.manage-users.user.partials.detail.identity-information-tab-content')
-                            </div>
-                        </div>
-                    </div>
+                <div class="tab-pane fade show active" id="employee_data" role="tabpanel">
+                    @include('pages.manage-users.user.partials.employee-data.employee-data-tab-content')
                 </div>
-                <div class="tab-pane fade" id="job_information" role="tabpanel">
-                    <div class="card card-flush mb-6 mb-xl-9">
-                        <div class="card-header mt-6">
-                            <div class="card-title flex-column">
-                                <h2 class="mb-1">Informasi Pekerjaan</h2>
-                            </div>
-                            <div class="card-toolbar">
-                                <button type="button" class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#job-information-update-modal" @click="add()">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body p-9 pt-4">
-                            <div class="tab-content">
-                                @include('pages.manage-users.user.partials.detail.job-information-tab-content')
-                            </div>
-                        </div>
-                    </div>
+                <div class="tab-pane fade" id="education_and_experiences" role="tabpanel">
+                    @include('pages.manage-users.user.partials.education-and-experiences.education-and-experience-tab-content')
                 </div>
                 <div class="card card-flush mb-6 mb-xl-9">
                     <div class="card-header mt-6">
@@ -172,20 +135,38 @@
                 userId: "{{ $user->id }}",
                 jobInformation: {},
                 identityInformation: {},
+                education: {},
+                educationCertificates: [],
+                jobExperiences: [],
                 bpjsKesStatus: false,
                 bpjsKetStatus: false,
                 attendance: [],
                 marriedStatus: null,
                 marriedData: [{name: "K/1"}, {name: "K/2"}, {name: "K/3"}],
                 noMarriedData: [{name: "TK/1"}, {name: "TK/2"}, {name: "TK/3"}],
+                educationCertificateVal: '',
+                jobExperiencesVal: '',
                 identityInformationForm: document.getElementById('form-identity-information-update'),
                 identityInformationModal: new bootstrap.Modal(document.getElementById('identity-information-update-modal')),
                 jobInformationForm: document.getElementById('form-job-information-update'),
                 jobInformationModal: new bootstrap.Modal(document.getElementById('job-information-update-modal')),
+                educationForm: document.getElementById('form-education-update'),
+                educationModal: new bootstrap.Modal(document.getElementById('education-update-modal')),
+                educationCertificateModalCreate: new bootstrap.Modal(document.getElementById('education-certificate-create-modal')),
+                educationCertificateFormCreate: document.getElementById('education-certificate-create-form'),
+                educationCertificateFormEdit: document.getElementById('education-certificate-edit-form'),
+                educationCertificateModalEdit: new bootstrap.Modal(document.getElementById('education-certificate-edit-modal')),
+                jobExperienceModalCreate: new bootstrap.Modal(document.getElementById('create-job-experience-modal')),
+                jobExperienceFormCreate: document.getElementById('create-job-experience-form'),
+                jobExperienceModalEdit: new bootstrap.Modal(document.getElementById('edit-job-experience-modal')),
+                jobExperienceFormEdit: document.getElementById('edit-job-experience-form'),
                 async init() {
                     await this.getIdentityInformation();
                     await this.getJobInformation();
                     await this.getAbsentData();
+                    await this.getEducation();
+                    await this.getEducationCertificate();
+                    await this.getJobExperiences();
                 },
                 async add() {
                     await this.getDepartmentData();
@@ -197,7 +178,7 @@
                 async identityInformationUpdate() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/manage-users/users/identity-information/${this.userId}`, new FormData(this.identityInformationForm));
+                        await axios.post(`/manage-users/identity-information/${this.userId}`, new FormData(this.identityInformationForm));
                         await showAlert('success', 'Data berhasil disimpan');
                         this.identityInformationModal.hide();
                         await this.init();
@@ -211,9 +192,99 @@
                 async jobInformationUpdate() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/manage-users/users/job-information/${this.userId}`, new FormData(this.jobInformationForm));
+                        await axios.post(`/manage-users/job-information/${this.userId}`, new FormData(this.jobInformationForm));
                         await showAlert('success', 'Data berhasil disimpan');
                         this.jobInformationModal.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async educationUpdate() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/manage-users/educations/${this.userId}`, new FormData(this.educationForm));
+                        await showAlert('success', 'Data berhasil disimpan');
+                        this.educationModal.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async educationCertificateStore() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/manage-users/education-certificates/store/${this.userId}`, new FormData(this.educationCertificateFormCreate));
+                        await showAlert('success', 'Data berhasil disimpan');
+                        this.educationCertificateModalCreate.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async educationCertificatesEdit(id) {
+                    const resp = await axios.get(`/manage-users/education-certificates/edit/${id}`)
+                    this.educationCertificateVal = resp.data
+                },
+                async educationCertificatesUpdate(id) {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/manage-users/education-certificates/update/${id}`, new FormData(this.educationCertificateFormEdit));
+                        await showAlert('success', 'Data berhasil disimpan');
+                        this.educationCertificateModalEdit.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async educationCertificatesDestroy(id) {
+                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                        try {
+                            await axios.delete(`/manage-users/education-certificates/destroy/${id}`);
+                            await showAlert('success', 'Data sukses dihapus');
+                            await this.init();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
+                },
+                async jobExperienceStore() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/manage-users/job-experiences/store/${this.userId}`, new FormData(this.jobExperienceFormCreate));
+                        await showAlert('success', 'Data berhasil disimpan');
+                        this.jobExperienceModalCreate.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async jobExperienceEdit(id) {
+                    const resp = await axios.get(`/manage-users/job-experiences/edit/${id}`);
+                    this.jobExperiencesVal = resp.data;
+                },
+                async jobExperienceUpdate(id) {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/manage-users/job-experiences/update/${id}`, new FormData(this.jobExperienceFormEdit));
+                        await showAlert('success', 'Data berhasil disimpan');
+                        this.jobExperienceModalEdit.hide();
                         await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
@@ -235,17 +306,29 @@
                     });
                 },
                 async getIdentityInformation() {
-                    const resp = await axios.get(`/manage-users/users/identity-information/${this.userId}`);
+                    const resp = await axios.get(`/manage-users/identity-information/${this.userId}`);
                     this.identityInformation = resp.data;
 
                     this.marriedStatus = this.identityInformation.marital_status === 'menikah' ? 'menikah' : 'tidak menikah';
                 },
                 async getJobInformation() {
-                    const resp = await axios.get(`/manage-users/users/job-information/${this.userId}`);
+                    const resp = await axios.get(`/manage-users/job-information/${this.userId}`);
                     this.jobInformation = resp.data;
 
                     this.bpjsKesStatus = this.jobInformation.no_kis ? 'ya' : 'tidak';
                     this.bpjsKetStatus = this.jobInformation.no_kpj ? 'ya' : 'tidak';
+                },
+                async getEducation() {
+                    const resp = await axios.get(`/manage-users/educations/${this.userId}`);
+                    this.education = resp.data;
+                },
+                async getEducationCertificate() {
+                    const resp = await axios.get(`/manage-users/education-certificates/${this.userId}`);
+                    this.educationCertificates = resp.data;
+                },
+                async getJobExperiences() {
+                    const resp = await axios.get(`/manage-users/job-experiences/${this.userId}`);
+                    this.jobExperiences = resp.data;
                 },
                 async getAbsentData() {
                     const resp = await axios.get(`/manage-users/users/absent/data/${this.userId}`);

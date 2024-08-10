@@ -5,7 +5,10 @@ namespace App\Http\Requests\UserProfile;
 use App\Models\LeaveAndPermission;
 use App\Service\CalculateUserLeaves;
 use Carbon\Carbon;
+use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -17,7 +20,7 @@ class LeaveAndPermissionRequest extends FormRequest
     public function __construct()
     {
         parent::__construct();
-        $this->calculateUserLeaves = new CalculateUserLeaves;
+        $this->calculateUserLeaves = new CalculateUserLeaves();
     }
 
     /**
@@ -57,29 +60,15 @@ class LeaveAndPermissionRequest extends FormRequest
             'reason' => ['required'],
             'leaves_status' => ['required'],
             'sick_letter' => [
-                Rule::requiredIf(fn () => $request->leaves_status === 'Sakit'),
+                Rule::requiredIf(fn() => $request->leaves_status === 'Sakit'),
             ],
-        ];
-    }
-
-    /**
-     * Custom validation messages.
-     */
-    public function messages(): array
-    {
-        return [
-            'start_date.required' => 'Tanggal awal tidak boleh kosong',
-            'start_date.date' => 'Tanggal awal harus berupa tanggal',
-            'start_date.after' => 'Pengajuan cuti minimal 6 hari sebelum hari ini',
-            'end_date.required' => 'Tanggal akhir tidak boleh kosong',
-            'end_date.date' => 'Tanggal akhir harus berupa tanggal',
         ];
     }
 
     /**
      * Get the start date of the first leave in the current month.
      */
-    private function getStartDate(Request $request)
+    private function getStartDate(Request $request): Model|LeaveAndPermission|Builder|null
     {
         return LeaveAndPermission::where('user_id', $request->user()->id)
             ->where('confirmation_status', 'Diterima')
@@ -91,7 +80,7 @@ class LeaveAndPermissionRequest extends FormRequest
     /**
      * Get the latest date of the most recent leave in the current month.
      */
-    private function getLatestDate(Request $request)
+    private function getLatestDate(Request $request): Model|LeaveAndPermission|Builder|null
     {
         return LeaveAndPermission::where('user_id', $request->user()->id)
             ->where('confirmation_status', 'Diterima')
@@ -104,7 +93,7 @@ class LeaveAndPermissionRequest extends FormRequest
     /**
      * Get any pending leave applications for the current month.
      */
-    private function getDiproses(Request $request)
+    private function getDiproses(Request $request): Model|LeaveAndPermission|Builder|null
     {
         return LeaveAndPermission::where('user_id', $request->user()->id)
             ->where('confirmation_status', 'Diproses')
@@ -118,13 +107,13 @@ class LeaveAndPermissionRequest extends FormRequest
      */
     private function calculateLeaveDaysInThisMonth($getStartDate, $getLatestDate): int
     {
-        return Carbon::parse($getStartDate?->start_date)->diffInDays($getLatestDate->end_date);
+        return Carbon::parse($getStartDate?->start_date)->diffInDays($getLatestDate?->end_date);
     }
 
     /**
      * Calculate the difference in days between the start date and end date of the request.
      */
-    private function calculateDiffDays($startDate, $endDate)
+    private function calculateDiffDays($startDate, $endDate): int
     {
         return Carbon::parse($startDate)->diffInDays($endDate);
     }
@@ -132,7 +121,7 @@ class LeaveAndPermissionRequest extends FormRequest
     /**
      * Validate the start date.
      */
-    private function validateStartDate(Request $request, $getDiproses): \Closure
+    private function validateStartDate(Request $request, $getDiproses): Closure
     {
         return function ($attribute, $value, $fail) use ($request, $getDiproses) {
             $minimumDate = Carbon::now()->addDays(6);
@@ -156,9 +145,16 @@ class LeaveAndPermissionRequest extends FormRequest
     /**
      * Validate the end date.
      */
-    private function validateEndDate(Request $request, $getLeavesDaysInThisMonth, $getDiffDaysBetweenStartDateAndEndDate): \Closure
-    {
-        return static function ($attribute, $value, $fail) use ($request, $getLeavesDaysInThisMonth, $getDiffDaysBetweenStartDateAndEndDate) {
+    private function validateEndDate(
+        Request $request,
+        $getLeavesDaysInThisMonth,
+        $getDiffDaysBetweenStartDateAndEndDate
+    ): Closure {
+        return static function ($attribute, $value, $fail) use (
+            $request,
+            $getLeavesDaysInThisMonth,
+            $getDiffDaysBetweenStartDateAndEndDate
+        ) {
             $diffInDays = Carbon::parse($request->start_date)->diffInDays($value);
 
             if ($diffInDays > 6 && $request->leaves_status === 'Cuti') {
@@ -175,6 +171,20 @@ class LeaveAndPermissionRequest extends FormRequest
 
             return null;
         };
+    }
+
+    /**
+     * Custom validation messages.
+     */
+    public function messages(): array
+    {
+        return [
+            'start_date.required' => 'Tanggal awal tidak boleh kosong',
+            'start_date.date' => 'Tanggal awal harus berupa tanggal',
+            'start_date.after' => 'Pengajuan cuti minimal 6 hari sebelum hari ini',
+            'end_date.required' => 'Tanggal akhir tidak boleh kosong',
+            'end_date.date' => 'Tanggal akhir harus berupa tanggal',
+        ];
     }
 }
 

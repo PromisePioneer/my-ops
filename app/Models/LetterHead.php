@@ -5,13 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * 
- *
  * @property int $id
  * @property string|null $header
  * @property string|null $footer
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LetterHead newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LetterHead newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LetterHead query()
@@ -20,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|LetterHead whereHeader($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LetterHead whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LetterHead whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class LetterHead extends Model

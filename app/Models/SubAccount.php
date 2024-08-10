@@ -10,8 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * 
- *
  * @property int $id
  * @property string $code
  * @property string $name
@@ -26,6 +24,7 @@ use Illuminate\Support\Facades\Auth;
  * @property-read int|null $account_transactions_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AccountTransaction> $subAccount
  * @property-read int|null $sub_account_count
+ *
  * @method static Builder|SubAccount newModelQuery()
  * @method static Builder|SubAccount newQuery()
  * @method static Builder|SubAccount query()
@@ -38,6 +37,7 @@ use Illuminate\Support\Facades\Auth;
  * @method static Builder|SubAccount whereId($value)
  * @method static Builder|SubAccount whereName($value)
  * @method static Builder|SubAccount whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class SubAccount extends Model

@@ -15,7 +15,7 @@
                         <div class="col-md-6">
                             <label for="nik" class="required form-label">No. Identitas</label>
                             <input type="text" id="nik" name="nik" class="form-control form-control-solid"
-                                   placeholder="NIK" :value="identityInformation.nik ?? '-'"/>
+                                   placeholder="NIK" :value="identityInformation.nik ?? ''"/>
                         </div>
                         <div class="col-md-6">
                             <label for="place_of_birth" class="required form-label">Jenis Kelamin</label>
@@ -35,7 +35,7 @@
                             <label for="place_of_birth" class="required form-label">Tempat Lahir</label>
                             <input type="text" id="place_of_birth" name="place_of_birth"
                                    class="form-control form-control-solid"
-                                   placeholder="Tempat Lahir" :value="identityInformation.place_of_birth ?? '-'"/>
+                                   placeholder="Tempat Lahir" :value="identityInformation.place_of_birth ?? ''"/>
                         </div>
                         <div class="col-md-6">
                             <label for="date_of_birth" class="required form-label">Tanggal Lahir</label>
@@ -89,7 +89,8 @@
                         <div class="col-md-6">
                             <label for="ktp_attachment" class="required form-label">No. Telepon</label>
                             <input type="number" id="phone_number" name="phone_number"
-                                   class="form-control form-control-solid" placeholder="No. Telepon" :value="identityInformation.phone_number"/>
+                                   class="form-control form-control-solid" placeholder="No. Telepon"
+                                   :value="identityInformation.phone_number"/>
                         </div>
                         <div class="col-md-6">
                             <label for="ktp_attachment" class="required form-label">KTP</label>
@@ -100,7 +101,7 @@
                     <div class="mb-4">
                         <label for="home_address" class="required form-label">Alamat</label>
                         <textarea name="home_address" id="home_address" class="form-control form-control-solid"
-                                  data-kt-autosize="true" x-text="identityInformation.home_address ?? '-'"></textarea>
+                                  data-kt-autosize="true" x-text="identityInformation.home_address ?? ''"></textarea>
                     </div>
                 </div>
 

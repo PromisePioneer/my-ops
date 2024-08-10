@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
+use Eloquent;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 /**
- * 
- *
  * @property int $id
  * @property int $account_id
  * @property int $branch_id
@@ -24,28 +25,30 @@ use Illuminate\Http\Request;
  * @property int $confirmation_status
  * @property string $type
  * @property int $created_by
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Branch $branch
- * @method static \Illuminate\Database\Eloquent\Builder|Goods newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Goods newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Goods query()
- * @method static \Illuminate\Database\Eloquent\Builder|Goods whereAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Goods whereBranchId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Goods whereConfirmationStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Goods whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Goods whereCreatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Goods whereFile($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Goods whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Goods whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Goods whereQty($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Goods whereSerialNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Goods whereTotalPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Goods whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Goods whereUnitPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Goods whereUnitTypeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Goods whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Branch $branch
+ *
+ * @method static Builder|Goods newModelQuery()
+ * @method static Builder|Goods newQuery()
+ * @method static Builder|Goods query()
+ * @method static Builder|Goods whereAccountId($value)
+ * @method static Builder|Goods whereBranchId($value)
+ * @method static Builder|Goods whereConfirmationStatus($value)
+ * @method static Builder|Goods whereCreatedAt($value)
+ * @method static Builder|Goods whereCreatedBy($value)
+ * @method static Builder|Goods whereFile($value)
+ * @method static Builder|Goods whereId($value)
+ * @method static Builder|Goods whereName($value)
+ * @method static Builder|Goods whereQty($value)
+ * @method static Builder|Goods whereSerialNumber($value)
+ * @method static Builder|Goods whereTotalPrice($value)
+ * @method static Builder|Goods whereType($value)
+ * @method static Builder|Goods whereUnitPrice($value)
+ * @method static Builder|Goods whereUnitTypeId($value)
+ * @method static Builder|Goods whereUpdatedAt($value)
+ *
+ * @mixin Eloquent
  */
 class Goods extends Model
 {

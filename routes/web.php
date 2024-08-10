@@ -7,6 +7,11 @@ use App\Http\Controllers\JournalAdjustment\InitialJournalController;
 use App\Http\Controllers\JournalAdjustment\JournalAdjustmentController;
 use App\Http\Controllers\Journals\GeneralJournalController;
 use App\Http\Controllers\Journals\GeneralLedgerController;
+use App\Http\Controllers\ManageUser\EducationCertificateController;
+use App\Http\Controllers\ManageUser\EducationController;
+use App\Http\Controllers\ManageUser\IdentityInformationController;
+use App\Http\Controllers\ManageUser\JobExperiencesController;
+use App\Http\Controllers\ManageUser\JobInformationController;
 use App\Http\Controllers\ManageUser\ManageUserLeavesController;
 use App\Http\Controllers\ManageUser\PayrollController;
 use App\Http\Controllers\ManageUser\PermissionController;
@@ -63,7 +68,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [UserController::class, 'usersData']);
             Route::get('/roles/data', [UserController::class, 'rolesData']);
             Route::get('/branch/data', [UserController::class, 'branchData']);
-
             Route::get('/filter/branch/data/{branch}', [UserController::class, 'filterByBranch']);
             Route::get('/search', [UserController::class, 'search']);
             Route::get('/placement/data', [UserController::class, 'getPlacementData']);
@@ -74,17 +78,49 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/get-selected-branch/{user}', [UserController::class, 'getSelectedBranch']);
             Route::get('/show/{user}', [UserController::class, 'show']);
             Route::get('/detail/{user}', [UserController::class, 'detail']);
-            Route::get('/identity-information/{user}', [UserController::class, 'identityInformation']);
-            Route::post('/identity-information/{user}', [UserController::class, 'identityInformationUpdate']);
-            Route::get('/job-information/{user}', [UserController::class, 'jobInformation']);
-            Route::get('/job-information/department/selected/{user}', [UserController::class, 'getSelectedDepartment']);
             Route::get('/department/data', [UserController::class, 'getDepartmentData']);
             Route::get('/absent/data/{user}', [UserController::class, 'getAbsentData']);
-            Route::post('/job-information/{user}', [UserController::class, 'jobInformationUpdate']);
-            Route::get('/job-information/view-file/{user}', [UserController::class, 'viewFileJobInformation']);
             Route::post('/update/{user}', [UserController::class, 'update']);
             Route::delete('/{user}', [UserController::class, 'destroy']);
         });
+
+
+        Route::prefix('identity-information')->group(function () {
+            Route::get('/{user}', [IdentityInformationController::class, 'index']);
+            Route::post('/{user}', [IdentityInformationController::class, 'update']);
+        });
+
+        Route::prefix('job-information')->group(function () {
+            Route::get('/{user}', [JobInformationController::class, 'index']);
+            Route::post('/{user}', [JobInformationController::class, 'update']);
+            Route::get('/view-file/{user}', [JobInformationController::class, 'viewFile']);
+            Route::get('/department/selected/{user}', [JobInformationController::class, 'getSelectedDepartment']);
+        });
+
+        Route::prefix('educations')->group(function () {
+            Route::get('/{user}', [EducationController::class, 'getRelatedUserEducation']);
+            Route::post('/{user}', [EducationController::class, 'update']);
+            Route::get('/view-file/{user}', [EducationController::class, 'viewFile']);
+        });
+
+        Route::prefix('education-certificates')->group(function () {
+            Route::get('/{user}', [EducationCertificateController::class, 'getEducationCertificate']);
+            Route::post('/store/{user}', [EducationCertificateController::class, 'store']);
+            Route::get('/edit/{educationCertificate}', [EducationCertificateController::class, 'edit']);
+            Route::post('/update/{educationCertificate}', [EducationCertificateController::class, 'update']);
+            Route::delete('destroy/{educationCertificate}', [EducationCertificateController::class, 'destroy']);
+            Route::get('/view-file/{educationCertificate}', [EducationCertificateController::class, 'viewFile']);
+        });
+
+
+        Route::prefix('job-experiences')->group(function () {
+            Route::get('/{user}', [JobExperiencesController::class, 'getRelatedUserJobExperience']);
+            Route::post('/store/{user}', [JobExperiencesController::class, 'store']);
+            Route::get('/edit/{jobExperience}', [JobExperiencesController::class, 'edit']);
+            Route::post('/update/{jobExperience}', [JobExperiencesController::class, 'update']);
+            Route::delete('/destroy/{jobExperience}', [JobExperiencesController::class, 'destroy']);
+        });
+
 
         Route::prefix('/permissions')->group(function () {
             Route::get('/', [PermissionController::class, 'index']);

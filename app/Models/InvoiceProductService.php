@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * 
- *
  * @property int $id
  * @property int $invoice_id
  * @property string $description
@@ -17,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Invoice $invoice
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceProductService newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceProductService newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceProductService query()
@@ -28,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceProductService whereTotalPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceProductService whereUnitPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|InvoiceProductService whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class InvoiceProductService extends Model

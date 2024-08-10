@@ -11,8 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * 
- *
  * @property int $id
  * @property string $date
  * @property int|null $account_id
@@ -25,6 +23,7 @@ use Illuminate\Support\Facades\Auth;
  * @property-read \App\Models\Account|null $account
  * @property-read \App\Models\Branch|null $branch
  * @property-read \App\Models\SubAccount|null $subAccount
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction query()
@@ -37,6 +36,7 @@ use Illuminate\Support\Facades\Auth;
  * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereSubAccountId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class AccountTransaction extends Model
