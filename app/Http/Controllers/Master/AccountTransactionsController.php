@@ -20,7 +20,7 @@ class AccountTransactionsController extends Controller
         $this->middleware('permission:tambah transaksi akun', ['only' => ['create', 'store']]);
         $this->middleware('permission:update transaksi akun', ['only' => ['edit', 'update']]);
         $this->middleware('permission:hapus transaksi akun', ['only' => ['destroy']]);
-        $this->accountTransaction = new AccountTransaction;
+        $this->accountTransaction = new AccountTransaction();
     }
 
     public function index(): View

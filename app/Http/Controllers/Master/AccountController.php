@@ -28,8 +28,8 @@ class AccountController extends Controller
         $this->middleware('permission:update akun', ['only' => ['edit', 'update']]);
         $this->middleware('permission:hapus akun', ['only' => ['destroy']]);
 
-        $this->account = new Account;
-        $this->branch = new Branch;
+        $this->account = new Account();
+        $this->branch = new Branch();
     }
 
     public function index(): View
@@ -103,7 +103,7 @@ class AccountController extends Controller
     public function import(AccountImportRequest $request): JsonResponse
     {
         $file = $request->file('file_import');
-        Excel::import(new AccountImport, $file);
+        Excel::import(new AccountImport(), $file);
 
         return response()->json([
             'message' => 'Data berhasil diimport',

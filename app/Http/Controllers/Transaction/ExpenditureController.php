@@ -25,10 +25,10 @@ class ExpenditureController extends Controller
 
     public function __construct()
     {
-        $this->expenditureService = new ExpenditureServices;
-        $this->expenditure = new Expenditure;
-        $this->subAccount = new SubAccount;
-        $this->branch = new Branch;
+        $this->expenditureService = new ExpenditureServices();
+        $this->expenditure = new Expenditure();
+        $this->subAccount = new SubAccount();
+        $this->branch = new Branch();
     }
 
     public function index()

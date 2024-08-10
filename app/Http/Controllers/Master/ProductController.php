@@ -22,7 +22,7 @@ class ProductController extends Controller
         $this->middleware('permission:update product', ['only' => ['edit', 'update']]);
         $this->middleware('permission:hapus product', ['only' => ['destroy']]);
 
-        $this->product = new Product;
+        $this->product = new Product();
     }
 
     public function index(): View

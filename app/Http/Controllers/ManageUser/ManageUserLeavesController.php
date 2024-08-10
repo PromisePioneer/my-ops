@@ -18,7 +18,7 @@ class ManageUserLeavesController extends Controller
     public function __construct()
     {
         $this->perPage = 10;
-        $this->leavesAndPermission = new LeaveAndPermission;
+        $this->leavesAndPermission = new LeaveAndPermission();
     }
 
     public function index(): View

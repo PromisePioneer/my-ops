@@ -13,7 +13,7 @@ class MenuController extends Controller
 
     public function __construct()
     {
-        $this->menu = new Menu;
+        $this->menu = new Menu();
     }
 
     public function index(): View

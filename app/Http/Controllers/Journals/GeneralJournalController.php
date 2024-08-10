@@ -15,7 +15,7 @@ class GeneralJournalController extends Controller
 
     public function __construct()
     {
-        $this->accountTransaction = new AccountTransaction;
+        $this->accountTransaction = new AccountTransaction();
     }
 
     public function index()

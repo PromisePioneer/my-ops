@@ -23,10 +23,10 @@ class FabServices
 
     public function __construct()
     {
-        $this->handleFileUploadService = new HandleFileUploadService;
-        $this->accountTransactionService = new AccountTransactionService;
-        $this->subAccount = new SubAccount;
-        $this->contact = new Contact;
+        $this->handleFileUploadService = new HandleFileUploadService();
+        $this->accountTransactionService = new AccountTransactionService();
+        $this->subAccount = new SubAccount();
+        $this->contact = new Contact();
     }
 
     public function store($request): void

@@ -16,7 +16,7 @@ class JournalAdjustmentController extends Controller
 
     public function __construct()
     {
-        $this->journalAdjustmentService = new JournalAdjustmentServices;
+        $this->journalAdjustmentService = new JournalAdjustmentServices();
     }
 
     public function index()

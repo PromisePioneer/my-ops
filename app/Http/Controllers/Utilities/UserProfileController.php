@@ -24,9 +24,9 @@ class UserProfileController extends Controller
 
     public function __construct()
     {
-        $this->identityInformation = new UserIdentityInformation;
-        $this->jobInformation = new UserJobInformation;
-        $this->handleFileUpload = new HandleFileUploadService;
+        $this->identityInformation = new UserIdentityInformation();
+        $this->jobInformation = new UserJobInformation();
+        $this->handleFileUpload = new HandleFileUploadService();
     }
 
     public function index(): View

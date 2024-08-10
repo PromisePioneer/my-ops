@@ -12,7 +12,7 @@ class OfferingLetterService
 
     public function __construct()
     {
-        $this->handleFileUploadService = new HandleFileUploadService;
+        $this->handleFileUploadService = new HandleFileUploadService();
     }
 
     public function store($request): void

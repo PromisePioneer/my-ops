@@ -54,8 +54,11 @@ class LeaveAndPermissionController extends Controller
     {
         $data = $request->validated();
         $data['user_id'] = $request->user()->id;
-        $data['file'] = $this->handleUploadFileService->upload($request, 'documents/leave-and-permission/sick-letter',
-            'sick_letter');
+        $data['file'] = $this->handleUploadFileService->upload(
+            $request,
+            'documents/leave-and-permission/sick-letter',
+            'sick_letter'
+        );
 
 
         LeaveAndPermission::create($data);

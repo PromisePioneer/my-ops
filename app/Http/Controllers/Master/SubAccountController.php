@@ -28,8 +28,8 @@ class SubAccountController extends Controller
         $this->middleware('permission:update kategori akun', ['only' => ['edit', 'update']]);
         $this->middleware('permission:hapus kategori akun', ['only' => ['destroy']]);
 
-        $this->subAccount = new SubAccount;
-        $this->account = new Account;
+        $this->subAccount = new SubAccount();
+        $this->account = new Account();
     }
 
     public function index(): View
@@ -104,7 +104,7 @@ class SubAccountController extends Controller
                 ->delete();
 
             $file = $request->file('file_import');
-            Excel::import(new SubAccountImport, $file);
+            Excel::import(new SubAccountImport(), $file);
 
             DB::commit();
 

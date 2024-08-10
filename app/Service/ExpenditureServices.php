@@ -13,7 +13,7 @@ class ExpenditureServices
 
     public function __construct()
     {
-        $this->accountTransactionService = new AccountTransactionService;
+        $this->accountTransactionService = new AccountTransactionService();
     }
 
     public function store(ExpenditureRequest $request): void

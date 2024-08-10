@@ -21,7 +21,7 @@ class PayrollController extends Controller
 
     public function __construct()
     {
-        $this->payroll = new Payroll;
+        $this->payroll = new Payroll();
     }
 
     public function index(): View

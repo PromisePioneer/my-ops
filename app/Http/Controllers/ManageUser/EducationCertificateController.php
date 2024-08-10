@@ -29,7 +29,8 @@ class EducationCertificateController extends Controller
     public function getEducationCertificate(Request $request): JsonResponse
     {
         return response()->json($this->educationCertificate->getRelatedUserEducationCertificate(
-            $request->user()->id));
+            $request->user()->id
+        ));
     }
 
     public function store(EducationCertificateRequest $request, User $user): JsonResponse
@@ -77,8 +78,10 @@ class EducationCertificateController extends Controller
 
     public function viewFile(EducationCertificate $educationCertificate): View
     {
-        return view('pages.manage-users.user.partials.education-and-experiences.education-certificates.view-file',
-            compact('educationCertificate'));
+        return view(
+            'pages.manage-users.user.partials.education-and-experiences.education-certificates.view-file',
+            compact('educationCertificate')
+        );
     }
 
 

@@ -42,13 +42,13 @@ class InvoiceController extends Controller
 
     public function __construct()
     {
-        $this->invoiceProductServices = new InvoiceProductService;
-        $this->invoiceService = new InvoiceService;
-        $this->invoice = new Invoice;
-        $this->subAccount = new SubAccount;
-        $this->contact = new Contact;
-        $this->companyProfileServices = new CompanyProfileServices;
-        $this->branch = new Branch;
+        $this->invoiceProductServices = new InvoiceProductService();
+        $this->invoiceService = new InvoiceService();
+        $this->invoice = new Invoice();
+        $this->subAccount = new SubAccount();
+        $this->contact = new Contact();
+        $this->companyProfileServices = new CompanyProfileServices();
+        $this->branch = new Branch();
     }
 
     public function index(): View

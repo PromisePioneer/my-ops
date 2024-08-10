@@ -38,11 +38,11 @@ class InvoiceService
 
     public function __construct()
     {
-        $this->subAccount = new SubAccount;
-        $this->contact = new Contact;
-        $this->accountTransaction = new AccountTransaction;
-        $this->accountTransactionService = new AccountTransactionService;
-        $this->handleFileUploadService = new HandleFileUploadService;
+        $this->subAccount = new SubAccount();
+        $this->contact = new Contact();
+        $this->accountTransaction = new AccountTransaction();
+        $this->accountTransactionService = new AccountTransactionService();
+        $this->handleFileUploadService = new HandleFileUploadService();
     }
 
     private static function generateInvoiceNumber(Request $request): string

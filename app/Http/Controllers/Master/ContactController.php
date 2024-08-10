@@ -24,8 +24,8 @@ class ContactController extends Controller
         $this->middleware('permission:tambah contact', ['only' => ['create', 'store']]);
         $this->middleware('permission:update contact', ['only' => ['edit', 'update']]);
         $this->middleware('permission:hapus contact', ['only' => ['destroy']]);
-        $this->contact = new Contact;
-        $this->branch = new Branch;
+        $this->contact = new Contact();
+        $this->branch = new Branch();
     }
 
     public function index(): View

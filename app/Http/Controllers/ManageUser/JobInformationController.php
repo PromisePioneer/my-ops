@@ -13,7 +13,6 @@ use Illuminate\View\View;
 
 class JobInformationController extends Controller
 {
-
     private JobInformationService $jobInformationService;
     private Department $department;
     private UserJobInformation $jobInformation;

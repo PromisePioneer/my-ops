@@ -32,11 +32,11 @@ class FabController extends Controller
 
     public function __construct()
     {
-        $this->fabServices = new FabServices;
-        $this->serviceCategory = new ServiceCategory;
-        $this->fab = new Fab;
-        $this->contact = new Contact;
-        $this->branch = new Branch;
+        $this->fabServices = new FabServices();
+        $this->serviceCategory = new ServiceCategory();
+        $this->fab = new Fab();
+        $this->contact = new Contact();
+        $this->branch = new Branch();
     }
 
     public function index()

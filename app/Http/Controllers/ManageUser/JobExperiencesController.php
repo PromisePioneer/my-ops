@@ -10,7 +10,6 @@ use Illuminate\Http\JsonResponse;
 
 class JobExperiencesController extends Controller
 {
-
     private JobExperience $jobExperience;
 
     public function __construct()

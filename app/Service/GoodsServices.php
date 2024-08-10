@@ -21,9 +21,9 @@ class GoodsServices
 
     public function __construct()
     {
-        $this->accountTransactionService = new AccountTransactionService;
-        $this->unitType = new UnitType;
-        $this->subAccount = new SubAccount;
+        $this->accountTransactionService = new AccountTransactionService();
+        $this->unitType = new UnitType();
+        $this->subAccount = new SubAccount();
     }
 
     public function store(GoodsRequest $request): void

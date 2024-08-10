@@ -32,11 +32,11 @@ class BastController extends Controller
 
     public function __construct()
     {
-        $this->contact = new Contact;
-        $this->bastService = new BastServices;
-        $this->bast = new Bast;
-        $this->bastProduct = new BastProduct;
-        $this->branch = new Branch;
+        $this->contact = new Contact();
+        $this->bastService = new BastServices();
+        $this->bast = new Bast();
+        $this->bastProduct = new BastProduct();
+        $this->branch = new Branch();
     }
 
     public function index(): View

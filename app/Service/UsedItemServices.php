@@ -15,7 +15,7 @@ class UsedItemServices
 
     public function __construct()
     {
-        $this->accountTransactionService = new AccountTransactionService;
+        $this->accountTransactionService = new AccountTransactionService();
     }
 
     public function store(Request $request, Goods $goods): void

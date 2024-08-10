@@ -34,12 +34,12 @@ class OfferingLettersController extends Controller
 
     public function __construct()
     {
-        $this->OfferingLetterService = new OfferingLetterService;
-        $this->offeringLetter = new OfferingLetter;
-        $this->contact = new Contact;
-        $this->serviceCategory = new ServiceCategory;
-        $this->offeringLetterProduct = new OfferingLetterProduct;
-        $this->branch = new Branch;
+        $this->OfferingLetterService = new OfferingLetterService();
+        $this->offeringLetter = new OfferingLetter();
+        $this->contact = new Contact();
+        $this->serviceCategory = new ServiceCategory();
+        $this->offeringLetterProduct = new OfferingLetterProduct();
+        $this->branch = new Branch();
     }
 
     public function index(): View

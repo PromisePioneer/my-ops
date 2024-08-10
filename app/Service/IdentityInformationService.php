@@ -12,7 +12,7 @@ class IdentityInformationService
 
     public function __construct()
     {
-        $this->handleFileUploadService = new HandleFileUploadService;
+        $this->handleFileUploadService = new HandleFileUploadService();
     }
 
     public function update(IdentityInformationRequest $request, User $user): void

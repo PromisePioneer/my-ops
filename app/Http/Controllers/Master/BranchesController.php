@@ -135,7 +135,7 @@ class BranchesController extends Controller
     {
         $file = $request->file('file_import');
 
-        Excel::import(new BranchesImport, $file);
+        Excel::import(new BranchesImport(), $file);
 
         return response()->json([
             'message' => 'Data berhasil diimport',

@@ -60,7 +60,7 @@ class LeaveAndPermissionRequest extends FormRequest
             'reason' => ['required'],
             'leaves_status' => ['required'],
             'sick_letter' => [
-                Rule::requiredIf(fn() => $request->leaves_status === 'Sakit'),
+                Rule::requiredIf(fn () => $request->leaves_status === 'Sakit'),
             ],
         ];
     }

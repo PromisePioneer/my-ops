@@ -17,7 +17,7 @@ class InitialJournalController extends Controller
 
     public function __construct()
     {
-        $this->initialJournal = new InitialJournalServices;
+        $this->initialJournal = new InitialJournalServices();
     }
 
     public function index(): View

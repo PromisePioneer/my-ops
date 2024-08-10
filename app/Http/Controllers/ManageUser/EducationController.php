@@ -14,7 +14,6 @@ use Throwable;
 
 class EducationController extends Controller
 {
-
     private Education $education;
     private HandleFileUploadService $handleUploadService;
 
@@ -41,9 +40,12 @@ class EducationController extends Controller
                 'major' => $request->major,
                 'graduation_year' => $request->graduation_year,
                 'gpa' => $request->gpa,
-                'sk_file' => $this->handleUploadService->upload($request, 'documents/certificate_of_graduation',
+                'sk_file' => $this->handleUploadService->upload(
+                    $request,
+                    'documents/certificate_of_graduation',
                     'certificate_of_graduation',
-                    $currentUserEducation?->certificate_of_graduation)
+                    $currentUserEducation?->certificate_of_graduation
+                )
             ]);
         });
 
