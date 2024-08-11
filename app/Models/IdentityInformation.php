@@ -25,26 +25,26 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read User $user
  *
- * @method static Builder|UserIdentityInformation newModelQuery()
- * @method static Builder|UserIdentityInformation newQuery()
- * @method static Builder|UserIdentityInformation query()
- * @method static Builder|UserIdentityInformation whereCreatedAt($value)
- * @method static Builder|UserIdentityInformation whereDateOfBirth($value)
- * @method static Builder|UserIdentityInformation whereGender($value)
- * @method static Builder|UserIdentityInformation whereHomeAddress($value)
- * @method static Builder|UserIdentityInformation whereId($value)
- * @method static Builder|UserIdentityInformation whereKtpAttachment($value)
- * @method static Builder|UserIdentityInformation whereMaritalStatus($value)
- * @method static Builder|UserIdentityInformation whereMarriedStatus($value)
- * @method static Builder|UserIdentityInformation whereNik($value)
- * @method static Builder|UserIdentityInformation wherePhoneNumber($value)
- * @method static Builder|UserIdentityInformation wherePlaceOfBirth($value)
- * @method static Builder|UserIdentityInformation whereUpdatedAt($value)
- * @method static Builder|UserIdentityInformation whereUserId($value)
+ * @method static Builder|IdentityInformation newModelQuery()
+ * @method static Builder|IdentityInformation newQuery()
+ * @method static Builder|IdentityInformation query()
+ * @method static Builder|IdentityInformation whereCreatedAt($value)
+ * @method static Builder|IdentityInformation whereDateOfBirth($value)
+ * @method static Builder|IdentityInformation whereGender($value)
+ * @method static Builder|IdentityInformation whereHomeAddress($value)
+ * @method static Builder|IdentityInformation whereId($value)
+ * @method static Builder|IdentityInformation whereKtpAttachment($value)
+ * @method static Builder|IdentityInformation whereMaritalStatus($value)
+ * @method static Builder|IdentityInformation whereMarriedStatus($value)
+ * @method static Builder|IdentityInformation whereNik($value)
+ * @method static Builder|IdentityInformation wherePhoneNumber($value)
+ * @method static Builder|IdentityInformation wherePlaceOfBirth($value)
+ * @method static Builder|IdentityInformation whereUpdatedAt($value)
+ * @method static Builder|IdentityInformation whereUserId($value)
  *
  * @mixin Eloquent
  */
-class UserIdentityInformation extends Model
+class IdentityInformation extends Model
 {
     use HasFactory;
 
@@ -69,7 +69,7 @@ class UserIdentityInformation extends Model
     }
 
     //eloquent
-    public function getRelatedUserIdentityInformation(int $userId): Model|Builder|UserIdentityInformation|null
+    public function getRelatedUserIdentityInformation(int $userId): Model|Builder|IdentityInformation|null
     {
         return self::where('user_id', $userId)->first();
     }

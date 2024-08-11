@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Utilities;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Utilities\UserProfile\UpdatePasswordRequest;
 use App\Http\Requests\Utilities\UserProfile\UserProfileRequest;
+use App\Models\IdentityInformation;
+use App\Models\JobInformation;
 use App\Models\User;
-use App\Models\UserIdentityInformation;
-use App\Models\UserJobInformation;
 use App\Service\HandleFileUploadService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,16 +16,16 @@ use Illuminate\View\View;
 
 class UserProfileController extends Controller
 {
-    private UserIdentityInformation $identityInformation;
+    private IdentityInformation $identityInformation;
 
-    private UserJobInformation $jobInformation;
+    private JobInformation $jobInformation;
 
     private HandleFileUploadService $handleFileUpload;
 
     public function __construct()
     {
-        $this->identityInformation = new UserIdentityInformation();
-        $this->jobInformation = new UserJobInformation();
+        $this->identityInformation = new IdentityInformation();
+        $this->jobInformation = new JobInformation();
         $this->handleFileUpload = new HandleFileUploadService();
     }
 

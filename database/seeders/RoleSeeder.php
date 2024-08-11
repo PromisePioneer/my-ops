@@ -24,6 +24,8 @@ class RoleSeeder extends Seeder
         Role::create(['name' => 'Stocker']);
         Role::create(['name' => 'Customer Service']);
         Role::create(['name' => 'NOC']);
+        Role::create(['name' => 'HR']);
+        Role::create(['name' => 'Testing Role']);
 
         $superAdminRole = Role::create(['name' => 'Super Admin']);
         $superAdmin = User::where('name', 'Super Admin')->first();

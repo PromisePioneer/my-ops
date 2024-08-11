@@ -9,6 +9,7 @@ use App\Http\Controllers\Journals\GeneralJournalController;
 use App\Http\Controllers\Journals\GeneralLedgerController;
 use App\Http\Controllers\ManageUser\EducationCertificateController;
 use App\Http\Controllers\ManageUser\EducationController;
+use App\Http\Controllers\ManageUser\FamilyInformationController;
 use App\Http\Controllers\ManageUser\IdentityInformationController;
 use App\Http\Controllers\ManageUser\JobExperiencesController;
 use App\Http\Controllers\ManageUser\JobInformationController;
@@ -119,6 +120,12 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/edit/{jobExperience}', [JobExperiencesController::class, 'edit']);
             Route::post('/update/{jobExperience}', [JobExperiencesController::class, 'update']);
             Route::delete('/destroy/{jobExperience}', [JobExperiencesController::class, 'destroy']);
+        });
+
+
+        Route::prefix('family-informations')->group(function () {
+            Route::get('/{user}', [FamilyInformationController::class, 'getRelatedFamilyInformation']);
+            Route::post('/{user}', [FamilyInformationController::class, 'updateOrCreate']);
         });
 
 

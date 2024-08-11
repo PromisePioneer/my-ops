@@ -5,8 +5,8 @@ namespace App\Http\Controllers\ManageUser;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\JobInformationRequest;
 use App\Models\Department;
+use App\Models\JobInformation;
 use App\Models\User;
-use App\Models\UserJobInformation;
 use App\Service\JobInformationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
@@ -15,13 +15,13 @@ class JobInformationController extends Controller
 {
     private JobInformationService $jobInformationService;
     private Department $department;
-    private UserJobInformation $jobInformation;
+    private JobInformation $jobInformation;
 
     public function __construct()
     {
         $this->department = new Department();
         $this->jobInformationService = new JobInformationService();
-        $this->jobInformation = new UserJobInformation();
+        $this->jobInformation = new JobInformation();
     }
 
 
@@ -42,7 +42,7 @@ class JobInformationController extends Controller
 
     public function viewFile(User $user): View
     {
-        $user = UserJobInformation::where('user_id', $user->id)->first();
+        $user = JobInformation::where('user_id', $user->id)->first();
 
         return view('pages.manage-users.user.partials.job-information.view-file', compact('user'));
     }

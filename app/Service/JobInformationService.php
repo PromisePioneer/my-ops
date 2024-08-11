@@ -3,8 +3,8 @@
 namespace App\Service;
 
 use App\Http\Requests\User\JobInformationRequest;
+use App\Models\JobInformation;
 use App\Models\User;
-use App\Models\UserJobInformation;
 
 class JobInformationService
 {
@@ -17,8 +17,8 @@ class JobInformationService
 
     public function update(JobInformationRequest $request, User $user): void
     {
-        $currentJobInfoId = UserJobInformation::where('user_id', $user->id)->first();
-        UserJobInformation::updateOrCreate([
+        $currentJobInfoId = JobInformation::where('user_id', $user->id)->first();
+        JobInformation::updateOrCreate([
             'user_id' => $user->id,
         ], [
             'emp_code' => '123123',

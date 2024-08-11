@@ -54,6 +54,7 @@ class EducationRequest extends FormRequest
             'institution.required' => 'instansi tidak boleh kosong',
             'major.required' => 'jurusan tidak boleh kosong',
             'graduation_year.required' => 'tahun lulus tidak boleh kosong',
+            'graduation_year.digits' => 'tahun lulus tidak valid!',
             'certificate_of_graduation.required_if' => 'ijazah tidak boleh kosong',
             'certificate_of_graduation.mimes' => 'file harus berupa pdf',
             'certificate_of_graduation.max' => 'file harus berukuran maksimal 2 Mb',

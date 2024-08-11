@@ -40,7 +40,7 @@ class EducationController extends Controller
                 'major' => $request->major,
                 'graduation_year' => $request->graduation_year,
                 'gpa' => $request->gpa,
-                'sk_file' => $this->handleUploadService->upload(
+                'certificate_of_graduation' => $this->handleUploadService->upload(
                     $request,
                     'documents/certificate_of_graduation',
                     'certificate_of_graduation',

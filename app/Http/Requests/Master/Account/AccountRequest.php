@@ -16,7 +16,7 @@ class AccountRequest extends FormRequest
     {
         return [
             'branch_id' => [
-                'required',
+                'nullable',
                 Rule::exists('branches', 'id'),
             ],
             'name' => [
@@ -27,8 +27,7 @@ class AccountRequest extends FormRequest
                 Rule::unique('accounts', 'code')
                     ->where(function ($query) {
                         return $query->where('branch_id', $this->branch_id);
-                    })
-                    ->ignore(request()->route('account')),
+                    })->ignore($this->route('account')), // Ensure uniqueness for code during update
             ],
         ];
     }

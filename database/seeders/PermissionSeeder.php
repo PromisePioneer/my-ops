@@ -32,7 +32,6 @@ class PermissionSeeder extends Seeder
             Permission::create(['name' => $permission]);
             $financeManagerRole->givePermissionTo($permission);
             $directorRole->givePermissionTo($permission);
-
         }
 
         $beginningBalances = [
@@ -45,7 +44,6 @@ class PermissionSeeder extends Seeder
         foreach ($beginningBalances as $permission) {
             Permission::create(['name' => $permission]);
             $financeManagerRole->givePermissionTo($permission);
-
         }
 
         $contact = [
@@ -94,14 +92,14 @@ class PermissionSeeder extends Seeder
             $accountant->givePermissionTo($permission);
         }
 
-        $accountCategory = [
-            'lihat kategori akun',
-            'tambah kategori akun',
-            'update kategori akun',
-            'hapus kategori akun',
+        $subAccount = [
+            'lihat sub akun',
+            'tambah sub akun',
+            'update sub akun',
+            'hapus sub akun',
         ];
 
-        foreach ($accountCategory as $permission) {
+        foreach ($subAccount as $permission) {
             Permission::create(['name' => $permission]);
             $financeManagerRole->givePermissionTo($permission);
         }
@@ -111,6 +109,7 @@ class PermissionSeeder extends Seeder
             'tambah akun',
             'update akun',
             'hapus akun',
+            'import akun',
         ];
 
         foreach ($account as $permission) {

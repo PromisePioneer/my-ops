@@ -4,19 +4,19 @@ namespace App\Http\Controllers\ManageUser;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\IdentityInformationRequest;
+use App\Models\IdentityInformation;
 use App\Models\User;
-use App\Models\UserIdentityInformation;
 use App\Service\IdentityInformationService;
 use Illuminate\Http\JsonResponse;
 
 class IdentityInformationController extends Controller
 {
-    private UserIdentityInformation $identityInformation;
+    private IdentityInformation $identityInformation;
     private IdentityInformationService $identityInformationService;
 
     public function __construct()
     {
-        $this->identityInformation = new UserIdentityInformation();
+        $this->identityInformation = new IdentityInformation();
         $this->identityInformationService = new IdentityInformationService();
     }
 

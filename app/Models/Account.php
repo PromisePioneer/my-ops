@@ -6,6 +6,7 @@ use Eloquent;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -46,6 +47,9 @@ use Illuminate\Support\Facades\Auth;
  */
 class Account extends Model
 {
+
+    use HasFactory;
+
     protected $table = 'accounts';
 
     protected $fillable = [
@@ -76,9 +80,11 @@ class Account extends Model
     // eloquent
     public function getAccountsBasedOnUserBranch(?int $branchId, int $perPage): LengthAwarePaginator
     {
-        $accounts = self::with(['subAccount' => static function ($query) {
-            $query->orderBy('code', 'ASC');
-        }])->where('branch_id', $branchId)
+        $accounts = self::with([
+            'subAccount' => static function ($query) {
+                $query->orderBy('code', 'ASC');
+            }
+        ])->where('branch_id', $branchId)
             ->paginate($perPage);
 
         return self::formatAccounts($accounts);
@@ -115,9 +121,11 @@ class Account extends Model
 
     public function filteringAccountBasedOnBranch(int $branchId, int $perPage): LengthAwarePaginator
     {
-        $accounts = self::with(['subAccount' => static function ($query) {
-            $query->orderBy('code', 'ASC');
-        }])->where('branch_id', $branchId)
+        $accounts = self::with([
+            'subAccount' => static function ($query) {
+                $query->orderBy('code', 'ASC');
+            }
+        ])->where('branch_id', $branchId)
             ->paginate($perPage);
 
         return self::formatAccounts($accounts);
@@ -126,11 +134,13 @@ class Account extends Model
     public function searchAccounts(Request $request, int $perPage): LengthAwarePaginator
     {
         $searchTerm = $request->input('search');
-        $query = self::with(['subAccount' => function ($query) {
-            $query->orderBy('code', 'ASC');
-        }])->where('branch_id', Auth::user()->branch_id);
+        $query = self::with([
+            'subAccount' => function ($query) {
+                $query->orderBy('code', 'ASC');
+            }
+        ])->where('branch_id', Auth::user()->branch_id);
 
-        if (! empty($searchTerm)) {
+        if (!empty($searchTerm)) {
             $query->where(function ($query) use ($searchTerm) {
                 $query->where('code', 'like', '%'.$searchTerm.'%')
                     ->orWhere('name', 'like', '%'.$searchTerm.'%');

@@ -3,8 +3,8 @@
 namespace App\Service;
 
 use App\Http\Requests\User\IdentityInformationRequest;
+use App\Models\IdentityInformation;
 use App\Models\User;
-use App\Models\UserIdentityInformation;
 
 class IdentityInformationService
 {
@@ -17,8 +17,8 @@ class IdentityInformationService
 
     public function update(IdentityInformationRequest $request, User $user): void
     {
-        $userIdentityInfoId = UserIdentityInformation::where('user_id', $user->id)->first();
-        UserIdentityInformation::updateOrCreate([
+        $userIdentityInfoId = IdentityInformation::where('user_id', $user->id)->first();
+        IdentityInformation::updateOrCreate([
             'user_id' => $user->id,
         ], [
             'nik' => $request->nik,
@@ -27,7 +27,8 @@ class IdentityInformationService
             'gender' => $request->gender,
             'home_address' => $request->home_address,
             'phone_number' => $request->phone_number,
-            'ktp_attachment' => $this->handleFileUploadService->upload($request, 'documents/user/ktp', 'ktp_attachment', $userIdentityInfoId ? $userIdentityInfoId->ktp_attachment : 'null'),
+            'ktp_attachment' => $this->handleFileUploadService->upload($request, 'documents/user/ktp', 'ktp_attachment',
+                $userIdentityInfoId ? $userIdentityInfoId->ktp_attachment : 'null'),
             'marital_status' => $request->marital_status,
             'married_status' => $request->married_status,
         ]);

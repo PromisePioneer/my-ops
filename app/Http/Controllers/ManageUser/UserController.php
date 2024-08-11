@@ -5,12 +5,12 @@ namespace App\Http\Controllers\ManageUser;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\IdentityInformationRequest;
 use App\Http\Requests\User\UserRequest;
+use App\Models\Attendance;
 use App\Models\Branch;
 use App\Models\Department;
+use App\Models\IdentityInformation;
+use App\Models\JobInformation;
 use App\Models\User;
-use App\Models\UserAttendance;
-use App\Models\UserIdentityInformation;
-use App\Models\UserJobInformation;
 use App\Service\IdentityInformationService;
 use App\Service\JobInformationService;
 use Carbon\Carbon;
@@ -26,15 +26,15 @@ class UserController extends Controller
 
     private IdentityInformationService $identityInformationService;
 
-    private UserJobInformation $jobInformation;
+    private JobInformation $jobInformation;
 
-    private UserIdentityInformation $identityInformation;
+    private IdentityInformation $identityInformation;
 
     private Branch $branch;
 
     private User $user;
 
-    private UserAttendance $attendance;
+    private Attendance $attendance;
 
     private Department $department;
 
@@ -51,9 +51,9 @@ class UserController extends Controller
         $this->branch = new Branch();
         $this->department = new Department();
         $this->identityInformationService = new IdentityInformationService();
-        $this->jobInformation = new userJobInformation();
-        $this->identityInformation = new UserIdentityInformation();
-        $this->attendance = new UserAttendance();
+        $this->jobInformation = new JobInformation();
+        $this->identityInformation = new IdentityInformation();
+        $this->attendance = new Attendance();
         $this->jobInformationService = new JobInformationService();
     }
 
