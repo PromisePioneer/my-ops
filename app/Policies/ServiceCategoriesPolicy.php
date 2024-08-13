@@ -4,7 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 
-class BranchPolicy
+class ServiceCategoriesPolicy
 {
     /**
      * Create a new policy instance.
@@ -16,26 +16,21 @@ class BranchPolicy
 
     public function view(User $user): bool
     {
-        return $user->can('lihat cabang');
+        return $user->can('lihat kategori layanan');
     }
 
     public function create(User $user): bool
     {
-        return $user->can('tambah cabang');
+        return $user->can('tambah kategori layanan');
     }
 
     public function update(User $user): bool
     {
-        return $user->can('update cabang');
+        return $user->can('update kategori layanan');
     }
 
     public function delete(User $user): bool
     {
-        return $user->can('hapus cabang');
-    }
-
-    public function import(User $user): bool
-    {
-        return $user->can('import cabang');
+        return $user->can('hapus kategori layanan');
     }
 }

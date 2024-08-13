@@ -14,7 +14,7 @@ class CreateUsersTable extends Migration
         Schema::create('users', static function (Blueprint $table) {
             $table->id();
             $table->string('absent_id')->unique();
-            $table->enum('placement', ['Pusat', 'Cabang']);
+            $table->enum('placement', ['Pusat', 'Cabang'])->default('Pusat');
             $table->unsignedBigInteger('branch_id')->nullable();
             $table->string('nip')->unique();
             $table->string('name');

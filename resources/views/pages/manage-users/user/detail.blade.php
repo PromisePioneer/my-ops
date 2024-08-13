@@ -3,6 +3,8 @@
     <div class="d-flex flex-column flex-xl-row" x-data="userDetailInformation()">
         @include('pages.manage-users.user.partials.employee-data.identity-information.modal.create')
         @include('pages.manage-users.user.partials.employee-data.job-information.modal.create')
+        @include('pages.manage-users.user.partials.employee-data.family-information.modal.create')
+        @include('pages.manage-users.user.partials.employee-data.health-information.modal.create')
         @include('pages.manage-users.user.partials.education-and-experiences.education.modal.create')
         @include('pages.manage-users.user.partials.education-and-experiences.education-certificates.modal.create')
         @include('pages.manage-users.user.partials.education-and-experiences.education-certificates.modal.edit')
@@ -138,14 +140,18 @@
                 education: {},
                 educationCertificates: [],
                 jobExperiences: [],
+                familyInformation: [],
                 bpjsKesStatus: false,
                 bpjsKetStatus: false,
                 attendance: [],
+                healthInformation: [],
                 marriedStatus: null,
                 marriedData: [{name: "K/1"}, {name: "K/2"}, {name: "K/3"}],
                 noMarriedData: [{name: "TK/1"}, {name: "TK/2"}, {name: "TK/3"}],
                 educationCertificateVal: '',
                 jobExperiencesVal: '',
+                childNameData: [],
+                diseaseData: [],
                 identityInformationForm: document.getElementById('form-identity-information-update'),
                 identityInformationModal: new bootstrap.Modal(document.getElementById('identity-information-update-modal')),
                 jobInformationForm: document.getElementById('form-job-information-update'),
@@ -160,6 +166,10 @@
                 jobExperienceFormCreate: document.getElementById('create-job-experience-form'),
                 jobExperienceModalEdit: new bootstrap.Modal(document.getElementById('edit-job-experience-modal')),
                 jobExperienceFormEdit: document.getElementById('edit-job-experience-form'),
+                familyInformationModal: new bootstrap.Modal(document.getElementById('family-information-update-modal')),
+                familyInformationForm: document.getElementById('form-family-information-update'),
+                healthInformationModal: new bootstrap.Modal(document.getElementById('health-information-update-modal')),
+                healthInformationForm: document.getElementById('form-health-information-update'),
                 async init() {
                     await this.getIdentityInformation();
                     await this.getJobInformation();
@@ -167,6 +177,10 @@
                     await this.getEducation();
                     await this.getEducationCertificate();
                     await this.getJobExperiences();
+                    await this.getFamilyInformation();
+                    await this.selectedChildData();
+                    await this.getHealthInformation();
+                    await this.selectedDiseaseData();
                 },
                 async add() {
                     await this.getDepartmentData();
@@ -249,6 +263,22 @@
                         this.buttonLoading = false;
                     }
                 },
+                async selectedChildData() {
+                    this.childNameData = [];
+                    this.familyInformation.child?.map((child, i) => {
+                        this.childNameData.push({
+                            name: child.child
+                        })
+                    })
+                },
+                async selectedDiseaseData() {
+                    this.diseaseData = [];
+                    this.healthInformation.disease.map((name) => {
+                        this.diseaseData.push({
+                            name: name
+                        })
+                    })
+                },
                 async educationCertificatesDestroy(id) {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
@@ -275,6 +305,26 @@
                         this.buttonLoading = false;
                     }
                 },
+                addChildNameData() {
+                    this.childNameData.push({
+                        name: '',
+                    })
+                },
+                removeChildData(index) {
+                    if (this.childNameData.length > 1) {
+                        this.childNameData.splice(index, 1);
+                    }
+                },
+                addDiseaseData() {
+                    this.diseaseData.push({
+                        name: '',
+                    });
+                },
+                removeDiseaseData(index) {
+                    if (this.diseaseData.length > 1) {
+                        this.diseaseData.splice(index, 1);
+                    }
+                },
                 async jobExperienceEdit(id) {
                     const resp = await axios.get(`/manage-users/job-experiences/edit/${id}`);
                     this.jobExperiencesVal = resp.data;
@@ -285,6 +335,34 @@
                         await axios.post(`/manage-users/job-experiences/update/${id}`, new FormData(this.jobExperienceFormEdit));
                         await showAlert('success', 'Data berhasil disimpan');
                         this.jobExperienceModalEdit.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async familyInformationUpdate(id) {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/manage-users/family-informations/${this.userId}`, new FormData(this.familyInformationForm));
+                        await showAlert('success', 'Data berhasil disimpan');
+                        this.familyInformationModal.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async healthInformationUpdate(id) {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/manage-users/health-informations/${this.userId}`, new FormData(this.healthInformationForm));
+                        await showAlert('success', 'Data berhasil disimpan');
+                        this.healthInformationModal.hide();
                         await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
@@ -333,6 +411,14 @@
                 async getAbsentData() {
                     const resp = await axios.get(`/manage-users/users/absent/data/${this.userId}`);
                     this.attendance = resp.data;
+                },
+                async getFamilyInformation() {
+                    const resp = await axios.get(`/manage-users/family-informations/${this.userId}`);
+                    this.familyInformation = resp.data;
+                },
+                async getHealthInformation() {
+                    const resp = await axios.get(`/manage-users/health-informations/${this.userId}`);
+                    this.healthInformation = resp.data;
                 },
                 selectedDepartment() {
                     const selectedDepartment = $('#selectedDepartment');

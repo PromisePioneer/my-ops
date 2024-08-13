@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use Eloquent;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -21,32 +25,34 @@ use Illuminate\Http\Request;
  * @property string $npwp
  * @property string $complete_address
  * @property string|null $other_info
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Branch|null $branch
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Branch|null $branch
  *
- * @method static \Illuminate\Database\Eloquent\Builder|Contact newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Contact newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Contact query()
- * @method static \Illuminate\Database\Eloquent\Builder|Contact whereBranchId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Contact whereCompanyName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Contact whereCompleteAddress($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Contact whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Contact whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Contact whereFax($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Contact whereFullName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Contact whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Contact whereIdentityNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Contact whereIdentityType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Contact whereNpwp($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Contact whereOtherInfo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Contact wherePhoneNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Contact whereUpdatedAt($value)
+ * @method static Builder|Contact newModelQuery()
+ * @method static Builder|Contact newQuery()
+ * @method static Builder|Contact query()
+ * @method static Builder|Contact whereBranchId($value)
+ * @method static Builder|Contact whereCompanyName($value)
+ * @method static Builder|Contact whereCompleteAddress($value)
+ * @method static Builder|Contact whereCreatedAt($value)
+ * @method static Builder|Contact whereEmail($value)
+ * @method static Builder|Contact whereFax($value)
+ * @method static Builder|Contact whereFullName($value)
+ * @method static Builder|Contact whereId($value)
+ * @method static Builder|Contact whereIdentityNumber($value)
+ * @method static Builder|Contact whereIdentityType($value)
+ * @method static Builder|Contact whereNpwp($value)
+ * @method static Builder|Contact whereOtherInfo($value)
+ * @method static Builder|Contact wherePhoneNumber($value)
+ * @method static Builder|Contact whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class Contact extends Model
 {
+    use HasFactory;
+
     protected $table = 'contacts';
 
     protected $fillable = [

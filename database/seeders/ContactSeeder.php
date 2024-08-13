@@ -19,7 +19,7 @@ class ContactSeeder extends Seeder
 
         for ($i = 1; $i <= 1000; $i++) {
             Contact::create([
-                'branch_id' => $faker->numberBetween(1, 10),
+                'branch_id' => null,
                 'full_name' => $faker->name,
                 'company_name' => $faker->company,
                 'email' => $faker->email,
@@ -27,7 +27,7 @@ class ContactSeeder extends Seeder
                 'identity_type' => 'ktp',
                 'identity_number' => $faker->randomNumber(),
                 'fax' => $faker->phoneNumber,
-                'npwp' => $faker->bankAccountNumber,
+                'npwp' => $faker->unique()->randomNumber(),
                 'complete_address' => $faker->address,
                 'other_info' => $faker->text,
             ]);

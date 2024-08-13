@@ -11,9 +11,12 @@
 |
 */
 
+use App\Models\User;
+use Spatie\Permission\Models\Role;
+
 uses(
     Tests\TestCase::class,
-    // Illuminate\Foundation\Testing\RefreshDatabase::class,
+    Illuminate\Foundation\Testing\RefreshDatabase::class,
 )->in('Feature');
 
 /*
@@ -42,7 +45,16 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function setUpUserWithPermissions(array $permissions)
 {
-    // ..
+    Artisan::call('migrate:fresh');
+    Artisan::call('db:seed');
+    $role = Role::where('name', 'Testing Role')->first();
+    foreach ($permissions as $permission) {
+        $role->givePermissionTo($permission);
+    }
+    $user = User::factory()->create();
+    $user->assignRole($role);
+
+    return $user;
 }

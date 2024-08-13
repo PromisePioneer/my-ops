@@ -26,6 +26,7 @@ class PermissionSeeder extends Seeder
             'tambah cabang',
             'update cabang',
             'hapus cabang',
+            'import cabang',
         ];
 
         foreach ($branches as $permission) {
@@ -60,6 +61,19 @@ class PermissionSeeder extends Seeder
             $financeManagerRole->givePermissionTo($permission);
             $accountant->givePermissionTo($permission);
         }
+
+
+        $department = [
+            'lihat department',
+            'tambah department',
+            'update department',
+            'hapus department',
+        ];
+
+        foreach ($department as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
 
         $product = [
             'lihat produk',

@@ -4,11 +4,23 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 use App\Models\Account;
+use App\Models\Branch;
+use App\Models\Contact;
+use App\Models\Department;
+use App\Models\Product;
+use App\Models\ServiceCategory;
 use App\Policies\AccountPolicy;
+use App\Policies\BranchPolicy;
+use App\Policies\ContactPolicy;
+use App\Policies\DepartmentPolicy;
+use App\Policies\ProductPolicy;
+use App\Policies\RolePolicy;
+use App\Policies\ServiceCategoriesPolicy;
 use Carbon\Carbon;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
+use Spatie\Permission\Models\Role;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -19,6 +31,12 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Account::class => AccountPolicy::class,
+        Branch::class => BranchPolicy::class,
+        Contact::class => ContactPolicy::class,
+        Product::class => ProductPolicy::class,
+        ServiceCategory::class => ServiceCategoriesPolicy::class,
+        Department::class => DepartmentPolicy::class,
+        Role::class => RolePolicy::class
     ];
 
     /**

@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('health_informations', function (Blueprint $table) {
             $table->id();
-            $table->date('date_of_diagnosis');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('disease');
             $table->timestamps();
         });

@@ -5,7 +5,7 @@ namespace App\Http\Requests\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class FamilyInformationRequest extends FormRequest
+class HealthInformationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,16 +23,7 @@ class FamilyInformationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'partner_name' => ['required', 'string'],
-//            'family_dependents' => ['required'],
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'partner_name.required' => 'nama pasangan tidak boleh kosong',
-            'family_dependents.required' => 'jumlah anggota keluarga bergantung tidak boleh kosong',
+            'disease' => ['nullable', 'string'],
         ];
     }
 }

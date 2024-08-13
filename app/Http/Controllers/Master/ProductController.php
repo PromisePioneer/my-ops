@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Product\ProductRequest;
 use App\Models\Product;
+use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -12,37 +14,46 @@ use Illuminate\View\View;
 class ProductController extends Controller
 {
     public int $perPage = 10;
-
     private Product $product;
 
     public function __construct()
     {
-        $this->middleware('permission:lihat product', ['only' => ['index']]);
-        $this->middleware('permission:tambah product', ['only' => ['create', 'store']]);
-        $this->middleware('permission:update product', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:hapus product', ['only' => ['destroy']]);
-
         $this->product = new Product();
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function index(): View
     {
+        $this->authorize('view', Product::class);
         return view('pages.master.product.index');
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function data(): JsonResponse
     {
+        $this->authorize('view', Product::class);
         return response()->json($this->product->getDataWithPagination($this->perPage));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function search(Request $request): JsonResponse
     {
-
+        $this->authorize('view', Product::class);
         return response()->json($this->product->searchData($request, $this->perPage));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function store(ProductRequest $request): JsonResponse
     {
+        $this->authorize('create', Product::class);
         Product::create($request->validated());
 
         return response()->json([
@@ -50,13 +61,21 @@ class ProductController extends Controller
         ], 200);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function show(Product $product): JsonResponse
     {
+        $this->authorize('update produk', $product);
         return response()->json($product);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function update(ProductRequest $request, Product $product): JsonResponse
     {
+        $this->authorize('update produk', $product);
         $product->update($request->validated());
 
         return response()->json([
@@ -65,11 +84,11 @@ class ProductController extends Controller
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function destroy(Request $request, Product $product): JsonResponse
     {
-
+        $this->authorize('delete', $product);
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
         $product->whereIn('id', $explodeID)->delete();

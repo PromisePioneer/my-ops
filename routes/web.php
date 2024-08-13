@@ -10,6 +10,7 @@ use App\Http\Controllers\Journals\GeneralLedgerController;
 use App\Http\Controllers\ManageUser\EducationCertificateController;
 use App\Http\Controllers\ManageUser\EducationController;
 use App\Http\Controllers\ManageUser\FamilyInformationController;
+use App\Http\Controllers\ManageUser\HealthInformationController;
 use App\Http\Controllers\ManageUser\IdentityInformationController;
 use App\Http\Controllers\ManageUser\JobExperiencesController;
 use App\Http\Controllers\ManageUser\JobInformationController;
@@ -126,6 +127,10 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('family-informations')->group(function () {
             Route::get('/{user}', [FamilyInformationController::class, 'getRelatedFamilyInformation']);
             Route::post('/{user}', [FamilyInformationController::class, 'updateOrCreate']);
+        });
+        Route::prefix('health-informations')->group(function () {
+            Route::get('/{user}', [HealthInformationController::class, 'getRelatedUserHealthInformation']);
+            Route::post('/{user}', [HealthInformationController::class, 'updateOrCreate']);
         });
 
 

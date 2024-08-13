@@ -2,9 +2,10 @@
 
 namespace App\Policies;
 
+use App\Models\Product;
 use App\Models\User;
 
-class BranchPolicy
+class ProductPolicy
 {
     /**
      * Create a new policy instance.
@@ -16,26 +17,21 @@ class BranchPolicy
 
     public function view(User $user): bool
     {
-        return $user->can('lihat cabang');
+        return $user->can('lihat produk');
     }
 
     public function create(User $user): bool
     {
-        return $user->can('tambah cabang');
+        return $user->can('tambah produk');
     }
 
-    public function update(User $user): bool
+    public function update(User $user, Product $product): bool
     {
-        return $user->can('update cabang');
+        return $user->can('update produk');
     }
 
     public function delete(User $user): bool
     {
-        return $user->can('hapus cabang');
-    }
-
-    public function import(User $user): bool
-    {
-        return $user->can('import cabang');
+        return $user->can('delete produk');
     }
 }

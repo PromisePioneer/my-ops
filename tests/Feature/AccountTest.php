@@ -1,21 +1,7 @@
 <?php
 
 use App\Models\Account;
-use App\Models\User;
-use Spatie\Permission\Models\Role;
 
-
-function setUpUserWithPermissions(array $permissions)
-{
-    $role = Role::where('name', 'Testing Role')->first();
-    foreach ($permissions as $permission) {
-        $role->givePermissionTo($permission);
-    }
-    $user = User::factory()->create();
-    $user->assignRole($role);
-
-    return $user;
-}
 
 beforeEach(function () {
     $this->user = setUpUserWithPermissions(['lihat akun', 'tambah akun', 'update akun', 'hapus akun']);
@@ -100,7 +86,7 @@ it('can delete account with correct permission', function () {
 
 it('cannot delete account without permission', function () {
     $account = Account::factory()->create();
-    $user = User::first();
+    $user = $this->user;
     $role = $user->roles->first();
     $role->revokePermissionTo('hapus akun');
     $this->actingAs($user);

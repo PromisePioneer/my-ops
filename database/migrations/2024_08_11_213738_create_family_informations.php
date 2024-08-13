@@ -12,9 +12,9 @@ return new class extends Migration {
     {
         Schema::create('family_informations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('partner_name')->nullable();
-            $table->integer('family_dependents')->nullable();
+            $table->json('child');
             $table->timestamps();
         });
     }

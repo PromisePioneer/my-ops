@@ -8,6 +8,8 @@ use App\Http\Requests\Master\Branch\BranchRequest;
 use App\Imports\BranchesImport;
 use App\Models\Branch;
 use App\Models\User;
+use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -15,28 +17,33 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class BranchesController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('permission:lihat cabang', ['only' => ['index']]);
-        $this->middleware('permission:tambah cabang', ['only' => ['create', 'store']]);
-        $this->middleware('permission:update cabang', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:hapus cabang', ['only' => ['destroy']]);
-    }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function index(): View
     {
+        $this->authorize('view', Branch::class);
         return view('pages.master.branch.index');
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function data(): JsonResponse
     {
+        $this->authorize('view', Branch::class);
         $branches = Branch::select('id', 'code', 'name')->paginate(10);
-
         return response()->json($branches);
     }
 
+
+    /**
+     * @throws AuthorizationException
+     */
     public function search(Request $request): JsonResponse
     {
+        $this->authorize('view', Branch::class);
         $branchSearch = Branch::where('name', 'like', '%'.$request->search.'%')
             ->Orwhere('code', 'like', '%'.$request->search.'%')
             ->select('id', 'code', 'name')
@@ -46,10 +53,13 @@ class BranchesController extends Controller
         return response()->json($branchSearch);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function store(BranchRequest $request): JsonResponse
     {
+        $this->authorize('create', Branch::class);
         Branch::create($request->validated());
-
         return response()->json([
             'message' => 'data berhasil disimpan',
         ], 200);
@@ -103,13 +113,21 @@ class BranchesController extends Controller
         ]);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function show(Branch $branch): JsonResponse
     {
+        $this->authorize('update', $branch);
         return response()->json($branch);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function update(BranchRequest $request, Branch $branch): JsonResponse
     {
+        $this->authorize('update', $branch);
         $branch->update($request->validated());
 
         return response()->json([
@@ -118,21 +136,23 @@ class BranchesController extends Controller
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function destroy(Request $request, Branch $branch): JsonResponse
     {
-        $implodeID = implode(',', $request->get('id'));
-        $explodeID = explode(',', $implodeID);
-        $branch->whereIn('id', $explodeID)->delete();
-
+        $this->authorize('delete', $branch);
+        $branch->whereIn('id', [$request->get('id')])->delete();
         return response()->json([
             'message' => 'data berhasil dihapus',
         ], 200);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function import(BranchImportRequest $request): JsonResponse
     {
+        $this->authorize('import', Branch::class);
         $file = $request->file('file_import');
 
         Excel::import(new BranchesImport(), $file);

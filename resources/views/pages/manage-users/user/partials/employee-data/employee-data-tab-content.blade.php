@@ -1,2 +1,4 @@
 @include('pages.manage-users.user.partials.employee-data.identity-information.index')
 @include('pages.manage-users.user.partials.employee-data.job-information.index')
+@include('pages.manage-users.user.partials.employee-data.family-information.index')
+@include('pages.manage-users.user.partials.employee-data.health-information.index')

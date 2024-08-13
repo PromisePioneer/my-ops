@@ -22,7 +22,7 @@ class ContactRequest extends FormRequest
                 'required',
                 'email',
                 Rule::unique('contacts', 'email')
-                    ->ignore($request->route('contact')),
+                    ->ignore($request->route('contact') === null),
             ],
             'phone_number' => ['required'],
             'identity_type' => [
@@ -32,7 +32,7 @@ class ContactRequest extends FormRequest
             'identity_number' => [
                 'required',
                 Rule::unique('contacts', 'identity_number')
-                    ->ignore($request->route('contact')),
+                    ->ignore($request->route('contact') === null),
             ],
             'fax' => ['required'],
             'npwp' => ['required'],
