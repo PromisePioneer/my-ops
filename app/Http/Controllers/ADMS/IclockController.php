@@ -40,7 +40,7 @@ class IclockController extends Controller
 
         // update status device
         FpDevice::updateOrCreate(
-            ['no_sn' => $this->sn],
+            ['serial_number' => $this->sn],
             ['online' => now()]
         );
 
