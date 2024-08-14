@@ -60,64 +60,65 @@ class IclockController extends Controller
 
     public function receiveRecords(Request $request): string
     {
-//        dd($request->all());
-        //DB::connection()->enableQueryLog();
-        $url = "http://www.solutioncloud.co.id/iclock/edata?SN=$this->sn&table=ATTLOG&Stamp=9999";
-        $content = file_get_contents($url);
-        dd($content);
-//        $content['url'] = "http://www.solutioncloud.co.id/iclock/edata?SN=$this->sn&table=ATTLOG&Stamp=9999";
-//        $content['data'] = ;
-//        DB::table('finger_log')->insert($content);
-//        try {
-//            // $post_content = $request->getContent();
-//            //$arr = explode("\n", $post_content);
-//            $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
-//            dd($arr);
-//            //$tot = count($arr);
-//            $tot = 0;
-//            //operation log
-//            if ($request->input('table') == "OPERLOG") {
-//                // $tot = count($arr) - 1;
-//                foreach ($arr as $rey) {
-//                    if (isset($rey)) {
-//                        $tot++;
-//                    }
-//                }
-//                return "OK: ".$tot;
-//            }
-//            //attendance
-//            foreach ($arr as $rey) {
-//                // $data = preg_split('/\s+/', trim($rey));
-//                if (empty($rey)) {
-//                    continue;
-//                }
-//                // $data = preg_split('/\s+/', trim($rey));
-//                $data = explode("\t", $rey);
-//                //dd($data);
-//                $q['sn'] = $this->sn;
-//                $q['table'] = $request->input('table');
-//                $q['stamp'] = $request->input('Stamp');
-//                $q['employee_id'] = $data[0];
-//                $q['timestamp'] = $data[1];
-//                $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
-//                $q['status2'] = $this->validateAndFormatInteger($data[3] ?? null);
-//                $q['status3'] = $this->validateAndFormatInteger($data[4] ?? null);
-//                $q['status4'] = $this->validateAndFormatInteger($data[5] ?? null);
-//                $q['status5'] = $this->validateAndFormatInteger($data[6] ?? null);
-//                $q['created_at'] = now();
-//                $q['updated_at'] = now();
-//                //dd($q);
-//                DB::table('attendances')->insert($q);
-//                $tot++;
-//                // dd(DB::getQueryLog());
-//            }
-//            return "OK: ".$tot;
-//        } catch (Throwable $e) {
-//            $data['error'] = $e;
-//            DB::table('error_log')->insert($data);
-//            report($e);
-//            return "ERROR: ".$tot."\n";
-//        }
+        DB::connection()->enableQueryLog();
+        $content['url'] = json_encode($request->all());
+        $content['data'] = $request->getContent();
+        DB::table('finger_log')->insert($content);
+        try {
+            // $post_content = $request->getContent();
+            //$arr = explode("\n", $post_content);
+            $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
+            //$tot = count($arr);
+            $tot = 0;
+            //operation log
+            if ($request->input('table') == "OPERLOG") {
+                // $tot = count($arr) - 1;
+                foreach ($arr as $rey) {
+                    if (isset($rey)) {
+                        $tot++;
+                    }
+                }
+                return "OK: ".$tot;
+            }
+            //attendance
+            foreach ($arr as $rey) {
+                // $data = preg_split('/\s+/', trim($rey));
+                if (empty($rey)) {
+                    continue;
+                }
+                // $data = preg_split('/\s+/', trim($rey));
+                $data = explode("\t", $rey);
+                //dd($data);
+                $q['sn'] = $this->sn;
+                $q['table'] = $request->input('table');
+                $q['stamp'] = $request->input('Stamp');
+                $q['employee_id'] = $data[0];
+                $q['timestamp'] = $data[1];
+                $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
+                $q['status2'] = $this->validateAndFormatInteger($data[3] ?? null);
+                $q['status3'] = $this->validateAndFormatInteger($data[4] ?? null);
+                $q['status4'] = $this->validateAndFormatInteger($data[5] ?? null);
+                $q['status5'] = $this->validateAndFormatInteger($data[6] ?? null);
+                $q['created_at'] = now();
+                $q['updated_at'] = now();
+                //dd($q);
+                DB::table('attendances')->insert($q);
+                $tot++;
+                // dd(DB::getQueryLog());
+            }
+            return "OK: ".$tot;
+        } catch (Throwable $e) {
+            $data['error'] = $e;
+            DB::table('error_log')->insert($data);
+            report($e);
+            return "ERROR: ".$tot."\n";
+        }
+    }
+
+    private function validateAndFormatInteger($value)
+    {
+        return isset($value) && $value !== '' ? (int) $value : null;
+        // return is_numeric($value) ? (int) $value : null;
     }
 
     public function test(Request $request)
@@ -131,11 +132,5 @@ class IclockController extends Controller
         $r = "GET OPTION FROM: ".$this->sn."\nStamp=".strtotime('now')."\nOpStamp=".strtotime('now')."\nErrorDelay=60\nDelay=30\nResLogDay=18250\nResLogDelCount=10000\nResLogCount=50000\nTransTimes=00:00;14:05\nTransInterval=1\nTransFlag=1111000000\nRealtime=1\nEncrypt=0";
 
         return response()->json($r);
-    }
-
-    private function validateAndFormatInteger($value)
-    {
-        return isset($value) && $value !== '' ? (int) $value : null;
-        // return is_numeric($value) ? (int) $value : null;
     }
 }
