@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ADMS\FpDevicesController;
+use App\Http\Controllers\ADMS\IclockController;
 use App\Http\Controllers\Inventory\GoodsController;
 use App\Http\Controllers\Inventory\UnitTypesController;
 use App\Http\Controllers\Inventory\UsedItemsController;
@@ -585,10 +586,10 @@ Route::group(['middleware' => ['auth']], static function () {
 });
 
 
-//// handshake
-//Route::get('/iclock/cdata', [IclockController::class, 'handshake']);
-//// request dari device
-//Route::post('/iclock/cdata', [IclockController::class, 'receiveRecords']);
-//
-//Route::get('/iclock/test', [IclockController::class, 'test']);
-//Route::get('/iclock/getrequest', [IclockController::class, 'getrequest']);
+// handshake
+Route::get('/iclock/cdata', [IclockController::class, 'handshake']);
+// request dari device
+Route::post('/iclock/cdata', [IclockController::class, 'receiveRecords']);
+
+Route::get('/iclock/test', [IclockController::class, 'test']);
+Route::get('/iclock/getrequest', [IclockController::class, 'getrequest']);
