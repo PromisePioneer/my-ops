@@ -1,4 +1,4 @@
-﻿<div class="modal fade" tabindex="-1" id="modal-create">
+<div class="modal fade" tabindex="-1" id="modal-edit">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -9,17 +9,25 @@
                 </div>
             </div>
 
-            <form id="form-create" @submit.prevent="save()">
+            <form id="form-edit" @submit.prevent="update(editVal.id)">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Kode</label>
-                        <input type="number" id="code" name="code" class="form-control form-control-solid"
-                               placeholder="Kode"/>
+                        <label for="branch_id" class="required form-label">Cabang</label>
+                        <select name="branch_id" class="form-select form-select-solid branch-select2"
+                                id="selected-branch">
+                            <option value="0">Pilih</option>
+                        </select>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama</label>
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama Cabang"/>
+                               placeholder="Nama" :value="editVal.name"/>
+                    </div>
+                    <div class="mb-10">
+                        <label for="serial_number" class="required form-label">Serial Number</label>
+                        <input type="text" id="serial_number" name="serial_number"
+                               class="form-control form-control-solid"
+                               placeholder="Nama" :value="editVal.serial_number"/>
                     </div>
                 </div>
 

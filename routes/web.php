@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ADMS\FpDevicesController;
+use App\Http\Controllers\ADMS\IclockController;
 use App\Http\Controllers\Inventory\GoodsController;
 use App\Http\Controllers\Inventory\UnitTypesController;
 use App\Http\Controllers\Inventory\UsedItemsController;
@@ -21,7 +23,6 @@ use App\Http\Controllers\ManageUser\UserAttendanceController;
 use App\Http\Controllers\ManageUser\UserController;
 use App\Http\Controllers\Master\AccountController;
 use App\Http\Controllers\Master\AccountTransactionsController;
-use App\Http\Controllers\Master\AttendanceMachineController;
 use App\Http\Controllers\Master\BranchesController;
 use App\Http\Controllers\Master\ContactController;
 use App\Http\Controllers\Master\DepartmentController;
@@ -53,6 +54,11 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+
+Route::get('/', function () {
+    return view('welcome');
+});
 
 Route::get('/', static function () {
     return redirect('/login');
@@ -563,4 +569,27 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [MenuController::class, 'data']);
         });
     });
+
+    Route::prefix('/adms')->group(function () {
+        Route::prefix('/fp-devices')->group(function () {
+            Route::get('/', [FpDevicesController::class, 'index']);
+            Route::get('/data', [FpDevicesController::class, 'data']);
+            Route::get('/search', [FpDevicesController::class, 'search']);
+            Route::post('/', [FpDevicesController::class, 'store']);
+            Route::get('/{fpDevice}', [FpDevicesController::class, 'edit']);
+            Route::get('/branch/data', [FpDevicesController::class, 'getBranchData']);
+            Route::get('/branch/selected/{fpDevice}', [FpDevicesController::class, 'selectedBranchData']);
+            Route::post('/{fpDevice}', [FpDevicesController::class, 'update']);
+            Route::delete('/{fpDevice}', [FpDevicesController::class, 'destroy']);
+        });
+    });
+
+
+    // handshake
+    Route::get('/iclock/cdata', [IclockController::class, 'handshake']);
+// request dari device
+    Route::post('/iclock/cdata', [IclockController::class, 'receiveRecords']);
+
+    Route::get('/iclock/test', [IclockController::class, 'test']);
+    Route::get('/iclock/getrequest', [IclockController::class, 'getrequest']);
 });

@@ -14,8 +14,16 @@ class CreateUsersTable extends Migration
         Schema::create('users', static function (Blueprint $table) {
             $table->id();
             $table->string('absent_id')->unique();
+            $table->integer('pri')->default(0);
             $table->enum('placement', ['Pusat', 'Cabang'])->default('Pusat');
             $table->unsignedBigInteger('branch_id')->nullable();
+            $table->string('card')->nullable();
+            $table->integer('grp')->default(1);
+            $table->string('tz')->default('0000000100000000');
+            $table->integer('verify')->default(0);
+            $table->string('vice_card')->nullable();
+            $table->dateTime('start_datetime')->nullable();
+            $table->dateTime('end_datetime')->nullable();
             $table->string('nip')->unique();
             $table->string('name');
             $table->date('join_date');

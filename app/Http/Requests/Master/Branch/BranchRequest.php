@@ -18,12 +18,12 @@ class BranchRequest extends FormRequest
             'code' => [
                 'required',
                 Rule::unique('branches', 'code')
-                    ->ignore(request()->route('branch')),
+                    ->ignore($this->route('branch')),
             ],
             'name' => [
                 'required',
                 Rule::unique('branches', 'name')
-                    ->ignore(request()->route('branch')),
+                    ->ignore($this->route('branch')),
             ],
         ];
     }

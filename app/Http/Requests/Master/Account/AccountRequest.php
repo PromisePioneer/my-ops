@@ -27,7 +27,7 @@ class AccountRequest extends FormRequest
                 Rule::unique('accounts', 'code')
                     ->where(function ($query) {
                         return $query->where('branch_id', $this->branch_id);
-                    })->ignore($this->route('account')), // Ensure uniqueness for code during update
+                    })->ignore($this->route('account')),
             ],
         ];
     }

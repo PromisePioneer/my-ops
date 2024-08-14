@@ -345,6 +345,21 @@
                         </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
+                <x-dropdown-menu :active="request()->segment(1) === 'adms'">
+                    @slot('parentIcon')
+                        <i class="bi bi-app-indicator"></i>
+                    @endslot
+                    @slot('menuTitle')
+                        ADMS
+                    @endslot
+                    @slot('menuItem')
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'fp-devices'"
+                                href="{{ url('adms/fp-devices') }}">
+                            Mesin Absen
+                        </x-dropdown-menu-item>
+                    @endslot
+                </x-dropdown-menu>
             </div>
         </div>
         <div class="aside-footer flex-column-auto py-5" id="kt_aside_footer">

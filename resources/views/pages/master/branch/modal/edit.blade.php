@@ -3,7 +3,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Form Cabang</h5>
-                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
+                     aria-label="Close">
                     <span class="svg-icon svg-icon-2x"></span>
                 </div>
             </div>
@@ -12,17 +13,20 @@
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Kode</label>
-                        <input type="number" id="code" name="code" class="form-control form-control-solid" placeholder="Kode" :value="editVal.code"/>
+                        <input type="number" id="code" name="code" class="form-control form-control-solid"
+                               placeholder="Kode" x-bind:value="editVal.code"/>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama</label>
-                        <input type="text" id="name" name="name" class="form-control form-control-solid" placeholder="Nama Cabang" :value="editVal.name"/>
+                        <input type="text" id="name" name="name" class="form-control form-control-solid"
+                               placeholder="Nama Cabang" :value="editVal.name"/>
                     </div>
                 </div>
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary btn-sm" :disabled="buttonLoading" x-text="buttonLoading ? 'Loading...' : 'Simpan'">
+                    <button type="submit" class="btn btn-primary btn-sm" :disabled="buttonLoading"
+                            x-text="buttonLoading ? 'Loading...' : 'Simpan'">
                 </div>
             </form>
         </div>
