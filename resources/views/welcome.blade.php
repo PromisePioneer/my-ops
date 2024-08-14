@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-    {{ dd(DB::table('finger_log')->get()) }}
+    {{ dd(DB::table('finger_logs')->get()) }}
 
     <title>Laravel</title>
 
