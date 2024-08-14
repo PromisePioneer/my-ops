@@ -583,13 +583,13 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::delete('/{fpDevice}', [FpDevicesController::class, 'destroy']);
         });
     });
-
-
-    // handshake
-    Route::get('/iclock/cdata', [IclockController::class, 'handshake']);
-// request dari device
-    Route::post('/iclock/cdata', [IclockController::class, 'receiveRecords']);
-
-    Route::get('/iclock/test', [IclockController::class, 'test']);
-    Route::get('/iclock/getrequest', [IclockController::class, 'getrequest']);
 });
+
+
+// handshake
+Route::get('/iclock/cdata', [IclockController::class, 'handshake']);
+// request dari device
+Route::post('/iclock/cdata', [IclockController::class, 'receiveRecords']);
+
+Route::get('/iclock/test', [IclockController::class, 'test']);
+Route::get('/iclock/getrequest', [IclockController::class, 'getrequest']);
