@@ -41,7 +41,10 @@ class IclockController extends Controller
         // update status device
         FpDevice::updateOrCreate(
             ['serial_number' => $this->sn],
-            ['online' => now()]
+            [
+                'name' => $this->sn,
+                'online' => now()
+            ]
         );
 
         return "GET OPTION FROM: {$request->input('SN')}\r\n".
