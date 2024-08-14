@@ -78,7 +78,7 @@
                                                 data-bs-target="#modal-edit" @click="edit(shift.id)">
                                             <i class="bi bi-pencil"></i>
                                         </button>
-                                        <button class="btn btn-danger btn-sm" @click="destroy(device.id)">
+                                        <button class="btn btn-danger btn-sm" @click="destroy(shift.id)">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </td>
@@ -183,6 +183,18 @@
                     } finally {
                         this.buttonLoading = false;
                     }
+                },
+                async destroy(id) {
+                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                        try {
+                            await axios.delete(`/adms/manage-shift/${id}`);
+                            await showAlert('success', 'Data sukses dihapus');
+                            await this.init();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
                 },
             }
         }
