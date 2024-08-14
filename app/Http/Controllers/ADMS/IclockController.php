@@ -21,7 +21,7 @@ class IclockController extends Controller
         $data = [
             'url' => json_encode($request->all()),
             'data' => $request->getContent(),
-            'sn' => $request->input('SN'),
+            'serial_number' => $request->input('SN'),
             'option' => $request->input('option'),
         ];
         DeviceLog::create($data);
