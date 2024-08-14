@@ -7,7 +7,7 @@
 
 
     {{--    {{ dd(DB::table('finger_logs')->get()) }}--}}
-    {{ dd(DeviceLog::where('id', 100)->first()) }}
+    {{ dd(DeviceLog::all()) }}
     <title>Laravel</title>
 
     <!-- Fonts -->
