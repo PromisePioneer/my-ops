@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ADMS\AttendancesController;
 use App\Http\Controllers\ADMS\FpDevicesController;
 use App\Http\Controllers\ADMS\IclockController;
 use App\Http\Controllers\Inventory\GoodsController;
@@ -582,6 +583,11 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/{fpDevice}', [FpDevicesController::class, 'update']);
             Route::delete('/{fpDevice}', [FpDevicesController::class, 'destroy']);
         });
+
+        
+        Route::prefix('attendances')->group(function () {
+            Route::get('/', [AttendancesController::class, 'index']);
+        });
     });
 });
 
@@ -593,3 +599,4 @@ Route::post('/iclock/cdata', [IclockController::class, 'receiveRecords']);
 
 Route::get('/iclock/test', [IclockController::class, 'test']);
 Route::get('/iclock/getrequest', [IclockController::class, 'getrequest']);
+
