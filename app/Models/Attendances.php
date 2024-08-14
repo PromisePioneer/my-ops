@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class Attendances extends Model
 {
@@ -26,6 +28,31 @@ class Attendances extends Model
 
     public function getAttendanceWithPagination(int $perPage)
     {
-        return self::orderBy('created_at', 'desc')->paginate($perPage);
+        $attendances = self::orderBy('created_at', 'desc')->paginate($perPage);
+        self::formattedData($attendances);
+        return $attendances;
     }
+
+
+    private static function formattedData(LengthAwarePaginator $data)
+    {
+        $formattedData = $data->getCollection()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'sn' => $item->sn,
+                'employee_id' => $item->employee_id,
+                'timestamp' => Carbon::parse($item->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                'status1' => $item->status1,
+                'status2' => $item->status2,
+                'status3' => $item->status3,
+                'status4' => $item->status4,
+                'status5' => $item->status5,
+            ];
+        });
+
+        $data->setCollection($formattedData);
+
+        return $data;
+    }
+
 }
