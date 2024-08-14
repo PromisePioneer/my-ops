@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\ADMS;
 
 use App\Http\Controllers\Controller;
+use App\Models\Attendances;
+use App\Models\DeviceLog;
+use App\Models\ErrorLog;
+use App\Models\FingerLog;
+use App\Models\FpDevice;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class IclockController extends Controller
@@ -31,10 +35,11 @@ class IclockController extends Controller
             'sn' => $this->sn,
             'option' => $request->input('option'),
         ];
-        DB::table('device_logs')->insert($data);
+        DeviceLog::created($data);
+
 
         // update status device
-        DB::table('fp_devices')->updateOrInsert(
+        FpDevice::updateOrCreate(
             ['no_sn' => $this->sn],
             ['online' => now()]
         );
@@ -61,7 +66,7 @@ class IclockController extends Controller
         //DB::connection()->enableQueryLog();
         $content['url'] = json_encode($request->all());
         $content['data'] = $request->getContent();
-        DB::table('finger_log')->insert($content);
+        FingerLog::create($content);
         try {
             // $post_content = $request->getContent();
             //$arr = explode("\n", $post_content);
@@ -100,20 +105,20 @@ class IclockController extends Controller
                 $q['created_at'] = now();
                 $q['updated_at'] = now();
                 //dd($q);
-                DB::table('attendances')->insert($q);
+                Attendances::create($q);
                 $tot++;
                 // dd(DB::getQueryLog());
             }
             return "OK: ".$tot;
         } catch (Throwable $e) {
             $data['error'] = $e;
-            DB::table('error_logs')->insert($data);
+            ErrorLog::create(($data));
             report($e);
             return "ERROR: ".$tot."\n";
         }
     }
 
-    private function validateAndFormatInteger($value)
+    private function validateAndFormatInteger($value): ?int
     {
         return isset($value) && $value !== '' ? (int) $value : null;
         // return is_numeric($value) ? (int) $value : null;
@@ -122,7 +127,7 @@ class IclockController extends Controller
     public function test(Request $request): void
     {
         $log['data'] = $request->getContent();
-        DB::table('finger_logs')->insert($log);
+        FingerLog::create($log);
     }
 
     public function getrequest(Request $request): string
