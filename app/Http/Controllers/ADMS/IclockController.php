@@ -16,23 +16,12 @@ class IclockController extends Controller
     /**
      * @throws Throwable
      */
-    private readonly string $sn;
-
-    public function __construct()
-    {
-        $this->sn = 'AEWD233960062';
-    }
-
-
-    /**
-     * @throws Throwable
-     */
     public function handshake(Request $request): string
     {
         $data = [
             'url' => json_encode($request->all()),
             'data' => $request->getContent(),
-            'sn' => $this->sn,
+            'sn' => $request->input('SN'),
             'option' => $request->input('option'),
         ];
         DeviceLog::create($data);
@@ -40,9 +29,9 @@ class IclockController extends Controller
 
         // update status device
         FpDevice::updateOrCreate(
-            ['serial_number' => $this->sn],
+            ['serial_number' => $request->input('SN')],
             [
-                'name' => $this->sn,
+                'name' => $request->input('SN'),
                 'online' => now()
             ]
         );
