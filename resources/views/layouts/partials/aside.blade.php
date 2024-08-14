@@ -75,7 +75,7 @@
         </div>
     </div>
     <div class="aside-menu flex-column-fluid">
-        <div class="hover-scroll-overlay-y px-2 my-5 my-lg-5" id="kt_aside_menu_wrapper" data-kt-scroll="true"
+        <div class="hover-scroll-overlay-y px-2 pb-14 my-5 my-lg-5" id="kt_aside_menu_wrapper" data-kt-scroll="true"
              data-kt-scroll-height="auto"
              data-kt-scroll-dependencies="{default: '#kt_aside_toolbar, #kt_aside_footer', lg: '#kt_header, #kt_aside_toolbar, #kt_aside_footer'}"
              data-kt-scroll-wrappers="#kt_aside_menu" data-kt-scroll-offset="5px">
@@ -359,21 +359,13 @@
                             Mesin Absen
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'fp-devices'"
+                                :active="request()->segment(2) === 'attendances'"
                                 href="{{ url('adms/attendances') }}">
                             Data Kehadiran
                         </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
             </div>
-        </div>
-        <div class="aside-footer flex-column-auto py-5" id="kt_aside_footer">
-            <a href="#"
-               class="btn btn-custom btn-primary w-100" data-bs-toggle="tooltip" data-bs-trigger="hover"
-               data-bs-dismiss-="click" title=""
-               data-bs-original-title="Cek untuk petunjuk penggunaan aplikasi">
-                <span class="btn-label">Dokumentasi aplikasi</span>
-            </a>
         </div>
     </div>
 </div>
