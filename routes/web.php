@@ -3,6 +3,7 @@
 use App\Http\Controllers\ADMS\AttendancesController;
 use App\Http\Controllers\ADMS\FpDevicesController;
 use App\Http\Controllers\ADMS\IclockController;
+use App\Http\Controllers\ADMS\ManageShiftController;
 use App\Http\Controllers\Inventory\GoodsController;
 use App\Http\Controllers\Inventory\UnitTypesController;
 use App\Http\Controllers\Inventory\UsedItemsController;
@@ -588,6 +589,16 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('attendances')->group(function () {
             Route::get('/', [AttendancesController::class, 'index']);
             Route::get('/data', [AttendancesController::class, 'data']);
+        });
+
+        Route::prefix('/manage-shift')->group(function () {
+            Route::get('/', [ManageShiftController::class, 'index']);
+            Route::get('/data', [ManageShiftController::class, 'data']);
+            Route::get('/search', [ManageShiftController::class, 'search']);
+            Route::post('/', [ManageShiftController::class, 'store']);
+            Route::get('/{manageShift}', [ManageShiftController::class, 'edit']);
+            Route::post('/{manageShift}', [ManageShiftController::class, 'update']);
+            Route::delete('/{manageShift}', [ManageShiftController::class, 'destroy']);
         });
     });
 });

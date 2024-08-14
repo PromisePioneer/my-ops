@@ -1,10 +1,11 @@
 @extends('layouts.template')
-@section('page-title', 'Data Mesin Absensi')
+@section('page-title', 'Pengaturan Shift')
 @section('content')
-    <div x-data="fpDevicesData()">
+
+    <div x-data="manageShiftData ()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.adms.fp-devices.modal.create')
-            @include('pages.adms.fp-devices.modal.edit')
+            @include('pages.adms.manage-shift.modal.create')
+            @include('pages.adms.manage-shift.modal.edit')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -17,13 +18,6 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                        <button type="button" class="btn btn-light-primary btn-sm me-3" data-bs-toggle="modal"
-                                data-bs-target="#modal-import">
-                            <span class="svg-icon svg-icon-2">
-                                <i class="bi bi-file-earmark-excel-fill"></i>
-                            </span>
-                            Import
-                        </button>
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                                     data-bs-target="#modal-create">
@@ -42,9 +36,13 @@
                                 <th class="w-10px pe-2">
                                     No
                                 </th>
-                                <th class="min-w-125px">Cabang</th>
-                                <th class="min-w-125px">Nama Mesin</th>
-                                <th class="min-w-125px">Serial Number</th>
+                                <th class="min-w-125px">Nama</th>
+                                <th class="min-w-125px">Jam Masuk</th>
+                                <th class="min-w-125px">Jam Pulang</th>
+                                <th class="min-w-125px">Mulai Check In</th>
+                                <th class="min-w-125px">Mulai Check Out</th>
+                                <th class="min-w-125px">Akhir Check Out</th>
+
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
@@ -59,23 +57,25 @@
                                     </td>
                                 </tr>
                             </template>
-                            <template x-if="!isLoading && devices.data?.length === 0">
+                            <template x-if="!isLoading && shifts.data?.length === 0">
                                 <tr>
                                     <td colspan="9">
                                         <center>Data Tidak Ditemukan</center>
                                     </td>
                                 </tr>
                             </template>
-                            <template x-for="(device, index) in devices?.data" :key="device.id">
+                            <template x-for="(shift, index) in shifts?.data" :key="shift.id">
                                 <tr>
                                     <td x-text="startIndex + index++"></td>
-                                    <td x-text="device.branch?.name"></td>
-                                    <td x-text="device.name"></td>
-                                    <td x-text="device.serial_number"></td>
-                                    <td x-text="device.online"></td>
+                                    <td x-text="shift.name"></td>
+                                    <td x-text="shift.clock_in"></td>
+                                    <td x-text="shift.clock_out"></td>
+                                    <td x-text="shift.time_to_checkin"></td>
+                                    <td x-text="shift.time_to_checkout"></td>
+                                    <td x-text="shift.end_time_to_checkout"></td>
                                     <td>
                                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(device.id)">
+                                                data-bs-target="#modal-edit" @click="edit(shift.id)">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <button class="btn btn-danger btn-sm" @click="destroy(device.id)">
@@ -102,58 +102,58 @@
     @include('components.toast')
 @endsection
 @push('script')
-    <script defer>
-        function fpDevicesData() {
+    <script>
+        $(".time").flatpickr({
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+        });
+
+        function manageShiftData() {
             return {
-                devices: [],
-                isLoading: true,
                 buttonLoading: false,
+                isLoading: false,
                 startIndex: null,
-                selectedCheckBox: [],
-                selectAll: false,
-                singleChecked: false,
+                shifts: null,
                 search: '',
                 editVal: '',
-                formCreate: document.getElementById('form-create'),
-                formEdit: document.getElementById('form-edit'),
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
+                formCreate: document.getElementById('form-create'),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
-                deleteForm: document.getElementById('deleteForm'),
+                formEdit: document.getElementById('form-edit'),
                 async init() {
-                    const resp = await axios.get('/adms/fp-devices/data');
-                    this.devices = resp.data
-                    this.startIndex = this.devices.from;
-                    this.isLoading = false;
-                    await this.getBranchData();
+                    await this.getShiftsData();
                 },
-                async searchData() {
+                async getShiftsData() {
+                    this.isLoading = true
                     try {
-                        this.devices = await axios.get('/adms/fp-devices/search', {
-                            params: {search: this.search},
-                            headers: {'Content-Type': 'application/json'}
-                        });
+                        const resp = await axios.get('/adms/manage-shift/data');
+                        this.shifts = resp.data;
+                        this.startIndex = this.shifts.from;
                     } catch (error) {
-                        console.log(error);
+                        console.log(error)
+                    } finally {
+                        this.isLoading = false;
                     }
                 },
                 async nextPage() {
-                    if (this.devices.next_page_url) {
-                        const resp = await axios.get(`${this.devices.next_page_url}`);
-                        this.startIndex = this.devices.from
-                        this.devices = resp.data
+                    if (this.shifts.next_page_url) {
+                        const resp = await axios.get(`${this.shifts.next_page_url}`);
+                        this.startIndex = this.shifts.from
+                        this.shifts = resp.data
                     }
                 },
                 async previousPage() {
-                    if (this.devices.prev_page_url) {
-                        const resp = await axios.get(`${this.devices.prev_page_url}`);
-                        this.startIndex = this.devices.from
-                        this.devices = resp.data
+                    if (this.shifts.prev_page_url) {
+                        const resp = await axios.get(`${this.shifts.prev_page_url}`);
+                        this.startIndex = this.shifts.from
+                        this.shifts = resp.data
                     }
                 },
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/adms/fp-devices/', new FormData(this.formCreate))
+                        await axios.post('/adms/manage-shift/', new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
@@ -166,61 +166,23 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/adms/fp-devices/${id}`);
+                    const resp = await axios.get(`/adms/manage-shift/${id}`);
                     this.editVal = resp.data;
-                    await this.selectedBranch();
                 },
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/adms/fp-devices/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/adms/manage-shift/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
-                        this.modalEdit.hide();
                         this.formEdit.reset();
+                        this.modalEdit.hide();
                         await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]));
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
                     } finally {
                         this.buttonLoading = false;
                     }
-                },
-                async destroy(id) {
-                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
-                        try {
-                            await axios.delete(`/adms/fp-devices/${id}`);
-                            await showAlert('success', 'Data sukses dihapus');
-                            await this.init();
-                        } catch (error) {
-                            console.error(error);
-                            await showAlert('error', 'Terjadi kesalahan');
-                        }
-                    });
-                },
-                async getBranchData() {
-                    $(".branch-select2").select2({
-                        ajax: {
-                            url: '/adms/fp-devices/branch/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async selectedBranch() {
-                    const selectedBranch = $('#selected-branch');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/adms/fp-devices/branch/selected/${this.editVal.id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedBranch.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
                 },
             }
         }

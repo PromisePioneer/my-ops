@@ -363,6 +363,11 @@
                                 href="{{ url('adms/attendances') }}">
                             Data Kehadiran
                         </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'manage-shift'"
+                                href="{{ url('adms/manage-shift') }}">
+                            Manajemen Shift
+                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
             </div>
