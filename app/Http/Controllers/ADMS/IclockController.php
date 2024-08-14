@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\ADMS;
 
 use App\Http\Controllers\Controller;
-use App\Models\DeviceLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -21,9 +20,26 @@ class IclockController extends Controller
     }
 
 
-    public function handshake(Request $request)
+    /**
+     * @throws Throwable
+     */
+    public function handshake(Request $request): string
     {
-        $response = "GET OPTION FROM: {$this->sn}\r\n".
+        $data = [
+            'url' => json_encode($request->all()),
+            'data' => $request->getContent(),
+            'sn' => $this->sn,
+            'option' => $request->input('option'),
+        ];
+        DB::table('device_logs')->insert($data);
+
+        // update status device
+        DB::table('fp_devices')->updateOrInsert(
+            ['no_sn' => $this->sn],
+            ['online' => now()]
+        );
+
+        return "GET OPTION FROM: {$request->input('SN')}\r\n".
             "Stamp=9999\r\n".
             "OpStamp=".time()."\r\n".
             "ErrorDelay=60\r\n".
@@ -37,30 +53,12 @@ class IclockController extends Controller
             //  "TimeZone=7\r\n" .
             "Realtime=1\r\n".
             "Encrypt=0";
-
-        DB::transaction(function () use ($request, &$response) {
-            $data = [
-                'url' => "http://www.solutioncloud.co.id/iclock/edata?SN=$this->sn&table=ATTLOG&Stamp=9999",
-                'data' => $request->getContent(),
-                'serial_number' => $this->sn,
-                'option' => &$response,
-            ];
-            DeviceLog::create($data);
-
-            DB::table('fp_devices')->updateOrInsert(
-                ['serial_number' => $this->sn],
-                ['name' => 'mantap']
-            );
-        });
-
-
-        return response()->json($response);
     }
 
 
     public function receiveRecords(Request $request): string
     {
-        DB::connection()->enableQueryLog();
+        //DB::connection()->enableQueryLog();
         $content['url'] = json_encode($request->all());
         $content['data'] = $request->getContent();
         DB::table('finger_log')->insert($content);
@@ -89,7 +87,7 @@ class IclockController extends Controller
                 // $data = preg_split('/\s+/', trim($rey));
                 $data = explode("\t", $rey);
                 //dd($data);
-                $q['sn'] = $this->sn;
+                $q['sn'] = $request->input('SN');
                 $q['table'] = $request->input('table');
                 $q['stamp'] = $request->input('Stamp');
                 $q['employee_id'] = $data[0];
@@ -109,7 +107,7 @@ class IclockController extends Controller
             return "OK: ".$tot;
         } catch (Throwable $e) {
             $data['error'] = $e;
-            DB::table('error_log')->insert($data);
+            DB::table('error_logs')->insert($data);
             report($e);
             return "ERROR: ".$tot."\n";
         }
@@ -121,16 +119,15 @@ class IclockController extends Controller
         // return is_numeric($value) ? (int) $value : null;
     }
 
-    public function test(Request $request)
+    public function test(Request $request): void
     {
         $log['data'] = $request->getContent();
         DB::table('finger_logs')->insert($log);
     }
 
-    public function getrequest(Request $request)
+    public function getrequest(Request $request): string
     {
-        $r = "GET OPTION FROM: ".$this->sn."\nStamp=".strtotime('now')."\nOpStamp=".strtotime('now')."\nErrorDelay=60\nDelay=30\nResLogDay=18250\nResLogDelCount=10000\nResLogCount=50000\nTransTimes=00:00;14:05\nTransInterval=1\nTransFlag=1111000000\nRealtime=1\nEncrypt=0";
-
-        return response()->json($r);
+        //  $r = "GET OPTION FROM: ".$request->SN."\nStamp=".strtotime('now')."\nOpStamp=".strtotime('now')."\nErrorDelay=60\nDelay=30\nResLogDay=18250\nResLogDelCount=10000\nResLogCount=50000\nTransTimes=00:00;14:05\nTransInterval=1\nTransFlag=1111000000\nRealtime=1\nEncrypt=0";
+        return "OK";
     }
 }
