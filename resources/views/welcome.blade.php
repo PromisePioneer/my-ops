@@ -1,4 +1,4 @@
-@php use App\Models\Attendances; @endphp
+@php use App\Models\Attendances;use App\Models\DeviceLog; @endphp
         <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -7,7 +7,7 @@
 
 
     {{--    {{ dd(DB::table('finger_logs')->get()) }}--}}
-    {{ dd(Attendances::all()) }}
+    {{ dd(DeviceLog::where('id', 100)->first()) }}
     <title>Laravel</title>
 
     <!-- Fonts -->
