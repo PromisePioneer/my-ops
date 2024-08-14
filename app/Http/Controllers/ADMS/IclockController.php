@@ -35,7 +35,7 @@ class IclockController extends Controller
             'sn' => $this->sn,
             'option' => $request->input('option'),
         ];
-        DeviceLog::created($data);
+        DeviceLog::create($data);
 
 
         // update status device
