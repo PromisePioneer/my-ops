@@ -72,6 +72,7 @@
                                     <td x-text="device.branch?.name"></td>
                                     <td x-text="device.name"></td>
                                     <td x-text="device.serial_number"></td>
+                                    <td x-text="device.online"></td>
                                     <td>
                                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(device.id)">

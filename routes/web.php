@@ -584,9 +584,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::delete('/{fpDevice}', [FpDevicesController::class, 'destroy']);
         });
 
-        
+
         Route::prefix('attendances')->group(function () {
             Route::get('/', [AttendancesController::class, 'index']);
+            Route::get('/data', [AttendancesController::class, 'data']);
         });
     });
 });

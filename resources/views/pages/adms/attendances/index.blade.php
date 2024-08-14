@@ -2,36 +2,115 @@
 @section('page-title', 'Data Kehadiran')
 @section('content')
 
-    <table>
-        <thead>
-        <tr>
-            <th>sn</th>
-            <th>table</th>
-            <th>stamp</th>
-            <th>employee_id</th>
-            <th>timestamp</th>
-            <th>status1</th>
-            <th>status2</th>
-            <th>status3</th>
-            <th>status4</th>
-            <th>status5</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach($attendance as $att)
-            <tr>
-                <td>{{ $loop->iteration }}</td>
-                <td>{{ $att->table }}</td>
-                <td>{{ $att->stamp }}</td>
-                <td>{{ $att->employee_id }}</td>
-                <td>{{ $att->timestamp }}</td>
-                <td>{{ $att->status1 }}</td>
-                <td>{{ $att->status2 }}</td>
-                <td>{{ $att->status3 }}</td>
-                <td>{{ $att->status4 }}</td>
-                <td>{{ $att->status5 }}</td>
-            </tr>
-        @endforeach
-        </tbody>
-    </table>
+    <div x-data="attendanceData()">
+        <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-header border-0 pt-6">
+                <div class="card-title">
+                    {{--                    <div class="d-flex align-items-center position-relative my-1">--}}
+                    {{--                        <span class="svg-icon svg-icon-1 position-absolute ms-6">--}}
+                    {{--                           <i class="bi bi-search"></i>--}}
+                    {{--                        </span>--}}
+                    {{--                        --}}{{--                        <input type="text" name="search" x-model="search" @input.debounce="searchData()"--}}
+                    {{--                        --}}{{--                               class="form-control form-control-solid w-250px ps-14" placeholder="Search...">--}}
+                    {{--                    </div>--}}
+                </div>
+            </div>
+            <div class="card-body py-3">
+                <div class="py-5">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
+                            <thead>
+                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                <th class="w-10px pe-2">
+                                    No
+                                </th>
+                                <th class="min-w-125px">Serial Number</th>
+                                <th class="min-w-125px">ID User</th>
+                                <th class="min-w-125px">Timestamp</th>
+                                <th class="min-w-125px">Status 1</th>
+                                <th class="min-w-125px">Status 2</th>
+                                <th class="min-w-125px">Status 3</th>
+                                <th class="min-w-125px">Status 4</th>
+                                <th class="min-w-125px">Status 5</th>
+                            </thead>
+                            <tbody class="text-gray-600 fw-bold">
+                            <template x-if="isLoading">
+                                <tr>
+                                    <td colspan="9">
+                                        <div style="text-align: center;">
+                                            <div class="spinner-border" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template x-if="!isLoading && attendanceLog.data?.length === 0">
+                                <tr>
+                                    <td colspan="9">
+                                        <center>Data Tidak Ditemukan</center>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template x-for="(attendance, index) in attendanceLog?.data" :key="attendance.id">
+                                <tr>
+                                    <td x-text="startIndex + index++"></td>
+                                    <td x-text="attendance.sn"></td>
+                                    <td x-text="attendance.employee_id"></td>
+                                    <td x-text="attendance.timestamp"></td>
+                                    <td x-text="attendance.status1"></td>
+                                    <td x-text="attendance.status2"></td>
+                                    <td x-text="attendance.status3"></td>
+                                    <td x-text="attendance.status4"></td>
+                                    <td x-text="attendance.status5"></td>
+                                </tr>
+                            </template>
+                            </tbody>
+                        </table>
+                    </div>
+                    <ul class="pagination float-end mb-4">
+                        <li class="page-item previous">
+                            <button class="btn btn-light btn-sm" @click="previousPage()">Previous</button>
+                        </li>
+                        <li class="page-item next">
+                            <button class="btn btn-light btn-sm" @click="nextPage()">Next</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        function attendanceData() {
+            return {
+                isLoading: false,
+                attendanceLog: [],
+                startIndex: null,
+                async init() {
+                    await this.getAttendanceLog();
+                },
+                async getAttendanceLog() {
+                    const resp = await axios.get('/adms/attendances/data');
+                    this.attendanceLog = resp.data;
+                    this.startIndex = this.attendanceLog.from;
+                },
+                async nextPage() {
+                    if (this.attendanceLog.next_page_url) {
+                        const resp = await axios.get(`${this.attendanceLog.next_page_url}`);
+                        this.startIndex = this.attendanceLog.from
+                        this.attendanceLog = resp.data
+                    }
+                },
+                async previousPage() {
+                    if (this.attendanceLog.prev_page_url) {
+                        const resp = await axios.get(`${this.attendanceLog.prev_page_url}`);
+                        this.startIndex = this.attendanceLog.from
+                        this.attendanceLog = resp.data
+                    }
+                },
+            }
+        }
+    </script>
 @endsection

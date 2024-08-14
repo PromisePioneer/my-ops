@@ -22,4 +22,10 @@ class Attendances extends Model
         'status4',
         'status5'
     ];
+
+
+    public function getAttendanceWithPagination(int $perPage)
+    {
+        return self::orderBy('created_at', 'desc')->paginate($perPage);
+    }
 }

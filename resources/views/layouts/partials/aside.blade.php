@@ -358,6 +358,11 @@
                                 href="{{ url('adms/fp-devices') }}">
                             Mesin Absen
                         </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'fp-devices'"
+                                href="{{ url('adms/attendances') }}">
+                            Data Kehadiran
+                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
             </div>
