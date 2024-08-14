@@ -1,12 +1,13 @@
-<!DOCTYPE html>
+@php use App\Models\Attendances; @endphp
+        <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-    {{ dd(DB::table('finger_logs')->get()) }}
-
+    {{--    {{ dd(DB::table('finger_logs')->get()) }}--}}
+    {{ dd(Attendances::all()) }}
     <title>Laravel</title>
 
     <!-- Fonts -->
