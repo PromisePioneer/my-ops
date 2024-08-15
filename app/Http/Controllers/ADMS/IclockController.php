@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\ADMS;
 
 use App\Http\Controllers\Controller;
+use App\Models\Attendances;
 use App\Models\DeviceLog;
 use App\Models\ErrorLog;
 use App\Models\FingerLog;
 use App\Models\FpDevice;
 use Illuminate\Http\Request;
-use Jmrashed\Zkteco\Lib\Helper\Attendance;
 use Throwable;
 
 class IclockController extends Controller
@@ -84,29 +84,29 @@ class IclockController extends Controller
                 // $data = preg_split('/\s+/', trim($rey));
                 $data = explode("\t", $rey);
                 //dd($data);
-//                $q['sn'] = $request->input('SN');
-//                $q['table'] = $request->input('table');
-//                $q['stamp'] = $request->input('Stamp');
-//                $q['employee_id'] = $data[0];
-//                $q['timestamp'] = $data[1];
-//                $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
-//                $q['status2'] = $this->validateAndFormatInteger($data[3] ?? null);
-//                $q['status3'] = $this->validateAndFormatInteger($data[4] ?? null);
-//                $q['status4'] = $this->validateAndFormatInteger($data[5] ?? null);
-//                $q['status5'] = $this->validateAndFormatInteger($data[6] ?? null);
-//                $q['created_at'] = now();
-//                $q['updated_at'] = now();
-//                Attendances::create($q);
-                Attendance::updateOrCreate([
-                    'employee_id' => $data[1],
-                ], [
-                    'sn' => $request->input('SN'),
-                    'table' => $request->input('table'),
-                    'stamp' => $request->input('Stamp'),
-                    'timestamp' => $data[1],
-                    'status_checkin' => (int) $data[2] === 0 ?: 0,
-                    'status_checkout' => (int) $data[2] === 1 ?: 1,
-                ]);
+                $q['sn'] = $request->input('SN');
+                $q['table'] = $request->input('table');
+                $q['stamp'] = $request->input('Stamp');
+                $q['employee_id'] = $data[0];
+                $q['timestamp'] = $data[1];
+                $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
+                $q['status2'] = $this->validateAndFormatInteger($data[3] ?? null);
+                $q['status3'] = $this->validateAndFormatInteger($data[4] ?? null);
+                $q['status4'] = $this->validateAndFormatInteger($data[5] ?? null);
+                $q['status5'] = $this->validateAndFormatInteger($data[6] ?? null);
+                $q['created_at'] = now();
+                $q['updated_at'] = now();
+                Attendances::create($q);
+//                Attendance::updateOrCreate([
+//                    'employee_id' => $data[1],
+//                ], [
+//                    'sn' => $request->input('SN'),
+//                    'table' => $request->input('table'),
+//                    'stamp' => $request->input('Stamp'),
+//                    'timestamp' => $data[1],
+//                    'status_checkin' => (int) $data[2] === 0 ?: 0,
+//                    'status_checkout' => (int) $data[2] === 1 ?: 1,
+//                ]);
                 $tot++;
 //                dd(DB::getQueryLog());
             }
@@ -119,6 +119,12 @@ class IclockController extends Controller
         }
     }
 
+    private function validateAndFormatInteger($value): ?int
+    {
+        return isset($value) && $value !== '' ? (int) $value : null;
+        // return is_numeric($value) ? (int) $value : null;
+    }
+
     public function test(Request $request): void
     {
         $log['data'] = $request->getContent();
@@ -129,11 +135,5 @@ class IclockController extends Controller
     {
         //  $r = "GET OPTION FROM: ".$request->SN."\nStamp=".strtotime('now')."\nOpStamp=".strtotime('now')."\nErrorDelay=60\nDelay=30\nResLogDay=18250\nResLogDelCount=10000\nResLogCount=50000\nTransTimes=00:00;14:05\nTransInterval=1\nTransFlag=1111000000\nRealtime=1\nEncrypt=0";
         return "OK";
-    }
-
-    private function validateAndFormatInteger($value): ?int
-    {
-        return isset($value) && $value !== '' ? (int) $value : null;
-        // return is_numeric($value) ? (int) $value : null;
     }
 }
