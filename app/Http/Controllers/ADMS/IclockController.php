@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ADMS;
 
 use App\Http\Controllers\Controller;
+use App\Models\Attendances;
 use App\Models\DeviceLog;
 use App\Models\ErrorLog;
 use App\Models\FingerLog;
@@ -66,32 +67,33 @@ class IclockController extends Controller
             FingerLog::create($content);
             try {
                 $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
-                dd($arr);
-//                $tot = 0;
-//                if ($request->input('table') == "OPERLOG") {
-//                    foreach ($arr as $rey) {
-//                        if (isset($rey)) {
-//                            $tot++;
-//                        }
-//                    }
-//                    return "OK: ".$tot;
-//                }
-//                //attendance
-//                foreach ($arr as $rey) {
-//                    if (empty($rey)) {
-//                        continue;
-//                    }
-//                    $data = explode("\t", $rey);
-//                    $q['sn'] = $request->input('SN');
-//                    $q['table'] = $request->input('table');
-//                    $q['stamp'] = $request->input('Stamp');
-//                    $q['employee_id'] = $data[0];
-//                    $q['timestamp'] = $data[1];
-//                    $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
-//                    Attendances::create($q);
-//                    $tot++;
-//                }
-//                return "OK: ".$tot;
+
+                $tot = 0;
+                if ($request->input('table') == "OPERLOG") {
+                    foreach ($arr as $rey) {
+                        if (isset($rey)) {
+                            $tot++;
+                        }
+                    }
+                    return "OK: ".$tot;
+                }
+                //attendance
+                foreach ($arr as $rey) {
+                    if (empty($rey)) {
+                        continue;
+                    }
+                    $data = explode("\t", $rey);
+                    dd($data);
+                    $q['sn'] = $request->input('SN');
+                    $q['table'] = $request->input('table');
+                    $q['stamp'] = $request->input('Stamp');
+                    $q['employee_id'] = $data[0];
+                    $q['timestamp'] = $data[1];
+                    $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
+                    Attendances::create($q);
+                    $tot++;
+                }
+                return "OK: ".$tot;
             } catch (Throwable $e) {
                 $data['error'] = $e;
                 ErrorLog::create(($data));
@@ -99,6 +101,11 @@ class IclockController extends Controller
                 return "ERROR: ".$tot."\n";
             }
         });
+    }
+
+    private function validateAndFormatInteger($value): ?int
+    {
+        return isset($value) && $value !== '' ? (int) $value : null;
     }
 
     public function test(Request $request): void
@@ -111,10 +118,5 @@ class IclockController extends Controller
     {
         //  $r = "GET OPTION FROM: ".$request->SN."\nStamp=".strtotime('now')."\nOpStamp=".strtotime('now')."\nErrorDelay=60\nDelay=30\nResLogDay=18250\nResLogDelCount=10000\nResLogCount=50000\nTransTimes=00:00;14:05\nTransInterval=1\nTransFlag=1111000000\nRealtime=1\nEncrypt=0";
         return "OK";
-    }
-
-    private function validateAndFormatInteger($value): ?int
-    {
-        return isset($value) && $value !== '' ? (int) $value : null;
     }
 }
