@@ -80,6 +80,8 @@ class IclockController extends Controller
                     }
                     return "OK: ".$tot;
                 }
+
+                dd($arr);
                 //attendance
                 foreach ($arr as $rey) {
                     // $data = preg_split('/\s+/', trim($rey));
@@ -87,7 +89,7 @@ class IclockController extends Controller
                         continue;
                     }
                     // $data = preg_split('/\s+/', trim($rey));
-                    $data = explode("\t", $rey);
+                    $data = implode("\t", $rey);
                     //dd($data);
                     $q['sn'] = $request->input('SN');
                     $q['table'] = $request->input('table');
