@@ -131,10 +131,17 @@ class IclockController extends Controller
         // Ambil nomor seri dari request
         $sn = $request->query('SN');
 
+        // Contoh data untuk command
+        $cmdId = '12345';
+        $startTime = '2024-08-15 08:00:00';
+        $endTime = '2024-08-15 17:00:00';
+
+        // Siapkan command dengan data dinamis
+        $command = "C:{$cmdId}:DATA QUERY ATTLOG StartTime={$startTime}\tEndTime={$endTime}";
+
         // Simpan perintah dalam array statis
         $commands = [
-            'AEWD233960062' => 'GET_LOG', // contoh perintah untuk SN tertentu
-            // Tambahkan nomor seri lain dan perintah sesuai kebutuhan
+            'AEWD233960062' => $command, // Assign the dynamic command to a specific SN
         ];
 
         // Coba dump nomor seri dan perintah yang ditemukan
