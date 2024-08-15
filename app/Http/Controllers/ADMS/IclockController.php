@@ -161,6 +161,7 @@ class IclockController extends Controller
 
     public function getAttLog(Request $request): array
     {
-        dd($request->all());
+        $rawContent = $request->getContent();
+        dd($rawContent);
     }
 }
