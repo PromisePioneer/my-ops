@@ -78,10 +78,11 @@ class IclockController extends Controller
                 }
                 //attendance
                 foreach ($arr as $rey) {
+                    dd($rey);
                     if (empty($rey)) {
                         continue;
                     }
-                    $data = implode("\t", $rey);
+                    $data = explode("\t", $rey);
 //                    $q['sn'] = $request->input('SN');
 //                    $q['table'] = $request->input('table');
 //                    $q['stamp'] = $request->input('Stamp');
