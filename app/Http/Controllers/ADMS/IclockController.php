@@ -82,7 +82,7 @@ class IclockController extends Controller
                     if (empty($rey)) {
                         continue;
                     }
-//                    $data = explode("\t", $rey);
+                    $data = explode("\t", $rey);
 //                    $q['sn'] = $request->input('SN');
 //                    $q['table'] = $request->input('table');
 //                    $q['stamp'] = $request->input('Stamp');
@@ -103,7 +103,8 @@ class IclockController extends Controller
                         'table' => $request->input('table'),
                         'stamp' => $request->input('Stamp'),
                         'timestamp' => $data[1],
-                        'check_in' => $statusCheck,
+                        'check_in' => $statusCheck === 0 ? 0 : null,
+                        'check_out' => $statusCheck === 1 ? 1 : null,
                     ]);
                     dd($test);
                     $tot++;
