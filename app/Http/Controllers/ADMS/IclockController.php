@@ -125,37 +125,8 @@ class IclockController extends Controller
     {
         //  $r = "GET OPTION FROM: ".$request->SN."\nStamp=".strtotime('now')."\nOpStamp=".strtotime('now')."\nErrorDelay=60\nDelay=30\nResLogDay=18250\nResLogDelCount=10000\nResLogCount=50000\nTransTimes=00:00;14:05\nTransInterval=1\nTransFlag=1111000000\nRealtime=1\nEncrypt=0";
 
-        // Ambil nomor seri dari request
-        $sn = $request->query('SN');
-
-        // Contoh data untuk command
-        $cmdId = '12345';
-        $startTime = '2024-08-15 08:00:00';
-        $endTime = '2024-08-15 17:00:00';
-
-        // Siapkan command dengan data dinamis
-        $command = "C:{$cmdId}:DATA QUERY ATTLOG StartTime={$startTime}\tEndTime={$endTime}";
-
-        // Simpan perintah dalam array statis
-        $commands = [
-            'AEWD233960062' => $command, // Assign the dynamic command to a specific SN
-        ];
-
-        // Cek apakah ada perintah untuk nomor seri ini
-        if (isset($commands[$sn])) {
-            $command = $commands[$sn];
-
-            // Hapus perintah setelah dikirim jika diperlukan
-            unset($commands[$sn]);
-
-            // Kirimkan perintah ke mesin
-            return response($command)
-                ->header('Content-Type', 'text/plain');
-        }
-
         // Jika tidak ada perintah, kirim "OK"
-        return response('OK')
-            ->header('Content-Type', 'text/plain');
+        return "OK";
     }
 
 
