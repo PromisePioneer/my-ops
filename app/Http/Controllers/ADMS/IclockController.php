@@ -103,13 +103,12 @@ class IclockController extends Controller
                     'sn' => $request->input('SN'),
                     'table' => $request->input('table'),
                     'stamp' => $request->input('Stamp'),
-                    'employee_id' => $data[0],
                     'timestamp' => $data[1],
                     'status_checkin' => (int) $data[2] === 0 ?: 0,
                     'status_checkout' => (int) $data[2] === 1 ?: 1,
                 ]);
                 $tot++;
-                // dd(DB::getQueryLog());
+//                dd(DB::getQueryLog());
             }
             return "OK: ".$tot;
         } catch (Throwable $e) {
