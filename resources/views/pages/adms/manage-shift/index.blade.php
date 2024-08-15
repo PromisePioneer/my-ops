@@ -103,12 +103,6 @@
 @endsection
 @push('script')
     <script>
-        $(".time").flatpickr({
-            enableTime: true,
-            noCalendar: true,
-            dateFormat: "H:i",
-        });
-
         function manageShiftData() {
             return {
                 buttonLoading: false,

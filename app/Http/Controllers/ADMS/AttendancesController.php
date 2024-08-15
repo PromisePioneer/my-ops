@@ -10,6 +10,7 @@ class AttendancesController extends Controller
 {
 
     public readonly int $perPage;
+    private Attendances $attendance;
 
     public function __construct()
     {
@@ -19,12 +20,12 @@ class AttendancesController extends Controller
 
     public function index()
     {
-        $attendance = Attendances::all();
-        return view('pages.adms.attendances.index', compact('attendance'));
+        return view('pages.adms.attendances.index');
     }
 
     public function data(): JsonResponse
     {
-        return response()->json($this->attendance->getAttendanceWithPagination($this->perPage));
+        $attendances = Attendances::get()->groupBy('employee_id');
+        return response()->json($attendances);
     }
 }

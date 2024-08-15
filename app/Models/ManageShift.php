@@ -15,6 +15,7 @@ class ManageShift extends Model
         'clock_in',
         'clock_out',
         'time_to_checkin',
+        'end_time_to_checkin',
         'time_to_checkout',
         'end_time_to_checkout'
     ];

@@ -27,6 +27,7 @@ class ManageShiftRequest extends FormRequest
             'clock_in' => ['required', 'date_format:H:i'],
             'clock_out' => ['required', 'date_format:H:i', 'after:clock_in'],
             'time_to_checkin' => ['required', 'date_format:H:i'],
+            'end_time_to_checkin' => ['required', 'date_format:H:i', 'after:time_to_checkin'],
             'time_to_checkout' => ['required', 'date_format:H:i', 'after:time_to_checkin'],
             'end_time_to_checkout' => ['required', 'date_format:H:i', 'after:time_to_checkout'],
         ];

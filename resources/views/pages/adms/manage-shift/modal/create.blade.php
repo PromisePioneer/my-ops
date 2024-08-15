@@ -19,6 +19,9 @@
                                        placeholder="Nama"/>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="row">
                         <div class="col-md-6">
                             <div class="mb-10">
                                 <label for="time" class="required form-label">Jam masuk</label>
@@ -27,9 +30,6 @@
                                        placeholder="Jam Masuk"/>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="row">
                         <div class="col-lg-6">
                             <div class="mb-10">
                                 <label for="time" class="required form-label">Jam keluar</label>
@@ -38,6 +38,9 @@
                                        placeholder="Jam Keluar"/>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="row">
                         <div class="col-lg-6">
                             <div class="mb-10">
                                 <label for="time" class="required form-label">Mulai Check in</label>
@@ -46,7 +49,16 @@
                                        placeholder="Mulai Check in"/>
                             </div>
                         </div>
+                        <div class="col-lg-6">
+                            <div class="mb-10">
+                                <label for="time" class="required form-label">Akhir Check in</label>
+                                <input type="time" id="end_time_to_checkin" name="end_time_to_checkin"
+                                       class="form-control form-control-solid time"
+                                       placeholder="Akhir Check in"/>
+                            </div>
+                        </div>
                     </div>
+
 
                     <div class="row">
                         <div class="col-lg-6">
@@ -57,6 +69,7 @@
                                        placeholder="Mulai Check out"/>
                             </div>
                         </div>
+
                         <div class="col-lg-6">
                             <div class="mb-10">
                                 <label for="time" class="required form-label">Akhir Check out</label>

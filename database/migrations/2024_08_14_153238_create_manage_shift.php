@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->time('clock_in');
             $table->time('clock_out');
             $table->time('time_to_checkin');
+            $table->time('end_time_to_checkin');
             $table->time('time_to_checkout');
             $table->time('end_time_to_checkout');
             $table->timestamps();
