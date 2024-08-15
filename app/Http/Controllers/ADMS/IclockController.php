@@ -67,7 +67,7 @@ class IclockController extends Controller
             FingerLog::create($content);
             try {
                 $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
-                dd($arr);
+//                dd($arr);
                 $tot = 0;
                 if ($request->input('table') == "OPERLOG") {
                     foreach ($arr as $rey) {
@@ -82,14 +82,30 @@ class IclockController extends Controller
                     if (empty($rey)) {
                         continue;
                     }
-                    $data = explode("\t", $rey);
-                    $q['sn'] = $request->input('SN');
-                    $q['table'] = $request->input('table');
-                    $q['stamp'] = $request->input('Stamp');
-                    $q['employee_id'] = $data[0];
-                    $q['timestamp'] = $data[1];
-                    $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
-                    Attendances::create($q);
+//                    $data = explode("\t", $rey);
+//                    $q['sn'] = $request->input('SN');
+//                    $q['table'] = $request->input('table');
+//                    $q['stamp'] = $request->input('Stamp');
+//                    $q['employee_id'] = $data[0];
+//                    $q['timestamp'] = $data[1];
+//                    $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
+
+                    $statusCheck = 0;
+                    if ($this->validateAndFormatInteger($data[2] ?? null) === 1) {
+                        $statusCheck = 1;
+                    }
+
+
+                    $test = Attendances::updateOrCreate([
+                        'employee_id' => $data[0],
+                    ], [
+                        'sn' => $request->input('SN'),
+                        'table' => $request->input('table'),
+                        'stamp' => $request->input('Stamp'),
+                        'timestamp' => $data[1],
+                        'check_in' => $statusCheck,
+                    ]);
+                    dd($test);
                     $tot++;
                 }
                 return "OK: ".$tot;
