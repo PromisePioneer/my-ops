@@ -67,7 +67,6 @@ class IclockController extends Controller
             FingerLog::create($content);
             try {
                 $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
-//                dd($arr);
                 $tot = 0;
                 if ($request->input('table') == "OPERLOG") {
                     foreach ($arr as $rey) {
