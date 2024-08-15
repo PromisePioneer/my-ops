@@ -121,47 +121,39 @@ class IclockController extends Controller
         FingerLog::create($log);
     }
 
-    public function getrequest(Request $request): string
+    public function handleRequest(Request $request)
     {
-        //  $r = "GET OPTION FROM: ".$request->SN."\nStamp=".strtotime('now')."\nOpStamp=".strtotime('now')."\nErrorDelay=60\nDelay=30\nResLogDay=18250\nResLogDelCount=10000\nResLogCount=50000\nTransTimes=00:00;14:05\nTransInterval=1\nTransFlag=1111000000\nRealtime=1\nEncrypt=0";
+        $serialNumber = $request->query('SN');
 
-        // Ambil nomor seri dari request
-        $sn = $request->query('SN');
+        $command = $this->getCommandForMachine($serialNumber);
 
-        // Contoh data untuk command
-        $cmdId = '12345';
-        $startTime = '2024-08-15 08:00:00';
-        $endTime = '2024-08-15 17:00:00';
-
-        // Siapkan command dengan data dinamis
-        $command = "C:{$cmdId}:DATA QUERY ATTLOG StartTime={$startTime}\tEndTime={$endTime}";
-
-        // Simpan perintah dalam array statis
-        $commands = [
-            'AEWD233960062' => $command, // Assign the dynamic command to a specific SN
-        ];
-
-        // Cek apakah ada perintah untuk nomor seri ini
-        if (isset($commands[$sn])) {
-            $command = $commands[$sn];
-
-            // Hapus perintah setelah dikirim jika diperlukan
-            unset($commands[$sn]);
-
-            // Kirimkan perintah ke mesin
-            return response($command)
-                ->header('Content-Type', 'text/plain');
+        if (empty($command)) {
+            return response('OK', 200)
+                ->header('Content-Type', 'text/plain')
+                ->header('Content-Length', 2);
+        } else {
+            return response($command, 200)
+                ->header('Content-Type', 'text/plain')
+                ->header('Content-Length', strlen($command));
         }
-
-        // Jika tidak ada perintah, kirim "OK"
-        return response('OK')
-            ->header('Content-Type', 'text/plain');
     }
 
-
-    public function getAttLog(Request $request): array
+    private function getCommandForMachine($serialNumber)
     {
-        $rawContent = $request->getContent();
-        dd($rawContent);
+        // Anda bisa menambahkan logika di sini untuk menentukan apakah perlu mengirim command
+        // Misalnya, berdasarkan waktu tertentu atau kondisi lainnya
+
+        // Contoh: Selalu kirim command untuk semua mesin
+        return $this->generateCommand();
+    }
+
+    private function generateCommand()
+    {
+        $cmdId = '1001'; // ID command statis
+        $now = Carbon::now();
+        $startTime = $now->copy()->startOfDay()->format('Y-m-d H:i:s');
+        $endTime = $now->copy()->endOfDay()->format('Y-m-d H:i:s');
+
+        return "C:{$cmdId}:DATA QUERY ATTLOG StartTime{$startTime}\tEndTime={$endTime}";
     }
 }
