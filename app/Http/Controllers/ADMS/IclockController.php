@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\ADMS;
 
 use App\Http\Controllers\Controller;
-use App\Models\Attendances;
 use App\Models\DeviceLog;
 use App\Models\ErrorLog;
 use App\Models\FingerLog;
 use App\Models\FpDevice;
+use App\Models\ManageShift;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class IclockController extends Controller
@@ -53,60 +54,51 @@ class IclockController extends Controller
     }
 
 
-    public function receiveRecords(Request $request): string
+    /**
+     * @throws Throwable
+     */
+    public function receiveRecords(Request $request): void
     {
-        //DB::connection()->enableQueryLog();
-        $content['url'] = json_encode($request->all());
-        $content['data'] = $request->getContent();
-        FingerLog::create($content);
-        try {
-            // $post_content = $request->getContent();
-            //$arr = explode("\n", $post_content);
-            $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
-            //$tot = count($arr);
-            $tot = 0;
-            //operation log
-            if ($request->input('table') == "OPERLOG") {
-                // $tot = count($arr) - 1;
-                foreach ($arr as $rey) {
-                    if (isset($rey)) {
-                        $tot++;
-                    }
-                }
-                return "OK: ".$tot;
+        DB::transaction(function () use ($request) {
+            $officeHour = ManageShift::where('id', 1)->first();
+            $content['url'] = json_encode($request->all());
+            $content['data'] = $request->getContent();
+            FingerLog::create($content);
+            try {
+                $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
+                dd($arr);
+//                $tot = 0;
+//                if ($request->input('table') == "OPERLOG") {
+//                    foreach ($arr as $rey) {
+//                        if (isset($rey)) {
+//                            $tot++;
+//                        }
+//                    }
+//                    return "OK: ".$tot;
+//                }
+//                //attendance
+//                foreach ($arr as $rey) {
+//                    if (empty($rey)) {
+//                        continue;
+//                    }
+//                    $data = explode("\t", $rey);
+//                    $q['sn'] = $request->input('SN');
+//                    $q['table'] = $request->input('table');
+//                    $q['stamp'] = $request->input('Stamp');
+//                    $q['employee_id'] = $data[0];
+//                    $q['timestamp'] = $data[1];
+//                    $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
+//                    Attendances::create($q);
+//                    $tot++;
+//                }
+//                return "OK: ".$tot;
+            } catch (Throwable $e) {
+                $data['error'] = $e;
+                ErrorLog::create(($data));
+                report($e);
+                return "ERROR: ".$tot."\n";
             }
-            //attendance
-            foreach ($arr as $rey) {
-                // $data = preg_split('/\s+/', trim($rey));
-                if (empty($rey)) {
-                    continue;
-                }
-                // $data = preg_split('/\s+/', trim($rey));
-                $data = explode("\t", $rey);
-                //dd($data);
-                $q['sn'] = $request->input('SN');
-                $q['table'] = $request->input('table');
-                $q['stamp'] = $request->input('Stamp');
-                $q['employee_id'] = $data[0];
-                $q['timestamp'] = $data[1];
-                $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
-                Attendances::create($q);
-                $tot++;
-                // dd(DB::getQueryLog());
-            }
-            return "OK: ".$tot;
-        } catch (Throwable $e) {
-            $data['error'] = $e;
-            ErrorLog::create(($data));
-            report($e);
-            return "ERROR: ".$tot."\n";
-        }
-    }
-
-    private function validateAndFormatInteger($value): ?int
-    {
-        return isset($value) && $value !== '' ? (int) $value : null;
-        // return is_numeric($value) ? (int) $value : null;
+        });
     }
 
     public function test(Request $request): void
@@ -119,5 +111,10 @@ class IclockController extends Controller
     {
         //  $r = "GET OPTION FROM: ".$request->SN."\nStamp=".strtotime('now')."\nOpStamp=".strtotime('now')."\nErrorDelay=60\nDelay=30\nResLogDay=18250\nResLogDelCount=10000\nResLogCount=50000\nTransTimes=00:00;14:05\nTransInterval=1\nTransFlag=1111000000\nRealtime=1\nEncrypt=0";
         return "OK";
+    }
+
+    private function validateAndFormatInteger($value): ?int
+    {
+        return isset($value) && $value !== '' ? (int) $value : null;
     }
 }
