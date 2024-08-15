@@ -133,7 +133,7 @@ class IclockController extends Controller
 
         // Simpan perintah dalam array statis
         $commands = [
-            '0316144680030' => 'GET_LOG', // contoh perintah untuk SN tertentu
+            'AEWD233960062' => 'GET_LOG', // contoh perintah untuk SN tertentu
             // Tambahkan nomor seri lain dan perintah sesuai kebutuhan
         ];
 
