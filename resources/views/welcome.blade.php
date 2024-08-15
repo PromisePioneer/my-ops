@@ -5,9 +5,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
-    {{--    {{ dd(DB::table('finger_logs')->get()) }}--}}
-    {{ dd(DeviceLog::all()) }}
     <title>Laravel</title>
 
     <!-- Fonts -->

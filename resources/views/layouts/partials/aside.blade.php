@@ -131,11 +131,6 @@
                                 href="{{ url('master/roles') }}">
                             Role
                         </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'attendance-machine-info'"
-                                href="{{ url('master/attendance-machine-info') }}">
-                            Mesin Absen
-                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
 
