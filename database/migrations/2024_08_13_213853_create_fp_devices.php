@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->foreignId('branch_id')->nullable()->constrained('branches');
             $table->string('name');
             $table->string('serial_number');
-            $table->string('online');
+            $table->string('online')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
