@@ -21,6 +21,15 @@ class Attendances extends Model
         'status1',
     ];
 
+
+    public function getAttendanceWithPagination(int $perPage)
+    {
+        $attendances = self::orderBy('created_at', 'desc')->paginate($perPage);
+        self::formattedData($attendances);
+        return $attendances;
+    }
+
+
     private static function formattedData(LengthAwarePaginator $data)
     {
         $formattedData = $data->getCollection()->map(function ($item) {
@@ -40,13 +49,6 @@ class Attendances extends Model
         $data->setCollection($formattedData);
 
         return $data;
-    }
-
-    public function getAttendanceWithPagination(int $perPage)
-    {
-        $attendances = self::groupBy('employee_id')->get();
-//        self::formattedData($attendances);
-        return $attendances;
     }
 
 }

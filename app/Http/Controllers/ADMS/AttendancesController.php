@@ -25,7 +25,6 @@ class AttendancesController extends Controller
 
     public function data(): JsonResponse
     {
-        $attendances = Attendances::get()->groupBy('employee_id');
-        return response()->json($attendances);
+        return response()->json($this->attendance->getAttendanceWithPagination($this->perPage));
     }
 }
