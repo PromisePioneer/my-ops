@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ADMS;
 use App\Http\Controllers\Controller;
 use App\Models\Attendances;
 use App\Models\DeviceLog;
+use App\Models\ErrorLog;
 use App\Models\FingerLog;
 use App\Models\FpDevice;
 use Illuminate\Http\Request;
@@ -104,9 +105,10 @@ class IclockController extends Controller
                 }
                 return "OK: ".$tot;
             } catch (Throwable $e) {
-                return $e->getMessage();
+                dd($e);
+//                return $e->getMessage();
                 $data['error'] = $e;
-//                ErrorLog::create($data);
+                ErrorLog::create($data);
                 report($e);
                 return "ERROR: ".$tot."\n";
             }
