@@ -104,6 +104,7 @@ class IclockController extends Controller
                 }
                 return "OK: ".$tot;
             } catch (Throwable $e) {
+                return $e->getMessage();
                 $data['error'] = $e;
 //                ErrorLog::create($data);
                 report($e);
