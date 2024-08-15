@@ -28,10 +28,6 @@
                                 <th class="min-w-125px">ID User</th>
                                 <th class="min-w-125px">Timestamp</th>
                                 <th class="min-w-125px">Status 1</th>
-                                <th class="min-w-125px">Status 2</th>
-                                <th class="min-w-125px">Status 3</th>
-                                <th class="min-w-125px">Status 4</th>
-                                <th class="min-w-125px">Status 5</th>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
                             <template x-if="isLoading">
@@ -59,10 +55,6 @@
                                     <td x-text="attendance.employee_id"></td>
                                     <td x-text="attendance.timestamp"></td>
                                     <td x-text="attendance.status1"></td>
-                                    <td x-text="attendance.status2"></td>
-                                    <td x-text="attendance.status3"></td>
-                                    <td x-text="attendance.status4"></td>
-                                    <td x-text="attendance.status5"></td>
                                 </tr>
                             </template>
                             </tbody>
