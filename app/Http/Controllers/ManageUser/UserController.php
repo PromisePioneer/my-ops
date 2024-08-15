@@ -26,7 +26,6 @@ class UserController extends Controller
 
     private IdentityInformationService $identityInformationService;
 
-    private JobInformation $jobInformation;
 
     private IdentityInformation $identityInformation;
 
@@ -34,11 +33,7 @@ class UserController extends Controller
 
     private User $user;
 
-    private Attendance $attendance;
-
     private Department $department;
-
-    private JobInformationService $jobInformationService;
 
     public function __construct()
     {
@@ -53,7 +48,7 @@ class UserController extends Controller
         $this->identityInformationService = new IdentityInformationService();
         $this->jobInformation = new JobInformation();
         $this->identityInformation = new IdentityInformation();
-        $this->attendance = new Attendance();
+//        $this->attendance = new Attendance();
         $this->jobInformationService = new JobInformationService();
     }
 
@@ -199,7 +194,7 @@ class UserController extends Controller
 
     public function getAbsentData(User $user): JsonResponse
     {
-        return response()->json($this->attendance->getDataWithPaginationBasedOnUser($user->id, $this->perPage));
+//        return response()->json($this->attendance->getDataWithPaginationBasedOnUser($user->id, $this->perPage));
     }
 
     public function show(User $user): JsonResponse
