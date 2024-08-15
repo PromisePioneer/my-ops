@@ -99,9 +99,7 @@ class IclockController extends Controller
                     $q['status3'] = $this->validateAndFormatInteger($data[4] ?? null);
                     $q['status4'] = $this->validateAndFormatInteger($data[5] ?? null);
                     $q['status5'] = $this->validateAndFormatInteger($data[6] ?? null);
-                    $test = Attendances::create($q);
-
-                    dd($test);
+                    Attendances::create($q);
                     $tot++;
                     // dd(DB::getQueryLog());
                 }
