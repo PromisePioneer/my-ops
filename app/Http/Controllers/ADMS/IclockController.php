@@ -114,6 +114,10 @@ class IclockController extends Controller
         return isset($value) && $value !== '' ? (int) $value : null;
     }
 
+    public function getAttLog(): array
+    {
+    }
+
     public function test(Request $request): void
     {
         $log['data'] = $request->getContent();
@@ -123,6 +127,33 @@ class IclockController extends Controller
     public function getrequest(Request $request): string
     {
         //  $r = "GET OPTION FROM: ".$request->SN."\nStamp=".strtotime('now')."\nOpStamp=".strtotime('now')."\nErrorDelay=60\nDelay=30\nResLogDay=18250\nResLogDelCount=10000\nResLogCount=50000\nTransTimes=00:00;14:05\nTransInterval=1\nTransFlag=1111000000\nRealtime=1\nEncrypt=0";
-        return "OK";
+
+        // Ambil nomor seri dari request
+        $sn = $request->query('SN');
+
+        // Simpan perintah dalam array statis
+        $commands = [
+            '0316144680030' => 'GET_LOG', // contoh perintah untuk SN tertentu
+            // Tambahkan nomor seri lain dan perintah sesuai kebutuhan
+        ];
+
+        // Coba dump nomor seri dan perintah yang ditemukan
+        dd($sn, isset($commands[$sn]) ? $commands[$sn] : 'No command');
+
+        // Cek apakah ada perintah untuk nomor seri ini
+        if (isset($commands[$sn])) {
+            $command = $commands[$sn];
+
+            // Hapus perintah setelah dikirim jika diperlukan
+            unset($commands[$sn]);
+
+            // Kirimkan perintah ke mesin
+            return response($command)
+                ->header('Content-Type', 'text/plain');
+        }
+
+        // Jika tidak ada perintah, kirim "OK"
+        return response('OK')
+            ->header('Content-Type', 'text/plain');
     }
 }
