@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
             LetterHeadSeeder::class,
             UnitTypesSeeder::class,
             PositionSeeder::class,
-            AttendancesSeeder::class
+//            AttendancesSeeder::class
         ]);
     }
 }
