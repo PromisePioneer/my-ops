@@ -17,8 +17,7 @@ return new class extends Migration {
             $table->string('stamp');
             $table->integer('employee_id');
             $table->dateTime('timestamp');
-            $table->boolean('status_checkin')->nullable();
-            $table->boolean('status_checkout')->nullable();
+            $table->boolean('status1')->nullable();
             $table->timestamps();
         });
     }

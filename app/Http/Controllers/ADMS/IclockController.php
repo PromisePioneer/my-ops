@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\ADMS;
 
 use App\Http\Controllers\Controller;
+use App\Models\Attendances;
 use App\Models\DeviceLog;
 use App\Models\ErrorLog;
 use App\Models\FingerLog;
 use App\Models\FpDevice;
 use Illuminate\Http\Request;
-use Jmrashed\Zkteco\Lib\Helper\Attendance;
 use Throwable;
 
 class IclockController extends Controller
@@ -84,31 +84,15 @@ class IclockController extends Controller
                 // $data = preg_split('/\s+/', trim($rey));
                 $data = explode("\t", $rey);
                 //dd($data);
-//                $q['sn'] = $request->input('SN');
-//                $q['table'] = $request->input('table');
-//                $q['stamp'] = $request->input('Stamp');
-//                $q['employee_id'] = $data[0];
-//                $q['timestamp'] = $data[1];
-//                $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
-//                $q['status2'] = $this->validateAndFormatInteger($data[3] ?? null);
-//                $q['status3'] = $this->validateAndFormatInteger($data[4] ?? null);
-//                $q['status4'] = $this->validateAndFormatInteger($data[5] ?? null);
-//                $q['status5'] = $this->validateAndFormatInteger($data[6] ?? null);
-//                $q['created_at'] = now();
-//                $q['updated_at'] = now();
-//                Attendances::create($q);
-                Attendance::updateOrCreate([
-                    'employee_id' => $data[1],
-                ], [
-                    'sn' => $request->input('SN'),
-                    'table' => $request->input('table'),
-                    'stamp' => $request->input('Stamp'),
-                    'timestamp' => $data[1],
-                    'status_checkin' => $this->validateAndFormatInteger($data[2] ?? null) === 0 ? 0 : null,
-                    'status_checkout' => $this->validateAndFormatInteger($data[2] ?? null) === 1 ? 1 : null,
-                ]);
+                $q['sn'] = $request->input('SN');
+                $q['table'] = $request->input('table');
+                $q['stamp'] = $request->input('Stamp');
+                $q['employee_id'] = $data[0];
+                $q['timestamp'] = $data[1];
+                $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
+                Attendances::create($q);
                 $tot++;
-//                dd(DB::getQueryLog());
+                // dd(DB::getQueryLog());
             }
             return "OK: ".$tot;
         } catch (Throwable $e) {
