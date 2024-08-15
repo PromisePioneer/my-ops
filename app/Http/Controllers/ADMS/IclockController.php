@@ -82,6 +82,7 @@ class IclockController extends Controller
                         continue;
                     }
                     $data = explode("\t", $rey);
+                    dd($data);
 //                    $q['sn'] = $request->input('SN');
 //                    $q['table'] = $request->input('table');
 //                    $q['stamp'] = $request->input('Stamp');
