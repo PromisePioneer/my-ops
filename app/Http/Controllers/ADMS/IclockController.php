@@ -114,9 +114,6 @@ class IclockController extends Controller
         return isset($value) && $value !== '' ? (int) $value : null;
     }
 
-    public function getAttLog(): array
-    {
-    }
 
     public function test(Request $request): void
     {
@@ -144,9 +141,6 @@ class IclockController extends Controller
             'AEWD233960062' => $command, // Assign the dynamic command to a specific SN
         ];
 
-        // Coba dump nomor seri dan perintah yang ditemukan
-        dd($sn, isset($commands[$sn]) ? $commands[$sn] : 'No command');
-
         // Cek apakah ada perintah untuk nomor seri ini
         if (isset($commands[$sn])) {
             $command = $commands[$sn];
@@ -162,5 +156,11 @@ class IclockController extends Controller
         // Jika tidak ada perintah, kirim "OK"
         return response('OK')
             ->header('Content-Type', 'text/plain');
+    }
+
+
+    public function getAttLog(Request $request): array
+    {
+        dd($request->all());
     }
 }
