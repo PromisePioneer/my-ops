@@ -9,7 +9,6 @@ use App\Models\ErrorLog;
 use App\Models\FingerLog;
 use App\Models\FpDevice;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class IclockController extends Controller
@@ -57,62 +56,59 @@ class IclockController extends Controller
     /**
      * @throws Throwable
      */
-    public function receiveRecords(Request $request): void
+    public function receiveRecords(Request $request): string
     {
-        DB::transaction(function () use ($request) {
-            //DB::connection()->enableQueryLog();
-            $content['url'] = json_encode($request->all());
-            $content['data'] = $request->getContent();
-            FingerLog::create($content);
-            try {
-                // $post_content = $request->getContent();
-                //$arr = explode("\n", $post_content);
-                $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
-                //$tot = count($arr);
-                $tot = 0;
-                //operation log
-                if ($request->input('table') == "OPERLOG") {
-                    // $tot = count($arr) - 1;
-                    foreach ($arr as $rey) {
-                        if (isset($rey)) {
-                            $tot++;
-                        }
-                    }
-                    return "OK: ".$tot;
-                }
-                //attendance
+        //DB::connection()->enableQueryLog();
+        $content['url'] = json_encode($request->all());
+        $content['data'] = $request->getContent();
+        FingerLog::create($content);
+        try {
+            // $post_content = $request->getContent();
+            //$arr = explode("\n", $post_content);
+            $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
+            //$tot = count($arr);
+            $tot = 0;
+            //operation log
+            if ($request->input('table') == "OPERLOG") {
+                // $tot = count($arr) - 1;
                 foreach ($arr as $rey) {
-                    // $data = preg_split('/\s+/', trim($rey));
-                    if (empty($rey)) {
-                        continue;
+                    if (isset($rey)) {
+                        $tot++;
                     }
-                    // $data = preg_split('/\s+/', trim($rey));
-                    $data = implode("\t", $rey);
-                    dd($data);
-                    $q['sn'] = $request->input('SN');
-                    $q['table'] = $request->input('table');
-                    $q['stamp'] = $request->input('Stamp');
-                    $q['employee_id'] = $data[0];
-                    $q['timestamp'] = $data[1];
-                    $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
-                    $q['status2'] = $this->validateAndFormatInteger($data[3] ?? null);
-                    $q['status3'] = $this->validateAndFormatInteger($data[4] ?? null);
-                    $q['status4'] = $this->validateAndFormatInteger($data[5] ?? null);
-                    $q['status5'] = $this->validateAndFormatInteger($data[6] ?? null);
-                    Attendances::create($q);
-                    $tot++;
-                    // dd(DB::getQueryLog());
                 }
                 return "OK: ".$tot;
-            } catch (Throwable $e) {
-                dd($e);
-//                return $e->getMessage();
-                $data['error'] = $e;
-                ErrorLog::create($data);
-                report($e);
-                return "ERROR: ".$tot."\n";
             }
-        });
+            //attendance
+            foreach ($arr as $rey) {
+                // $data = preg_split('/\s+/', trim($rey));
+                if (empty($rey)) {
+                    continue;
+                }
+                // $data = preg_split('/\s+/', trim($rey));
+                $data = implode("\t", $rey);
+                $q['sn'] = $request->input('SN');
+                $q['table'] = $request->input('table');
+                $q['stamp'] = $request->input('Stamp');
+                $q['employee_id'] = $data[0];
+                $q['timestamp'] = $data[1];
+                $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
+                $q['status2'] = $this->validateAndFormatInteger($data[3] ?? null);
+                $q['status3'] = $this->validateAndFormatInteger($data[4] ?? null);
+                $q['status4'] = $this->validateAndFormatInteger($data[5] ?? null);
+                $q['status5'] = $this->validateAndFormatInteger($data[6] ?? null);
+                Attendances::create($q);
+                $tot++;
+                // dd(DB::getQueryLog());
+            }
+            return "OK: ".$tot;
+        } catch (Throwable $e) {
+            dd($e);
+//                return $e->getMessage();
+            $data['error'] = $e;
+            ErrorLog::create($data);
+            report($e);
+            return "ERROR: ".$tot."\n";
+        }
     }
 
     private function validateAndFormatInteger($value): ?int
