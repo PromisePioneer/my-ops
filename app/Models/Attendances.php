@@ -24,7 +24,7 @@ class Attendances extends Model
 
     public function getAttendanceWithPagination(int $perPage)
     {
-        $attendances = self::latest()->paginate($perPage);
+        $attendances = self::orderBy('timestamp', 'DESC')->paginate($perPage);
         self::formattedData($attendances);
         return $attendances;
     }
