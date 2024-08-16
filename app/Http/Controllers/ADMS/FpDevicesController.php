@@ -14,6 +14,8 @@ class FpDevicesController extends Controller
 {
 
     public readonly int $perPage;
+    private FpDevice $FpDevices;
+    private Branch $branch;
 
     public function __construct()
     {
@@ -69,7 +71,7 @@ class FpDevicesController extends Controller
         ]);
     }
 
-    public function destroy(FpDevice $fpDevice)
+    public function destroy(FpDevice $fpDevice): JsonResponse
     {
         $fpDevice->delete();
         return response()->json([

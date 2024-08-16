@@ -3,6 +3,7 @@
 @section('content')
 
     <div x-data="userData()">
+        @include('pages.manage-users.user.modal.import')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -40,6 +41,13 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                        <button type="button" class="btn btn-light-primary btn-sm me-3" data-bs-toggle="modal"
+                                data-bs-target="#modal-import">
+                            <span class="svg-icon svg-icon-2">
+                                <i class="bi bi-file-earmark-excel-fill"></i>
+                            </span>
+                            Import
+                        </button>
                         <a href="{{ url('/manage-users/users/create') }}" class="btn btn-primary btn-sm">Tambah</a>
                     </div>
                     <div class="d-flex justify-content-end align-items-center d-none"
@@ -89,7 +97,8 @@
                                 <td x-text="startIndex + index++"></td>
                                 <td class="d-flex align-items-center">
                                     <div class="d-flex flex-column">
-                                        <a :href="`/manage-users/users/detail/${user.id}`" class="text-gray-800 text-hover-primary mb-1"
+                                        <a :href="`/manage-users/users/detail/${user.id}`"
+                                           class="text-gray-800 text-hover-primary mb-1"
                                            x-text="user.name"></a>
                                         <span x-text="user.nip"></span>
                                     </div>
@@ -106,7 +115,7 @@
                                 <td>
                                     <a x-bind:href="`/manage-users/users/edit/${user.id}`"
                                        class="btn btn-sm btn-primary"><i
-                                            class="bi bi-pencil"></i></a>
+                                                class="bi bi-pencil"></i></a>
                                     <button class="btn btn-danger btn-sm" @click="destroy(user.id)">
                                         <i class="bi bi-trash"></i>
                                     </button>
@@ -138,6 +147,8 @@
                 isLoading: true,
                 startIndex: null,
                 search: '',
+                modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
+                formImport: document.getElementById('form-import'),
                 async init() {
                     await this.getUserData();
                     await this.filterByBranch();
@@ -197,6 +208,21 @@
                         const response = await axios.get(`/manage-users/users/filter/branch/data/${selectedBranch.id}`);
                         self.users = response.data;
                     });
+                },
+                async importData() {
+                    this.buttonLoading = true
+                    try {
+                        await axios.post('/manage-users/users/import/', new FormData(this.formImport))
+                        await showAlert('success', 'Data berhasil diimport')
+                        this.formImport.reset();
+                        this.modalImport.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
                 },
             }
         }

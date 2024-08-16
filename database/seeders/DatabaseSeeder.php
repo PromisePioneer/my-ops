@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             LetterHeadSeeder::class,
             UnitTypesSeeder::class,
             PositionSeeder::class,
+            ManageShiftSeeder::class
 //            AttendancesSeeder::class
         ]);
     }

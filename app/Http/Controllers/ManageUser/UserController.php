@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ManageUser;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\IdentityInformationRequest;
 use App\Http\Requests\User\UserRequest;
+use App\Imports\UserImport;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\IdentityInformation;
@@ -17,6 +18,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -201,5 +203,17 @@ class UserController extends Controller
         $users = $user->with('roles')->find($user->id);
 
         return response()->json($users);
+    }
+
+    public function import(Request $request)
+    {
+//        $this->authorize('import', Branch::class);
+        $file = $request->file('file_import');
+
+        Excel::import(new UserImport(), $file);
+
+        return response()->json([
+            'message' => 'Data berhasil diimport',
+        ]);
     }
 }

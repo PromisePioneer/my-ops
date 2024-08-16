@@ -3,7 +3,6 @@
 @section('content')
     <div x-data="fpDevicesData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.adms.fp-devices.modal.create')
             @include('pages.adms.fp-devices.modal.edit')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -13,23 +12,6 @@
                         </span>
                         <input type="text" name="search" x-model="search" @input.debounce="searchData()"
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
-                    </div>
-                </div>
-                <div class="card-toolbar">
-                    <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                        <button type="button" class="btn btn-light-primary btn-sm me-3" data-bs-toggle="modal"
-                                data-bs-target="#modal-import">
-                            <span class="svg-icon svg-icon-2">
-                                <i class="bi bi-file-earmark-excel-fill"></i>
-                            </span>
-                            Import
-                        </button>
-                        <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
-                                Tambah
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -114,9 +96,7 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                formCreate: document.getElementById('form-create'),
                 formEdit: document.getElementById('form-edit'),
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 deleteForm: document.getElementById('deleteForm'),
                 async init() {

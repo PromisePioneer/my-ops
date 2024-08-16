@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ADMS\ManageShiftRequest;
 use App\Models\ManageShift;
 use Illuminate\Http\JsonResponse;
+use Illuminate\View\View;
 
 class ManageShiftController extends Controller
 {
@@ -18,7 +19,7 @@ class ManageShiftController extends Controller
         $this->perPage = 10;
     }
 
-    public function index()
+    public function index(): View
     {
         return view('pages.adms.manage-shift.index');
     }

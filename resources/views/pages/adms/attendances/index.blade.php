@@ -21,13 +21,13 @@
                         <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="w-10px pe-2">
-                                    No
-                                </th>
-                                <th class="min-w-125px">Serial Number</th>
+                                {{--                                <th class="w-10px pe-2">--}}
+                                {{--                                    No--}}
+                                {{--                                </th>--}}
+                                <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">ID User</th>
-                                <th class="min-w-125px">Timestamp</th>
-                                <th class="min-w-125px">Status 1</th>
+                                <th class="min-w-125px">Waktu C/In</th>
+                                <th class="min-w-125px">Waktu C/Out</th>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
                             <template x-if="isLoading">
@@ -48,13 +48,12 @@
                                     </td>
                                 </tr>
                             </template>
-                            <template x-for="(attendance, index) in attendanceLog?.data" :key="attendance.id">
+                            <template x-for="(attendance, index) in attendanceLog" :key="index">
                                 <tr>
-                                    <td x-text="startIndex + index++"></td>
-                                    <td x-text="attendance.sn"></td>
-                                    <td x-text="attendance.employee_id"></td>
-                                    <td x-text="attendance.timestamp"></td>
-                                    <td x-text="attendance.status1"></td>
+                                    <td x-text="attendance.name"></td>
+                                    <td x-text="attendance.absent_id"></td>
+                                    <td x-text="attendance.check_in_time ?? '-'"></td>
+                                    <td x-text="attendance.check_out_time ?? '-'"></td>
                                 </tr>
                             </template>
                             </tbody>
@@ -79,7 +78,6 @@
             return {
                 isLoading: false,
                 attendanceLog: [],
-                startIndex: null,
                 async init() {
                     await this.getAttendanceLog();
                 },
@@ -91,7 +89,6 @@
                 async nextPage() {
                     if (this.attendanceLog.next_page_url) {
                         const resp = await axios.get(`${this.attendanceLog.next_page_url}`);
-                        this.startIndex = this.attendanceLog.from
                         this.attendanceLog = resp.data
                     }
                 },

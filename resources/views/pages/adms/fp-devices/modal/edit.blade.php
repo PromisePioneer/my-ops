@@ -27,7 +27,7 @@
                         <label for="serial_number" class="required form-label">Serial Number</label>
                         <input type="text" id="serial_number" name="serial_number"
                                class="form-control form-control-solid"
-                               placeholder="Nama" :value="editVal.serial_number"/>
+                               placeholder="Nama" :value="editVal.serial_number" readonly/>
                     </div>
                 </div>
 
