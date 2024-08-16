@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendances;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class AttendancesController extends Controller
@@ -28,25 +29,27 @@ class AttendancesController extends Controller
     public function data(): JsonResponse
     {
         $att = User::leftJoin('attendances', 'attendances.employee_id', '=', 'users.absent_id')
-            ->select('users.*', 'attendances.*')
+            ->select('users.*', 'attendances.*', DB::raw('DATE(attendances.timestamp) as date'))
             ->get()
-            ->groupBy('name')->map(function ($item) {
-                return [
-                    'name' => $item->first()->name,
-                    'absent_id' => $item->first()->absent_id,
-                    'timestamp' => $item->first()->timestamp,
-                    'check_in_time' => $item->where('status1', 0)->first()->timestamp ?? null,
-                    'check_out_time' => $item->where('status1', 1)->first()->timestamp ?? null,
-                    'check_in' => $item->first()->status1 === 0 ? 0 : null,
-                    'check_out' => $item->first()->status1 === 1 ? 1 : null,
-                ];
+            ->groupBy(['name', 'date'])
+            ->map(function ($itemsByDate) {
+                return $itemsByDate->map(function ($item) {
+                    return [
+                        'name' => $item->first()->name,
+                        'absent_id' => $item->first()->absent_id,
+                        'check_in_time' => $item->where('status1', 0)->first()->timestamp ?? null,
+                        'check_out_time' => $item->where('status1', 1)->first()->timestamp ?? null,
+                        'check_in' => $item->first()->status1 === 0 ? 0 : null,
+                        'check_out' => $item->first()->status1 === 1 ? 1 : null,
+                    ];
+                });
             });
 
 
-        return response()->json($att);
+        return response()->json(Attendances::all());
     }
 
-    public function attendancesSummary()
+    public function attendancesSummary(): void
     {
         $att = User::leftJoin('attendances', 'attendances.employee_id', '=', 'users.absent_id')
             ->select('users.*', 'attendances.*')

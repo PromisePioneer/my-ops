@@ -128,6 +128,11 @@ class User extends Authenticatable
         return $this->hasOne(JobInformation::class);
     }
 
+    public function manageShift(): HasOne
+    {
+        return $this->hasOne(ManageShift::class, 'user_id');
+    }
+
     //eloquent
     public function getDataWithPagination(int $perPage): LengthAwarePaginator
     {

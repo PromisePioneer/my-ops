@@ -58,19 +58,16 @@ class IclockController extends Controller
      */
     public function receiveRecords(Request $request): string
     {
-        //DB::connection()->enableQueryLog();
         $content['url'] = json_encode($request->all());
         $content['data'] = $request->getContent();
         FingerLog::create($content);
+
         try {
-            // $post_content = $request->getContent();
-            //$arr = explode("\n", $post_content);
             $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
-            //$tot = count($arr);
             $tot = 0;
-            //operation log
+
+            // Operation log
             if ($request->input('table') == "OPERLOG") {
-                // $tot = count($arr) - 1;
                 foreach ($arr as $rey) {
                     if (isset($rey)) {
                         $tot++;
@@ -78,27 +75,58 @@ class IclockController extends Controller
                 }
                 return "OK: ".$tot;
             }
-            //attendance
+
+            // Attendance
             foreach ($arr as $rey) {
-                // $data = preg_split('/\s+/', trim($rey));
                 if (empty($rey)) {
                     continue;
                 }
-                // $data = preg_split('/\s+/', trim($rey));
+
                 $data = explode("\t", $rey);
-                $q['sn'] = $request->input('SN');
-                $q['table'] = $request->input('table');
-                $q['stamp'] = $request->input('Stamp');
-                $q['employee_id'] = $data[0];
-                $q['timestamp'] = $data[1];
-                $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
-                $q['status2'] = $this->validateAndFormatInteger($data[3] ?? null);
-                $q['status3'] = $this->validateAndFormatInteger($data[4] ?? null);
-                $q['status4'] = $this->validateAndFormatInteger($data[5] ?? null);
-                $q['status5'] = $this->validateAndFormatInteger($data[6] ?? null);
-                Attendances::create($q);
+
+                $attendanceData = [
+                    'sn' => $request->input('SN'),
+                    'table' => $request->input('table'),
+                    'stamp' => $request->input('Stamp'),
+                    'employee_id' => $data[0],
+                    'timestamp' => $data[1],
+                    'status1' => $this->validateAndFormatInteger($data[2] ?? null),
+                    'status2' => $this->validateAndFormatInteger($data[3] ?? null),
+                    'status3' => $this->validateAndFormatInteger($data[4] ?? null),
+                    'status4' => $this->validateAndFormatInteger($data[5] ?? null),
+                    'status5' => $this->validateAndFormatInteger($data[6] ?? null),
+                ];
+
+                $date = date('Y-m-d', strtotime($attendanceData['timestamp']));
+
+                if ($attendanceData['status1'] == 0) {
+                    // Check-in
+                    $existingRecord = Attendances::where('employee_id', $attendanceData['employee_id'])
+                        ->whereDate('timestamp', $date)
+                        ->orderBy('timestamp', 'asc')
+                        ->first();
+
+                    if (!$existingRecord) {
+                        // Jika tidak ada record check-in sebelumnya, simpan data check-in
+                        Attendances::create($attendanceData);
+                    }
+                } elseif ($attendanceData['status1'] == 1) {
+                    // Check-out
+                    $lastCheckOut = Attendances::where('employee_id', $attendanceData['employee_id'])
+                        ->whereDate('timestamp', $date)
+                        ->orderBy('timestamp', 'desc')
+                        ->first();
+
+                    if ($lastCheckOut) {
+                        // Perbarui record check-out terakhir dengan waktu check-out terbaru
+                        $lastCheckOut->update([
+                            'check_out_time' => $attendanceData['timestamp'],
+                            'check_out' => 1
+                        ]);
+                    }
+                }
+
                 $tot++;
-                // dd(DB::getQueryLog());
             }
             return "OK: ".$tot;
         } catch (Throwable $e) {
@@ -108,6 +136,7 @@ class IclockController extends Controller
             return "ERROR: ".$tot."\n";
         }
     }
+
 
     private function validateAndFormatInteger($value): ?int
     {
