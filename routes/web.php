@@ -304,26 +304,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/update/{role}', [RoleController::class, 'update']);
             Route::delete('/{role}', [RoleController::class, 'destroy']);
         });
-
-        Route::prefix('attendance-machine-info')->group(function () {
-            Route::get('/', [AttendanceMachineController::class, 'index']);
-            Route::get('/data', [AttendanceMachineController::class, 'data']);
-            Route::get('/branch/data', [AttendanceMachineController::class, 'getBranchData']);
-            Route::get(
-                '/selected/branch/data/{attendanceMachineInformation}',
-                [AttendanceMachineController::class, 'getSelectedBranch']
-            );
-            Route::get('/search', [AttendanceMachineController::class, 'search']);
-            Route::post('/', [AttendanceMachineController::class, 'store']);
-            Route::get('/detail/{attendanceMachineInformation}', [AttendanceMachineController::class, 'detail']);
-            Route::get(
-                '/tarik-data-absen/{attendanceMachineInformation}',
-                [AttendanceMachineController::class, 'tarikDataAbsen']
-            );
-            Route::get('/{attendanceMachineInformation}', [AttendanceMachineController::class, 'edit']);
-            Route::post('/{attendanceMachineInformation}', [AttendanceMachineController::class, 'update']);
-            Route::delete('/{attendanceMachineInformation}', [AttendanceMachineController::class, 'destroy']);
-        });
     });
 
     //utility
