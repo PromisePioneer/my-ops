@@ -611,5 +611,5 @@ Route::get('/iclock/cdata', [IclockController::class, 'handshake']);
 Route::post('/iclock/cdata', [IclockController::class, 'receiveRecords']);
 
 Route::get('/iclock/test', [IclockController::class, 'test']);
-Route::get('/iclock/getrequest', [IclockController::class, 'handleRequest']);
+Route::get('/iclock/getrequest', [IclockController::class, 'getrequest']);
 
