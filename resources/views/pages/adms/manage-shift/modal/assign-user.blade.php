@@ -14,7 +14,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-10">
-                                <label for="name" class="required form-label">User</label>
+                                <label for="name" class="required form-label">Karyawan</label>
                                 <select name="user_id[]" class="form-select form-select-solid user-select2"
                                         id="selectedUserShift"
                                         multiple>

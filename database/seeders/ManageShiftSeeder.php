@@ -14,7 +14,7 @@ class ManageShiftSeeder extends Seeder
     {
         ManageShift::create([
             'id' => 1,
-            'name' => 'Kantor',
+            'name' => 'Default',
             'clock_in' => '08:00',
             'clock_out' => '17:00',
             'time_to_checkin' => '06:00',

@@ -21,15 +21,16 @@
                         <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                {{--                                <th class="w-10px pe-2">--}}
-                                {{--                                    No--}}
-                                {{--                                </th>--}}
+                                <th class="w-10px pe-2">
+                                    No
+                                </th>
                                 <th class="min-w-125px">Nama</th>
-                                <th class="min-w-125px">ID User</th>
+                                <th class="min-w-125px">Jam Kerja</th>
+                                <th class="min-w-125px">Tanggal</th>
                                 <th class="min-w-125px">Waktu C/In</th>
                                 <th class="min-w-125px">Waktu C/Out</th>
                             </thead>
-                            <tbody class="text-gray-600 fw-bold">
+                            <tbody class="fw-bold">
                             <template x-if="isLoading">
                                 <tr>
                                     <td colspan="9">
@@ -58,12 +59,23 @@
                             {{--                                    </tr>--}}
                             {{--                                </template>--}}
                             {{--                            </template>--}}
-                            <template x-for="(attendance, index) in attendanceLog.data">
+                            <template x-for="(attendance, index) in attendanceLog.data" :key="index">
                                 <tr>
-                                    <td x-text="attendance.sn"></td>
-                                    <td x-text="attendance.employee_id"></td>
-                                    <td x-text="attendance.timestamp"></td>
-                                    <td x-text="attendance.status1"></td>
+                                    <td x-text="startIndex + index++"></td>
+                                    <td x-text="attendance.name"></td>
+                                    <td x-text="attendance.work_time ?? 'Default'"></td>
+                                    <td x-text="attendance.date"></td>
+                                    <td>
+                                        <span class="badge bg-info" x-text="attendance.checkin_time"></span>
+                                    </td>
+                                    <td>
+                                        <template x-if="attendance.checkout_time === null">
+                                            <span class="badge bg-danger">Belum Checkout</span>
+                                        </template>
+                                        <template x-if="attendance.checkout_time">
+                                            <span class="badge bg-info" x-text="attendance.checkout_time"></span>
+                                        </template>
+                                    </td>
                                 </tr>
                             </template>
                             </tbody>

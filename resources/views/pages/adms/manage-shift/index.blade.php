@@ -41,6 +41,7 @@
                                 <th class="min-w-125px">Jam Masuk</th>
                                 <th class="min-w-125px">Jam Pulang</th>
                                 <th class="min-w-125px">Mulai Check In</th>
+                                <th class="min-w-125px">Akhir Check In</th>
                                 <th class="min-w-125px">Mulai Check Out</th>
                                 <th class="min-w-125px">Akhir Check Out</th>
 
@@ -72,34 +73,43 @@
                                     <td x-text="shift.clock_in"></td>
                                     <td x-text="shift.clock_out"></td>
                                     <td x-text="shift.time_to_checkin"></td>
+                                    <td x-text="shift.end_time_to_checkin"></td>
                                     <td x-text="shift.time_to_checkout"></td>
                                     <td x-text="shift.end_time_to_checkout"></td>
                                     <td>
-                                        <button class="btn btn-info btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-assign-user" @click="assignUserShift(shift.id)">
-                                            <i class="fas fa-user-tag"></i>
-                                        </button>
-                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(shift.id)">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-danger btn-sm" @click="destroy(shift.id)">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                        <template x-if="shift.id !== 1">
+                                            <button class="btn btn-info btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-assign-user"
+                                                    @click="assignUserShift(shift.id)">
+                                                <i class="fas fa-user-tag"></i>
+                                            </button>
+                                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-edit" @click="edit(shift.id)">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" @click="destroy(shift.id)">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </template>
                                     </td>
                                 </tr>
                             </template>
                             </tbody>
                         </table>
                     </div>
-                    <ul class="pagination float-end mb-4">
-                        <li class="page-item previous">
-                            <button class="btn btn-light btn-sm" @click="previousPage">Previous</button>
-                        </li>
-                        <li class="page-item next">
-                            <button class="btn btn-light btn-sm" @click="nextPage">Next</button>
-                        </li>
-                    </ul>
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <span class="text-danger">
+                           Note: Jika karyawan tidak dijadwalkan dalam jam kerja tertentu maka jam kerja akan diset secara otomatis ke default
+                        </span>
+                        <ul class="pagination">
+                            <li class="page-item previous">
+                                <button class="btn btn-light btn-sm" @click="previousPage">Previous</button>
+                            </li>
+                            <li class="page-item next">
+                                <button class="btn btn-light btn-sm" @click="nextPage">Next</button>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

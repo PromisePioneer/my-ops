@@ -351,7 +351,7 @@
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'attendances'"
                                 href="{{ url('adms/attendances') }}">
-                            Data Kehadiran
+                            Log Fingerprint
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'manage-shift'"
