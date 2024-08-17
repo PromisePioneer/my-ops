@@ -14,6 +14,7 @@ class UserImport implements ToModel
      */
     public function model(array $row): User
     {
+        dd($row);
         return new User([
             'absent_id' => $row[0],
             'nip' => $row[1],
