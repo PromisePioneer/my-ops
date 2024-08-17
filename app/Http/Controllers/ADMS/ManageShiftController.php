@@ -35,6 +35,8 @@ class ManageShiftController extends Controller
 
     public function store(ManageShiftRequest $request): JsonResponse
     {
+        $data = $request->validated();
+        $data['branch_id'] = $request->user()->branch_id ?? null;
         ManageShift::create($request->validated());
         return response()->json([
             'message' => 'Data berhasil disimpan'

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\IdentityInformationRequest;
 use App\Http\Requests\User\UserRequest;
 use App\Imports\UserImport;
+use App\Models\Attendances;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\IdentityInformation;
@@ -35,6 +36,7 @@ class UserController extends Controller
     private User $user;
 
     private Department $department;
+    private Attendances $attendances;
 
     public function __construct()
     {
@@ -49,7 +51,7 @@ class UserController extends Controller
         $this->identityInformationService = new IdentityInformationService();
         $this->jobInformation = new JobInformation();
         $this->identityInformation = new IdentityInformation();
-//        $this->attendance = new Attendance();
+        $this->attendances = new Attendances();
         $this->jobInformationService = new JobInformationService();
     }
 
@@ -98,7 +100,7 @@ class UserController extends Controller
         $data['password'] = Hash::make('MayatamaPekanbaru2024');
         $data['nip'] = str_replace('-', '', $format);
         $user = User::create($data);
-        $user->assignRole($request->role);
+        $user->syncRoles($request->role);
 
         return response()->json([
             'message' => 'data berhasil disimpan',
@@ -195,7 +197,8 @@ class UserController extends Controller
 
     public function getAbsentData(User $user): JsonResponse
     {
-//        return response()->json($this->attendance->getDataWithPaginationBasedOnUser($user->id, $this->perPage));
+        return response()->json($this->attendances->getAttendancesDataBasedOnAbsentId($user->absent_id,
+            $this->perPage));
     }
 
     public function show(User $user): JsonResponse
@@ -205,9 +208,8 @@ class UserController extends Controller
         return response()->json($users);
     }
 
-    public function import(Request $request)
+    public function import(Request $request): JsonResponse
     {
-//        $this->authorize('import', Branch::class);
         $file = $request->file('file_import');
 
         Excel::import(new UserImport(), $file);

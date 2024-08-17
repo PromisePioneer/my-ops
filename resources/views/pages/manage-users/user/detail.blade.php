@@ -90,8 +90,7 @@
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="min-w-125px">Tanggal</th>
-                                <th class="min-w-125px">Clock in</th>
-                                <th class="min-w-125px">Clock Out</th>
+                                <th class="min-w-125px">Status</th>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
                             <template x-if="isLoading">
@@ -112,11 +111,23 @@
                                     </td>
                                 </tr>
                             </template>
-                            <template x-for="absent in attendance?.data" :key="absent.id">
+                            <template x-for="absent in attendance?.data" :key="index">
                                 <tr>
-                                    <td x-text="absent.date"></td>
-                                    <td x-text="absent.clock_in"></td>
-                                    <td x-text="absent.clock_out"></td>
+                                    <td x-text="absent.timestamp"></td>
+                                    <template x-if="absent.status1 === 0">
+                                        <td>
+                                            <span class="badge bg-success">
+                                                Check in
+                                            </span>
+                                        </td>
+                                    </template>
+                                    <template x-if="absent.status1 === 1">
+                                        <td>
+                                            <span class="badge bg-danger">
+                                                Check out
+                                            </span>
+                                        </td>
+                                    </template>
                                 </tr>
                             </template>
                             </tbody>
@@ -273,11 +284,13 @@
                 },
                 async selectedDiseaseData() {
                     this.diseaseData = [];
-                    this.healthInformation.disease.map((name) => {
-                        this.diseaseData.push({
-                            name: name
+                    if (this.healthInformation.disease) {
+                        this.healthInformation.disease.map((name) => {
+                            this.diseaseData.push({
+                                name: name
+                            })
                         })
-                    })
+                    }
                 },
                 async educationCertificatesDestroy(id) {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {

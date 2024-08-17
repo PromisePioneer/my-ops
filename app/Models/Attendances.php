@@ -51,4 +51,13 @@ class Attendances extends Model
         return $data;
     }
 
+
+    public function getAttendancesDataBasedOnAbsentId(int $absentId, int $perPage): LengthAwarePaginator
+    {
+        return self::join('users', 'users.absent_id', '=', 'attendances.employee_id')
+            ->where('absent_id', $absentId)
+            ->orderBy('timestamp', 'DESC')
+            ->paginate($perPage);
+    }
+
 }

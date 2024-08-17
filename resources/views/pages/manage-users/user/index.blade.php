@@ -142,6 +142,7 @@
     <script>
         function userData() {
             return {
+                buttonLoading: false,
                 users: [],
                 role: [],
                 isLoading: true,

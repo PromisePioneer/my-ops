@@ -48,24 +48,24 @@
                                     </td>
                                 </tr>
                             </template>
-                            <template x-for="(user, userName) in attendanceLog" :key="userName">
-                                <template x-for="(attendance, date) in user" :key="date">
-                                    <tr>
-                                        <td x-text="attendance.name"></td>
-                                        <td x-text="attendance.absent_id"></td>
-                                        <td x-text="attendance.check_in_time ?? '-'"></td>
-                                        <td x-text="attendance.check_out_time ?? '-'"></td>
-                                    </tr>
-                                </template>
-                            </template>
-                            {{--                            <template x-for="(attendance, index) in attendanceLog.data">--}}
-                            {{--                                <tr>--}}
-                            {{--                                    <td x-text="attendance.sn"></td>--}}
-                            {{--                                    <td x-text="attendance.employee_id"></td>--}}
-                            {{--                                    <td x-text="attendance.timestamp"></td>--}}
-                            {{--                                    <td x-text="attendance.status1"></td>--}}
-                            {{--                                </tr>--}}
+                            {{--                            <template x-for="(user, userName) in attendanceLog" :key="userName">--}}
+                            {{--                                <template x-for="(attendance, date) in user" :key="date">--}}
+                            {{--                                    <tr>--}}
+                            {{--                                        <td x-text="attendance.name"></td>--}}
+                            {{--                                        <td x-text="attendance.absent_id"></td>--}}
+                            {{--                                        <td x-text="attendance.check_in_time ?? '-'"></td>--}}
+                            {{--                                        <td x-text="attendance.check_out_time ?? '-'"></td>--}}
+                            {{--                                    </tr>--}}
+                            {{--                                </template>--}}
                             {{--                            </template>--}}
+                            <template x-for="(attendance, index) in attendanceLog.data">
+                                <tr>
+                                    <td x-text="attendance.sn"></td>
+                                    <td x-text="attendance.employee_id"></td>
+                                    <td x-text="attendance.timestamp"></td>
+                                    <td x-text="attendance.status1"></td>
+                                </tr>
+                            </template>
                             </tbody>
                         </table>
                     </div>
