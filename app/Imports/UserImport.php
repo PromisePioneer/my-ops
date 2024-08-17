@@ -21,7 +21,7 @@ class UserImport implements ToModel, WithHeadingRow
             'nip' => $row['nik'],
             'name' => $row['nama'],
             'join_date' => Carbon::createFromFormat('d/m/Y', $row['join_date']),
-            'email' => fake()->unique(true)->safeEmail(),
+            'email' => fake()->unique()->safeEmail(),
             'password' => Hash::make('password'),
             'placement' => "Pusat",
         ]);
