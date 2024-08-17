@@ -30,8 +30,8 @@ class BranchesImport implements ToModel, WithHeadingRow, WithValidation
     public function model(array $row): Branch
     {
         return new Branch([
-            'code' => $row['kode'],
-            'name' => $row['nama'],
+            'code' => $row[0],
+            'name' => $row[1],
         ]);
     }
 }
