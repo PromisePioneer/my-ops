@@ -153,16 +153,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::delete('/{permission}', [PermissionController::class, 'destroy']);
         });
 
-        Route::prefix('attendance')->group(function () {
-            Route::get('/', [UserAttendanceController::class, 'index']);
-            Route::get('/data', [UserAttendanceController::class, 'data']);
-            Route::get('/users/data', [UserAttendanceController::class, 'getUserData']);
-            Route::get('/search', [UserAttendanceController::class, 'search']);
-            Route::post('/', [UserAttendanceController::class, 'store']);
-            Route::get('/{userAttendance}', [UserAttendanceController::class, 'edit']);
-            Route::post('/{userAttendance}', [UserAttendanceController::class, 'update']);
-            Route::post('/{userAttendance}', [UserAttendanceController::class, 'destroy']);
-        });
 
         Route::prefix('payroll')->group(function () {
             Route::get('/', [PayrollController::class, 'index']);
@@ -575,21 +565,22 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('/manage-shift')->group(function () {
             Route::get('/', [ManageShiftController::class, 'index']);
             Route::get('/data', [ManageShiftController::class, 'data']);
+            Route::get('/user/data', [ManageShiftController::class, 'getUserData']);
             Route::get('/search', [ManageShiftController::class, 'search']);
             Route::post('/', [ManageShiftController::class, 'store']);
             Route::get('/{manageShift}', [ManageShiftController::class, 'edit']);
             Route::post('/{manageShift}', [ManageShiftController::class, 'update']);
             Route::delete('/{manageShift}', [ManageShiftController::class, 'destroy']);
+            Route::post('assign-shift/{manageShift}', [ManageShiftController::class, 'assignShift']);
+            Route::get('/user/selected/{manageShift}', [ManageShiftController::class, 'getSelectedUserShift']);
         });
     });
 });
 
-
-// handshake
-Route::get('/iclock/cdata', [IclockController::class, 'handshake']);
-// request dari device
-Route::post('/iclock/cdata', [IclockController::class, 'receiveRecords']);
-
-Route::get('/iclock/test', [IclockController::class, 'test']);
-Route::get('/iclock/getrequest', [IclockController::class, 'getrequest']);
+Route::prefix('/iclock')->group(function () {
+    Route::get('cdata', [IclockController::class, 'handshake']);
+    Route::post('cdata', [IclockController::class, 'receiveRecords']);
+    Route::get('test', [IclockController::class, 'test']);
+    Route::get('getrequest', [IclockController::class, 'getrequest']);
+});
 

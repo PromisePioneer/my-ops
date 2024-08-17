@@ -13,16 +13,7 @@ class ManageShiftSeeder extends Seeder
     public function run(): void
     {
         ManageShift::create([
-            'name' => 'Lapangan',
-            'clock_in' => '09:00',
-            'clock_out' => '18:00',
-            'time_to_checkin' => '07:00',
-            'end_time_to_checkin' => '11:00',
-            'time_to_checkout' => '18:00',
-            'end_time_to_checkout' => '23:59'
-        ]);
-
-        ManageShift::create([
+            'id' => 1,
             'name' => 'Kantor',
             'clock_in' => '08:00',
             'clock_out' => '17:00',

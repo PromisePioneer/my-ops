@@ -3,146 +3,32 @@
 namespace App\Http\Controllers\ADMS;
 
 use App\Http\Controllers\Controller;
-use App\Models\Attendances;
-use App\Models\DeviceLog;
-use App\Models\ErrorLog;
 use App\Models\FingerLog;
-use App\Models\FpDevice;
+use App\Service\IclockService;
 use Illuminate\Http\Request;
 use Throwable;
 
 class IclockController extends Controller
 {
+    private IclockService $iclockService;
+
     /**
      * @throws Throwable
      */
+    public function __construct()
+    {
+        $this->iclockService = new IclockService();
+    }
+
     public function handshake(Request $request): string
     {
-        $data = [
-            'url' => json_encode($request->all()),
-            'data' => $request->getContent(),
-            'serial_number' => $request->input('SN'),
-            'option' => $request->input('option'),
-        ];
-        DeviceLog::create($data);
-
-
-        // update status device
-        FpDevice::updateOrCreate(
-            ['serial_number' => $request->input('SN')],
-            [
-                'name' => $request->input('SN'),
-                'online' => now()
-            ]
-        );
-
-        return "GET OPTION FROM: {$request->input('SN')}\r\n".
-            "Stamp=9999\r\n".
-            "OpStamp=".time()."\r\n".
-            "ErrorDelay=60\r\n".
-            "Delay=30\r\n".
-            "ResLogDay=18250\r\n".
-            "ResLogDelCount=10000\r\n".
-            "ResLogCount=50000\r\n".
-            "TransTimes=00:00;14:05\r\n".
-            "TransInterval=1\r\n".
-            "TransFlag=1111000000\r\n".
-            //  "TimeZone=7\r\n" .
-            "Realtime=1\r\n".
-            "Encrypt=0";
+        return $this->iclockService->handshake($request);
     }
 
-
-    /**
-     * @throws Throwable
-     */
     public function receiveRecords(Request $request): string
     {
-        $content['url'] = json_encode($request->all());
-        $content['data'] = $request->getContent();
-        FingerLog::create($content);
-
-        try {
-            $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
-            $tot = 0;
-
-            // Operation log
-            if ($request->input('table') == "OPERLOG") {
-                foreach ($arr as $rey) {
-                    if (isset($rey)) {
-                        $tot++;
-                    }
-                }
-                return "OK: ".$tot;
-            }
-
-            // Attendance
-            foreach ($arr as $rey) {
-                if (empty($rey)) {
-                    continue;
-                }
-
-                $data = explode("\t", $rey);
-
-                $attendanceData = [
-                    'sn' => $request->input('SN'),
-                    'table' => $request->input('table'),
-                    'stamp' => $request->input('Stamp'),
-                    'employee_id' => $data[0],
-                    'timestamp' => $data[1],
-                    'status1' => $this->validateAndFormatInteger($data[2] ?? null),
-                    'status2' => $this->validateAndFormatInteger($data[3] ?? null),
-                    'status3' => $this->validateAndFormatInteger($data[4] ?? null),
-                    'status4' => $this->validateAndFormatInteger($data[5] ?? null),
-                    'status5' => $this->validateAndFormatInteger($data[6] ?? null),
-                ];
-
-                $date = date('Y-m-d', strtotime($attendanceData['timestamp']));
-
-                if ($attendanceData['status1'] == 0) {
-                    // Check-in
-                    $existingRecord = Attendances::where('employee_id', $attendanceData['employee_id'])
-                        ->whereDate('timestamp', $date)
-                        ->orderBy('timestamp', 'asc')
-                        ->first();
-
-                    if (!$existingRecord) {
-                        // Jika tidak ada record check-in sebelumnya, simpan data check-in
-                        Attendances::create($attendanceData);
-                    }
-                } elseif ($attendanceData['status1'] == 1) {
-                    // Check-out
-                    $lastCheckOut = Attendances::where('employee_id', $attendanceData['employee_id'])
-                        ->whereDate('timestamp', $date)
-                        ->orderBy('timestamp', 'desc')
-                        ->first();
-
-                    if ($lastCheckOut) {
-                        // Perbarui record check-out terakhir dengan waktu check-out terbaru
-                        $lastCheckOut->update([
-                            'check_out_time' => $attendanceData['timestamp'],
-                            'check_out' => 1
-                        ]);
-                    }
-                }
-
-                $tot++;
-            }
-            return "OK: ".$tot;
-        } catch (Throwable $e) {
-            $data['error'] = $e;
-            ErrorLog::create($data);
-            report($e);
-            return "ERROR: ".$tot."\n";
-        }
+        return $this->iclockService->recieveRecords($request);
     }
-
-
-    private function validateAndFormatInteger($value): ?int
-    {
-        return isset($value) && $value !== '' ? (int) $value : null;
-    }
-
 
     public function test(Request $request): void
     {
@@ -152,15 +38,9 @@ class IclockController extends Controller
 
     public function getrequest(Request $request): string
     {
-        //  $r = "GET OPTION FROM: ".$request->SN."\nStamp=".strtotime('now')."\nOpStamp=".strtotime('now')."\nErrorDelay=60\nDelay=30\nResLogDay=18250\nResLogDelCount=10000\nResLogCount=50000\nTransTimes=00:00;14:05\nTransInterval=1\nTransFlag=1111000000\nRealtime=1\nEncrypt=0";
-
-        // Jika tidak ada perintah, kirim "OK"
+        // if no command send "OK"
         return "OK";
     }
 
 
-    public function getAttLog(Request $request): array
-    {
-        dd($request->all());
-    }
 }

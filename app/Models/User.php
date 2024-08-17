@@ -157,4 +157,27 @@ class User extends Authenticatable
     {
         return self::with('roles')->where('branch_id', $branchId)->paginate($perPage);
     }
+
+
+    public function getUserBasedOnBranch(Request $request): array
+    {
+        $search = $request->search;
+        $query = self::orderby('name', 'asc')
+            ->where('branch_id', $request->user()->branch_id)
+            ->select('id', 'name');
+
+        if ($search !== '') {
+            $query->where('name', 'like', '%'.$search.'%');
+            $query->orWhere('nip', 'like', '%'.$search.'%');
+        }
+
+        $user = $query->get();
+
+        return $user->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->nip.''.$item->name,
+            ];
+        })->toArray();
+    }
 }

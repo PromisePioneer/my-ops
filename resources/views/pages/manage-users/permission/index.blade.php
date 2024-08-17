@@ -121,15 +121,15 @@
                 async nextPage() {
                     if (this.permissions.next_page_url) {
                         const resp = await axios.get(`${this.permissions.next_page_url}`);
-                        this.startIndex = this.resp.from
                         this.permissions = resp.data
+                        this.startIndex = this.permissions.from
                     }
                 },
                 async previousPage() {
                     if (this.permissions.prev_page_url) {
                         const resp = await axios.get(`${this.permissions.prev_page_url}`);
-                        this.startIndex = this.resp.from
                         this.permissions = resp.data
+                        this.startIndex = this.permissions.from
                     }
                 },
                 async save() {

@@ -324,11 +324,6 @@
                             Hak Akses
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'attendance'"
-                                href="{{ url('manage-users/attendance') }}">
-                            Absensi
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'leaves'"
                                 href="{{ url('manage-users/leaves') }}">
                             Manajemen Cuti

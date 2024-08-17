@@ -6,6 +6,7 @@
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             @include('pages.adms.manage-shift.modal.create')
             @include('pages.adms.manage-shift.modal.edit')
+            @include('pages.adms.manage-shift.modal.assign-user')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -74,6 +75,10 @@
                                     <td x-text="shift.time_to_checkout"></td>
                                     <td x-text="shift.end_time_to_checkout"></td>
                                     <td>
+                                        <button class="btn btn-info btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#modal-assign-user" @click="assignUserShift(shift.id)">
+                                            <i class="fas fa-user-tag"></i>
+                                        </button>
                                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(shift.id)">
                                             <i class="bi bi-pencil"></i>
@@ -103,6 +108,17 @@
 @endsection
 @push('script')
     <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            $('#modal-assign-user').on('hide.bs.modal', function () {
+                // Reset the form
+                document.getElementById('form-assign-user').reset();
+
+                // Clear the Select2 dropdown
+                $('#selectedUserShift').val(null).trigger('change');
+            });
+        });
+
         function manageShiftData() {
             return {
                 buttonLoading: false,
@@ -111,7 +127,10 @@
                 shifts: null,
                 search: '',
                 editVal: '',
+                shiftId: '',
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
+                modalAssignUser: new bootstrap.Modal(document.getElementById('modal-assign-user')),
+                formAssignUser: document.getElementById('form-assign-user'),
                 formCreate: document.getElementById('form-create'),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formEdit: document.getElementById('form-edit'),
@@ -163,6 +182,11 @@
                     const resp = await axios.get(`/adms/manage-shift/${id}`);
                     this.editVal = resp.data;
                 },
+                async assignUserShift(id) {
+                    this.shiftId = id;
+                    await this.getUserData();
+                    await this.selectedUserShift();
+                },
                 async update(id) {
                     this.buttonLoading = true;
                     try {
@@ -188,6 +212,49 @@
                             console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');
                         }
+                    });
+                },
+                async assignShift(id) {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/adms/manage-shift/assign-shift/${id}`, new FormData(this.formAssignUser))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.formAssignUser.reset();
+                        this.modalAssignUser.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async getUserData() {
+                    $(".user-select2").select2({
+                        ajax: {
+                            url: '/adms/manage-shift/user/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async selectedUserShift() {
+                    const selectedUserShift = $('#selectedUserShift');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/adms/manage-shift/user/selected/${this.shiftId}`,
+                    });
+
+                    response.forEach(user => {
+                        const option = new Option(user.name, user.id, true, true);
+                        selectedUserShift.append(option).trigger('change').trigger({
+                            type: 'select2:select',
+                            params: {results: user}
+                        });
                     });
                 },
             }
