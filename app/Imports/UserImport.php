@@ -3,7 +3,6 @@
 namespace App\Imports;
 
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -20,7 +19,6 @@ class UserImport implements ToModel, WithHeadingRow
             'absent_id' => $row['absen'],
             'nip' => $row['nik'],
             'name' => $row['nama'],
-            'join_date' => Carbon::createFromFormat('Y-m-d', $row['join_date']),
             'email' => fake()->unique()->safeEmail(),
             'password' => Hash::make('password'),
             'placement' => "Pusat",
