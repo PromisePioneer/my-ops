@@ -46,7 +46,7 @@ class AttendancesController extends Controller
             });
 
 
-        return response()->json($this->attendance->getAttendanceWithPagination($this->perPage));
+        return response()->json($att);
     }
 
     public function attendancesSummary(): void
