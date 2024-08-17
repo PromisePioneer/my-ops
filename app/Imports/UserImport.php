@@ -15,9 +15,9 @@ class UserImport implements ToModel
     public function model(array $row): User
     {
         return new User([
-            'absent_id' => $row['absen'],
-            'nip' => $row['nik'],
-            'name' => $row['nama'],
+            'absent_id' => $row[0],
+            'nip' => $row[1],
+            'name' => $row[2],
             'email' => fake()->unique()->safeEmail(),
             'password' => Hash::make('password'),
             'placement' => "Pusat",
