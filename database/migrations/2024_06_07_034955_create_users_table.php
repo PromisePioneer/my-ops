@@ -13,7 +13,7 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', static function (Blueprint $table) {
             $table->id();
-            $table->string('absent_id')->unique();
+            $table->string('absent_id');
             $table->integer('pri')->default(0);
             $table->enum('placement', ['Pusat', 'Cabang'])->default('Pusat');
             $table->unsignedBigInteger('branch_id')->nullable();
