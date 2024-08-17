@@ -24,7 +24,7 @@ class CreateUsersTable extends Migration
             $table->string('vice_card')->nullable();
             $table->dateTime('start_datetime')->nullable();
             $table->dateTime('end_datetime')->nullable();
-            $table->string('nip')->unique();
+            $table->string('nip')->unique()->nullable();
             $table->string('name')->nullable();
             $table->date('join_date')->nullable();
             $table->string('email')->unique()->nullable();
