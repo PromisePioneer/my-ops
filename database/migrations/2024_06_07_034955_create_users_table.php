@@ -25,9 +25,9 @@ class CreateUsersTable extends Migration
             $table->dateTime('start_datetime')->nullable();
             $table->dateTime('end_datetime')->nullable();
             $table->string('nip')->unique();
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->date('join_date')->nullable();
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->dateTime('last_login')->nullable();

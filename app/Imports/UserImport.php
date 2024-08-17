@@ -18,7 +18,6 @@ class UserImport implements ToModel
             'absent_id' => $row[0],
             'nip' => $row[1],
             'name' => $row[2],
-            'email' => fake()->unique()->safeEmail(),
             'password' => Hash::make('password'),
             'placement' => "Pusat",
         ]);
