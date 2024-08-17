@@ -20,7 +20,7 @@ class UserImport implements ToModel, WithHeadingRow
             'absent_id' => $row['absen'],
             'nip' => $row['nik'],
             'name' => $row['nama'],
-            'join_date' => Carbon::createFromFormat('d/m/Y', $row['join_date']),
+            'join_date' => Carbon::createFromFormat('Y-m-d', $row['join_date']),
             'email' => fake()->unique()->safeEmail(),
             'password' => Hash::make('password'),
             'placement' => "Pusat",
