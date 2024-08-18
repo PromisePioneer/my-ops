@@ -56,7 +56,6 @@ class IclockService
             // $post_content = $request->getContent();
             //$arr = explode("\n", $post_content);
             $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
-            dd($arr);
             //$tot = count($arr);
             $tot = 0;
             //operation log
@@ -77,6 +76,7 @@ class IclockService
                 }
                 // $data = preg_split('/\s+/', trim($rey));
                 $data = explode("\t", $rey);
+                dd($data);
                 //dd($data);
                 $q['sn'] = $request->input('SN');
                 $q['table'] = $request->input('table');
