@@ -76,8 +76,8 @@
                                     <td x-text="shift.end_time_to_checkin"></td>
                                     <td x-text="shift.time_to_checkout"></td>
                                     <td x-text="shift.end_time_to_checkout"></td>
-                                    <td>
-                                        <template x-if="shift.id !== 1">
+                                    <template x-if="shift.id !== 1">
+                                        <td>
                                             <button class="btn btn-info btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modal-assign-user"
                                                     @click="assignUserShift(shift.id)">
@@ -90,8 +90,8 @@
                                             <button class="btn btn-danger btn-sm" @click="destroy(shift.id)">
                                                 <i class="bi bi-trash"></i>
                                             </button>
-                                        </template>
-                                    </td>
+                                        </td>
+                                    </template>
                                 </tr>
                             </template>
                             </tbody>
