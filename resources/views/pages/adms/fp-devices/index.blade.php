@@ -27,6 +27,7 @@
                                 <th class="min-w-125px">Cabang</th>
                                 <th class="min-w-125px">Nama Mesin</th>
                                 <th class="min-w-125px">Serial Number</th>
+                                <th class="min-w-125px">Terakhir Terkoneksi</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
@@ -51,7 +52,7 @@
                             <template x-for="(device, index) in devices?.data" :key="device.id">
                                 <tr>
                                     <td x-text="startIndex + index++"></td>
-                                    <td x-text="device.branch?.name"></td>
+                                    <td x-text="device.branch?.name ?? 'Belum Diset'"></td>
                                     <td x-text="device.name"></td>
                                     <td x-text="device.serial_number"></td>
                                     <td x-text="device.online"></td>
