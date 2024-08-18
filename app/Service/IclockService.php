@@ -10,7 +10,6 @@ use App\Models\FpDevice;
 use App\Models\ManageShift;
 use App\Models\UserShift;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class IclockService
@@ -51,46 +50,45 @@ class IclockService
             "Encrypt=0";
     }
 
-    public function recieveRecords(Request $request)
+    public function recieveRecords(Request $request): string
     {
-        DB::transaction(function () use ($request) {
-            $content['url'] = json_encode($request->all());
-            $content['data'] = $request->getContent();
-            FingerLog::create($content);
-            try {
-                $inputLines = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
-                $processedCount = 0;
+        $content['url'] = json_encode($request->all());
+        $content['data'] = $request->getContent();
+        FingerLog::create($content);
+        try {
+            $inputLines = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
+            $processedCount = 0;
 
-                if ($request->input('table') == "OPERLOG") {
-                    return $this->handleOperLog($inputLines);
-                }
-
-                foreach ($inputLines as $line) {
-                    if (empty($line)) {
-                        continue;
-                    }
-
-                    $attendanceData = $this->prepareAttendanceData($line, $request);
-
-                    if (!$this->isValidUserShift($attendanceData['employee_id'])) {
-                        continue;
-                    }
-
-                    $shift = $this->getShiftForUser($attendanceData['employee_id']);
-                    if (!$shift) {
-                        continue;
-                    }
-
-                    $this->processAttendanceRecord($attendanceData, $shift);
-                    $processedCount++;
-                }
-
-                return "OK: ".$processedCount;
-            } catch (Throwable $e) {
-                $this->logError($e);
-                return "ERROR: ".$processedCount."\n";
+            if ($request->input('table') == "OPERLOG") {
+                return $this->handleOperLog($inputLines);
             }
-        });
+
+            foreach ($inputLines as $line) {
+                dd($line);
+                if (empty($line)) {
+                    continue;
+                }
+
+                $attendanceData = $this->prepareAttendanceData($line, $request);
+
+                if (!$this->isValidUserShift($attendanceData['employee_id'])) {
+                    continue;
+                }
+
+                $shift = $this->getShiftForUser($attendanceData['employee_id']);
+                if (!$shift) {
+                    continue;
+                }
+
+                $this->processAttendanceRecord($attendanceData, $shift);
+                $processedCount++;
+            }
+
+            return "OK: ".$processedCount;
+        } catch (Throwable $e) {
+            $this->logError($e);
+            return "ERROR: ".$processedCount."\n";
+        }
     }
 
     private function handleOperLog($lines): string
