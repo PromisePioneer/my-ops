@@ -10,6 +10,7 @@ use App\Models\FpDevice;
 use App\Models\ManageShift;
 use App\Models\UserShift;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class IclockService
@@ -100,7 +101,7 @@ class IclockService
             return "OK: ".$tot;
         } catch (Throwable $e) {
             $data['error'] = $e;
-            DB::table('error_log')->insert($data);
+            DB::table('error_logs')->insert($data);
             report($e);
             return "ERROR: ".$tot."\n";
         }
