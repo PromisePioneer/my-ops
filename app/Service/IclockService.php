@@ -52,103 +52,67 @@ class IclockService
 
     public function recieveRecords(Request $request): string
     {
+        // Log incoming request data
         $content['url'] = json_encode($request->all());
         $content['data'] = $request->getContent();
         FingerLog::create($content);
-//        try {
-//            // $post_content = $request->getContent();
-//            //$arr = explode("\n", $post_content);
-//            $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
-//            //$tot = count($arr);
-//            $tot = 0;
-//            //operation log
-//            if ($request->input('table') == "OPERLOG") {
-//                // $tot = count($arr) - 1;
-//                foreach ($arr as $rey) {
-//                    if (isset($rey)) {
-//                        $tot++;
-//                    }
-//                }
-//                return "OK: ".$tot;
-//            }
-//            //attendance
-//            foreach ($arr as $rey) {
-//                // $data = preg_split('/\s+/', trim($rey));
-//                if (empty($rey)) {
-//                    continue;
-//                }
-//                // $data = preg_split('/\s+/', trim($rey));
-//                $data = explode("\t", $rey);
-//                //dd($data);
-//                $q['sn'] = $request->input('SN');
-//                $q['table'] = $request->input('table');
-//                $q['stamp'] = $request->input('Stamp');
-//                $q['employee_id'] = $data[0];
-//                $q['timestamp'] = $data[1];
-//                $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
-//                $q['status2'] = $this->validateAndFormatInteger($data[3] ?? null);
-//                $q['status3'] = $this->validateAndFormatInteger($data[4] ?? null);
-//                $q['status4'] = $this->validateAndFormatInteger($data[5] ?? null);
-//                $q['status5'] = $this->validateAndFormatInteger($data[6] ?? null);
-//                $q['created_at'] = now();
-//                $q['updated_at'] = now();
-//                //dd($q);
-//                Attendances::create($q);
-//                $tot++;
-//                // dd(DB::getQueryLog());
-//            }
-//            return "OK: ".$tot;
-//        } catch (Throwable $e) {
-//            $data['error'] = $e;
-//            DB::table('error_logs')->insert($data);
-//            report($e);
-//            return "ERROR: ".$tot."\n";
-//        }
 
         try {
-            $inputLines = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
+            // Split input lines by various line breaks
+            $inputLines = preg_split('/\r\n|\r|\n/', $request->getContent());
             $processedCount = 0;
 
+            // Handle OPERLOG case separately
             if ($request->input('table') == "OPERLOG") {
                 return $this->handleOperLog($inputLines);
             }
 
+            // Process each line for attendance records
             foreach ($inputLines as $line) {
-                if (empty($line)) {
+                // Skip empty lines
+                if (empty(trim($line))) {
                     continue;
                 }
 
+                // Prepare attendance data
                 $attendanceData = $this->prepareAttendanceData($line, $request);
 
+                // Check if user shift is valid
                 if (!$this->isValidUserShift($attendanceData['employee_id'])) {
                     continue;
                 }
 
+                // Get shift information for the user
                 $shift = $this->getShiftForUser($attendanceData['employee_id']);
                 if (!$shift) {
                     continue;
                 }
 
+                // Process the attendance record
                 $this->processAttendanceRecord($attendanceData, $shift);
                 $processedCount++;
             }
 
             return "OK: ".$processedCount;
         } catch (Throwable $e) {
+            // Log and report any errors
             $this->logError($e);
             return "ERROR: ".$processedCount."\n";
         }
     }
 
-    private function handleOperLog($lines): string
+    private function handleOperLog(array $lines): string
     {
-        $count = count(array_filter($lines));
+        // Filter out empty lines and count valid ones
+        $count = count(array_filter($lines, fn($line) => !empty(trim($line))));
         return "OK: ".$count;
     }
 
-    private function prepareAttendanceData($line, $request): array
+    private function prepareAttendanceData(string $line, Request $request): array
     {
+        // Split line by tab character
         $data = explode("\t", $line);
+
         return [
             'sn' => $request->input('SN'),
             'table' => $request->input('table'),
@@ -164,27 +128,25 @@ class IclockService
         return isset($value) && $value !== '' ? (int) $value : null;
     }
 
-    private function isValidUserShift($employeeId)
+    private function isValidUserShift(string $employeeId): bool
     {
         return UserShift::whereHas('user', function ($query) use ($employeeId) {
             $query->where('absent_id', $employeeId);
         })->exists();
     }
 
-    private function getShiftForUser($employeeId)
+    private function getShiftForUser(string $employeeId)
     {
         $userShift = UserShift::whereHas('user', function ($query) use ($employeeId) {
             $query->where('absent_id', $employeeId);
         })->first();
 
-        if (!$userShift) {
-            return ManageShift::find(1);
-        }
-
-        return ManageShift::find($userShift->shift_id) ?? ManageShift::find(1);
+        return $userShift
+            ? ManageShift::find($userShift->shift_id) ?? ManageShift::find(1)
+            : ManageShift::find(1);
     }
 
-    private function processAttendanceRecord($attendanceData, $shift): void
+    private function processAttendanceRecord(array $attendanceData, $shift): void
     {
         $date = date('Y-m-d', strtotime($attendanceData['timestamp']));
         $time = date('H:i:s', strtotime($attendanceData['timestamp']));
@@ -196,7 +158,7 @@ class IclockService
         }
     }
 
-    private function processCheckIn($attendanceData, $shift, $date, $time): void
+    private function processCheckIn(array $attendanceData, $shift, string $date, string $time): void
     {
         if ($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin)) {
             $existingRecord = $this->getAttendanceRecord($attendanceData['employee_id'], $date);
@@ -212,7 +174,7 @@ class IclockService
         return $time >= $startTime && $time <= $endTime;
     }
 
-    private function getAttendanceRecord($employeeId, $date, $order = 'asc')
+    private function getAttendanceRecord(string $employeeId, string $date, string $order = 'asc')
     {
         return Attendances::where('employee_id', $employeeId)
             ->whereDate('timestamp', $date)
@@ -220,7 +182,7 @@ class IclockService
             ->first();
     }
 
-    private function processCheckOut($attendanceData, $shift, $date, $time): void
+    private function processCheckOut(array $attendanceData, $shift, string $date, string $time): void
     {
         if ($this->isValidTime($time, $shift->time_to_checkout, $shift->end_time_to_checkout)) {
             $existingCheckOut = $this->getAttendanceRecord($attendanceData['employee_id'], $date, 'desc');
@@ -246,3 +208,4 @@ class IclockService
     }
 
 }
+
