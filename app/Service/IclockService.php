@@ -59,12 +59,12 @@ class IclockService
                 return $this->handleOperLog($inputLines);
             }
 
+            dd($inputLines);
+
             foreach ($inputLines as $line) {
                 if (empty($line)) {
                     continue;
                 }
-
-                dd($line);
 
                 $attendanceData = $this->prepareAttendanceData($line, $request);
 
