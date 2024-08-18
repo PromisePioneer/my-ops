@@ -66,14 +66,16 @@ class IclockService
 
                 $attendanceData = $this->prepareAttendanceData($line, $request);
 
-                if (!$this->isValidUserShift($attendanceData['employee_id'])) {
-                    continue;
-                }
+                dd($attendanceData);
+//
+//                if (!$this->isValidUserShift($attendanceData['employee_id'])) {
+//                    continue;
+//                }
 
                 $shift = $this->getShiftForUser($attendanceData['employee_id']);
-                if (!$shift) {
-                    continue;
-                }
+//                if (!$shift) {
+//                    continue;
+//                }
 
                 $this->processAttendanceRecord($attendanceData, $shift);
                 $processedCount++;
@@ -110,13 +112,6 @@ class IclockService
     private function validateAndFormatInteger($value): ?int
     {
         return isset($value) && $value !== '' ? (int) $value : null;
-    }
-
-    private function isValidUserShift($employeeId)
-    {
-        return UserShift::whereHas('user', function ($query) use ($employeeId) {
-            $query->where('absent_id', $employeeId);
-        })->exists();
     }
 
     private function getShiftForUser($employeeId)
@@ -191,5 +186,12 @@ class IclockService
         $data['error'] = $exception;
         ErrorLog::create($data);
         report($exception);
+    }
+
+    private function isValidUserShift($employeeId)
+    {
+        return UserShift::whereHas('user', function ($query) use ($employeeId) {
+            $query->where('absent_id', $employeeId);
+        })->exists();
     }
 }

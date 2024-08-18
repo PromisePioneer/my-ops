@@ -66,7 +66,6 @@ it('cannot update branch without correct permission', function () {
 
 it('can delete branch with correct permission', function () {
     $branch = Branch::factory()->create()->toArray();
-
     $branchesArr = [
         'id' => $branch['id'],
     ];
