@@ -64,9 +64,9 @@ class IclockService
                     continue;
                 }
 
-                $attendanceData = $this->prepareAttendanceData($line, $request);
+                dd($line);
 
-                dd($attendanceData);
+                $attendanceData = $this->prepareAttendanceData($line, $request);
 
                 if (!$this->isValidUserShift($attendanceData['employee_id'])) {
                     continue;
