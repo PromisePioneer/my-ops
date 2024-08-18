@@ -90,4 +90,11 @@ class Attendances extends Model
         })->values();
     }
 
+
+    public function getAttendancesDataBasedOnUserId(int $perPage)
+    {
+        return self::join('users', 'users.absent_id', '=', 'attendances.employee_id')
+            ->paginate($perPage);
+    }
+
 }
