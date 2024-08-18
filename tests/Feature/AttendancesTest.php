@@ -53,7 +53,7 @@ test('recieveRecords processes valid attendance records for check-in', function 
     ]);
     UserShift::factory()->create(['user_id' => $user->id, 'shift_id' => $shift->id]);
 
-    $request = Request::create('/receive', 'POST', [
+    $request = Request::create('/iclock/cdata/', 'POST', [
         'SN' => '12345',
         'table' => 'CHECKINOUT',
         'Stamp' => '9999'

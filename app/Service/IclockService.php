@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Models\Attendances;
 use App\Models\DeviceLog;
 use App\Models\ErrorLog;
+use App\Models\FingerLog;
 use App\Models\FpDevice;
 use App\Models\ManageShift;
 use App\Models\UserShift;
@@ -51,6 +52,9 @@ class IclockService
 
     public function recieveRecords(Request $request): string
     {
+        $content['url'] = json_encode($request->all());
+        $content['data'] = $request->getContent();
+        FingerLog::create($content);
         try {
             $inputLines = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
             $processedCount = 0;
@@ -60,7 +64,6 @@ class IclockService
             }
 
             foreach ($inputLines as $line) {
-                dd($line);
                 if (empty($line)) {
                     continue;
                 }
