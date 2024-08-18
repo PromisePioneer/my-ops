@@ -27,7 +27,7 @@
                                 <th class="min-w-125px">Cabang</th>
                                 <th class="min-w-125px">Nama Mesin</th>
                                 <th class="min-w-125px">Serial Number</th>
-                                <th class="min-w-125px">Terakhir Terkoneksi</th>
+                                <th class="min-w-125px">Terakhir Handshake</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
