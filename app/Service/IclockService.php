@@ -76,7 +76,7 @@ class IclockService
                 }
                 // $data = preg_split('/\s+/', trim($rey));
                 $data = explode("\t", $rey);
-                dd($data);
+//                dd($data);
                 //dd($data);
                 $q['sn'] = $request->input('SN');
                 $q['table'] = $request->input('table');
