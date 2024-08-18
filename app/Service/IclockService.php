@@ -65,9 +65,9 @@ class IclockService
 
             foreach ($inputLines as $line) {
                 dd($line);
-                if (empty($line)) {
-                    continue;
-                }
+//                if (empty($line)) {
+//                    continue;
+//                }
 
                 $attendanceData = $this->prepareAttendanceData($line, $request);
 
