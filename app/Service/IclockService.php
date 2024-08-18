@@ -51,7 +51,7 @@ class IclockService
             "Encrypt=0";
     }
 
-    public function recieveRecords(Request $request): void
+    public function recieveRecords(Request $request)
     {
         DB::transaction(function () use ($request) {
             $content['url'] = json_encode($request->all());
