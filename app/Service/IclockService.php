@@ -90,13 +90,11 @@ class IclockService
         }
     }
 
-
     private function handleOperLog($lines): string
     {
         $count = count(array_filter($lines));
         return "OK: ".$count;
     }
-
 
     private function prepareAttendanceData($line, $request): array
     {
@@ -192,8 +190,9 @@ class IclockService
 
     private function logError(Throwable $exception): void
     {
-        $data['error'] = $exception;
+        $data['error'] = $exception->getMessage();
         ErrorLog::create($data);
         report($exception);
     }
+
 }
