@@ -60,6 +60,7 @@ class IclockService
             }
 
             foreach ($inputLines as $line) {
+                dd($line);
                 if (empty($line)) {
                     continue;
                 }
