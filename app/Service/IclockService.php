@@ -53,7 +53,6 @@ class IclockService
     {
         try {
             $inputLines = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
-            dd($inputLines);
             $processedCount = 0;
 
             if ($request->input('table') == "OPERLOG") {
