@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
+use function PHPUnit\Framework\isEmpty;
+
 class IclockService
 {
     public function handshake(Request $request): string
@@ -216,7 +218,7 @@ class IclockService
         if ($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin)) {
             $existingRecord = $this->getAttendanceRecord($attendanceData['employee_id'], $date);
 
-            dd($existingRecord);
+            dd(isEmpty($existingRecord));
 
             if (!$existingRecord) {
                 Attendances::create($attendanceData);
