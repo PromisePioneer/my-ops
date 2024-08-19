@@ -139,7 +139,7 @@ class IclockService
 
                     // Get shift information for the user
                     $shift = $this->getShiftForUser($attendanceData['employee_id']);
-                    dd(!$shift);
+//                    dd(!$shift);
                     if (!$shift) {
                         continue;
                     }
