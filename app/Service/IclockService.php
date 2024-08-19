@@ -4,13 +4,13 @@ namespace App\Service;
 
 use App\Models\Attendances;
 use App\Models\DeviceLog;
-use App\Models\ErrorLog;
 use App\Models\FingerLog;
 use App\Models\FpDevice;
 use App\Models\ManageShift;
 use App\Models\UserShift;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class IclockService
@@ -255,9 +255,7 @@ class IclockService
 
     private function logError(Exception $exception): void
     {
-        $data['error'] = $exception->getMessage();
-        ErrorLog::create($data);
-        report($exception);
+        Log::error($exception->getMessage());
     }
 
 }
