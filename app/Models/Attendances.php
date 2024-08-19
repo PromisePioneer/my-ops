@@ -106,7 +106,7 @@ class Attendances extends Model
         $formattedAttendances = $attedancesData->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
-                'date' => Carbon::parse($item->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                'timestamp' => Carbon::parse($item->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
                 'status1' => $item->status1,
             ];
         });
