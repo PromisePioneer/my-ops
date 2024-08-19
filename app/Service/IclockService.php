@@ -131,11 +131,11 @@ class IclockService
                     // Prepare attendance data
                     $attendanceData = $this->prepareAttendanceData($line, $request);
 
-                    dd($this->isValidUserShift($attendanceData['employee_id']));
-                    // Check if user shift is valid
-                    if (!$this->isValidUserShift($attendanceData['employee_id'])) {
-                        continue;
-                    }
+//                    dd($this->isValidUserShift($attendanceData['employee_id']));
+//                    // Check if user shift is valid
+//                    if (!$this->isValidUserShift($attendanceData['employee_id'])) {
+//                        continue;
+//                    }
 
                     // Get shift information for the user
                     $shift = $this->getShiftForUser($attendanceData['employee_id']);
@@ -184,13 +184,6 @@ class IclockService
     private function validateAndFormatInteger($value): ?int
     {
         return isset($value) && $value !== '' ? (int) $value : null;
-    }
-
-    private function isValidUserShift(string $employeeId): bool
-    {
-        return UserShift::whereHas('user', function ($query) use ($employeeId) {
-            $query->where('absent_id', $employeeId);
-        })->exists();
     }
 
     private function getShiftForUser(string $employeeId)
@@ -263,6 +256,13 @@ class IclockService
         $data['error'] = $exception->getMessage();
         DB::table('error_logs')->insert($data);
         report($exception);
+    }
+
+    private function isValidUserShift(string $employeeId): bool
+    {
+        return UserShift::whereHas('user', function ($query) use ($employeeId) {
+            $query->where('absent_id', $employeeId);
+        })->exists();
     }
 
 }
