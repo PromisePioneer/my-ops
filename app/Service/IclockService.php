@@ -5,11 +5,11 @@ namespace App\Service;
 use App\Models\Attendances;
 use App\Models\DeviceLog;
 use App\Models\ErrorLog;
+use App\Models\FingerLog;
 use App\Models\FpDevice;
 use App\Models\ManageShift;
 use App\Models\UserShift;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class IclockService
@@ -52,110 +52,105 @@ class IclockService
 
     public function recieveRecords(Request $request): string
     {
-        try {
-            // $post_content = $request->getContent();
-            //$arr = explode("\n", $post_content);
-            $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
-            //$tot = count($arr);
-            $tot = 0;
-            //operation log
-            if ($request->input('table') == "OPERLOG") {
-                // $tot = count($arr) - 1;
-                foreach ($arr as $rey) {
-                    if (isset($rey)) {
-                        $tot++;
-                    }
-                }
-                return "OK: ".$tot;
-            }
-            //attendance
-            foreach ($arr as $rey) {
-                // $data = preg_split('/\s+/', trim($rey));
-                if (empty($rey)) {
-                    continue;
-                }
-                // $data = preg_split('/\s+/', trim($rey));
-                $data = explode("\t", $rey);
-//                dd($data);
-                //dd($data);
-                $q['sn'] = $request->input('SN');
-                $q['table'] = $request->input('table');
-                $q['stamp'] = $request->input('Stamp');
-                $q['employee_id'] = $data[0];
-                $q['timestamp'] = $data[1];
-                $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
-                $q['status2'] = $this->validateAndFormatInteger($data[3] ?? null);
-                $q['status3'] = $this->validateAndFormatInteger($data[4] ?? null);
-                $q['status4'] = $this->validateAndFormatInteger($data[5] ?? null);
-                $q['status5'] = $this->validateAndFormatInteger($data[6] ?? null);
-                $q['created_at'] = now();
-                $q['updated_at'] = now();
-                //dd($q);
-                Attendances::create($q);
-                $tot++;
-                // dd(DB::getQueryLog());
-            }
-            return "OK: ".$tot;
-        } catch (Throwable $e) {
-            $data['error'] = $e;
-            DB::table('error_logs')->insert($data);
-            report($e);
-            return "ERROR: ".$tot."\n";
-        }
+//        try {
+//            // $post_content = $request->getContent();
+//            //$arr = explode("\n", $post_content);
+//            $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
+//            //$tot = count($arr);
+//            $tot = 0;
+//            //operation log
+//            if ($request->input('table') == "OPERLOG") {
+//                // $tot = count($arr) - 1;
+//                foreach ($arr as $rey) {
+//                    if (isset($rey)) {
+//                        $tot++;
+//                    }
+//                }
+//                return "OK: ".$tot;
+//            }
+//            //attendance
+//            foreach ($arr as $rey) {
+//                // $data = preg_split('/\s+/', trim($rey));
+//                if (empty($rey)) {
+//                    continue;
+//                }
+//                // $data = preg_split('/\s+/', trim($rey));
+//                $data = explode("\t", $rey);
+////                dd($data);
+//                //dd($data);
+//                $q['sn'] = $request->input('SN');
+//                $q['table'] = $request->input('table');
+//                $q['stamp'] = $request->input('Stamp');
+//                $q['employee_id'] = $data[0];
+//                $q['timestamp'] = $data[1];
+//                $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
+//                $q['status2'] = $this->validateAndFormatInteger($data[3] ?? null);
+//                $q['status3'] = $this->validateAndFormatInteger($data[4] ?? null);
+//                $q['status4'] = $this->validateAndFormatInteger($data[5] ?? null);
+//                $q['status5'] = $this->validateAndFormatInteger($data[6] ?? null);
+//                $q['created_at'] = now();
+//                $q['updated_at'] = now();
+//                //dd($q);
+//                Attendances::create($q);
+//                $tot++;
+//                // dd(DB::getQueryLog());
+//            }
+//            return "OK: ".$tot;
+//        } catch (Throwable $e) {
+//            $data['error'] = $e;
+//            DB::table('error_logs')->insert($data);
+//            report($e);
+//            return "ERROR: ".$tot."\n";
+//        }
 
 
 //        // Log incoming request data
-//        $content['url'] = json_encode($request->all());
-//        $content['data'] = $request->getContent();
-//        FingerLog::create($content);
-//
-//        try {
-//            // Split input lines by various line breaks
-//            $inputLines = preg_split('/\r\n|\r|\n/', $request->getContent());
-//            $processedCount = 0;
-//
-//            // Handle OPERLOG case separately
-//            if ($request->input('table') == "OPERLOG") {
-//                return $this->handleOperLog($inputLines);
-//            }
-//
-//            // Process each line for attendance records
-//            foreach ($inputLines as $line) {
-//                // Skip empty lines
-//                if (empty(trim($line))) {
-//                    continue;
-//                }
-//
-//                // Prepare attendance data
-//                $attendanceData = $this->prepareAttendanceData($line, $request);
-//
-//                // Check if user shift is valid
-//                if (!$this->isValidUserShift($attendanceData['employee_id'])) {
-//                    continue;
-//                }
-//
-//                // Get shift information for the user
-//                $shift = $this->getShiftForUser($attendanceData['employee_id']);
-//                if (!$shift) {
-//                    continue;
-//                }
-//
-//                // Process the attendance record
-//                $this->processAttendanceRecord($attendanceData, $shift);
-//                $processedCount++;
-//            }
-//
-//            return "OK: ".$processedCount;
-//        } catch (Throwable $e) {
-//            // Log and report any errors
-//            $this->logError($e);
-//            return "ERROR: ".$processedCount."\n";
-//        }
-    }
+        $content['url'] = json_encode($request->all());
+        $content['data'] = $request->getContent();
+        FingerLog::create($content);
 
-    private function validateAndFormatInteger($value): ?int
-    {
-        return isset($value) && $value !== '' ? (int) $value : null;
+        try {
+            // Split input lines by various line breaks
+            $inputLines = preg_split('/\r\n|\r|\n/', $request->getContent());
+            $processedCount = 0;
+
+            // Handle OPERLOG case separately
+            if ($request->input('table') == "OPERLOG") {
+                return $this->handleOperLog($inputLines);
+            }
+
+            // Process each line for attendance records
+            foreach ($inputLines as $line) {
+                // Skip empty lines
+                if (empty(trim($line))) {
+                    continue;
+                }
+
+                // Prepare attendance data
+                $attendanceData = $this->prepareAttendanceData($line, $request);
+
+                // Check if user shift is valid
+                if (!$this->isValidUserShift($attendanceData['employee_id'])) {
+                    continue;
+                }
+
+                // Get shift information for the user
+                $shift = $this->getShiftForUser($attendanceData['employee_id']);
+                if (!$shift) {
+                    continue;
+                }
+
+                // Process the attendance record
+                $this->processAttendanceRecord($attendanceData, $shift);
+                $processedCount++;
+            }
+
+            return "OK: ".$processedCount;
+        } catch (Throwable $e) {
+            // Log and report any errors
+            $this->logError($e);
+            return "ERROR: ".$processedCount."\n";
+        }
     }
 
     private function handleOperLog(array $lines): string
@@ -178,6 +173,11 @@ class IclockService
             'timestamp' => $data[1],
             'status1' => $this->validateAndFormatInteger($data[2] ?? null),
         ];
+    }
+
+    private function validateAndFormatInteger($value): ?int
+    {
+        return isset($value) && $value !== '' ? (int) $value : null;
     }
 
     private function isValidUserShift(string $employeeId): bool
