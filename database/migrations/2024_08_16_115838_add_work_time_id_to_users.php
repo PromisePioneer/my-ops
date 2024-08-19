@@ -10,11 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('user_shifts', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('shift_id')->constrained('manage_shift')->cascadeOnDelete();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreignId('work_time_id')->after('join_date')->nullable()->constrained('work_timez')->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 
@@ -23,6 +20,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_shifts');
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 };

@@ -3,7 +3,7 @@
 use App\Http\Controllers\ADMS\AttendancesController;
 use App\Http\Controllers\ADMS\FpDevicesController;
 use App\Http\Controllers\ADMS\IclockController;
-use App\Http\Controllers\ADMS\ManageShiftController;
+use App\Http\Controllers\ADMS\WorkTimeController;
 use App\Http\Controllers\Inventory\GoodsController;
 use App\Http\Controllers\Inventory\UnitTypesController;
 use App\Http\Controllers\Inventory\UsedItemsController;
@@ -561,17 +561,17 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [AttendancesController::class, 'data']);
         });
 
-        Route::prefix('/manage-shift')->group(function () {
-            Route::get('/', [ManageShiftController::class, 'index']);
-            Route::get('/data', [ManageShiftController::class, 'data']);
-            Route::get('/user/data', [ManageShiftController::class, 'getUserData']);
-            Route::get('/search', [ManageShiftController::class, 'search']);
-            Route::post('/', [ManageShiftController::class, 'store']);
-            Route::get('/{manageShift}', [ManageShiftController::class, 'edit']);
-            Route::post('/{manageShift}', [ManageShiftController::class, 'update']);
-            Route::delete('/{manageShift}', [ManageShiftController::class, 'destroy']);
-            Route::post('assign-shift/{manageShift}', [ManageShiftController::class, 'assignShift']);
-            Route::get('/user/selected/{manageShift}', [ManageShiftController::class, 'getSelectedUserShift']);
+        Route::prefix('/work-time')->group(function () {
+            Route::get('/', [WorkTimeController::class, 'index']);
+            Route::get('/data', [WorkTimeController::class, 'data']);
+            Route::get('/user/data', [WorkTimeController::class, 'getUserData']);
+            Route::get('/search', [WorkTimeController::class, 'search']);
+            Route::post('/', [WorkTimeController::class, 'store']);
+            Route::get('/{workTime}', [WorkTimeController::class, 'edit']);
+            Route::post('/{workTime}', [WorkTimeController::class, 'update']);
+            Route::delete('/{workTime}', [WorkTimeController::class, 'destroy']);
+            Route::post('assign-work-time/{workTime}', [WorkTimeController::class, 'assignWorkTime']);
+            Route::get('/user/selected/{workTime}', [WorkTimeController::class, 'getSelectedUserWorkTime']);
         });
     });
 });

@@ -5,7 +5,7 @@ namespace App\Http\Requests\ADMS;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ManageShiftRequest extends FormRequest
+class WorkTimeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

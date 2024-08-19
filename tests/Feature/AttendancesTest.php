@@ -3,9 +3,9 @@
 use App\Models\Attendances;
 use App\Models\DeviceLog;
 use App\Models\FpDevice;
-use App\Models\ManageShift;
 use App\Models\User;
-use App\Models\UserShift;
+use App\Models\UserWorkTIme;
+use App\Models\WorkTime;
 use App\Service\IclockService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
@@ -42,7 +42,7 @@ test('recieveRecords handles OPERLOG correctly', function () {
 test('recieveRecords processes valid attendance records for check-in', function () {
     // Create necessary data
     $user = User::factory()->create(['absent_id' => '1001']);
-    $shift = ManageShift::factory()->create([
+    $shift = WorkTime::factory()->create([
         'name' => fake()->name,
         'clock_in' => '08:00:00',
         'clock_out' => '17:00:00',
@@ -51,7 +51,7 @@ test('recieveRecords processes valid attendance records for check-in', function 
         'time_to_checkout' => '17:00:00',
         'end_time_to_checkout' => '23:59:00',
     ]);
-    UserShift::factory()->create(['user_id' => $user->id, 'shift_id' => $shift->id]);
+    UserWorkTIme::factory()->create(['user_id' => $user->id, 'shift_id' => $shift->id]);
 
     $request = Request::create('/iclock/cdata/', 'POST', [
         'SN' => '12345',
@@ -69,7 +69,7 @@ test('recieveRecords processes valid attendance records for check-in', function 
 test('recieveRecords processes valid attendance records for check-out', function () {
     // Create necessary data
     $user = User::factory()->create(['absent_id' => '1001']);
-    $shift = ManageShift::factory()->create([
+    $shift = WorkTime::factory()->create([
         'name' => fake()->name,
         'clock_in' => '08:00:00',
         'clock_out' => '17:00:00',
@@ -78,7 +78,7 @@ test('recieveRecords processes valid attendance records for check-out', function
         'time_to_checkout' => '17:00:00',
         'end_time_to_checkout' => '23:59:00',
     ]);
-    UserShift::factory()->create(['user_id' => $user->id, 'shift_id' => $shift->id]);
+    UserWorkTIme::factory()->create(['user_id' => $user->id, 'shift_id' => $shift->id]);
 
     $request = Request::create('/receive', 'POST', [
         'SN' => '12345',

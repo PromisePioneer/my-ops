@@ -28,6 +28,7 @@
                                 <th class="min-w-125px">Jam Kerja</th>
                                 <th class="min-w-125px">Tanggal</th>
                                 <th class="min-w-125px">Waktu C/In</th>
+                                <th class="min-w-125px">Terlambat</th>
                                 <th class="min-w-125px">Waktu C/Out</th>
                             </thead>
                             <tbody class="fw-bold">
@@ -67,6 +68,9 @@
                                     <td x-text="attendance.date"></td>
                                     <td>
                                         <span class="badge bg-info" x-text="attendance.checkin_time"></span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info" x-text="`${attendance.late_checkin} menit`"></span>
                                     </td>
                                     <td>
                                         <template x-if="attendance.checkout_time === null">

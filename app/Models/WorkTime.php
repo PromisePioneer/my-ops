@@ -4,12 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 
-class ManageShift extends Model
+class WorkTime extends Model
 {
     use HasFactory;
 
-    protected $table = 'manage_shift';
+    protected $table = 'work_time';
     protected $fillable = [
         'name',
         'clock_in',
@@ -26,4 +27,11 @@ class ManageShift extends Model
         return self::where('branch_id', $branchId)->paginate($perPage);
     }
 
+    public function searchDataWithPagination(Request $request, int $perPage)
+    {
+        $search = $request->input('search');
+        return self::where('branch_id', $request->user()->branch_id)
+            ->orWhere('name', 'like', '%'.$search.'%')
+            ->paginate($perPage);
+    }
 }

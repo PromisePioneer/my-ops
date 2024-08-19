@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class UserShift extends Model
+class UserWorkTIme extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'user_id',
-        'shift_id'
+        'work_time_id'
     ];
 
     public function user(): BelongsTo
@@ -20,20 +20,20 @@ class UserShift extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function shift(): BelongsTo
+    public function workTime(): BelongsTo
     {
-        return $this->belongsTo(ManageShift::class, 'shift_id');
+        return $this->belongsTo(WorkTime::class, 'work_time_id');
     }
 
 
-    public function getSelectedUserShift(int $shiftId): array
+    public function getSelectedUserShift(int $workTimeId): array
     {
-        $shift = self::with('user')->where('shift_id', $shiftId)->get();
+        $shift = self::with('user')->where('work_time_id', $workTimeId)->get();
 
-        return $shift->map(function ($shift) {
+        return $shift->map(function ($workTime) {
             return [
-                'id' => $shift->user->id,
-                'name' => $shift->user->name,
+                'id' => $workTime->user->id,
+                'name' => $workTime->user->name,
             ];
         })->toArray();
     }

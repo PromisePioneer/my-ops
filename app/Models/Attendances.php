@@ -53,11 +53,11 @@ class Attendances extends Model
         $attendances = self::select('attendances.employee_id', 'users.name', 'attendances.timestamp',
             'attendances.status1')
             ->join('users', 'users.absent_id', '=', 'attendances.employee_id')
-            ->leftJoin('user_shifts', 'user_shifts.user_id', '=', 'users.id')
-            ->leftJoin('manage_shift', 'manage_shift.id', '=', 'user_shifts.shift_id')
+            ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
+            ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
             ->orderBy('attendances.timestamp', 'DESC')
             ->select('users.name as user_name', 'attendances.timestamp', 'attendances.status1',
-                'manage_shift.name as shift_name', 'attendances.employee_id')
+                'work_time.name as shift_name', 'attendances.employee_id')
             ->get()
             ->groupBy(function ($item) {
                 return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
@@ -77,17 +77,34 @@ class Attendances extends Model
     {
         return $groupedData->map(function ($items) {
             $checkIn = $items->where('status1', 0)->first();
-            $checkOut = $items->where('status1', 1)->first();
+            $checkOut = $items->where('status1', 1)->last();
+            if ($checkIn) {
+                $userWorktime = WorkTime::where('name', $checkIn->shift_name)->first();
+                $defaultWorkTime = WorkTime::where('id', 1)->first();
+                $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
 
-            return [
-                'name' => $checkIn ? $checkIn->user_name : $checkOut->user_name,
-                'work_time' => $checkIn ? $checkIn->shift_name : $checkOut->shift_name ?? 'Default',
-                'date' => $checkIn ? Carbon::parse($checkIn->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y') : null,
-                'employee_id' => $checkIn ? $checkIn->employee_id : $checkOut->employee_id,
-                'checkin_time' => $checkIn ? Carbon::parse($checkIn->timestamp)->format('g:i A') : null,
-                'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('g:i A') : null,
-            ];
-        })->values();
+                // Combine the date of check-in with the expected time
+                $expectedCheckIn = Carbon::parse($checkIn->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+                $expectedCheckIn = Carbon::parse($expectedCheckIn);
+
+                // Calculate lateness in minutes
+                $actualCheckIn = Carbon::parse($checkIn->timestamp);
+                $minutesLate = $expectedCheckIn->diffInMinutes($actualCheckIn, false);
+
+                return [
+                    'name' => $checkIn->user_name,
+                    'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
+                    'date' => Carbon::parse($checkIn->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                    'employee_id' => $checkIn->employee_id,
+                    'checkin_time' => $actualCheckIn->format('g:i A'),
+                    'late_checkin' => (int) $minutesLate, // Only show lateness if it's positive
+                    'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('g:i A') : null,
+                ];
+            }
+
+            return null;
+        })->values(); // Filter to remove null values
+
     }
 
 

@@ -4,7 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 
-class ManageShiftPolicy
+class WorkTimePolicy
 {
     /**
      * Create a new policy instance.

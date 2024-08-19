@@ -354,8 +354,8 @@
                             Log Fingerprint
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'manage-shift'"
-                                href="{{ url('adms/manage-shift') }}">
+                                :active="request()->segment(2) === 'work-time'"
+                                href="{{ url('adms/work-time') }}">
                             Manajemen Shift
                         </x-dropdown-menu-item>
                     @endslot

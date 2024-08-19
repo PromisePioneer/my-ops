@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\UserWorkTIme;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\UserShift>
+ * @extends Factory<UserWorkTIme>
  */
 class UserShiftFactory extends Factory
 {

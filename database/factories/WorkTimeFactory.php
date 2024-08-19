@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\ManageShift;
+use App\Models\WorkTime;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<ManageShift>
+ * @extends Factory<WorkTime>
  */
-class ManageShiftFactory extends Factory
+class WorkTimeFactory extends Factory
 {
     /**
      * Define the model's default state.

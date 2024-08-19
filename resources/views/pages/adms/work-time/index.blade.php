@@ -4,9 +4,9 @@
 
     <div x-data="manageShiftData ()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.adms.manage-shift.modal.create')
-            @include('pages.adms.manage-shift.modal.edit')
-            @include('pages.adms.manage-shift.modal.assign-user')
+            @include('pages.adms.work-time.modal.create')
+            @include('pages.adms.work-time.modal.edit')
+            @include('pages.adms.work-time.modal.assign-user')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -150,7 +150,7 @@
                 async getShiftsData() {
                     this.isLoading = true
                     try {
-                        const resp = await axios.get('/adms/manage-shift/data');
+                        const resp = await axios.get('/adms/work-time/data');
                         this.shifts = resp.data;
                         this.startIndex = this.shifts.from;
                     } catch (error) {
@@ -176,7 +176,7 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/adms/manage-shift/', new FormData(this.formCreate))
+                        await axios.post('/adms/work-time/', new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
@@ -189,7 +189,7 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/adms/manage-shift/${id}`);
+                    const resp = await axios.get(`/adms/work-time/${id}`);
                     this.editVal = resp.data;
                 },
                 async assignUserShift(id) {
@@ -200,7 +200,7 @@
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/adms/manage-shift/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/adms/work-time/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formEdit.reset();
                         this.modalEdit.hide();
@@ -215,7 +215,7 @@
                 async destroy(id) {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.delete(`/adms/manage-shift/${id}`);
+                            await axios.delete(`/adms/work-time/${id}`);
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -227,7 +227,7 @@
                 async assignShift(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/adms/manage-shift/assign-shift/${id}`, new FormData(this.formAssignUser))
+                        await axios.post(`/adms/work-time/assign-shift/${id}`, new FormData(this.formAssignUser))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formAssignUser.reset();
                         this.modalAssignUser.hide();
@@ -242,7 +242,7 @@
                 async getUserData() {
                     $(".user-select2").select2({
                         ajax: {
-                            url: '/adms/manage-shift/user/data',
+                            url: '/adms/work-time/user/data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -256,7 +256,7 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/adms/manage-shift/user/selected/${this.shiftId}`,
+                        url: `/adms/work-time/user/selected/${this.shiftId}`,
                     });
 
                     response.forEach(user => {

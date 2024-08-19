@@ -2,17 +2,17 @@
 
 namespace Database\Seeders;
 
-use App\Models\ManageShift;
+use App\Models\WorkTime;
 use Illuminate\Database\Seeder;
 
-class ManageShiftSeeder extends Seeder
+class WorkTimeSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        ManageShift::create([
+        WorkTime::create([
             'id' => 1,
             'name' => 'Default',
             'clock_in' => '08:00',

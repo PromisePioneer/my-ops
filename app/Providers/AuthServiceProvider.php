@@ -7,17 +7,17 @@ use App\Models\Account;
 use App\Models\Branch;
 use App\Models\Contact;
 use App\Models\Department;
-use App\Models\ManageShift;
 use App\Models\Product;
 use App\Models\ServiceCategory;
+use App\Models\WorkTime;
 use App\Policies\AccountPolicy;
 use App\Policies\BranchPolicy;
 use App\Policies\ContactPolicy;
 use App\Policies\DepartmentPolicy;
-use App\Policies\ManageShiftPolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\ServiceCategoriesPolicy;
+use App\Policies\WorkTimePolicy;
 use Carbon\Carbon;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -39,7 +39,7 @@ class AuthServiceProvider extends ServiceProvider
         ServiceCategory::class => ServiceCategoriesPolicy::class,
         Department::class => DepartmentPolicy::class,
         Role::class => RolePolicy::class,
-        ManageShift::class => ManageShiftPolicy::class,
+        WorkTime::class => WorkTimePolicy::class,
     ];
 
     /**

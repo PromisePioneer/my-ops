@@ -130,7 +130,7 @@ class User extends Authenticatable
 
     public function manageShift(): HasOne
     {
-        return $this->hasOne(ManageShift::class, 'user_id');
+        return $this->hasOne(WorkTime::class, 'user_id');
     }
 
     //eloquent
