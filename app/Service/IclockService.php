@@ -200,11 +200,12 @@ class IclockService
 
     private function processAttendanceRecord(array $attendanceData, $shift): void
     {
-        dd($attendanceData);
         $date = date('Y-m-d', strtotime($attendanceData['timestamp']));
         $time = date('H:i:s', strtotime($attendanceData['timestamp']));
 
+
         if ($attendanceData['status1'] == 0) {
+            dd('checkin');
             $this->processCheckIn($attendanceData, $shift, $date, $time);
         } elseif ($attendanceData['status1'] == 1) {
             $this->processCheckOut($attendanceData, $shift, $date, $time);
