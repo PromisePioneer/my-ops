@@ -205,7 +205,6 @@ class IclockService
 
 
         if ($attendanceData['status1'] == 0) {
-            dd('checkin');
             $this->processCheckIn($attendanceData, $shift, $date, $time);
         } elseif ($attendanceData['status1'] == 1) {
             $this->processCheckOut($attendanceData, $shift, $date, $time);
@@ -214,6 +213,7 @@ class IclockService
 
     private function processCheckIn(array $attendanceData, $shift, string $date, string $time): void
     {
+        dd($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin));
         if ($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin)) {
             $existingRecord = $this->getAttendanceRecord($attendanceData['employee_id'], $date);
 
