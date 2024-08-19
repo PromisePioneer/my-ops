@@ -91,10 +91,27 @@ class Attendances extends Model
     }
 
 
-    public function getAttendancesDataBasedOnUserId(int $perPage)
+    public function getAttendancesDataBasedOnUserId(int $perPage, int $absentId): LengthAwarePaginator
     {
-        return self::join('users', 'users.absent_id', '=', 'attendances.employee_id')
-            ->paginate($perPage);
+        $query = self::join('users', 'users.absent_id', '=',
+            'attendances.employee_id')->where('attendances.employee_id', $absentId)->paginate($perPage);
+
+        self::formattedAbsentDataBasedOnUserId($query);
+        return $query;
+    }
+
+
+    private static function formattedAbsentDataBasedOnUserId(LengthAwarePaginator $attedancesData): void
+    {
+        $formattedAttendances = $attedancesData->getCollection()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'date' => Carbon::parse($item->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                'status1' => $item->status1,
+            ];
+        });
+
+        $attedancesData->setCollection($formattedAttendances);
     }
 
 }

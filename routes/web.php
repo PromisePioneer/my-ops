@@ -21,7 +21,6 @@ use App\Http\Controllers\ManageUser\JobInformationController;
 use App\Http\Controllers\ManageUser\ManageUserLeavesController;
 use App\Http\Controllers\ManageUser\PayrollController;
 use App\Http\Controllers\ManageUser\PermissionController;
-use App\Http\Controllers\ManageUser\UserAttendanceController;
 use App\Http\Controllers\ManageUser\UserController;
 use App\Http\Controllers\Master\AccountController;
 use App\Http\Controllers\Master\AccountTransactionsController;

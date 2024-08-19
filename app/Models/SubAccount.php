@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -17,12 +21,12 @@ use Illuminate\Support\Facades\Auth;
  * @property float $debit_balance
  * @property float $credit_balance
  * @property float $balance
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Account $account
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AccountTransaction> $accountTransactions
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Account $account
+ * @property-read Collection<int, AccountTransaction> $accountTransactions
  * @property-read int|null $account_transactions_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\AccountTransaction> $subAccount
+ * @property-read Collection<int, AccountTransaction> $subAccount
  * @property-read int|null $sub_account_count
  *
  * @method static Builder|SubAccount newModelQuery()
@@ -38,7 +42,7 @@ use Illuminate\Support\Facades\Auth;
  * @method static Builder|SubAccount whereName($value)
  * @method static Builder|SubAccount whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class SubAccount extends Model
 {
@@ -69,7 +73,7 @@ class SubAccount extends Model
     }
 
     //eloquent
-    public function getSubAccountBasedOnUserBranch()
+    public function getSubAccountBasedOnUserBranch(): LengthAwarePaginator
     {
         $query = self::whereHas('account', static function ($query) {
             $query->where('branch_id', Auth::user()->branch_id);
@@ -78,20 +82,6 @@ class SubAccount extends Model
         self::formattedData($query);
 
         return $query;
-    }
-
-    public function searchSubAccountBasedOnUserBranch(Request $request)
-    {
-        $subAccount = self::whereHas('account', static function ($query) {
-            $query->where('branch_id', Auth::user()->branch_id);
-        })->where('name', 'like', '%'.$request->search.'%')
-            ->orWhere('code', 'like', '%'.$request->search.'%')
-            ->orderBy('code', 'ASC')
-            ->paginate(10);
-
-        self::formattedData($subAccount);
-
-        return $subAccount;
     }
 
     private static function formattedData($query): void
@@ -107,6 +97,20 @@ class SubAccount extends Model
             ];
         });
         $query->setCollection($formattedData);
+    }
+
+    public function searchSubAccountBasedOnUserBranch(Request $request): LengthAwarePaginator
+    {
+        $subAccount = self::whereHas('account', static function ($query) {
+            $query->where('branch_id', Auth::user()->branch_id);
+        })->where('name', 'like', '%'.$request->search.'%')
+            ->orWhere('code', 'like', '%'.$request->search.'%')
+            ->orderBy('code', 'ASC')
+            ->paginate(10);
+
+        self::formattedData($subAccount);
+
+        return $subAccount;
     }
 
     public function getSubAccountForInvoiceStore(Request $request): array
@@ -161,7 +165,6 @@ class SubAccount extends Model
 
     public function getAllPersediaanSubAccount(Request $request): array
     {
-
         $search = $request->input('search');
         $query = self::with('account')->whereHas('account', function ($query) use ($request) {
             $query->where('branch_id', $request->user()->branch_id);

@@ -197,8 +197,7 @@ class UserController extends Controller
 
     public function getAbsentData(User $user): JsonResponse
     {
-        return response()->json($this->attendances->getAttendancesDataBasedOnUserId($user->absent_id,
-            $this->perPage));
+        return response()->json($this->attendances->getAttendancesDataBasedOnUserId($this->perPage, $user->absent_id));
     }
 
     public function show(User $user): JsonResponse

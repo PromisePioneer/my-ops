@@ -13,9 +13,8 @@ beforeEach(function () {
 it('can access department page with correct permission', function () {
     $user = $this->user;
     $this->actingAs($user);
-    $this->get(url('/master/department'))
-        ->assertViewIs('pages.master.department.index')
-        ->assertStatus(200);
+    $response = $this->get(url('/master/department'))->assertStatus(200);
+    $response->assertViewIs('pages.master.department.index');
 });
 
 it('cannot access department without permission', function () {
@@ -47,10 +46,59 @@ it('cannot store department without permission', function () {
 it('can update department with correct permission', function () {
     $user = $this->user;
     $this->actingAs($user);
-    $department = Department::factory()->make()->toArray();
+    $department = Department::factory()->create([
+        'id' => 300,
+        'code' => 'test',
+        'name' => 'test'
+    ])->toArray();
     $departmentUpdate = [
         'name' => $department['name'],
+        'code' => $department['code']
     ];
+    $this->post('/master/department/'.$department['id'], $departmentUpdate)->assertStatus(200);
+});
 
-    $this->post('/master/department/'.$department->id, $departmentUpdate)->assertStatus(200);
+
+it('cannot update department without permission', function () {
+    $user = $this->user;
+    $role = $this->user->roles()->first();
+    $role->revokePermissionTo('update department');
+    $this->actingAs($user);
+    $department = Department::factory()->create([
+        'id' => 300,
+        'code' => 'test',
+        'name' => 'test'
+    ])->toArray();
+    $departmentUpdate = [
+        'name' => $department['name'],
+        'code' => $department['code']
+    ];
+    $this->post('/master/department/'.$department['id'], $departmentUpdate)->assertStatus(403);
+});
+
+it('can delete department with correct permission', function () {
+    $user = $this->user;
+    $this->actingAs($user);
+    $department = Department::factory()->create([
+        'id' => 300,
+        'code' => 'test',
+        'name' => 'test'
+    ])->toArray();
+
+    $this->delete(url('/master/department/'.$department['id']))->assertStatus(200);
+});
+
+
+it('cannot delete department without permission', function () {
+    $user = $this->user;
+    $role = $this->user->roles()->first();
+    $role->revokePermissionTo('hapus department');
+    $this->actingAs($user);
+    $department = Department::factory()->create([
+        'id' => 300,
+        'code' => 'test',
+        'name' => 'test'
+    ])->toArray();
+
+    $this->delete(url('/master/department/'.$department['id']))->assertStatus(403);
 });
