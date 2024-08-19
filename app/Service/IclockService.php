@@ -122,9 +122,9 @@ class IclockService
             // Process each line for attendance records
             foreach ($inputLines as $line) {
                 // Skip empty lines
-//                if (empty(trim($line))) {
-//                    continue;
-//                }
+                if (empty(trim($line))) {
+                    continue;
+                }
 
                 // Prepare attendance data
                 $attendanceData = $this->prepareAttendanceData($line, $request);
@@ -252,7 +252,7 @@ class IclockService
         }
     }
 
-    private function logError(Throwable $exception): void
+    private function logError(\Exception $exception): void
     {
         $data['error'] = $exception->getMessage();
         ErrorLog::create($data);
