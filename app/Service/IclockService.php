@@ -110,41 +110,45 @@ class IclockService
         $content['data'] = $request->getContent();
         FingerLog::create($content);
 
+        $processedCount = 0;
         try {
-            // Split input lines by various line breaks
-            $inputLines = preg_split('/\r\n|\r|\n/', $request->getContent());
-            $processedCount = 0;
+            DB::transaction(function () use ($processedCount, $request) {
+                // Split input lines by various line breaks
+                $inputLines = preg_split('/\r\n|\r|\n/', $request->getContent());
 
-            // Handle OPERLOG case separately
-            if ($request->input('table') == "OPERLOG") {
-                return $this->handleOperLog($inputLines);
-            }
-
-            // Process each line for attendance records
-            foreach ($inputLines as $line) {
-                // Skip empty lines
-                if (empty(trim($line))) {
-                    continue;
+                // Handle OPERLOG case separately
+                if ($request->input('table') == "OPERLOG") {
+                    return $this->handleOperLog($inputLines);
                 }
 
-                // Prepare attendance data
-                $attendanceData = $this->prepareAttendanceData($line, $request);
+                // Process each line for attendance records
+                foreach ($inputLines as $line) {
+                    // Skip empty lines
+                    if (empty(trim($line))) {
+                        continue;
+                    }
 
-                // Check if user shift is valid
-                if (!$this->isValidUserShift($attendanceData['employee_id'])) {
-                    continue;
+                    // Prepare attendance data
+                    $attendanceData = $this->prepareAttendanceData($line, $request);
+
+                    // Check if user shift is valid
+                    if (!$this->isValidUserShift($attendanceData['employee_id'])) {
+                        continue;
+                    }
+
+                    // Get shift information for the user
+                    $shift = $this->getShiftForUser($attendanceData['employee_id']);
+                    if (!$shift) {
+                        continue;
+                    }
+
+                    // Process the attendance record
+                    $this->processAttendanceRecord($attendanceData, $shift);
+                    $processedCount++;
                 }
+                return "OK: ".$processedCount;
+            });
 
-                // Get shift information for the user
-                $shift = $this->getShiftForUser($attendanceData['employee_id']);
-                if (!$shift) {
-                    continue;
-                }
-
-                // Process the attendance record
-                $this->processAttendanceRecord($attendanceData, $shift);
-                $processedCount++;
-            }
 
             return "OK: ".$processedCount;
         } catch (Throwable $e) {
