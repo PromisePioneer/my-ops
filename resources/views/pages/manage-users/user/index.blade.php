@@ -211,7 +211,7 @@
                     });
                 },
                 async importData() {
-                    this.buttonLoading = true
+                    this.buttonLoading = true;
                     try {
                         await axios.post('/manage-users/users/import/', new FormData(this.formImport))
                         await showAlert('success', 'Data berhasil diimport')

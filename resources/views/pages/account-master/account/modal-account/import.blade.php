@@ -20,14 +20,16 @@
                         <label for="name" class="required form-label">Download Template</label>
                         <br>
                         <div class="d-grid gap-2">
-                            <a href="{{ asset('assets/media/documents/excel/accounts.xlsx') }}" class="btn btn-primary btn-sm">Download</a>
+                            <a href="{{ asset('assets/media/documents/excel/accounts.xlsx') }}"
+                               class="btn btn-primary btn-sm">Download</a>
                             <span class="text-danger">Wajib menggunakan template ini.</span>
                         </div>
                     </div>
 
                     <div class="float-end">
                         <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary btn-sm">Save changes</button>
+                        <button type="submit" class="btn btn-primary btn-sm" :disabled="buttonLoading"
+                                :x-text="buttonLoading ? 'Loading...' : 'Simpan'"></button>
                     </div>
                 </form>
 
