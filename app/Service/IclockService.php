@@ -122,9 +122,9 @@ class IclockService
             // Process each line for attendance records
             foreach ($inputLines as $line) {
                 // Skip empty lines
-                if (empty(trim($line))) {
-                    continue;
-                }
+//                if (empty(trim($line))) {
+//                    continue;
+//                }
 
                 // Prepare attendance data
                 $attendanceData = $this->prepareAttendanceData($line, $request);
