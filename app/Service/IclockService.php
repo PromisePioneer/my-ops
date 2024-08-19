@@ -131,6 +131,7 @@ class IclockService
                     // Prepare attendance data
                     $attendanceData = $this->prepareAttendanceData($line, $request);
 
+                    dd($this->isValidUserShift($attendanceData['employee_id']));
                     // Check if user shift is valid
                     if (!$this->isValidUserShift($attendanceData['employee_id'])) {
                         continue;
@@ -169,8 +170,6 @@ class IclockService
     {
         // Split line by tab character
         $data = explode("\t", $line);
-
-        dd($data);
 
         return [
             'sn' => $request->input('SN'),
