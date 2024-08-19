@@ -170,6 +170,8 @@ class IclockService
         // Split line by tab character
         $data = explode("\t", $line);
 
+        dd($data);
+
         return [
             'sn' => $request->input('SN'),
             'table' => $request->input('table'),
