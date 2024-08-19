@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('work_time_id')->after('join_date')->nullable()->constrained('work_timez')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('work_time_id')->after('join_date')->nullable()->constrained('work_time')->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 
