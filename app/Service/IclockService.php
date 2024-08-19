@@ -10,7 +10,7 @@ use App\Models\ManageShift;
 use App\Models\UserShift;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class IclockService
@@ -255,7 +255,9 @@ class IclockService
 
     private function logError(Exception $exception): void
     {
-        Log::error($exception->getMessage());
+        $data['error'] = $exception->getMessage();
+        DB::table('error_logs')->insert($data);
+        report($exception);
     }
 
 }
