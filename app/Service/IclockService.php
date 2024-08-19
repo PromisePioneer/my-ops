@@ -145,7 +145,7 @@ class IclockService
 //                    }
 
                     // Process the attendance record
-                    $this->processAttendanceRecord($attendanceData, $shift);
+                    dd($this->processAttendanceRecord($attendanceData, $shift));
                     $processedCount++;
                 }
                 return "OK: ".$processedCount;
