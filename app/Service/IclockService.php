@@ -217,7 +217,6 @@ class IclockService
             $existingRecord = $this->getAttendanceRecord($attendanceData['employee_id'], $date);
 
             if (!$existingRecord) {
-                dd('nice');
                 Attendances::create($attendanceData);
             }
         }
