@@ -9,6 +9,7 @@ use App\Models\FingerLog;
 use App\Models\FpDevice;
 use App\Models\ManageShift;
 use App\Models\UserShift;
+use Exception;
 use Illuminate\Http\Request;
 use Throwable;
 
@@ -252,7 +253,7 @@ class IclockService
         }
     }
 
-    private function logError(\Exception $exception): void
+    private function logError(Exception $exception): void
     {
         $data['error'] = $exception->getMessage();
         ErrorLog::create($data);
