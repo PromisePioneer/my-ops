@@ -145,7 +145,7 @@ class IclockService
 //                    }
 
                     // Process the attendance record
-                    dd($this->processAttendanceRecord($attendanceData, $shift));
+                    $this->processAttendanceRecord($attendanceData, $shift);
                     $processedCount++;
                 }
                 return "OK: ".$processedCount;
@@ -200,6 +200,7 @@ class IclockService
 
     private function processAttendanceRecord(array $attendanceData, $shift): void
     {
+        dd($attendanceData);
         $date = date('Y-m-d', strtotime($attendanceData['timestamp']));
         $time = date('H:i:s', strtotime($attendanceData['timestamp']));
 
