@@ -91,8 +91,7 @@ class Attendances extends Model
 
                 // Calculate lateness in minutes
                 $actualCheckIn = Carbon::parse($checkIn->timestamp);
-                $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn,
-                    false) : 0;
+                $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
 
                 return [
                     'name' => $checkIn->user_name,
