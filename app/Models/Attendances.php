@@ -97,13 +97,12 @@ class Attendances extends Model
                     'employee_id' => $checkIn->employee_id,
                     'checkin_time' => $actualCheckIn->format('H:i'),
                     'late_checkin' => (int) $minutesLate,
-                    'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('g:i A') : null,
+                    'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
                 ];
             }
 
             return null;
-        })->values(); // Filter to remove null values
-
+        })->values();
     }
 
 
