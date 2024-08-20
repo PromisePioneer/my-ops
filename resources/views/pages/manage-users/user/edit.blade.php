@@ -64,7 +64,7 @@
                                 <div class="row">
                                     <template x-for="role in roles" :key="role.id">
                                         <div class="col-md-4 mt-2">
-                                            <input class="form-check-input" type="checkbox"
+                                            <input class="form-check-input" type="radio"
                                                    :checked="users?.roles[0].id === role.id" :value="role.name" multiple
                                                    name="role[]"/>
                                             <label class="form-check-label" for="flexCheckChecked">

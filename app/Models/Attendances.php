@@ -36,7 +36,10 @@ class Attendances extends Model
                         'sn' => $item->sn,
                         'user_name' => $item->name,
                         'employee_id' => $item->employee_id,
-                        'timestamp' => Carbon::parse($item->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('H:i'),
+                        'timestamp' => Carbon::parse($item->timestamp)
+                            ->locale('id')
+                            ->settings(['formatFunction' => 'translatedFormat'])
+                            ->format('H:i'),
                         'check_in' => $item->status1,
                         'status2' => $item->status2,
                         'status3' => $item->status3,
