@@ -54,26 +54,30 @@ class Attendances extends Model
 
     public function getAttendanceWithPagination(int $perPage): LengthAwarePaginator
     {
-        $attendances = self::select('attendances.employee_id', 'users.name', 'attendances.timestamp',
-            'attendances.status1')
+        // Mengambil data dengan pagination langsung
+        $query = self::select('attendances.employee_id', 'users.name as user_name', 'attendances.timestamp',
+            'attendances.status1', 'work_time.name as work_time')
             ->leftjoin('users', 'users.absent_id', '=', 'attendances.employee_id')
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
-            ->orderBy('attendances.timestamp', 'DESC')
-            ->select('users.name as user_name', 'attendances.timestamp', 'attendances.status1',
-                'work_time.name as work_time', 'attendances.employee_id')
-            ->get()
-            ->groupBy(function ($item) {
-                return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
-            });
+            ->orderBy('attendances.timestamp', 'DESC');
 
-        $formattedData = $this->formatGroupedData($attendances);
-        $paginator = new LengthAwarePaginator($formattedData->forPage(Paginator::resolveCurrentPage(), $perPage),
-            $formattedData->count(), $perPage);
+        // Lakukan pagination sebelum grouping
+        $paginator = $query->paginate($perPage);
 
-        $paginator->withPath(url('/adms/attendances/data'));
+        // Lakukan grouping setelah data diambil untuk page tertentu
+        $groupedData = $paginator->getCollection()->groupBy(function ($item) {
+            return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
+        });
 
-        return $paginator;
+        // Format data yang telah digroup
+        $formattedData = $this->formatGroupedData($groupedData);
+
+        // Update paginator dengan data yang telah diformat
+        $paginator->setCollection($formattedData);
+
+        // Kembalikan paginator yang telah diformat
+        return $paginator->withPath(url('/adms/attendances/data'));
     }
 
     private function formatGroupedData($groupedData)
@@ -81,6 +85,7 @@ class Attendances extends Model
         return $groupedData->map(function ($items) {
             $checkIn = $items->where('status1', 0)->first();
             $checkOut = $items->where('status1', 1)->last();
+
             if ($checkIn) {
                 $userWorktime = WorkTime::where('name', $checkIn->work_time)->first();
                 $defaultWorkTime = WorkTime::where('id', 1)->first();
@@ -106,7 +111,7 @@ class Attendances extends Model
             }
 
             return null;
-        })->values();
+        })->filter()->values(); // Tambahkan filter() untuk menghapus null values
     }
 
 
