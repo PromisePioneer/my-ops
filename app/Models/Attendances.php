@@ -80,7 +80,7 @@ class Attendances extends Model
         return $groupedData->map(function ($items) {
             $checkIn = $items->where('status1', 0)->first();
             $checkOut = $items->where('status1', 1)->last();
-            if ($checkIn) {
+            if ($checkIn && $checkIn) {
                 $userWorktime = WorkTime::where('name', $checkIn->work_time)->first();
                 $defaultWorkTime = WorkTime::where('id', 1)->first();
                 $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
@@ -91,7 +91,7 @@ class Attendances extends Model
 
                 // Calculate lateness in minutes
                 $actualCheckIn = Carbon::parse($checkIn->timestamp);
-                $minutesLate = $expectedCheckIn->diffInMinutes($actualCheckIn, true);
+                $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
 
                 return [
                     'name' => $checkIn->user_name,
