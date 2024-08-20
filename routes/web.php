@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ADMS\AttendancesController;
+use App\Http\Controllers\ADMS\AttendanceSummaryController;
 use App\Http\Controllers\ADMS\FpDevicesController;
 use App\Http\Controllers\ADMS\IclockController;
 use App\Http\Controllers\ADMS\WorkTimeController;
@@ -574,6 +575,15 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/user/selected/{workTime}', [WorkTimeController::class, 'getSelectedUserWorkTime']);
             Route::get('/detail/{workTime}', [WorkTimeController::class, 'detail']);
             Route::get('/detail/data/{workTime}', [WorkTimeController::class, 'detailData']);
+        });
+
+
+        Route::prefix('/attendances-summary')->group(function () {
+            Route::get('/', [AttendanceSummaryController::class, 'index']);
+            Route::get('/period-data', [AttendanceSummaryController::class, 'selectPeriodData']);
+            Route::get('/detail/{time}', [AttendanceSummaryController::class, 'detail']);
+            Route::get('/detail/data/01-{month}-{year}', [AttendanceSummaryController::class, 'detailData']);
+            Route::get('/detail/data/search', [AttendanceSummaryController::class, 'searchDetailData']);
         });
     });
 });

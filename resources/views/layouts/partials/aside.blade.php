@@ -356,7 +356,12 @@
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'work-time'"
                                 href="{{ url('adms/work-time') }}">
-                            Manajemen Shift
+                            Pengaturan Jam Kerja
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'attendances-summary'"
+                                href="{{ url('adms/attendances-summary') }}">
+                            Riwayat Absensi
                         </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
