@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ErrorLog;
+use App\Models\Attendances;
 use Illuminate\View\View;
 
 class HomeController extends Controller
@@ -22,8 +22,8 @@ class HomeController extends Controller
      */
     public function index(): View
     {
-//        dd(Attendances::all());
-        dd(ErrorLog::all());
+        dd(Attendances::all());
+//        dd(ErrorLog::all());
         return view('home');
     }
 }
