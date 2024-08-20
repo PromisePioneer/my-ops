@@ -116,6 +116,8 @@ class IclockService
                 // Split input lines by various line breaks
                 $inputLines = preg_split('/\r\n|\r|\n/', $request->getContent());
 
+                dd($inputLines);
+
                 // Handle OPERLOG case separately
                 if ($request->input('table') == "OPERLOG") {
                     return $this->handleOperLog($inputLines);
