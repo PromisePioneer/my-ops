@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ADMS\UserWorkTimeRequest;
 use App\Http\Requests\ADMS\WorkTimeRequest;
 use App\Models\User;
-use App\Models\UserWorkTIme;
+use App\Models\UserWorkTime;
 use App\Models\WorkTime;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -18,13 +18,13 @@ class WorkTimeController extends Controller
     public readonly int $perPage;
     private WorkTime $workTime;
     private User $user;
-    private UserWorkTIme $userWorkTime;
+    private UserWorkTime $userWorkTime;
 
     public function __construct()
     {
         $this->workTime = new WorkTime();
         $this->user = new User();
-        $this->userWorkTime = new UserWorkTIme();
+        $this->userWorkTime = new UserWorkTime();
         $this->perPage = 10;
     }
 
@@ -94,7 +94,7 @@ class WorkTimeController extends Controller
     public function assignWorkTime(UserWorkTimeRequest $request, WorkTime $workTime): JsonResponse
     {
         foreach ($request['user_id'] as $userId) {
-            UserWorkTIme::updateOrCreate([
+            UserWorkTime::updateOrCreate([
                 'user_id' => $userId,
             ], [
                 'work_time_id' => $workTime->id

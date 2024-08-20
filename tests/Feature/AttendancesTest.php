@@ -4,7 +4,7 @@ use App\Models\Attendances;
 use App\Models\DeviceLog;
 use App\Models\FpDevice;
 use App\Models\User;
-use App\Models\UserWorkTIme;
+use App\Models\UserWorkTime;
 use App\Models\WorkTime;
 use App\Service\IclockService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -51,7 +51,7 @@ test('recieveRecords processes valid attendance records for check-in', function 
         'time_to_checkout' => '17:00:00',
         'end_time_to_checkout' => '23:59:00',
     ]);
-    UserWorkTIme::factory()->create(['user_id' => $user->id, 'shift_id' => $shift->id]);
+    UserWorkTime::factory()->create(['user_id' => $user->id, 'shift_id' => $shift->id]);
 
     $request = Request::create('/iclock/cdata/', 'POST', [
         'SN' => '12345',
@@ -78,7 +78,7 @@ test('recieveRecords processes valid attendance records for check-out', function
         'time_to_checkout' => '17:00:00',
         'end_time_to_checkout' => '23:59:00',
     ]);
-    UserWorkTIme::factory()->create(['user_id' => $user->id, 'shift_id' => $shift->id]);
+    UserWorkTime::factory()->create(['user_id' => $user->id, 'shift_id' => $shift->id]);
 
     $request = Request::create('/receive', 'POST', [
         'SN' => '12345',

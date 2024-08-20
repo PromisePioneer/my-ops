@@ -6,7 +6,7 @@ use App\Models\Attendances;
 use App\Models\DeviceLog;
 use App\Models\FingerLog;
 use App\Models\FpDevice;
-use App\Models\UserWorkTIme;
+use App\Models\UserWorkTime;
 use App\Models\WorkTime;
 use Exception;
 use Illuminate\Http\Request;
@@ -189,12 +189,12 @@ class IclockService
 
     private function getShiftForUser(string $employeeId)
     {
-        $userShift = UserWorkTIme::whereHas('user', function ($query) use ($employeeId) {
+        $userShift = UserWorkTime::whereHas('user', function ($query) use ($employeeId) {
             $query->where('absent_id', $employeeId);
         })->first();
 
         return $userShift
-            ? WorkTime::find($userShift->shift_id) ?? WorkTime::find(1)
+            ? WorkTime::find($userShift->work_time_id) ?? WorkTime::find(1)
             : WorkTime::find(1);
     }
 
@@ -255,14 +255,15 @@ class IclockService
 
     private function logError(Exception $exception): void
     {
-        $data['error'] = $exception->getMessage();
-        DB::table('error_logs')->insert($data);
+        DB::table('error_logs')->insert([
+            'data' => $exception->getMessage()
+        ]);
         report($exception);
     }
 
     private function isValidUserShift(string $employeeId): bool
     {
-        return UserWorkTIme::whereHas('user', function ($query) use ($employeeId) {
+        return UserWorkTime::whereHas('user', function ($query) use ($employeeId) {
             $query->where('absent_id', $employeeId);
         })->exists();
     }

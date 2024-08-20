@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class UserWorkTIme extends Model
+class UserWorkTime extends Model
 {
     use HasFactory;
 
