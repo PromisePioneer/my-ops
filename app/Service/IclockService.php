@@ -255,6 +255,7 @@ class IclockService
 
     private function logError(Exception $exception): void
     {
+        dd($exception->getMessage());
         DB::table('error_logs')->insert([
             'data' => $exception->getMessage()
         ]);
