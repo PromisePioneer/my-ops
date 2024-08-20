@@ -123,7 +123,6 @@ class IclockService
 
                 // Process each line for attendance records
                 foreach ($inputLines as $line) {
-                    dd($line);
                     // Skip empty lines
                     if (empty(trim($line))) {
                         continue;
@@ -131,6 +130,7 @@ class IclockService
 
                     // Prepare attendance data
                     $attendanceData = $this->prepareAttendanceData($line, $request);
+                    dd($attendanceData);
 
 //                    dd($this->isValidUserShift($attendanceData['employee_id']));
 //                    // Check if user shift is valid
