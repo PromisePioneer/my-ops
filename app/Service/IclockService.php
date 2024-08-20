@@ -116,8 +116,6 @@ class IclockService
                 // Split input lines by various line breaks
                 $inputLines = preg_split('/\r\n|\r|\n/', $request->getContent());
 
-                dd($inputLines);
-
                 // Handle OPERLOG case separately
                 if ($request->input('table') == "OPERLOG") {
                     return $this->handleOperLog($inputLines);
@@ -125,6 +123,7 @@ class IclockService
 
                 // Process each line for attendance records
                 foreach ($inputLines as $line) {
+                    dd($line);
                     // Skip empty lines
                     if (empty(trim($line))) {
                         continue;
