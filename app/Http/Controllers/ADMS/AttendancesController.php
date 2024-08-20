@@ -4,7 +4,6 @@ namespace App\Http\Controllers\ADMS;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendances;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 
@@ -30,16 +29,4 @@ class AttendancesController extends Controller
         return response()->json($this->attendance->getAttendanceWithPagination($this->perPage));
     }
 
-    public function attendancesSummary(): void
-    {
-        $att = User::leftJoin('attendances', 'attendances.employee_id', '=', 'users.absent_id')
-            ->select('users.*', 'attendances.*')
-            ->groupBy('name')
-            ->get()->map(function ($item) {
-                return [
-                    'name' => $item->first()->name,
-                    'timestamp' => $item->first()->timestamp,
-                ];
-            });
-    }
 }
