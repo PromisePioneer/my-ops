@@ -10,10 +10,8 @@ use App\Models\Attendances;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\IdentityInformation;
-use App\Models\JobInformation;
 use App\Models\User;
 use App\Service\IdentityInformationService;
-use App\Service\JobInformationService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -49,10 +47,8 @@ class UserController extends Controller
         $this->branch = new Branch();
         $this->department = new Department();
         $this->identityInformationService = new IdentityInformationService();
-        $this->jobInformation = new JobInformation();
         $this->identityInformation = new IdentityInformation();
         $this->attendances = new Attendances();
-        $this->jobInformationService = new JobInformationService();
     }
 
     public function index(): View

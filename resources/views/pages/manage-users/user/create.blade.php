@@ -61,7 +61,7 @@
                                 <div class="row">
                                     <template x-for="row in role" :key="row.id">
                                         <div class="col-md-4 mt-2">
-                                            <input class="form-check-input" type="checkbox" :value="row.name" multiple
+                                            <input class="form-check-input" type="radio" :value="row.name" multiple
                                                    name="role[]"/>
                                             <label class="form-check-label" for="flexCheckChecked">
                                                 <span x-text="row.name"></span>
