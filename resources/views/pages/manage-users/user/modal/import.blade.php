@@ -28,7 +28,8 @@
 
                     <div class="float-end">
                         <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary btn-sm">Save changes</button>
+                        <button type="submit" class="btn btn-primary btn-sm" :disabled="buttonLoading"
+                                x-text="buttonLoading ? 'Loading...' : 'Simpan'"></button>
                     </div>
                 </form>
 

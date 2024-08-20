@@ -18,13 +18,13 @@ class WorkTimeController extends Controller
     public readonly int $perPage;
     private WorkTime $workTime;
     private User $user;
-    private UserWorkTIme $userShift;
+    private UserWorkTIme $userWorkTime;
 
     public function __construct()
     {
         $this->workTime = new WorkTime();
         $this->user = new User();
-        $this->userShift = new UserWorkTIme();
+        $this->userWorkTime = new UserWorkTIme();
         $this->perPage = 10;
     }
 
@@ -97,7 +97,7 @@ class WorkTimeController extends Controller
             UserWorkTIme::updateOrCreate([
                 'user_id' => $userId,
             ], [
-                'shift_id' => $workTime->id
+                'work_time_id' => $workTime->id
             ]);
         }
 
@@ -109,7 +109,7 @@ class WorkTimeController extends Controller
 
     public function getSelectedUserWorkTime(WorkTime $workTime): JsonResponse
     {
-        return response()->json($this->userShift->getSelectedUserShift($workTime->id));
+        return response()->json($this->userWorkTime->getSelectedUserShift($workTime->id));
     }
 
     /**
@@ -123,5 +123,16 @@ class WorkTimeController extends Controller
         return response()->json([
             'message' => 'Data berhasil dihapus'
         ]);
+    }
+
+
+    public function detail(WorkTime $workTime): View
+    {
+        return view('pages.adms.work-time.detail', compact('workTime'));
+    }
+
+    public function detailData(WorkTime $workTime): JsonResponse
+    {
+        return response()->json($this->userWorkTime->getDetailUserOnSelectedWorkTime($workTime->id, $this->perPage));
     }
 }

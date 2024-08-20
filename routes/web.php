@@ -572,6 +572,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::delete('/{workTime}', [WorkTimeController::class, 'destroy']);
             Route::post('assign-work-time/{workTime}', [WorkTimeController::class, 'assignWorkTime']);
             Route::get('/user/selected/{workTime}', [WorkTimeController::class, 'getSelectedUserWorkTime']);
+            Route::get('/detail/{workTime}', [WorkTimeController::class, 'detail']);
+            Route::get('/detail/data/{workTime}', [WorkTimeController::class, 'detailData']);
         });
     });
 });

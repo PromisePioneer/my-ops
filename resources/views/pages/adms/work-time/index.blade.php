@@ -69,7 +69,9 @@
                             <template x-for="(shift, index) in shifts?.data" :key="shift.id">
                                 <tr>
                                     <td x-text="startIndex + index++"></td>
-                                    <td x-text="shift.name"></td>
+                                    <td>
+                                        <a :href="`/adms/work-time/detail/${shift.id}`" x-text="shift.name"></a>
+                                    </td>
                                     <td x-text="shift.clock_in"></td>
                                     <td x-text="shift.clock_out"></td>
                                     <td x-text="shift.time_to_checkin"></td>
@@ -121,10 +123,7 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             $('#modal-assign-user').on('hide.bs.modal', function () {
-                // Reset the form
                 document.getElementById('form-assign-user').reset();
-
-                // Clear the Select2 dropdown
                 $('#selectedUserShift').val(null).trigger('change');
             });
         });
@@ -227,7 +226,7 @@
                 async assignShift(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/adms/work-time/assign-shift/${id}`, new FormData(this.formAssignUser))
+                        await axios.post(`/adms/work-time/assign-work-time/${id}`, new FormData(this.formAssignUser))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formAssignUser.reset();
                         this.modalAssignUser.hide();

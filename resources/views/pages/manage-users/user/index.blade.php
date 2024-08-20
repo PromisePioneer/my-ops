@@ -187,7 +187,6 @@
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
-                            console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');
                         }
                     });
