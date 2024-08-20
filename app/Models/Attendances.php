@@ -56,7 +56,7 @@ class Attendances extends Model
     {
         $attendances = self::select('attendances.employee_id', 'users.name', 'attendances.timestamp',
             'attendances.status1')
-            ->join('users', 'users.absent_id', '=', 'attendances.employee_id')
+            ->leftjoin('users', 'users.absent_id', '=', 'attendances.employee_id')
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
             ->orderBy('attendances.timestamp', 'DESC')
