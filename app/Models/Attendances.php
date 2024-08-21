@@ -207,7 +207,7 @@ class Attendances extends Model
 //                'total_hadir' => $totalPresent,
 //                'total_menit_terlambat' => (int) $totalMinutesLate
 //            ];
-//        })->values();
+        })->values();
     }
 
     public function searchAttendancesSummary(Request $request)
