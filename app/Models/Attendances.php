@@ -180,7 +180,7 @@ class Attendances extends Model
 
             foreach ($dailyAttendances as $day => $dailyItems) {
                 $checkIn = $dailyItems->where('status1', 0)->first();
-                $userWorktime = WorkTime::where('name', $checkIn->work_time)->first();
+                $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
                 $defaultWorkTime = WorkTime::where('id', 1)->first();
                 $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
 
