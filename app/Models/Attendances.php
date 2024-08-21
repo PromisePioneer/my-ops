@@ -189,7 +189,7 @@ class Attendances extends Model
                 $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
                 // Calculate lateness in minutes for that day
-                $actualCheckIn = Carbon::parse($checkIn->timestamp);
+                $actualCheckIn = Carbon::parse($checkIn?->timestamp);
                 if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                     $minutesLate = $expectedCheckIn->diffInMinutes($actualCheckIn);
                     $totalMinutesLate += $minutesLate;
