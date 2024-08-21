@@ -22,7 +22,7 @@ class HomeController extends Controller
      */
     public function index(): View
     {
-        dd(Attendances::all());
+        dd(Attendances::limit(10)->get());
         return view('home');
     }
 }
