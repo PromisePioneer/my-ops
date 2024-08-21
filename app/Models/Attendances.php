@@ -185,7 +185,7 @@ class Attendances extends Model
                 $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
 
                 // Combine the date of check-in with the expected time
-                $expectedCheckIn = Carbon::parse($checkIn->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+                $expectedCheckIn = Carbon::parse($checkIn?->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
                 $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
                 // Calculate lateness in minutes for that day
