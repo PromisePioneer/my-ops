@@ -171,6 +171,8 @@ class Attendances extends Model
     private function formatGroupedDataForAttendancesSummary($attendances, $month, $year)
     {
         return $attendances->map(function ($items) use ($month, $year) {
+            dd($items);
+
             $totalMinutesLate = 0;
 
             // Group by each day to calculate daily lateness
