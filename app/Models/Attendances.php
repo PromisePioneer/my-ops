@@ -54,7 +54,6 @@ class Attendances extends Model
 
     public function getAttendanceWithPagination(int $perPage): LengthAwarePaginator
     {
-        // Mengambil data dengan pagination langsung
         $query = self::select('attendances.employee_id', 'users.name as user_name', 'attendances.timestamp',
             'attendances.status1', 'work_time.name as work_time')
             ->leftjoin('users', 'users.absent_id', '=', 'attendances.employee_id')
@@ -62,7 +61,6 @@ class Attendances extends Model
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
             ->orderBy('attendances.timestamp', 'DESC');
 
-        // Lakukan pagination sebelum grouping
         $paginator = $query->paginate($perPage);
 
         // Lakukan grouping setelah data diambil untuk page tertentu
@@ -70,13 +68,10 @@ class Attendances extends Model
             return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
         });
 
-        // Format data yang telah digroup
         $formattedData = $this->formatGroupedData($groupedData);
 
-        // Update paginator dengan data yang telah diformat
         $paginator->setCollection($formattedData);
 
-        // Kembalikan paginator yang telah diformat
         return $paginator->withPath(url('/adms/attendances/data'));
     }
 
@@ -90,11 +85,9 @@ class Attendances extends Model
             $defaultWorkTime = WorkTime::where('id', 1)->first();
             $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
 
-            // Combine the date of check-in with the expected time
             $expectedCheckIn = Carbon::parse($checkIn->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
             $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
-            // Calculate lateness in minutes
             $actualCheckIn = Carbon::parse($checkIn->timestamp);
             $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
 
@@ -107,7 +100,7 @@ class Attendances extends Model
                 'late_checkin' => (int) $minutesLate,
                 'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
             ];
-        })->filter()->values(); // Tambahkan filter() untuk menghapus null values
+        })->filter()->values();
     }
 
 
