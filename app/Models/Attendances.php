@@ -173,41 +173,41 @@ class Attendances extends Model
         return $attendances->map(function ($items) use ($month, $year) {
             dd($items);
 
-            $totalMinutesLate = 0;
-
-            // Group by each day to calculate daily lateness
-            $dailyAttendances = $items->groupBy(function ($item) {
-                return Carbon::parse($item->timestamp)->format('Y-m-d');
-            });
-
-            foreach ($dailyAttendances as $day => $dailyItems) {
-                $checkIn = $dailyItems->where('status1', 0)->first();
-                $userWorktime = WorkTime::where('name', $checkIn->work_time)->first();
-                $defaultWorkTime = WorkTime::where('id', 1)->first();
-                $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
-
-                // Combine the date of check-in with the expected time
-                $expectedCheckIn = Carbon::parse($checkIn->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
-                $expectedCheckIn = Carbon::parse($expectedCheckIn);
-
-                // Calculate lateness in minutes for that day
-                $actualCheckIn = Carbon::parse($checkIn->timestamp);
-                if ($actualCheckIn->greaterThan($expectedCheckIn)) {
-                    $minutesLate = $expectedCheckIn->diffInMinutes($actualCheckIn);
-                    $totalMinutesLate += $minutesLate;
-                }
-            }
-
-            $totalPresent = $items->where('status1', 0)->count();
-
-            return [
-                'branch' => $items->first()->branch_name ?? 'Pusat',
-                'nip' => $items->first()->user_nip,
-                'name' => $items->first()->user_name,
-                'total_hadir' => $totalPresent,
-                'total_menit_terlambat' => (int) $totalMinutesLate
-            ];
-        })->values();
+//            $totalMinutesLate = 0;
+//
+//            // Group by each day to calculate daily lateness
+//            $dailyAttendances = $items->groupBy(function ($item) {
+//                return Carbon::parse($item->timestamp)->format('Y-m-d');
+//            });
+//
+//            foreach ($dailyAttendances as $day => $dailyItems) {
+//                $checkIn = $dailyItems->where('status1', 0)->first();
+//                $userWorktime = WorkTime::where('name', $checkIn->work_time)->first();
+//                $defaultWorkTime = WorkTime::where('id', 1)->first();
+//                $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
+//
+//                // Combine the date of check-in with the expected time
+//                $expectedCheckIn = Carbon::parse($checkIn->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+//                $expectedCheckIn = Carbon::parse($expectedCheckIn);
+//
+//                // Calculate lateness in minutes for that day
+//                $actualCheckIn = Carbon::parse($checkIn->timestamp);
+//                if ($actualCheckIn->greaterThan($expectedCheckIn)) {
+//                    $minutesLate = $expectedCheckIn->diffInMinutes($actualCheckIn);
+//                    $totalMinutesLate += $minutesLate;
+//                }
+//            }
+//
+//            $totalPresent = $items->where('status1', 0)->count();
+//
+//            return [
+//                'branch' => $items->first()->branch_name ?? 'Pusat',
+//                'nip' => $items->first()->user_nip,
+//                'name' => $items->first()->user_name,
+//                'total_hadir' => $totalPresent,
+//                'total_menit_terlambat' => (int) $totalMinutesLate
+//            ];
+//        })->values();
     }
 
     public function searchAttendancesSummary(Request $request)
