@@ -210,10 +210,8 @@ class Attendances extends Model
 
     public function searchAttendancesSummary(Request $request)
     {
-        // Ambil input pencarian dari query string
         $search = $request->input('search');
 
-        // Mulai query dengan filter berdasarkan input pencarian
         $query = self::join('users', 'users.absent_id', '=', 'attendances.employee_id')
             ->leftJoin('branches', 'branches.id', '=', 'users.branch_id')
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
@@ -221,7 +219,6 @@ class Attendances extends Model
             ->select('users.nip as user_nip', 'users.name as user_name', 'attendances.timestamp', 'attendances.status1',
                 'work_time.name as work_time', 'attendances.employee_id');
 
-        // Terapkan filter pencarian
         if ($search) {
             $query->where('users.name', 'like', '%'.$search.'%')
                 ->orWhere('branches.name', 'like', '%'.$search.'%')
@@ -229,10 +226,8 @@ class Attendances extends Model
                 ->orWhere('users.nip', 'like', '%'.$search.'%');
         }
 
-        // Ambil hasil pencarian
         $attendances = $query->orderBy('attendances.timestamp', 'DESC')->get();
 
-        // Format data sebelum dikirim ke frontend
         $groupedAttendances = $attendances->groupBy(function ($item) {
             return $item->user_name;
         });
