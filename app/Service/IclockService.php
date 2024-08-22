@@ -240,7 +240,6 @@ class IclockService
         if ($this->isValidTime($time, $shift->time_to_checkout, $shift->end_time_to_checkout)) {
             $existingCheckOut = $this->getAttendanceRecord($attendanceData['employee_id'], $date, 'desc');
 
-
             if (!$existingCheckOut || $existingCheckOut->status1 != 1) {
                 Attendances::create($attendanceData);
             }
