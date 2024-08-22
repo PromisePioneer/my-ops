@@ -89,6 +89,7 @@ class AttendanceSummaryController extends Controller
         $attendances = $this->attendances->attendanceSummaryDetailForOneMonthBasedOnUserId($month, $year,
             $employeeId, $this->perPage);
 
+
         $totalPresentAndTotalMinutesLate = Attendances::select('attendances.employee_id', 'users.name as user_name',
             'attendances.timestamp',
             'attendances.status1', 'work_time.name as work_time', 'users.nip as user_nip')
@@ -98,11 +99,12 @@ class AttendanceSummaryController extends Controller
             ->whereMonth('attendances.timestamp', $month)
             ->whereYear('attendances.timestamp', $year)
             ->where('users.absent_id', $employeeId)
+            ->get()
             ->groupBy(function ($item) {
                 return $item->user_name;
             });
 
-        $summaryData = $totalPresentAndTotalMinutesLate->getCollection()->map(function ($items) {
+        $summaryData = $totalPresentAndTotalMinutesLate->map(function ($items) {
             $totalMinutesLate = 0;
             $totalPresent = $items->where('status1', 0)->count();
             // Group by each day to calculate daily lateness
@@ -134,7 +136,7 @@ class AttendanceSummaryController extends Controller
                 'name' => $items->first()->user_name,
                 'nik' => $items->first()->user_nip
             ];
-        })->filter()->values();
+        })->values();
 
 
         return response()->json([
