@@ -114,7 +114,7 @@ class AttendanceSummaryController extends Controller
 
             foreach ($dailyAttendances as $day => $dailyItems) {
                 $checkIn = $dailyItems->where('status1', 0)->first(); // Data Check-In
-                
+
 
                 if ($checkIn) {
                     $userWorktime = WorkTime::where('name', $checkIn->work_time)->first();
@@ -133,8 +133,6 @@ class AttendanceSummaryController extends Controller
                     }
                 }
             }
-
-            dd($totalMinutesLate);
 
             return [
                 'totalMinutesLate' => (int) $totalMinutesLate.' Menit',
