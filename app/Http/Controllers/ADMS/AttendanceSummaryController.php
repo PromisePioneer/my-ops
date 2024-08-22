@@ -102,7 +102,7 @@ class AttendanceSummaryController extends Controller
                 return $item->user_name;
             });
 
-        $summaryData = $totalPresentAndTotalMinutesLate->map(function ($items) {
+        $summaryData = $totalPresentAndTotalMinutesLate->getCollection()->map(function ($items) {
             $totalMinutesLate = 0;
             $totalPresent = $items->where('status1', 0)->count();
             // Group by each day to calculate daily lateness
