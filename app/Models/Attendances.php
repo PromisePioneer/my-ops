@@ -52,30 +52,25 @@ class Attendances extends Model
             $checkIn = $items->where('status1', 0)->first();
             $checkOut = $items->where('status1', 1)->last();
 
-            if ($checkIn) { // Pastikan ada data check-in
-                $userWorktime = WorkTime::where('name', $checkIn->work_time)->first();
-                $defaultWorkTime = WorkTime::where('id', 1)->first();
-                $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
+            $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
+            $defaultWorkTime = WorkTime::where('id', 1)->first();
+            $expectedCheckInTime = $userWorktime ? $userWorktime?->clock_in : $defaultWorkTime?->clock_in;
 
-                $expectedCheckIn = Carbon::parse($checkIn->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
-                $expectedCheckIn = Carbon::parse($expectedCheckIn);
+            $expectedCheckIn = Carbon::parse($checkIn?->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+            $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
-                $actualCheckIn = Carbon::parse($checkIn->timestamp);
-                $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
+            $actualCheckIn = Carbon::parse($checkIn?->timestamp);
+            $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
 
-                return [
-                    'name' => $checkIn->user_name,
-                    'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
-                    'date' => Carbon::parse($checkIn->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
-                    'employee_id' => $checkIn->employee_id,
-                    'checkin_time' => $actualCheckIn->format('H:i'),
-                    'late_checkin' => (int) $minutesLate,
-                    'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
-                ];
-            }
-
-            // Jika tidak ada data check-in, jangan tambahkan ke hasil
-            return null;
+            return [
+                'name' => $checkIn?->user_name,
+                'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
+                'date' => Carbon::parse($checkIn?->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                'employee_id' => $checkIn?->employee_id,
+                'checkin_time' => $actualCheckIn->format('H:i'),
+                'late_checkin' => (int) $minutesLate,
+                'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
+            ];
         })->filter()->values();
     }
 
