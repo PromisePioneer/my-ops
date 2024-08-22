@@ -89,6 +89,8 @@ class AttendanceSummaryController extends Controller
         $attendances = $this->attendances->attendanceSummaryDetailForOneMonthBasedOnUserId($month, $year,
             $employeeId, $this->perPage);
 
+        dd($attendances);
+
 
         $totalPresentAndTotalMinutesLate = Attendances::select('attendances.employee_id', 'users.name as user_name',
             'attendances.timestamp',
