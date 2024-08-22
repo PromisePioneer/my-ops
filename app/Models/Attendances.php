@@ -81,21 +81,21 @@ class Attendances extends Model
             $checkIn = $items->where('status1', 0)->first();
             $checkOut = $items->where('status1', 1)->last();
 
-            $userWorktime = WorkTime::where('name', $checkIn->work_time)->first();
+            $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
             $defaultWorkTime = WorkTime::where('id', 1)->first();
-            $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
+            $expectedCheckInTime = $userWorktime ? $userWorktime?->clock_in : $defaultWorkTime?->clock_in;
 
-            $expectedCheckIn = Carbon::parse($checkIn->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+            $expectedCheckIn = Carbon::parse($checkIn?->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
             $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
-            $actualCheckIn = Carbon::parse($checkIn->timestamp);
+            $actualCheckIn = Carbon::parse($checkIn?->timestamp);
             $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
 
             return [
-                'name' => $checkIn->user_name,
+                'name' => $checkIn?->user_name,
                 'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
-                'date' => Carbon::parse($checkIn->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
-                'employee_id' => $checkIn->employee_id,
+                'date' => Carbon::parse($checkIn?->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                'employee_id' => $checkIn?->employee_id,
                 'checkin_time' => $actualCheckIn->format('H:i'),
                 'late_checkin' => (int) $minutesLate,
                 'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
@@ -130,7 +130,9 @@ class Attendances extends Model
 
     public function getAttendancesPeriod(int $perPage): LengthAwarePaginator
     {
-        return self::selectRaw("CONCAT(MONTH(timestamp), '-', YEAR(timestamp)) as waktu")->distinct()->paginate($perPage);
+        return self::selectRaw("CONCAT(MONTH(timestamp), '-', YEAR(timestamp)) as waktu")
+            ->distinct()
+            ->paginate($perPage);
     }
 
 
@@ -193,6 +195,7 @@ class Attendances extends Model
 
             return [
                 'branch' => $items->first()->branch_name ?? 'Pusat',
+                'employee_id' => $items->first()->employee_id,
                 'nip' => $items->first()->user_nip,
                 'name' => $items->first()->user_name,
                 'total_hadir' => $totalPresent,
@@ -226,6 +229,71 @@ class Attendances extends Model
         });
 
         return $this->formatGroupedDataForAttendancesSummary($groupedAttendances, null, null);
+    }
+
+
+    public function filterAttendancesSummaryByDate(
+        $startDate,
+        $endDate,
+        $month,
+        $year,
+        int $perPage
+    ): LengthAwarePaginator {
+        $attendances = self::join('users', 'users.absent_id', '=', 'attendances.employee_id')
+            ->leftJoin('branches', 'branches.id', '=', 'users.branch_id')
+            ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
+            ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
+            ->whereMonth('attendances.timestamp', $month)
+            ->whereYear('attendances.timestamp', $year)
+            ->whereBetween('attendances.timestamp', [$startDate, $endDate])
+            ->orderBy('attendances.timestamp', 'DESC')
+            ->select('users.nip as user_nip', 'branches.name as branches_name', 'users.name as user_name',
+                'attendances.timestamp',
+                'attendances.status1',
+                'work_time.name as work_time', 'attendances.employee_id')
+            ->get()
+            ->groupBy(function ($item) {
+                return $item->user_name;
+            });
+
+        $formattedData = $this->formatGroupedDataForAttendancesSummary($attendances, $month, $year);
+        $paginator = new LengthAwarePaginator($formattedData->forPage(Paginator::resolveCurrentPage(), $perPage),
+            $formattedData->count(), $perPage);
+
+        $paginator->withPath(url("adms/attendances-summary/detail/data/01-{$month}-{$year}"));
+
+        return $paginator;
+    }
+
+
+    public function attendanceSummaryDetailForOneMonthBasedOnUserId(
+        string $month,
+        string $year,
+        int $employeeId,
+        int $perPage
+    ): LengthAwarePaginator {
+        $query = self::select('attendances.employee_id', 'users.name as user_name', 'attendances.timestamp',
+            'attendances.status1', 'work_time.name as work_time')
+            ->leftjoin('users', 'users.absent_id', '=', 'attendances.employee_id')
+            ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
+            ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
+            ->whereMonth('attendances.timestamp', $month)
+            ->whereYear('attendances.timestamp', $year)
+            ->where('users.absent_id', $employeeId)
+            ->orderBy('attendances.timestamp', 'ASC');
+
+        $paginator = $query->paginate($perPage);
+
+        // Lakukan grouping setelah data diambil untuk page tertentu
+        $groupedData = $paginator->getCollection()->groupBy(function ($item) {
+            return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
+        });
+
+        $formattedData = $this->formatGroupedData($groupedData);
+
+        $paginator->setCollection($formattedData);
+
+        return $paginator->withPath(url('/adms/attendances/data'));
     }
 
 }

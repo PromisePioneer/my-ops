@@ -32,6 +32,7 @@ use App\Http\Controllers\Master\ProductController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\ServicesCategoryController;
 use App\Http\Controllers\Master\SubAccountController;
+use App\Http\Controllers\Operational\SPController;
 use App\Http\Controllers\Setting\MenuController;
 use App\Http\Controllers\Transaction\BastController;
 use App\Http\Controllers\Transaction\ExpenditureController;
@@ -172,6 +173,20 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/search', [ManageUserLeavesController::class, 'search']);
             Route::get('/{leaveAndPermission}', [ManageUserLeavesController::class, 'detail']);
             Route::post('/{leaveAndPermission}', [ManageUserLeavesController::class, 'changeStatus']);
+        });
+
+        Route::prefix('sp')->group(function () {
+            Route::get('/', [SPController::class, 'index']);
+            Route::get('/data', [SpController::class, 'data']);
+            Route::get('/search', [SpController::class, 'search']);
+            Route::get('/users/data', [SpController::class, 'getUserData']);
+            Route::get('/create', [SpController::class, 'create']);
+            Route::post('/', [SpController::class, 'store']);
+            Route::get('/{sp}', [SpController::class, 'edit']);
+            Route::post('/{sp}', [SpController::class, 'update']);
+            Route::get('/confirm/{sp}', [SpController::class, 'confirm']);
+            Route::delete('/{sp}', [SpController::class, 'destroy']);
+            Route::get('export-pdf/{sp}', [SPController::class, 'exportToPDF']);
         });
     });
 
@@ -584,6 +599,11 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/detail/{time}', [AttendanceSummaryController::class, 'detail']);
             Route::get('/detail/data/01-{month}-{year}', [AttendanceSummaryController::class, 'detailData']);
             Route::get('/detail/data/search', [AttendanceSummaryController::class, 'searchDetailData']);
+            Route::post('/detail/data/filter-date/{month}/{year}', [AttendanceSummaryController::class, 'filterDate']);
+            Route::post('/detail/data/assign-sp/{employeeId}',
+                [AttendanceSummaryController::class, 'assignSPToEmployee']);
+            Route::get('/detail/data/user/detail/{month}/{year}/{employeeId}',
+                [AttendanceSummaryController::class, 'attendanceSummaryDetailForOneMonthBasedOnUserId']);
         });
     });
 });

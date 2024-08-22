@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             MenuSeeder::class,
             DepartmentSeeder::class,
-//            BranchSeeder::class,
+            BranchSeeder::class,
             AccountSeeder::class,
             SubAccountSeeder::class,
             UserSeeder::class,
@@ -29,7 +29,8 @@ class DatabaseSeeder extends Seeder
             LetterHeadSeeder::class,
             UnitTypesSeeder::class,
             PositionSeeder::class,
-            WorkTimeSeeder::class
+            WorkTimeSeeder::class,
+            SpSeeder::class,
 //            AttendancesSeeder::class
         ]);
     }

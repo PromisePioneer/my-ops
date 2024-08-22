@@ -333,6 +333,11 @@
                                 href="{{ url('manage-users/payroll') }}">
                             Payroll
                         </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'sp'"
+                                href="{{ url('manage-users/sp') }}">
+                            Surat Peringatan
+                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
                 <x-dropdown-menu :active="request()->segment(1) === 'adms'">

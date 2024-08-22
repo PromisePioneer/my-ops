@@ -203,8 +203,10 @@ class UserController extends Controller
         return response()->json($users);
     }
 
+
     public function import(Request $request): JsonResponse
     {
+        ini_set('max_execution_time', 180);
         $file = $request->file('file_import');
 
         Excel::import(new UserImport(), $file);

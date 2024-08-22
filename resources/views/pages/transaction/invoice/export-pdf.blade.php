@@ -221,10 +221,12 @@
             @foreach($invoiceServiceList as $invoiceService)
                 <tr class="row-product">
                     <td class="data-table-product" style="text-align: center">{{ $loop->iteration }}</td>
-                    <td class="data-table-product"  style="text-align: center">{{ $invoiceService->description }}</td>
-                    <td class="data-table-product"  style="text-align: center">Rp.{{ number_format($invoiceService->unit_price) }}</td>
-                    <td class="data-table-product"  style="text-align: center">{{ $invoiceService->qty }}</td>
-                    <td class="data-table-product" style="padding: 0 10px 0 10px;" >Rp. {{ number_format($invoiceService->total_price) }}</td>
+                    <td class="data-table-product" style="text-align: center">{{ $invoiceService->description }}</td>
+                    <td class="data-table-product" style="text-align: center">
+                        Rp.{{ number_format($invoiceService->unit_price) }}</td>
+                    <td class="data-table-product" style="text-align: center">{{ $invoiceService->qty }}</td>
+                    <td class="data-table-product" style="padding: 0 10px 0 10px;">
+                        Rp. {{ number_format($invoiceService->total_price) }}</td>
                 </tr>
             @endforeach
             </tbody>
@@ -325,10 +327,12 @@
         </p>
     </div>
 
+    <div class="clearfix"></div>
     <div class="kop-footer">
         <img class="kop-image-footer"
              src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"/>
     </div>
+
 </div>
 </body>
 </html>

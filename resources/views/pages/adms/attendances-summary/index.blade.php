@@ -3,24 +3,12 @@
 
     <div x-data="attendancesPeriod()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            <div class="card-header border-0 pt-6">
-                <div class="card-title">
-                    <div class="d-flex align-items-center position-relative my-1">
-                        <span class="svg-icon svg-icon-1 position-absolute ms-6">
-                           <i class="bi bi-search"></i>
-                        </span>
-                        {{--                                                <input type="text" name="search" x-model="search" @input.debounce="searchData"--}}
-                        {{--                                                       class="form-control form-control-solid w-250px ps-14" placeholder="Search...">--}}
-                    </div>
-                </div>
-            </div>
             <div class="card-body py-3">
                 <div class="py-5">
                     <div class="table-responsive">
                         <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="min-w-125px">No</th>
                                 <th class="min-w-125px">Periode</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
@@ -43,9 +31,8 @@
                                     </td>
                                 </tr>
                             </template>
-                            <template x-for="(period, index) in periods?.data" :key="index">
+                            <template x-for="(period, index) in periods?.data" :key="periods.nip">
                                 <tr>
-                                    <td x-text="startIndex + index++"></td>
                                     <td x-text="formatDate(period.waktu)"></td>
                                     <td>
                                         <a :href="`/adms/attendances-summary/detail/01-${period.waktu}`"
@@ -60,10 +47,10 @@
                     </div>
                     <ul class="pagination float-end mb-4">
                         <li class="page-item previous">
-                            <button class="btn btn-light btn-sm" @click="previousPage">Previous</button>
+                            <button class="btn btn-light btn-sm" @click="previousPage()">Previous</button>
                         </li>
                         <li class="page-item next">
-                            <button class="btn btn-light btn-sm" @click="nextPage">Next</button>
+                            <button class="btn btn-light btn-sm" @click="nextPage()">Next</button>
                         </li>
                     </ul>
                 </div>
