@@ -279,7 +279,7 @@ class Attendances extends Model
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
             ->whereMonth('attendances.timestamp', $month)
             ->whereYear('attendances.timestamp', $year)
-            ->where('users.employee_id', $employeeId)
+            ->where('attendances.employee_id', $employeeId)
             ->orderBy('attendances.timestamp', 'ASC');
 
         $paginator = $query->paginate($perPage);
