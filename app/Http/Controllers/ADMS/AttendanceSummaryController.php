@@ -115,7 +115,7 @@ class AttendanceSummaryController extends Controller
             foreach ($dailyAttendances as $day => $dailyItems) {
                 $checkIn = $dailyItems->where('status1', 0)->first(); // Data Check-In
 
-                if ($checkIn) { // Memastikan ada data check-in
+                if ($checkIn) {
                     $userWorktime = WorkTime::where('name', $checkIn->work_time)->first();
                     $defaultWorkTime = WorkTime::where('id', 1)->first();
                     $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
@@ -128,7 +128,7 @@ class AttendanceSummaryController extends Controller
                     $actualCheckIn = Carbon::parse($checkIn->timestamp);
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                         $minutesLate = $expectedCheckIn->diffInMinutes($actualCheckIn);
-                        $totalMinutesLate += $minutesLate;
+                        $totalMinutesLate = $minutesLate;
                     }
                 }
             }
