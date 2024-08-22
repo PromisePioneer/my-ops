@@ -103,10 +103,13 @@ class AttendanceSummaryController extends Controller
                 return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
             });
 
+
+        dd($totalPresentAndTotalMinutesLate->toArray());
+
         $summaryData = $totalPresentAndTotalMinutesLate->map(function ($items) {
             $totalMinutesLate = 0;
             $totalPresent = $items->where('status1', 0)->count(); // Menghitung hari hadir (check-in)
-            
+
 
             // Mengelompokkan per hari untuk menghitung keterlambatan harian
             $dailyAttendances = $items->groupBy(function ($item) {
