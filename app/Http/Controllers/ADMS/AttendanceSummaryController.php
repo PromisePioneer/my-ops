@@ -136,7 +136,7 @@ class AttendanceSummaryController extends Controller
                 'name' => $items->first()->user_name,
                 'nik' => $items->first()->user_nip
             ];
-        })->values();
+        })->filter()->values();
 
 
         return response()->json([
