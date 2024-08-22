@@ -128,8 +128,8 @@ class AttendanceSummaryController extends Controller
                     $actualCheckIn = Carbon::parse($checkIn->timestamp);
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                         $minutesLate = $expectedCheckIn->diffInMinutes($actualCheckIn);
-                        dd($minutesLate);
                         $totalMinutesLate += $minutesLate;
+                        dd($totalMinutesLate);
                     }
                 }
             }
