@@ -293,7 +293,7 @@ class Attendances extends Model
 
         $paginator->setCollection($formattedData);
 
-        return $paginator->withPath(url('/adms/attendances/data'));
+        return $paginator;
     }
 
 }
