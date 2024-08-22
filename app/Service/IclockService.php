@@ -205,9 +205,9 @@ class IclockService
         $time = date('H:i:s', strtotime($attendanceData['timestamp']));
 
 
-        if ($attendanceData['status1'] === 0) {
+        if ($attendanceData['status1'] == 0) {
             $this->processCheckIn($attendanceData, $shift, $date, $time);
-        } elseif ($attendanceData['status1'] === 1) {
+        } elseif ($attendanceData['status1'] == 1) {
             $this->processCheckOut($attendanceData, $shift, $date, $time);
         }
     }
@@ -240,7 +240,7 @@ class IclockService
         if ($this->isValidTime($time, $shift->time_to_checkout, $shift->end_time_to_checkout)) {
             $existingCheckOut = $this->getAttendanceRecord($attendanceData['employee_id'], $date, 'desc');
 
-            if (!$existingCheckOut || $existingCheckOut->status1 !== 1) {
+            if (!$existingCheckOut || $existingCheckOut->status1 != 1) {
                 Attendances::create([
                     'sn' => $attendanceData['sn'],
                     'table' => $attendanceData['table'],
