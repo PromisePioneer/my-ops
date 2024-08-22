@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Collection;
 
 class Attendances extends Model
 {
@@ -23,34 +22,6 @@ class Attendances extends Model
         'timestamp',
         'status1',
     ];
-
-    private static function formattedData(LengthAwarePaginator $data): Collection
-    {
-        return $data->groupBy(function ($item) {
-            return Carbon::parse($item->timestamp)->format('Y-m-d').'-'.$item->status1;
-        })->map(function ($group) {
-            return [
-                'date' => Carbon::parse($group->first()->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
-                'records' => $group->map(function ($item) {
-                    return [
-                        'id' => $item->id,
-                        'sn' => $item->sn,
-                        'user_name' => $item->name,
-                        'employee_id' => $item->employee_id,
-                        'timestamp' => Carbon::parse($item->timestamp)
-                            ->locale('id')
-                            ->settings(['formatFunction' => 'translatedFormat'])
-                            ->format('H:i'),
-                        'check_in' => $item->status1,
-                        'status2' => $item->status2,
-                        'status3' => $item->status3,
-                        'status4' => $item->status4,
-                        'status5' => $item->status5,
-                    ];
-                }),
-            ];
-        })->values();
-    }
 
     public function getAttendanceWithPagination(int $perPage): LengthAwarePaginator
     {
