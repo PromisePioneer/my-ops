@@ -254,8 +254,6 @@ class Attendances extends Model
             ->orderBy('attendances.timestamp', 'ASC');
 
 
-        dd($query);
-
         $paginator = $query->paginate($perPage);
 
         // Lakukan grouping setelah data diambil untuk page tertentu
