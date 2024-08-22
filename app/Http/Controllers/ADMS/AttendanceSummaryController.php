@@ -143,7 +143,7 @@ class AttendanceSummaryController extends Controller
 
         return response()->json([
             'data' => $attendances,
-            'summary_data' => $summaryData->first() // Mengambil data pertama dari collection
+            'summary_data' => $summaryData[0] // Mengambil data pertama dari collection
         ]);
     }
 }
