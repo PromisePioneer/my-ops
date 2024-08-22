@@ -105,7 +105,8 @@ class AttendanceSummaryController extends Controller
 
         $summaryData = $totalPresentAndTotalMinutesLate->map(function ($items) {
             $totalMinutesLate = 0;
-            $totalPresent = $items; // Menghitung hari hadir (check-in)
+            $totalPresent = $items->where('status1', 0)->count(); // Menghitung hari hadir (check-in)
+            
 
             // Mengelompokkan per hari untuk menghitung keterlambatan harian
             $dailyAttendances = $items->groupBy(function ($item) {
