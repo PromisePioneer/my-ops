@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Attendances;
-use App\Models\ErrorLog;
 use Illuminate\View\View;
 
 class HomeController extends Controller
@@ -23,8 +21,6 @@ class HomeController extends Controller
      */
     public function index(): View
     {
-        dd(Attendances::all());
-        dd(ErrorLog::all());
         return view('home');
     }
 }
