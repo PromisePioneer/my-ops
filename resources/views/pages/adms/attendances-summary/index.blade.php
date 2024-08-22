@@ -31,7 +31,7 @@
                                     </td>
                                 </tr>
                             </template>
-                            <template x-for="(period, index) in periods?.data" :key="periods.nip">
+                            <template x-for="(period, index) in periods?.data" :key="index">
                                 <tr>
                                     <td x-text="formatDate(period.waktu)"></td>
                                     <td>
