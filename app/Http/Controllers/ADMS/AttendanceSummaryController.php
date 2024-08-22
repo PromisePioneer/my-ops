@@ -101,7 +101,7 @@ class AttendanceSummaryController extends Controller
             ->where('users.absent_id', $employeeId)
             ->get()
             ->groupBy(function ($item) {
-                return $item->user_name;
+                return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
             });
 
         $summaryData = $totalPresentAndTotalMinutesLate->map(function ($items) {
