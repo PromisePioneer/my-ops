@@ -50,7 +50,7 @@ class Attendances extends Model
     {
         return $groupedData->map(function ($items) {
             $checkIn = $items->where('status1', 0)->first();
-            $checkOut = $items->where('status1', 1)->last();
+            $checkOut = $items->where('status1', 1)->first();
 
             $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
             $defaultWorkTime = WorkTime::where('id', 1)->first();
