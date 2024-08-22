@@ -115,6 +115,8 @@ class AttendanceSummaryController extends Controller
             foreach ($dailyAttendances as $day => $dailyItems) {
                 $checkIn = $dailyItems->where('status1', 0)->first(); // Data Check-In
 
+                dd($checkIn);
+
                 if ($checkIn) {
                     $userWorktime = WorkTime::where('name', $checkIn->work_time)->first();
                     $defaultWorkTime = WorkTime::where('id', 1)->first();
