@@ -247,7 +247,7 @@ class Attendances extends Model
             'attendances.status1', 'work_time.name as work_time')
             ->leftJoin('users', 'users.absent_id', '=', 'attendances.employee_id')
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
-            ->join('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
+            ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
             ->whereMonth('attendances.timestamp', $month)
             ->whereYear('attendances.timestamp', $year)
             ->where('attendances.employee_id', $employeeId)
