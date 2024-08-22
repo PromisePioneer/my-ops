@@ -205,9 +205,9 @@ class IclockService
         $time = date('H:i:s', strtotime($attendanceData['timestamp']));
 
 
-        if ($attendanceData['status1'] == 0) {
+        if ($attendanceData['status1'] === 0) {
             $this->processCheckIn($attendanceData, $shift, $date, $time);
-        } elseif ($attendanceData['status1'] == 1) {
+        } elseif ($attendanceData['status1'] === 1) {
             $this->processCheckOut($attendanceData, $shift, $date, $time);
         }
     }
