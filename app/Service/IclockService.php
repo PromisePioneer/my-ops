@@ -241,6 +241,7 @@ class IclockService
             $existingCheckOut = $this->getAttendanceRecord($attendanceData['employee_id'], $date, 'desc');
 
             if (!$existingCheckOut || $existingCheckOut->status1 != 1) {
+                dd('test');
                 Attendances::create($attendanceData);
             }
         }
