@@ -129,10 +129,11 @@ class AttendanceSummaryController extends Controller
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                         $minutesLate = $expectedCheckIn->diffInMinutes($actualCheckIn);
                         $totalMinutesLate += $minutesLate;
-                        dd($totalMinutesLate);
                     }
                 }
             }
+
+            dd($totalMinutesLate);
 
             return [
                 'totalMinutesLate' => (int) $totalMinutesLate.' Menit',
