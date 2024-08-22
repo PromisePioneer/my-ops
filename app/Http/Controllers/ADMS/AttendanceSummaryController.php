@@ -126,10 +126,9 @@ class AttendanceSummaryController extends Controller
 
                     // Hitung keterlambatan dalam menit untuk hari tersebut
                     $actualCheckIn = Carbon::parse($checkIn->timestamp);
-
-                    dd($actualCheckIn);
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                         $minutesLate = $expectedCheckIn->diffInMinutes($actualCheckIn);
+                        dd($minutesLate);
                         $totalMinutesLate += $minutesLate;
                     }
                 }
