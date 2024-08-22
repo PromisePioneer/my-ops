@@ -107,6 +107,9 @@ class AttendanceSummaryController extends Controller
             $totalMinutesLate = 0;
             $totalPresent = $items->where('status1', 0)->count(); // Menghitung hari hadir (check-in)
 
+
+            dd($totalPresent);
+
             // Mengelompokkan per hari untuk menghitung keterlambatan harian
             $dailyAttendances = $items->groupBy(function ($item) {
                 return Carbon::parse($item->timestamp)->format('Y-m-d');
