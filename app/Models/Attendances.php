@@ -39,6 +39,8 @@ class Attendances extends Model
             return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
         });
 
+        dd($groupedData);
+
         $formattedData = $this->formatGroupedData1($groupedData);
 
         $paginator->setCollection($formattedData);
@@ -50,9 +52,7 @@ class Attendances extends Model
     {
         return $groupedData->map(function ($items) {
             $checkIn = $items->where('status1', 0)->first();
-            dd($checkIn);
-
-            $checkOut = $items->where('status1', 1)->first();
+            $checkOut = $items->where('status1', 1)->last();
             $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
             $defaultWorkTime = WorkTime::where('id', 1)->first();
             $expectedCheckInTime = $userWorktime ? $userWorktime?->clock_in : $defaultWorkTime?->clock_in;
