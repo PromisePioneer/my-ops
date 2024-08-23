@@ -28,9 +28,9 @@ class Attendances extends Model
         $allData = self::select('attendances.employee_id', 'users.name as user_name', 'attendances.timestamp',
             'attendances.status1', 'work_time.name as work_time')
             ->join('users', 'users.absent_id', '=', 'attendances.employee_id')
+            ->whereNotNull('attendances.employee_id')
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
-            ->whereNotNull('attendances.employee_id')
             ->orderBy('attendances.timestamp', 'DESC')
             ->get();
 
