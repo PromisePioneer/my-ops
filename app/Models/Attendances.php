@@ -116,15 +116,24 @@ class Attendances extends Model
 
     public function getAttendancesPeriod(int $perPage)
     {
+        $baseQuery = self::selectRaw("CONCAT(MONTH(timestamp), '-', YEAR(timestamp)) as waktu, YEAR(timestamp) as year, MONTH(timestamp) as month")
+            ->distinct();
+
+        // Step 2: Create a subquery to get distinct periods
+        $subQuery = $baseQuery->toBase();
+
+        // Step 3: Order the results in a subquery
+        $orderedSubQuery = \DB::table(\DB::raw("({$subQuery->toSql()}) as sub"))
+            ->mergeBindings($subQuery->getQuery()) // Merge bindings from the original query
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc');
+
+        // Step 4: Paginate the results
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
 
-        $query = self::selectRaw("CONCAT(MONTH(timestamp), '-', YEAR(timestamp)) as waktu")
-            ->distinct()
-            ->orderByRaw("YEAR(timestamp) ASC, MONTH(timestamp) ASC");
-
         $paginator = new LengthAwarePaginator(
-            $query->forPage($currentPage, $perPage)->get(),
-            $query->count(),
+            $orderedSubQuery->forPage($currentPage, $perPage)->get(),
+            $orderedSubQuery->count(),
             $perPage,
             $currentPage,
             ['path' => LengthAwarePaginator::resolveCurrentPath()]
