@@ -25,31 +25,26 @@ class Attendances extends Model
 
     public function getAttendanceWithPagination(int $perPage): LengthAwarePaginator
     {
-        $query = self::select(
-            'attendances.employee_id',
-            'users.name as user_name',
-            'attendances.timestamp',
-            'attendances.status1',
-            'work_time.name as work_time'
-        )
+        $allData = self::select('attendances.employee_id', 'users.name as user_name', 'attendances.timestamp',
+            'attendances.status1', 'work_time.name as work_time')
             ->join('users', 'users.absent_id', '=', 'attendances.employee_id')
-            ->join('user_work_time', 'user_work_time.user_id', '=', 'users.id')
-            ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id');
+            ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
+            ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
+            ->orderBy('attendances.timestamp', 'DESC')
+            ->get();
 
-        $allData = $query->get(); // Ambil semua data terlebih dahulu
-
-// Lakukan grouping setelah data diambil
+        // Lakukan grouping setelah data diambil
         $groupedData = $allData->groupBy(function ($item) {
             return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
         });
 
-// Format data yang telah dikelompokkan
+        // Format data yang telah dikelompokkan
         $formattedData = $this->formatGroupedData1($groupedData);
 
-// Baru lakukan paginasi setelah format data
+        // Lakukan paginasi setelah format data
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $perPage = 10;
         $formattedCollection = collect($formattedData);
+
         $paginator = new LengthAwarePaginator(
             $formattedCollection->forPage($currentPage, $perPage),
             $formattedCollection->count(),
