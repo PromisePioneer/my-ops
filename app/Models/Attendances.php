@@ -65,7 +65,7 @@ class Attendances extends Model
                 $defaultWorkTime = WorkTime::where('id', 1)->first();
 
                 // Tentukan waktu check-in yang diharapkan
-                $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
+                $expectedCheckInTime = $userWorktime->clock_in;
                 $expectedCheckIn = Carbon::parse($checkIn->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
                 $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
