@@ -33,7 +33,7 @@ class Attendances extends Model
             'work_time.name as work_time'
         )
             ->join('users', 'users.absent_id', '=', 'attendances.employee_id')
-            ->join('user_work_time', 'user_work_time.user_id', '=', 'users.id')
+            ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
             ->get();
 
