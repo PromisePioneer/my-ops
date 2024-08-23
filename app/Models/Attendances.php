@@ -61,7 +61,7 @@ class Attendances extends Model
 
             if ($checkIn) {
                 // Jika `work_time` null, gunakan jam kerja default
-                $userWorktime = WorkTime::where('name', $checkIn->work_time)->first();
+                $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
                 $defaultWorkTime = WorkTime::where('id', 1)->first();
 
                 // Tentukan waktu check-in yang diharapkan
