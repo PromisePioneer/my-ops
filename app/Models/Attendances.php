@@ -34,7 +34,7 @@ class Attendances extends Model
         )
             ->join('users', 'users.absent_id', '=', 'attendances.employee_id')
             ->join('user_work_time', 'user_work_time.user_id', '=', 'users.id')
-            ->join('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
+            ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
             ->orderBy('attendances.timestamp', 'DESC');
 
         $paginator = $query->paginate($perPage);
