@@ -63,6 +63,10 @@ class Attendances extends Model
             $checkIn = $items->where('status1', 0)->first(); // Data Check-In
             $checkOut = $items->where('status1', 1)->last(); // Data Check-Out
 
+            if (is_null($checkIn)) {
+                return null;
+            }
+
             // Jika `work_time` null, gunakan jam kerja default
             $userWorktime = WorkTime::where('name', $checkIn->work_time ?? 'Default')->first();
             $defaultWorkTime = WorkTime::where('id', 1)->first();
