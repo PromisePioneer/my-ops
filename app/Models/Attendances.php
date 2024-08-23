@@ -63,7 +63,7 @@ class Attendances extends Model
             $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
 
             return [
-                'name' => $checkIn?->user_name,
+                'name' => $checkIn->user_name,
                 'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
                 'date' => Carbon::parse($checkIn?->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
                 'employee_id' => $checkIn?->employee_id,
