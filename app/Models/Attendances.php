@@ -210,7 +210,7 @@ class Attendances extends Model
         $year,
         int $perPage
     ): LengthAwarePaginator {
-        $attendances = self::join('users', 'users.absent_id', '=', 'attendances.employee_id')
+        return self::join('users', 'users.absent_id', '=', 'attendances.employee_id')
             ->leftJoin('branches', 'branches.id', '=', 'users.branch_id')
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
@@ -226,14 +226,6 @@ class Attendances extends Model
             ->groupBy(function ($item) {
                 return $item->user_name;
             });
-
-        $formattedData = $this->formatGroupedDataForAttendancesSummary($attendances, $month, $year);
-        $paginator = new LengthAwarePaginator($formattedData->forPage(Paginator::resolveCurrentPage(), $perPage),
-            $formattedData->count(), $perPage);
-
-        $paginator->withPath(url("adms/attendances-summary/detail/data/01-{$month}-{$year}"));
-
-        return $paginator;
     }
 
 
