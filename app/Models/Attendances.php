@@ -75,7 +75,7 @@ class Attendances extends Model
             return [
                 'name' => $checkIn?->user_name,
                 'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
-                'date' => Carbon::parse($checkIn->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                'date' => Carbon::parse($checkIn?->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
                 'employee_id' => $checkIn->employee_id,
                 'checkin_time' => $actualCheckIn->format('H:i'),
                 'late_checkin' => $minutesLate,
