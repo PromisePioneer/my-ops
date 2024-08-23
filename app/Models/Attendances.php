@@ -116,12 +116,20 @@ class Attendances extends Model
 
     public function getAttendancesPeriod(int $perPage)
     {
-        // Use DB Query Builder to ensure the correct application of pagination
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+
         $query = self::selectRaw("CONCAT(MONTH(timestamp), '-', YEAR(timestamp)) as waktu")
             ->distinct();
 
-        // Paginate the results
-        return $query->paginate($perPage);
+        $paginator = new LengthAwarePaginator(
+            $query->forPage($currentPage, $perPage)->get(),
+            $query->count(),
+            $perPage,
+            $currentPage,
+            ['path' => LengthAwarePaginator::resolveCurrentPath()]
+        );
+
+        return $paginator;
     }
 
     public function getAttendancesBasedOnPeriod(string $month, string $year, int $perPage): LengthAwarePaginator
