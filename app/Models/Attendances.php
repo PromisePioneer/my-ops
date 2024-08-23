@@ -56,6 +56,8 @@ class Attendances extends Model
     private function formatGroupedData1($groupedData)
     {
         return $groupedData->map(function ($items) {
+            dd($items);
+
             $checkIn = $items->where('status1', 0)->first(); // Data Check-In
             $checkOut = $items->where('status1', 1)->last(); // Data Check-Out
 
