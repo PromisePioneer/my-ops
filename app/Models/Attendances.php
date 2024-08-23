@@ -50,6 +50,8 @@ class Attendances extends Model
     {
         return $groupedData->map(function ($items) {
             $checkIn = $items->where('status1', 0)->first();
+            dd($checkIn);
+
             $checkOut = $items->where('status1', 1)->first();
             $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
             $defaultWorkTime = WorkTime::where('id', 1)->first();
@@ -62,7 +64,7 @@ class Attendances extends Model
             $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
 
             return [
-                'name' => $checkIn?->user_name,
+                'name' => $checkIn->user_name,
                 'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
                 'date' => Carbon::parse($checkIn?->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
                 'employee_id' => $checkIn?->employee_id,
