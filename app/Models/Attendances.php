@@ -25,8 +25,13 @@ class Attendances extends Model
 
     public function getAttendanceWithPagination(int $perPage): LengthAwarePaginator
     {
-        $query = self::select('attendances.employee_id', 'users.name as user_name', 'attendances.timestamp',
-            'attendances.status1', 'work_time.name as work_time')
+        $query = self::select(
+            'attendances.employee_id',
+            'users.name as user_name',
+            'attendances.timestamp',
+            'attendances.status1',
+            'work_time.name as work_time'
+        )
             ->join('users', 'users.absent_id', '=', 'attendances.employee_id')
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
@@ -39,9 +44,10 @@ class Attendances extends Model
             return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
         });
 
-
+        // Format data yang telah dikelompokkan
         $formattedData = $this->formatGroupedData1($groupedData);
 
+        // Set collection kembali ke paginator dengan data yang telah diformat
         $paginator->setCollection($formattedData);
 
         return $paginator->withPath(url('/adms/attendances/data'));
@@ -50,32 +56,36 @@ class Attendances extends Model
     private function formatGroupedData1($groupedData)
     {
         return $groupedData->map(function ($items) {
-            $checkIn = $items->where('status1', 0)->first();
-            $checkOut = $items->where('status1', 1)->last();
+            $checkIn = $items->where('status1', 0)->first(); // Data Check-In
+            $checkOut = $items->where('status1', 1)->last(); // Data Check-Out
 
             if ($checkIn) {
-                $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
+                // Jika `work_time` null, gunakan jam kerja default
+                $userWorktime = WorkTime::where('name', $checkIn->work_time)->first();
                 $defaultWorkTime = WorkTime::where('id', 1)->first();
-                $expectedCheckInTime = $userWorktime ? $userWorktime?->clock_in : $defaultWorkTime?->clock_in;
 
-                $expectedCheckIn = Carbon::parse($checkIn?->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+                // Tentukan waktu check-in yang diharapkan
+                $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
+                $expectedCheckIn = Carbon::parse($checkIn->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
                 $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
-                $actualCheckIn = Carbon::parse($checkIn?->timestamp);
+                // Hitung keterlambatan (dalam menit)
+                $actualCheckIn = Carbon::parse($checkIn->timestamp);
                 $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
 
                 return [
                     'name' => $checkIn->user_name,
                     'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
-                    'date' => Carbon::parse($checkIn?->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
-                    'employee_id' => $checkIn?->employee_id,
+                    'date' => Carbon::parse($checkIn->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                    'employee_id' => $checkIn->employee_id,
                     'checkin_time' => $actualCheckIn->format('H:i'),
-                    'late_checkin' => (int) $minutesLate,
+                    'late_checkin' => $minutesLate,
                     'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
                 ];
             }
+
             return null;
-        })->filter()->values();
+        })->filter()->values(); // Filter data yang null dan reset indeks array
     }
 
     public function getAttendancesDataBasedOnUserId(int $perPage, int $absentId): LengthAwarePaginator
