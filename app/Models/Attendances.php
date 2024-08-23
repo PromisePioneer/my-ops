@@ -50,6 +50,7 @@ class Attendances extends Model
     private function formatGroupedData1($groupedData)
     {
         return $groupedData->map(function ($items) {
+            dd($items);
             $checkIn = $items->where('status1', 0)->first();
             $checkOut = $items->where('status1', 1)->last();
             $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
