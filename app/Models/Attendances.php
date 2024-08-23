@@ -38,9 +38,6 @@ class Attendances extends Model
             return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
         });
 
-
-        dd($groupedData);
-
         // Format data yang telah dikelompokkan
         $formattedData = $this->formatGroupedData1($groupedData);
 
