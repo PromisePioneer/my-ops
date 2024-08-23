@@ -56,8 +56,6 @@ class Attendances extends Model
     private function formatGroupedData1($groupedData)
     {
         return $groupedData->map(function ($items) {
-            dd($items);
-
             $checkIn = $items->where('status1', 0)->first(); // Data Check-In
             $checkOut = $items->where('status1', 1)->last(); // Data Check-Out
 
@@ -75,7 +73,7 @@ class Attendances extends Model
             $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
 
             return [
-                'name' => $checkIn->user_name,
+                'name' => $checkIn?->user_name,
                 'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
                 'date' => Carbon::parse($checkIn->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
                 'employee_id' => $checkIn->employee_id,
