@@ -65,11 +65,11 @@ class Attendances extends Model
 
             // Tentukan waktu check-in yang diharapkan
             $expectedCheckInTime = $userWorktime->clock_in;
-            $expectedCheckIn = Carbon::parse($checkIn->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+            $expectedCheckIn = Carbon::parse($checkIn?->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
             $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
             // Hitung keterlambatan (dalam menit)
-            $actualCheckIn = Carbon::parse($checkIn->timestamp);
+            $actualCheckIn = Carbon::parse($checkIn?->timestamp);
             $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
 
             return [
