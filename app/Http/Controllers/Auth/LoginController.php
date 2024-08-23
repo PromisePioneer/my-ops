@@ -3,7 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Auth;
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 
 class LoginController extends Controller
 {
@@ -39,5 +45,22 @@ class LoginController extends Controller
     public function username(): string
     {
         return 'nip';
+    }
+
+
+    public function authenticated(Request $request, User $user): RedirectResponse|Redirector|Application
+    {
+        if (Auth::user()->status_active === 'Tidak Aktif') {
+            Auth::logout();
+            return redirect('login')->withErrors(['Your account is inactive']);
+        }
+
+
+        if ($user->hasAnyRole('Technichian', 'Accounting', 'Stocker', 'WKCA', 'KCA', 'NOC')) {
+            return redirect('/utility/user-profile/profile-detail');
+        }
+
+
+        return redirect()->intended($this->redirectTo);
     }
 }

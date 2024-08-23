@@ -3,6 +3,7 @@
 @section('content')
     <div x-data="fpDevicesData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
+            @include('pages.adms.fp-devices.modal.create')
             @include('pages.adms.fp-devices.modal.edit')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -16,6 +17,14 @@
                 </div>
             </div>
             <div class="card-body py-3">
+                <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                    <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#modal-create">
+                            Tambah
+                        </button>
+                    </div>
+                </div>
                 <div class="py-5">
                     <div class="table-responsive">
                         <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">

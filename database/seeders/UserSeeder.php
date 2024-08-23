@@ -29,16 +29,5 @@ class UserSeeder extends Seeder
             'branch_id' => null,
             'placement' => 'Pusat',
         ]);
-
-        User::factory()->create([
-            'absent_id' => $faker->unique()->randomNumber(3),
-            'nip' => 123,
-            'join_date' => $faker->date(),
-            'name' => 'Hi',
-            'email' => 'hi@mayatama.com',
-            'password' => Hash::make('12345678'),
-            'branch_id' => null,
-            'placement' => 'Pusat',
-        ]);
     }
 }

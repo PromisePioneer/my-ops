@@ -215,4 +215,15 @@ class UserController extends Controller
             'message' => 'Data berhasil diimport',
         ]);
     }
+
+
+    public function changeStatusActive(User $user): JsonResponse
+    {
+        $user->active = !$user->active;
+        $user->save();
+
+        return response()->json([
+            'message' => 'data sukses diupdate!',
+        ]);
+    }
 }

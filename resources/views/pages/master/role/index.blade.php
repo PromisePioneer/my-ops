@@ -112,15 +112,15 @@
                 async nextPage() {
                     if (this.roles.next_page_url) {
                         const resp = await axios.get(`${this.roles.next_page_url}`);
-                        this.startIndex = this.resp.from
                         this.roles = resp.data
+                        this.startIndex = this.roles.from
                     }
                 },
                 async previousPage() {
                     if (this.roles.prev_page_url) {
                         const resp = await axios.get(`${this.roles.prev_page_url}`);
-                        this.startIndex = this.resp.from
                         this.roles = resp.data
+                        this.startIndex = this.roles.from
                     }
                 },
                 async destroy(id) {

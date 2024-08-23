@@ -13,7 +13,7 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', static function (Blueprint $table) {
             $table->id();
-            $table->string('absent_id')->nullable();
+            $table->string('absent_id')->unique();
             $table->integer('pri')->default(0);
             $table->enum('placement', ['Pusat', 'Cabang'])->default('Pusat');
             $table->unsignedBigInteger('branch_id')->nullable();
@@ -24,14 +24,15 @@ class CreateUsersTable extends Migration
             $table->string('vice_card')->nullable();
             $table->dateTime('start_datetime')->nullable();
             $table->dateTime('end_datetime')->nullable();
-            $table->string('nip')->unique()->nullable();
-            $table->string('name')->nullable();
-            $table->date('join_date')->nullable();
+            $table->string('nip')->unique();
+            $table->string('name');
+            $table->date('join_date');
             $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->dateTime('last_login')->nullable();
             $table->string('profile_pic')->nullable();
+            $table->boolean('active')->default(true);
             $table->rememberToken();
             $table->timestamps();
 

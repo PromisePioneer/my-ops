@@ -58,6 +58,7 @@
                                 </th>
                                 <th class="min-w-125px">Kode</th>
                                 <th class="min-w-125px">Nama</th>
+                                <th class="min-w-125px">Alamat</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
@@ -93,6 +94,7 @@
                                         <a :href="`/master/branch/structure-orgranization/${branch.id}`"
                                            x-text="branch.name"></a>
                                     </td>
+                                    <td x-text="branch.address"></td>
                                     <td>
                                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(branch.id)">

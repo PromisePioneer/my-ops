@@ -21,6 +21,12 @@
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
                                placeholder="Nama Cabang"/>
                     </div>
+
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Alamat</label>
+                        <textarea class="form-control form-control-solid" name="address" id="address"
+                                  data-kt-autosize="true" placeholder="Alamat Cabang"></textarea>
+                    </div>
                 </div>
 
                 <div class="modal-footer">

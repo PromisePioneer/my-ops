@@ -16,8 +16,8 @@ class PermissionSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $kacabRole = Role::where('name', 'Kepala Cabang')->firstOrFail();
-        $accountant = Role::where('name', 'Accountant')->firstOrFail();
+        $kacabRole = Role::where('name', 'Manager Cabang')->firstOrFail();
+        $accountant = Role::where('name', 'Accounting')->firstOrFail();
         $directorRole = Role::where('name', 'Direktur')->firstOrFail();
         $financeManagerRole = Role::where('name', 'Manager Keuangan')->firstOrFail();
 

@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             UnitTypesSeeder::class,
             PositionSeeder::class,
             WorkTimeSeeder::class,
-            SpSeeder::class,
+//            SpSeeder::class,
 //            AttendancesSeeder::class
         ]);
     }

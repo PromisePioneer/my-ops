@@ -11,7 +11,7 @@
                         <span class="svg-icon svg-icon-1 position-absolute ms-6">
                            <i class="bi bi-search"></i>
                         </span>
-                        <input type="text" name="search" x-model="search" @input.debounce="searchData"
+                        <input type="text" name="search" x-model="search" @input.debounce="searchData()"
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
                 </div>
@@ -69,7 +69,7 @@
                             <th class="w-10px pe-2">
                                 No
                             </th>
-                            <th class="min-w-125px">User</th>
+                            <th class="min-w-125px">Karyawan</th>
                             <th class="min-w-125px">Role</th>
                             <th class="min-w-125px">Actions</th>
                         </thead>
@@ -119,6 +119,16 @@
                                     <button class="btn btn-danger btn-sm" @click="destroy(user.id)">
                                         <i class="bi bi-trash"></i>
                                     </button>
+                                    <template x-if="user.active === 1">
+                                        <button class="btn btn-danger btn-sm" @click="changeActiveStatus(user.id)">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                        </button>
+                                    </template>
+                                    <template x-if="user.active === 0">
+                                        <button class="btn btn-success btn-sm" @click="changeActiveStatus(user.id)">
+                                            <i class="bi bi-check-square-fill"></i>
+                                        </button>
+                                    </template>
                                 </td>
                             </tr>
                         </template>
@@ -223,6 +233,18 @@
                     } finally {
                         this.buttonLoading = false;
                     }
+                },
+                async changeActiveStatus(id) {
+                    this.buttonLoading = true;
+                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                        try {
+                            await axios.post(`/manage-users/users/change-status/${id}`);
+                            await showAlert('success', 'Data sukses dihapus');
+                            await this.init();
+                        } catch (error) {
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
                 },
             }
         }

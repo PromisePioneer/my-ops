@@ -94,6 +94,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/update/{user}', [UserController::class, 'update']);
             Route::delete('/{user}', [UserController::class, 'destroy']);
             Route::post('/import', [UserController::class, 'import']);
+            Route::post('/change-status/{user}', [UserController::class, 'changeStatusActive']);
         });
 
 

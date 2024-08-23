@@ -101,9 +101,7 @@ class Attendances extends Model
 
     public function getAttendancesPeriod(int $perPage): LengthAwarePaginator
     {
-        return self::selectRaw("CONCAT(MONTH(timestamp), '-', YEAR(timestamp)) as waktu")
-            ->distinct()
-            ->paginate($perPage);
+        return self::selectRaw("CONCAT(MONTH(timestamp), '-', YEAR(timestamp)) as waktu")->distinct()->paginate($perPage);
     }
 
 
@@ -146,19 +144,21 @@ class Attendances extends Model
 
             foreach ($dailyAttendances as $day => $dailyItems) {
                 $checkIn = $dailyItems->where('status1', 0)->first();
-                $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
-                $defaultWorkTime = WorkTime::where('id', 1)->first();
-                $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
+                if ($checkIn) {
+                    $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
+                    $defaultWorkTime = WorkTime::where('id', 1)->first();
+                    $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
 
-                // Combine the date of check-in with the expected time
-                $expectedCheckIn = Carbon::parse($checkIn?->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
-                $expectedCheckIn = Carbon::parse($expectedCheckIn);
+                    // Combine the date of check-in with the expected time
+                    $expectedCheckIn = Carbon::parse($checkIn?->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+                    $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
-                // Calculate lateness in minutes for that day
-                $actualCheckIn = Carbon::parse($checkIn?->timestamp);
-                if ($actualCheckIn->greaterThan($expectedCheckIn)) {
-                    $minutesLate = $expectedCheckIn->diffInMinutes($actualCheckIn);
-                    $totalMinutesLate += $minutesLate;
+                    // Calculate lateness in minutes for that day
+                    $actualCheckIn = Carbon::parse($checkIn?->timestamp);
+                    if ($actualCheckIn->greaterThan($expectedCheckIn)) {
+                        $minutesLate = $expectedCheckIn->diffInMinutes($actualCheckIn);
+                        $totalMinutesLate += $minutesLate;
+                    }
                 }
             }
 
@@ -245,7 +245,7 @@ class Attendances extends Model
     ): LengthAwarePaginator {
         $query = self::select('attendances.employee_id', 'users.name as user_name', 'attendances.timestamp',
             'attendances.status1', 'work_time.name as work_time')
-            ->leftJoin('users', 'users.absent_id', '=', 'attendances.employee_id')
+            ->join('users', 'users.absent_id', '=', 'attendances.employee_id')
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
             ->whereMonth('attendances.timestamp', $month)
