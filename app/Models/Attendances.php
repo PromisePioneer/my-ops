@@ -33,12 +33,12 @@ class Attendances extends Model
             'work_time.name as work_time'
         )
             ->join('users', 'users.absent_id', '=', 'attendances.employee_id')
-            ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
+            ->join('user_work_time', 'user_work_time.user_id', '=', 'users.id')
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
-            ->get()->take(50);
+            ->get()
+            ->orderBy('attendances.timestamp', 'DESC');
 
-
-        dd($query);
+        $paginator = $query->paginate($perPage);
 
         // Lakukan grouping setelah data diambil untuk page tertentu
         $groupedData = $paginator->getCollection()->groupBy(function ($item) {
