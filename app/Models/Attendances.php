@@ -51,26 +51,29 @@ class Attendances extends Model
         return $groupedData->map(function ($items) {
             $checkIn = $items->where('status1', 0)->first();
             $checkOut = $items->where('status1', 1)->first();
+            if ($checkIn) {
+                $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
+                $defaultWorkTime = WorkTime::where('id', 1)->first();
+                $expectedCheckInTime = $userWorktime ? $userWorktime?->clock_in : $defaultWorkTime?->clock_in;
 
-            $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
-            $defaultWorkTime = WorkTime::where('id', 1)->first();
-            $expectedCheckInTime = $userWorktime ? $userWorktime?->clock_in : $defaultWorkTime?->clock_in;
+                $expectedCheckIn = Carbon::parse($checkIn?->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+                $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
-            $expectedCheckIn = Carbon::parse($checkIn?->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
-            $expectedCheckIn = Carbon::parse($expectedCheckIn);
+                $actualCheckIn = Carbon::parse($checkIn?->timestamp);
+                $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
 
-            $actualCheckIn = Carbon::parse($checkIn?->timestamp);
-            $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
+                return [
+                    'name' => $checkIn->user_name,
+                    'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
+                    'date' => Carbon::parse($checkIn?->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                    'employee_id' => $checkIn?->employee_id,
+                    'checkin_time' => $actualCheckIn->format('H:i'),
+                    'late_checkin' => (int) $minutesLate,
+                    'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
+                ];
+            }
 
-            return [
-                'name' => $checkIn->user_name,
-                'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
-                'date' => Carbon::parse($checkIn?->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
-                'employee_id' => $checkIn?->employee_id,
-                'checkin_time' => $actualCheckIn->format('H:i'),
-                'late_checkin' => (int) $minutesLate,
-                'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
-            ];
+            return null;
         })->filter()->values();
     }
 
@@ -210,7 +213,7 @@ class Attendances extends Model
         $year,
         int $perPage
     ): LengthAwarePaginator {
-        return self::join('users', 'users.absent_id', '=', 'attendances.employee_id')
+        $attendances = self::join('users', 'users.absent_id', '=', 'attendances.employee_id')
             ->leftJoin('branches', 'branches.id', '=', 'users.branch_id')
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
@@ -226,6 +229,14 @@ class Attendances extends Model
             ->groupBy(function ($item) {
                 return $item->user_name;
             });
+
+        $formattedData = $this->formatGroupedDataForAttendancesSummary($attendances, $month, $year);
+        $paginator = new LengthAwarePaginator($formattedData->forPage(Paginator::resolveCurrentPage(), $perPage),
+            $formattedData->count(), $perPage);
+
+        $paginator->withPath(url("adms/attendances-summary/detail/data/01-{$month}-{$year}"));
+
+        return $paginator;
     }
 
 
@@ -238,11 +249,11 @@ class Attendances extends Model
         $query = self::select('attendances.employee_id', 'users.name as user_name', 'attendances.timestamp',
             'attendances.status1', 'work_time.name as work_time')
             ->join('users', 'users.absent_id', '=', 'attendances.employee_id')
+            ->where('attendances.employee_id', $employeeId)
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
             ->whereMonth('attendances.timestamp', $month)
-            ->whereYear('attendances.timestamp', $year)
-            ->where('attendances.employee_id', $employeeId);
+            ->whereYear('attendances.timestamp', $year);
 
 
         $paginator = $query->paginate($perPage);
