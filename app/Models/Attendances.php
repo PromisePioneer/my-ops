@@ -119,7 +119,8 @@ class Attendances extends Model
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
 
         $query = self::selectRaw("CONCAT(MONTH(timestamp), '-', YEAR(timestamp)) as waktu")
-            ->distinct();
+            ->distinct()
+            ->orderByRaw("YEAR(timestamp) ASC, MONTH(timestamp) ASC");
 
         $paginator = new LengthAwarePaginator(
             $query->forPage($currentPage, $perPage)->get(),
