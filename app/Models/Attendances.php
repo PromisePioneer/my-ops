@@ -39,44 +39,39 @@ class Attendances extends Model
             return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
         });
 
-        $formattedData = $this->formatGroupedData($groupedData);
+        $formattedData = $this->formatGroupedData1($groupedData);
 
         $paginator->setCollection($formattedData);
 
         return $paginator->withPath(url('/adms/attendances/data'));
     }
 
-    private function formatGroupedData($groupedData)
+    private function formatGroupedData1($groupedData)
     {
         return $groupedData->map(function ($items) {
             $checkIn = $items->where('status1', 0)->first();
             $checkOut = $items->where('status1', 1)->first();
-            if ($checkIn) {
-                $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
-                $defaultWorkTime = WorkTime::where('id', 1)->first();
-                $expectedCheckInTime = $userWorktime ? $userWorktime?->clock_in : $defaultWorkTime?->clock_in;
+            $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
+            $defaultWorkTime = WorkTime::where('id', 1)->first();
+            $expectedCheckInTime = $userWorktime ? $userWorktime?->clock_in : $defaultWorkTime?->clock_in;
 
-                $expectedCheckIn = Carbon::parse($checkIn?->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
-                $expectedCheckIn = Carbon::parse($expectedCheckIn);
+            $expectedCheckIn = Carbon::parse($checkIn?->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+            $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
-                $actualCheckIn = Carbon::parse($checkIn?->timestamp);
-                $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
+            $actualCheckIn = Carbon::parse($checkIn?->timestamp);
+            $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
 
-                return [
-                    'name' => $checkIn->user_name,
-                    'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
-                    'date' => Carbon::parse($checkIn?->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
-                    'employee_id' => $checkIn?->employee_id,
-                    'checkin_time' => $actualCheckIn->format('H:i'),
-                    'late_checkin' => (int) $minutesLate,
-                    'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
-                ];
-            }
-
-            return null;
+            return [
+                'name' => $checkIn->user_name,
+                'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
+                'date' => Carbon::parse($checkIn?->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                'employee_id' => $checkIn?->employee_id,
+                'checkin_time' => $actualCheckIn->format('H:i'),
+                'late_checkin' => (int) $minutesLate,
+                'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
+            ];
         })->filter()->values();
     }
-
 
     public function getAttendancesDataBasedOnUserId(int $perPage, int $absentId): LengthAwarePaginator
     {
@@ -86,7 +81,6 @@ class Attendances extends Model
         self::formattedAbsentDataBasedOnUserId($query);
         return $query;
     }
-
 
     private static function formattedAbsentDataBasedOnUserId(LengthAwarePaginator $attedancesData): void
     {
@@ -101,12 +95,10 @@ class Attendances extends Model
         $attedancesData->setCollection($formattedAttendances);
     }
 
-
     public function getAttendancesPeriod(int $perPage): LengthAwarePaginator
     {
         return self::selectRaw("CONCAT(MONTH(timestamp), '-', YEAR(timestamp)) as waktu")->distinct()->paginate($perPage);
     }
-
 
     public function getAttendancesBasedOnPeriod(string $month, string $year, int $perPage): LengthAwarePaginator
     {
@@ -205,7 +197,6 @@ class Attendances extends Model
         return $this->formatGroupedDataForAttendancesSummary($groupedAttendances, null, null);
     }
 
-
     public function filterAttendancesSummaryByDate(
         $startDate,
         $endDate,
@@ -239,7 +230,6 @@ class Attendances extends Model
         return $paginator;
     }
 
-
     public function attendanceSummaryDetailForOneMonthBasedOnUserId(
         string $month,
         string $year,
@@ -268,6 +258,37 @@ class Attendances extends Model
         $paginator->setCollection($formattedData);
 
         return $paginator;
+    }
+
+    private function formatGroupedData($groupedData)
+    {
+        return $groupedData->map(function ($items) {
+            $checkIn = $items->where('status1', 0)->first();
+            $checkOut = $items->where('status1', 1)->first();
+            if ($checkIn) {
+                $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
+                $defaultWorkTime = WorkTime::where('id', 1)->first();
+                $expectedCheckInTime = $userWorktime ? $userWorktime?->clock_in : $defaultWorkTime?->clock_in;
+
+                $expectedCheckIn = Carbon::parse($checkIn?->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+                $expectedCheckIn = Carbon::parse($expectedCheckIn);
+
+                $actualCheckIn = Carbon::parse($checkIn?->timestamp);
+                $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
+
+                return [
+                    'name' => $checkIn->user_name,
+                    'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
+                    'date' => Carbon::parse($checkIn?->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                    'employee_id' => $checkIn?->employee_id,
+                    'checkin_time' => $actualCheckIn->format('H:i'),
+                    'late_checkin' => (int) $minutesLate,
+                    'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
+                ];
+            }
+
+            return null;
+        })->filter()->values();
     }
 
 }
