@@ -71,7 +71,7 @@ class Attendances extends Model
                 'late_checkin' => (int) $minutesLate,
                 'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
             ];
-        })->values();
+        })->filter()->values();
     }
 
     public function getAttendancesDataBasedOnUserId(int $perPage, int $absentId): LengthAwarePaginator
