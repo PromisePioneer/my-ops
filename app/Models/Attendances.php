@@ -86,7 +86,7 @@ class Attendances extends Model
                 'date' => Carbon::parse($checkIn?->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
                 'employee_id' => $checkIn->employee_id ?? null,
                 'checkin_time' => $actualCheckIn->format('H:i'),
-                'late_checkin' => $minutesLate,
+                'late_checkin' => (int) $minutesLate,
                 'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
             ];
         })->filter()->values(); // Filter data yang null dan reset indeks array
