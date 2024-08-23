@@ -36,20 +36,29 @@ class Attendances extends Model
             ->join('user_work_time', 'user_work_time.user_id', '=', 'users.id')
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id');
 
-        $paginator = $query->paginate($perPage);
+        $allData = $query->get(); // Ambil semua data terlebih dahulu
 
-        // Lakukan grouping setelah data diambil untuk page tertentu
-        $groupedData = $paginator->getCollection()->groupBy(function ($item) {
+// Lakukan grouping setelah data diambil
+        $groupedData = $allData->groupBy(function ($item) {
             return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
         });
 
-        // Format data yang telah dikelompokkan
+// Format data yang telah dikelompokkan
         $formattedData = $this->formatGroupedData1($groupedData);
 
-        // Set collection kembali ke paginator dengan data yang telah diformat
-        $paginator->setCollection($formattedData);
+// Baru lakukan paginasi setelah format data
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $perPage = 10;
+        $formattedCollection = collect($formattedData);
+        $paginator = new LengthAwarePaginator(
+            $formattedCollection->forPage($currentPage, $perPage),
+            $formattedCollection->count(),
+            $perPage,
+            $currentPage,
+            ['path' => url('/adms/attendances/data')]
+        );
 
-        return $paginator->withPath(url('/adms/attendances/data'));
+        return $paginator;
     }
 
     private function formatGroupedData1($groupedData)
