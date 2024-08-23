@@ -141,7 +141,9 @@ class BranchesController extends Controller
     public function destroy(Request $request, Branch $branch): JsonResponse
     {
         $this->authorize('delete', $branch);
-        Branch::whereIn('id', [(string) $request->get('id')])->delete();
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $branch->whereIn('id', $explodeID)->delete();
         return response()->json([
             'message' => 'data berhasil dihapus',
         ], 200);
