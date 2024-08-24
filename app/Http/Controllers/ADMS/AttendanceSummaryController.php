@@ -87,7 +87,7 @@ class AttendanceSummaryController extends Controller
     public function attendanceSummaryDetailForOneMonthBasedOnUserId($month, $year, $employeeId): JsonResponse
     {
         $attendances = $this->attendances->attendanceSummaryDetailForOneMonthBasedOnUserId($month, $year,
-            $employeeId, 10);
+            $employeeId, 1);
 
 
         $totalPresentAndTotalMinutesLate = Attendances::select('attendances.employee_id', 'users.name as user_name',
