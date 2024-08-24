@@ -212,15 +212,15 @@
                 },
 
                 async nextPageForUserSummary() {
-                    if (this.usersDetail.next_page_url) {
-                        const resp = await axios.get(`${this.usersDetail.next_page_url}`);
+                    if (this.usersDetail?.data.next_page_url) {
+                        const resp = await axios.get(`${this.usersDetail.data.next_page_url}`);
                         this.usersDetail = resp.data.data
                         this.startIndex = this.usersDetail.from
                     }
                 },
                 async previousPageForUserSummary() {
-                    if (this.usersDetail.prev_page_url) {
-                        const resp = await axios.get(`${this.usersDetail.prev_page_url}`);
+                    if (this.usersDetail?.data.prev_page_url) {
+                        const resp = await axios.get(`${this.usersDetail.data.prev_page_url}`);
                         this.usersDetail = resp.data.data
                         this.startIndex = this.usersDetail.from
                     }
