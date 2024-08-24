@@ -202,7 +202,7 @@ class Attendances extends Model
         })->values();
     }
 
-    public function searchAttendancesSummary(Request $request)
+    public function searchAttendancesSummary(Request $request, $month, $year)
     {
         $search = $request->input('search');
 
@@ -211,7 +211,10 @@ class Attendances extends Model
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
             ->select('users.nip as user_nip', 'users.name as user_name', 'attendances.timestamp', 'attendances.status1',
-                'work_time.name as work_time', 'attendances.employee_id');
+                'work_time.name as work_time', 'attendances.employee_id')
+            ->whereMonth('attendances.timestamp', $month)
+            ->whereYear('attendances.timestamp', $year);
+
 
         if ($search) {
             $query->where('users.name', 'like', '%'.$search.'%')

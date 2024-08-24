@@ -93,11 +93,11 @@ class AttendanceSummaryController extends Controller
         $totalPresentAndTotalMinutesLate = Attendances::select('attendances.employee_id', 'users.name as user_name',
             'attendances.timestamp', 'attendances.status1', 'work_time.name as work_time', 'users.nip as user_nip')
             ->join('users', 'users.absent_id', '=', 'attendances.employee_id')
+            ->where('users.absent_id', $employeeId)
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
             ->whereMonth('attendances.timestamp', $month)
             ->whereYear('attendances.timestamp', $year)
-            ->where('users.absent_id', $employeeId)
             ->get()
             ->groupBy(function ($item) {
                 return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
