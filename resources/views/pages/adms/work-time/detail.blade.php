@@ -70,7 +70,10 @@
                                 <tr>
                                     <td x-text="startIndex + index++"></td>
                                     <td x-text="user.user.nip"></td>
-                                    <td x-text="user.user.name"></td>
+                                    <td>
+                                        <a :href="`/manage-users/users/detail/${user.user_id}`"
+                                           x-text="user.user.name"></a>
+                                    </td>
                                     <td>
                                         <span class="badge bg-danger"
                                               x-text="user.user.roles[0]?.name ?? 'Tidak Ada'"></span>
