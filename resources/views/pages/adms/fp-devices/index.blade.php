@@ -129,15 +129,15 @@
                 async nextPage() {
                     if (this.devices.next_page_url) {
                         const resp = await axios.get(`${this.devices.next_page_url}`);
-                        this.startIndex = this.devices.from
                         this.devices = resp.data
+                        this.startIndex = this.devices.from
                     }
                 },
                 async previousPage() {
                     if (this.devices.prev_page_url) {
                         const resp = await axios.get(`${this.devices.prev_page_url}`);
-                        this.startIndex = this.devices.from
                         this.devices = resp.data
+                        this.startIndex = this.devices.from
                     }
                 },
                 async save() {
