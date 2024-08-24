@@ -74,7 +74,7 @@
 
                 <div class="mt-4">
                     <h6>
-                        Total Kehadiran : <span x-text="usersDetail?.summary_data?.total_present"></span>
+                        Total Kehadiran : <span x-text="usersDetail?.total_present"></span>
                     </h6>
                     <h6>
                         Total Terlambat : <span x-text="usersDetail?.summary_data?.totalMinutesLate"></span>
