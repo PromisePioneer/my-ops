@@ -114,7 +114,7 @@ class Attendances extends Model
         $attedancesData->setCollection($formattedAttendances);
     }
 
-    public function getAttendancesPeriod(int $perPage)
+    public function getAttendancesPeriod(int $perPage): LengthAwarePaginator
     {
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
 
