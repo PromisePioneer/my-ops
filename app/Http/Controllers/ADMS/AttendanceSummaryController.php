@@ -108,8 +108,6 @@ class AttendanceSummaryController extends Controller
 
         $summaryData = $totalPresentAndTotalMinutesLate->map(function ($items) {
             $totalMinutesLate = 0;
-
-
             // Mengelompokkan per hari untuk menghitung keterlambatan harian
             $dailyAttendances = $items->groupBy(function ($item) {
                 return Carbon::parse($item->timestamp)->format('Y-m-d');
@@ -146,6 +144,7 @@ class AttendanceSummaryController extends Controller
 
         return response()->json([
             'data' => $attendances,
+            'total_present' => $totalPresent,
             'summary_data' => $summaryData[0]
         ]);
     }
