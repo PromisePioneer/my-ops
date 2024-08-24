@@ -209,7 +209,6 @@
                 async getAttendanceSummaryDetailForEachUser() {
                     const resp = await axios.get(`/adms/attendances-summary/detail/data/user/detail/${this.month}/${this.year}/${this.userId}`);
                     this.usersDetail = resp.data;
-                    console.log(usersDetail?.total_present);
                 },
 
                 async nextPageForUserSummary() {
