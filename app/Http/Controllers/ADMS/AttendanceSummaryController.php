@@ -52,9 +52,9 @@ class AttendanceSummaryController extends Controller
         return response()->json($this->attendances->getAttendancesBasedOnPeriod($month, $year, $this->perPage));
     }
 
-    public function searchDetailData(Request $request): JsonResponse
+    public function searchDetailData(Request $request, $month, $year): JsonResponse
     {
-        return response()->json($this->attendances->searchAttendancesSummary($request));
+        return response()->json($this->attendances->searchAttendancesSummary($request, $month, $year));
     }
 
 

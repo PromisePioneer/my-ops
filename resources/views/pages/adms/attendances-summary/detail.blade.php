@@ -161,7 +161,7 @@
                 },
                 async searchData() {
                     try {
-                        this.attendances = await axios.get('/adms/attendances-summary/detail/data/search', {
+                        this.attendances = await axios.get(`/adms/attendances-summary/detail/data/search/01-${this.month}-${this.year}`, {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
