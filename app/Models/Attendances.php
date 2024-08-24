@@ -281,7 +281,8 @@ class Attendances extends Model
             ->whereYear('attendances.timestamp', $year);
 
 
-        $paginator = $query->paginate($perPage);
+        $paginator = new LengthAwarePaginator($query->forPage(Paginator::resolveCurrentPage(), $perPage),
+            $query->count(), $perPage);
 
         // Lakukan grouping setelah data diambil untuk page tertentu
         $groupedData = $paginator->getCollection()->groupBy(function ($item) {
