@@ -116,19 +116,21 @@ class AttendanceSummaryController extends Controller
                 $checkIn = $dailyItems->where('status1', 0)->first(); // Data Check-In
 
 
-                $userWorktime = WorkTime::where('name', $checkIn->work_time)->first();
-                $defaultWorkTime = WorkTime::where('id', 1)->first();
-                $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
+                if ($checkIn) {
+                    $userWorktime = WorkTime::where('name', $checkIn->work_time)->first();
+                    $defaultWorkTime = WorkTime::where('id', 1)->first();
+                    $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
 
-                // Gabungkan tanggal check-in dengan waktu yang diharapkan
-                $expectedCheckIn = Carbon::parse($checkIn->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
-                $expectedCheckIn = Carbon::parse($expectedCheckIn);
+                    // Gabungkan tanggal check-in dengan waktu yang diharapkan
+                    $expectedCheckIn = Carbon::parse($checkIn->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+                    $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
-                // Hitung keterlambatan dalam menit untuk hari tersebut
-                $actualCheckIn = Carbon::parse($checkIn->timestamp);
-                if ($actualCheckIn->greaterThan($expectedCheckIn)) {
-                    $minutesLate = $expectedCheckIn->diffInMinutes($actualCheckIn);
-                    $totalMinutesLate = $minutesLate;
+                    // Hitung keterlambatan dalam menit untuk hari tersebut
+                    $actualCheckIn = Carbon::parse($checkIn->timestamp);
+                    if ($actualCheckIn->greaterThan($expectedCheckIn)) {
+                        $minutesLate = $expectedCheckIn->diffInMinutes($actualCheckIn);
+                        $totalMinutesLate = $minutesLate;
+                    }
                 }
             }
 
