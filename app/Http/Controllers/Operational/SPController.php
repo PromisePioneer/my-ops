@@ -49,6 +49,12 @@ class SPController extends Controller
         return response()->json($this->user->getUserBasedOnBranch($request));
     }
 
+
+    public function getUserPICAndLeader(Request $request): JsonResponse
+    {
+        return response()->json($this->user->getUserPICAndLeader($request));
+    }
+
     public function store(SPRequest $request): JsonResponse
     {
         SP::create([
@@ -70,19 +76,34 @@ class SPController extends Controller
         return view('pages.manage-users.sp.create');
     }
 
-    public function edit(): JsonResponse
+    public function edit(SP $sp): View
     {
+        return view('pages.manage-users.sp.edit', compact('sp'));
     }
 
-    public function update(): JsonResponse
+    public function update(SPRequest $request, SP $sp): JsonResponse
     {
+        $sp->update([
+            'branch_id' => $request->user()->branch_id,
+            'user_id' => $request->user_id,
+            'sp_number' => $this->spService->generateSpNumber($request),
+            'sp_date' => $request->sp_date,
+            'sp_type' => $request->sp_type,
+            'created_by' => $request->user()->id,
+            'reason' => $request->reason,
+            'description' => $request->description
+        ]);
+
+
+        return response()->json([
+            'message' => 'Data berhasil disimpan.'
+        ]);
     }
 
 
     public function destroy(SP $sp): JsonResponse
     {
         $sp->delete();
-
         return response()->json($sp);
     }
 

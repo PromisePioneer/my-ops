@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->date('sp_date');
             $table->enum('sp_type', ['SP-1', 'SP-2', 'SP-3']);
             $table->string('reason');
+            $table->foreignId('punished_by')->constrained('users');
             $table->foreignId('created_by')->constrained('users');
             $table->text('description');
             $table->timestamps();

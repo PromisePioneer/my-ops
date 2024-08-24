@@ -21,11 +21,14 @@ class RoleSeeder extends Seeder
         Role::create(['name' => 'Accounting']); //1
         Role::create(['name' => 'KCA']); // multi kca
         Role::create(['name' => 'WKCA']); // multi
-        Role::create(['name' => 'Technician']);
+        Role::create(['name' => 'Teknisi']);
         Role::create(['name' => 'Stocker']); //1
         Role::create(['name' => 'Customer Service']); //1
         Role::create(['name' => 'NOC']); // multi
         Role::create(['name' => 'HR']); //1
+
+        Role::create(['name' => 'PIC Customer Service']);
+        Role::create(['name' => 'PIC NOC']);
 
         $superAdminRole = Role::create(['name' => 'Super Admin']);
         $superAdmin = User::where('name', 'Super Admin')->first();

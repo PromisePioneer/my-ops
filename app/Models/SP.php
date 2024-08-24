@@ -22,12 +22,23 @@ class SP extends Model
         'sp_type',
         'created_by',
         'reason',
-        'description'
+        'description',
+        'punished_by'
     ];
 
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function punishedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'punished_by');
     }
 
     public function branch(): BelongsTo
@@ -75,9 +86,5 @@ class SP extends Model
         self::formattedData($sp);
         return $sp;
     }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
+    
 }

@@ -180,4 +180,30 @@ class User extends Authenticatable
             ];
         })->toArray();
     }
+
+
+    public function getUserPICAndLeader(Request $request): array
+    {
+        $search = $request->search;
+
+        $query = self::with('roles')
+            ->whereHas('roles', static function ($query) {
+                $query->where('name', 'TAI');
+            })->orderby('name', 'asc');
+
+
+        if ($search !== '') {
+            $query->where('name', 'like', '%'.$search.'%');
+            $query->orWhere('nip', 'like', '%'.$search.'%');
+        }
+
+        $user = $query->get();
+
+        return $user->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => '('.$item->nip.')'.' '.$item->roles[0]->name,
+            ];
+        })->toArray();
+    }
 }

@@ -93,7 +93,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/absent/data/{user}', [UserController::class, 'getAbsentData']);
             Route::post('/update/{user}', [UserController::class, 'update']);
             Route::delete('/{user}', [UserController::class, 'destroy']);
-            Route::post('/import', [UserController::class, 'import']);
             Route::post('/change-status/{user}', [UserController::class, 'changeStatusActive']);
         });
 
@@ -181,6 +180,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [SpController::class, 'data']);
             Route::get('/search', [SpController::class, 'search']);
             Route::get('/users/data', [SpController::class, 'getUserData']);
+            Route::get('/users/user-pic-and-leder/data', [SPController::class, 'getUserPICAndLeader']);
             Route::get('/create', [SpController::class, 'create']);
             Route::post('/', [SpController::class, 'store']);
             Route::get('/{sp}', [SpController::class, 'edit']);
