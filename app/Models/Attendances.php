@@ -301,9 +301,6 @@ class Attendances extends Model
             $checkIn = $items->where('status1', 0)->first();
             $checkOut = $items->where('status1', 1)->first();
 
-            if ($checkIn) {
-                return null;
-            }
 
             if ($checkIn) {
                 $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
