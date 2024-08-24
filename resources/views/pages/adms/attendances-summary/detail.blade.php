@@ -208,14 +208,13 @@
                 },
                 async getAttendanceSummaryDetailForEachUser() {
                     const resp = await axios.get(`/adms/attendances-summary/detail/data/user/detail/${this.month}/${this.year}/${this.userId}`);
-                    this.usersDetail = resp.data;
+                    this.usersDetail = resp.data.data;
                 },
 
                 async nextPageForUserSummary() {
                     if (this.usersDetail?.data.next_page_url) {
                         const resp = await axios.get(`${this.usersDetail.data.next_page_url}`);
                         this.usersDetail = resp.data.data
-                        this.startIndex = this.usersDetail.from
                     }
                 },
                 async previousPageForUserSummary() {
