@@ -281,19 +281,27 @@ class Attendances extends Model
             ->whereYear('attendances.timestamp', $year);
 
 
-        $paginator = new LengthAwarePaginator($query->forPage(Paginator::resolveCurrentPage(), $perPage),
-            $query->count(), $perPage);
+        $formattedData = $this->formatGroupedData($query);
+        $paginator = new LengthAwarePaginator($formattedData->forPage(Paginator::resolveCurrentPage(), $perPage),
+            $formattedData->count(), $perPage);
 
-        // Lakukan grouping setelah data diambil untuk page tertentu
-        $groupedData = $paginator->getCollection()->groupBy(function ($item) {
-            return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
-        });
-
-        $formattedData = $this->formatGroupedData($groupedData);
-
-        $paginator->setCollection($formattedData);
+        $paginator->withPath(url("adms/attendances-summary/detail/data/01-{$month}-{$year}"));
 
         return $paginator;
+
+
+//        $paginator = $query->paginate($perPage);
+//
+//        // Lakukan grouping setelah data diambil untuk page tertentu
+//        $groupedData = $paginator->getCollection()->groupBy(function ($item) {
+//            return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
+//        });
+//
+//        $formattedData = $this->formatGroupedData($groupedData);
+//
+//        $paginator->setCollection($formattedData);
+//
+//        return $paginator;
     }
 
     private function formatGroupedData($groupedData)
