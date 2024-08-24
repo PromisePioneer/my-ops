@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class UserWorkTime extends Model
@@ -46,6 +48,27 @@ class UserWorkTime extends Model
     {
         return self::with('user', 'user.roles')
             ->where('work_time_id', $workTimeId)
-            ->paginate($this->perPage);
+            ->paginate($perPage);
+    }
+
+    public function searchDetailUserOnSelectedWorkTIme(
+        Request $request,
+        $workTimeId,
+        int $perPage
+    ): Collection {
+        $search = $request->input('search');
+        $query = self::with('user', 'user.roles')->where('work_time_id', $workTimeId);
+
+
+        if ($search) {
+            $query->whereHas('user', function ($item) use ($search) {
+                $item->where('name', 'like', '%'.$search.'%');
+                $item->orWhere('nip', 'like', '%'.$search.'%');
+                $item->orWhere('absent_id', 'like', '%'.$search.'%');
+            });
+        }
+
+
+        return $query->get();
     }
 }

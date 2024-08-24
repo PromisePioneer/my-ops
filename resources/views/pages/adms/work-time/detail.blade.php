@@ -77,7 +77,7 @@
                                     </td>
                                     <td x-text="user.user.absent_id"></td>
                                     <td>
-                                        <button class="btn btn-danger btn-sm" @click="destroy(shift.id)">
+                                        <button class="btn btn-danger btn-sm" @click="destroy(user.id)">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </td>
@@ -98,7 +98,7 @@
             </div>
         </div>
     </div>
-
+    @include('components.toast')
 @endsection
 @push('script')
     <script>
@@ -108,6 +108,7 @@
                 startIndex: null,
                 users: [],
                 workTimeId: "{{ $workTime->id }}",
+                search: '',
                 async init() {
                     this.isLoading = true;
                     await this.getUserData();
@@ -117,6 +118,28 @@
                     const resp = await axios.get(`/adms/work-time/detail/data/${this.workTimeId}`);
                     this.users = resp.data;
                     this.startIndex = this.users.from;
+                },
+                async searchData() {
+                    try {
+                        this.users = await axios.get(`/adms/work-time/detail/data/search/${this.workTimeId}`, {
+                            params: {search: this.search},
+                            headers: {'Content-Type': 'application/json'}
+                        });
+                    } catch (error) {
+                        console.log(error);
+                    }
+                },
+                async destroy(id) {
+                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                        try {
+                            await axios.delete(`/adms/work-time/detail/data/destroy/${id}`);
+                            await showAlert('success', 'Data sukses dihapus');
+                            await this.init();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
                 }
             }
         }

@@ -591,6 +591,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/user/selected/{workTime}', [WorkTimeController::class, 'getSelectedUserWorkTime']);
             Route::get('/detail/{workTime}', [WorkTimeController::class, 'detail']);
             Route::get('/detail/data/{workTime}', [WorkTimeController::class, 'detailData']);
+            Route::get('/detail/data/search/{workTime}',
+                [WorkTimeController::class, 'searchDetailData']);
+            Route::delete('/detail/data/destroy/{userWorkTime}',
+                [WorkTimeController::class, 'destroyDetailWorktimeUser']);
         });
 
 

@@ -135,4 +135,21 @@ class WorkTimeController extends Controller
     {
         return response()->json($this->userWorkTime->getDetailUserOnSelectedWorkTime($workTime->id, $this->perPage));
     }
+
+
+    public function searchDetailData(Request $request, WorkTime $workTime): JsonResponse
+    {
+        return response()->json($this->userWorkTime->searchDetailUserOnSelectedWorkTIme($request, $workTime->id,
+            $this->perPage));
+    }
+
+
+    public function destroyDetailWorktimeUser(UserWorkTime $userWorkTime): JsonResponse
+    {
+        $userWorkTime->delete();
+
+        return response()->json([
+            'message' => 'Data berhasil dihapus'
+        ]);
+    }
 }
