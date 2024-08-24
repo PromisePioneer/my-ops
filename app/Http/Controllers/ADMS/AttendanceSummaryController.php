@@ -139,7 +139,6 @@ class AttendanceSummaryController extends Controller
 
             return [
                 'totalMinutesLate' => (int) $totalMinutesLate.' Menit',
-                'total_present' => $totalPresent.' Hari',
                 'name' => $items->first()->user_name,
                 'nik' => $items->first()->user_nip
             ];
