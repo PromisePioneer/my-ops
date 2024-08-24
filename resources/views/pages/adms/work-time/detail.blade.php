@@ -72,7 +72,8 @@
                                     <td x-text="user.user.nip"></td>
                                     <td x-text="user.user.name"></td>
                                     <td>
-                                        <span class="badge bg-danger" x-text="user.user.roles[0].name"></span>
+                                        <span class="badge bg-danger"
+                                              x-text="user.user.roles[0].name ?? 'Tidak Ada'"></span>
                                     </td>
                                     <td x-text="user.user.absent_id"></td>
                                     <td>
