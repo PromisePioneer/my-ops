@@ -159,7 +159,7 @@ class Attendances extends Model
         return $paginator;
     }
 
-    private function formatGroupedDataForAttendancesSummary($attendances, $month, $year)
+    public function formatGroupedDataForAttendancesSummary($attendances, $month, $year)
     {
         return $attendances->map(function ($items) use ($month, $year) {
             $totalMinutesLate = 0;
