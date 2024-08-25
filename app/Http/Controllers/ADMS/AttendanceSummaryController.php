@@ -113,19 +113,17 @@ class AttendanceSummaryController extends Controller
             });
 
             foreach ($dailyAttendances as $day => $dailyItems) {
-                $checkIn = $dailyItems->where('status1', 0)->first(); // Data Check-In
-
-
+                $checkIn = $dailyItems->where('status1', 0)->first();
                 if ($checkIn) {
-                    $userWorktime = WorkTime::where('name', $checkIn->work_time)->first();
+                    $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
                     $defaultWorkTime = WorkTime::where('id', 1)->first();
                     $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
 
-                    // Gabungkan tanggal check-in dengan waktu yang diharapkan
-                    $expectedCheckIn = Carbon::parse($checkIn->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+                    // Combine the date of check-in with the expected time
+                    $expectedCheckIn = Carbon::parse($checkIn?->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
                     $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
-                    // Hitung keterlambatan dalam menit untuk hari tersebut
+                    // Calculate lateness in minutes for that day
                     $actualCheckIn = Carbon::parse($checkIn?->timestamp);
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                         $minutesLate = $expectedCheckIn->diffInMinutes($actualCheckIn);
