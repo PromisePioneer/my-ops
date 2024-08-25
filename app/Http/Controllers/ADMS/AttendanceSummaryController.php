@@ -99,8 +99,9 @@ class AttendanceSummaryController extends Controller
             ->whereYear('attendances.timestamp', $year)
             ->get()
             ->groupBy(function ($item) {
-                return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
+                return $item->user_name;
             });
+
 
         $totalPresent = $totalPresentAndTotalMinutesLate->where('status1',
             0)->count(); // Menghitung hari hadir (check-in)
@@ -133,7 +134,7 @@ class AttendanceSummaryController extends Controller
             }
 
             return [
-                'totalMinutesLate' => $totalMinutesLate.' Menit',
+                'totalMinutesLate' => (int) $totalMinutesLate.' Menit',
                 'name' => $items->first()->user_name,
                 'nik' => $items->first()->user_nip
             ];
