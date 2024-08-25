@@ -89,7 +89,6 @@ class AttendanceSummaryController extends Controller
         $attendances = $this->attendances->attendanceSummaryDetailForOneMonthBasedOnUserId($month, $year,
             $employeeId, 10);
 
-
         $totalPresentAndTotalMinutesLate = Attendances::select('attendances.employee_id', 'users.name as user_name',
             'attendances.timestamp', 'attendances.status1', 'work_time.name as work_time', 'users.nip as user_nip')
             ->join('users', 'users.absent_id', '=', 'attendances.employee_id')
@@ -127,10 +126,10 @@ class AttendanceSummaryController extends Controller
                     $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
                     // Hitung keterlambatan dalam menit untuk hari tersebut
-                    $actualCheckIn = Carbon::parse($checkIn->timestamp);
+                    $actualCheckIn = Carbon::parse($checkIn?->timestamp);
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                         $minutesLate = $expectedCheckIn->diffInMinutes($actualCheckIn);
-                        $totalMinutesLate = $minutesLate;
+                        $totalMinutesLate += $minutesLate;
                     }
                 }
             }

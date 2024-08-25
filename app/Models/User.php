@@ -186,10 +186,7 @@ class User extends Authenticatable
     {
         $search = $request->search;
 
-        $query = self::with('roles')
-            ->whereHas('roles', static function ($query) {
-                $query->where('name', 'TAI');
-            })->orderby('name', 'asc');
+        $query = self::orderby('name');
 
 
         if ($search !== '') {
@@ -197,12 +194,19 @@ class User extends Authenticatable
             $query->orWhere('nip', 'like', '%'.$search.'%');
         }
 
-        $user = $query->get();
+        if ($query->role('Manager Cabang')) {
+            $query->whereNot('id', $request->user()->id)
+                ->where('branch_id', $request->user()->branch_id);
+        }
 
-        return $user->map(function ($item) {
+        return $query->role([
+            'Direktur', 'Manager Operasional', 'Manager Keuangan', 'Manager Cabang'
+        ])->get()->map(function (
+            $item
+        ) {
             return [
                 'id' => $item->id,
-                'text' => '('.$item->nip.')'.' '.$item->roles[0]->name,
+                'text' => $item->name,
             ];
         })->toArray();
     }

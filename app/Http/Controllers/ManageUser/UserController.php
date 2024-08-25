@@ -174,7 +174,7 @@ class UserController extends Controller
         $data = $request->validated();
         $branch = $this->branch->getSelectedData($request->branch_id);
         $date = Carbon::parse($request->join_date)->format('d-m-y');
-        $data['password'] = Hash::make('MayatamaPekanbaru2024');
+        $data['password'] = Hash::make('mayatama');
         $handlingBranchIfDataNull = $branch['code'] ?? '100';
         $format = $handlingBranchIfDataNull.$date.$request->absent_id;
         $data['nip'] = str_replace('-', '', $format);
