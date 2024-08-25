@@ -109,7 +109,7 @@ class AttendanceSummaryController extends Controller
             $totalMinutesLate = 0;
             // Mengelompokkan per hari untuk menghitung keterlambatan harian
             $dailyAttendances = $items->groupBy(function ($item) {
-                return Carbon::parse($item->timestamp)->format('Y-m-d');
+                return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
             });
 
             foreach ($dailyAttendances as $day => $dailyItems) {
