@@ -56,16 +56,6 @@
                                            placeholder="Alasan"/>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
-                                <div class="mb-0">
-                                    <label class="form-label fs-6 fw-bolder text-gray-700 required">Yang Memberi
-                                        SP</label>
-                                    <select name="user_id" class="form-select form-select-solid pic-users-select2"
-                                            data-placeholder="Select an option">
-                                        <option selected>Pilih Karyawan</option>
-                                    </select>
-                                </div>
-                            </div>
                         </div>
                         <div class="mb-10">
                             <label class="form-label fs-6 fw-bolder text-gray-700">Catatan</label>
@@ -165,18 +155,6 @@
                     $(".users-select2").select2({
                         ajax: {
                             url: '/manage-users/sp/users/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async getUserPicAndLeader() {
-                    $(".pic-users-select2").select2({
-                        ajax: {
-                            url: '/manage-users/sp/users/user-pic-and-leder/data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),

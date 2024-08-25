@@ -159,11 +159,10 @@ class User extends Authenticatable
     }
 
 
-    public function getUserBasedOnBranch(Request $request): array
+    public function getUser(Request $request): array
     {
         $search = $request->search;
         $query = self::orderby('name', 'asc')
-            ->where('branch_id', $request->user()->branch_id)
             ->select('id', 'name');
 
         if ($search !== '') {
@@ -171,42 +170,35 @@ class User extends Authenticatable
             $query->orWhere('nip', 'like', '%'.$search.'%');
         }
 
+
+        if ($request->user()->hasRole('Manager Cabang')) {
+            $query->whereNot('id', $request->user()->id)
+                ->where('branch_id', $request->user()->branch_id)
+                ->role(['KCA', 'WKCA', 'Teknisi', 'Accounting', 'Stocker']);
+        }
+
+        if ($request->user()->hasRole('PIC NOC')) {
+            $query->whereNot('id', $request->user()->id)->role(['NOC']);
+        }
+
+        if ($request->user()->hasRole('PIC Customer Service')) {
+            $query->whereNot('id', $request->user()->id)->role(['Customer Service']);
+        }
+
+
+        if ($request->user()->hasRole('KCA') && $request->user()->hasRole('WKCA')) {
+            $query->whereNot('id', $request->user()->id)
+                ->where('branch_id', $request->user()->branch_id)
+                ->role('Teknisi');
+        }
+
+
         $user = $query->get();
 
         return $user->map(function ($item) {
             return [
                 'id' => $item->id,
                 'text' => $item->nip.''.$item->name,
-            ];
-        })->toArray();
-    }
-
-
-    public function getUserPICAndLeader(Request $request): array
-    {
-        $search = $request->search;
-
-        $query = self::orderby('name');
-
-
-        if ($search !== '') {
-            $query->where('name', 'like', '%'.$search.'%');
-            $query->orWhere('nip', 'like', '%'.$search.'%');
-        }
-
-        if ($query->role('Manager Cabang')) {
-            $query->whereNot('id', $request->user()->id)
-                ->where('branch_id', $request->user()->branch_id);
-        }
-
-        return $query->role([
-            'Direktur', 'Manager Operasional', 'Manager Keuangan', 'Manager Cabang'
-        ])->get()->map(function (
-            $item
-        ) {
-            return [
-                'id' => $item->id,
-                'text' => $item->name,
             ];
         })->toArray();
     }

@@ -16,8 +16,8 @@ class RoleSeeder extends Seeder
         Role::create(['name' => 'Direktur']);//1
         Role::create(['name' => 'Manager Keuangan']);//1
         Role::create(['name' => 'Manager Cabang']); //1
+        Role::create(['name' => 'General Manager']); //1
         Role::create(['name' => 'Manager Operasional']); //1
-
         Role::create(['name' => 'Accounting']); //1
         Role::create(['name' => 'KCA']); // multi kca
         Role::create(['name' => 'WKCA']); // multi

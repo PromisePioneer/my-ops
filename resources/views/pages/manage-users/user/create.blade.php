@@ -11,22 +11,24 @@
                     @csrf
                     <div class="card-body">
                         <div class="row mb-4">
-                            <div class="col-md-6" x-model="placement">
-                                <label class="col-form-label required fw-bold fs-6">Penempatan</label>
-                                <select name="placement" id="selectedPlacement"
-                                        class="form-select form-select-solid user-placement-select2">
-                                    <option value="0" selected>Pilih</option>
-                                    <option value="Cabang">Cabang</option>
-                                    <option value="Pusat">Pusat</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-6" x-show="placement === 'Cabang'" x-transition x-cloak>
-                                <label class="col-form-label required fw-bold fs-6">Cabang</label>
-                                <select :name="`${placement === 'Cabang' ? 'branch_id' : ''}`"
-                                        class="form-select form-select-solid branchSelect2">
-                                    <option value="0">Pilih Cabang</option>
-                                </select>
-                            </div>
+                            @if(Auth::user()->branch_id === null)
+                                <div class="col-md-6" x-model="placement">
+                                    <label class="col-form-label required fw-bold fs-6">Penempatan</label>
+                                    <select name="placement" id="selectedPlacement"
+                                            class="form-select form-select-solid user-placement-select2">
+                                        <option value="0" selected>Pilih</option>
+                                        <option value="Cabang">Cabang</option>
+                                        <option value="Pusat">Pusat</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-6" x-show="placement === 'Cabang'" x-transition x-cloak>
+                                    <label class="col-form-label required fw-bold fs-6">Cabang</label>
+                                    <select :name="`${placement === 'Cabang' ? 'branch_id' : ''}`"
+                                            class="form-select form-select-solid branchSelect2">
+                                        <option value="0">Pilih Cabang</option>
+                                    </select>
+                                </div>
+                            @endif
                         </div>
                         <div class="row mb-4">
                             <div class="col-lg-6">

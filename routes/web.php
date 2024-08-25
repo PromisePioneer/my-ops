@@ -88,6 +88,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/edit/{user}', [UserController::class, 'edit']);
             Route::get('/get-selected-branch/{user}', [UserController::class, 'getSelectedBranch']);
             Route::get('/show/{user}', [UserController::class, 'show']);
+            Route::post('/import', [UserController::class, 'import']);
             Route::get('/detail/{user}', [UserController::class, 'detail']);
             Route::get('/department/data', [UserController::class, 'getDepartmentData']);
             Route::get('/absent/data/{user}', [UserController::class, 'getAbsentData']);

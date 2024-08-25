@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\User;
 
+use App\Rules\UniqueLeaders;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -25,13 +26,10 @@ class UserRequest extends FormRequest
             'placement' => [
                 'required',
                 Rule::in('Pusat', 'Cabang'),
+                new UniqueLeaders($request),
             ],
             'branch_id' => [
-                'integer',
-                Rule::exists('branches', 'id'),
-                Rule::requiredIf(static function () use ($request) {
-                    return $request->branch_id;
-                }),
+                Rule::requiredIf($request->user()->placement === 'Cabang'),
             ],
             'absent_id' => [
                 'required',
@@ -45,7 +43,8 @@ class UserRequest extends FormRequest
                 'email',
                 Rule::unique('users', 'email')->ignore($request->route('user')),
             ],
-            'roles.*' => ['required',
+            'roles.*' => [
+                'required',
                 'integer',
                 Rule::exists('roles', 'id'),
             ],
@@ -66,10 +65,11 @@ class UserRequest extends FormRequest
             'roles.required' => 'Role tidak boleh kosong',
             'roles.integer' => 'Role tidak valid',
             'roles.exists' => 'Role tidak valid',
-            'branch_id.required' => 'Branch tidak boleh kosong',
+            'branch_id.required_if' => 'Branch tidak boleh kosong',
             'branch_id.integer' => 'Branch tidak valid',
             'branch_id.exists' => 'Branch tidak valid',
             'absent_id.max' => 'Absent tidak boleh lebih dari 3 karakter',
+            'placement.required_if' => 'Penempatan tidak boleh kosong',
         ];
     }
 }

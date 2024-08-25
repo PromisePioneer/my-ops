@@ -78,11 +78,17 @@ class UserController extends Controller
         return response()->json($this->user->filterBasedOnUserBranch($branch->id, $this->perPage));
     }
 
-    public function rolesData(): JsonResponse
+    public function rolesData(Request $request): JsonResponse
     {
-        $role = Role::all();
+        $roles = Role::all();
 
-        return response()->json($role);
+        if ($request->user()->hasRole('Manager Cabang')) {
+            $roles = $roles->filter(function ($role) {
+                return in_array($role->name, ['Accounting', 'Stocker', 'Customer Service', 'KCA', 'WKCA', 'Teknisi']);
+            });
+        }
+
+        return response()->json($roles);
     }
 
     public function store(UserRequest $request): JsonResponse
@@ -93,7 +99,10 @@ class UserController extends Controller
         $handlingBranchIfDataNull = $branch['code'] ?? '100';
         $format = $handlingBranchIfDataNull.$date.$request->absent_id;
         $data = $request->validated();
-        $data['password'] = Hash::make('MayatamaPekanbaru2024');
+
+        $data['placement'] = $request->branch_id ? 'Cabang' : 'Pusat';
+        $data['branch_id'] = $request->user()->role('Manager Cabang') ? $request->user()->branch_id : $request->get('branch_id');
+        $data['password'] = Hash::make('mayatama');
         $data['nip'] = str_replace('-', '', $format);
         $user = User::create($data);
         $user->syncRoles($request->role);
@@ -171,12 +180,16 @@ class UserController extends Controller
 
     public function update(User $user, UserRequest $request): JsonResponse
     {
-        $data = $request->validated();
         $branch = $this->branch->getSelectedData($request->branch_id);
         $date = Carbon::parse($request->join_date)->format('d-m-y');
-        $data['password'] = Hash::make('mayatama');
+
         $handlingBranchIfDataNull = $branch['code'] ?? '100';
         $format = $handlingBranchIfDataNull.$date.$request->absent_id;
+        $data = $request->validated();
+
+        $data['placement'] = $request->branch_id ? 'Cabang' : 'Pusat';
+        $data['branch_id'] = $request->user()->role('Manager Cabang') ? $request->user()->branch_id : $request->get('branch_id');
+        $data['password'] = Hash::make('mayatama');
         $data['nip'] = str_replace('-', '', $format);
         $user->update($data);
         $user->syncRoles($request->role);

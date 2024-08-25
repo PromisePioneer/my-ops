@@ -46,7 +46,7 @@ class SPController extends Controller
 
     public function getUserData(Request $request): JsonResponse
     {
-        return response()->json($this->user->getUserBasedOnBranch($request));
+        return response()->json($this->user->getUser($request));
     }
 
 
@@ -65,6 +65,7 @@ class SPController extends Controller
             'sp_type' => $request->sp_type,
             'created_by' => $request->user()->id,
             'reason' => $request->reason,
+            'punished_by' => $request->user()->id,
             'description' => $request->description
         ]);
 
