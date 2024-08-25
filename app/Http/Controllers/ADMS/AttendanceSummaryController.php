@@ -103,9 +103,6 @@ class AttendanceSummaryController extends Controller
             });
 
 
-        $totalPresent = $totalPresentAndTotalMinutesLate->where('status1',
-            0)->count(); // Menghitung hari hadir (check-in)
-
         $summaryData = $totalPresentAndTotalMinutesLate->map(function ($items) {
             $totalMinutesLate = 0;
             // Mengelompokkan per hari untuk menghitung keterlambatan harian
@@ -136,13 +133,13 @@ class AttendanceSummaryController extends Controller
             return [
                 'totalMinutesLate' => (int) $totalMinutesLate.' Menit',
                 'name' => $items->first()->user_name,
-                'nik' => $items->first()->user_nip
+                'nik' => $items->first()->user_nip,
+                'total_present' => $items->where('status1', 0)->count()
             ];
         })->values();
 
         return response()->json([
             'data' => $attendances,
-            'total_present' => $totalPresent,
             'summary_data' => $summaryData[0]
         ]);
     }
