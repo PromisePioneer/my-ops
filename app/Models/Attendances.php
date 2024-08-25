@@ -31,8 +31,7 @@ class Attendances extends Model
             ->whereNotNull('attendances.employee_id')
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
-            ->orderBy('attendances.timestamp', 'DESC')
-            ->get();
+            ->orderBy('attendances.timestamp', 'DESC');
 
         // Lakukan grouping setelah data diambil
         $groupedData = $allData->groupBy(function ($item) {
@@ -46,15 +45,13 @@ class Attendances extends Model
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
         $formattedCollection = collect($formattedData);
 
-        $paginator = new LengthAwarePaginator(
+        return new LengthAwarePaginator(
             $formattedCollection->forPage($currentPage, $perPage),
             $formattedCollection->count(),
             $perPage,
             $currentPage,
             ['path' => url('/adms/attendances/data')]
         );
-
-        return $paginator;
     }
 
     private function formatGroupedData1($groupedData)
@@ -121,15 +118,13 @@ class Attendances extends Model
         $query = self::selectRaw("CONCAT(MONTH(timestamp), '-', YEAR(timestamp)) as waktu")
             ->distinct();
 
-        $paginator = new LengthAwarePaginator(
+        return new LengthAwarePaginator(
             $query->forPage($currentPage, $perPage)->get(),
             $query->count(),
             $perPage,
             $currentPage,
             ['path' => LengthAwarePaginator::resolveCurrentPath()]
         );
-
-        return $paginator;
     }
 
     public function getAttendancesBasedOnPeriod(string $month, string $year, int $perPage): LengthAwarePaginator
