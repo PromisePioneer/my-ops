@@ -38,7 +38,6 @@ class IclockController extends Controller
 
     public function getrequest(Request $request): string
     {
-        // if no command send "OK"
         return "OK";
     }
 

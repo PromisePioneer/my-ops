@@ -18,12 +18,13 @@ class SP extends Model
         'branch_id',
         'user_id',
         'sp_number',
-        'sp_date',
         'sp_type',
         'created_by',
         'reason',
         'description',
-        'punished_by'
+        'punished_by',
+        'start_date',
+        'end_date',
     ];
 
     public function createdBy(): BelongsTo
@@ -64,8 +65,9 @@ class SP extends Model
                 'branch_name' => $sp->branch->name ?? null,
                 'user_id' => $sp->user->name,
                 'sp_number' => $sp->sp_number,
-                'sp_date' => Carbon::parse($sp->sp_date)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                'date' => Carbon::parse($sp->start_date)->format('d/m/Y').' - '.Carbon::parse($sp->end_date)->format('d/m/Y'),
                 'sp_type' => $sp->sp_type,
+                'punished_by' => $sp->punishedBy?->name,
                 'created_by' => $sp->createdBy->name,
             ];
         })->values();
@@ -80,11 +82,10 @@ class SP extends Model
         $sp = self::whereHas('user', function ($query) use ($search) {
             $query->where('name', 'like', '%'.$search.'%');
             $query->orWhere('nip', 'like', '%'.$search.'%');
-        })->orWhere('sp_number', 'like', '%'.$search.'%')
-            ->orWhere('sp_date', 'like', '%'.$search.'%')->paginate($this->perPage);
+        })->orWhere('sp_number', 'like', '%'.$search.'%')->paginate($this->perPage);
 
         self::formattedData($sp);
         return $sp;
     }
-    
+
 }

@@ -39,22 +39,19 @@ class Attendances extends Model
 
         $paginatedResults = $allData->paginate($perPage);
 
-        // Group and format only the paginated data
         $groupedData = collect($paginatedResults->items())->groupBy(function ($item) {
             return $item->employee_id;
         });
 
 
-        // Format data yang telah dikelompokkan
         $formattedData = $this->formatGroupedData1($groupedData);
-        $paginator = new LengthAwarePaginator(
+        return new LengthAwarePaginator(
             $formattedData,
             $paginatedResults->total(),
             $perPage,
             $paginatedResults->currentPage(),
             ['path' => url('/adms/attendances/data')]
         );
-        return $paginator;
     }
 
     private function formatGroupedData1($groupedData)

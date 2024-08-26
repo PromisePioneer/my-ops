@@ -9,6 +9,7 @@ use App\Models\Contact;
 use App\Models\Department;
 use App\Models\Product;
 use App\Models\ServiceCategory;
+use App\Models\SP;
 use App\Models\WorkTime;
 use App\Policies\AccountPolicy;
 use App\Policies\BranchPolicy;
@@ -17,6 +18,7 @@ use App\Policies\DepartmentPolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\ServiceCategoriesPolicy;
+use App\Policies\SpPolicy;
 use App\Policies\WorkTimePolicy;
 use Carbon\Carbon;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -40,6 +42,7 @@ class AuthServiceProvider extends ServiceProvider
         Department::class => DepartmentPolicy::class,
         Role::class => RolePolicy::class,
         WorkTime::class => WorkTimePolicy::class,
+        SP::class => SpPolicy::class
     ];
 
     /**

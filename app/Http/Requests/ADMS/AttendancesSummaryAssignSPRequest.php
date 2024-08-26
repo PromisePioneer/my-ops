@@ -25,7 +25,6 @@ class AttendancesSummaryAssignSPRequest extends FormRequest
         return [
             'sp_type' => ['required'],
             'reason' => ['required'],
-            'sp_date' => ['required'],
             'description' => ['required'],
         ];
     }

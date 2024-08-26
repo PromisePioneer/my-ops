@@ -181,9 +181,9 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [SpController::class, 'data']);
             Route::get('/search', [SpController::class, 'search']);
             Route::get('/users/data', [SpController::class, 'getUserData']);
-            Route::get('/users/user-pic-and-leder/data', [SPController::class, 'getUserPICAndLeader']);
             Route::get('/create', [SpController::class, 'create']);
             Route::post('/', [SpController::class, 'store']);
+            Route::get('/users/data/selected/{sp}', [SpController::class, 'selectedUserdata']);
             Route::get('/{sp}', [SpController::class, 'edit']);
             Route::post('/{sp}', [SpController::class, 'update']);
             Route::get('/confirm/{sp}', [SpController::class, 'confirm']);

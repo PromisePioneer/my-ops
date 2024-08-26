@@ -37,10 +37,11 @@
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                             <th class="w-10px pe-2">No</th>
                             <th class="min-w-125px">Cabang</th>
-                            <th class="min-w-125px">Tanggal</th>
+                            <th class="min-w-150px">Tanggal</th>
                             <th class="min-w-125px">No. SP</th>
                             <th class="min-w-125px">Karyawan</th>
                             <th class="min-w-125px">Dibuat Oleh</th>
+                            <th class="min-w-125px">Yg memberi sanksi</th>
                             <th class="min-w-125px">Actions</th>
                         </thead>
                         <tbody class="fw-bold">
@@ -66,18 +67,18 @@
                             <tr>
                                 <td x-text="startIndex + index++"></td>
                                 <td x-text="sp.branch_name ?? 'Pusat'"></td>
-                                <td x-text="sp.sp_date"></td>
+                                <td x-text="sp.date"></td>
                                 <td x-text="sp.sp_number"></td>
                                 <td x-text="sp.user_id"></td>
+                                <td x-text="sp.punished_by"></td>
                                 <td x-text="sp.created_by"></td>
                                 <td>
                                     <a :href="`/manage-users/sp/export-pdf/${sp.id}`" class="btn btn-danger btn-sm">
                                         <i class="bi bi-file-earmark-pdf"></i>
                                     </a>
-                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#modal-edit" @click="edit(sp.id)">
+                                    <a :href="`/manage-users/sp/${sp.id}`" class="btn btn-primary btn-sm">
                                         <i class="bi bi-pencil"></i>
-                                    </button>
+                                    </a>
                                     <button class="btn btn-danger btn-sm" @click="destroy(sp.id)">
                                         <i class="bi bi-trash"></i>
                                     </button>

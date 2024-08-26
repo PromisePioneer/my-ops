@@ -171,25 +171,15 @@ class User extends Authenticatable
         }
 
 
+        if ($request->user()->hasRole('Manager Keuangan')) {
+            $query->whereNot('id', $request->user()->id)->role(['Accounting']);
+        }
+
+
         if ($request->user()->hasRole('Manager Cabang')) {
             $query->whereNot('id', $request->user()->id)
                 ->where('branch_id', $request->user()->branch_id)
                 ->role(['KCA', 'WKCA', 'Teknisi', 'Accounting', 'Stocker']);
-        }
-
-        if ($request->user()->hasRole('PIC NOC')) {
-            $query->whereNot('id', $request->user()->id)->role(['NOC']);
-        }
-
-        if ($request->user()->hasRole('PIC Customer Service')) {
-            $query->whereNot('id', $request->user()->id)->role(['Customer Service']);
-        }
-
-
-        if ($request->user()->hasRole('KCA') && $request->user()->hasRole('WKCA')) {
-            $query->whereNot('id', $request->user()->id)
-                ->where('branch_id', $request->user()->branch_id)
-                ->role('Teknisi');
         }
 
 
@@ -201,5 +191,15 @@ class User extends Authenticatable
                 'text' => $item->nip.''.$item->name,
             ];
         })->toArray();
+    }
+
+
+    public function getSelectedData(int $userId): ?array
+    {
+        $user = self::where('id', $userId)->first();
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+        ];
     }
 }

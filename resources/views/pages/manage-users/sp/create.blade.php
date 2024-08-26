@@ -14,10 +14,20 @@
                             <div class="col-lg-6">
                                 <div class="d-flex align-items-center flex-equal fw-row me-4 order-2"
                                      data-bs-toggle="tooltip" data-bs-trigger="hover">
-                                    <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal :</div>
+                                    <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal awal :</div>
                                     <div class="position-relative d-flex align-items-center w-150px">
-                                        <input type="date" class="form-control form-control-white fw-bolder pe-5"
-                                               placeholder="Tanggal" name="sp_date" id="sp_date"/>
+                                        <input type="date" class="form-control form-control-white fw-bolder pe-5 date"
+                                               placeholder="Tanggal awal" name="start_date" id="start_date"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="d-flex align-items-center flex-equal fw-row me-4 order-2"
+                                     data-bs-toggle="tooltip" data-bs-trigger="hover">
+                                    <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal akhir :</div>
+                                    <div class="position-relative d-flex align-items-center w-150px">
+                                        <input type="date" class="form-control form-control-white fw-bolder pe-5 date"
+                                               placeholder="Tanggal akhir" name="end_date" id="end_date"/>
                                     </div>
                                 </div>
                             </div>
@@ -66,7 +76,7 @@
                     </div>
 
                     <div class="float-end">
-                        <a href="{{ url('/income-transactions/invoice') }}" class="btn btn-sm btn-light">Cancel</a>
+                        <a href="{{ url('/manage-users/sp') }}" class="btn btn-sm btn-light">Cancel</a>
                         <button type="submit" class="btn btn-sm btn-primary" :disabled="buttonLoading"
                                 x-text="buttonLoading ? 'Loading...' : 'Generate SP'"></button>
                     </div>
@@ -78,7 +88,7 @@
 @endsection
 @push('script')
     <script>
-
+        $(".date").flatpickr();
         tinymce.init({
             selector: 'textarea#description',
             plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion',
@@ -91,35 +101,11 @@
             autosave_restore_when_empty: false,
             autosave_retention: '2m',
             image_advtab: true,
-            link_list: [
-                {title: 'My page 1', value: 'https://www.tiny.cloud'},
-                {title: 'My page 2', value: 'http://www.moxiecode.com'}
-            ],
-            image_list: [
-                {title: 'My page 1', value: 'https://www.tiny.cloud'},
-                {title: 'My page 2', value: 'http://www.moxiecode.com'}
-            ],
             image_class_list: [
                 {title: 'None', value: ''},
                 {title: 'Some class', value: 'class-name'}
             ],
             importcss_append: true,
-            file_picker_callback: (callback, value, meta) => {
-                /* Provide file and text for the link dialog */
-                if (meta.filetype === 'file') {
-                    callback('https://www.google.com/logos/google.jpg', {text: 'My text'});
-                }
-
-                /* Provide image and alt text for the image dialog */
-                if (meta.filetype === 'image') {
-                    callback('https://www.google.com/logos/google.jpg', {alt: 'My alt text'});
-                }
-
-                /* Provide alternative source and posted for the media dialog */
-                if (meta.filetype === 'media') {
-                    callback('movie.mp4', {source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg'});
-                }
-            },
             height: 600,
             image_caption: true,
             quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
@@ -142,7 +128,7 @@
                     try {
                         await axios.post(`/manage-users/sp`, new FormData(this.form))
                         await showAlert('success', 'Data berhasil disimpan').then(() => {
-                            window.location.href = '{{ url('/income-transactions/offering-letters/') }}'
+                            window.location.href = '{{ url('/manage-users/sp') }}'
                         })
                     } catch (error) {
                         const respError = error.response.data.errors;

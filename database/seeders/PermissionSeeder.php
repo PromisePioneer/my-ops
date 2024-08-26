@@ -214,5 +214,22 @@ class PermissionSeeder extends Seeder
             $directorRole->givePermissionTo($permission);
             $financeManagerRole->givePermissionTo($permission);
         }
+
+
+        $permission = [
+            'lihat SP',
+            'update semua SP',
+            'update sp sendiri',
+            'hapus semua SP',
+            'hapus sp sendiri',
+        ];
+
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+            $directorRole->givePermissionTo($permission);
+            $financeManagerRole->givePermissionTo($permission);
+            $kacabRole->givePermissionTo($permission);
+        }
     }
 }

@@ -50,8 +50,6 @@
         }
 
         .table-heading-container {
-            width: 30%;
-            margin-right: 10%;
             float: left;
             display: inline-block;
         }
@@ -91,6 +89,27 @@
             width: 100%;
         }
 
+
+        .table-heading-container {
+            width: 48%;
+            margin-right: 10%;
+            float: left;
+            display: inline-block;
+        }
+
+        .clearfix {
+            clear: both;
+            margin-bottom: 40px;
+        }
+
+        .table-heading .table-data-heading {
+            /*border: 1px solid;*/
+            border: none !important;
+            margin-bottom: 100px;
+            width: 50%;
+            text-align: left;
+        }
+
         .signature {
             font-size: 13px;
             padding-right: 40px;
@@ -100,6 +119,10 @@
 
         .text-center {
             text-align: center;
+        }
+
+        .heading-separator {
+            margin-bottom: 0;
         }
     </style>
 </head>
@@ -162,7 +185,7 @@
                         :
                     </td>
                     <td class="table-data-heading" style="font-size: 13px; width: 100%">
-                        {{ $sp->user->roles->first()->name  }}
+                        {{ $sp?->user?->roles?->first()?->name  }}
                     </td>
                 </tr>
                 </tbody>
@@ -178,16 +201,109 @@
 
     <br>
 
-    <div class="signature">
-        <p class="text-center">Yang Memberikan Sanksi
-            <br><br>
-            <img src="data:image/png;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
-                 width="100px" height="70px">
-            <br><br><u>{{ $sp->createdBy->name }}</u><br>{{ $sp->createdBy->roles->first()->name }}
-        </p>
-    </div>
+    @if($punishedBy->hasAnyRole(['Manager Keuangan', 'Direktur', 'Manager Operasional']))
 
-    <br>
+        <div style="margin-right: 30px;float: right">
+            <table>
+                <tr>
+                    <th style="text-align: center; padding: 8px;">
+                        <p style="font-size: 12px; margin: 0;">Yang Memberi Sanksi:</p>
+                    </th>
+                    <th style="text-align: center; padding: 8px;"></th>
+                </tr>
+                <tr>
+                    <th style="text-align: center; padding: 8px;">
+                        <p style="font-size: 12px; margin: 0;">
+                            <img
+                                    src="data:image/png;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                    width="100px" height="70px">
+                        </p>
+                    </th>
+                    <th style="text-align: center; padding: 8px;">
+                </tr>
+                <tr>
+                    <th style="text-align: center; padding: 8px 8px 0 8px;">
+                        <p style="font-size: 12px; margin: 0; text-decoration: underline">
+                            {{ $punishedBy?->name }}
+                        </p>
+                    </th>
+                </tr>
+                <tr style="padding: 0">
+                    <th style="text-align: center; padding: 8px;">
+                        <p style="font-size: 12px; margin: 0;">{{ $punishedBy?->roles[0]?->name }}</p>
+                    </th>
+                </tr>
+            </table>
+        </div>
+
+    @endif
+
+    @if($punishedBy->hasAnyRole(['Manager Cabang']))
+        <div class="heading-separator table-heading-container">
+            <table>
+                <tr>
+                    <th style="text-align: center; padding: 8px;">
+                        <p style="font-size: 12px; margin: 0;">Yang Memberi Sanksi:</p>
+                    </th>
+                    <th style="text-align: center; padding: 8px;"></th>
+                </tr>
+                <tr>
+                    <th style="text-align: center; padding: 8px;">
+                        <p style="font-size: 12px; margin: 0;">
+                            <img
+                                    src="data:image/png;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                    width="100px" height="70px">
+                        </p>
+                    </th>
+                    <th style="text-align: center; padding: 8px;">
+                </tr>
+                <tr>
+                    <th style="text-align: center; padding: 8px 8px 0 8px;">
+                        <p style="font-size: 12px; margin: 0; text-decoration: underline">
+                            {{ $punishedBy?->name }}
+                        </p>
+                    </th>
+                </tr>
+                <tr style="padding: 0">
+                    <th style="text-align: center; padding: 8px;">
+                        <p style="font-size: 12px; margin: 0;">{{ $punishedBy?->roles[0]?->name }}</p>
+                    </th>
+                </tr>
+            </table>
+        </div>
+        <div class="heading-separator table-heading-container">
+            <table>
+                <tr>
+                    <th style="text-align: center; padding: 8px;">
+                        <p style="font-size: 12px; margin: 0;">Yang Mengetahui:</p>
+                    </th>
+                    <th style="text-align: center; padding: 8px;"></th>
+                </tr>
+                <tr>
+                    <th style="text-align: center; padding: 8px;">
+                        <p style="font-size: 12px; margin: 0;">
+                            <img
+                                    src="data:image/png;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                    width="100px" height="70px">
+                        </p>
+                    </th>
+                    <th style="text-align: center; padding: 8px;">
+                </tr>
+                <tr>
+                    <th style="text-align: center; padding: 8px 8px 0 8px;">
+                        <p style="font-size: 12px; margin: 0; text-decoration: underline">
+                            {{ $operationalManager?->name }}
+                        </p>
+                    </th>
+                </tr>
+                <tr style="padding: 0">
+                    <th style="text-align: center; padding: 8px;">
+                        <p style="font-size: 12px; margin: 0;">{{ $operationalManager?->roles[0]?->name }}</p>
+                    </th>
+                </tr>
+            </table>
+        </div>
+    @endif
 
     <div class="kop-footer">
         <img class="kop-image-footer"
