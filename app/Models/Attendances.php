@@ -25,65 +25,62 @@ class Attendances extends Model
 
     public function getAttendanceWithPagination(int $perPage): LengthAwarePaginator
     {
-        $allData = self::select('attendances.employee_id', 'users.name as user_name', 'attendances.timestamp',
-            'attendances.status1', 'work_time.name as work_time')
-            ->join('users', 'users.absent_id', '=', 'attendances.employee_id')
+        $allData = self::join('users', 'users.absent_id', '=', 'attendances.employee_id')
             ->whereNotNull('attendances.employee_id')
+            ->whereNotNull('users.name')
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
-            ->orderBy('attendances.timestamp', 'DESC');
+            ->orderBy('attendances.timestamp', 'desc')
+            ->select('attendances.employee_id', 'users.name as user_name',
+                'attendances.timestamp',
+                'attendances.status1', 'work_time.name as work_time'
+            );
 
-        // Lakukan grouping setelah data diambil
-        $groupedData = $allData->groupBy(function ($item) {
-            return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
+
+        $paginatedResults = $allData->paginate($perPage);
+
+        // Group and format only the paginated data
+        $groupedData = collect($paginatedResults->items())->groupBy(function ($item) {
+            return $item->employee_id;
         });
+
 
         // Format data yang telah dikelompokkan
         $formattedData = $this->formatGroupedData1($groupedData);
-
-        // Lakukan paginasi setelah format data
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $formattedCollection = collect($formattedData);
-
-        return new LengthAwarePaginator(
-            $formattedCollection->forPage($currentPage, $perPage),
-            $formattedCollection->count(),
+        $paginator = new LengthAwarePaginator(
+            $formattedData,
+            $paginatedResults->total(),
             $perPage,
-            $currentPage,
+            $paginatedResults->currentPage(),
             ['path' => url('/adms/attendances/data')]
         );
+        return $paginator;
     }
 
     private function formatGroupedData1($groupedData)
     {
         return $groupedData->map(function ($items) {
+            $userName = $items->first()->user_name;
+            $timeStamp = $items->first()->timestamp;
             $checkIn = $items->where('status1', 0)->first(); // Data Check-In
             $checkOut = $items->where('status1', 1)->last(); // Data Check-Out
-
-            if (is_null($checkIn)) {
-                return null;
-            }
-
-            // Jika `work_time` null, gunakan jam kerja default
+            // Jika work_time null, gunakan jam kerja default
             $userWorktime = WorkTime::where('name', $checkIn->work_time ?? 'Default')->first();
             $defaultWorkTime = WorkTime::where('id', 1)->first();
-
             // Tentukan waktu check-in yang diharapkan
             $expectedCheckInTime = $userWorktime->clock_in;
-            $expectedCheckIn = Carbon::parse($checkIn?->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+            $expectedCheckIn = Carbon::parse($timeStamp)->format('Y-m-d').' '.$expectedCheckInTime;
             $expectedCheckIn = Carbon::parse($expectedCheckIn);
-
             // Hitung keterlambatan (dalam menit)
-            $actualCheckIn = Carbon::parse($checkIn?->timestamp);
+            $actualCheckIn = Carbon::parse($checkIn->timestamp ?? null);
             $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
-
             return [
-                'name' => $checkIn?->user_name,
+                'name' => $userName,
                 'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
-                'date' => Carbon::parse($checkIn?->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                'date' => Carbon::parse($timeStamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y') ?? null,
                 'employee_id' => $checkIn->employee_id ?? null,
-                'checkin_time' => $actualCheckIn->format('H:i'),
-                'late_checkin' => (int) $minutesLate,
+                'checkin_time' => $actualCheckIn->format('H:i') ?? null,
+                'late_checkin' => (int) $minutesLate ?? null,
                 'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
             ];
         })->filter()->values(); // Filter data yang null dan reset indeks array
@@ -118,13 +115,15 @@ class Attendances extends Model
         $query = self::selectRaw("CONCAT(MONTH(timestamp), '-', YEAR(timestamp)) as waktu")
             ->distinct();
 
-        return new LengthAwarePaginator(
+        $paginator = new LengthAwarePaginator(
             $query->forPage($currentPage, $perPage)->get(),
             $query->count(),
             $perPage,
             $currentPage,
             ['path' => LengthAwarePaginator::resolveCurrentPath()]
         );
+
+        return $paginator;
     }
 
     public function getAttendancesBasedOnPeriod(string $month, string $year, int $perPage): LengthAwarePaginator
@@ -135,7 +134,6 @@ class Attendances extends Model
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
             ->whereMonth('attendances.timestamp', $month)
             ->whereYear('attendances.timestamp', $year)
-            ->orderBy('attendances.timestamp', 'DESC')
             ->select('users.nip as user_nip', 'branches.name as branches_name', 'users.name as user_name',
                 'attendances.timestamp',
                 'attendances.status1',
