@@ -202,7 +202,6 @@
     <br>
 
     @if($punishedBy->hasAnyRole(['Manager Keuangan', 'Direktur', 'Manager Operasional']))
-
         <div style="margin-right: 30px;float: right">
             <table>
                 <tr>
