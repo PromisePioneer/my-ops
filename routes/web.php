@@ -95,6 +95,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/update/{user}', [UserController::class, 'update']);
             Route::delete('/{user}', [UserController::class, 'destroy']);
             Route::post('/change-status/{user}', [UserController::class, 'changeStatusActive']);
+            Route::get('/filter', [UserController::class, 'filter']);
         });
 
 
@@ -184,6 +185,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/create', [SpController::class, 'create']);
             Route::post('/', [SpController::class, 'store']);
             Route::get('/users/data/selected/{sp}', [SpController::class, 'selectedUserdata']);
+            Route::get('/list-of-reason/{sp}', [SpController::class, 'getListOfReason']);
             Route::get('/{sp}', [SpController::class, 'edit']);
             Route::post('/{sp}', [SpController::class, 'update']);
             Route::get('/confirm/{sp}', [SpController::class, 'confirm']);

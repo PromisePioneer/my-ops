@@ -195,119 +195,198 @@
 
     <div class="clearfix"></div>
 
-    <div style="margin: 0 30px 0 40px; font-size: 13px">
-        <p>{!! $sp->description !!}</p>
-    </div>
+    @if($sp->sp_type === 'SP-1' || $sp->sp_type === 'SP-2')
+        <div style="margin: 0 30px 0 40px; font-size: 13px">
+            Sehubungan sikap indisipliner dan pelanggaran terhadap tata tertib perusahaan yang saudara
+            lakukan, yaitu sebagai berikut :
+            <div style="padding: 5px 0 3px 0"></div>
+            <ol>
+                @foreach($spReasonList as $spReason)
+                    <li>{{ $spReason->list_of_reason }}</li>
+                @endforeach
+            </ol>
 
-    <br>
+            <div style="padding: 5px 0 3px 0"></div>
+            <p>
+                Maka dengan ini saudara dikenakan. Adapun ketentuan
+                <span style="color: red">{{ $sp->sp_type }}</span> yang telah ditetapkan oleh manajemen untuk saudara
+                adalah sebagai
+                berikut:
+            </p>
+            <ol style="line-height: 1.7em">
+                <li>Surat Peringatan Pertama berlaku untuk 6 (enam) bulan kedepan sejak diterbitkan.</li>
+                <li>Jika didapati saudara kembali melakukan tindakan indispliner dan/atau pelanggaran tata tertib,
+                    sehingga saudara dianggap meremehkan peraturan dan peringatan yang berlaku, maka
+                    perusahaan akan memberikan Surat Peringatan Kedua/Ketiga hingga pemutusan hubungan
+                    kerja sesuai kualifikasi pada peraturan perusahaan yang berlaku.
+                </li>
+                <li>
+                    Sanksi yang diberikan kepada saudara yaitu:
+                    <ol type="a">
+                        <li>Tidak mendapatkan bonus selama 6 (enam) bulan.</li>
+                        <li>Penundaan kenaikan gaji selama 6 (enam) bulan.</li>
+                        <li> Berjanji untuk tidak mengulangi kesalahan yang telah dilakukan sesuai yang disebutkan di
+                            Surat Peringatan ini.
+                        </li>
+                        <li>Berpotensi dilakukannya Demosi dan/atau Mutasi hingga Penurunan Gaji apabila kerap
+                            mengulangi kesalahan.
+                        </li>
+                    </ol>
+                </li>
+            </ol>
 
-    @if($punishedBy->hasAnyRole(['Manager Keuangan', 'Direktur', 'Manager Operasional']))
-        <div style="margin-right: 30px;float: right">
-            <table>
-                <tr>
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;">Yang Memberi Sanksi:</p>
-                    </th>
-                    <th style="text-align: center; padding: 8px;"></th>
-                </tr>
-                <tr>
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;">
-                            <img
-                                    src="data:image/png;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
-                                    width="100px" height="70px">
-                        </p>
-                    </th>
-                    <th style="text-align: center; padding: 8px;">
-                </tr>
-                <tr>
-                    <th style="text-align: center; padding: 8px 8px 0 8px;">
-                        <p style="font-size: 12px; margin: 0; text-decoration: underline">
-                            {{ $punishedBy?->name }}
-                        </p>
-                    </th>
-                </tr>
-                <tr style="padding: 0">
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;">{{ $punishedBy?->roles[0]?->name }}</p>
-                    </th>
-                </tr>
-            </table>
+            <div style="padding: 5px 0 3px 0"></div>
+
+            <p>
+                Demikian Surat Peringatan ini dibuat agar dapat diperhatikan dan ditaati oleh yang
+                bersangkutan.
+            </p>
+
+            @endif
         </div>
 
-    @endif
 
-    @if($punishedBy->hasAnyRole(['Manager Cabang']))
-        <div class="heading-separator table-heading-container">
-            <table>
-                <tr>
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;">Yang Memberi Sanksi:</p>
-                    </th>
-                    <th style="text-align: center; padding: 8px;"></th>
-                </tr>
-                <tr>
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;">
-                            <img
-                                    src="data:image/png;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
-                                    width="100px" height="70px">
-                        </p>
-                    </th>
-                    <th style="text-align: center; padding: 8px;">
-                </tr>
-                <tr>
-                    <th style="text-align: center; padding: 8px 8px 0 8px;">
-                        <p style="font-size: 12px; margin: 0; text-decoration: underline">
-                            {{ $punishedBy?->name }}
-                        </p>
-                    </th>
-                </tr>
-                <tr style="padding: 0">
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;">{{ $punishedBy?->roles[0]?->name }}</p>
-                    </th>
-                </tr>
-            </table>
-        </div>
-        <div class="heading-separator table-heading-container">
-            <table>
-                <tr>
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;">Yang Mengetahui:</p>
-                    </th>
-                    <th style="text-align: center; padding: 8px;"></th>
-                </tr>
-                <tr>
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;">
-                            <img
-                                    src="data:image/png;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
-                                    width="100px" height="70px">
-                        </p>
-                    </th>
-                    <th style="text-align: center; padding: 8px;">
-                </tr>
-                <tr>
-                    <th style="text-align: center; padding: 8px 8px 0 8px;">
-                        <p style="font-size: 12px; margin: 0; text-decoration: underline">
-                            {{ $operationalManager?->name }}
-                        </p>
-                    </th>
-                </tr>
-                <tr style="padding: 0">
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;">{{ $operationalManager?->roles[0]?->name }}</p>
-                    </th>
-                </tr>
-            </table>
-        </div>
-    @endif
 
-    <div class="kop-footer">
-        <img class="kop-image-footer"
-             src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"/>
-    </div>
+        @if($sp->sp_type === 'SP-3')
+            <div style="margin: 0 30px 0 40px; font-size: 13px">
+                Sehubungan sikap indisipliner dan pelanggaran terhadap tata tertib perusahaan yang saudara
+                lakukan, yaitu sebagai berikut :
+                <div style="padding: 5px 0 3px 0"></div>
+                <ol>
+                    @foreach($spReasonList as $spReason)
+                        <li>{{ $spReason->list_of_reason }}</li>
+                    @endforeach
+                </ol>
+                <div style="padding: 5px 0 3px 0"></div>
+
+                <p> Kami ingin mengingatkan Anda bahwa tindakan pelanggaran terhadap kebijakan perusahaan dapat
+                    berdampak serius tidak hanya pada kinerja Anda sendiri tetapi juga pada citra perusahaan secara
+                    keseluruhan.</p>
+                <br>
+                <p>
+                    Sehubungan dengan hal ini, kami sangat menyesalkan bahwa upaya-upaya untuk memperbaiki
+                    perilaku Anda belum memberikan hasil yang diharapkan. Oleh karena itu, dengan penuh penyesalan,
+                    kami harus memberikan sanksi terberat yang telah disepakati oleh perusahaan untuk pelanggaran
+                    yang telah terjadi.
+                </p>
+                <br>
+                <p>
+                    Dengan ini, kami menyampaikan bahwa sanksi yang diberlakukan atas pelanggaran-pelanggaran yang
+                    telah terjadi adalah pengunduran diri dari jabatan Anda di perusahaan ini. Anda diharapkan untuk
+                    mengajukan pengunduran diri secara tertulis dalam waktu <b>7 (tujuh) hari</b> kerja sejak tanggal
+                    penerimaan surat ini. Demikian Surat Peringatan ini dibuat dan agar dapat dilaksanakan.
+                </p>
+            </div>
+        @endif
+
+        <br>
+        @if($punishedBy->hasAnyRole(['Manager Keuangan', 'Direktur', 'Manager Operasional']))
+            <div style="margin-right: 30px;float: right">
+                <table>
+                    <tr>
+                        <th style="text-align: center; padding: 8px;">
+                            <p style="font-size: 12px; margin: 0;">Yang Memberi Sanksi:</p>
+                        </th>
+                        <th style="text-align: center; padding: 8px;"></th>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center; padding: 8px;">
+                            <p style="font-size: 12px; margin: 0;">
+                                <img
+                                        src="data:image/png;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                        width="100px" height="70px">
+                            </p>
+                        </th>
+                        <th style="text-align: center; padding: 8px;">
+                    </tr>
+                    <tr>
+                        <th style="text-align: center; padding: 8px 8px 0 8px;">
+                            <p style="font-size: 12px; margin: 0; text-decoration: underline">
+                                {{ $punishedBy?->name }}
+                            </p>
+                        </th>
+                    </tr>
+                    <tr style="padding: 0">
+                        <th style="text-align: center; padding: 8px;">
+                            <p style="font-size: 12px; margin: 0;">{{ $punishedBy?->roles[0]?->name }}</p>
+                        </th>
+                    </tr>
+                </table>
+            </div>
+        @endif
+
+        @if($punishedBy->hasAnyRole(['Manager Cabang']))
+            <div class="heading-separator table-heading-container">
+                <table>
+                    <tr>
+                        <th style="text-align: center; padding: 8px;">
+                            <p style="font-size: 12px; margin: 0;">Yang Memberi Sanksi:</p>
+                        </th>
+                        <th style="text-align: center; padding: 8px;"></th>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center; padding: 8px;">
+                            <p style="font-size: 12px; margin: 0;">
+                                <img
+                                        src="data:image/png;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                        width="100px" height="70px">
+                            </p>
+                        </th>
+                        <th style="text-align: center; padding: 8px;">
+                    </tr>
+                    <tr>
+                        <th style="text-align: center; padding: 8px 8px 0 8px;">
+                            <p style="font-size: 12px; margin: 0; text-decoration: underline">
+                                {{ $punishedBy?->name }}
+                            </p>
+                        </th>
+                    </tr>
+                    <tr style="padding: 0">
+                        <th style="text-align: center; padding: 8px;">
+                            <p style="font-size: 12px; margin: 0;">{{ $punishedBy?->roles[0]?->name }}</p>
+                        </th>
+                    </tr>
+                </table>
+            </div>
+            <div class="heading-separator table-heading-container">
+                <table>
+                    <tr>
+                        <th style="text-align: center; padding: 8px;">
+                            <p style="font-size: 12px; margin: 0;">Yang Mengetahui:</p>
+                        </th>
+                        <th style="text-align: center; padding: 8px;"></th>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center; padding: 8px;">
+                            <p style="font-size: 12px; margin: 0;">
+                                <img
+                                        src="data:image/png;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                        width="100px" height="70px">
+                            </p>
+                        </th>
+                        <th style="text-align: center; padding: 8px;">
+                    </tr>
+                    <tr>
+                        <th style="text-align: center; padding: 8px 8px 0 8px;">
+                            <p style="font-size: 12px; margin: 0; text-decoration: underline">
+                                {{ $operationalManager?->name }}
+                            </p>
+                        </th>
+                    </tr>
+                    <tr style="padding: 0">
+                        <th style="text-align: center; padding: 8px;">
+                            <p style="font-size: 12px; margin: 0;">{{ $operationalManager?->roles[0]?->name }}</p>
+                        </th>
+                    </tr>
+                </table>
+            </div>
+            <div class="clearfix"></div>
+        @endif
+
+        <div class="kop-footer">
+            <img class="kop-image-footer"
+                 src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"/>
+        </div>
 </div>
 </body>
 </html>

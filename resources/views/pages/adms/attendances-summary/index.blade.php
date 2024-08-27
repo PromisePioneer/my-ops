@@ -68,9 +68,19 @@
                 periods: null,
                 startIndex: null,
                 async init() {
-                    const resp = await axios.get('/adms/attendances-summary/period-data');
-                    this.periods = resp.data;
-                    this.startIndex = this.periods.from;
+                    await this.getPeriodsData();
+                },
+                async getPeriodsData() {
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/adms/attendances-summary/period-data');
+                        this.periods = resp.data;
+                        this.startIndex = this.periods.from;
+                    } catch (e) {
+                        console.log(error)
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 formatDate(val) {
                     const [month, year] = val.split('-');

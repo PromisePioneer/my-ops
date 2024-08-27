@@ -4,6 +4,36 @@
 
     <div x-data="userData()">
         @include('pages.manage-users.user.modal.import')
+        <div class="col-lg-6">
+            <div class="card card-xl-stretch mb-5 mb-xl-8">
+                <div class="card-header">
+                    <h3 class="card-title">Filter Data</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4 mt-0">
+                        <input type="number" min="1900" max="2099" step="1" name="year" id="year"
+                               class="form-control form-control-solid" placeholder="Hi">
+                    </div>
+                    <div class="row mb-4">
+                        <select name="month" id="month" class="form-select form-select-solid" data-control="select2"
+                                data-placeholder="Select an option" data-allow-clear="true">
+                            <option value="">Pilih Bulan</option>
+                            <template x-for="(month, index) in months" :key="index">
+                                <option :value="month.number" x-text="month.name"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <div class="row mb-7">
+                        <select name="branch_id" id="" class="form-select form-select-solid branch-select2">
+                            <option value="">Pilih Cabang</option>
+                        </select>
+                    </div>
+                    <div class="text-end">
+                        <button type="button" @click="filter()" class="btn btn-primary btn-sm">Filter</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -71,6 +101,7 @@
                             </th>
                             <th class="min-w-125px">Karyawan</th>
                             <th class="min-w-125px">Role</th>
+                            <th class="min-w-125px">Tanggal Masuk</th>
                             <th class="min-w-125px">Actions</th>
                         </thead>
                         <tbody class="text-gray-600 fw-bold">
@@ -112,6 +143,7 @@
                                         </ul>
                                     </template>
                                 </td>
+                                <td x-text="user.join_date"></td>
                                 <td>
                                     <a x-bind:href="`/manage-users/users/edit/${user.id}`"
                                        class="btn btn-sm btn-primary"><i
@@ -145,30 +177,71 @@
                 </div>
             </div>
         </div>
+        @include('components.toast')
     </div>
-    @include('components.toast')
 @endsection
 @push('script')
     <script>
         function userData() {
             return {
                 buttonLoading: false,
+                year: [{}],
                 users: [],
                 role: [],
+                months: [],
                 isLoading: true,
                 startIndex: null,
                 search: '',
+                formFilter: document.getElementById('formFilter'),
                 modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
                 formImport: document.getElementById('form-import'),
                 async init() {
                     await this.getUserData();
                     await this.filterByBranch();
                     this.isLoading = false;
+                    await this.getMonth();
+                    await this.getBranchData();
+                },
+                getMonth() {
+                    this.months.push(
+                        {name: "Januari", number: '01'},
+                        {name: "Februari", number: '02'},
+                        {name: "Maret", number: '3'},
+                        {name: "April", number: '04'},
+                        {name: "Mei", number: '05'},
+                        {name: "Juni", number: '06'},
+                        {name: "Juli", number: '07'},
+                        {name: "Agustus", number: '08'},
+                        {name: "September", number: '09'},
+                        {name: "Oktober", number: '10'},
+                        {name: "November", number: '11'},
+                        {name: "Desember", number: '12'},
+                    )
                 },
                 async getUserData() {
                     const users = await axios.get('/manage-users/users/data');
                     this.users = users.data;
                     this.startIndex = this.users.from;
+                },
+                async filter() {
+                    const year = document.getElementById('year')?.value ?? '';
+                    const month = document.getElementById('month')?.value ?? '';
+                    const branch_id = $(".branch-select2")?.val();
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/manage-users/users/filter', {
+                            params: {
+                                month: month,
+                                year: year,
+                                branch_id: branch_id
+                            }
+                        });
+                        this.users = resp.data;
+                    } catch (e) {
+                        console.log(e);
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async searchData() {
                     this.users = await axios.get('/manage-users/users/search', {
@@ -198,6 +271,18 @@
                             await this.init();
                         } catch (error) {
                             await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
+                },
+                async getBranchData() {
+                    $(".branch-select2").select2({
+                        ajax: {
+                            url: '/manage-users/users/branch/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true
                         }
                     });
                 },

@@ -15,13 +15,11 @@ return new class extends Migration {
             $table->foreignId('branch_id')->nullable()->constrained('branches');
             $table->foreignId('user_id')->constrained('users');
             $table->string('sp_number');
-            $table->date('start_date');
-            $table->date('end_date');
+            $table->date('date');
             $table->enum('sp_type', ['SP-1', 'SP-2', 'SP-3']);
-            $table->string('reason');
+            $table->json('list_of_reason');
             $table->foreignId('punished_by')->constrained('users');
             $table->foreignId('created_by')->constrained('users');
-            $table->text('description');
             $table->timestamps();
         });
     }

@@ -23,8 +23,8 @@ class SP extends Model
         'reason',
         'description',
         'punished_by',
-        'start_date',
-        'end_date',
+        'date',
+        'list_of_reason'
     ];
 
     public function createdBy(): BelongsTo

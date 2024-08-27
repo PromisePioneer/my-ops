@@ -91,6 +91,28 @@ class UserController extends Controller
         return response()->json($roles);
     }
 
+    public function filter(Request $request): JsonResponse
+    {
+        $users = User::with('roles')->where('branch_id', $request->branch_id);
+
+        if ($request->year) {
+            $users->whereYear('join_date', $request->year);
+        }
+
+        if ($request->month) {
+            $users->whereMonth('join_date', '=', $request->month);
+        }
+
+        if ($request->month && $request->date) {
+            $users->whereDate('join_date', Carbon::parse('01-'.$request->month.'-'.$request->year));
+        }
+
+        $filteredData = $users->paginate($this->perPage);
+
+
+        return response()->json($filteredData);
+    }
+
     public function store(UserRequest $request): JsonResponse
     {
         $branch = $this->branch->getSelectedData($request->branch_id);

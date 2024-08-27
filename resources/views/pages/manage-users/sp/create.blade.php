@@ -14,20 +14,10 @@
                             <div class="col-lg-6">
                                 <div class="d-flex align-items-center flex-equal fw-row me-4 order-2"
                                      data-bs-toggle="tooltip" data-bs-trigger="hover">
-                                    <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal awal :</div>
-                                    <div class="position-relative d-flex align-items-center w-150px">
-                                        <input type="date" class="form-control form-control-white fw-bolder pe-5 date"
-                                               placeholder="Tanggal awal" name="start_date" id="start_date"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="d-flex align-items-center flex-equal fw-row me-4 order-2"
-                                     data-bs-toggle="tooltip" data-bs-trigger="hover">
                                     <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal akhir :</div>
                                     <div class="position-relative d-flex align-items-center w-150px">
                                         <input type="date" class="form-control form-control-white fw-bolder pe-5 date"
-                                               placeholder="Tanggal akhir" name="end_date" id="end_date"/>
+                                               placeholder="Tanggal" name="date" id="date"/>
                                     </div>
                                 </div>
                             </div>
@@ -49,7 +39,7 @@
                                     <div class="col-lg-11 fv-row">
                                         <select name="sp_type" class="form-select form-select-solid account-select2"
                                                 data-placeholder="Select an option">
-                                            <option value="0" selected>Pilih</option>
+                                            <option value="0" selected disabled>Pilih</option>
                                             <option value="SP-1">SP-1</option>
                                             <option value="SP-2">SP-2</option>
                                             <option value="SP-3">SP-3</option>
@@ -58,20 +48,41 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row mb-10">
-                            <div class="col-lg-6">
-                                <div class="mb-0">
-                                    <label class="form-label fs-6 fw-bolder text-gray-700 required">Alasan SP</label>
-                                    <input class="form-control form-control-solid" type="text" name="reason"
-                                           placeholder="Alasan"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mb-10">
-                            <label class="form-label fs-6 fw-bolder text-gray-700">Catatan</label>
-                            <textarea name="description" id="description" class="form-control form-control-solid"
-                                      rows="3"
-                                      placeholder="Thanks for your business"></textarea>
+                        <div class="table-responsive mb-20">
+                            <table class="table g-5 gs-0 mb-0 fw-bolder text-gray-700" data-kt-element="items">
+                                <thead>
+                                <tr class="border-bottom fs-7 fw-bolder text-gray-700 text-uppercase">
+                                    <th class="min-w-300px w-475px required">Alasan</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <template x-for="(field,index) in fields " :key="index">
+                                    <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
+                                        <td style='text-align:center; vertical-align:middle' width="100%">
+                                            <textarea type="text" class="form-control form-control-solid mb-2"
+                                                      x-model="field.list_of_reason"
+                                                      :name="`data[${index}][list_of_reason]`"
+                                                      placeholder="Deskripsi" data-kt-autosize="true"></textarea>
+                                        </td>
+                                        <td class="pt-5 text-end" style='text-align:center; vertical-align:middle'>
+                                            <button type="button" class="btn btn-sm btn-icon btn-active-color-primary"
+                                                    @click="removeField(index)">
+                                                    <span class="svg-icon svg-icon-3">
+                                                        <i class="bi bi-trash"></i>
+                                                    </span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </template>
+                                </tbody>
+                                <tfoot>
+                                <tr class="border-top border-top-dashed align-top fs-6 fw-bolder text-gray-700">
+                                    <th class="text-primary">
+                                        <button type="button" class="btn btn-link py-1" @click="add()">Tambah</button>
+                                    </th>
+                                </tr>
+                                </tfoot>
+                            </table>
                         </div>
                     </div>
 
@@ -89,39 +100,29 @@
 @push('script')
     <script>
         $(".date").flatpickr();
-        tinymce.init({
-            selector: 'textarea#description',
-            plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons accordion',
-            editimage_cors_hosts: ['picsum.photos'],
-            menubar: 'file edit view insert format tools table help',
-            toolbar: "undo redo | accordion accordionremove | blocks fontfamily fontsize | bold italic underline strikethrough | align numlist bullist | link image | table media | lineheight outdent indent| forecolor backcolor removeformat | charmap emoticons | code fullscreen preview | save print | pagebreak anchor codesample | ltr rtl",
-            autosave_ask_before_unload: true,
-            autosave_interval: '30s',
-            autosave_prefix: '{path}{query}-{id}-',
-            autosave_restore_when_empty: false,
-            autosave_retention: '2m',
-            image_advtab: true,
-            image_class_list: [
-                {title: 'None', value: ''},
-                {title: 'Some class', value: 'class-name'}
-            ],
-            importcss_append: true,
-            height: 600,
-            image_caption: true,
-            quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
-            noneditable_class: 'mceNonEditable',
-            toolbar_mode: 'sliding',
-            contextmenu: 'link image table',
-            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
-        });
 
         function generateSP() {
             return {
+                fields: [{
+                    list_of_reason: '',
+                }],
                 form: document.getElementById('form'),
                 buttonLoading: false,
                 async init() {
                     await this.getUserData();
-                    await this.getUserPicAndLeader();
+                },
+                add() {
+                    this.fields.push({
+                        description: '',
+                        qty: '',
+                        unit_price: '',
+                        total_price: '',
+                    });
+                },
+                removeField(index) {
+                    if (this.fields.length > 1) {
+                        this.fields.splice(index, 1);
+                    }
                 },
                 async save() {
                     this.buttonLoading = true;

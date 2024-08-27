@@ -72,17 +72,16 @@ class SPController extends Controller
     public function store(SPRequest $request): JsonResponse
     {
 //        $this->authorize('create', SP::class);
+
         SP::create([
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
+            'date' => $request->date,
             'branch_id' => $request->user()->branch_id,
             'user_id' => $request->user_id,
             'sp_number' => $this->spService->generateSpNumber($request),
             'sp_type' => $request->sp_type,
             'created_by' => $request->user()->id,
-            'reason' => $request->reason,
+            'list_of_reason' => json_encode($request['data']),
             'punished_by' => $request->user()->id,
-            'description' => $request->description,
         ]);
 
         return response()->json(['message' => 'Data berhasil disimpan.']);
@@ -116,22 +115,26 @@ class SPController extends Controller
         return view('pages.manage-users.sp.edit', compact('sp'));
     }
 
+
+    public function getListOfReason(SP $sp): JsonResponse
+    {
+        $listOfReason = json_decode($sp->list_of_reason);
+        return response()->json($listOfReason);
+    }
+
     /**
      * @throws AuthorizationException
      */
     public function update(SPRequest $request, SP $sp): JsonResponse
     {
-//        $this->authorize('update', SP::class);
         $sp->update([
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
+            'date' => $request->date,
             'branch_id' => $request->user()->branch_id,
             'user_id' => $request->user_id,
             'sp_number' => $this->spService->generateSpNumber($request),
             'sp_type' => $request->sp_type,
             'created_by' => $request->user()->id,
-            'reason' => $request->reason,
-            'description' => $request->description
+            'list_of_reason' => json_encode($request['data']),
         ]);
 
 
@@ -157,8 +160,11 @@ class SPController extends Controller
         $operationalManager = User::role('Manager Operasional')->with('roles')->first();
 
 
+        $spReasonList = json_decode($sp?->list_of_reason);
+
+
         $pdf = Pdf::loadView('pages.manage-users.sp.export-pdf',
-            compact('sp', 'punishedBy', 'operationalManager'))->setPaper('A4',
+            compact('sp', 'punishedBy', 'operationalManager', 'spReasonList'))->setPaper('A4',
             'portrait');
 
         return $pdf->stream();

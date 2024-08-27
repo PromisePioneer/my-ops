@@ -1,9 +1,6 @@
 @php use Carbon\Carbon; @endphp
 @extends('layouts.template')
 @section('content')
-    @push('styles')
-        <script src="{{ asset('assets/plugins/custom/tinymce/tinymce.bundle.js') }}"></script>
-    @endpush
     <div x-data="attendancesSummary()">
         @include('pages.adms.attendances-summary.modal.sp')
         @include('pages.adms.attendances-summary.modal.attendances-summary-detail')
@@ -155,6 +152,18 @@
                 formSp: document.getElementById('form-sp'),
                 usersDetail: [],
                 async init() {
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get(`/adms/attendances-summary/detail/data/01-${this.month}-${this.year}`);
+                        this.attendances = resp.data;
+                        this.startIndex = this.attendances.from
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+                async getAttendanceSummary() {
                     const resp = await axios.get(`/adms/attendances-summary/detail/data/01-${this.month}-${this.year}`);
                     this.attendances = resp.data;
                     this.startIndex = this.attendances.from

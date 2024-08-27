@@ -216,7 +216,7 @@ class PermissionSeeder extends Seeder
         }
 
 
-        $permission = [
+        $permissions = [
             'lihat SP',
             'update semua SP',
             'update sp sendiri',
