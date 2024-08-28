@@ -191,6 +191,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/confirm/{sp}', [SpController::class, 'confirm']);
             Route::delete('/{sp}', [SpController::class, 'destroy']);
             Route::get('export-pdf/{sp}', [SPController::class, 'exportToPDF']);
+            Route::get('/user/current-sp/{user}', [SPController::class, 'getCurrentSp']);
         });
     });
 

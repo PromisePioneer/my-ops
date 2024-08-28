@@ -14,10 +14,11 @@
                             <div class="col-lg-6">
                                 <div class="d-flex align-items-center flex-equal fw-row me-4 order-2"
                                      data-bs-toggle="tooltip" data-bs-trigger="hover">
-                                    <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal akhir :</div>
+                                    <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal:</div>
                                     <div class="position-relative d-flex align-items-center w-150px">
                                         <input type="date" class="form-control form-control-white fw-bolder pe-5 date"
-                                               placeholder="Tanggal" name="date" id="date"/>
+                                               placeholder="Tanggal" name="start_date" id="start_date"
+                                               :value="currentSP?.current_sp?.start_date ?? ''"/>
                                     </div>
                                 </div>
                             </div>
@@ -40,9 +41,9 @@
                                         <select name="sp_type" class="form-select form-select-solid account-select2"
                                                 data-placeholder="Select an option">
                                             <option value="0" selected disabled>Pilih</option>
-                                            <option value="SP-1">SP-1</option>
-                                            <option value="SP-2">SP-2</option>
-                                            <option value="SP-3">SP-3</option>
+                                            <template x-for="(spType, index) in SPType" :key="index">
+                                                <option :value="spType.name" x-text="spType.name"></option>
+                                            </template>
                                         </select>
                                     </div>
                                 </div>
@@ -56,13 +57,14 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <template x-for="(field,index) in fields " :key="index">
+                                <template x-for="(field,index) in fields" :key="index">
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td style='text-align:center; vertical-align:middle' width="100%">
                                             <textarea type="text" class="form-control form-control-solid mb-2"
                                                       x-model="field.list_of_reason"
                                                       :name="`data[${index}][list_of_reason]`"
-                                                      placeholder="Deskripsi" data-kt-autosize="true"></textarea>
+                                                      placeholder="Deskripsi" data-kt-autosize="true"
+                                                      x-text="field.list_of_reason"></textarea>
                                         </td>
                                         <td class="pt-5 text-end" style='text-align:center; vertical-align:middle'>
                                             <button type="button" class="btn btn-sm btn-icon btn-active-color-primary"
@@ -103,20 +105,25 @@
 
         function generateSP() {
             return {
+                SPType: [],
                 fields: [{
                     list_of_reason: '',
                 }],
                 form: document.getElementById('form'),
+                currentSP: null,
                 buttonLoading: false,
                 async init() {
                     await this.getUserData();
+                    await this.getCurrentSp();
+                    this.SPType.push(
+                        {name: "SP-1"},
+                        {name: "SP-2"},
+                        {name: "SP-3"},
+                    )
                 },
                 add() {
                     this.fields.push({
-                        description: '',
-                        qty: '',
-                        unit_price: '',
-                        total_price: '',
+                        list_of_reason: '',
                     });
                 },
                 removeField(index) {
@@ -137,6 +144,29 @@
                     } finally {
                         this.buttonLoading = false;
                     }
+                },
+                async getCurrentSp() {
+                    const self = this
+                    $('.users-select2').on('change', async function () {
+                        const usersValue = $(".users-select2").val();
+                        const resp = await axios.get(`/manage-users/sp/user/current-sp/${usersValue}`);
+                        self.currentSP = resp.data;
+                        self.fields = []
+                        self.currentSP?.list_of_reason.map(val => {
+                            self.fields.push(val);
+                        });
+                        if (self.currentSP.current_sp.sp_type === 'SP-1') {
+                            self.SPType.splice(0, 1);
+                        }
+
+                        if (self.currentSP.current_sp.sp_type === 'SP-2'
+                            ||
+                            self.currentSP.current_sp.sp_type === 'SP-3') {
+                            self.SPType.splice(0, 2);
+                        }
+
+                        console.log(self.SPType)
+                    })
                 },
                 async getUserData() {
                     $(".users-select2").select2({

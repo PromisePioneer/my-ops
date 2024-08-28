@@ -50,12 +50,11 @@ class LoginController extends Controller
 
     public function authenticated(Request $request, User $user): RedirectResponse|Redirector|Application
     {
-        if (Auth::user()->status_active === 'Tidak Aktif') {
+        if (Auth::user()->active === 0) {
             Auth::logout();
             return redirect('login')->withErrors(['Your account is inactive']);
         }
-
-
+        
         if ($user->hasAnyRole('Technichian', 'Accounting', 'Stocker', 'WKCA', 'KCA', 'NOC')) {
             return redirect('/utility/user-profile/profile-detail');
         }

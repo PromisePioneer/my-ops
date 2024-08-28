@@ -23,7 +23,8 @@ class SP extends Model
         'reason',
         'description',
         'punished_by',
-        'date',
+        'start_date',
+        'end_date',
         'list_of_reason'
     ];
 
@@ -50,7 +51,6 @@ class SP extends Model
     public function getDataWithPagination(int $perPage): LengthAwarePaginator
     {
         $sp = self::with('createdBy', 'user', 'branch')->paginate($perPage);
-
         self::formattedData($sp);
         return $sp;
     }
@@ -59,24 +59,36 @@ class SP extends Model
 
     private static function formattedData(LengthAwarePaginator $sp): void
     {
-        $formattedData = $sp->getCollection()->map(function ($sp) {
+        $formattedData = $sp->getCollection()->map(function ($item) {
+            $isExpired = false;
+
+            $spActive = $item->where('expired_if_has_new_sp', 0)->first();
+
+            if ($spActive->id === $item->id && $spActive->expired_if_has_new_sp === 0 && $spActive->end_date > Carbon::now()) {
+                $isExpired = true;
+            }
+
             return [
-                'id' => $sp->id,
-                'branch_name' => $sp->branch->name ?? null,
-                'user_id' => $sp->user->name,
-                'sp_number' => $sp->sp_number,
-                'date' => Carbon::parse($sp->start_date)->format('d/m/Y').' - '.Carbon::parse($sp->end_date)->format('d/m/Y'),
-                'sp_type' => $sp->sp_type,
-                'punished_by' => $sp->punishedBy?->name,
-                'created_by' => $sp->createdBy->name,
+                'id' => $item->id,
+                'branch_name' => $item->branch->name ?? null,
+                'user_id' => "({$item->user->nip}) {$item->user->name}",
+                'sp_number' => $item->sp_number,
+                'date' => Carbon::parse($item->start_date)->format('d/m/Y').' - '.Carbon::parse($item->end_date)->format('d/m/Y'),
+                'expired' => $isExpired,
+                'sp_type' => $item->sp_type,
+                'punished_by' => $item->punishedBy?->name,
+                'created_by' => $item->createdBy->name,
             ];
         })->values();
 
         $sp->setCollection($formattedData);
     }
 
-    public function searchDataWithPagination(Request $request, int $perPage): LengthAwarePaginator
-    {
+    public
+    function searchDataWithPagination(
+        Request $request,
+        int $perPage
+    ): LengthAwarePaginator {
         $search = $request->input('search');
 
         $sp = self::whereHas('user', function ($query) use ($search) {
@@ -87,5 +99,4 @@ class SP extends Model
         self::formattedData($sp);
         return $sp;
     }
-
 }

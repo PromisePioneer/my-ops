@@ -146,7 +146,7 @@ class User extends Authenticatable
     public function searchData(Request $request): Collection
     {
         $search = $request->input('search');
-        
+
         return self::with('roles')
             ->where('name', 'like', '%'.$search.'%')
             ->orWhere('email', 'like', '%'.$search.'%')
@@ -162,19 +162,22 @@ class User extends Authenticatable
     public function getUser(Request $request): array
     {
         $search = $request->search;
-        $query = self::orderby('name', 'asc')
-            ->select('id', 'name');
 
-        if ($search !== '') {
-            $query->where('name', 'like', '%'.$search.'%');
-            $query->orWhere('nip', 'like', '%'.$search.'%');
+        $query = self::where('active', '=', 1)
+            ->orderBy('name')
+            ->select('id', 'name', 'nip');
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('nip', 'like', '%'.$search.'%');
+            });
         }
-
 
         if ($request->user()->hasRole('Manager Keuangan')) {
-            $query->whereNot('id', $request->user()->id)->role(['Accounting']);
+            $query->whereNot('id', $request->user()->id)
+                ->role(['Accounting']);
         }
-
 
         if ($request->user()->hasRole('Manager Cabang')) {
             $query->whereNot('id', $request->user()->id)
@@ -182,13 +185,12 @@ class User extends Authenticatable
                 ->role(['KCA', 'WKCA', 'Teknisi', 'Accounting', 'Stocker']);
         }
 
+        $users = $query->get();
 
-        $user = $query->get();
-
-        return $user->map(function ($item) {
+        return $users->map(function ($item) {
             return [
                 'id' => $item->id,
-                'text' => $item->nip.''.$item->name,
+                'text' => $item->nip.' '.$item->name,
             ];
         })->toArray();
     }

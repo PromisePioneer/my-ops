@@ -8,11 +8,14 @@ use App\Models\SP;
 use App\Models\User;
 use App\Service\SpService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Throwable;
 
 class SPController extends Controller
 {
@@ -68,21 +71,40 @@ class SPController extends Controller
 
     /**
      * @throws AuthorizationException
+     * @throws Throwable
      */
     public function store(SPRequest $request): JsonResponse
     {
-//        $this->authorize('create', SP::class);
+        $currentSP = SP::where('user_id', $request->user_id)
+            ->where('expired_if_has_new_sp', false)
+            ->where('end_date', '>', Carbon::now())
+            ->first();
+        $endData = Carbon::parse($request->start_date)->addMonth(6);
+        DB::transaction(function () use ($request, $currentSP, $endData) {
+            $sp = SP::create([
+                'start_date' => $request->start_date,
+                'end_date' => $endData,
+                'branch_id' => $request->user()->branch_id,
+                'user_id' => $request->user_id,
+                'sp_number' => $this->spService->generateSpNumber($request),
+                'sp_type' => $request->sp_type,
+                'created_by' => $request->user()->id,
+                'list_of_reason' => json_encode($request['data']),
+                'punished_by' => $request->user()->id,
+            ]);
 
-        SP::create([
-            'date' => $request->date,
-            'branch_id' => $request->user()->branch_id,
-            'user_id' => $request->user_id,
-            'sp_number' => $this->spService->generateSpNumber($request),
-            'sp_type' => $request->sp_type,
-            'created_by' => $request->user()->id,
-            'list_of_reason' => json_encode($request['data']),
-            'punished_by' => $request->user()->id,
-        ]);
+
+            if ($currentSP) {
+                $currentSP->expired_if_has_new_sp = true;
+                $currentSP->save();
+            }
+
+            if ($currentSP?->sp_type === 'SP-3') {
+                $user = User::where('id', $sp->user_id)->first();
+                $user->active = false;
+                $user->save();
+            }
+        });
 
         return response()->json(['message' => 'Data berhasil disimpan.']);
     }
@@ -94,32 +116,6 @@ class SPController extends Controller
     {
 //        $this->authorize('create', SP::class);
         return view('pages.manage-users.sp.create');
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-
-    public function selectedUserdata(SP $sp): JsonResponse
-    {
-//        $this->authorize('update', SP::class);
-        return response()->json($this->user->getSelectedData($sp->user_id));
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function edit(SP $sp): View
-    {
-//        $this->authorize('update', SP::class);
-        return view('pages.manage-users.sp.edit', compact('sp'));
-    }
-
-
-    public function getListOfReason(SP $sp): JsonResponse
-    {
-        $listOfReason = json_decode($sp->list_of_reason);
-        return response()->json($listOfReason);
     }
 
     /**
@@ -143,6 +139,41 @@ class SPController extends Controller
         ]);
     }
 
+    public function getCurrentSP(User $user): JsonResponse
+    {
+        $currentSP = SP::where('user_id', $user->id)->where('expired_if_has_new_sp', false)
+            ->where('end_date', '>', Carbon::now())
+            ->first();
+        $getListOfReasonOfCurrentSP = json_decode($currentSP->list_of_reason);
+        return response()->json([
+            'current_sp' => $currentSP,
+            'list_of_reason' => $getListOfReasonOfCurrentSP,
+        ]);
+    }
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function selectedUserdata(SP $sp): JsonResponse
+    {
+//        $this->authorize('update', SP::class);
+        return response()->json($this->user->getSelectedData($sp->user_id));
+    }
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function edit(SP $sp): View
+    {
+//        $this->authorize('update', SP::class);
+        return view('pages.manage-users.sp.edit', compact('sp'));
+    }
+
+    public function getListOfReason(SP $sp): JsonResponse
+    {
+        $listOfReason = json_decode($sp->list_of_reason);
+        return response()->json($listOfReason);
+    }
 
     /**
      * @throws AuthorizationException

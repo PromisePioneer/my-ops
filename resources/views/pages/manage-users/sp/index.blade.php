@@ -31,21 +31,18 @@
                 </div>
             </div>
             <div class="card-body py-3">
-                <div class="py-5">
+                <div class="table-responsive py-5">
                     <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
                         <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                            <th class="w-10px pe-2">No</th>
                             <th class="min-w-125px">Cabang</th>
-                            <th class="min-w-150px">Tanggal</th>
                             <th class="min-w-125px">No. SP</th>
                             <th class="min-w-125px">Karyawan</th>
-                            <th class="min-w-125px">Dibuat Oleh</th>
-                            <th class="min-w-125px">Yg memberi sanksi</th>
+                            <th class="min-w-125px">Status</th>
                             <th class="min-w-125px">Actions</th>
                         </thead>
-                        <tbody class="fw-bold">
                         <template x-if="isLoading">
+                            <tbody class="fw-bold">
                             <tr>
                                 <td colspan="9">
                                     <div style="text-align: center;">
@@ -55,24 +52,32 @@
                                     </div>
                                 </td>
                             </tr>
+                            </tbody>
                         </template>
                         <template x-if="!isLoading && spList.data?.length === 0">
+                            <tbody class="fw-bold">
                             <tr>
                                 <td colspan="9">
                                     <center>Data Tidak Ditemukan</center>
                                 </td>
                             </tr>
+                            </tbody>
                         </template>
-                        <template x-for="(sp,index) in spList?.data" :key="sp.id">
-                            <tr>
-                                <td x-text="startIndex + index++"></td>
-                                <td x-text="sp.branch_name ?? 'Pusat'"></td>
-                                <td x-text="sp.date"></td>
-                                <td x-text="sp.sp_number"></td>
-                                <td x-text="sp.user_id"></td>
-                                <td x-text="sp.punished_by"></td>
-                                <td x-text="sp.created_by"></td>
+                        <template x-for="(sp,index) in spList?.data" :key="index">
+                            <tbody class="fw-bold">
+                            <tr :class="{'table-active': selected === index}" style="cursor:pointer;">
+                                <td @click="selected === index ? selected = null : selected = index"
+                                    x-text="sp.branch_name ?? 'Pusat'"></td>
+                                <td @click="selected === index ? selected = null : selected = index"
+                                    x-text="sp.sp_number"></td>
+                                <td @click="selected === index ? selected = null : selected = index"
+                                    x-text="sp.user_id"></td>
+                                <td @click="selected === index ? selected = null : selected = index">
+                                   <span x-text="sp.expired  ? 'Masih Berlaku' : 'Sudah Habis'"
+                                         :class="sp.expired ? 'badge bg-success' : 'badge bg-danger'"></span>
+                                </td>
                                 <td>
+
                                     <a :href="`/manage-users/sp/export-pdf/${sp.id}`" class="btn btn-danger btn-sm">
                                         <i class="bi bi-file-earmark-pdf"></i>
                                     </a>
@@ -84,8 +89,31 @@
                                     </button>
                                 </td>
                             </tr>
+                            <tr x-show="selected === index" x-cloak x-transition>
+                                <td colspan="5">
+                                    <div class="d-flex justify-content-center">
+
+                                        <div class="col-lg-12">
+                                            <div class="p-4 bg-light">
+                                                <h6>Detail SP:</h6>
+                                                <p>No. SP: <span x-text="sp.sp_number"></span></p>
+                                                <p>Karyawan: <span x-text="sp.user_id"></span></p>
+                                                <p>Cabang: <span x-text="sp.branch_name ?? 'Pusat'"></span></p>
+                                                <p>Yg memberi sanksi: <span x-text="sp.punished_by"></span></p>
+                                                <p>
+                                                    Tipe SP : <span x-text="sp.sp_type" class="badge bg-danger"></span>
+                                                </p>
+                                                <p>Status:
+                                                    <span x-text="sp.expired  ? 'Masih Berlaku' : 'Sudah Habis'"
+                                                          :class="sp.expired ? 'badge bg-success' : 'badge bg-danger'"></span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
                         </template>
-                        </tbody>
                     </table>
                     <ul class="pagination float-end mb-4">
                         <li class="page-item previous">
@@ -108,6 +136,7 @@
                 isLoading: false,
                 spList: [],
                 startIndex: null,
+                selected: null,
                 search: '',
                 async init() {
                     await this.getSpData();

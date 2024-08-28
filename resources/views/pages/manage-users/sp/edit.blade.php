@@ -17,7 +17,8 @@
                                     <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal akhir :</div>
                                     <div class="position-relative d-flex align-items-center w-150px">
                                         <input type="date" class="form-control form-control-white fw-bolder pe-5 date"
-                                               placeholder="Tanggal" name="date" id="date" value="{{ $sp->date }}"/>
+                                               placeholder="Tanggal" name="date" id="date"
+                                               value="{{ $sp->start_date }}"/>
                                     </div>
                                 </div>
                             </div>

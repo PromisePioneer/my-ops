@@ -25,7 +25,7 @@ class SPRequest extends FormRequest
     {
         return [
             'user_id' => ['required', 'exists:users,id'],
-            'date' => ['required', 'date', 'after_or_equal:today'],
+            'start_date' => ['required', 'date', 'after_or_equal:today'],
             'sp_type' => [
                 'required',
                 Rule::in('SP-1', 'SP-2', 'SP-3'),
@@ -40,9 +40,9 @@ class SPRequest extends FormRequest
         return [
             'user_id.required' => 'Karyawan tidak boleh kosong',
             'user_id.exists' => 'Karyawan tidak valid',
-            'date.required' => 'Tanggal tidak boleh kosong',
-            'date.date' => 'Tanggal tidak valid',
-            'date.after_or_equal' => 'tanggal tidak boleh sebelum tanggal hari ini',
+            'start_date.required' => 'Tanggal tidak boleh kosong',
+            'start_date.date' => 'Tanggal tidak valid',
+            'start_date.after_or_equal' => 'tanggal tidak boleh sebelum tanggal hari ini',
             'sp_type.required' => 'Karyawan tidak boleh kosong',
             'sp_type.in' => 'Tipe SP tidak valid',
             'list_of_reason.required' => 'Alasan tidak boleh kosong',
