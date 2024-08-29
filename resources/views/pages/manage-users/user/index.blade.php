@@ -129,8 +129,7 @@
                                 <td class="d-flex align-items-center">
                                     <div class="d-flex flex-column">
                                         <a :href="`/manage-users/users/detail/${user.id}`"
-                                           class="text-gray-800 text-hover-primary mb-1"
-                                           x-text="user.name"></a>
+                                           class="text-gray-800 text-hover-primary mb-1" x-text="user.name"></a>
                                         <span x-text="user.nip"></span>
                                     </div>
                                 </td>
@@ -276,14 +275,16 @@
                 },
                 async getBranchData() {
                     $(".branch-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Cabang",
                         ajax: {
                             url: '/manage-users/users/branch/data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),
                             processResults: (data) => ({results: data}),
-                            cache: true
-                        }
+                            cache: true,
+                        },
                     });
                 },
                 async filterByBranch() {

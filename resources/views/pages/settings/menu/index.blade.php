@@ -1,10 +1,8 @@
 @extends('layouts.template')
 @section('page-title', 'Menu Management')
 @section('content')
-    <div x-data="departmentsData()">
+    <div x-data="menuData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.setting.menu.modal.create')
-            @include('pages.setting.menu.modal.edit')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -18,10 +16,10 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
+                            <a href="#" type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                               data-bs-target="#modal-create">
                                 Tambah
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -29,19 +27,13 @@
             <div class="card-body py-3">
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
+                        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="w-10px pe-2">No</th>
                                 <th class="min-w-125px">Nama</th>
-                                <th class="min-w-125px">Link</th>
-                                <th class="min-w-125px">Deskripsi</th>
-                                <th class="min-w-125px">Icon</th>
-                                <th class="min-w-125px">Urutan</th>
-                                <th class="min-w-125px">Actions</th>
                             </thead>
-                            <tbody class="text-gray-600 fw-bold">
                             <template x-if="isLoading">
+                                <tbody class="fw-bold">
                                 <tr>
                                     <td colspan="9">
                                         <div style="text-align: center;">
@@ -51,37 +43,74 @@
                                         </div>
                                     </td>
                                 </tr>
+                                </tbody>
                             </template>
                             <template x-if="!isLoading && menus.data?.length === 0">
+                                <tbody class="fw-bold">
                                 <tr>
                                     <td colspan="9">
                                         <center>Data Tidak Ditemukan</center>
                                     </td>
                                 </tr>
+                                </tbody>
                             </template>
                             <template x-for="(menu, index) in menus?.data" :key="menu.id">
-                                <tr>
-                                    <td x-text="startIndex + index++"></td>
-                                    <td x-text="menu.nama_menu"></td>
-                                    <td x-text="menu.link_menu"></td>
-                                    <td x-text="menu.deskripsi_menu"></td>
+                                <tbody class="fw-bold">
+                                <tr :class="{'table-active': selected === index}" style="cursor:pointer;"
+                                    @click="selected === index ? selected = null : selected = index">
                                     <td>
-                                        <i :class="menu.icon_menu"></i>
-                                    </td>
-                                    <td x-text="menu.no_urut"></td>
-                                    <td>
-                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(menu.id)">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-danger btn-sm"
-                                                @click="destroy(menu.id)">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                        <a href="#" x-text="`Section Menu ${menu.name}`"></a>
                                     </td>
                                 </tr>
+
+                                <tr class="text-gray-600" x-show="selected === index" x-cloak x-transition>
+                                    <td colspan="5">
+                                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped">
+                                            <thead>
+                                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                                <th>Nama Menu</th>
+                                                <th>URL</th>
+                                                <th>ICON</th>
+                                                <th>Action</th>
+                                            </tr>
+                                            </thead>
+                                            <template x-for="(child, index) in menu.children" :key="index">
+                                                <tbody :class="{'table-active': selectedSubMenu === index}"
+                                                       style="cursor:pointer;"
+                                                       @click="selectedSubMenu === index ? selectedSubMenu = null : selectedSubMenu = index">
+                                                <tr>
+                                                    <td x-text="child.name"></td>
+                                                    <td x-text="child.url"></td>
+                                                    <td>
+                                                        <i :class="child.icon"></i>
+                                                    </td>
+                                                    <td>
+                                                        <a href="#"
+                                                           class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary">
+                                                            <span class="svg-icon svg-icon-2">
+                                                                <i class="fas fa-edit"></i>
+                                                            </span>
+                                                        </a>
+                                                        <a href="#"
+                                                           class="btn btn-sm btn-icon btn-bg-light btn-active-color-danger">
+                                                            <span class="svg-icon svg-icon-2">
+                                                                <i class="fas fa-trash"></i>
+                                                            </span>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <template x-for="childSubMenu in child.children">
+                                                    <tr x-show="selectedSubMenu === index" x-cloak x-transition>
+                                                        <td></td>
+                                                    </tr>
+                                                </template>
+                                                </tbody>
+                                            </template>
+                                        </table>
+                                    </td>
+                                </tr>
+                                </tbody>
                             </template>
-                            </tbody>
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4">
@@ -100,7 +129,7 @@
 @endsection
 @push('script')
     <script>
-        function departmentsData() {
+        function menuData() {
             return {
                 isLoading: false,
                 buttonLoading: false,
@@ -108,17 +137,15 @@
                 startIndex: null,
                 search: '',
                 editVal: '',
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                formCreate: document.getElementById('form-create'),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
-                formEdit: document.getElementById('form-edit'),
+                selected: null,
+                selectedSubMenu: null,
                 async init() {
                     await this.getMenuData();
                 },
                 async searchData() {
                     this.isLoading = true;
                     try {
-                        this.departments = await axios.get('/master/department/search', {
+                        this.departments = await axios.get('/settings/menu-management/data', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -192,7 +219,7 @@
                 async getMenuData() {
                     this.isLoading = true
                     try {
-                        const resp = await axios.get('/setting/menu/data');
+                        const resp = await axios.get('/settings/menu-management/data');
                         this.menus = resp.data;
                         this.startIndex = this.menus.from;
                     } catch (error) {

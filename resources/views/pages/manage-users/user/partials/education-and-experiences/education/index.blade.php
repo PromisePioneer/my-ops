@@ -34,10 +34,18 @@
                     <tr>
                         <td>Ijazah</td>
                         <td>
-                            <a :href="`/manage-users/educations/view-file/${userId}`" class="btn btn-primary btn-sm"
-                               :disabled="!education.certificate_of_graduation">
-                                File
-                            </a>
+                            <template x-if="education.certificate_of_graduation">
+                                <a :href="`/manage-users/educations/view-file/${userId}`"
+                                   class="btn btn-danger btn-sm">
+                                    <i class="bi bi-file-pdf-fill"></i>
+                                </a>
+                            </template>
+
+                            <template x-if="!education.certificate_of_graduation">
+                                <button class="btn btn-danger btn-sm" disabled>
+                                    <i class="bi bi-file-pdf-fill"></i>
+                                </button>
+                            </template>
                         </td>
                     </tr>
                     </tbody>

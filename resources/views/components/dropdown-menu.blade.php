@@ -1,11 +1,14 @@
 @props([
-    'active',
+    'active' => false,
+    'parentIcon' => '',
+    'menuTitle' => '',
+    'menuItem' => ''
 ])
 
 @php
     $classes = ($active ?? false)
-                ? 'menu-item menu-accordion active hover show'
-                : 'menu-item menu-accordion'
+        ? 'menu-item menu-accordion active hover show'
+        : 'menu-item menu-accordion';
 @endphp
 
 <div data-kt-menu-trigger="click" {{ $attributes->merge(['class' => $classes]) }}>

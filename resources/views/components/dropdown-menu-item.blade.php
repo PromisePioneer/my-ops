@@ -1,9 +1,11 @@
-@props(['active'])
+@props([
+    'active' => false
+])
 
 @php
     $classes = ($active ?? false)
-               ? 'menu-link active'
-               : 'menu-link'
+        ? 'menu-link active'
+        : 'menu-link';
 @endphp
 
 <div class="menu-item">

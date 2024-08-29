@@ -1,10 +1,13 @@
-@props(['active'])
+@props([
+    'active' => true
+])
 
 @php
     $classes = ($active ?? false)
     ? 'menu-link active'
-    : 'menu-link'
+    : 'menu-link';
 @endphp
+
 
 <div class="menu-item">
     <a {{ $attributes->merge(['class' => $classes]) }}>

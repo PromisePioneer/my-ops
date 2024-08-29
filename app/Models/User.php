@@ -118,6 +118,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
@@ -141,6 +142,25 @@ class User extends Authenticatable
                 $query->select('id', 'name');
             },
         ])->with('roles')->paginate($perPage);
+    }
+
+    public function getUserBasedOnBranch(Request $request): array
+    {
+        $search = $request->input('search');
+        $query = self::with('branch')->where('branch_id', $request->user()->branch_id);
+
+        if ($search !== '') {
+            $query->where('name', 'like', '%'.$search.'%');
+            $query->orWhere('email', 'like', '%'.$search.'%');
+        }
+
+        $user = $query->get();
+        return $user->map(function ($user) {
+            return [
+                'id' => $user->id,
+                'text' => "({$user->nip}) {$user->name}",
+            ];
+        })->toArray();
     }
 
     public function searchData(Request $request): Collection

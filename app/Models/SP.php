@@ -25,6 +25,7 @@ class SP extends Model
         'punished_by',
         'start_date',
         'end_date',
+        'expired_if_has_new_sp',
         'list_of_reason'
     ];
 
@@ -62,10 +63,16 @@ class SP extends Model
         $formattedData = $sp->getCollection()->map(function ($item) {
             $isExpired = false;
 
-            $spActive = $item->where('expired_if_has_new_sp', 0)->first();
+            $spActive = $item->where('expired_if_has_new_sp', 0)->get();
 
-            if ($spActive->id === $item->id && $spActive->expired_if_has_new_sp === 0 && $spActive->end_date > Carbon::now()) {
-                $isExpired = true;
+            foreach ($spActive as $active) {
+                if ($active?->id === $item->id) {
+                    $isExpired = true;
+                }
+
+                if ($active?->id === $item->id && $item->end_date < Carbon::now()) {
+                    $isExpired = false;
+                }
             }
 
             return [
@@ -95,6 +102,18 @@ class SP extends Model
             $query->where('name', 'like', '%'.$search.'%');
             $query->orWhere('nip', 'like', '%'.$search.'%');
         })->orWhere('sp_number', 'like', '%'.$search.'%')->paginate($this->perPage);
+
+        self::formattedData($sp);
+        return $sp;
+    }
+
+
+    public function getSPBasedOnUserId(int $userId): LengthAwarePaginator
+    {
+        $sp = self::with('createdBy', 'user')
+            ->where('end_date', '>', Carbon::now())
+            ->where('expired_if_has_new_sp', 0)
+            ->where('user_id', $userId)->paginate($this->perPage);
 
         self::formattedData($sp);
         return $sp;

@@ -73,11 +73,10 @@
                                 <td @click="selected === index ? selected = null : selected = index"
                                     x-text="sp.user_id"></td>
                                 <td @click="selected === index ? selected = null : selected = index">
-                                   <span x-text="sp.expired  ? 'Masih Berlaku' : 'Sudah Habis'"
-                                         :class="sp.expired ? 'badge bg-success' : 'badge bg-danger'"></span>
+                                    <span x-text="sp.expired  ? 'Masih Berlaku' : 'Sudah Habis'"
+                                          :class="sp.expired ? 'badge bg-success'  : 'badge bg-danger'"></span>
                                 </td>
                                 <td>
-
                                     <a :href="`/manage-users/sp/export-pdf/${sp.id}`" class="btn btn-danger btn-sm">
                                         <i class="bi bi-file-earmark-pdf"></i>
                                     </a>
@@ -92,21 +91,37 @@
                             <tr x-show="selected === index" x-cloak x-transition>
                                 <td colspan="5">
                                     <div class="d-flex justify-content-center">
-
                                         <div class="col-lg-12">
                                             <div class="p-4 bg-light">
                                                 <h6>Detail SP:</h6>
-                                                <p>No. SP: <span x-text="sp.sp_number"></span></p>
-                                                <p>Karyawan: <span x-text="sp.user_id"></span></p>
-                                                <p>Cabang: <span x-text="sp.branch_name ?? 'Pusat'"></span></p>
-                                                <p>Yg memberi sanksi: <span x-text="sp.punished_by"></span></p>
-                                                <p>
-                                                    Tipe SP : <span x-text="sp.sp_type" class="badge bg-danger"></span>
-                                                </p>
-                                                <p>Status:
-                                                    <span x-text="sp.expired  ? 'Masih Berlaku' : 'Sudah Habis'"
-                                                          :class="sp.expired ? 'badge bg-success' : 'badge bg-danger'"></span>
-                                                </p>
+                                                <ul>
+                                                    <li><p>No. SP: <span x-text="sp.sp_number"></span></p>
+                                                    <li>
+                                                        <p>Karyawan: <span x-text="sp.user_id"></span></p>
+                                                    </li>
+                                                    <li>
+                                                        <p>Masa Berlaku: <span x-text="sp.date"></span></p>
+                                                    </li>
+                                                    <li>
+                                                        <p>Cabang: <span x-text="sp.branch_name ?? 'Pusat'"></span></p>
+                                                    </li>
+                                                    <li>
+                                                        <p>Yg memberi sanksi: <span x-text="sp.punished_by"></span></p>
+                                                    </li>
+                                                    <li>
+                                                        <p>
+                                                            Tipe SP : <span x-text="sp.sp_type"
+                                                                            class="badge bg-danger"></span>
+                                                        </p>
+                                                    </li>
+                                                    <li>
+                                                        <p>Status:
+                                                            <span x-text="sp.expired  ? 'Masih Berlaku' : 'Sudah Habis'"
+                                                                  :class="sp.expired ? 'badge bg-success'  : 'badge bg-danger'"></span>
+                                                        </p>
+
+                                                    </li>
+                                                </ul>
                                             </div>
                                         </div>
                                     </div>

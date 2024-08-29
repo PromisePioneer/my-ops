@@ -71,7 +71,7 @@ Auth::routes();
 
 Route::group(['middleware' => ['auth']], static function () {
     //dashboard
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
     Route::prefix('/manage-users')->group(function () {
         Route::prefix('users')->group(function () {
@@ -313,6 +313,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/show/{role}', [RoleController::class, 'show']);
             Route::post('/update/{role}', [RoleController::class, 'update']);
             Route::delete('/{role}', [RoleController::class, 'destroy']);
+            Route::get('/detail/{role}', [RoleController::class, 'detail']);
+            Route::get('/detail/associated-users/{role}', [RoleController::class, 'associatedUsers']);
         });
     });
 
@@ -338,6 +340,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/identity-information/data', [UserProfileController::class, 'identityInformation']);
             Route::get('/job-information', [UserProfileController::class, 'jobInformationPage']);
             Route::get('/job-information/data', [UserProfileController::class, 'jobInformation']);
+            Route::get('/sp', [UserProfileController::class, 'spPage']);
+            Route::get('/sp/data', [UserProfileController::class, 'spData']);
 
             Route::prefix('leaves-and-permission')->group(function () {
                 Route::get('/', [LeaveAndPermissionController::class, 'index']);
@@ -556,12 +560,6 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::delete('/{expenditure}', [ExpenditureController::class, 'destroy']);
     });
 
-    Route::prefix('/setting')->group(function () {
-        Route::prefix('/menu')->group(function () {
-            Route::get('/', [MenuController::class, 'index']);
-            Route::get('/data', [MenuController::class, 'data']);
-        });
-    });
 
     Route::prefix('/adms')->group(function () {
         Route::prefix('/fp-devices')->group(function () {
@@ -617,6 +615,7 @@ Route::group(['middleware' => ['auth']], static function () {
         });
     });
 });
+
 
 Route::prefix('/iclock')->group(function () {
     Route::get('cdata', [IclockController::class, 'handshake']);

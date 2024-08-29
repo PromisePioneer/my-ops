@@ -144,10 +144,15 @@ class SPController extends Controller
         $currentSP = SP::where('user_id', $user->id)->where('expired_if_has_new_sp', false)
             ->where('end_date', '>', Carbon::now())
             ->first();
+
+
+        $resetDate = Carbon::now()->format('Y-m-d');
+
         $getListOfReasonOfCurrentSP = json_decode($currentSP->list_of_reason);
         return response()->json([
             'current_sp' => $currentSP,
             'list_of_reason' => $getListOfReasonOfCurrentSP,
+            'reset_date' => $resetDate,
         ]);
     }
 

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Role\RoleRequest;
+use App\Models\User;
+use App\Service\RoleService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,8 +16,14 @@ use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
-    private static int $perPage = 10;
+    public readonly int $perPage;
+    private RoleService $roleService;
 
+    public function __construct()
+    {
+        $this->roleService = new RoleService();
+        $this->perPage = 5;
+    }
 
     /**
      * @throws AuthorizationException
@@ -33,9 +41,16 @@ class RoleController extends Controller
     public function rolesData(): JsonResponse
     {
         $this->authorize('view', Role::class);
-        $roles = Role::paginate(self::$perPage);
+        return response()->json($this->roleService->getRoleWithPermissionAndPagination($this->perPage));
+    }
 
-        return response()->json($roles);
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function search(Request $request): JsonResponse
+    {
+        return response()->json($this->roleService->searchRole($request, $this->perPage));
     }
 
     /**
@@ -44,7 +59,7 @@ class RoleController extends Controller
     public function getPermission(): JsonResponse
     {
         $this->authorize('create', Role::class);
-        $permission = Permission::paginate(self::$perPage);
+        $permission = Permission::all();
 
         return response()->json($permission);
     }
@@ -52,34 +67,12 @@ class RoleController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function searchRole(Request $request): JsonResponse
+    public function edit(Role $role): JsonResponse
     {
-        $this->authorize('view', Role::class);
-        $query = Role::where('name', 'like', '%'.$request->search.'%')->get();
-
-        return response()->json($query);
+        $rolesData = Role::with('permissions')->where('id', $role->id)->first();
+        return response()->json($rolesData);
     }
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function edit(Role $role): View
-    {
-        $this->authorize('update', Role::class);
-        return view('pages.master.role.edit', compact('role'));
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function search(Request $request): JsonResponse
-    {
-        $this->authorize('view', Role::class);
-        $search = $request->input('search');
-        $query = Role::where('name', 'like', '%'.$search.'%')->get();
-
-        return response()->json($query);
-    }
 
     /**
      * @throws AuthorizationException
@@ -116,6 +109,26 @@ class RoleController extends Controller
             ->all();
 
         return response()->json($associatedPermissions);
+    }
+
+
+    public function detail(Role $role): View
+    {
+        return view('pages.master.role.detail', compact('role'));
+    }
+
+
+    public function associatedUsers(Role $role): JsonResponse
+    {
+        $users = User::with('branch')
+            ->whereHas('roles', function ($query) use ($role) {
+                $query->where('id', $role->id);
+            })->paginate($this->perPage);
+
+        return response()->json([
+            'data' => $users,
+            'total_user' => $users->count()
+        ]);
     }
 
     /**

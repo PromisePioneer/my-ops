@@ -18,7 +18,7 @@
                                     <div class="position-relative d-flex align-items-center w-150px">
                                         <input type="date" class="form-control form-control-white fw-bolder pe-5 date"
                                                placeholder="Tanggal" name="start_date" id="start_date"
-                                               :value="currentSP?.current_sp?.start_date ?? ''"/>
+                                               :value="currentSP?.reset_date ?? ''"/>
                                     </div>
                                 </div>
                             </div>
