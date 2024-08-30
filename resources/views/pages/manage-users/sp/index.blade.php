@@ -49,13 +49,6 @@
                                class="btn btn-light btn-active-primary btn-sm mx-1">
                                 <i class="bi bi-plus-circle-fill"></i> Tambah
                             </a>
-                            <button class="btn btn-light btn-active-info btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#modal-import">
-                               <span class="svg-icon">
-                                    <i class="bi bi-upload fs-5"></i>
-                               </span>
-                                Import
-                            </button>
                         </div>
                         <div class="card-toolbar">
                             <div class="d-flex align-items-center position-relative my-1"
