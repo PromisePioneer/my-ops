@@ -58,7 +58,7 @@ class UserController extends Controller
 
     public function usersData(): JsonResponse
     {
-        $user = $this->user->getDataWithPagination($this->perPage);
+        $user = $this->user->getData()->paginate($this->perPage)->onEachSide(1);
 
         return response()->json($user);
     }
@@ -73,11 +73,6 @@ class UserController extends Controller
         return response()->json($this->branch->getData($request));
     }
 
-    public function filterByBranch(Branch $branch): JsonResponse
-    {
-        return response()->json($this->user->filterBasedOnUserBranch($branch->id, $this->perPage));
-    }
-
     public function rolesData(Request $request): JsonResponse
     {
         $roles = Role::all();
@@ -88,28 +83,30 @@ class UserController extends Controller
             });
         }
 
+
         return response()->json($roles);
     }
 
     public function filter(Request $request): JsonResponse
     {
-        $users = User::with('roles')->where('branch_id', $request->branch_id);
-
+        $users = $this->user->getData()->where('active', $request->active ?? true);
         if ($request->year) {
+            $users->where('branch_id', $request->branch_id);
             $users->whereYear('join_date', $request->year);
         }
 
         if ($request->month) {
+            $users->where('branch_id', $request->branch_id);
             $users->whereMonth('join_date', '=', $request->month);
         }
 
-        if ($request->month && $request->date) {
+        if ($request->month && $request->year) {
+            $users->where('branch_id', $request->branch_id);
             $users->whereDate('join_date', Carbon::parse('01-'.$request->month.'-'.$request->year));
         }
 
-        $filteredData = $users->paginate($this->perPage);
 
-
+        $filteredData = $users->paginate($this->perPage)->onEachSide(1);
         return response()->json($filteredData);
     }
 

@@ -13,35 +13,44 @@
             box-sizing: border-box;
         }
 
+
         * {
             margin: 0;
         }
 
+
+        @page {
+            margin: 0 0;
+        }
+
+        /** Define now the real margins of every page in the PDF **/
         body {
+            margin: 3cm 2cm 2cm;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             font-family: Poppins, Helvetica, sans-serif;
             font-size: 62.5%;
         }
 
-        .kop-header {
-            margin: 0 auto;
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3cm;
         }
 
-        .kop-image-header {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .kop-image-footer {
-            width: 100%;
-            margin-bottom: 100px;
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 5cm;
         }
 
         .wrapper {
             position: relative;
-            min-height: 100%;
-            margin-bottom: -100px;
         }
 
         table {
@@ -55,7 +64,6 @@
         }
 
         .table-heading .table-data-heading {
-            /*border: 1px solid;*/
             border: none !important;
             margin-bottom: 100px;
             width: 50%;
@@ -83,13 +91,6 @@
         }
 
 
-        .kop-footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-        }
-
-
         .table-heading-container {
             width: 48%;
             margin-right: 10%;
@@ -110,16 +111,6 @@
             text-align: left;
         }
 
-        .signature {
-            font-size: 13px;
-            padding-right: 40px;
-            font-weight: bold;
-            float: right;
-        }
-
-        .text-center {
-            text-align: center;
-        }
 
         .heading-separator {
             margin-bottom: 0;
@@ -141,14 +132,15 @@
     }
 @endphp
 
+<header>
+    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-header.png'))) }}"
+         width="100%" height="100%"/>
+</header>
+
 <div class="wrapper">
-    <div class="kop-header">
-        <img class="kop-image-header"
-             src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-header.png'))) }}"/>
-    </div>
     <div class="heading-toolbar">
         <p style="font-size: 26px"><u>Surat Peringatan {{ $super }} ({{ $sp->sp_type }})</u></p>
-        <p style="font-size: 17px">Nomor : {{ $sp->sp_number }}</p>
+        <p style="font-size: 17px; ">Nomor : {{ $sp->sp_number }}</p>
     </div>
     <p style="font-size: 13px; margin: 10px 40px 0 30px;">Surat peringatan ini ditujukan kepada : </p>
     <div style="margin: 0 30px 0 40px">
@@ -383,10 +375,10 @@
             <div class="clearfix"></div>
         @endif
 
-        <div class="kop-footer">
-            <img class="kop-image-footer"
-                 src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"/>
-        </div>
+        <footer>
+            <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"
+                 width="100%" height="100%"/>
+        </footer>
 </div>
 </body>
 </html>

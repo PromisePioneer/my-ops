@@ -453,7 +453,7 @@
                 },
                 getImageURL(imagePath) {
                     if (imagePath === null) {
-                        const placeholders = '/assets/media/placeholders/ktp.png'
+                        const placeholders = 'assets/media/placeholders/ktp.png'
                         return "{{ asset('') }}" + placeholders;
                     }
                     return imagePath ? "{{ Storage::url('') }}" + imagePath : '';

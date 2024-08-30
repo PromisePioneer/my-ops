@@ -47,9 +47,9 @@
             <div class="row mb-7">
                 <label class="col-lg-4 fw-bold text-muted">Foto KTP</label>
                 <div class="col-lg-8 fv-row">
-                    <img :src="getImageURL(identityInformation.ktp_attachment ?? null)"
-                         @click="$dispatch('lightbox', `${getImageURL(identityInformation.ktp_attachment)}`)"
-                         height="100"/>
+                    <img :src="getImageURL(identityInformation?.ktp_attachment ?? null)"
+                         @click="$dispatch('lightbox', `${getImageURL(identityInformation?.ktp_attachment) ?? null}`)"
+                         alt="Foto Karyawan" class="w-100"/>
                 </div>
             </div>
         </div>
@@ -66,8 +66,7 @@
                 },
                 getImageURL(imagePath) {
                     if (imagePath === null) {
-                        const placeholders = '/assets/media/placeholders/ktp.png'
-                        return "{{ asset('') }}" + placeholders;
+                        return "{{ asset('assets/media/placeholders/ktp.png') }}" + placeholders;
                     }
                     return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
                 },

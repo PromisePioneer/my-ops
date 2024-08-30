@@ -205,4 +205,9 @@ class SPController extends Controller
 
         return $pdf->stream();
     }
+
+    public function show(SP $sp): JsonResponse
+    {
+        return response()->json($this->sp->showSPDetail($sp));
+    }
 }

@@ -118,4 +118,21 @@ class SP extends Model
         self::formattedData($sp);
         return $sp;
     }
+
+
+    public function showSPDetail(SP $sp)
+    {
+        $spData = $sp->with('user')->where('id', $sp->id)->first();
+        
+        return [
+            'id' => $spData->id,
+            'branch_name' => $spData->branch->name ?? null,
+            'user_id' => "({$spData->user->nip}) {$spData->user->name}",
+            'sp_number' => $spData->sp_number,
+            'date' => Carbon::parse($spData->start_date)->format('d/m/Y').' - '.Carbon::parse($spData->end_date)->format('d/m/Y'),
+            'sp_type' => $spData->sp_type,
+            'punished_by' => $spData->punishedBy?->name,
+            'created_by' => $spData->createdBy->name,
+        ];
+    }
 }

@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class UserImport implements ToModel, WithHeadingRow
 {
@@ -45,11 +46,11 @@ class UserImport implements ToModel, WithHeadingRow
     {
         return User::create([
             'branch_id' => Branch::where('name', $row['cabang'])->pluck('id')->first() ?? null,
-            'absent_id' => $row['absen_id'],
-            'nip' => $row['nik'],
+            'absent_id' => (int) $row['absen_id'],
+            'nip' => (int) $row['nik'],
             'name' => $row['nama'],
             'placement' => $row['penempatan'],
-            'join_date' => Carbon::parse($row['tanggal_masuk']),
+            'join_date' => Carbon::instance(Date::excelToDateTimeObject($row['tanggal_masuk'])),
             'password' => Hash::make('password'),
         ]);
     }

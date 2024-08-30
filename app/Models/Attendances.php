@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
 
 class Attendances extends Model
 {
@@ -109,18 +110,18 @@ class Attendances extends Model
     {
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
 
-        $query = self::selectRaw("CONCAT(MONTH(timestamp), '-', YEAR(timestamp)) as waktu")
+        $query = self::select(DB::raw("CONCAT(MONTH(timestamp), '-', YEAR(timestamp)) as waktu"),
+            DB::raw('YEAR(timestamp) as tahun'), DB::raw('MONTHNAME(timestamp) as bulan'))
+            ->orderBy('tahun', 'desc')
             ->distinct();
 
-        $paginator = new LengthAwarePaginator(
+        return new LengthAwarePaginator(
             $query->forPage($currentPage, $perPage)->get(),
             $query->count(),
             $perPage,
             $currentPage,
             ['path' => LengthAwarePaginator::resolveCurrentPath()]
         );
-
-        return $paginator;
     }
 
     public function getAttendancesBasedOnPeriod(string $month, string $year, int $perPage): LengthAwarePaginator
@@ -268,7 +269,8 @@ class Attendances extends Model
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
             ->whereMonth('attendances.timestamp', $month)
-            ->whereYear('attendances.timestamp', $year);
+            ->whereYear('attendances.timestamp', $year)
+            ->orderBy('attendances.timestamp', 'ASC');
 
 
         $paginator = $query->paginate($perPage);

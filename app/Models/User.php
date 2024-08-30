@@ -135,13 +135,13 @@ class User extends Authenticatable
     }
 
     //eloquent
-    public function getDataWithPagination(int $perPage): LengthAwarePaginator
+    public function getData()
     {
         return self::with([
             'branch' => function ($query) {
                 $query->select('id', 'name');
             },
-        ])->with('roles')->paginate($perPage);
+        ])->with('roles');
     }
 
     public function getUserBasedOnBranch(Request $request): array

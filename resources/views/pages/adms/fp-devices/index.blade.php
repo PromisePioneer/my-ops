@@ -39,7 +39,7 @@
                                 <th class="min-w-125px">Terakhir Handshake</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
-                            <tbody class="text-gray-600 fw-bold">
+                            <tbody class="fw-bold">
                             <template x-if="isLoading">
                                 <tr>
                                     <td colspan="9">
@@ -81,10 +81,10 @@
                     </div>
                     <ul class="pagination float-end mb-4">
                         <li class="page-item previous">
-                            <button class="btn btn-light btn-sm" @click="previousPage">Previous</button>
+                            <button class="btn btn-light btn-sm" @click="previousPage()">Previous</button>
                         </li>
                         <li class="page-item next">
-                            <button class="btn btn-light btn-sm" @click="nextPage">Next</button>
+                            <button class="btn btn-light btn-sm" @click="nextPage()">Next</button>
                         </li>
                     </ul>
                 </div>
