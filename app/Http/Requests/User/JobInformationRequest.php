@@ -22,7 +22,6 @@ class JobInformationRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
-            'department_id' => ['required', 'exists:departments,id'],
             'fixed_salary' => ['required'],
             'contract_status' => [
                 'required',

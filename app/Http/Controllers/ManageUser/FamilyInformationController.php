@@ -10,7 +10,6 @@ use Illuminate\Http\JsonResponse;
 
 class FamilyInformationController extends Controller
 {
-
     private FamilyInformation $familyInformation;
 
     public function __construct()
@@ -21,6 +20,7 @@ class FamilyInformationController extends Controller
     public function getRelatedFamilyInformation(User $user): JsonResponse
     {
         $family = $this->familyInformation->getRelatedUserFamilyInformation($user->id);
+
         return response()->json([
             'partner_name' => $this->familyInformation->getRelatedUserFamilyInformation($user->id),
             'child' => json_decode($family?->child),
@@ -33,12 +33,11 @@ class FamilyInformationController extends Controller
             'user_id' => $user->id,
         ], [
             'partner_name' => $request->partner_name,
-            'child' => json_encode($request['data'])
+            'child' => json_encode($request['data']),
         ]);
 
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
-
 }

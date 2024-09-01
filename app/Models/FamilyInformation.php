@@ -12,17 +12,17 @@ class FamilyInformation extends Model
     use HasFactory;
 
     protected $table = 'family_informations';
+
     protected $fillable = [
         'user_id',
         'partner_name',
-        'child'
+        'child',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
-
 
     public function getRelatedUserFamilyInformation(int $userId): Model|Builder|null
     {

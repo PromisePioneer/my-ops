@@ -122,10 +122,13 @@
                 },
                 async add() {
                     await this.getAllPermissions();
+                    await this.getDepartments();
                 },
                 async edit(id) {
                     const resp = await axios.get(`/master/roles/edit/${id}`);
                     await this.getAllPermissions();
+                    await this.getDepartments();
+                    await this.selectedDepartment(id);
                     this.editVal = resp.data;
                 },
                 async getRole() {
@@ -206,6 +209,31 @@
                     const resp = await axios.get('/master/roles/permissions/data');
                     this.permissionData = resp.data;
                 },
+                async getDepartments() {
+                    $(".departments-select2").select2({
+                        ajax: {
+                            url: '/master/roles/departments/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async selectedDepartment(id) {
+                    const selectedDepartment = $('#selectedDepartment');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/master/roles/departments/data/selected/${id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedDepartment.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                }
             }
         }
     </script>

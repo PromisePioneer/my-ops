@@ -8,41 +8,22 @@ use App\Models\User;
 
 class JobInformationService
 {
-    private HandleFileUploadService $handleUploadService;
 
-    public function __construct()
-    {
-        $this->handleUploadService = new HandleFileUploadService();
-    }
 
     public function update(JobInformationRequest $request, User $user): void
     {
-        $currentJobInfoId = JobInformation::where('user_id', $user->id)->first();
         JobInformation::updateOrCreate([
             'user_id' => $user->id,
         ], [
-            'emp_code' => '123123',
-            'absent_id' => '123123',
             'department_id' => $request->department_id,
             'fixed_salary' => $request->fixed_salary,
             'contract_status' => $request->contract_status,
+            'contract_end_date' => $request->contract_end_date,
             'bank_account_number' => $request->bank_account_number,
             'bpjs_kes' => $request->bpjs_kes,
             'no_kpj' => $request->bpjs_ket === 'ya' ? $request->no_kpj : null,
             'bpjs_ket' => $request->bpjs_ket,
             'no_kis' => $request->bpjs_kes === 'ya' ? $request->no_kis : null,
-            'sk_file' => $this->handleUploadService->upload(
-                $request,
-                'documents/sk',
-                'sk_file',
-                $currentJobInfoId ? $currentJobInfoId->sk_file : null
-            ),
-            'contract_file' => $this->handleUploadService->upload(
-                $request,
-                'documents/contract-file',
-                'contract_file',
-                $currentJobInfoId ? $currentJobInfoId->contract_file : null
-            ),
         ]);
     }
 }

@@ -41,7 +41,7 @@ class AuthServiceProvider extends ServiceProvider
         Department::class => DepartmentPolicy::class,
         Role::class => RolePolicy::class,
         WorkTime::class => WorkTimePolicy::class,
-        SP::class => SpPolicy::class
+        SP::class => SpPolicy::class,
     ];
 
     /**
@@ -51,11 +51,9 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-
         config(['app.locale' => 'id']);
         Carbon::setLocale('id');
         date_default_timezone_set('Asia/Jakarta');
-
 
         Gate::before(static function ($user, $ability) {
             return $user->hasRole('Super Admin') ? true : null;

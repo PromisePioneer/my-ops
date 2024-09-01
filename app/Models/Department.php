@@ -6,6 +6,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -38,6 +39,12 @@ class Department extends Model
         'name',
     ];
 
+
+    public function departments(): HasMany
+    {
+        return $this->hasMany(RoleHasDepartment::class, 'department_id');
+    }
+
     public function getData(Request $request): array
     {
         $search = $request->input('search');
@@ -54,13 +61,13 @@ class Department extends Model
         })->toArray();
     }
 
-    public function getSelectedData(int $departmentId): array
+    public function getSelectedData(?int $departmentId): array
     {
         $department = self::where('id', $departmentId)->first();
 
         return [
-            'id' => $department->id,
-            'name' => $department->name,
+            'id' => $department?->id ?? '-',
+            'name' => $department?->name ?? '-',
         ];
     }
 }

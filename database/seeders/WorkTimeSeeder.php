@@ -20,7 +20,7 @@ class WorkTimeSeeder extends Seeder
             'time_to_checkin' => '07:00',
             'end_time_to_checkin' => '10:00',
             'time_to_checkout' => '17:00',
-            'end_time_to_checkout' => '23:59'
+            'end_time_to_checkout' => '23:59',
         ]);
 
         WorkTime::create([
@@ -30,9 +30,8 @@ class WorkTimeSeeder extends Seeder
             'time_to_checkin' => '07:00',
             'end_time_to_checkin' => '11:00',
             'time_to_checkout' => '18:00',
-            'end_time_to_checkout' => '23:59'
+            'end_time_to_checkout' => '23:59',
         ]);
-
 
         WorkTime::create([
             'name' => 'NOC Pagi',
@@ -41,7 +40,7 @@ class WorkTimeSeeder extends Seeder
             'time_to_checkin' => '06:00',
             'end_time_to_checkin' => '10:00',
             'time_to_checkout' => '16:00',
-            'end_time_to_checkout' => '23:59'
+            'end_time_to_checkout' => '23:59',
         ]);
 
         WorkTime::create([
@@ -51,7 +50,7 @@ class WorkTimeSeeder extends Seeder
             'time_to_checkin' => '23:00',
             'end_time_to_checkin' => '02:00',
             'time_to_checkout' => '08:00',
-            'end_time_to_checkout' => '11:59'
+            'end_time_to_checkout' => '11:59',
         ]);
 
         WorkTime::create([
@@ -61,9 +60,8 @@ class WorkTimeSeeder extends Seeder
             'time_to_checkin' => '06:00',
             'end_time_to_checkin' => '10:00',
             'time_to_checkout' => '16:00',
-            'end_time_to_checkout' => '23:00'
+            'end_time_to_checkout' => '23:00',
         ]);
-
 
         WorkTime::create([
             'name' => 'CS Malam',
@@ -72,7 +70,7 @@ class WorkTimeSeeder extends Seeder
             'time_to_checkin' => '17:00',
             'end_time_to_checkin' => '20:00',
             'time_to_checkout' => '03:00',
-            'end_time_to_checkout' => '06:00'
+            'end_time_to_checkout' => '06:00',
         ]);
 
         WorkTime::create([
@@ -82,7 +80,7 @@ class WorkTimeSeeder extends Seeder
             'time_to_checkin' => '17:00',
             'end_time_to_checkin' => '20:00',
             'time_to_checkout' => '03:00',
-            'end_time_to_checkout' => '06:00'
+            'end_time_to_checkout' => '06:00',
         ]);
     }
 }

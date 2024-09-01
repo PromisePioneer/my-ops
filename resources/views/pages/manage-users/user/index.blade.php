@@ -156,9 +156,12 @@
                                                 </div>
                                                 <div class="d-flex flex-column">
                                                     <a :href="`/manage-users/users/detail/${user.id}`"
-                                                       class="text-gray-800 text-hover-primary mb-1"
-                                                       x-text="user.name"></a>
-                                                    <span x-text="user.email ?? 'Email Belum Dimasukkan'"></span>
+                                                       class="text-gray-800 text-hover-primary mb-1">
+                                                        <span x-text="user.name"></span>
+                                                    </a>
+                                                    <span class="badge badge-light-info fw-bolder fs-8"
+                                                          x-text="user.roles[0].name ?? ''">
+                                                        </span>
                                                 </div>
                                             </td>
                                             @include('pages.manage-users.user.modal.import')

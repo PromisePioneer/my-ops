@@ -20,7 +20,7 @@ class SpSeeder extends Seeder
             'sp_type' => 'SP-1',
             'created_by' => 1,
             'reason' => fake()->word(),
-            'description' => fake()->word()
+            'description' => fake()->word(),
         ]);
     }
 }

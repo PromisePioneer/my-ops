@@ -41,7 +41,7 @@
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
-                            <tbody class="text-gray-600 fw-bold">
+                            <tbody class="fw-bold">
                             <template x-if="isLoading">
                                 <tr>
                                     <td colspan="9">

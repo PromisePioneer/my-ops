@@ -47,6 +47,8 @@
                                 <div class="fw-bolder mt-5">Cabang</div>
                                 <div class="text-gray-600">{{ $user->branch?->name }}</div>
                             @endif
+                            <div class="fw-bolder mt-5">Department</div>
+                            <div class="text-gray-600">{{ $role->department[0]->name }}</div>
                             <div class="fw-bolder mt-5">NIK</div>
                             <div class="text-gray-600">{{ $user->nip }}</div>
                             <div class="fw-bolder mt-5">Email</div>
@@ -157,6 +159,7 @@
                 attendance: [],
                 healthInformation: [],
                 marriedStatus: null,
+                contractStatus: null,
                 marriedData: [{name: "K/1"}, {name: "K/2"}, {name: "K/3"}],
                 noMarriedData: [{name: "TK/1"}, {name: "TK/2"}, {name: "TK/3"}],
                 educationCertificateVal: '',

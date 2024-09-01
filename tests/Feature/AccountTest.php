@@ -2,7 +2,6 @@
 
 use App\Models\Account;
 
-
 beforeEach(function () {
     $this->user = setUpUserWithPermissions(['lihat akun', 'tambah akun', 'update akun', 'hapus akun']);
 });
@@ -28,7 +27,6 @@ it('can store account with correct permission', function () {
     $response->assertStatus(200);
     $this->assertDatabaseHas('accounts', $account);
 });
-
 
 it('cannot store account without permission', function () {
     $user = $this->user;
@@ -56,7 +54,6 @@ it('can update account with correct permission', function () {
     $this->assertModelExists(Account::find($account->id));
 });
 
-
 it('cannot update account without permission', function () {
     $user = $this->user;
     $role = $user->roles->first();
@@ -75,7 +72,6 @@ it('cannot update account without permission', function () {
     $this->post(url('account-master/account/update/'.$account->id), $updateData)->assertStatus(403);
     $this->assertModelExists(Account::find($account->id));
 });
-
 
 it('can delete account with correct permission', function () {
     $account = Account::factory()->create();

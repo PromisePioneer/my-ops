@@ -60,7 +60,6 @@ class LeaveAndPermissionController extends Controller
             'sick_letter'
         );
 
-
         LeaveAndPermission::create($data);
 
         return response()->json([

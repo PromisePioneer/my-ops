@@ -44,7 +44,7 @@ class FpDevice extends Model
         'branch_id',
         'name',
         'serial_number',
-        'online'
+        'online',
     ];
 
     public function branch(): BelongsTo

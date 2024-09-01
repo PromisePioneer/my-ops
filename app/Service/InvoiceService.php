@@ -52,8 +52,11 @@ class InvoiceService
             $data['branch_id'] = $request->user()->branch_id;
             $data['invoice_number'] = self::generateInvoiceNumber($request);
             $data['baa_file'] = $this->handleFileUploadService->upload($request, 'documents/invoice/baa', 'baa_file');
-            $data['cooperative_contract_file'] = $this->handleFileUploadService->upload($request,
-                'documents/invoice/cooperative-contract', 'cooperative_contract_file');
+            $data['cooperative_contract_file'] = $this->handleFileUploadService->upload(
+                $request,
+                'documents/invoice/cooperative-contract',
+                'cooperative_contract_file'
+            );
             $data['created_by'] = $request->user()->id;
             $data['grand_total'] = $request->grand_total;
             $invoice = Invoice::create($data);
@@ -63,8 +66,10 @@ class InvoiceService
 
     private static function generateInvoiceNumber(Request $request): string
     {
-        $invoice = Invoice::where('branch_id', $request->user()->branch_id)->where('contact_id',
-            $request->contact_id)->latest()->first();
+        $invoice = Invoice::where('branch_id', $request->user()->branch_id)->where(
+            'contact_id',
+            $request->contact_id
+        )->latest()->first();
         $findCompanyName = Contact::where('id', $request->contact_id)->first()->company_name;
         $invoiceDate = convertToRoman(Carbon::parse($request->due_date)->format('m'));
         $invoiceYear = convertToRoman(Carbon::parse($request->due_date)->format('Y'));
@@ -107,11 +112,18 @@ class InvoiceService
             $data = $request->validated();
             $data['branch_id'] = $request->user()->branch_id;
             $data['invoice_number'] = self::generateInvoiceNumber($request);
-            $data['baa_file'] = $this->handleFileUploadService->upload($request, 'documents/invoice/baa', 'baa_file',
-                $invoice->baa_file);
-            $data['cooperative_contract_file'] = $this->handleFileUploadService->upload($request,
-                'documents/invoice/cooperative-contract', 'cooperative_contract_file',
-                $invoice->cooperative_contract_file);
+            $data['baa_file'] = $this->handleFileUploadService->upload(
+                $request,
+                'documents/invoice/baa',
+                'baa_file',
+                $invoice->baa_file
+            );
+            $data['cooperative_contract_file'] = $this->handleFileUploadService->upload(
+                $request,
+                'documents/invoice/cooperative-contract',
+                'cooperative_contract_file',
+                $invoice->cooperative_contract_file
+            );
             $data['created_by'] = $request->user()->id;
             $data['grand_total'] = $request->grand_total;
             $invoice->update($data);
@@ -134,14 +146,25 @@ class InvoiceService
     {
         $piutangPelanggan = $this->subAccount->findPiutangPelangganSubAccount($invoice->branch_id);
         $selectedContact = $this->contact->getSelectedData($invoice->contact_id);
-        $description = sprintf(self::INVOICE_SENT_DESCRIPTION, $selectedContact['company_name'],
-            $invoice->invoice_number);
+        $description = sprintf(
+            self::INVOICE_SENT_DESCRIPTION,
+            $selectedContact['company_name'],
+            $invoice->invoice_number
+        );
 
         DB::transaction(function () use ($piutangPelanggan, $description, $invoice) {
-            $this->accountTransactionService->createDebitTransaction($description, $invoice->grand_total, null,
-                $piutangPelanggan->id);
-            $this->accountTransactionService->createCreditTransaction($description, $invoice->grand_total, null,
-                $invoice->account_id);
+            $this->accountTransactionService->createDebitTransaction(
+                $description,
+                $invoice->grand_total,
+                null,
+                $piutangPelanggan->id
+            );
+            $this->accountTransactionService->createCreditTransaction(
+                $description,
+                $invoice->grand_total,
+                null,
+                $invoice->account_id
+            );
         });
     }
 
@@ -150,13 +173,20 @@ class InvoiceService
         $piutangPelanggan = $this->subAccount->findPiutangPelangganSubAccount($invoice->branch_id);
         $selectedContact = $this->contact->getSelectedData($invoice->contact_id);
         $totalPlusTax = self::PPN_RATE * $invoice['grand_total'];
-        $description = sprintf(self::CALCULATE_PPN_AFTER_INVOICE_SENT_DESCRIPTION, $selectedContact['company_name'],
-            $invoice->invoice_number);
+        $description = sprintf(
+            self::CALCULATE_PPN_AFTER_INVOICE_SENT_DESCRIPTION,
+            $selectedContact['company_name'],
+            $invoice->invoice_number
+        );
         $ppn = $this->subAccount->findPPNSubAccount($invoice->branch_id);
 
         DB::transaction(function () use ($ppn, $piutangPelanggan, $description, $totalPlusTax) {
-            $this->accountTransactionService->createDebitTransaction($description, $totalPlusTax, null,
-                $piutangPelanggan->id);
+            $this->accountTransactionService->createDebitTransaction(
+                $description,
+                $totalPlusTax,
+                null,
+                $piutangPelanggan->id
+            );
             $this->accountTransactionService->createCreditTransaction($description, $totalPlusTax, null, $ppn->id);
         });
     }
@@ -166,8 +196,11 @@ class InvoiceService
         $selectedContact = $this->contact->getSelectedData($invoice->contact_id);
         $rekeningMayatamaPusat = $this->subAccount->findRekeningMayatamaPusatSubAccount($invoice->branch_id);
         $piutangPelanggan = $this->subAccount->findPiutangPelangganSubAccount($invoice->branch_id);
-        $description = sprintf(self::CALCULATE_PPN_AFTER_INVOICE_SENT_DESCRIPTION, $selectedContact['company_name'],
-            $invoice->invoice_number);
+        $description = sprintf(
+            self::CALCULATE_PPN_AFTER_INVOICE_SENT_DESCRIPTION,
+            $selectedContact['company_name'],
+            $invoice->invoice_number
+        );
         $currentPPN = $this->accountTransaction->getCurrentPPNOnInvoice($invoice->branch_id, $description);
 
         DB::transaction(function () use (
@@ -183,10 +216,18 @@ class InvoiceService
                 $this->includePPh23AfterInvoicePaid($request, $invoice, $selectedContact['company_name']);
             }
             $totalAfterInvoicePaid = $invoice->grand_total + $currentPPN->credit - ($request->pph23_form ?? 0);
-            $this->accountTransactionService->createDebitTransaction($description, $totalAfterInvoicePaid, null,
-                $rekeningMayatamaPusat->id);
-            $this->accountTransactionService->createCreditTransaction($description, $totalAfterInvoicePaid, null,
-                $piutangPelanggan->id);
+            $this->accountTransactionService->createDebitTransaction(
+                $description,
+                $totalAfterInvoicePaid,
+                null,
+                $rekeningMayatamaPusat->id
+            );
+            $this->accountTransactionService->createCreditTransaction(
+                $description,
+                $totalAfterInvoicePaid,
+                null,
+                $piutangPelanggan->id
+            );
             $invoice->payment_status = self::PAID_STATUS;
             $invoice->save();
         });
@@ -196,14 +237,25 @@ class InvoiceService
     {
         $pph23Account = $this->subAccount->findPPH23SubAccount($invoice->branch_id);
         $piutangPelanggan = $this->subAccount->findPiutangPelangganSubAccount($invoice->branch_id);
-        $description = sprintf(self::INCLUDE_PPH23_AFTER_INVOICE_PAID_DESCRIPTION, $companyName,
-            $invoice->invoice_number);
+        $description = sprintf(
+            self::INCLUDE_PPH23_AFTER_INVOICE_PAID_DESCRIPTION,
+            $companyName,
+            $invoice->invoice_number
+        );
 
         DB::transaction(function () use ($pph23Account, $piutangPelanggan, $description, $request) {
-            $this->accountTransactionService->createDebitTransaction($description, $request->pph23_form, null,
-                $pph23Account->id);
-            $this->accountTransactionService->createCreditTransaction($description, $request->pph23_form, null,
-                $piutangPelanggan->id);
+            $this->accountTransactionService->createDebitTransaction(
+                $description,
+                $request->pph23_form,
+                null,
+                $pph23Account->id
+            );
+            $this->accountTransactionService->createCreditTransaction(
+                $description,
+                $request->pph23_form,
+                null,
+                $piutangPelanggan->id
+            );
         });
     }
 }

@@ -33,7 +33,6 @@ use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\ServicesCategoryController;
 use App\Http\Controllers\Master\SubAccountController;
 use App\Http\Controllers\Operational\SPController;
-use App\Http\Controllers\Setting\MenuController;
 use App\Http\Controllers\Transaction\BastController;
 use App\Http\Controllers\Transaction\ExpenditureController;
 use App\Http\Controllers\Transaction\FabController;
@@ -57,7 +56,6 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
 
 Route::get('/', function () {
     return view('auth.login');
@@ -98,7 +96,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/filter', [UserController::class, 'filter']);
         });
 
-
         Route::prefix('identity-information')->group(function () {
             Route::get('/{user}', [IdentityInformationController::class, 'index']);
             Route::post('/{user}', [IdentityInformationController::class, 'update']);
@@ -109,6 +106,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/{user}', [JobInformationController::class, 'update']);
             Route::get('/view-file/{user}', [JobInformationController::class, 'viewFile']);
             Route::get('/department/selected/{user}', [JobInformationController::class, 'getSelectedDepartment']);
+            Route::get('/contract-file/{user}', [JobInformationController::class, 'contractFile']);
         });
 
         Route::prefix('educations')->group(function () {
@@ -126,7 +124,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/view-file/{educationCertificate}', [EducationCertificateController::class, 'viewFile']);
         });
 
-
         Route::prefix('job-experiences')->group(function () {
             Route::get('/{user}', [JobExperiencesController::class, 'getRelatedUserJobExperience']);
             Route::post('/store/{user}', [JobExperiencesController::class, 'store']);
@@ -134,7 +131,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/update/{jobExperience}', [JobExperiencesController::class, 'update']);
             Route::delete('/destroy/{jobExperience}', [JobExperiencesController::class, 'destroy']);
         });
-
 
         Route::prefix('family-informations')->group(function () {
             Route::get('/{user}', [FamilyInformationController::class, 'getRelatedFamilyInformation']);
@@ -145,7 +141,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/{user}', [HealthInformationController::class, 'updateOrCreate']);
         });
 
-
         Route::prefix('/permissions')->group(function () {
             Route::get('/', [PermissionController::class, 'index']);
             Route::get('/data', [PermissionController::class, 'permissionData']);
@@ -155,7 +150,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/update/{permission}', [PermissionController::class, 'update']);
             Route::delete('/{permission}', [PermissionController::class, 'destroy']);
         });
-
 
         Route::prefix('payroll')->group(function () {
             Route::get('/', [PayrollController::class, 'index']);
@@ -306,7 +300,9 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('roles')->group(function () {
             Route::get('/', [RoleController::class, 'index']);
             Route::get('/data', [RoleController::class, 'rolesData']);
+            Route::get('/departments/data', [RoleController::class, 'getDepartments']);
             Route::get('/permissions/data', [RoleController::class, 'getPermission']);
+            Route::get('/departments/data/selected/{role}', [RoleController::class, 'getSelectedDepartment']);
             Route::get('/create', [RoleController::class, 'create']);
             Route::get('/search', [RoleController::class, 'search']);
             Route::post('/', [RoleController::class, 'store']);
@@ -561,7 +557,6 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::delete('/{expenditure}', [ExpenditureController::class, 'destroy']);
     });
 
-
     Route::prefix('/adms')->group(function () {
         Route::prefix('/fp-devices')->group(function () {
             Route::get('/', [FpDevicesController::class, 'index']);
@@ -574,7 +569,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/{fpDevice}', [FpDevicesController::class, 'update']);
             Route::delete('/{fpDevice}', [FpDevicesController::class, 'destroy']);
         });
-
 
         Route::prefix('attendances')->group(function () {
             Route::get('/', [AttendancesController::class, 'index']);
@@ -594,29 +588,37 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/user/selected/{workTime}', [WorkTimeController::class, 'getSelectedUserWorkTime']);
             Route::get('/detail/{workTime}', [WorkTimeController::class, 'detail']);
             Route::get('/detail/data/{workTime}', [WorkTimeController::class, 'detailData']);
-            Route::get('/detail/data/search/{workTime}',
-                [WorkTimeController::class, 'searchDetailData']);
-            Route::delete('/detail/data/destroy/{userWorkTime}',
-                [WorkTimeController::class, 'destroyDetailWorktimeUser']);
+            Route::get(
+                '/detail/data/search/{workTime}',
+                [WorkTimeController::class, 'searchDetailData']
+            );
+            Route::delete(
+                '/detail/data/destroy/{userWorkTime}',
+                [WorkTimeController::class, 'destroyDetailWorktimeUser']
+            );
         });
-
 
         Route::prefix('/attendances-summary')->group(function () {
             Route::get('/', [AttendanceSummaryController::class, 'index']);
             Route::get('/period-data', [AttendanceSummaryController::class, 'selectPeriodData']);
             Route::get('/detail/{time}', [AttendanceSummaryController::class, 'detail']);
             Route::get('/detail/data/01-{month}-{year}', [AttendanceSummaryController::class, 'detailData']);
-            Route::get('/detail/data/search/01-{month}-{year}',
-                [AttendanceSummaryController::class, 'searchDetailData']);
+            Route::get(
+                '/detail/data/search/01-{month}-{year}',
+                [AttendanceSummaryController::class, 'searchDetailData']
+            );
             Route::post('/detail/data/filter-date/{month}/{year}', [AttendanceSummaryController::class, 'filterDate']);
-            Route::post('/detail/data/assign-sp/{employeeId}',
-                [AttendanceSummaryController::class, 'assignSPToEmployee']);
-            Route::get('/detail/data/user/detail/{month}/{year}/{employeeId}',
-                [AttendanceSummaryController::class, 'attendanceSummaryDetailForOneMonthBasedOnUserId']);
+            Route::post(
+                '/detail/data/assign-sp/{employeeId}',
+                [AttendanceSummaryController::class, 'assignSPToEmployee']
+            );
+            Route::get(
+                '/detail/data/user/detail/{month}/{year}/{employeeId}',
+                [AttendanceSummaryController::class, 'attendanceSummaryDetailForOneMonthBasedOnUserId']
+            );
         });
     });
 });
-
 
 Route::prefix('/iclock')->group(function () {
     Route::get('cdata', [IclockController::class, 'handshake']);
@@ -624,4 +626,3 @@ Route::prefix('/iclock')->group(function () {
     Route::get('test', [IclockController::class, 'test']);
     Route::get('getrequest', [IclockController::class, 'getrequest']);
 });
-

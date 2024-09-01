@@ -2,6 +2,8 @@
 
 namespace App\Helper;
 
+use Carbon\Carbon;
+
 function convertToRoman(int $number): string
 {
     $integer = intval($number);
@@ -32,16 +34,23 @@ function convertToRoman(int $number): string
     return $result;
 }
 
-
 function parse($configString): array
 {
     $configArray = [];
     $lines = explode("\r\n", trim($configString));
 
     foreach ($lines as $line) {
-        list($key, $value) = explode('=', $line, 2);
+        [$key, $value] = explode('=', $line, 2);
         $configArray[trim($key)] = trim($value);
     }
 
     return $configArray;
+}
+
+
+function formatDate($date): string
+{
+    return Carbon::parse($date)->locale('id')
+        ->settings(['formatFunction' => 'translatedFormat'])
+        ->format('l, j F Y');
 }

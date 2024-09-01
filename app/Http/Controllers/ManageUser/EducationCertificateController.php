@@ -15,7 +15,9 @@ use Illuminate\View\View;
 class EducationCertificateController extends Controller
 {
     public readonly int $perPage;
+
     private EducationCertificate $educationCertificate;
+
     private HandleFileUploadService $handleUploadService;
 
     public function __construct()
@@ -24,7 +26,6 @@ class EducationCertificateController extends Controller
         $this->educationCertificate = new EducationCertificate();
         $this->handleUploadService = new HandleFileUploadService();
     }
-
 
     public function getEducationCertificate(Request $request): JsonResponse
     {
@@ -41,16 +42,14 @@ class EducationCertificateController extends Controller
         EducationCertificate::create($data);
 
         return response()->json([
-            'message' => 'Data berhasil disimpan'
+            'message' => 'Data berhasil disimpan',
         ]);
     }
-
 
     public function edit(EducationCertificate $educationCertificate): JsonResponse
     {
         return response()->json($educationCertificate);
     }
-
 
     public function update(
         EducationCertificateRequest $request,
@@ -60,10 +59,9 @@ class EducationCertificateController extends Controller
         $educationCertificate->update($data);
 
         return response()->json([
-            'message' => 'Data berhasil disimpan'
+            'message' => 'Data berhasil disimpan',
         ]);
     }
-
 
     public function destroy(EducationCertificate $educationCertificate): JsonResponse
     {
@@ -71,10 +69,9 @@ class EducationCertificateController extends Controller
         $educationCertificate->delete();
 
         return response()->json([
-            'message' => 'Data berhasil dihapus'
+            'message' => 'Data berhasil dihapus',
         ]);
     }
-
 
     public function viewFile(EducationCertificate $educationCertificate): View
     {
@@ -83,6 +80,4 @@ class EducationCertificateController extends Controller
             compact('educationCertificate')
         );
     }
-
-
 }

@@ -16,8 +16,11 @@ use Illuminate\View\View;
 class WorkTimeController extends Controller
 {
     public readonly int $perPage;
+
     private WorkTime $workTime;
+
     private User $user;
+
     private UserWorkTime $userWorkTime;
 
     public function __construct()
@@ -34,6 +37,7 @@ class WorkTimeController extends Controller
     public function index(): View
     {
         $this->authorize('view', WorkTime::class);
+
         return view('pages.adms.work-time.index');
     }
 
@@ -43,6 +47,7 @@ class WorkTimeController extends Controller
     public function data(Request $request): JsonResponse
     {
         $this->authorize('view', WorkTime::class);
+
         return response()->json($this->workTime->getDataWithPagination($request->user()->branch_id, $this->perPage));
     }
 
@@ -65,8 +70,9 @@ class WorkTimeController extends Controller
         $data = $request->validated();
         $data['branch_id'] = $request->user()->branch_id ?? null;
         WorkTime::create($request->validated());
+
         return response()->json([
-            'message' => 'Data berhasil disimpan'
+            'message' => 'Data berhasil disimpan',
         ]);
     }
 
@@ -76,6 +82,7 @@ class WorkTimeController extends Controller
     public function edit(WorkTime $workTime): JsonResponse
     {
         $this->authorize('update', $workTime);
+
         return response()->json($workTime);
     }
 
@@ -86,8 +93,9 @@ class WorkTimeController extends Controller
     {
         $this->authorize('update', $workTime);
         $workTime->update($request->validated());
+
         return response()->json([
-            'message' => 'Data berhasil disimpan'
+            'message' => 'Data berhasil disimpan',
         ]);
     }
 
@@ -97,15 +105,14 @@ class WorkTimeController extends Controller
             UserWorkTime::updateOrCreate([
                 'user_id' => $userId,
             ], [
-                'work_time_id' => $workTime->id
+                'work_time_id' => $workTime->id,
             ]);
         }
 
         return response()->json([
-            'message' => 'Data berhasil disimpan'
+            'message' => 'Data berhasil disimpan',
         ]);
     }
-
 
     public function getSelectedUserWorkTime(WorkTime $workTime): JsonResponse
     {
@@ -120,11 +127,11 @@ class WorkTimeController extends Controller
     ): JsonResponse {
         $this->authorize('destroy', $workTime);
         $workTime->delete();
+
         return response()->json([
-            'message' => 'Data berhasil dihapus'
+            'message' => 'Data berhasil dihapus',
         ]);
     }
-
 
     public function detail(WorkTime $workTime): View
     {
@@ -136,20 +143,21 @@ class WorkTimeController extends Controller
         return response()->json($this->userWorkTime->getDetailUserOnSelectedWorkTime($workTime->id, $this->perPage));
     }
 
-
     public function searchDetailData(Request $request, WorkTime $workTime): JsonResponse
     {
-        return response()->json($this->userWorkTime->searchDetailUserOnSelectedWorkTIme($request, $workTime->id,
-            $this->perPage));
+        return response()->json($this->userWorkTime->searchDetailUserOnSelectedWorkTIme(
+            $request,
+            $workTime->id,
+            $this->perPage
+        ));
     }
-
 
     public function destroyDetailWorktimeUser(UserWorkTime $userWorkTime): JsonResponse
     {
         $userWorkTime->delete();
 
         return response()->json([
-            'message' => 'Data berhasil dihapus'
+            'message' => 'Data berhasil dihapus',
         ]);
     }
 }

@@ -12,9 +12,10 @@ use Illuminate\View\View;
 
 class FpDevicesController extends Controller
 {
-
     public readonly int $perPage;
+
     private FpDevice $FpDevices;
+
     private Branch $branch;
 
     public function __construct()
@@ -52,8 +53,9 @@ class FpDevicesController extends Controller
     public function store(FpDeviceRequest $request): JsonResponse
     {
         FpDevice::create($request->validated());
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
 
@@ -62,20 +64,21 @@ class FpDevicesController extends Controller
         return response()->json($fpDevice);
     }
 
-
     public function update(FpDeviceRequest $request, FpDevice $fpDevice): JsonResponse
     {
         $fpDevice->update($request->validated());
+
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
 
     public function destroy(FpDevice $fpDevice): JsonResponse
     {
         $fpDevice->delete();
+
         return response()->json([
-            'message' => 'data berhasil dihapus'
+            'message' => 'data berhasil dihapus',
         ]);
     }
 }

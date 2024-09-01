@@ -11,11 +11,12 @@ use function App\Helper\convertToRoman;
 
 class SpService
 {
-
     public function generateSpNumber(SPRequest|AttendancesSummaryAssignSPRequest $request): string
     {
-        $sp = SP::where('branch_id', $request->user()->branch_id)->where('user_id',
-            $request->user_id)->latest()->first();
+        $sp = SP::where('branch_id', $request->user()->branch_id)->where(
+            'user_id',
+            $request->user_id
+        )->latest()->first();
         $spMonth = convertToRoman(Carbon::parse($request->due_date)->format('m'));
         $spYear = Carbon::parse($request->due_date)->format('Y');
 

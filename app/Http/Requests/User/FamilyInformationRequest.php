@@ -24,7 +24,7 @@ class FamilyInformationRequest extends FormRequest
     {
         return [
             'partner_name' => ['required', 'string'],
-//            'family_dependents' => ['required'],
+            //            'family_dependents' => ['required'],
         ];
     }
 

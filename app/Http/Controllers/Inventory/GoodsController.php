@@ -20,9 +20,13 @@ class GoodsController extends Controller
     public int $perPage = 10;
 
     private GoodsServices $goodsService;
+
     private Goods $goods;
+
     private UnitType $unitType;
+
     private SubAccount $subAccount;
+
     private Branch $branch;
 
     public function __construct()

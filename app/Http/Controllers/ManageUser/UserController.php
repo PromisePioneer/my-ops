@@ -10,6 +10,7 @@ use App\Models\Attendances;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\IdentityInformation;
+use App\Models\Role;
 use App\Models\User;
 use App\Service\IdentityInformationService;
 use Carbon\Carbon;
@@ -18,14 +19,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
-use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
     public int $perPage = 10;
 
     private IdentityInformationService $identityInformationService;
-
 
     private IdentityInformation $identityInformation;
 
@@ -34,6 +33,7 @@ class UserController extends Controller
     private User $user;
 
     private Department $department;
+
     private Attendances $attendances;
 
     public function __construct()
@@ -77,12 +77,14 @@ class UserController extends Controller
     {
         $roles = Role::all();
 
-        if ($request->user()->hasRole('Manager Cabang')) {
+        if ($request->user()->hasRole('Branch Manager')) {
             $roles = $roles->filter(function ($role) {
-                return in_array($role->name, ['Accounting', 'Stocker', 'Customer Service', 'KCA', 'WKCA', 'Teknisi']);
+                return in_array($role->name, [
+                    'Finance & Accounting Staff', 'Stocker Staff', 'Customer Service Staff', 'Head Engineer',
+                    'Senior Engineer',
+                ]);
             });
         }
-
 
         return response()->json($roles);
     }
@@ -105,8 +107,8 @@ class UserController extends Controller
             $users->whereDate('join_date', Carbon::parse('01-'.$request->month.'-'.$request->year));
         }
 
-
         $filteredData = $users->paginate($this->perPage)->onEachSide(1);
+
         return response()->json($filteredData);
     }
 
@@ -180,7 +182,8 @@ class UserController extends Controller
 
     public function detail(User $user): View
     {
-        return view('pages.manage-users.user.detail', compact('user'));
+        $role = Role::with('department')->where('id', $user->roles[0]->id)->first();
+        return view('pages.manage-users.user.detail', compact('user', 'role'));
     }
 
     public function identityInformation(User $user): JsonResponse
@@ -207,7 +210,7 @@ class UserController extends Controller
         $data = $request->validated();
 
         $data['placement'] = $request->branch_id ? 'Cabang' : 'Pusat';
-        $data['branch_id'] = $request->user()->role('Manager Cabang') ? $request->user()->branch_id : $request->get('branch_id');
+        $data['branch_id'] = $request->branch_id;
         $data['password'] = Hash::make('mayatama');
         $data['nip'] = str_replace('-', '', $format);
         $user->update($data);
@@ -235,7 +238,6 @@ class UserController extends Controller
         return response()->json($users);
     }
 
-
     public function import(Request $request): JsonResponse
     {
         ini_set('max_execution_time', 180);
@@ -247,7 +249,6 @@ class UserController extends Controller
             'message' => 'Data berhasil diimport',
         ]);
     }
-
 
     public function changeStatusActive(User $user): JsonResponse
     {

@@ -22,7 +22,6 @@ class JobExperiencesController extends Controller
         return response()->json($this->jobExperience->getRelatedJobExperiences($user->id));
     }
 
-
     public function store(JobExperienceRequest $request, User $user): JsonResponse
     {
         $data = $request->validated();
@@ -30,10 +29,9 @@ class JobExperiencesController extends Controller
         JobExperience::create($data);
 
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
-
 
     public function edit(JobExperience $jobExperience): JsonResponse
     {
@@ -46,16 +44,16 @@ class JobExperiencesController extends Controller
         $jobExperience->update($data);
 
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
-
 
     public function destroy(JobExperience $jobExperience): JsonResponse
     {
         $jobExperience->delete();
+
         return response()->json([
-            'message' => 'data berhasil dihapus'
+            'message' => 'data berhasil dihapus',
         ]);
     }
 }

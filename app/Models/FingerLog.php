@@ -10,8 +10,9 @@ class FingerLog extends Model
     use HasFactory;
 
     protected $table = 'finger_logs';
+
     protected $fillable = [
         'data',
-        'url'
+        'url',
     ];
 }

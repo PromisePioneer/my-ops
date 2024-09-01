@@ -20,6 +20,7 @@ class DepartmentController extends Controller
     public function index(): View
     {
         $this->authorize('view', Department::class);
+
         return view('pages.master.department.index');
     }
 
@@ -30,6 +31,7 @@ class DepartmentController extends Controller
     {
         $this->authorize('view', Department::class);
         $departments = Department::paginate(self::$perPage);
+
         return response()->json($departments);
     }
 
@@ -66,6 +68,7 @@ class DepartmentController extends Controller
     public function edit(Department $department): JsonResponse
     {
         $this->authorize('update', $department);
+
         return response()->json($department);
     }
 

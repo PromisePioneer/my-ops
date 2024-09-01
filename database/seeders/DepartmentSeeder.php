@@ -8,21 +8,53 @@ use Illuminate\Database\Seeder;
 
 class DepartmentSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $faker = Faker::create('id_ID');
 
+
         Department::create([
-            'code' => $faker->unique()->randomNumber(6),
-            'name' => 'Keuangan',
+            'code' => '100',
+            'name' => 'Managerial',
         ]);
 
         Department::create([
-            'code' => $faker->unique()->randomNumber(6),
-            'name' => 'Operasional',
+            'code' => '101',
+            'name' => 'Finance',
+        ]);
+
+        Department::create([
+            'code' => '102',
+            'name' => 'Operational',
+        ]);
+
+
+        Department::create([
+            'code' => '103',
+            'name' => 'Warehouse',
+        ]);
+
+
+        Department::create([
+            'code' => '104',
+            'name' => 'NOC',
+        ]);
+
+
+        Department::create([
+            'code' => '106',
+            'name' => 'Customer Service',
+        ]);
+
+        Department::create([
+            'code' => '107',
+            'name' => 'KU',
+        ]);
+
+
+        Department::create([
+            'code' => '108',
+            'name' => 'Area',
         ]);
     }
 }

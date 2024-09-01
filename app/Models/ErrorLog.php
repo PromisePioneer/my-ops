@@ -10,7 +10,8 @@ class ErrorLog extends Model
     use HasFactory;
 
     protected $table = 'error_logs';
+
     protected $fillable = [
-        'data'
+        'data',
     ];
 }

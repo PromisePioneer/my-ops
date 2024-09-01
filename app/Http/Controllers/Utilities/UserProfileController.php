@@ -18,8 +18,11 @@ use Illuminate\View\View;
 class UserProfileController extends Controller
 {
     private IdentityInformation $identityInformation;
+
     private JobInformation $jobInformation;
+
     private HandleFileUploadService $handleFileUpload;
+
     private SP $sp;
 
     public function __construct()
@@ -82,7 +85,6 @@ class UserProfileController extends Controller
     {
         return response()->json($this->jobInformation->getRelatedUserJobInformation($request->user()->id));
     }
-
 
     public function spPage(): View
     {

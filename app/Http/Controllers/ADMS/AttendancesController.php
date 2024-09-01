@@ -3,19 +3,19 @@
 namespace App\Http\Controllers\ADMS;
 
 use App\Http\Controllers\Controller;
-use App\Models\Attendances;
+use App\Service\AttendancesService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 
 class AttendancesController extends Controller
 {
-
     public readonly int $perPage;
-    private Attendances $attendance;
+
+    private AttendancesService $attendanceService;
 
     public function __construct()
     {
-        $this->attendance = new Attendances();
+        $this->attendanceService = new AttendancesService();
         $this->perPage = 10;
     }
 
@@ -26,7 +26,6 @@ class AttendancesController extends Controller
 
     public function data(): JsonResponse
     {
-        return response()->json($this->attendance->getAttendanceWithPagination($this->perPage));
+        return response()->json($this->attendanceService->attendancesLog());
     }
-
 }

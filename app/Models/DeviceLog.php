@@ -10,6 +10,7 @@ class DeviceLog extends Model
     use HasFactory;
 
     protected $table = 'device_logs';
+
     protected $fillable = [
         'data',
         'date',

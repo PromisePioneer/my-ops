@@ -13,11 +13,11 @@ class UserWorkTime extends Model
 {
     use HasFactory;
 
-
     protected $table = 'user_work_time';
+
     protected $fillable = [
         'user_id',
-        'work_time_id'
+        'work_time_id',
     ];
 
     public function user(): BelongsTo
@@ -30,7 +30,6 @@ class UserWorkTime extends Model
         return $this->belongsTo(WorkTime::class, 'work_time_id');
     }
 
-
     public function getSelectedUserShift(int $workTimeId): array
     {
         $shift = self::with('user')->where('work_time_id', $workTimeId)->get();
@@ -42,7 +41,6 @@ class UserWorkTime extends Model
             ];
         })->toArray();
     }
-
 
     public function getDetailUserOnSelectedWorkTime($workTimeId, int $perPage): LengthAwarePaginator
     {
@@ -59,7 +57,6 @@ class UserWorkTime extends Model
         $search = $request->input('search');
         $query = self::with('user', 'user.roles')->where('work_time_id', $workTimeId);
 
-
         if ($search) {
             $query->whereHas('user', function ($item) use ($search) {
                 $item->where('name', 'like', '%'.$search.'%');
@@ -67,7 +64,6 @@ class UserWorkTime extends Model
                 $item->orWhere('absent_id', 'like', '%'.$search.'%');
             });
         }
-
 
         return $query->get();
     }

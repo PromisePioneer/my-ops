@@ -14,7 +14,9 @@ use Illuminate\View\View;
 class ContactController extends Controller
 {
     public int $perPage = 10;
+
     private Contact $contact;
+
     private Branch $branch;
 
     public function __construct()
@@ -29,6 +31,7 @@ class ContactController extends Controller
     public function index(): View
     {
         $this->authorize('view', Contact::class);
+
         return view('pages.master.contact.index');
     }
 
@@ -38,8 +41,11 @@ class ContactController extends Controller
     public function data(Request $request): JsonResponse
     {
         $this->authorize('view', Contact::class);
-        return response()->json($this->contact->getDataWithPaginationBasedOnUserBranch($request->user()->branch_id,
-            $this->perPage));
+
+        return response()->json($this->contact->getDataWithPaginationBasedOnUserBranch(
+            $request->user()->branch_id,
+            $this->perPage
+        ));
     }
 
     /**
@@ -48,6 +54,7 @@ class ContactController extends Controller
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', Contact::class);
+
         return response()->json($this->contact->searchDataBasedOnUserBranch($request));
     }
 
@@ -57,6 +64,7 @@ class ContactController extends Controller
     public function branchData(Request $request): JsonResponse
     {
         $this->authorize('view', Contact::class);
+
         return response()->json($this->branch->getData($request));
     }
 
@@ -66,6 +74,7 @@ class ContactController extends Controller
     public function filterByBranch(Branch $branch): JsonResponse
     {
         $this->authorize('view', Contact::class);
+
         return response()->json($this->contact->filterDataBasedOnUserBranch($branch->id, $this->perPage));
     }
 
@@ -82,13 +91,13 @@ class ContactController extends Controller
         ], 200);
     }
 
-
     /**
      * @throws AuthorizationException
      */
     public function edit(Contact $contact): JsonResponse
     {
         $this->authorize('update', $contact);
+
         return response()->json($contact);
     }
 
@@ -104,7 +113,6 @@ class ContactController extends Controller
             'message' => 'data berhasil disimpan',
         ], 200);
     }
-
 
     /**
      * @throws AuthorizationException

@@ -5,9 +5,8 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class Attendances extends Model
@@ -15,6 +14,7 @@ class Attendances extends Model
     use HasFactory;
 
     protected $table = 'attendances';
+
     protected $fillable = [
         'sn',
         'table',
@@ -24,72 +24,17 @@ class Attendances extends Model
         'status1',
     ];
 
-    public function getAttendanceWithPagination(int $perPage): LengthAwarePaginator
-    {
-        $allData = self::join('users', 'users.absent_id', '=', 'attendances.employee_id')
-            ->whereNotNull('attendances.employee_id')
-            ->whereNotNull('users.name')
-            ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
-            ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
-            ->orderBy('attendances.timestamp', 'desc')
-            ->select('attendances.employee_id', 'users.name as user_name',
-                'attendances.timestamp',
-                'attendances.status1', 'work_time.name as work_time'
-            );
-
-
-        $paginatedResults = $allData->paginate($perPage);
-
-        $groupedData = collect($paginatedResults->items())->groupBy(function ($item) {
-            return $item->employee_id;
-        });
-
-
-        $formattedData = $this->formatGroupedData1($groupedData);
-        return new LengthAwarePaginator(
-            $formattedData,
-            $paginatedResults->total(),
-            $perPage,
-            $paginatedResults->currentPage(),
-            ['path' => url('/adms/attendances/data')]
-        );
-    }
-
-    private function formatGroupedData1($groupedData)
-    {
-        return $groupedData->map(function ($items) {
-            $userName = $items->first()->user_name;
-            $timeStamp = $items->first()->timestamp;
-            $checkIn = $items->where('status1', 0)->first(); // Data Check-In
-            $checkOut = $items->where('status1', 1)->last(); // Data Check-Out
-            // Jika work_time null, gunakan jam kerja default
-            $userWorktime = WorkTime::where('name', $checkIn->work_time ?? 'Default')->first();
-            $defaultWorkTime = WorkTime::where('id', 1)->first();
-            // Tentukan waktu check-in yang diharapkan
-            $expectedCheckInTime = $userWorktime->clock_in;
-            $expectedCheckIn = Carbon::parse($timeStamp)->format('Y-m-d').' '.$expectedCheckInTime;
-            $expectedCheckIn = Carbon::parse($expectedCheckIn);
-            // Hitung keterlambatan (dalam menit)
-            $actualCheckIn = Carbon::parse($checkIn->timestamp ?? null);
-            $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
-            return [
-                'name' => $userName,
-                'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
-                'date' => Carbon::parse($timeStamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y') ?? null,
-                'employee_id' => $checkIn->employee_id ?? null,
-                'checkin_time' => $actualCheckIn->format('H:i') ?? null,
-                'late_checkin' => (int) $minutesLate ?? null,
-                'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
-            ];
-        })->filter()->values(); // Filter data yang null dan reset indeks array
-    }
-
     public function getAttendancesDataBasedOnUserId(int $perPage, int $absentId): LengthAwarePaginator
     {
-        $query = self::join('users', 'users.absent_id', '=',
-            'attendances.employee_id')->where('attendances.employee_id', $absentId)->paginate($perPage);
+        $query = self::join(
+            'users',
+            'users.absent_id',
+            '=',
+            'attendances.employee_id'
+        )->where('attendances.employee_id', $absentId)->paginate($perPage);
 
         self::formattedAbsentDataBasedOnUserId($query);
+
         return $query;
     }
 
@@ -106,53 +51,46 @@ class Attendances extends Model
         $attedancesData->setCollection($formattedAttendances);
     }
 
-    public function getAttendancesPeriod(int $perPage): LengthAwarePaginator
+    public function attendancesPeriod()
     {
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-
-        $query = self::select(DB::raw("CONCAT(MONTH(timestamp), '-', YEAR(timestamp)) as waktu"),
-            DB::raw('YEAR(timestamp) as tahun'), DB::raw('MONTHNAME(timestamp) as bulan'))
+        return self::select(
+            DB::raw("CONCAT(MONTH(timestamp), '-', YEAR(timestamp)) as waktu"),
+            DB::raw('YEAR(timestamp) as tahun'),
+            DB::raw('MONTHNAME(timestamp) as bulan')
+        )
             ->orderBy('tahun', 'desc')
             ->distinct();
-
-        return new LengthAwarePaginator(
-            $query->forPage($currentPage, $perPage)->get(),
-            $query->count(),
-            $perPage,
-            $currentPage,
-            ['path' => LengthAwarePaginator::resolveCurrentPath()]
-        );
     }
 
-    public function getAttendancesBasedOnPeriod(string $month, string $year, int $perPage): LengthAwarePaginator
+    public function getAttendancesSummaryInAMonth(string $month, string $year): Collection
     {
-        $attendances = self::join('users', 'users.absent_id', '=', 'attendances.employee_id')
+        return $this->getAttendancesLog()->whereMonth('attendances.timestamp', $month)
+            ->whereYear('attendances.timestamp', $year)->get()->groupBy('user_name');
+    }
+
+    public function getAttendancesLog()
+    {
+        return self::join('users', 'users.absent_id', '=', 'attendances.employee_id')
             ->leftJoin('branches', 'branches.id', '=', 'users.branch_id')
+            ->whereNotNull('attendances.employee_id')
+            ->whereNotNull('users.name')
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
             ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
-            ->whereMonth('attendances.timestamp', $month)
-            ->whereYear('attendances.timestamp', $year)
-            ->select('users.nip as user_nip', 'branches.name as branches_name', 'users.name as user_name',
+            ->orderBy('attendances.timestamp', 'desc')
+            ->select(
+                'attendances.employee_id',
+                'users.name as user_name',
+                'users.nip as user_nip',
                 'attendances.timestamp',
                 'attendances.status1',
-                'work_time.name as work_time', 'attendances.employee_id')
-            ->get()
-            ->groupBy(function ($item) {
-                return $item->user_name;
-            });
-
-        $formattedData = $this->formatGroupedDataForAttendancesSummary($attendances, $month, $year);
-        $paginator = new LengthAwarePaginator($formattedData->forPage(Paginator::resolveCurrentPage(), $perPage),
-            $formattedData->count(), $perPage);
-
-        $paginator->withPath(url("adms/attendances-summary/detail/data/01-{$month}-{$year}"));
-
-        return $paginator;
+                'work_time.name as work_time',
+                'attendances.sn'
+            );
     }
 
-    public function formatGroupedDataForAttendancesSummary($attendances, $month, $year)
+    public function formatGroupedDataForAttendancesSummary($attendances)
     {
-        return $attendances->map(function ($items) use ($month, $year) {
+        return $attendances->map(function ($items) {
             $totalMinutesLate = 0;
 
             // Group by each day to calculate daily lateness
@@ -163,16 +101,16 @@ class Attendances extends Model
             foreach ($dailyAttendances as $day => $dailyItems) {
                 $checkIn = $dailyItems->where('status1', 0)->first();
                 if ($checkIn) {
-                    $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
+                    $userWorktime = WorkTime::where('name', $checkIn->work_time ?? null)->first();
                     $defaultWorkTime = WorkTime::where('id', 1)->first();
                     $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
 
                     // Combine the date of check-in with the expected time
-                    $expectedCheckIn = Carbon::parse($checkIn?->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+                    $expectedCheckIn = Carbon::parse($checkIn->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
                     $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
                     // Calculate lateness in minutes for that day
-                    $actualCheckIn = Carbon::parse($checkIn?->timestamp);
+                    $actualCheckIn = Carbon::parse($checkIn->timestamp);
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                         $minutesLate = $expectedCheckIn->diffInMinutes($actualCheckIn);
                         $totalMinutesLate += $minutesLate;
@@ -183,77 +121,14 @@ class Attendances extends Model
             $totalPresent = $items->where('status1', 0)->count();
 
             return [
-                'branch' => $items->first()->branch_name ?? 'Pusat',
+                'branch' => $items->first()->branches_name,
                 'employee_id' => $items->first()->employee_id,
                 'nip' => $items->first()->user_nip,
                 'name' => $items->first()->user_name,
                 'total_hadir' => $totalPresent,
-                'total_menit_terlambat' => (int) $totalMinutesLate
+                'total_menit_terlambat' => (int) $totalMinutesLate,
             ];
         })->values();
-    }
-
-    public function searchAttendancesSummary(Request $request, $month, $year)
-    {
-        $search = $request->input('search');
-
-        $query = self::join('users', 'users.absent_id', '=', 'attendances.employee_id')
-            ->leftJoin('branches', 'branches.id', '=', 'users.branch_id')
-            ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
-            ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
-            ->select('users.nip as user_nip', 'users.name as user_name', 'attendances.timestamp', 'attendances.status1',
-                'work_time.name as work_time', 'attendances.employee_id')
-            ->whereMonth('attendances.timestamp', $month)
-            ->whereYear('attendances.timestamp', $year);
-
-
-        if ($search) {
-            $query->where('users.name', 'like', '%'.$search.'%')
-                ->orWhere('branches.name', 'like', '%'.$search.'%')
-                ->orWhere('work_time.name', 'like', '%'.$search.'%')
-                ->orWhere('users.nip', 'like', '%'.$search.'%');
-        }
-
-        $attendances = $query->orderBy('attendances.timestamp', 'DESC')->get();
-
-        $groupedAttendances = $attendances->groupBy(function ($item) {
-            return $item->user_name;
-        });
-
-        return $this->formatGroupedDataForAttendancesSummary($groupedAttendances, null, null);
-    }
-
-    public function filterAttendancesSummaryByDate(
-        $startDate,
-        $endDate,
-        $month,
-        $year,
-        int $perPage
-    ): LengthAwarePaginator {
-        $attendances = self::join('users', 'users.absent_id', '=', 'attendances.employee_id')
-            ->leftJoin('branches', 'branches.id', '=', 'users.branch_id')
-            ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
-            ->leftJoin('work_time', 'work_time.id', '=', 'user_work_time.work_time_id')
-            ->whereMonth('attendances.timestamp', $month)
-            ->whereYear('attendances.timestamp', $year)
-            ->whereBetween('attendances.timestamp', [$startDate, $endDate])
-            ->orderBy('attendances.timestamp', 'DESC')
-            ->select('users.nip as user_nip', 'branches.name as branches_name', 'users.name as user_name',
-                'attendances.timestamp',
-                'attendances.status1',
-                'work_time.name as work_time', 'attendances.employee_id')
-            ->get()
-            ->groupBy(function ($item) {
-                return $item->user_name;
-            });
-
-        $formattedData = $this->formatGroupedDataForAttendancesSummary($attendances, $month, $year);
-        $paginator = new LengthAwarePaginator($formattedData->forPage(Paginator::resolveCurrentPage(), $perPage),
-            $formattedData->count(), $perPage);
-
-        $paginator->withPath(url("adms/attendances-summary/detail/data/01-{$month}-{$year}"));
-
-        return $paginator;
     }
 
     public function attendanceSummaryDetailForOneMonthBasedOnUserId(
@@ -262,8 +137,13 @@ class Attendances extends Model
         int $employeeId,
         int $perPage
     ): LengthAwarePaginator {
-        $query = self::select('attendances.employee_id', 'users.name as user_name', 'attendances.timestamp',
-            'attendances.status1', 'work_time.name as work_time')
+        $query = self::select(
+            'attendances.employee_id',
+            'users.name as user_name',
+            'attendances.timestamp',
+            'attendances.status1',
+            'work_time.name as work_time'
+        )
             ->join('users', 'users.absent_id', '=', 'attendances.employee_id')
             ->where('attendances.employee_id', $employeeId)
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
@@ -272,18 +152,14 @@ class Attendances extends Model
             ->whereYear('attendances.timestamp', $year)
             ->orderBy('attendances.timestamp', 'ASC');
 
-
         $paginator = $query->paginate($perPage);
 
-        // Lakukan grouping setelah data diambil untuk page tertentu
         $groupedData = $paginator->getCollection()->groupBy(function ($item) {
             return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
         });
 
         $formattedData = $this->formatGroupedData($groupedData);
-
         $paginator->setCollection($formattedData);
-
         return $paginator;
     }
 
@@ -293,23 +169,22 @@ class Attendances extends Model
             $checkIn = $items->where('status1', 0)->first();
             $checkOut = $items->where('status1', 1)->first();
 
-
             if ($checkIn) {
-                $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
+                $userWorktime = WorkTime::where('name', $checkIn->work_time)->first();
                 $defaultWorkTime = WorkTime::where('id', 1)->first();
-                $expectedCheckInTime = $userWorktime ? $userWorktime?->clock_in : $defaultWorkTime?->clock_in;
+                $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime?->clock_in;
 
-                $expectedCheckIn = Carbon::parse($checkIn?->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+                $expectedCheckIn = Carbon::parse($checkIn->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
                 $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
-                $actualCheckIn = Carbon::parse($checkIn?->timestamp);
+                $actualCheckIn = Carbon::parse($checkIn->timestamp);
                 $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
 
                 return [
                     'name' => $checkIn->user_name,
                     'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
-                    'date' => Carbon::parse($checkIn?->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
-                    'employee_id' => $checkIn?->employee_id,
+                    'date' => Carbon::parse($checkIn->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                    'employee_id' => $checkIn->employee_id,
                     'checkin_time' => $actualCheckIn->format('H:i'),
                     'late_checkin' => (int) $minutesLate,
                     'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
@@ -319,5 +194,4 @@ class Attendances extends Model
             return null;
         })->filter()->values();
     }
-
 }

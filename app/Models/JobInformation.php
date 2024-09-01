@@ -58,7 +58,6 @@ class JobInformation extends Model
         'emp_code',
         'absent_id',
         'user_id',
-        'department_id',
         'fixed_salary',
         'placement_id',
         'contract_status',
@@ -67,8 +66,7 @@ class JobInformation extends Model
         'no_kis',
         'bpjs_ket',
         'no_kpj',
-        'sk_file',
-        'contract_file',
+        'contract_end_date',
     ];
 
     public function user(): BelongsTo
@@ -76,14 +74,9 @@ class JobInformation extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function department(): BelongsTo
-    {
-        return $this->belongsTo(Department::class, 'department_id');
-    }
-
     //eloquent
     public function getRelatedUserJobInformation(int $userId): Model|Builder|null
     {
-        return self::with('department')->where('user_id', $userId)->first();
+        return self::where('user_id', $userId)->first();
     }
 }

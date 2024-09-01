@@ -14,7 +14,6 @@ class WorkTimePolicy
         //
     }
 
-
     public function view(User $user): bool
     {
         if ($user->hasRole('HR')) {
@@ -38,11 +37,8 @@ class WorkTimePolicy
         return $user->can('update shift');
     }
 
-
     public function destroy(User $user): bool
     {
         return $user->can('hapus shift');
     }
-
-
 }

@@ -19,19 +19,18 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             RoleSeeder::class,
             PermissionSeeder::class,
-//            ContactSeeder::class,
+            //            ContactSeeder::class,
             ProductSeeder::class,
             ServicesCategoriesSeeder::class,
             OfferingLetterSeeder::class,
-//            BastSeeder::class,
+            //            BastSeeder::class,
             CompanyProfileSeeder::class,
             LetterHeadSeeder::class,
             UnitTypesSeeder::class,
             PositionSeeder::class,
             WorkTimeSeeder::class,
             FpDeviceSeeder::class,
-//            SpSeeder::class,
-//            AttendancesSeeder::class
+            RoleHasDepartmentSeeder::class,
         ]);
     }
 }

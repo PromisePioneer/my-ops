@@ -2,50 +2,68 @@
 
 namespace App\Service;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class RoleService
 {
+    private static int $perPage = 10;
+    private Role $role;
 
-    public function getRoleWithPermissionAndPagination(int $perPage)
+
+    public function __construct()
     {
-        $roles = Role::with('permissions')->paginate($perPage);
-        self::formattedData($roles);
-
-        return $roles;
+        $this->role = new Role();
     }
 
-    public function formattedData(LengthAwarePaginator $roles): void
+
+    public function rolePermissionAndDepartmentsPaginatedData(): LengthAwarePaginator
     {
-        $roleData = $roles->getCollection()->map(function ($item) {
+        $data = $this->role->rolePermissionAndDepartments()->paginate(self::$perPage);
+        self::formattedData($data);
+
+        return $data;
+    }
+
+    public function formattedData(LengthAwarePaginator $data): void
+    {
+        $roleData = $data->getCollection()->map(function ($item) {
             $permission = Permission::whereIn('name', $item->permissions->pluck('name'))->take(5);
             $totalUser = User::role($item->name)->count();
 
             return [
                 'id' => $item->id,
                 'role_name' => $item->name,
+                'department' => $item->department[0]->name ?? null,
                 'permissions' => $permission->get(),
                 'total_permission_in_this_role' => $item->permissions->count() - 5,
                 'total_user' => $totalUser,
             ];
         });
 
-        $roles->setCollection($roleData);
+        $data->setCollection($roleData);
     }
 
-    public function searchRole(Request $request, int $perPage): LengthAwarePaginator
+    public function searchRole(Request $request): LengthAwarePaginator
     {
-        $query = Role::with('permissions')
-            ->where('name', 'like', '%'.$request->search.'%')
-            ->paginate($perPage);
-        self::formattedData($query);
+        $search = $request->input('search');
+        $query = $this->role->rolePermissionAndDepartments()
+            ->where('name', 'like', '%'.$search.'%')
+            ->paginate(self::$perPage);
 
+        self::formattedData($query);
         return $query;
     }
 
 
+    public function associatedUsers(int $roleId): LengthAwarePaginator
+    {
+        return User::with('branch', 'roles', 'roles.department')
+            ->whereHas('roles', function ($query) use ($roleId) {
+                $query->where('id', $roleId);
+            })->paginate(self::$perPage);
+    }
 }

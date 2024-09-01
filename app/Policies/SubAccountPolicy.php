@@ -12,7 +12,6 @@ class SubAccountPolicy
         //
     }
 
-
     public function view()
     {
     }
@@ -21,11 +20,9 @@ class SubAccountPolicy
     {
     }
 
-
     public function update()
     {
     }
-
 
     public function delete()
     {

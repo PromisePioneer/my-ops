@@ -17,7 +17,6 @@ class UniqueLeaders implements ValidationRule
         $this->request = $request;
     }
 
-
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $this->validateDirector($fail);
@@ -29,19 +28,19 @@ class UniqueLeaders implements ValidationRule
         $this->validatePicCustomerService($fail);
     }
 
-    private function validateDirector(Closure $fail)
+    private function validateDirector(Closure $fail): void
     {
-        $director = User::role('Direktur')->where('branch_id', null)->first();
+        $director = User::role('Director')->where('branch_id', null)->first();
 
         if ($director?->id === $this->request->route('user')?->id) {
             return;
         }
 
-        if ($this->request->placement === 'Cabang' && $this->request->role[0] === 'Manager Operasional') {
+        if ($this->request->placement === 'Cabang' && $this->request->role[0] === 'Director') {
             $fail('Direktur tidak boleh berada di cabang!');
         }
 
-        if ($director !== null && $this->request->placement === 'Pusat' && $this->request->role[0] === 'Direktur') {
+        if ($director !== null && $this->request->placement === 'Pusat' && $this->request->role[0] === 'Director') {
             $fail("Direktur sudah terdaftar atas nama {$director->name}!");
         }
     }
@@ -54,7 +53,7 @@ class UniqueLeaders implements ValidationRule
             return;
         }
 
-        if ($this->request->placement === 'Cabang' && $this->request->role[0] === 'Manager Operasional') {
+        if ($this->request->placement === 'Cabang' && $this->request->role[0] === 'General Manager') {
             $fail('General Manager tidak boleh berada di cabang!');
         }
 
@@ -65,35 +64,32 @@ class UniqueLeaders implements ValidationRule
 
     public function validateFinanceManager(Closure $fail): void
     {
-        $financeManager = User::role('Manager Keuangan')->where('branch_id', null)->first();
-
+        $financeManager = User::role('FA & Tax Manager')->where('branch_id', null)->first();
 
         if ($financeManager?->id === $this->request->route('user')?->id) {
             return;
         }
 
-        if ($this->request->placement === 'Cabang' && $this->request->role[0] === 'Manager Keuangan') {
+        if ($this->request->placement === 'Cabang' && $this->request->role[0] === 'FA & Tax Manager') {
             $fail('Manager Keuangan tidak boleh berada di cabang!');
         }
 
-        if ($financeManager !== null && $this->request->placement === 'Pusat' && $this->request->role[0] === 'Manager Keuangan') {
+        if ($financeManager !== null && $this->request->placement === 'Pusat' && $this->request->role[0] === 'FA & Tax Manager') {
             $fail("Manager Keuangan sudah terdaftar dengan atas nama {$financeManager->name} ");
         }
     }
 
     private function validateBranchManager(Closure $fail): void
     {
-        $branchManager = User::role('Manager Cabang')->where('branch_id', $this->request->branch_id)->first();
+        $branchManager = User::role('Branch Manager')->where('branch_id', $this->request->branch_id)->first();
 
         $branch = Branch::where('id', $this->request->branch_id)->first();
-
 
         if (isset($branchManager->id) === isset($this->request->route('user')->id)) {
             return;
         }
 
-
-        if ($this->request->placement === 'Pusat' && $this->request->role[0] === 'Manager Cabang') {
+        if ($this->request->placement === 'Pusat' && $this->request->role[0] === 'Branch Manager') {
             $fail('Manager Cabang tidak boleh berada di pusat');
         }
 
@@ -104,52 +100,52 @@ class UniqueLeaders implements ValidationRule
 
     public function validateOperationalManager(Closure $fail): void
     {
-        $operationalManager = User::role('Manager Operasional')->where('branch_id', null)->first();
+        $operationalManager = User::role('Operational Manager')->where('branch_id', null)->first();
 
         if ($operationalManager?->id === $this->request->route('user')?->id) {
             return;
         }
 
-        if ($this->request->placement === 'Cabang' && $this->request->role[0] === 'Manager Operasional') {
-            $fail('Manager Operasional tidak boleh berada di cabang!');
+        if ($this->request->placement === 'Cabang' && $this->request->role[0] === 'Operational Manager') {
+            $fail('Operational Manager tidak boleh berada di cabang!');
         }
 
-        if ($operationalManager !== null && $this->request->placement === 'Pusat' && $this->request->role[0] === 'Manager Operasional') {
+        if ($operationalManager !== null && $this->request->placement === 'Pusat' && $this->request->role[0] === 'Operational Manager') {
             $fail("Manager Operasional sudah terdaftar atas nama {$operationalManager->name}!");
         }
     }
 
     private function validatePicNoc(Closure $fail): void
     {
-        $picNoc = User::role('PIC NOC')->where('branch_id', null)->first();
+        $picNoc = User::role('NOC Supervisor')->where('branch_id', null)->first();
 
         if ($picNoc?->id === $this->request->route('user')?->id) {
             return;
         }
 
-        if ($this->request->placement === 'Cabang' && $this->request->role[0] === 'Manager Operasional') {
-            $fail('PIC NOC tidak boleh berada di cabang!');
+        if ($this->request->placement === 'Cabang' && $this->request->role[0] === 'NOC Supervisor') {
+            $fail('NOC Supervisor tidak boleh berada di cabang!');
         }
 
-        if ($picNoc !== null && $this->request->placement === 'Pusat' && $this->request->role[0] === 'PIC NOC') {
-            $fail("PIC NOC sudah terdaftar atas nama {$picNoc->name}!");
+        if ($picNoc !== null && $this->request->placement === 'Pusat' && $this->request->role[0] === 'NOC Supervisor') {
+            $fail("NOC Supervisor sudah terdaftar atas nama {$picNoc->name}!");
         }
     }
 
     private function validatePicCustomerService(Closure $fail): void
     {
-        $picCustomerService = User::role('PIC Customer Service')->where('branch_id', null)->first();
+        $picCustomerService = User::role('Customer Service Leader')->where('branch_id', null)->first();
 
         if ($picCustomerService?->id === $this->request->route('user')?->id) {
             return;
         }
 
-        if ($this->request->placement === 'Cabang' && $this->request->role[0] === 'Manager Operasional') {
-            $fail('PIC Customer Service tidak boleh berada di cabang!');
+        if ($this->request->placement === 'Cabang' && $this->request->role[0] === 'Customer Service Leader') {
+            $fail('Customer Service Leader tidak boleh berada di cabang!');
         }
 
-        if ($picCustomerService !== null && $this->request->placement === 'Pusat' && $this->request->role[0] === 'PIC Customer Service') {
-            $fail("PIC Customer Service sudah terdaftar atas nama {$picCustomerService->name}!");
+        if ($picCustomerService !== null && $this->request->placement === 'Pusat' && $this->request->role[0] === 'Customer Service Leader') {
+            $fail("Customer Service Leader sudah terdaftar atas nama {$picCustomerService->name}!");
         }
     }
 }

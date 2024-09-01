@@ -233,7 +233,6 @@
                 Demikian Surat Peringatan ini dibuat agar dapat diperhatikan dan ditaati oleh yang
                 bersangkutan.
             </p>
-
             @endif
         </div>
 
