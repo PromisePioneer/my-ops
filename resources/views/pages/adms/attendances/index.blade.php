@@ -42,7 +42,12 @@
                                     <td x-text="attendance.work_time ?? 'Default'"></td>
                                     <td x-text="attendance.date"></td>
                                     <td>
-                                        <span class="badge bg-info" x-text="attendance.checkin_time"></span>
+                                        <template x-if="attendance.checkin_time === null">
+                                            <span class="badge bg-danger">-</span>
+                                        </template>
+                                        <template x-if="attendance.checkin_time">
+                                            <span class="badge bg-info" x-text="attendance.checkin_time"></span>
+                                        </template>
                                     </td>
                                     <td>
                                         <span class="badge bg-info" x-text="`${attendance.late_checkin} menit`"></span>

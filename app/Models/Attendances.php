@@ -83,7 +83,8 @@ class Attendances extends Model
                 'users.nip as user_nip',
                 'attendances.timestamp',
                 'attendances.status1',
-                'work_time.name as work_time'
+                'work_time.name as work_time',
+                'attendances.sn'
             );
     }
 
