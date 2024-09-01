@@ -19,7 +19,7 @@ beforeEach(function () {
 test('handshake method creates device log and updates fp device', function () {
     $request = Request::create('/handshake', 'POST', [
         'SN' => '12345',
-        'option' => 'some_option'
+        'option' => 'some_option',
     ]);
 
     $response = $this->service->handshake($request);
@@ -31,7 +31,7 @@ test('handshake method creates device log and updates fp device', function () {
 
 test('recieveRecords handles OPERLOG correctly', function () {
     $request = Request::create('/receive', 'POST', [
-        'table' => 'OPERLOG'
+        'table' => 'OPERLOG',
     ], [], [], [], "line1\nline2\nline3");
 
     $response = $this->service->recieveRecords($request);
@@ -56,7 +56,7 @@ test('recieveRecords processes valid attendance records for check-in', function 
     $request = Request::create('/iclock/cdata/', 'POST', [
         'SN' => '12345',
         'table' => 'CHECKINOUT',
-        'Stamp' => '9999'
+        'Stamp' => '9999',
     ], [], [], [], "1001\t2023-08-17 09:00:00\t0");
 
     $response = $this->service->recieveRecords($request);
@@ -83,7 +83,7 @@ test('recieveRecords processes valid attendance records for check-out', function
     $request = Request::create('/receive', 'POST', [
         'SN' => '12345',
         'table' => 'CHECKINOUT',
-        'Stamp' => '9999'
+        'Stamp' => '9999',
     ], [], [], [], "1001\t2023-08-17 18:00:00\t1");
 
     $response = $this->service->recieveRecords($request);
@@ -97,7 +97,7 @@ test('recieveRecords ignores invalid user shifts', function () {
     $request = Request::create('/receive', 'POST', [
         'SN' => '12345',
         'table' => 'CHECKINOUT',
-        'Stamp' => '9999'
+        'Stamp' => '9999',
     ], [], [], [], "1001\t2023-08-17 09:00:00\t0");
 
     $response = $this->service->recieveRecords($request);

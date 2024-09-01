@@ -47,18 +47,17 @@ class LoginController extends Controller
         return 'nip';
     }
 
-
     public function authenticated(Request $request, User $user): RedirectResponse|Redirector|Application
     {
-        if (Auth::user()->active === 0) {
+        if ($request->user()->active === 0) {
             Auth::logout();
+
             return redirect('login')->withErrors(['Your account is inactive']);
         }
-        
+
         if ($user->hasAnyRole('Technichian', 'Accounting', 'Stocker', 'WKCA', 'KCA', 'NOC')) {
             return redirect('/utility/user-profile/profile-detail');
         }
-
 
         return redirect()->intended($this->redirectTo);
     }

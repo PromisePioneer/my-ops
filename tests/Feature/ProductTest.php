@@ -4,10 +4,9 @@ use App\Models\Product;
 
 beforeEach(function () {
     $this->user = setUpUserWithPermissions([
-        'lihat produk', 'tambah produk', 'update produk', 'hapus produk'
+        'lihat produk', 'tambah produk', 'update produk', 'hapus produk',
     ]);
 });
-
 
 it('can access product page with correct permission', function () {
     $user = $this->user;
@@ -30,5 +29,3 @@ it('can create a product page with correct permission', function () {
     $product = Product::factory()->create();
     $this->post(url('master/product'), $product->toArray())->assertStatus(200);
 });
-
-

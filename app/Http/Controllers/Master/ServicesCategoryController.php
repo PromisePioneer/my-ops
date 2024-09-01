@@ -22,6 +22,7 @@ class ServicesCategoryController extends Controller
     public function index(): View
     {
         $this->authorize('view', ServiceCategory::class);
+
         return view('pages.master.services-categories.index');
     }
 
@@ -32,6 +33,7 @@ class ServicesCategoryController extends Controller
     {
         $this->authorize('view', ServiceCategory::class);
         $services = ServiceCategory::orderBy('capacity', 'ASC')->paginate(self::$perPage);
+
         return response()->json($services);
     }
 
@@ -69,6 +71,7 @@ class ServicesCategoryController extends Controller
     public function show(ServiceCategory $serviceCategory): JsonResponse
     {
         $this->authorize('update', ServiceCategory::class);
+
         return response()->json($serviceCategory);
     }
 
@@ -79,6 +82,7 @@ class ServicesCategoryController extends Controller
     {
         $this->authorize('update', ServiceCategory::class);
         $serviceCategory->update($request->validated());
+
         return response()->json([
             'message' => 'data berhasil di update',
         ]);

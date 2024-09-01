@@ -17,7 +17,9 @@ use Maatwebsite\Excel\Facades\Excel;
 class AccountController extends Controller
 {
     public int $perPage = 10;
+
     private Branch $branch;
+
     private Account $account;
 
     public function __construct()
@@ -32,6 +34,7 @@ class AccountController extends Controller
     public function index(): View
     {
         $this->authorize('view', Account::class);
+
         return view('pages.account-master.account.index');
     }
 
@@ -42,6 +45,7 @@ class AccountController extends Controller
     {
         $this->authorize('view', Account::class);
         $accounts = $this->account->getAccountsBasedOnUserBranch($request->branch_id, $this->perPage);
+
         return response()->json($accounts);
     }
 
@@ -52,6 +56,7 @@ class AccountController extends Controller
     {
         $this->authorize('view', Account::class);
         $response = $this->branch->getData($request);
+
         return response()->json($response);
     }
 
@@ -62,12 +67,14 @@ class AccountController extends Controller
     {
         $this->authorize('view', Account::class);
         $accounts = $this->account->searchAccounts($request, $this->perPage);
+
         return response()->json($accounts);
     }
 
     public function filter(Branch $branch): JsonResponse
     {
         $filter = $this->account->filteringAccountBasedOnBranch($branch->id, $this->perPage);
+
         return response()->json($filter);
     }
 
@@ -78,6 +85,7 @@ class AccountController extends Controller
     {
         $this->authorize('create', Account::class);
         Account::create($request->validated());
+
         return response()->json([
             'message' => 'Data berhasil disimpan',
         ]);
@@ -86,6 +94,7 @@ class AccountController extends Controller
     public function getSelectedBranch(Account $account): JsonResponse
     {
         $selectedBranch = $this->branch->getSelectedData($account->branch_id);
+
         return response()->json($selectedBranch);
     }
 
@@ -95,6 +104,7 @@ class AccountController extends Controller
     public function edit(Account $account): JsonResponse
     {
         $this->authorize('update', $account);
+
         return response()->json($account);
     }
 
@@ -117,6 +127,7 @@ class AccountController extends Controller
     public function destroy(Account $account): JsonResponse
     {
         $this->authorize('delete', $account);
+
         return response()->json($account->delete());
     }
 

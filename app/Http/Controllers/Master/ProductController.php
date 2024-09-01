@@ -14,6 +14,7 @@ use Illuminate\View\View;
 class ProductController extends Controller
 {
     public int $perPage = 10;
+
     private Product $product;
 
     public function __construct()
@@ -27,6 +28,7 @@ class ProductController extends Controller
     public function index(): View
     {
         $this->authorize('view', Product::class);
+
         return view('pages.master.product.index');
     }
 
@@ -36,6 +38,7 @@ class ProductController extends Controller
     public function data(): JsonResponse
     {
         $this->authorize('view', Product::class);
+
         return response()->json($this->product->getDataWithPagination($this->perPage));
     }
 
@@ -45,6 +48,7 @@ class ProductController extends Controller
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', Product::class);
+
         return response()->json($this->product->searchData($request, $this->perPage));
     }
 
@@ -67,6 +71,7 @@ class ProductController extends Controller
     public function show(Product $product): JsonResponse
     {
         $this->authorize('update produk', $product);
+
         return response()->json($product);
     }
 

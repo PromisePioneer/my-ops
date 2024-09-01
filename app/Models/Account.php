@@ -47,7 +47,6 @@ use Illuminate\Support\Facades\Auth;
  */
 class Account extends Model
 {
-
     use HasFactory;
 
     protected $table = 'accounts';
@@ -83,7 +82,7 @@ class Account extends Model
         $accounts = self::with([
             'subAccount' => static function ($query) {
                 $query->orderBy('code', 'ASC');
-            }
+            },
         ])->where('branch_id', $branchId)
             ->paginate($perPage);
 
@@ -124,7 +123,7 @@ class Account extends Model
         $accounts = self::with([
             'subAccount' => static function ($query) {
                 $query->orderBy('code', 'ASC');
-            }
+            },
         ])->where('branch_id', $branchId)
             ->paginate($perPage);
 
@@ -137,10 +136,10 @@ class Account extends Model
         $query = self::with([
             'subAccount' => function ($query) {
                 $query->orderBy('code', 'ASC');
-            }
+            },
         ])->where('branch_id', Auth::user()->branch_id);
 
-        if (!empty($searchTerm)) {
+        if (! empty($searchTerm)) {
             $query->where(function ($query) use ($searchTerm) {
                 $query->where('code', 'like', '%'.$searchTerm.'%')
                     ->orWhere('name', 'like', '%'.$searchTerm.'%');

@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 class IdentityInformationController extends Controller
 {
     private IdentityInformation $identityInformation;
+
     private IdentityInformationService $identityInformationService;
 
     public function __construct()

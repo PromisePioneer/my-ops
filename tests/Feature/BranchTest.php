@@ -20,7 +20,6 @@ it('can cannot access index page without permission', function () {
     $this->get(url('master/branch/'))->assertStatus(403);
 });
 
-
 it('can store branch with correct permission', function () {
     $user = $this->user;
     $this->actingAs($user);
@@ -73,4 +72,3 @@ it('can delete branch with correct permission', function () {
     $this->actingAs($this->user);
     $this->post(url('master/branch/destroy'), $branchesArr)->assertStatus(200);
 });
-

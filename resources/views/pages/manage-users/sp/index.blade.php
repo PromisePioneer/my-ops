@@ -37,6 +37,13 @@
                                 <span class="fw-bold text-gray-600">Dibuat Oleh : &nbsp;</span>
                                 <span x-text="spDetailCard.created_by"></span>
                             </div>
+                            <div class="d-flex align-items-center py-2">
+                                <span class="fw-bold text-gray-600">File : &nbsp;</span>
+                                <a :href="`/manage-users/sp/export-pdf/${spDetailCard.id}`"
+                                   class="btn btn-danger btn-sm">
+                                    <i class="bi bi-file-pdf-fill"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

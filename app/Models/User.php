@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
@@ -82,11 +83,6 @@ class User extends Authenticatable
     use HasRoles;
     use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'branch_id',
         'absent_id',
@@ -100,24 +96,15 @@ class User extends Authenticatable
         'placement',
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
+
     protected $hidden = [
         'password', 'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
+
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
 
     public function branch(): BelongsTo
     {
@@ -132,6 +119,12 @@ class User extends Authenticatable
     public function manageShift(): HasOne
     {
         return $this->hasOne(WorkTime::class, 'user_id');
+    }
+
+
+    public function attendance(): HasMany
+    {
+        return $this->hasMany(Attendances::class, 'employee_id');
     }
 
     //eloquent
@@ -155,6 +148,7 @@ class User extends Authenticatable
         }
 
         $user = $query->get();
+
         return $user->map(function ($user) {
             return [
                 'id' => $user->id,
@@ -177,7 +171,6 @@ class User extends Authenticatable
     {
         return self::with('roles')->where('branch_id', $branchId)->paginate($perPage);
     }
-
 
     public function getUser(Request $request): array
     {
@@ -215,10 +208,10 @@ class User extends Authenticatable
         })->toArray();
     }
 
-
     public function getSelectedData(int $userId): ?array
     {
         $user = self::where('id', $userId)->first();
+
         return [
             'id' => $user->id,
             'name' => $user->name,

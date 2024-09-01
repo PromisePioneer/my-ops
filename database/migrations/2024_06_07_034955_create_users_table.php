@@ -14,11 +14,11 @@ class CreateUsersTable extends Migration
         Schema::create('users', static function (Blueprint $table) {
             $table->id();
             $table->foreignId('branch_id')->nullable()->constrained('branches');
-            $table->string('absent_id')->unique()->nullable();
-            $table->enum('placement', ['Pusat', 'Cabang'])->default('Pusat');
-            $table->string('nip')->unique();
-            $table->string('name');
-            $table->date('join_date');
+            $table->string('absent_id')->nullable();
+            $table->enum('placement', ['Pusat', 'Cabang'])->default('Pusat')->nullable();
+            $table->string('nip')->nullable();
+            $table->string('name')->nullable();
+            $table->date('join_date')->nullable();
             $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

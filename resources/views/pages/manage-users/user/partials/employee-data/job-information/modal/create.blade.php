@@ -12,22 +12,6 @@
             <form id="form-job-information-update" @submit.prevent="jobInformationUpdate()">
                 <div class="modal-body">
                     <div class="row mb-7">
-                        <div class="col-md-6">
-                            <label for="department_id" class="required form-label">Departemen</label>
-                            <select name="department_id" id="selectedDepartment"
-                                    class="form-select form-select-solid department-select2">
-                                <option value="0">Pilih Departemen</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="join_date" class="required form-label">Tanggal Mulai Bekerja</label>
-                            <input type="date" id="join_date" name="join_date"
-                                   class="form-control form-control-solid"
-                                   placeholder="Tanggal Lahir" :value="jobInformation.join_date ?? '' "/>
-                        </div>
-                    </div>
-
-                    <div class="row mb-7">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">BPJS KES Status</label>
                             <div class="mb-2">
@@ -80,9 +64,18 @@
                                    placeholder="Tempat Lahir" :value="jobInformation.fixed_salary ?? 0"/>
                         </div>
                         <div class="col-md-6">
+                            <label for="bank_account_number" class="required form-label">Nomor Rekening</label>
+                            <input type="number" id="bank_account_number" name="bank_account_number"
+                                   class="form-control form-control-solid"
+                                   placeholder="Tempat Lahir" :value="jobInformation.bank_account_number ?? 0"/>
+                        </div>
+                    </div>
+                    <div class="row mb-7">
+                        <div class="col-md-6">
                             <label for="contract_status" class="required form-label">Status Kontrak</label>
-                            <select class="form-select form-select-solid" name="contract_status">
-                                <option value="0" selected>Pilih</option>
+                            <select class="form-select form-select-solid" name="contract_status"
+                                    x-model="contractStatus">
+                                <option value="0">Pilih</option>
                                 <option value="Tetap" :selected="jobInformation.contract_status === 'Tetap'">
                                     Tetap
                                 </option>
@@ -107,25 +100,17 @@
                                 </option>
                             </select>
                         </div>
-                    </div>
-                    <div class="row mb-7">
-                        <div class="col-md-6">
-                            <label for="bank_account_number" class="required form-label">Nomor Rekening</label>
-                            <input type="number" id="bank_account_number" name="bank_account_number"
-                                   class="form-control form-control-solid"
-                                   placeholder="Tempat Lahir" :value="jobInformation.bank_account_number ?? 0"/>
+
+                        <div class="col-md-6"
+                             x-show="contractStatus && contractStatus !== 'Tetap' && contractStatus !== '0'"
+                             x-transition x-cloak>
+                            <label for="contract_status" class="required form-label">Akhir Masa Kerja</label>
+                            <input type="date"
+                                   :name="`${contractStatus !== 'Tetap' && contractStatus !== '0' ? 'contract_end_date' : ''}`"
+                                   id="contract_end_date"
+                                   class="form-control form-control-solid">
                         </div>
-                    </div>
-                    <div class="row mb-7">
-                        <div class="col-md-6">
-                            <label for="sk_file" class="required form-label">SK</label>
-                            <input type="file" id="sk_file" name="sk_file" class="form-control form-control-solid"/>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="contract_file" class="required form-label">Kontrak Kerja</label>
-                            <input type="file" id="contract_file" name="contract_file"
-                                   class="form-control form-control-solid" accept="application/pdf"/>
-                        </div>
+
                     </div>
                 </div>
 

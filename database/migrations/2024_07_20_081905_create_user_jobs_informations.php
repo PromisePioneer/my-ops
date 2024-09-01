@@ -14,18 +14,16 @@ class CreateUserJobsInformations extends Migration
         Schema::create('user_jobs_informations', static function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('department_id')->constrained('departments');
             $table->double('fixed_salary');
             $table->enum('contract_status', [
                 'Tetap', 'Kontrak', 'Vendor', 'Training', 'Magang', 'Freelance', 'Non Karyawan',
             ]);
+            $table->date('contract_end_date')->nullable();
             $table->string('bank_account_number');
             $table->enum('bpjs_kes', ['ya', 'tidak'])->default('tidak');
             $table->string('no_kpj')->nullable();
             $table->enum('bpjs_ket', ['ya', 'tidak'])->default('tidak');
             $table->string('no_kis')->nullable();
-            $table->string('sk_file');
-            $table->string('contract_file');
             $table->timestamps();
         });
     }

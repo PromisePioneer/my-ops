@@ -10,8 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- *
- *
  * @property int $id
  * @property int $user_id
  * @property string $name
@@ -21,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User $user
+ *
  * @method static Builder|Education newModelQuery()
  * @method static Builder|Education newQuery()
  * @method static Builder|Education query()
@@ -32,6 +31,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Education whereName($value)
  * @method static Builder|Education whereUpdatedAt($value)
  * @method static Builder|Education whereUserId($value)
+ *
  * @mixin Eloquent
  */
 class Education extends Model
@@ -39,6 +39,7 @@ class Education extends Model
     use HasFactory;
 
     protected $table = 'educations';
+
     protected $fillable = [
         'user_id',
         'level',
@@ -46,16 +47,15 @@ class Education extends Model
         'major',
         'graduation_year',
         'certificate_of_graduation',
-        'gpa'
+        'gpa',
     ];
-
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function getRelatedUserEducation(int|null $userId): Model|Education|Builder|null
+    public function getRelatedUserEducation(?int $userId): Model|Education|Builder|null
     {
         return self::where('id', $userId)->first();
     }

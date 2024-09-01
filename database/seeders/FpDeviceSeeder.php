@@ -16,7 +16,6 @@ class FpDeviceSeeder extends Seeder
         $this->branch = new Branch();
     }
 
-
     public function run(): void
     {
         FpDevice::create([
@@ -43,20 +42,17 @@ class FpDeviceSeeder extends Seeder
             'serial_number' => 'CKEB232360172',
         ]);
 
-
         FpDevice::create([
             'branch_id' => $this->branch->where('name', 'Duri')->first()->id,
             'name' => 'Duri (Duri13)',
             'serial_number' => 'CKEB221060441',
         ]);
 
-
         FpDevice::create([
             'branch_id' => $this->branch->where('name', 'Duri')->first()->id,
             'name' => 'Duri (Kandis)',
             'serial_number' => 'CKEB223360632',
         ]);
-
 
         FpDevice::create([
             'branch_id' => $this->branch->where('name', 'Duri')->first()->id,
@@ -70,7 +66,6 @@ class FpDeviceSeeder extends Seeder
             'serial_number' => 'BWXP183361136',
         ]);
 
-
         FpDevice::create([
             'branch_id' => $this->branch->where('name', 'Siak')->first()->id,
             'name' => 'Siak (Minas)',
@@ -83,13 +78,11 @@ class FpDeviceSeeder extends Seeder
             'serial_number' => 'CKEB233160985',
         ]);
 
-
         FpDevice::create([
             'branch_id' => $this->branch->where('name', 'Rohul')->first()->id,
             'name' => 'Rohul (Ujung)',
             'serial_number' => 'BWXP194360836',
         ]);
-
 
         FpDevice::create([
             'branch_id' => $this->branch->where('name', 'Rohul')->first()->id,
@@ -97,20 +90,17 @@ class FpDeviceSeeder extends Seeder
             'serial_number' => 'CKEB233160985',
         ]);
 
-
         FpDevice::create([
             'branch_id' => $this->branch->where('name', 'Sawahlunto')->first()->id,
             'name' => 'Sawahlunto (P.Kapur)',
             'serial_number' => 'BWXP203960476',
         ]);
 
-
         FpDevice::create([
             'branch_id' => $this->branch->where('name', 'Oku baturaja')->first()->id,
             'name' => 'OKU (Baturaja)',
             'serial_number' => 'CKEB223360638',
         ]);
-
 
         FpDevice::create([
             'branch_id' => $this->branch->where('name', 'Karimun')->first()->id,
@@ -123,7 +113,6 @@ class FpDeviceSeeder extends Seeder
             'name' => 'Karimun (Baran I)',
             'serial_number' => 'BWXP211160197',
         ]);
-
 
         FpDevice::create([
             'branch_id' => $this->branch->where('name', 'Kampar')->first()->id,

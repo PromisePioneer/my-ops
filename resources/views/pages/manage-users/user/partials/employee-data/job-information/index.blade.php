@@ -16,10 +16,6 @@
                 <table class="table align-middle table-row-dashed gy-5" id="kt_table_users_login_session">
                     <tbody class="fs-6 fw-bold text-gray-600">
                     <tr>
-                        <td>Departemen</td>
-                        <td x-text="jobInformation.department?.name ?? ''"></td>
-                    </tr>
-                    <tr>
                         <td>Gaji Pokok</td>
                         <td x-text="`Rp. ${jobInformation.fixed_salary ?? ''}`"></td>
                     </tr>
@@ -53,15 +49,15 @@
                     </template>
                     <tr>
                         <td>Dokumen SK & Kontrak</td>
-                        <template x-if="jobInformation.sk_file && jobInformation.contract_file">
+                        <template x-if="jobInformation.contract_end_date">
                             <td>
-                                <a :href="`/manage-users/job-information/view-file/${userId}`"
+                                <a :href="`/manage-users/job-information/contract-file/${userId}`"
                                    class="btn btn-danger btn-sm">
                                     <i class="bi bi-file-pdf-fill"></i>
                                 </a>
                             </td>
                         </template>
-                        <template x-if="!jobInformation.sk_file && !jobInformation.contract_file">
+                        <template x-if="!jobInformation.contract_end_date">
                             <td>
                                 <button class="btn btn-danger btn-sm" disabled>
                                     <i class="bi bi-file-pdf-fill"></i>

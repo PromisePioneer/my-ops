@@ -7,7 +7,6 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class AccountPolicy
 {
-
     use HandlesAuthorization;
 
     public function __construct()
@@ -29,7 +28,6 @@ class AccountPolicy
     {
         return $user->can('update akun');
     }
-
 
     public function delete(User $user): bool
     {

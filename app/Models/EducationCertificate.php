@@ -12,20 +12,19 @@ class EducationCertificate extends Model
     use HasFactory;
 
     protected $table = 'education_certificates';
+
     protected $fillable = [
         'user_id',
         'organization',
         'name',
         'year',
-        'file'
+        'file',
     ];
-
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-
 
     public function getRelatedUserEducationCertificate(int $userId): Collection|array
     {

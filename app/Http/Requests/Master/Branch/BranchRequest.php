@@ -25,7 +25,7 @@ class BranchRequest extends FormRequest
                 Rule::unique('branches', 'name')
                     ->ignore($this->route('branch')),
             ],
-            'address' => ['required']
+            'address' => ['required'],
         ];
     }
 

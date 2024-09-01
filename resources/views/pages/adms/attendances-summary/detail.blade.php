@@ -64,16 +64,12 @@
                             </template>
                             <template x-for="(attendance, index) in attendances.data" :key="index">
                                 <tr>
-                                    <td x-text="attendance.branch"></td>
+                                    <td x-text="attendance.branch ??  'Pusat'"></td>
                                     <td x-text="attendance.nip"></td>
                                     <td x-text="attendance.name"></td>
                                     <td x-text="attendance.total_hadir"></td>
                                     <td x-text="`${attendance.total_menit_terlambat} Menit`"></td>
                                     <td>
-                                        <a class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                           data-bs-target="#modal-sp" @click="detail(attendance.employee_id)">
-                                            SP
-                                        </a>
                                         <a class="btn btn-info btn-sm" data-bs-toggle="modal"
                                            data-bs-target="#modal-attendances-summary-detail"
                                            @click="detail(attendance.employee_id)">
@@ -113,29 +109,6 @@
             maxDate: endOfMonth
         });
 
-
-        tinymce.init({
-            selector: 'textarea#description',
-            plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons',
-            editimage_cors_hosts: ['picsum.photos'],
-            menubar: 'file edit view insert format tools table help',
-            toolbar: "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | align numlist bullist | link image | table media | lineheight outdent indent| forecolor backcolor removeformat | charmap emoticons | code fullscreen preview | save print | pagebreak anchor codesample | ltr rtl",
-            autosave_ask_before_unload: true,
-            autosave_interval: '30s',
-            autosave_prefix: '{path}{query}-{id}-',
-            autosave_restore_when_empty: false,
-            autosave_retention: '2m',
-            image_advtab: true,
-            importcss_append: true,
-            height: 600,
-            image_caption: true,
-            quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
-            noneditable_class: 'mceNonEditable',
-            toolbar_mode: 'sliding',
-            contextmenu: 'link image table',
-            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
-        });
-
         function attendancesSummary() {
             return {
                 buttonLoading: false,
@@ -147,7 +120,6 @@
                 search: '',
                 userId: "",
                 formFilterDate: document.getElementById('form-filter-date'),
-                modalSp: new bootstrap.Modal(document.getElementById('modal-sp')),
                 modalAttendanceSummaryDetail: new bootstrap.Modal(document.getElementById('modal-attendances-summary-detail')),
                 formSp: document.getElementById('form-sp'),
                 usersDetail: [],
@@ -169,13 +141,17 @@
                     this.startIndex = this.attendances.from
                 },
                 async searchData() {
+                    this.isLoading = true;
                     try {
-                        this.attendances = await axios.get(`/adms/attendances-summary/detail/data/search/01-${this.month}-${this.year}`, {
+                        const response = await axios.get(`/adms/attendances-summary/detail/data/search/01-${this.month}-${this.year}`, {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
+                        this.attendances = response.data;
                     } catch (error) {
-                        console.log(error);
+                        console.error('Error fetching data:', error);
+                    } finally {
+                        this.isLoading = false;
                     }
                 },
                 async nextPage() {

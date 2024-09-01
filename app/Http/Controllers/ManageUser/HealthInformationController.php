@@ -10,7 +10,6 @@ use Illuminate\Http\JsonResponse;
 
 class HealthInformationController extends Controller
 {
-
     private HealthInformation $healthInformation;
 
     public function __construct()
@@ -21,22 +20,22 @@ class HealthInformationController extends Controller
     public function getRelatedUserHealthInformation(User $user): JsonResponse
     {
         $health = $this->healthInformation->getRelatedUserHealthInformation($user->id);
+
         return response()->json([
-            'disease' => json_decode($health?->disease)
+            'disease' => json_decode($health?->disease),
         ]);
     }
-
 
     public function updateOrCreate(HealthInformationRequest $request, User $user): JsonResponse
     {
         HealthInformation::updateOrCreate([
             'user_id' => $user->id,
         ], [
-            'disease' => json_encode($request['data'])
+            'disease' => json_encode($request['data']),
         ]);
 
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
 }

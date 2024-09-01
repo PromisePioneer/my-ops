@@ -3,29 +3,24 @@
 namespace App\Http\Controllers\ADMS;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ADMS\AttendancesSummaryAssignSPRequest;
 use App\Models\Attendances;
-use App\Models\SP;
-use App\Models\User;
 use App\Models\WorkTime;
-use App\Service\SpService;
+use App\Service\AttendancesSummaryService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class AttendanceSummaryController extends Controller
 {
-
     public readonly int $perPage;
-    private Attendances $attendances;
-    private SpService $spService;
+    private AttendancesSummaryService $attendanceSummaryService;
 
     public function __construct()
     {
-        $this->attendances = new Attendances();
-        $this->spService = new SpService();
         $this->perPage = 10;
+        $this->attendanceSummaryService = new AttendancesSummaryService();
     }
 
     public function index(): View
@@ -33,64 +28,60 @@ class AttendanceSummaryController extends Controller
         return view('pages.adms.attendances-summary.index');
     }
 
-
     public function selectPeriodData(): JsonResponse
     {
-        return response()->json($this->attendances->getAttendancesPeriod($this->perPage));
+        return response()->json($this->attendanceSummaryService->attendancesPeriod());
     }
-
 
     public function detail($time): View
     {
         $month = date('m', strtotime($time));
         $year = date('Y', strtotime($time));
+
         return view('pages.adms.attendances-summary.detail', compact('month', 'year'));
     }
 
-    public function detailData(Request $request, $month, $year): JsonResponse
+    public function detailData($month, $year): JsonResponse
     {
-        return response()->json($this->attendances->getAttendancesBasedOnPeriod($month, $year, $this->perPage));
+        return response()->json($this->attendanceSummaryService->attendancesDataInAMonth($month, $year));
     }
 
     public function searchDetailData(Request $request, $month, $year): JsonResponse
     {
-        return response()->json($this->attendances->searchAttendancesSummary($request, $month, $year));
+        return response()->json($this->attendanceSummaryService->searchAttendancesSummary($request, $month, $year));
     }
-
 
     public function filterDate(Request $request, $month, $year): JsonResponse
     {
-        return response()->json($this->attendances->filterAttendancesSummaryByDate($request->start_date,
-            $request->end_date, $month, $year, $this->perPage));
+        return response()->json($this->attendanceSummaryService->filterAttendancesSummaryByDate(
+            $request->start_date,
+            $request->end_date,
+            $month,
+            $year,
+        ));
     }
 
-
-    public function assignSPToEmployee(
-        AttendancesSummaryAssignSPRequest $request,
-        $employeeId
+    public function attendanceSummaryDetailForOneMonthBasedOnUserId(
+        Attendances $attendances,
+        string $month,
+        string $year,
+        string $employeeId
     ): JsonResponse {
-        $user = User::where('users.absent_id', $employeeId)
-            ->first();
+        $attendancesData = $attendances->attendanceSummaryDetailForOneMonthBasedOnUserId(
+            $month,
+            $year,
+            $employeeId,
+            10
+        );
 
-        $data = $request->validated();
-        $data['user_id'] = $user->id;
-        $data['sp_number'] = $this->spService->generateSpNumber($request);
-        $data['created_by'] = $request->user()->id;
-        SP::create($data);
-
-        return response()->json([
-            'message' => 'data berhasil disimpan'
-        ]);
-    }
-
-
-    public function attendanceSummaryDetailForOneMonthBasedOnUserId($month, $year, $employeeId): JsonResponse
-    {
-        $attendances = $this->attendances->attendanceSummaryDetailForOneMonthBasedOnUserId($month, $year,
-            $employeeId, 10);
-
-        $totalPresentAndTotalMinutesLate = Attendances::select('attendances.employee_id', 'users.name as user_name',
-            'attendances.timestamp', 'attendances.status1', 'work_time.name as work_time', 'users.nip as user_nip')
+        $totalPresentAndTotalMinutesLate = DB::table('attendances')->select(
+            'attendances.employee_id',
+            'users.name as user_name',
+            'attendances.timestamp',
+            'attendances.status1',
+            'work_time.name as work_time',
+            'users.nip as user_nip'
+        )
             ->join('users', 'users.absent_id', '=', 'attendances.employee_id')
             ->where('users.absent_id', $employeeId)
             ->leftJoin('user_work_time', 'user_work_time.user_id', '=', 'users.id')
@@ -98,14 +89,10 @@ class AttendanceSummaryController extends Controller
             ->whereMonth('attendances.timestamp', $month)
             ->whereYear('attendances.timestamp', $year)
             ->get()
-            ->groupBy(function ($item) {
-                return $item->user_name;
-            });
-
+            ->groupBy('user_name');
 
         $summaryData = $totalPresentAndTotalMinutesLate->map(function ($items) {
             $totalMinutesLate = 0;
-            // Mengelompokkan per hari untuk menghitung keterlambatan harian
             $dailyAttendances = $items->groupBy(function ($item) {
                 return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
             });
@@ -113,16 +100,15 @@ class AttendanceSummaryController extends Controller
             foreach ($dailyAttendances as $day => $dailyItems) {
                 $checkIn = $dailyItems->where('status1', 0)->first();
                 if ($checkIn) {
-                    $userWorktime = WorkTime::where('name', $checkIn?->work_time)->first();
+                    $userWorktime = WorkTime::where('name', $checkIn->work_time ?? null)->first();
                     $defaultWorkTime = WorkTime::where('id', 1)->first();
                     $expectedCheckInTime = $userWorktime ? $userWorktime->clock_in : $defaultWorkTime->clock_in;
 
-                    // Combine the date of check-in with the expected time
-                    $expectedCheckIn = Carbon::parse($checkIn?->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+                    $expectedCheckIn = Carbon::parse($checkIn->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
                     $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
                     // Calculate lateness in minutes for that day
-                    $actualCheckIn = Carbon::parse($checkIn?->timestamp);
+                    $actualCheckIn = Carbon::parse($checkIn->timestamp);
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                         $minutesLate = $expectedCheckIn->diffInMinutes($actualCheckIn);
                         $totalMinutesLate += $minutesLate;
@@ -134,13 +120,13 @@ class AttendanceSummaryController extends Controller
                 'totalMinutesLate' => (int) $totalMinutesLate.' Menit',
                 'name' => $items->first()->user_name,
                 'nik' => $items->first()->user_nip,
-                'total_present' => $items->where('status1', 0)->count()
+                'total_present' => $items->where('status1', 0)->count(),
             ];
         })->values();
 
         return response()->json([
-            'data' => $attendances,
-            'summary_data' => $summaryData[0]
+            'data' => $attendancesData,
+            'summary_data' => $summaryData[0],
         ]);
     }
 }

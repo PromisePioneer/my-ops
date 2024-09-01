@@ -34,14 +34,14 @@ class EducationRequest extends FormRequest
                 'digits:4',
                 'integer',
                 'min:1900',
-                'max:'.Carbon::tomorrow()->year
+                'max:'.Carbon::tomorrow()->year,
             ],
             'certificate_of_graduation' => [
                 'mimes:pdf',
                 'max:2048',
                 Rule::requiredIf(function () use ($request) {
                     return $request->route('user') === null;
-                })
+                }),
             ],
             'gpa' => ['required', 'numeric'],
         ];

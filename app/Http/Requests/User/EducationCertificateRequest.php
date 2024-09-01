@@ -32,7 +32,7 @@ class EducationCertificateRequest extends FormRequest
                 'digits:4',
                 'integer',
                 'min:1900',
-                'max:'.Carbon::tomorrow()->year
+                'max:'.Carbon::tomorrow()->year,
             ],
             'name' => ['required', 'string', 'max:255'],
             'file' => [
@@ -40,11 +40,10 @@ class EducationCertificateRequest extends FormRequest
                 'max:2048',
                 Rule::requiredIf(function () use ($request) {
                     return $request->route('educationCertificate') === null;
-                })
+                }),
             ],
         ];
     }
-
 
     public function messages(): array
     {

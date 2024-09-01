@@ -15,6 +15,7 @@ use Throwable;
 class EducationController extends Controller
 {
     private Education $education;
+
     private HandleFileUploadService $handleUploadService;
 
     public function __construct()
@@ -30,7 +31,6 @@ class EducationController extends Controller
     {
         $currentUserEducation = $this->education->getRelatedUserEducation($user->id);
 
-
         DB::transaction(function () use ($user, $request, $currentUserEducation) {
             Education::updateOrCreate([
                 'user_id' => $user->id,
@@ -45,13 +45,12 @@ class EducationController extends Controller
                     'documents/certificate_of_graduation',
                     'certificate_of_graduation',
                     $currentUserEducation?->certificate_of_graduation
-                )
+                ),
             ]);
         });
 
-
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil disimpan',
         ]);
     }
 
@@ -59,7 +58,6 @@ class EducationController extends Controller
     {
         return response()->json($this->education->getRelatedUserEducation($user->id));
     }
-
 
     public function viewFile(User $user): View
     {

@@ -14,6 +14,7 @@ class SP extends Model
     use HasFactory;
 
     protected $table = 'sp';
+
     protected $fillable = [
         'branch_id',
         'user_id',
@@ -26,7 +27,7 @@ class SP extends Model
         'start_date',
         'end_date',
         'expired_if_has_new_sp',
-        'list_of_reason'
+        'list_of_reason',
     ];
 
     public function createdBy(): BelongsTo
@@ -53,6 +54,7 @@ class SP extends Model
     {
         $sp = self::with('createdBy', 'user', 'branch')->paginate($perPage);
         self::formattedData($sp);
+
         return $sp;
     }
 
@@ -91,8 +93,7 @@ class SP extends Model
         $sp->setCollection($formattedData);
     }
 
-    public
-    function searchDataWithPagination(
+    public function searchDataWithPagination(
         Request $request,
         int $perPage
     ): LengthAwarePaginator {
@@ -104,9 +105,9 @@ class SP extends Model
         })->orWhere('sp_number', 'like', '%'.$search.'%')->paginate($this->perPage);
 
         self::formattedData($sp);
+
         return $sp;
     }
-
 
     public function getSPBasedOnUserId(int $userId): LengthAwarePaginator
     {
@@ -116,14 +117,14 @@ class SP extends Model
             ->where('user_id', $userId)->paginate($this->perPage);
 
         self::formattedData($sp);
+
         return $sp;
     }
-
 
     public function showSPDetail(SP $sp)
     {
         $spData = $sp->with('user')->where('id', $sp->id)->first();
-        
+
         return [
             'id' => $spData->id,
             'branch_name' => $spData->branch->name ?? null,

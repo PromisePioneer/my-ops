@@ -17,13 +17,13 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class BranchesController extends Controller
 {
-
     /**
      * @throws AuthorizationException
      */
     public function index(): View
     {
         $this->authorize('view', Branch::class);
+
         return view('pages.master.branch.index');
     }
 
@@ -34,9 +34,9 @@ class BranchesController extends Controller
     {
         $this->authorize('view', Branch::class);
         $branches = Branch::select('id', 'code', 'name', 'address')->paginate(10);
+
         return response()->json($branches);
     }
-
 
     /**
      * @throws AuthorizationException
@@ -60,6 +60,7 @@ class BranchesController extends Controller
     {
         $this->authorize('create', Branch::class);
         Branch::create($request->validated());
+
         return response()->json([
             'message' => 'data berhasil disimpan',
         ], 200);
@@ -119,6 +120,7 @@ class BranchesController extends Controller
     public function show(Branch $branch): JsonResponse
     {
         $this->authorize('update', $branch);
+
         return response()->json($branch);
     }
 
@@ -144,6 +146,7 @@ class BranchesController extends Controller
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
         $branch->whereIn('id', $explodeID)->delete();
+
         return response()->json([
             'message' => 'data berhasil dihapus',
         ], 200);

@@ -27,8 +27,12 @@ class IdentityInformationService
             'gender' => $request->gender,
             'home_address' => $request->home_address,
             'phone_number' => $request->phone_number,
-            'ktp_attachment' => $this->handleFileUploadService->upload($request, 'documents/user/ktp', 'ktp_attachment',
-                $userIdentityInfoId ? $userIdentityInfoId->ktp_attachment : 'null'),
+            'ktp_attachment' => $this->handleFileUploadService->upload(
+                $request,
+                'documents/user/ktp',
+                'ktp_attachment',
+                $userIdentityInfoId ? $userIdentityInfoId->ktp_attachment : 'null'
+            ),
             'marital_status' => $request->marital_status,
             'married_status' => $request->married_status,
         ]);

@@ -12,7 +12,6 @@ it('can access the contact page with correct permission', function () {
     $response->assertViewIs('pages.master.contact.index');
 });
 
-
 it('cannot access the contact page without correct permission', function () {
     $user = $this->user;
     $role = $user->roles->first();
@@ -49,7 +48,7 @@ it('can update the contact page with correct permission', function () {
         'fax' => fake()->unique(true)->randomNumber(),
         'npwp' => fake()->unique(true)->randomNumber(),
         'complete_address' => fake()->unique(true)->address(),
-        'other_info' => fake()->word()
+        'other_info' => fake()->word(),
     ];
     $this->actingAs($user);
     $this->post(url('/master/contact/update', $contact->id), $updatedContact)->assertStatus(200);

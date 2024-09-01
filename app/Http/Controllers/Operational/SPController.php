@@ -19,10 +19,12 @@ use Throwable;
 
 class SPController extends Controller
 {
-
     public readonly int $perPage;
+
     private SP $sp;
+
     private User $user;
+
     private SpService $spService;
 
     public function __construct()
@@ -38,7 +40,7 @@ class SPController extends Controller
      */
     public function index(): View
     {
-//        $this->authorize('view', SP::class);
+        //        $this->authorize('view', SP::class);
         return view('pages.manage-users.sp.index');
     }
 
@@ -47,7 +49,7 @@ class SPController extends Controller
      */
     public function data(): JsonResponse
     {
-//        $this->authorize('view', SP::class);
+        //        $this->authorize('view', SP::class);
         return response()->json($this->sp->getDataWithPagination($this->perPage));
     }
 
@@ -56,7 +58,7 @@ class SPController extends Controller
      */
     public function search(Request $request): JsonResponse
     {
-//        $this->authorize('view', SP::class);
+        //        $this->authorize('view', SP::class);
         return response()->json($this->sp->searchDataWithPagination($request, $this->perPage));
     }
 
@@ -65,7 +67,7 @@ class SPController extends Controller
      */
     public function getUserData(Request $request): JsonResponse
     {
-//        $this->authorize('create', SP::class);
+        //        $this->authorize('create', SP::class);
         return response()->json($this->user->getUser($request));
     }
 
@@ -93,7 +95,6 @@ class SPController extends Controller
                 'punished_by' => $request->user()->id,
             ]);
 
-
             if ($currentSP) {
                 $currentSP->expired_if_has_new_sp = true;
                 $currentSP->save();
@@ -114,7 +115,7 @@ class SPController extends Controller
      */
     public function create(): View
     {
-//        $this->authorize('create', SP::class);
+        //        $this->authorize('create', SP::class);
         return view('pages.manage-users.sp.create');
     }
 
@@ -133,9 +134,8 @@ class SPController extends Controller
             'list_of_reason' => json_encode($request['data']),
         ]);
 
-
         return response()->json([
-            'message' => 'Data berhasil disimpan.'
+            'message' => 'Data berhasil disimpan.',
         ]);
     }
 
@@ -145,10 +145,10 @@ class SPController extends Controller
             ->where('end_date', '>', Carbon::now())
             ->first();
 
-
         $resetDate = Carbon::now()->format('Y-m-d');
 
         $getListOfReasonOfCurrentSP = json_decode($currentSP->list_of_reason);
+
         return response()->json([
             'current_sp' => $currentSP,
             'list_of_reason' => $getListOfReasonOfCurrentSP,
@@ -161,7 +161,7 @@ class SPController extends Controller
      */
     public function selectedUserdata(SP $sp): JsonResponse
     {
-//        $this->authorize('update', SP::class);
+        //        $this->authorize('update', SP::class);
         return response()->json($this->user->getSelectedData($sp->user_id));
     }
 
@@ -170,13 +170,14 @@ class SPController extends Controller
      */
     public function edit(SP $sp): View
     {
-//        $this->authorize('update', SP::class);
+        //        $this->authorize('update', SP::class);
         return view('pages.manage-users.sp.edit', compact('sp'));
     }
 
     public function getListOfReason(SP $sp): JsonResponse
     {
         $listOfReason = json_decode($sp->list_of_reason);
+
         return response()->json($listOfReason);
     }
 
@@ -185,8 +186,9 @@ class SPController extends Controller
      */
     public function destroy(SP $sp): JsonResponse
     {
-//        $this->authorize('update', SP::class);
+        //        $this->authorize('update', SP::class);
         $sp->delete();
+
         return response()->json($sp);
     }
 
@@ -195,13 +197,15 @@ class SPController extends Controller
         $punishedBy = User::with('roles')->where('id', $sp->punished_by)->first();
         $operationalManager = User::role('Manager Operasional')->with('roles')->first();
 
-
         $spReasonList = json_decode($sp?->list_of_reason);
 
-
-        $pdf = Pdf::loadView('pages.manage-users.sp.export-pdf',
-            compact('sp', 'punishedBy', 'operationalManager', 'spReasonList'))->setPaper('A4',
-            'portrait');
+        $pdf = Pdf::loadView(
+            'pages.manage-users.sp.export-pdf',
+            compact('sp', 'punishedBy', 'operationalManager', 'spReasonList')
+        )->setPaper(
+            'A4',
+            'portrait'
+        );
 
         return $pdf->stream();
     }

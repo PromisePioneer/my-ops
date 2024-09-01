@@ -25,10 +25,9 @@ class UserWorkTimeRequest extends FormRequest
         return [
             'user_id' => [
                 'required',
-            ]
+            ],
         ];
     }
-
 
     public function messages(): array
     {

@@ -34,7 +34,6 @@ class SPRequest extends FormRequest
         ];
     }
 
-
     public function messages(): array
     {
         return [

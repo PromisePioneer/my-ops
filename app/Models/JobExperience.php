@@ -12,13 +12,14 @@ class JobExperience extends Model
     use HasFactory;
 
     protected $table = 'job_experiences';
+
     protected $fillable = [
         'user_id',
         'company_name',
         'position',
         'responsibilities',
         'start_date',
-        'end_date'
+        'end_date',
     ];
 
     public function user(): BelongsTo
@@ -26,10 +27,8 @@ class JobExperience extends Model
         return $this->belongsTo(JobExperience::class, 'user_id');
     }
 
-
     public function getRelatedJobExperiences(int $userId): Collection|array
     {
         return self::with('user')->where('user_id', $userId)->get();
     }
-
 }

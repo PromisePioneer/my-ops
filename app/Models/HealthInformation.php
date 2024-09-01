@@ -12,11 +12,11 @@ class HealthInformation extends Model
     use HasFactory;
 
     protected $table = 'health_informations';
+
     protected $fillable = [
         'user_id',
-        'disease'
+        'disease',
     ];
-
 
     public function user(): BelongsTo
     {
@@ -27,6 +27,4 @@ class HealthInformation extends Model
     {
         return self::with('user')->where('user_id', $userId)->first();
     }
-
-
 }

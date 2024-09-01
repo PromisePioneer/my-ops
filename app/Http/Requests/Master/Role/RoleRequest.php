@@ -27,6 +27,7 @@ class RoleRequest extends FormRequest
                 Rule::unique('roles', 'name')
                     ->ignore(request()->route('role')),
             ],
+            'department_id' => ['required'],
         ];
     }
 
@@ -35,6 +36,7 @@ class RoleRequest extends FormRequest
         return [
             'name.required' => 'Nama Role tidak boleh kosong.',
             'name.unique' => 'Nama Role sudah terdaftar.',
+            'department_id.required' => 'Department tidak boleh kosong.',
         ];
     }
 }

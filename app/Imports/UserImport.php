@@ -8,11 +8,18 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithValidation;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
-class UserImport implements ToModel, WithHeadingRow
+class UserImport implements ToModel, WithHeadingRow, WithValidation
 {
 
+    private Branch $branch;
+
+    public function __construct()
+    {
+        $this->branch = new Branch();
+    }
 
     public function rules(): array
     {
@@ -21,7 +28,7 @@ class UserImport implements ToModel, WithHeadingRow
             'absent_id' => ['required'],
             '*.absent_id' => function ($attribute, $value, $onFailure) {
                 $user = User::where('absent_id', $value)->first();
-                if (!$user) {
+                if ($user) {
                     $onFailure('Absen ID sudah terdaftar');
                 }
             },
@@ -32,25 +39,21 @@ class UserImport implements ToModel, WithHeadingRow
                     $onFailure('nik sudah terdaftar');
                 }
             },
-            'Nama' => ['required'],
-            'Penempatan' => ['required'],
-            'Tanggal Masuk' => ['required', 'date'],
+            'nama' => ['required'],
+            'penempatan' => ['required'],
+            'tanggal_masuk' => ['required'],
         ];
     }
 
-    /**
-     * @param  array  $row
-     * @return User
-     */
     public function model(array $row): User
     {
-        return User::create([
-            'branch_id' => Branch::where('name', $row['cabang'])->pluck('id')->first() ?? null,
+        return new User([
+            'branch_id' => $this->branch->where('name', $row['cabang'])->pluck('id')->first() ?? null,
             'absent_id' => (int) $row['absen_id'],
             'nip' => (int) $row['nik'],
             'name' => $row['nama'],
             'placement' => $row['penempatan'],
-            'join_date' => Carbon::instance(Date::excelToDateTimeObject($row['tanggal_masuk'])),
+            'join_date' => Carbon::instance(Date::excelToDateTimeObject((int) $row['tanggal_masuk'])),
             'password' => Hash::make('password'),
         ]);
     }

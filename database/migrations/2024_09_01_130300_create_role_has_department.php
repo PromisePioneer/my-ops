@@ -4,16 +4,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration {
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('nota_dinas_officers', function (Blueprint $table) {
+        Schema::create('role_has_department', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('nota_dinas_id')->constrained('nota_dinas');
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('role_id')->constrained('roles');
+            $table->foreignId('department_id')->constrained('departments');
             $table->timestamps();
         });
     }
@@ -23,6 +23,6 @@ return new class () extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('nota_dinas_officers');
+        Schema::dropIfExists('role_has_department');
     }
 };
