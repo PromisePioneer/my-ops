@@ -38,7 +38,7 @@
                             <label for="user_id" class="required form-label">Cabang</label>
                             <select name="branch_id" id="branch_id"
                                     class="form-select form-select-solid branch-select2"
-                                    data-dropdown-parent="#modal-edit">
+                                    data-dropdown-parent="#modal-create">
                                 <option>Pilih Cabang</option>
                             </select>
                         </div>
@@ -48,7 +48,7 @@
                             <label for="user_id" class="required form-label">Jabatan Baru</label>
                             <select name="role_id" id="role_id"
                                     class="form-select form-select-solid roles-select2"
-                                    data-dropdown-parent="#modal-edit">
+                                    data-dropdown-parent="#modal-create">
                                 <option>Pilih Jabatan</option>
                             </select>
                         </div>
