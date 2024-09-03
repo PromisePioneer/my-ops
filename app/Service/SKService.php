@@ -7,12 +7,70 @@ use App\Models\Role;
 use App\Models\SK;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 use function App\Helper\convertToRoman;
 
 class SKService
 {
+
+
+    private static int $perPage = 10;
+    private SK $sk;
+
+
+    public function __construct()
+    {
+        $this->sk = new SK();
+    }
+
+    public function data()
+    {
+        $sk = $this->sk->getData()->paginate(10);
+        return self::formattedData($sk);
+    }
+
+    private static function formattedData(LengthAwarePaginator $sk): LengthAwarePaginator
+    {
+        $data = $sk->getCollection()->map(callback: function ($item) {
+            return [
+                'id' => $item->id,
+                'sk_number' => $item->sk_number,
+                'user_name' => '('.$item->user->nip.')'.$item->user->name,
+                'sk_type' => $item->sk_type,
+                'date' => Carbon::parse($item->date)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+            ];
+        });
+
+        $sk->setCollection($data);
+
+        return $sk;
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $query = $this->sk->getData();
+
+        if (!empty($search)) {
+            $query->where('sk_number', 'like', '%'.$search.'%')
+                ->orWhere('sk_type', 'like', '%'.$search.'%')
+                ->orWhere('date', 'like', '%'.$search.'%')
+                ->orWhereHas('newRole', function ($query) use ($search) {
+                    $query->where('name', 'like', '%'.$search.'%');
+                })->orWhereHas('user', function ($query) use ($search) {
+                    $query->where('name', 'like', '%'.$search.'%');
+                    $query->orWhere('nip', 'like', '%'.$search.'%');
+                });
+        }
+
+
+        $data = $query->paginate(self::$perPage);
+        return self::formattedData($data);
+    }
+
     public function store(SKRequest $request)
     {
         DB::transaction(callback: function () use ($request) {

@@ -41,12 +41,12 @@ class SKController extends Controller
 
     public function data(): JsonResponse
     {
-        return response()->json($this->sk->getData()->paginate(10));
+        return response()->json($this->SKService->data());
     }
 
     public function search(Request $request)
     {
-        $search = $request->get('search');
+        return response()->json($this->SKService->search($request));
     }
 
 
@@ -73,7 +73,7 @@ class SKController extends Controller
         $this->SKService->store($request);
         return response()->json(['message' => 'Data berhasil disimpan']);
     }
-    
+
     public function getSelectedUser(SK $sk): JsonResponse
     {
         return response()->json($this->user->getSelectedData($sk->user_id));

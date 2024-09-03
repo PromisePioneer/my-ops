@@ -92,10 +92,15 @@
                                         </tbody>
                                     </template>
                                     <template x-for="sk in skData.data" :key="sk.id">
-                                        <tbody class="fw-bold text-gray-600">
+                                        <tbody class="fw-bold">
                                         <tr>
                                             <td x-text="sk.sk_number"></td>
-                                            <td x-text="sk.user.name"></td>
+                                            <td>
+                                                <a :href="`/manage-users/users/detail/${user.id}`"
+                                                   class="text-gray-800 text-hover-primary mb-1">
+                                                    <span x-text="sk.user_name"></span>
+                                                </a>
+                                            </td>
                                             <td x-text="sk.sk_type"></td>
                                             <td x-text="sk.date"></td>
                                             <td>
@@ -156,7 +161,18 @@
                     await this.getSkData();
                 },
                 async searchData() {
-
+                    this.isLoading = true
+                    try {
+                        const resp = await axios.get('/manage-users/sk/search', {
+                            params: {search: this.search},
+                            headers: {'Content-Type': 'application/json'}
+                        });
+                        this.skData = resp.data
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async add() {
                     await this.getUserData();
