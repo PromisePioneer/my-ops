@@ -146,7 +146,6 @@ class SPController extends Controller
             ->first();
 
         $resetDate = Carbon::now()->format('Y-m-d');
-
         $getListOfReasonOfCurrentSP = json_decode($currentSP->list_of_reason);
 
         return response()->json([

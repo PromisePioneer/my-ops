@@ -219,9 +219,9 @@
                 modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
                 formImport: document.getElementById('form-import'),
                 async init() {
+                    this.isLoading = false;
                     await this.getUserData();
                     await this.filterByBranch();
-                    this.isLoading = false;
                     await this.getMonth();
                     await this.getBranchData();
                 },
@@ -285,13 +285,6 @@
                     const resp = await axios.get(`${url}`);
                     this.startIndex = resp.data.from
                     this.users = resp.data
-                },
-                async previousPage() {
-                    if (this.users.prev_page_url) {
-                        const resp = await axios.get(`${this.users.prev_page_url}`);
-                        this.startIndex = resp.data.from
-                        this.users = resp.data
-                    }
                 },
                 async destroy(id) {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
@@ -370,7 +363,6 @@
                     }
                     return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
                 },
-
             }
         }
     </script>

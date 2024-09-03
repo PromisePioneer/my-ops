@@ -8,7 +8,6 @@ use App\Models\Education;
 use App\Models\User;
 use App\Service\HandleFileUploadService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Throwable;
 
@@ -30,24 +29,21 @@ class EducationController extends Controller
     public function update(EducationRequest $request, User $user): JsonResponse
     {
         $currentUserEducation = $this->education->getRelatedUserEducation($user->id);
-
-        DB::transaction(function () use ($user, $request, $currentUserEducation) {
-            Education::updateOrCreate([
-                'user_id' => $user->id,
-            ], [
-                'level' => $request->level,
-                'institution' => $request->institution,
-                'major' => $request->major,
-                'graduation_year' => $request->graduation_year,
-                'gpa' => $request->gpa,
-                'certificate_of_graduation' => $this->handleUploadService->upload(
-                    $request,
-                    'documents/certificate_of_graduation',
-                    'certificate_of_graduation',
-                    $currentUserEducation?->certificate_of_graduation
-                ),
-            ]);
-        });
+        Education::updateOrCreate([
+            'user_id' => $user->id,
+        ], [
+            'level' => $request->level,
+            'institution' => $request->institution,
+            'major' => $request->major,
+            'graduation_year' => $request->graduation_year,
+            'gpa' => $request->gpa,
+            'certificate_of_graduation' => $this->handleUploadService->upload(
+                $request,
+                'documents/certificate_of_graduation',
+                'certificate_of_graduation',
+                $currentUserEducation?->certificate_of_graduation
+            ),
+        ]);
 
         return response()->json([
             'message' => 'data berhasil disimpan',

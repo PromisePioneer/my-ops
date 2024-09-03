@@ -18,9 +18,11 @@ class CreateUserIdentityInformations extends Migration
             $table->date('date_of_birth');
             $table->string('place_of_birth');
             $table->enum('gender', ['Laki Laki', 'Perempuan']);
+            $table->enum('religion', ['Islam', 'Kristen', 'Hindu', 'Budha', 'Katholik', 'Konghucu']);
             $table->string('ktp_attachment');
             $table->enum('marital_status', ['Menikah', 'Tidak Menikah']);
-            $table->enum('married_status', ['TK/0', 'TK/1', 'TK/2', 'TK/3', 'K/0', 'K/1', 'K/2', 'K/3'])->default('TK/0');
+            $table->enum('married_status',
+                ['TK/0', 'TK/1', 'TK/2', 'TK/3', 'K/0', 'K/1', 'K/2', 'K/3'])->default('TK/0');
             $table->text('home_address')->nullable();
             $table->string('phone_number');
             $table->timestamps();

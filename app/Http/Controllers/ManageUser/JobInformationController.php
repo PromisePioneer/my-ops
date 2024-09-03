@@ -57,6 +57,8 @@ class JobInformationController extends Controller
 
     public function contractFile(Request $request, User $user): Response
     {
+        $contractNumber = $this->jobInformationService->generateContractNumber($user);
+
         $pdf = Pdf::loadView('pages.manage-users.user.partials.employee-data.job-information.contract-file',
             compact('user')
         )->setPaper(

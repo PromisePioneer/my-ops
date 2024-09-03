@@ -57,6 +57,6 @@ class Education extends Model
 
     public function getRelatedUserEducation(?int $userId): Model|Education|Builder|null
     {
-        return self::where('id', $userId)->first();
+        return self::where('user_id', $userId)->first();
     }
 }

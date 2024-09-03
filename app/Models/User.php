@@ -116,6 +116,16 @@ class User extends Authenticatable
         return $this->hasOne(JobInformation::class);
     }
 
+    public function identityInformation(): HasOne
+    {
+        return $this->hasOne(IdentityInformation::class);
+    }
+
+    public function education(): HasOne
+    {
+        return $this->hasOne(Education::class);
+    }
+
     public function manageShift(): HasOne
     {
         return $this->hasOne(WorkTime::class, 'user_id');
@@ -125,6 +135,12 @@ class User extends Authenticatable
     public function attendance(): HasMany
     {
         return $this->hasMany(Attendances::class, 'employee_id');
+    }
+
+
+    public function contract(): HasOne
+    {
+        return $this->hasOne(ContractManagement::class, 'user_id');
     }
 
     //eloquent

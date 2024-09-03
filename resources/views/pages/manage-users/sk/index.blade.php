@@ -1,0 +1,304 @@
+@extends('layouts.template')
+@section('content')
+    <div x-data="skData()">
+        @include('pages.manage-users.sk.modal.create')
+        @include('pages.manage-users.sk.modal.edit')
+        <div class="d-flex flex-column flex-xl-row">
+            <div class="flex-lg-row-fluid ms-lg-10">
+                <div class="card card-flush mb-6 mb-xl-9">
+                    <div class="card-header pt-5">
+                        <div class="card-title">
+                            <button data-bs-toggle="modal"
+                                    data-bs-target="#modal-create" @click="add()"
+                                    class="btn btn-light btn-active-primary btn-sm mx-1">
+                                <i class="bi bi-plus-circle-fill"></i> Tambah
+                            </button>
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="d-flex align-items-center position-relative my-1"
+                                 data-kt-view-roles-table-toolbar="base">
+                                <span class="svg-icon svg-icon-1 position-absolute ms-6">
+															<svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                 height="24" viemanagewBox="0 0 24 24" fill="none">
+																<rect opacity="0.5" x="17.0365" y="15.1223"
+                                                                      width="8.15546" height="2" rx="1"
+                                                                      transform="rotate(45 17.0365 15.1223)"
+                                                                      fill="black"></rect>
+																<path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
+                                                                      fill="black"></path>
+															</svg>
+														</span>
+                                <input type="text" class="form-control form-control-solid w-250px ps-15"
+                                       x-model="search" @input.debounce="searchData()" placeholder="Cari...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0">
+                        <div id="kt_roles_view_table_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+                            <div class="table-responsive">
+                                <table class="table align-middle table-row-dashed fs-6 gy-5 mb-0 dataTable no-footer"
+                                       id="kt_roles_view_table">
+                                    <thead>
+                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="min-w-50px sorting" tabindex="0" aria-controls="kt_roles_view_table"
+                                            rowspan="1" colspan="1" aria-label="ID: activate to sort column ascending">
+                                            Nomor SK
+                                        </th>
+                                        <th class="min-w-50px sorting" tabindex="0" aria-controls="kt_roles_view_table"
+                                            rowspan="1" colspan="1" aria-label="ID: activate to sort column ascending">
+                                            Karyawan
+                                        </th>
+                                        <th class="min-w-150px sorting" tabindex="0" aria-controls="kt_roles_view_table"
+                                            rowspan="1" colspan="1"
+                                            aria-label="User: activate to sort column ascending">
+                                            Jenis SK
+                                        </th>
+                                        <th class="min-w-125px sorting" tabindex="0" aria-controls="kt_roles_view_table"
+                                            rowspan="1" colspan="1"
+                                            aria-label="Joined Date: activate to sort column ascending">
+                                            Tanggal
+                                        </th>
+                                        <th class="min-w-125px sorting" tabindex="0" aria-controls="kt_roles_view_table"
+                                            rowspan="1" colspan="1"
+                                            aria-label="Joined Date: activate to sort column ascending">
+                                            File SK
+                                        </th>
+                                        <th class="text-end min-w-100px sorting_disabled" rowspan="1" colspan="1"
+                                            aria-label="Actions">
+                                            Actions
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <template x-if="isLoading">
+                                        <tbody class="fw-bold text-gray-600">
+                                        <tr>
+                                            <td colspan="5">
+                                                <div style="text-align: center;">
+                                                    <div class="spinner-border" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </template>
+                                    <template x-if="!isLoading && skData.data?.length === 0">
+                                        <tbody class="fw-bold text-gray-600">
+                                        <tr>
+                                            <td colspan="9">
+                                                <center>Data Tidak Ditemukan</center>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </template>
+                                    <template x-for="sk in skData.data" :key="sk.id">
+                                        <tbody class="fw-bold text-gray-600">
+                                        <tr>
+                                            <td x-text="sk.sk_number"></td>
+                                            <td x-text="sk.user.name"></td>
+                                            <td x-text="sk.sk_type"></td>
+                                            <td x-text="sk.date"></td>
+                                            <td>
+                                                <a :href="`/manage-users/sk/export-pdf/${sk.id}`"
+                                                   class="btn btn-danger btn-sm">
+                                                    <i class="bi bi-file-pdf-fill"></i>
+                                                </a>
+                                            </td>
+                                            <td class="text-end">
+                                                <button data-bs-toggle="modal"
+                                                        data-bs-target="#modal-edit" @click="edit(sk.id)"
+                                                        class="btn btn-light btn-active-primary btn-sm mx-1">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </template>
+                                </table>
+                            </div>
+                            <div class="text-center mt-10">
+                                <div class="col-sm-12  d-flex align-items-center justify-content-center">
+                                    <template x-for="pagination in skData.links">
+                                        <ul class="pagination">
+                                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                                <button
+                                                        class="page-link"
+                                                        @click="paginationEndPoint(pagination.url)"
+                                                        x-html="pagination.label"></button>
+                                            </li>
+                                        </ul>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @include('components.toast')
+    </div>
+@endsection
+@push('script')
+    <script>
+        function skData() {
+            return {
+                isLoading: false,
+                skData: [],
+                startIndex: null,
+                buttonLoading: false,
+                search: '',
+                editVal: '',
+                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
+                formCreate: document.getElementById('form-create'),
+                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
+                formEdit: document.getElementById('form-edit'),
+                async init() {
+                    await this.getSkData();
+                },
+                async searchData() {
+
+                },
+                async add() {
+                    await this.getUserData();
+                    await this.getRolesData();
+                    await this.getBranchData();
+                },
+                async paginationEndPoint(url) {
+                    const resp = await axios.get(`${url}`);
+                    this.startIndex = resp.data.from
+                    this.skData = resp.data
+                },
+                async save() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/manage-users/sk/`, new FormData(this.formCreate))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        await this.modalCreate.hide();
+                        await this.formCreate.reset();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async edit(id) {
+                    const resp = await axios.get(`/manage-users/sk/${id}`);
+                    this.editVal = resp.data;
+                    await this.getUserData();
+                    await this.getRolesData();
+                    await this.getBranchData();
+                    await this.selectedRole();
+                    await this.selectedUser();
+                    await this.selectedBranch();
+                },
+                async update(id) {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/manage-users/sk/${id}`, new FormData(this.formEdit))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        await this.modalEdit.hide();
+                        await this.formEdit.reset();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async getSkData() {
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/manage-users/sk/data');
+                        this.skData = resp.data;
+                        this.startIndex = this.skData.from;
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+                async getUserData() {
+                    $(".users-select2").select2({
+                        ajax: {
+                            url: '/manage-users/sk/users/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+
+                async getBranchData() {
+                    $(".branch-select2").select2({
+                        ajax: {
+                            url: '/manage-users/sk/branch/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async getRolesData() {
+                    $(".roles-select2").select2({
+                        ajax: {
+                            url: '/manage-users/sk/roles/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async selectedUser() {
+                    const selectedUser = $('#selectedUser');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/manage-users/sk/selected-user/${this.editVal.id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedUser.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
+
+                async selectedRole() {
+                    const selectedRole = $('#selectedRole');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/manage-users/sk/selected-role/${this.editVal.id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedRole.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
+                async selectedBranch() {
+                    const selectedBranch = $('#selectedBranch');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/manage-users/sk/selected-branch/${this.editVal.id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedBranch.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
+
+            }
+        }
+    </script>
+@endpush

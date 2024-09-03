@@ -21,6 +21,7 @@ class IdentityInformationService
         IdentityInformation::updateOrCreate([
             'user_id' => $user->id,
         ], [
+            'religion' => $request->religion,
             'nik' => $request->nik,
             'date_of_birth' => $request->date_of_birth,
             'place_of_birth' => $request->place_of_birth,

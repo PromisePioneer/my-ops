@@ -56,6 +56,7 @@ class IdentityInformation extends Model
         'date_of_birth',
         'place_of_birth',
         'gender',
+        'religion',
         'home_address',
         'phone_number',
         'ktp_attachment',

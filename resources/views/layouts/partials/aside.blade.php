@@ -339,6 +339,16 @@
                                 href="{{ url('manage-users/sp') }}">
                             Surat Peringatan
                         </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'contract-management'"
+                                href="{{ url('manage-users/contract-management') }}">
+                            Kontrak Karyawan
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'sk'"
+                                href="{{ url('manage-users/sk') }}">
+                            SK Karyawan
+                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
                 <x-dropdown-menu :active="request()->segment(1) === 'adms'">

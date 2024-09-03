@@ -12,6 +12,7 @@ use App\Http\Controllers\JournalAdjustment\InitialJournalController;
 use App\Http\Controllers\JournalAdjustment\JournalAdjustmentController;
 use App\Http\Controllers\Journals\GeneralJournalController;
 use App\Http\Controllers\Journals\GeneralLedgerController;
+use App\Http\Controllers\ManageUser\ContractManagementController;
 use App\Http\Controllers\ManageUser\EducationCertificateController;
 use App\Http\Controllers\ManageUser\EducationController;
 use App\Http\Controllers\ManageUser\FamilyInformationController;
@@ -33,6 +34,7 @@ use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\ServicesCategoryController;
 use App\Http\Controllers\Master\SubAccountController;
 use App\Http\Controllers\Operational\SPController;
+use App\Http\Controllers\SKController;
 use App\Http\Controllers\Transaction\BastController;
 use App\Http\Controllers\Transaction\ExpenditureController;
 use App\Http\Controllers\Transaction\FabController;
@@ -187,6 +189,38 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('export-pdf/{sp}', [SPController::class, 'exportToPDF']);
             Route::get('/user/current-sp/{user}', [SPController::class, 'getCurrentSp']);
             Route::get('/show/{sp}', [SPController::class, 'show']);
+        });
+
+
+        Route::prefix('contract-management')->group(function () {
+            Route::get('/', [ContractManagementController::class, 'index']);
+            Route::get('/data', [ContractManagementController::class, 'data']);
+            Route::get('/branch/data', [ContractManagementController::class, 'getBranchData']);
+            Route::get('/filter', [ContractManagementController::class, 'filter']);
+            Route::get('/search', [ContractManagementController::class, 'search']);
+            Route::post('/store', [ContractManagementController::class, 'store']);
+            Route::get('/{contractManagement}', [ContractManagementController::class, 'edit']);
+            Route::post('/{contractManagement}', [ContractManagementController::class, 'update']);
+            Route::delete('/{contractManagement}', [ContractManagementController::class, 'destroy']);
+            Route::post('/extend-contract/{user}', [ContractManagementController::class, 'extendContract']);
+            Route::get('/contract-pdf/{user}', [ContractManagementController::class, 'contractFile']);
+        });
+
+
+        Route::prefix('sk')->group(function () {
+            Route::get('/', [SKController::class, 'index']);
+            Route::get('/data', [SKController::class, 'data']);
+            Route::get('/search', [SKController::class, 'search']);
+            Route::get('/users/data', [SKController::class, 'getUserData']);
+            Route::get('/roles/data', [SKController::class, 'getRoleData']);
+            Route::get('/branch/data', [SKController::class, 'getBranchData']);
+            Route::post('/', [SKController::class, 'store']);
+            Route::get('/{sk}', [SKController::class, 'edit']);
+            Route::post('/{sk}', [SKController::class, 'update']);
+            Route::get('/export-pdf/{sk}', [SKController::class, 'exportToPDF']);
+            Route::get('/selected-branch/{sk}', [SKController::class, 'getSelectedBranch']);
+            Route::get('/selected-role/{sk}', [SKController::class, 'getSelectedRole']);
+            Route::get('/selected-user/{sk}', [SKController::class, 'getSelectedUser']);
         });
     });
 

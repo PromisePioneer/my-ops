@@ -6,7 +6,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Surat Kontrak Pegawai</title>
+    <title>Surat Kontrak {{ $contract->user->name  }}</title>
 
     <style>
         *, *::before, *::after {
@@ -126,34 +126,59 @@
     <div class="wrapper">
         <div style="text-align: center; margin-bottom: 30px">
             <p style="font-size: 20px; font-weight: bold"><u>PERJANJIAN KERJA WAKTU TERTENTU</u></p>
-            <p style="font-size: 17px; ">Nomor : M01-018/MY- PKWT/9/2022</p>
+            <p style="font-size: 17px; ">Nomor : {{ $contract->contract_number }}</p>
         </div>
         <div style="margin: 10px 40px 0 30px;">
             <p style="font-size: 11px; ">Yang bertanda tangan di bawah ini: </p>
         </div>
         <div style="margin: 0 30px;">
-            <table class="table-heading" style="width: 100%; border-collapse: collapse; font-size: 11px;">
-                <tbody>
-                <tr>
-                    <td style="width: 5%; padding: 5px;">Nama</td>
-                    <td style="width: 1%; padding: 5px;">:</td>
-                    <td style="width: 20%; padding: 5px;">YOGA</td>
-                </tr>
-                <tr>
-                    <td style="width: 5%; padding: 5px;">Jabatan</td>
-                    <td style="width: 1%; padding: 5px;">:</td>
-                    <td style="width: 20%; padding: 5px;">Direktur</td>
-                </tr>
-                <tr>
-                    <td style="width: 5%; padding: 5px;">Alamat</td>
-                    <td style="width: 1%; padding: 5px;">:</td>
-                    <td style="width: 20%; padding: 5px;">
-                        Jl. Tanjung Sari Perum. Rafhanda No B15,
-                        Kel. Tanjung Palas Kec. Dumai Timur, Kota Dumai – Riau.
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            @if($contract->user?->branch?->code === null || $contract->user?->branch?->code === 100)
+                <table class="table-heading" style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                    <tbody>
+                    <tr>
+                        <td style="width: 5%; padding: 5px;">Nama</td>
+                        <td style="width: 1%; padding: 5px;">:</td>
+                        <td style="width: 20%; padding: 5px;">{{ $directorRole?->name }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 5%; padding: 5px;">Jabatan</td>
+                        <td style="width: 1%; padding: 5px;">:</td>
+                        <td style="width: 20%; padding: 5px;">{{ $directorRole?->roles[0]?->name }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 5%; padding: 5px;">Alamat</td>
+                        <td style="width: 1%; padding: 5px;">:</td>
+                        <td style="width: 20%; padding: 5px;">
+                            {{ $directorRole?->identityInformation?->home_address }}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                {{--            @else--}}
+                {{--                <table class="table-heading" style="width: 100%; border-collapse: collapse; font-size: 11px;">--}}
+                {{--                    <tbody>--}}
+                {{--                    <tr>--}}
+                {{--                        <td style="width: 5%; padding: 5px;">Nama</td>--}}
+                {{--                        <td style="width: 1%; padding: 5px;">:</td>--}}
+                {{--                        <td style="width: 20%; padding: 5px;">{{ $branchManagerRole?->name }}</td>--}}
+                {{--                    </tr>--}}
+                {{--                    <tr>--}}
+                {{--                        <td style="width: 5%; padding: 5px;">Jabatan</td>--}}
+                {{--                        <td style="width: 1%; padding: 5px;">:</td>--}}
+                {{--                        <td style="width: 20%; padding: 5px;">{{ $branchManagerRole?->roles[0]?->name }}</td>--}}
+                {{--                    </tr>--}}
+                {{--                    <tr>--}}
+                {{--                        <td style="width: 5%; padding: 5px;">Alamat</td>--}}
+                {{--                        <td style="width: 1%; padding: 5px;">:</td>--}}
+                {{--                        <td style="width: 20%; padding: 5px;">--}}
+                {{--                            {{ $branchManagerRole?->identityInformation?->home_address }}--}}
+                {{--                        </td>--}}
+                {{--                    </tr>--}}
+                {{--                    </tbody>--}}
+                {{--                </table>--}}
+
+            @endif
 
             <p style="font-size: 11px; text-align: justify;  text-justify: inter-word; margin-top: 11px ">
                 Dalam hal ini bertindak atas nama PT. Mayatama Solusindo yang berkedudukan di Jl. Sultan Hasanuddin No.
@@ -167,7 +192,7 @@
                 <tr>
                     <td style="width: 5%; padding: 5px;">Nama</td>
                     <td style="width: 1%; padding: 5px;">:</td>
-                    <td style="width: 20%; padding: 5px;">YOGA</td>
+                    <td style="width: 20%; padding: 5px;">{{ $contract->user->name }}</td>
                 </tr>
                 <tr>
                     <td style="width: 5%; padding: 5px;">Tempat, Tgl Lahir</td>
@@ -178,35 +203,35 @@
                     <td style="width: 5%; padding: 5px;">Pendidikan terakhir</td>
                     <td style="width: 1%; padding: 5px;">:</td>
                     <td style="width: 20%; padding: 5px;">
-                        S1
+                        {{ $contract->user->education?->level }}
                     </td>
                 </tr>
                 <tr>
                     <td style="width: 5%; padding: 5px;">Agama</td>
                     <td style="width: 1%; padding: 5px;">:</td>
                     <td style="width: 20%; padding: 5px;">
-                        Islam
+                        {{ $contract->user->identityInformation?->religion }}
                     </td>
                 </tr>
                 <tr>
                     <td style="width: 5%; padding: 5px;">No. KTP/SIM</td>
                     <td style="width: 1%; padding: 5px;">:</td>
                     <td style="width: 20%; padding: 5px;">
-                        123xxxxx
+                        {{ $contract->user->identityInformation?->nik }}
                     </td>
                 </tr>
                 <tr>
                     <td style="width: 5%; padding: 5px;">Telepon</td>
                     <td style="width: 1%; padding: 5px;">:</td>
                     <td style="width: 20%; padding: 5px;">
-                        08xxxxxx
+                        {{ $contract->user->identityInformation?->phone_number }}
                     </td>
                 </tr>
                 <tr>
                     <td style="width: 5%; padding: 5px;">Alamat</td>
                     <td style="width: 1%; padding: 5px;">:</td>
                     <td style="width: 20%; padding: 5px;">
-                        Jl. Kartini No.71
+                        {{ $contract->user->identityInformation?->home_address }}
                     </td>
                 </tr>
                 </tbody>
@@ -1505,25 +1530,48 @@
         </div>
         <div style="margin-top: 30px"></div>
         <div style="text-align: center;">
-            <div style="display: inline-block; vertical-align: top; margin-right: 30px;">
-                <table style="border-collapse: collapse; margin: 0;">
-                    <tr>
-                        <th style="padding: 8px; text-align: center;">
-                            <p style="margin: 0; font-size: 12px;">PIHAK PERTAMA</p>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th style="text-align: center; padding-bottom: 75px;">
-                            <p style="font-size: 12px; margin: 0;"></p>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th style="padding: 8px; text-align: center;">
-                            <p style="margin: 0; font-size: 12px; text-decoration: underline;">YOGA</p>
-                        </th>
-                    </tr>
-                </table>
-            </div>
+
+            @if($contract->user?->branch?->code === null || $contract->user?->branch?->code === 100)
+                <div style="display: inline-block; vertical-align: top; margin-right: 30px;">
+                    <table style="border-collapse: collapse; margin: 0;">
+                        <tr>
+                            <th style="padding: 8px; text-align: center;">
+                                <p style="margin: 0; font-size: 12px;">PIHAK PERTAMA</p>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="text-align: center; padding-bottom: 75px;">
+                                <p style="font-size: 12px; margin: 0;"></p>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="padding: 8px; text-align: center;">
+                                <p style="margin: 0; font-size: 12px; text-decoration: underline;">{{ $directorRole->name }}</p>
+                            </th>
+                        </tr>
+                    </table>
+                </div>
+                {{--            @else--}}
+                {{--                <div style="display: inline-block; vertical-align: top; margin-right: 30px;">--}}
+                {{--                    <table style="border-collapse: collapse; margin: 0;">--}}
+                {{--                        <tr>--}}
+                {{--                            <th style="padding: 8px; text-align: center;">--}}
+                {{--                                <p style="margin: 0; font-size: 12px;">PIHAK PERTAMA</p>--}}
+                {{--                            </th>--}}
+                {{--                        </tr>--}}
+                {{--                        <tr>--}}
+                {{--                            <th style="text-align: center; padding-bottom: 75px;">--}}
+                {{--                                <p style="font-size: 12px; margin: 0;"></p>--}}
+                {{--                            </th>--}}
+                {{--                        </tr>--}}
+                {{--                        <tr>--}}
+                {{--                            <th style="padding: 8px; text-align: center;">--}}
+                {{--                                <p style="margin: 0; font-size: 12px; text-decoration: underline;">{{ $branchManagerRole->name }}</p>--}}
+                {{--                            </th>--}}
+                {{--                        </tr>--}}
+                {{--                    </table>--}}
+                {{--                </div>--}}
+            @endif
 
             <div style="display: inline-block; vertical-align: top; margin-left: 200px;">
                 <table style="border-collapse: collapse; margin: 0;">
@@ -1539,7 +1587,7 @@
                     </tr>
                     <tr>
                         <th style="padding: 8px; text-align: center;">
-                            <p style="margin: 0; font-size: 12px; text-decoration: underline;">FIRMAN</p>
+                            <p style="margin: 0; font-size: 12px; text-decoration: underline;">{{ $contract->user->name }}</p>
                         </th>
                     </tr>
                 </table>

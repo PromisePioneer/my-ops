@@ -17,6 +17,8 @@
                             <input type="text" id="nik" name="nik" class="form-control form-control-solid"
                                    placeholder="NIK" :value="identityInformation.nik ?? ''"/>
                         </div>
+                    </div>
+                    <div class="row mb-4">
                         <div class="col-md-6">
                             <label for="place_of_birth" class="required form-label">Jenis Kelamin</label>
                             <select name="gender" id="gender" class="form-select form-select-solid">
@@ -26,6 +28,30 @@
                                 </option>
                                 <option value="Perempuan" :selected="identityInformation.gender === 'Perempuan'">
                                     Perempuan
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="place_of_birth" class="required form-label">Jenis Kelamin</label>
+                            <select name="religion" id="religion" class="form-select form-select-solid">
+                                <option value="0" selected>Pilih Agama</option>
+                                <option value="Islam" :selected="identityInformation.religion === 'Islam'">
+                                    Islam
+                                </option>
+                                <option value="Kristen" :selected="identityInformation.religion === 'Kristen'">
+                                    Kristen
+                                </option>
+                                <option value="Hindu" :selected="identityInformation.religion === 'Hindu'">
+                                    Hindu
+                                </option>
+                                <option value="Buddha" :selected="identityInformation.religion === 'Buddha'">
+                                    Buddha
+                                </option>
+                                <option value="Katholik" :selected="identityInformation.religion === 'Katholik'">
+                                    Katholik
+                                </option>
+                                <option value="Konghuchu" :selected="identityInformation.religion === 'Konghuchu'">
+                                    Konghuchu
                                 </option>
                             </select>
                         </div>

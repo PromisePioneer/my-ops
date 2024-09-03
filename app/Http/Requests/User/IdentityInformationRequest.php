@@ -22,6 +22,7 @@ class IdentityInformationRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
+            'religion' => ['required', Rule::in('Islam', 'Kristen', 'Hindu', 'Buddha', 'Katholik', 'Konghuchu')],
             'nik' => [
                 'required',
                 Rule::unique('user_identity_informations', 'nik')->ignore($request->route('user')),
@@ -60,6 +61,8 @@ class IdentityInformationRequest extends FormRequest
             'married_status.required' => 'Status perkawinan tidak boleh kosong',
             'married_status.in' => 'Status perkawinan tidak valid',
             'ktp_attachment.required_if' => 'ktp tidak boleh kosong',
+            'religion.required' => 'Agama Tidak boleh kosong',
+            'religion.in' => 'Agama Tidak valid',
         ];
     }
 }
