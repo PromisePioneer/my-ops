@@ -5,6 +5,7 @@ use App\Http\Controllers\ADMS\AttendanceSummaryController;
 use App\Http\Controllers\ADMS\FpDevicesController;
 use App\Http\Controllers\ADMS\IclockController;
 use App\Http\Controllers\ADMS\WorkTimeController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Inventory\GoodsController;
 use App\Http\Controllers\Inventory\UnitTypesController;
 use App\Http\Controllers\Inventory\UsedItemsController;
@@ -72,6 +73,7 @@ Auth::routes();
 Route::group(['middleware' => ['auth']], static function () {
     //dashboard
     Route::get('home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/summary', [HomeController::class, 'summary']);
 
     Route::prefix('/manage-users')->group(function () {
         Route::prefix('users')->group(function () {
