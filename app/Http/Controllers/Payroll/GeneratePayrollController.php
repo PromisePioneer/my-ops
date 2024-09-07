@@ -56,7 +56,6 @@ class GeneratePayrollController extends Controller
                 'published' => false,
             ]);
         }
-        
 
         return response()->json([
             'message' => 'data berhasil disimpan',
