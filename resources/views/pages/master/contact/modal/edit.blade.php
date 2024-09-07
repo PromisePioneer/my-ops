@@ -3,10 +3,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Form Contact</h5>
-
-                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
+                <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
-                    <span class="svg-icon svg-icon-2x"></span>
+                    <span class="svg-icon svg-icon-2x">
+                        <i class="ki-duotone ki-technology-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </span>
                 </div>
             </div>
 
@@ -42,10 +46,13 @@
                             <label class="d-flex align-items-center fs-6 fw-bold mb-2">
                                 <span class="required">Identitas</span>
                             </label>
-                            <select name="identity_type" class="form-select form-select-solid" data-placeholder="Select an option">
+                            <select name="identity_type" class="form-select form-select-solid"
+                                    data-placeholder="Select an option">
                                 <option value="ktp" :selected="`${editVal.identity_type === 'ktp'}`">KTP</option>
                                 <option value="sim" :selected="`${editVal.identity_type === 'sim'}`">SIM</option>
-                                <option value="passport" :selected="`${editVal.identity_type === 'passport'}`">PASSPORT</option>
+                                <option value="passport" :selected="`${editVal.identity_type === 'passport'}`">
+                                    PASSPORT
+                                </option>
                             </select>
                         </div>
                         <div class="col-md-10">
@@ -61,7 +68,8 @@
                             <label class="d-flex align-items-center fs-6 fw-bold mb-2">
                                 <span class="required">FAX</span>
                             </label>
-                            <input type="text" class="form-control form-control-solid" placeholder="FAX" name="fax" :value="editVal.fax"/>
+                            <input type="text" class="form-control form-control-solid" placeholder="FAX" name="fax"
+                                   :value="editVal.fax"/>
                         </div>
                         <div class="col-md-6">
                             <label class="d-flex align-items-center fs-6 fw-bold mb-2">
@@ -90,8 +98,16 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light btn-sm"  data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary btn-sm" :disabled="buttonLoading"  x-text="buttonLoading ? 'Loading...' : 'Simpan'">Save changes</button>
+                        <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
+                            <i class="ki-duotone ki-click fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                                <span class="path5"></span>
+                            </i>
+                            <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
+                        </button>
                     </div>
                 </form>
             </div>

@@ -32,7 +32,9 @@ class ServicesCategoryController extends Controller
     public function data(): JsonResponse
     {
         $this->authorize('view', ServiceCategory::class);
-        $services = ServiceCategory::orderBy('capacity', 'ASC')->paginate(self::$perPage);
+        $services = ServiceCategory::orderBy('capacity', 'ASC')
+            ->paginate(self::$perPage)
+            ->onEachSide(1);
 
         return response()->json($services);
     }

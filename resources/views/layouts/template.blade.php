@@ -1,6 +1,5 @@
 ﻿@php use Carbon\Carbon; @endphp
         <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <title>Accounting Software</title>
@@ -10,7 +9,7 @@
     <meta property="og:type" content="article"/>
     <link rel="shortcut icon" href="{{ asset('assets/media/logos/favicon.ico')}}"/>
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700"/>
     <link href="{{ asset('assets/plugins/global/plugins.bundle.css')}}" rel="stylesheet" type="text/css"/>
     <link href="{{ asset('assets/css/style.bundle.css')}}" rel="stylesheet" type="text/css"/>
     <link href="{{ asset('assets/css/image-lightbox.css') }}" rel="stylesheet">
@@ -26,7 +25,17 @@
 </head>
 
 
-<body id="kt_body" class="print-content-only header-tablet-and-mobile-fixed aside-enabled" x-data="notifications">
+<body id="kt_body" class="print-content-only header-tablet-and-mobile-fixed aside-enabled"
+      data-kt-app-page-loading-enabled="true" data-kt-app-page-loading="on" x-data="notifications">
+
+
+<!--begin::Page loading(append to body)-->
+<div class="page-loader flex-column bg-dark bg-opacity-25">
+    <span class="spinner-border text-primary" role="status"></span>
+    <span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
+</div>
+<!--end::Page loading-->
+
 
 <div>
     <div class="lightbox" x-data="{lightboxOpen: false, imgSrc: ''}" x-show="lightboxOpen" x-transition.opacity
@@ -211,6 +220,32 @@
 
 <script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
 <script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
+<script>
+
+
+    // Toggle
+    const button = document.querySelector("#kt_page_loading_overlay");
+    button.addEventListener("click", function () {
+        const loadingEl = document.createElement("div");
+        document.body.prepend(loadingEl);
+        loadingEl.classList.add("page-loader");
+        loadingEl.classList.add("flex-column");
+        loadingEl.classList.add("bg-dark");
+        loadingEl.classList.add("bg-opacity-25");
+        loadingEl.innerHTML = `
+        <span class="spinner-border text-primary" role="status"></span>
+        <span class="text-gray-800 fs-6 fw-semibold mt-5">Loading...</span>
+    `;
+
+        KTApp.showPageLoading();
+        setTimeout(function () {
+            KTApp.hidePageLoading();
+            loadingEl.remove();
+        }, 3000);
+    });
+
+
+</script>
 <script>
     function notifications() {
         return {

@@ -64,6 +64,7 @@ class LeaveAndPermission extends Model
         'acc_by',
     ];
 
+    // relationship
     public function accBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'acc_by');
@@ -95,6 +96,9 @@ class LeaveAndPermission extends Model
         return $data;
     }
 
+
+    //eloquent
+
     public function searchDataBasedOnUserId(Request $request): Collection|array
     {
         $search = $request->input('search');
@@ -109,7 +113,7 @@ class LeaveAndPermission extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class);
     }
 
     public function getDataWithPaginationBasedOnBranch(?int $branchId, int $perPage): LengthAwarePaginator

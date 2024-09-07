@@ -31,6 +31,8 @@ class DatabaseSeeder extends Seeder
             WorkTimeSeeder::class,
             FpDeviceSeeder::class,
             RoleHasDepartmentSeeder::class,
+            PayrollScheduleSeeder::class,
+            BPJSKetSeeder::class,
         ]);
     }
 }

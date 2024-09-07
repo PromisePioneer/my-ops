@@ -137,5 +137,9 @@ class FpDeviceSeeder extends Seeder
             'name' => 'Solok (Tj. Harapan)',
             'serial_number' => 'CKEB220760143',
         ]);
+
+//        FpDevice::create([
+//            'branch_id'=> $this->branch->where('name', '')
+//        ])
     }
 }

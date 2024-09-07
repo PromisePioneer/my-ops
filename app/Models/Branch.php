@@ -36,6 +36,7 @@ class Branch extends Model
     protected $fillable = [
         'name',
         'code',
+        'address',
     ];
 
     //eloquent

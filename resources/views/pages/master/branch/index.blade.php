@@ -18,9 +18,14 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-light-primary btn-sm"
+                                    data-bs-toggle="modal"
                                     data-bs-target="#modal-create">
-                                Tambah
+                                <i class="ki-duotone ki-message-add fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i> Tambah
                             </button>
                         </div>
                     </div>
@@ -30,9 +35,15 @@
                 <div class="col-12 ">
                     <form id="deleteForm" @submit.prevent="destroy()">
                         <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
-                        <button type="submit" class="btn btn-danger btn-sm mt-5" x-show="selectedCheckBox.length > 0"
+                        <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                                x-show="selectedCheckBox.length > 0"
                                 x-transition x-cloak>
-                            <i class="bi bi-trash"></i>
+                            <i class="ki-duotone ki-trash-square fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
                             Hapus
                         </button>
                     </form>
@@ -53,8 +64,8 @@
                                 <th class="min-w-125px">Alamat</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
-                            <tbody class="text-gray-600 fw-bold">
                             <template x-if="isLoading">
+                                <tbody class="fw-bold">
                                 <tr>
                                     <td colspan="9">
                                         <div style="text-align: center;">
@@ -64,15 +75,19 @@
                                         </div>
                                     </td>
                                 </tr>
+                                </tbody>
                             </template>
                             <template x-if="!isLoading && branches.data?.length === 0">
+                                <tbody class="fw-bold">
                                 <tr>
                                     <td colspan="9">
                                         <center>Data Tidak Ditemukan</center>
                                     </td>
                                 </tr>
+                                </tbody>
                             </template>
                             <template x-for="branch in branches?.data" :key="branch.id">
+                                <tbody class="fw-bold">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -86,25 +101,29 @@
                                         <a :href="`/master/branch/structure-orgranization/${branch.id}`"
                                            x-text="branch.name"></a>
                                     </td>
-                                    <td x-text="branch.address"></td>
+                                    <td x-text="`${branch.address.substring(0, 30)}...`"></td>
                                     <td>
-                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(branch.id)">
-                                            <i class="bi bi-pencil"></i>
+                                            <i class="ki-duotone ki-pencil fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
                                         </button>
                                     </td>
                                 </tr>
+                                </tbody>
                             </template>
-                            </tbody>
                         </table>
                     </div>
-                    <ul class="pagination float-end mb-4">
-                        <li class="page-item previous">
-                            <button class="btn btn-light btn-sm" @click="previousPage">Previous</button>
-                        </li>
-                        <li class="page-item next">
-                            <button class="btn btn-light btn-sm" @click="nextPage">Next</button>
-                        </li>
+                    <ul class="pagination float-end mb-4 mt-4">
+                        <template x-for="pagination in branches.links">
+                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                        x-html="pagination.label">
+                                </button>
+                            </li>
+                        </template>
                     </ul>
                 </div>
             </div>
@@ -146,17 +165,10 @@
                         console.log(error);
                     }
                 },
-                async nextPage() {
-                    if (this.branches.next_page_url) {
-                        const resp = await axios.get(`${this.branches.next_page_url}`);
-                        this.startIndex = this.branches.from
-                        this.branches = resp.data
-                    }
-                },
-                async previousPage() {
-                    if (this.branches.prev_page_url) {
-                        const resp = await axios.get(`${this.branches.prev_page_url}`);
-                        this.startIndex = this.branches.from
+                async paginationEndPoint(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
+                        this.startIndex = resp.data.from
                         this.branches = resp.data
                     }
                 },

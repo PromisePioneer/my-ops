@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use App\Models\Attendances;
+use App\Models\LeaveAndPermission;
+use App\Models\NationalHoliday;
 use App\Models\WorkTime;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -43,7 +45,7 @@ class AttendancesSummaryService
 
     public function attendancesDataInAMonthPaginatedData($attendances, $month, $year): LengthAwarePaginator
     {
-        $formattedData = $this->attendancesDataInAMonthFormattedData($attendances);
+        $formattedData = $this->attendancesDataInAMonthFormattedData($attendances, $month, $year);
         $paginator = new LengthAwarePaginator(
             $formattedData->forPage(Paginator::resolveCurrentPage(), self::$perPage),
             $formattedData->count(),
@@ -56,12 +58,22 @@ class AttendancesSummaryService
     }
 
 
-    public function attendancesDataInAMonthFormattedData($attendances): Collection
+    public function attendancesDataInAMonthFormattedData($attendances, $month, $year): Collection
     {
-        return $attendances->map(function ($items) {
-            $dailyAttendances = self::dailyAttendancesGroupBy($items);
-            $totalMinutesLate = $this->calculateMinutesLate($dailyAttendances);
+        return $attendances->map(function ($items) use ($month, $year) {
+            $dailyAttendances = $this->dailyAttendancesGroupBy($items);
+            $totalMinutesLate = $this->calculateMinutesLate($dailyAttendances, $month, $year);
             $totalPresent = $items->where('status1', 0)->count();
+            $calculateCuti = $this->calculateCuti($items, $month, $year);
+            $calculateIzin = $this->calculateIzin($items, $month, $year);
+            $calculateSakit = $this->calculatesakit($items, $month, $year);
+            $notCheckout = $items->whereNull('status1', 0);
+            $notCheckIn = $items->whereNull('status1', 1)->count();
+            $totalRegularHolidayIn1Week = 4;
+            $daysInMonth = Carbon::now()->daysInMonth;
+            $checkHolidayInThisMonth = NationalHoliday::whereMonth('date', $month)->whereYear('date', $year)->count();
+            $totalHoliday = $totalRegularHolidayIn1Week + $checkHolidayInThisMonth + $calculateIzin + $calculateCuti + $calculateSakit;
+            $totalAbsent = $daysInMonth - $totalPresent - $totalHoliday;
 
             return [
                 'branch' => $items->first()->branches_name,
@@ -70,20 +82,24 @@ class AttendancesSummaryService
                 'name' => $items->first()->user_name,
                 'total_hadir' => $totalPresent,
                 'total_menit_terlambat' => (int) $totalMinutesLate,
+                'cuti' => (int) $calculateCuti,
+                'izin' => (int) $calculateIzin,
+                'sakit' => (int) $calculateSakit,
+                'total_absent' => (int) $totalAbsent,
+                'not_checkin' => $notCheckIn,
+                'not_checkout' => $notCheckout,
             ];
         })->values();
     }
 
-
-    private static function dailyAttendancesGroupBy($items)
+    public function dailyAttendancesGroupBy($items)
     {
         return $items->groupBy(function ($item) {
             return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
         });
     }
 
-
-    public function calculateMinutesLate($dailyAttendances): float|int
+    public function calculateMinutesLate($dailyAttendances, $month, $year): float|int
     {
         foreach ($dailyAttendances as $day => $dailyItems) {
             $checkIn = $dailyItems->where('status1', 0)->first();
@@ -108,6 +124,77 @@ class AttendancesSummaryService
         return 0;
     }
 
+    public function calculateCuti($items, $month, $year): int|float
+    {
+        $getFirstCuti = LeaveAndPermission::join('users', 'users.id', '=',
+            'leaves_and_permissions.user_id')
+            ->join('attendances', 'users.absent_id', '=', 'attendances.employee_id')
+            ->whereMonth('start_date', $month)->whereYear('start_date', $year)
+            ->where('confirmation_status', 'Diterima')->where('users.absent_id',
+                $items->first()->employee_id)->where('leaves_status',
+                'Cuti')->orderBy('leaves_and_permissions.created_at',
+                'asc')->first();
+
+
+        $getLastCuti = LeaveAndPermission::join('users', 'users.id', '=',
+            'leaves_and_permissions.user_id')
+            ->join('attendances', 'users.absent_id', '=', 'attendances.employee_id')
+            ->whereMonth('start_date', $month)->whereYear('start_date', $year)
+            ->where('confirmation_status', 'Diterima')->where('users.absent_id',
+                $items->first()->employee_id)->where('leaves_status',
+                'Cuti')->latest('leaves_and_permissions.created_at')->first();
+
+
+        return Carbon::parse($getFirstCuti?->start_date)->diffInDays(Carbon::parse($getLastCuti?->end_date));
+    }
+
+    public function calculateIzin($items, $month, $year): int|float
+    {
+        $getFirstIzin = LeaveAndPermission::join('users', 'users.id', '=',
+            'leaves_and_permissions.user_id')
+            ->join('attendances', 'users.absent_id', '=', 'attendances.employee_id')
+            ->whereMonth('start_date', $month)->whereYear('start_date', $year)
+            ->where('confirmation_status', 'Diterima')->where('users.absent_id',
+                $items->first()->employee_id)->where('leaves_status',
+                'Izin')->orderBy('leaves_and_permissions.created_at',
+                'asc')->first();
+
+
+        $getLastIzin = LeaveAndPermission::join('users', 'users.id', '=',
+            'leaves_and_permissions.user_id')
+            ->join('attendances', 'users.absent_id', '=', 'attendances.employee_id')
+            ->whereMonth('start_date', $month)->whereYear('start_date', $year)
+            ->where('confirmation_status', 'Diterima')->where('users.absent_id',
+                $items->first()->employee_id)->where('leaves_status',
+                'Izin')->latest('leaves_and_permissions.created_at')->first();
+
+
+        return Carbon::parse($getFirstIzin?->start_date)->diffInDays(Carbon::parse($getLastIzin?->end_date));
+    }
+
+    public function calculatesakit($items, $month, $year): int|float
+    {
+        $getFirstSakit = LeaveAndPermission::join('users', 'users.id', '=',
+            'leaves_and_permissions.user_id')
+            ->join('attendances', 'users.absent_id', '=', 'attendances.employee_id')
+            ->whereMonth('start_date', $month)->whereYear('start_date', $year)
+            ->where('confirmation_status', 'Diterima')->where('users.absent_id',
+                $items->first()->employee_id)->where('leaves_status',
+                'Sakit')->orderBy('leaves_and_permissions.created_at',
+                'asc')->first();
+
+
+        $getLastSakit = LeaveAndPermission::join('users', 'users.id', '=',
+            'leaves_and_permissions.user_id')
+            ->join('attendances', 'users.absent_id', '=', 'attendances.employee_id')
+            ->whereMonth('start_date', $month)->whereYear('start_date', $year)
+            ->where('confirmation_status', 'Diterima')->where('users.absent_id',
+                $items->first()->employee_id)->where('leaves_status',
+                'Sakit')->latest('leaves_and_permissions.created_at')->first();
+
+
+        return Carbon::parse($getFirstSakit?->start_date)->diffInDays(Carbon::parse($getLastSakit?->end_date));
+    }
 
     public function searchAttendancesSummary(Request $request, $month, $year): LengthAwarePaginator
     {

@@ -9,34 +9,6 @@
                             <h2 class="mb-0">{{ $role->name }}</h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
-                        <div class="d-flex flex-column text-gray-600">
-                            <div class="d-flex align-items-center py-2">
-                                <span class="bullet bg-primary me-3"></span>Some Admin Controls
-                            </div>
-                            <div class="d-flex align-items-center py-2">
-                                <span class="bullet bg-primary me-3"></span>View Financial Summaries only
-                            </div>
-                            <div class="d-flex align-items-center py-2">
-                                <span class="bullet bg-primary me-3"></span>View and Edit API Controls
-                            </div>
-                            <div class="d-flex align-items-center py-2">
-                                <span class="bullet bg-primary me-3"></span>View Payouts only
-                            </div>
-                            <div class="d-flex align-items-center py-2">
-                                <span class="bullet bg-primary me-3"></span>View and Edit Disputes
-                            </div>
-                            <div class="d-flex align-items-center py-2 d-none">
-                                <span class="bullet bg-primary me-3"></span>
-                                <em>and 3 more...</em>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer pt-0">
-                        <button type="button" class="btn btn-light btn-active-primary" data-bs-toggle="modal"
-                                data-bs-target="#kt_modal_update_role">Edit Role
-                        </button>
-                    </div>
                 </div>
             </div>
             <div class="flex-lg-row-fluid ms-lg-10">
@@ -151,7 +123,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="row">
+                            <div class="row mt-4">
                                 <div class="col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start">
                                     <a href="{{ url('/master/roles') }}"
                                        class="btn btn-light btn-active-danger btn-sm">Kembali</a>

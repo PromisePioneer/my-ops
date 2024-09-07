@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role as SpatieRole;
 
@@ -60,5 +61,8 @@ class Role extends SpatieRole
         ];
     }
 
-
+    public function payrollAllowance(): HasMany
+    {
+        return $this->hasMany(PayrollAllowance::class, 'role_id');
+    }
 }

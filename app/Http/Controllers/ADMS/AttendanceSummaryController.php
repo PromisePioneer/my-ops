@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ADMS;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendances;
+use App\Models\LeaveAndPermission;
 use App\Models\WorkTime;
 use App\Service\AttendancesSummaryService;
 use Carbon\Carbon;
@@ -91,7 +92,24 @@ class AttendanceSummaryController extends Controller
             ->get()
             ->groupBy('user_name');
 
-        $summaryData = $totalPresentAndTotalMinutesLate->map(function ($items) {
+        $getCuti = LeaveAndPermission::join('users', 'users.id', '=',
+            'leaves_and_permissions.user_id')
+            ->whereMonth('start_date', $month)->whereYear('start_date', $year)
+            ->where('confirmation_status', 'Diterima')->where('users.absent_id',
+                $employeeId)->where('leaves_status', 'Cuti')->get();
+
+
+        $cutiDays = null;
+        foreach ($getCuti as $cuti) {
+            $cutiDays = Carbon::parse($cuti->start_date)->diffInDays(Carbon::parse($cuti->end_date));
+        }
+
+        $summaryData = $totalPresentAndTotalMinutesLate->map(function ($items) use (
+            $month,
+            $year,
+            $employeeId,
+            $cutiDays,
+        ) {
             $totalMinutesLate = 0;
             $dailyAttendances = $items->groupBy(function ($item) {
                 return $item->employee_id.'-'.Carbon::parse($item->timestamp)->format('Y-m-d');
@@ -121,6 +139,7 @@ class AttendanceSummaryController extends Controller
                 'name' => $items->first()->user_name,
                 'nik' => $items->first()->user_nip,
                 'total_present' => $items->where('status1', 0)->count(),
+                'total_cuti' => (int) $cutiDays,
             ];
         })->values();
 

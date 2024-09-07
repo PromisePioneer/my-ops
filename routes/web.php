@@ -4,6 +4,7 @@ use App\Http\Controllers\ADMS\AttendancesController;
 use App\Http\Controllers\ADMS\AttendanceSummaryController;
 use App\Http\Controllers\ADMS\FpDevicesController;
 use App\Http\Controllers\ADMS\IclockController;
+use App\Http\Controllers\ADMS\NationalHolidayController;
 use App\Http\Controllers\ADMS\WorkTimeController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Inventory\GoodsController;
@@ -22,7 +23,6 @@ use App\Http\Controllers\ManageUser\IdentityInformationController;
 use App\Http\Controllers\ManageUser\JobExperiencesController;
 use App\Http\Controllers\ManageUser\JobInformationController;
 use App\Http\Controllers\ManageUser\ManageUserLeavesController;
-use App\Http\Controllers\ManageUser\PayrollController;
 use App\Http\Controllers\ManageUser\PermissionController;
 use App\Http\Controllers\ManageUser\UserController;
 use App\Http\Controllers\Master\AccountController;
@@ -35,6 +35,12 @@ use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\ServicesCategoryController;
 use App\Http\Controllers\Master\SubAccountController;
 use App\Http\Controllers\Operational\SPController;
+use App\Http\Controllers\Payroll\BPJSKetController;
+use App\Http\Controllers\Payroll\GeneratePayrollController;
+use App\Http\Controllers\Payroll\PayrollAllowanceController;
+use App\Http\Controllers\Payroll\PayrollController;
+use App\Http\Controllers\Payroll\PayrollHistoryController;
+use App\Http\Controllers\Payroll\PayrollScheduleController;
 use App\Http\Controllers\SKController;
 use App\Http\Controllers\Transaction\BastController;
 use App\Http\Controllers\Transaction\ExpenditureController;
@@ -155,18 +161,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::delete('/{permission}', [PermissionController::class, 'destroy']);
         });
 
-        Route::prefix('payroll')->group(function () {
-            Route::get('/', [PayrollController::class, 'index']);
-            Route::get('/data', [PayrollController::class, 'data']);
-            Route::get('/user/data', [PayrollController::class, 'getUserData']);
-            Route::get('/search', [PayrollController::class, 'search']);
-            Route::get('/create', [PayrollController::class, 'create']);
-            Route::post('/', [PayrollController::class, 'store']);
-            Route::get('/{payroll}', [PayrollController::class, 'edit']);
-            Route::post('/{payroll}', [PayrollController::class, 'update']);
-            Route::delete('/{payroll}', [PayrollController::class, 'destroy']);
-            Route::get('/export-pdf/{payroll}', [PayrollController::class, 'exportToPDF']);
-        });
+
         Route::prefix('leaves')->group(function () {
             Route::get('/', [ManageUserLeavesController::class, 'index']);
             Route::get('/data', [ManageUserLeavesController::class, 'data']);
@@ -594,6 +589,11 @@ Route::group(['middleware' => ['auth']], static function () {
     });
 
     Route::prefix('/adms')->group(function () {
+        Route::prefix('/national-holiday')->group(function () {
+            Route::get('/', [NationalHolidayController::class, 'index']);
+            Route::get('/data', [NationalHolidayController::class, 'data']);
+            Route::post('/', [NationalHolidayController::class, 'generateHoliday']);
+        });
         Route::prefix('/fp-devices')->group(function () {
             Route::get('/', [FpDevicesController::class, 'index']);
             Route::get('/data', [FpDevicesController::class, 'data']);
@@ -652,6 +652,34 @@ Route::group(['middleware' => ['auth']], static function () {
                 '/detail/data/user/detail/{month}/{year}/{employeeId}',
                 [AttendanceSummaryController::class, 'attendanceSummaryDetailForOneMonthBasedOnUserId']
             );
+        });
+    });
+
+
+    Route::prefix('payroll')->group(function () {
+        Route::prefix('/setting')->group(function () {
+            Route::get('/', [PayrollController::class, 'index']);
+            Route::get('/roles/data', [PayrollController::class, 'getRolesData']);
+            Route::get('/payroll-schedule/data', [PayrollScheduleController::class, 'data']);
+            Route::post('payroll-schedule/', [PayrollScheduleController::class, 'store']);
+            Route::get('/payroll-allowance/data', [PayrollAllowanceController::class, 'data']);
+            Route::post('/payroll-allowance/', [PayrollAllowanceController::class, 'store']);
+            Route::delete('/payroll-allowance/{payrollAllowance}', [PayrollAllowanceController::class, 'destroy']);
+            Route::get('/bpjs-ket/data', [BPJSKetController::class, 'data']);
+            Route::get('/bpjs-ket/{bpjsKet}', [BPJSketController::class, 'edit']);
+            Route::post('/bpjs-ket/{bpjsKet}', [BpjsketController::class, 'update']);
+        });
+
+
+        Route::prefix('generate')->group(function () {
+            Route::get('/', [GeneratePayrollController::class, 'index']);
+            Route::post('/', [GeneratePayrollController::class, 'generatePayroll']);
+        });
+
+
+        Route::prefix('payroll-history')->group(function () {
+            Route::get('/', [PayrollHistoryController::class, 'index']);
+            Route::get('/data', [PayrollHistoryController::class, 'data']);
         });
     });
 });

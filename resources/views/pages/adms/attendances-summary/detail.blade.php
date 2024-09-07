@@ -41,6 +41,10 @@
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Total Kehadiran</th>
                                 <th class="min-w-125px">Total Terlambat</th>
+                                <th class="min-w-125px">Cuti</th>
+                                <th class="min-w-125px">Sakit</th>
+                                <th class="min-w-125px">Izin</th>
+                                <th class="min-w-125px">Alpha</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class="text-gray-600 fw-bold">
@@ -69,6 +73,10 @@
                                     <td x-text="attendance.name"></td>
                                     <td x-text="attendance.total_hadir"></td>
                                     <td x-text="`${attendance.total_menit_terlambat} Menit`"></td>
+                                    <td x-text="`${attendance.cuti} Hari`"></td>
+                                    <td x-text="`${attendance.sakit} Hari`"></td>
+                                    <td x-text="`${attendance.izin} Hari`"></td>
+                                    <td x-text="`${attendance.total_absent} Hari`"></td>
                                     <td>
                                         <a class="btn btn-info btn-sm" data-bs-toggle="modal"
                                            data-bs-target="#modal-attendances-summary-detail"

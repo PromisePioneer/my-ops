@@ -10,7 +10,7 @@
                 </div>
             @else
                 <div class="symbol symbol-50px">
-                    <img src="{{ asset('assets/media/dummy/dummy-picture.png') }}" alt="">
+                    <img src="{{ asset('assets/media/avatars/blank.png') }}" alt="">
                 </div>
             @endif
 
@@ -75,19 +75,23 @@
         </div>
     </div>
     <div class="aside-menu flex-column-fluid">
-        <div class="hover-scroll-overlay-y px-2 pb-14 my-5 my-lg-5" id="kt_aside_menu_wrapper" data-kt-scroll="true"
+        <div class="hover-scroll-overlay-y mx-3 my-5 my-lg-5" id="kt_aside_menu_wrapper" data-kt-scroll="true"
              data-kt-scroll-height="auto"
              data-kt-scroll-dependencies="{default: '#kt_aside_toolbar, #kt_aside_footer', lg: '#kt_header, #kt_aside_toolbar, #kt_aside_footer'}"
              data-kt-scroll-wrappers="#kt_aside_menu" data-kt-scroll-offset="5px">
-            <div
-                    class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
-                    id="#kt_aside_menu" data-kt-menu="true">
+            <div class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
+                 id="#kt_aside_menu" data-kt-menu="true">
 
                 <x-menu-sections>Dashboard</x-menu-sections>
                 <x-single-menu-item :active="request()->segment(1) === 'home'"
                                     href="{{ url('home') }}">
                     @slot('parentIcon')
-                        <i class="bi bi-house fs-1"></i>
+                        <i class="ki-duotone ki-element-11 fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                            <span class="path4"></span>
+                        </i>
                     @endslot
                     @slot('menuTitle')
                         Dashboard
@@ -96,7 +100,10 @@
                 <x-menu-sections>Master Data</x-menu-sections>
                 <x-dropdown-menu :active="request()->segment(1) === 'master'">
                     @slot('parentIcon')
-                        <i class="bi bi-speedometer2 fs-1"></i>
+                        <i class="ki-duotone ki-element-7 fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
                     @endslot
                     @slot('menuTitle')
                         Master
@@ -130,7 +137,7 @@
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'roles'"
                                 href="{{ url('master/roles') }}">
-                            Role
+                            Jabatan
                         </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
@@ -139,7 +146,13 @@
 
                 <x-dropdown-menu :active="request()->segment(1) === 'account-master'">
                     @slot('parentIcon')
-                        <i class="bi bi-app-indicator"></i>
+                        <i class="ki-duotone ki-element-plus fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                            <span class="path4"></span>
+                            <span class="path5"></span>
+                        </i>
                     @endslot
                     @slot('menuTitle')
                         Manajemen Akun
@@ -167,7 +180,11 @@
 
                 <x-dropdown-menu :active="request()->segment(1) === 'journals'">
                     @slot('parentIcon')
-                        <i class="bi bi-book-fill fs-1"></i>
+                        <i class="ki-duotone ki-book-square fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                        </i>
                     @endslot
                     @slot('menuTitle')
                         Penjurnalan
@@ -190,7 +207,11 @@
 
                 <x-dropdown-menu :active="request()->segment(1) === 'income-transactions'">
                     @slot('parentIcon')
-                        <i class="bi bi-cash fs-1"></i>
+                        <i class="ki-duotone ki-dollar fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                        </i>
                     @endslot
                     @slot('menuTitle')
                         Pendapatan
@@ -221,7 +242,12 @@
 
                 <x-dropdown-menu :active="request()->segment(1) === 'expenditure-transactions'">
                     @slot('parentIcon')
-                        <i class="bi bi-wallet2 fs-1"></i>
+                        <i class="ki-duotone ki-save-deposit fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                            <span class="path4"></span>
+                        </i>
                     @endslot
                     @slot('menuTitle')
                         Pengeluaran
@@ -239,7 +265,12 @@
 
                 <x-dropdown-menu :active="request()->segment(1) === 'inventory'">
                     @slot('parentIcon')
-                        <i class="bi bi-bag fs-1"></i>
+                        <i class="ki-duotone ki-basket-ok fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                            <span class="path4"></span>
+                        </i>
                     @endslot
                     @slot('menuTitle')
                         Inventaris
@@ -285,7 +316,10 @@
 
                 <x-dropdown-menu :active="request()->segment(1) === 'utility'">
                     @slot('parentIcon')
-                        <i class="bi bi-people-fill fs-1"></i>
+                        <i class="ki-duotone ki-abstract-29 fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
                     @endslot
                     @slot('menuTitle')
                         Utilitas
@@ -305,10 +339,39 @@
                 </x-dropdown-menu>
 
                 <x-menu-sections>Manajemen Karyawan</x-menu-sections>
-
+                <x-dropdown-menu :active="request()->segment(1) === 'payroll'">
+                    @slot('parentIcon')
+                        <i class="ki-duotone ki-profile-user fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                            <span class="path4"></span>
+                        </i>
+                    @endslot
+                    @slot('menuTitle')
+                        Payroll
+                    @endslot
+                    @slot('menuItem')
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'setting'"
+                                href="{{ url('payroll/setting') }}">
+                            Pengaturan
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'generate'"
+                                href="{{ url('payroll/generate') }}">
+                            Generate Payroll
+                        </x-dropdown-menu-item>
+                    @endslot
+                </x-dropdown-menu>
                 <x-dropdown-menu :active="request()->segment(1) === 'manage-users'">
                     @slot('parentIcon')
-                        <i class="bi bi-people-fill fs-1"></i>
+                        <i class="ki-duotone ki-profile-user fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                            <span class="path4"></span>
+                        </i>
                     @endslot
                     @slot('menuTitle')
                         Manajemen Karyawan
@@ -329,11 +392,7 @@
                                 href="{{ url('manage-users/leaves') }}">
                             Manajemen Cuti
                         </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'payroll'"
-                                href="{{ url('manage-users/payroll') }}">
-                            Payroll
-                        </x-dropdown-menu-item>
+
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'sp'"
                                 href="{{ url('manage-users/sp') }}">
@@ -359,6 +418,11 @@
                         ADMS
                     @endslot
                     @slot('menuItem')
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'national-holiday'"
+                                href="{{ url('adms/national-holiday') }}">
+                            Libur Nasional
+                        </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'fp-devices'"
                                 href="{{ url('adms/fp-devices') }}">
