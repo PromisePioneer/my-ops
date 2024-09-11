@@ -34,8 +34,8 @@
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th>#</th>
-                                <th>Tanggal</th>
                                 <th>Nama</th>
+                                <th>Tanggal</th>
                             </thead>
                             <template x-if="isLoading">
                                 <tbody class="fw-bold">

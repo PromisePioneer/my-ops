@@ -47,10 +47,10 @@ class NationalHolidayController extends Controller
                 return $val['is_national_holiday'] === true;
             });
 
+
             foreach ($nationalHolidays as $holiday) {
-                NationalHoliday::upsert([
+                NationalHoliday::updateOrCreate([
                     'date' => $holiday['holiday_date'],
-                    'name' => $holiday['holiday_name'],
                 ], [
                     'name' => $holiday['holiday_name'],
                 ]);
