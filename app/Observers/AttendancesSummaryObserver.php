@@ -9,6 +9,9 @@ use Carbon\Carbon;
 
 class AttendancesSummaryObserver
 {
+    /**
+     * Handle the Attendances "created" event.
+     */
     public function created(Attendances $attendances): void
     {
         $user = User::with('branch')
@@ -29,5 +32,37 @@ class AttendancesSummaryObserver
                 $attendancesSummary->clock_out = Carbon::parse($attendances->timestamps)->format('H:i');
             }
         }
+    }
+
+    /**
+     * Handle the Attendances "updated" event.
+     */
+    public function updated(Attendances $attendances): void
+    {
+        //
+    }
+
+    /**
+     * Handle the Attendances "deleted" event.
+     */
+    public function deleted(Attendances $attendances): void
+    {
+        //
+    }
+
+    /**
+     * Handle the Attendances "restored" event.
+     */
+    public function restored(Attendances $attendances): void
+    {
+        //
+    }
+
+    /**
+     * Handle the Attendances "force deleted" event.
+     */
+    public function forceDeleted(Attendances $attendances): void
+    {
+        //
     }
 }

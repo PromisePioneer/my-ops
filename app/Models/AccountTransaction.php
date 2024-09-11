@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Eloquent;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -18,26 +21,26 @@ use Illuminate\Support\Facades\Auth;
  * @property string $description
  * @property float $debit
  * @property float $credit
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Account|null $account
- * @property-read \App\Models\Branch|null $branch
- * @property-read \App\Models\SubAccount|null $subAccount
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Account|null $account
+ * @property-read Branch|null $branch
+ * @property-read SubAccount|null $subAccount
  *
- * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction query()
- * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereCredit($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereDebit($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereSubAccountId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AccountTransaction whereUpdatedAt($value)
+ * @method static Builder|AccountTransaction newModelQuery()
+ * @method static Builder|AccountTransaction newQuery()
+ * @method static Builder|AccountTransaction query()
+ * @method static Builder|AccountTransaction whereAccountId($value)
+ * @method static Builder|AccountTransaction whereCreatedAt($value)
+ * @method static Builder|AccountTransaction whereCredit($value)
+ * @method static Builder|AccountTransaction whereDate($value)
+ * @method static Builder|AccountTransaction whereDebit($value)
+ * @method static Builder|AccountTransaction whereDescription($value)
+ * @method static Builder|AccountTransaction whereId($value)
+ * @method static Builder|AccountTransaction whereSubAccountId($value)
+ * @method static Builder|AccountTransaction whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class AccountTransaction extends Model
 {
@@ -84,23 +87,8 @@ class AccountTransaction extends Model
         return $accountTransaction;
     }
 
-    public function searchAccountTransactionBasedOnUserBranch(Request $request, int $perPage): LengthAwarePaginator
-    {
-        $search = $request->search;
-        $accountTransaction = self::with('account', 'subAccount')
-            ->whereHas('account', static function ($query) {
-                $query->where('branch_id', Auth::user()->branch_id);
-            })->orWhereHas('subAccount.account', function ($query) {
-                $query->where('branch_id', Auth::user()->branch_id);
-            })->where('description', 'like', '%'.$search.'%')->paginate($perPage);
-
-        self::formattedAccounTransactionData($accountTransaction);
-
-        return $accountTransaction;
-    }
-
-    private static function formattedAccounTransactionData(LengthAwarePaginator $accountTransaction): LengthAwarePaginator
-    {
+    private static function formattedAccounTransactionData(LengthAwarePaginator $accountTransaction
+    ): LengthAwarePaginator {
         $formattedAccountTransaction = $accountTransaction->getCollection()->map(static function ($item) {
             return [
                 'id' => $item->id,
@@ -114,6 +102,21 @@ class AccountTransaction extends Model
         });
 
         $accountTransaction->setCollection($formattedAccountTransaction);
+
+        return $accountTransaction;
+    }
+
+    public function searchAccountTransactionBasedOnUserBranch(Request $request, int $perPage): LengthAwarePaginator
+    {
+        $search = $request->search;
+        $accountTransaction = self::with('account', 'subAccount')
+            ->whereHas('account', static function ($query) {
+                $query->where('branch_id', Auth::user()->branch_id);
+            })->orWhereHas('subAccount.account', function ($query) {
+                $query->where('branch_id', Auth::user()->branch_id);
+            })->where('description', 'like', '%'.$search.'%')->paginate($perPage);
+
+        self::formattedAccounTransactionData($accountTransaction);
 
         return $accountTransaction;
     }
