@@ -69,19 +69,19 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ url('payroll/deduction/nine-past-fiveteen-late/') }}"
+                        <a href="#"
                            class="fw-bold">
                             Bonus Penjualan
                         </a>
                     </li>
                     <li>
-                        <a href="{{ url('payroll/deduction/additional-deduction') }}"
+                        <a href="#"
                            class="fw-bold">
                             Bonus Project
                         </a>
                     </li>
                     <li>
-                        <a href="{{ url('payroll/deduction/additional-deduction') }}"
+                        <a href="#"
                            class="fw-bold">
                             Bonus Lainnya
                         </a>
