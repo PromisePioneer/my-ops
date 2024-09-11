@@ -139,6 +139,11 @@
                                 href="{{ url('master/roles') }}">
                             Jabatan
                         </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'broadband-packet'"
+                                href="{{ url('master/broadband-packet') }}">
+                            Paket Broadband
+                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
 
@@ -415,7 +420,7 @@
                         <i class="bi bi-app-indicator"></i>
                     @endslot
                     @slot('menuTitle')
-                        ADMS
+                        Data Absensi
                     @endslot
                     @slot('menuItem')
                         <x-dropdown-menu-item

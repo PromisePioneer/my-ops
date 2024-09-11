@@ -182,7 +182,7 @@
                                 </table>
                             </div>
                             <div class="text-center mt-10">
-                                <div class="col-sm-12  d-flex align-items-center justify-content-center">
+                                <div class="col-sm-12  d-flex align-items-center justify-content-end">
                                     <template x-for="pagination in users.links">
                                         <ul class="pagination">
                                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">

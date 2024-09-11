@@ -163,7 +163,7 @@ class IclockService
     private function handleOperLog(array $lines): string
     {
         // Filter out empty lines and count valid ones
-        $count = count(array_filter($lines, fn ($line) => ! empty(trim($line))));
+        $count = count(array_filter($lines, fn($line) => !empty(trim($line))));
 
         return 'OK: '.$count;
     }
@@ -215,7 +215,7 @@ class IclockService
     {
         if ($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin)) {
             $existingRecord = $this->getAttendanceRecord($attendanceData['employee_id'], $date);
-            if (! $existingRecord) {
+            if (!$existingRecord) {
                 Attendances::create($attendanceData);
             }
         }
@@ -239,7 +239,7 @@ class IclockService
         if ($this->isValidTime($time, $shift->time_to_checkout, $shift->end_time_to_checkout)) {
             $existingCheckOut = $this->getAttendanceRecord($attendanceData['employee_id'], $date, 'desc');
 
-            if (! $existingCheckOut || $existingCheckOut->status1 != 1) {
+            if (!$existingCheckOut || $existingCheckOut->status1 != 1) {
                 Attendances::create($attendanceData);
             }
         }

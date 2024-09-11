@@ -2,18 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class RoleHasAllowance extends Model
+class RoleHasPositionAllowance extends Model
 {
     use HasFactory;
 
-    protected $table = 'role_has_allowance';
+    protected $table = 'role_has_position_allowances';
     protected $fillable = [
         'role_id',
-        'allowance_id',
+        'amount',
     ];
 
 
@@ -22,10 +23,9 @@ class RoleHasAllowance extends Model
         return $this->belongsTo(Role::class, 'role_id');
     }
 
-    public function payrollAllowance(): BelongsTo
+
+    public function data(): Builder
     {
-        return $this->belongsTo(PayrollAllowance::class, 'allowance_id');
+        return self::with('role');
     }
-
-
 }

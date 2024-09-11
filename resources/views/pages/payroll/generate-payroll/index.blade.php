@@ -50,9 +50,7 @@
                     try {
                         await axios.post('/payroll/generate', new FormData(this.formGenerate))
                         await showAlert('success', 'Data berhasil disimpan')
-                        this.formCreate.reset();
-                        this.modalCreate.hide();
-                        window.location.href = 'payroll/payroll-history/';
+                        window.location.href = '/payroll/payroll-history/';
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))

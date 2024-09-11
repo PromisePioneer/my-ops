@@ -13,9 +13,8 @@ class AccountTransactionObserver
      *
      * @return void
      */
-    public function created(AccountTransaction $accountTransaction)
+    public function created(AccountTransaction $accountTransaction): void
     {
-
         if ($accountTransaction->account_id) {
             $account = Account::where('id', $accountTransaction->account_id)->first();
 

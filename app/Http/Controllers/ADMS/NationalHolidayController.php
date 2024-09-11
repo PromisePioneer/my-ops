@@ -12,8 +12,6 @@ use Illuminate\View\View;
 
 class NationalHolidayController extends Controller
 {
-
-
     private NationalHoliday $nationalHoliday;
 
     public function __construct()
@@ -50,8 +48,9 @@ class NationalHolidayController extends Controller
             });
 
             foreach ($nationalHolidays as $holiday) {
-                NationalHoliday::updateOrCreate([
+                NationalHoliday::upsert([
                     'date' => $holiday['holiday_date'],
+                    'name' => $holiday['holiday_name'],
                 ], [
                     'name' => $holiday['holiday_name'],
                 ]);

@@ -88,10 +88,12 @@ class DepartmentController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function destroy(Department $department): JsonResponse
+    public function destroy(Request $request, Department $department): JsonResponse
     {
-        $this->authorize('delete', $department);
-        $department->delete();
+//        $this->authorize('delete', $department);
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $department->whereIn('id', $explodeID)->delete();
 
         return response()->json([
             'message' => 'data berhasil dihapus',

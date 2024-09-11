@@ -10,10 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('role_has_allowance', function (Blueprint $table) {
+        Schema::create('payroll_benefits', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('allowance_id')->constrained('payroll_allowances')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('name');
+            $table->enum('type', ['Penjualan', 'Sales', 'Project', 'Lain-lain'])->nullable();
             $table->timestamps();
         });
     }
@@ -23,6 +23,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('role_has_allowance');
+        Schema::dropIfExists('payroll_benefits');
     }
 };

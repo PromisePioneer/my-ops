@@ -33,12 +33,30 @@
             </div>
             <div class="card-body py-3">
                 <div class="py-5">
+                    <div class="col-12 ">
+                        <form id="deleteForm" @submit.prevent="destroy()">
+                            <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                            <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                                    x-show="selectedCheckBox.length > 0"
+                                    x-transition x-cloak>
+                                <i class="ki-duotone ki-trash-square fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                    <span class="path4"></span>
+                                </i>
+                                Hapus
+                            </button>
+                        </form>
+                    </div>
                     <div class="table-responsive">
                         <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped ">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="w-10px pe-2">
-                                    #
+                                <th>
+                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                        <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
+                                    </div>
                                 </th>
                                 <th class="min-w-125px">Kode</th>
                                 <th class="min-w-125px">Nama</th>
@@ -66,10 +84,16 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-for="(department, index) in departments?.data" :key="department.id">
+                            <template x-for="department in departments?.data" :key="department.id">
                                 <tbody class="fw-bold">
                                 <tr>
-                                    <td x-text="startIndex + index++"></td>
+                                    <td>
+                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                             @click="selectCheckBox($event)">
+                                            <input class="form-check-input" type="checkbox" :value="branch.id"
+                                                   :id="'checkbox-' + branch.id"/>
+                                        </div>
+                                    </td>
                                     <td x-text="department.code"></td>
                                     <td x-text="department.name"></td>
                                     <td>
@@ -78,15 +102,6 @@
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
-                                            </i>
-                                        </button>
-                                        <button class="btn btn-light-danger btn-sm"
-                                                @click="destroy(department.id)">
-                                            <i class="ki-duotone ki-trash-square fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                                <span class="path3"></span>
-                                                <span class="path4"></span>
                                             </i>
                                         </button>
                                     </td>
@@ -119,7 +134,6 @@
                 isLoading: false,
                 buttonLoading: false,
                 departments: [],
-                startIndex: null,
                 search: '',
                 editVal: '',
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
@@ -143,10 +157,33 @@
                     }
 
                 },
+                toggleAllCheckBox() {
+                    this.selectAll = !this.selectAll;
+                    this.singleChecked = false;
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    this.selectedCheckBox = [];
+                    checkboxes.forEach((checkbox) => {
+                        checkbox.checked = this.selectAll;
+                        if (this.selectAll) {
+                            this.selectedCheckBox.push(checkbox.value);
+                        }
+                    });
+                    this.selectedCheckBox.shift();
+                },
+                selectCheckBox(event) {
+                    const checkboxId = event.target.value;
+                    if (event.target.checked) {
+                        this.selectedCheckBox.push(checkboxId);
+                    } else {
+                        const index = this.selectedCheckBox.indexOf(checkboxId);
+                        if (index !== -1) {
+                            this.selectedCheckBox.splice(index, 1);
+                        }
+                    }
+                },
                 async paginationEndPoint(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
-                        this.startIndex = resp.data.from
                         this.branches = resp.data
                     }
                 },
@@ -184,10 +221,10 @@
                         this.buttonLoading = false;
                     }
                 },
-                async destroy(id) {
+                async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.delete(`/master/department/${id}`);
+                            await axios.post(`/master/department/destroy`, new FormData(this.deleteForm));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {

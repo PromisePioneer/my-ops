@@ -19,11 +19,9 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             RoleSeeder::class,
             PermissionSeeder::class,
-            //            ContactSeeder::class,
             ProductSeeder::class,
             ServicesCategoriesSeeder::class,
             OfferingLetterSeeder::class,
-            //            BastSeeder::class,
             CompanyProfileSeeder::class,
             LetterHeadSeeder::class,
             UnitTypesSeeder::class,
@@ -33,6 +31,8 @@ class DatabaseSeeder extends Seeder
             RoleHasDepartmentSeeder::class,
             PayrollScheduleSeeder::class,
             BPJSKetSeeder::class,
+            CutOffPayrollSettingSeeder::class,
+            BroadbandPacketSeeder::class,
         ]);
     }
 }

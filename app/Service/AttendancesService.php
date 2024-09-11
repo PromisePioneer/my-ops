@@ -20,7 +20,7 @@ class AttendancesService
         $this->attendances = new Attendances();
     }
 
-    public function attendancesLog()
+    public function attendancesLog(): LengthAwarePaginator
     {
         $query = $this->attendances->getAttendancesLog()->whereMonth('attendances.timestamp',
             Carbon::now())->get();

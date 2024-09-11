@@ -10,9 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('payroll_allowances', function (Blueprint $table) {
+        Schema::create('additional_deduction', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->date('date');
+            $table->foreignId('user_id')->constrained('users');
+            $table->enum('type', ['Piket', 'Tangga', 'Mobil']);
             $table->double('amount');
             $table->timestamps();
         });
@@ -23,6 +25,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('payroll_allowances');
+        Schema::dropIfExists('additional_deduction');
     }
 };

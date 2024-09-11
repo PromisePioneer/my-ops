@@ -20,7 +20,7 @@
                             <a class="nav-link" data-bs-toggle="tab" href="#payroll-component">Payroll Component</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#thr">THR</a>
+                            <a class="nav-link" data-bs-toggle="tab" href="#cut-off">Cut Off</a>
                             <a class="nav-link" data-bs-toggle="tab" href="#bpjs">BPJS</a>
                         </li>
                     </ul>
@@ -53,6 +53,9 @@
                     <div class="tab-pane fade" id="bpjs" role="tabpanel">
                         @include('pages.payroll.bpjs.index')
                     </div>
+                    <div class="tab-pane fade" id="cut-off" role="tabpanel">
+                        @include('pages.payroll.cut-off-setting.index')
+                    </div>
                 </div>
             </div>
         </div>
@@ -71,16 +74,47 @@
                 bpjsKet: [],
                 bpjsKetEditVal: {},
                 search: '',
+                attendancesPeriod: '',
+                payrollCutOff: {},
                 formPayrollSchedule: document.getElementById('update-payroll-schedule'),
-                modalPayrollAllowancesCreate: new bootstrap.Modal(document.getElementById('modal-allowance-create')),
-                formPayrollAllowancesCreate: document.getElementById('form-allowance-create'),
                 formBpjsKet: document.getElementById('form-bpjs-ket-edit'),
                 modalBpjsKet: new bootstrap.Modal(document.getElementById('modal-bpjs-ket-edit')),
+                payrollCutOffForm: document.getElementById('payroll-cutoff-form'),
                 async init() {
                     await this.getPayrollScheduleData();
-                    await this.getAllowancesData();
                     await this.getRolesData();
                     await this.getBPJSKetData();
+                    await this.getPayrollCutOff();
+                },
+                async savePayrollCutOff() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/payroll/setting/cut-off/save', new FormData(this.payrollCutOffForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        await this.init();
+                    } catch (error) {
+                        const respError = error?.response?.data?.errors;
+                        Object.keys(respError)?.map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async getPayrollCutOff() {
+                    const resp = await axios.get('/payroll/setting/cut-off/data');
+                    this.payrollCutOff = resp.data;
+                },
+                async getAttendancesCutOff() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/payroll/setting/payroll-schedule', new FormData(this.payrollCutOffForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        await this.init();
+                    } catch (error) {
+                        const respError = error?.response?.data?.errors;
+                        Object.keys(respError)?.map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
                 },
                 async payrollScheduleSave() {
                     this.buttonLoading = true;
@@ -112,44 +146,6 @@
                         Object.keys(respError)?.map(err => toastr.error(respError[err][0]))
                     } finally {
                         this.buttonLoading = false;
-                    }
-                },
-                async saveAllowance() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post('/payroll/setting/payroll-allowance', new FormData(this.formPayrollAllowancesCreate))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.formPayrollAllowancesCreate.reset();
-                        this.modalPayrollAllowancesCreate.hide();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error?.response?.data?.errors;
-                        Object.keys(respError)?.map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
-                async destroyAllowance(id) {
-                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
-                        try {
-                            await axios.delete(`/payroll/setting/payroll-allowance/${id}`);
-                            await showAlert('success', 'Data sukses dihapus');
-                            await this.init();
-                        } catch (error) {
-                            console.error(error);
-                            await showAlert('error', 'Terjadi kesalahan');
-                        }
-                    });
-                },
-                async getAllowancesData() {
-                    this.isLoading = true
-                    try {
-                        const resp = await axios.get('/payroll/setting/payroll-allowance/data');
-                        this.allowances = resp.data;
-                    } catch (e) {
-                        console.log(e)
-                    } finally {
-                        this.isLoading = false;
                     }
                 },
                 async getBPJSKetData() {

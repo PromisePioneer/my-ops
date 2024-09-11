@@ -13,7 +13,6 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Maatwebsite\Excel\Facades\Excel;
 
 class BranchesController extends Controller
 {
@@ -150,20 +149,5 @@ class BranchesController extends Controller
         return response()->json([
             'message' => 'data berhasil dihapus',
         ], 200);
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function import(BranchImportRequest $request): JsonResponse
-    {
-        $this->authorize('import', Branch::class);
-        $file = $request->file('file_import');
-
-        Excel::import(new BranchesImport(), $file);
-
-        return response()->json([
-            'message' => 'Data berhasil diimport',
-        ]);
     }
 }

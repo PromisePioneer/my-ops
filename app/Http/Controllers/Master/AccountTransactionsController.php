@@ -10,9 +10,8 @@ use Illuminate\View\View;
 
 class AccountTransactionsController extends Controller
 {
-    private AccountTransaction $accountTransaction;
-
     public int $perPage = 10;
+    private AccountTransaction $accountTransaction;
 
     public function __construct()
     {
@@ -35,7 +34,8 @@ class AccountTransactionsController extends Controller
 
     public function search(Request $request): JsonResponse
     {
-        $accountTransaction = $this->accountTransaction->searchAccountTransactionBasedOnUserBranch($request, $this->perPage);
+        $accountTransaction = $this->accountTransaction->searchAccountTransactionBasedOnUserBranch($request,
+            $this->perPage);
 
         return response()->json($accountTransaction);
     }
