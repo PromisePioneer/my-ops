@@ -17,7 +17,7 @@
             <form id="form-create" @submit.prevent="save()">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Jabatan</label>
+                        <label for="name" class="required form-label">Karyawan</label>
                         <select name="user_id" class="form-control form-control-solid users-select2"
                                 data-dropdown-parent="#modal-create">
                             <option></option>

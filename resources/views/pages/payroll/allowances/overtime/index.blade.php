@@ -165,7 +165,7 @@
                 async searchData() {
                     this.isLoading = true;
                     try {
-                        const response = await axios.get('/payroll/allowances/transportation/search', {
+                        const response = await axios.get('/payroll/setting/allowances/transportation/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -211,7 +211,7 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/payroll/allowances/overtime/', new FormData(this.formCreate))
+                        await axios.post('/payroll/setting/allowances/overtime/', new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
@@ -224,14 +224,14 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/payroll/allowances/overtime/${id}`)
+                    const resp = await axios.get(`/payroll/setting/allowances/overtime/${id}`)
                     this.editVal = resp.data;
                     await this.selectedUser();
                 },
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/payroll/allowances/overtime/update/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/payroll/setting/allowances/overtime/update/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formEdit.reset();
                         this.modalEdit.hide();
@@ -246,7 +246,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post('/payroll/allowances/overtime/destroy', new FormData(this.formDelete));
+                            await axios.post('/payroll/setting/allowances/overtime/destroy', new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -256,7 +256,7 @@
                     });
                 },
                 async getPositionAllowancesData() {
-                    const resp = await axios.get('/payroll/allowances/overtime/data');
+                    const resp = await axios.get('/payroll/setting/allowances/overtime/data');
                     this.overtimeAllowances = resp.data
                     this.startIndex = this.overtimeAllowances.from
                 },
@@ -264,7 +264,7 @@
                     $(".users-select2").select2({
                         placeholder: "Pilih Karyawan",
                         ajax: {
-                            url: '/payroll/allowances/overtime/user/data',
+                            url: '/payroll/setting/allowances/overtime/user/data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -278,7 +278,7 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/payroll/allowances/overtime/user/selected/${this.editVal.id}`,
+                        url: `/payroll/setting/allowances/overtime/user/selected/${this.editVal.id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedUser.append(option).trigger('change').trigger({

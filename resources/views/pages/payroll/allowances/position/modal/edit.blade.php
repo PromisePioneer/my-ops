@@ -17,7 +17,7 @@
             <form id="form-edit" @submit.prevent="update(editVal.id)">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Jabatan</label>
+                        <label for="name" class="required form-label">Karyawan</label>
                         <select name="user_id" id="selectedUser" class="form-control form-control-solid"
                                 data-dropdown-parent="#modal-edit">
                             <option></option>

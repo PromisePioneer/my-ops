@@ -167,7 +167,7 @@
                 async searchData() {
                     this.isLoading = true;
                     try {
-                        const response = await axios.get('/payroll/allowances/transportation/search', {
+                        const response = await axios.get('/payroll/setting/allowances/transportation/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -213,7 +213,7 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/payroll/allowances/transportation/', new FormData(this.formCreate))
+                        await axios.post('/payroll/setting/allowances/transportation/', new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
@@ -226,7 +226,7 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/payroll/allowances/transportation/${id}`)
+                    const resp = await axios.get(`/payroll/setting/allowances/transportation/${id}`)
                     this.editVal = resp.data;
                     await this.selectedUser();
 
@@ -235,7 +235,7 @@
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/payroll/allowances/transportation/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/payroll/setting/allowances/transportation/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formEdit.reset();
                         this.modalEdit.hide();
@@ -250,7 +250,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post('/payroll/allowances/transportation/destroy', new FormData(this.formDelete));
+                            await axios.post('/payroll/setting/allowances/transportation/destroy', new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -260,7 +260,7 @@
                     });
                 },
                 async getPositionAllowancesData() {
-                    const resp = await axios.get('/payroll/allowances/transportation/data');
+                    const resp = await axios.get('/payroll/setting/allowances/transportation/data');
                     this.transportationAllowances = resp.data
                     this.startIndex = this.transportationAllowances.from
                 },
@@ -268,7 +268,7 @@
                     $(".users-select2").select2({
                         placeholder: "Pilih Karyawan",
                         ajax: {
-                            url: '/payroll/allowances/transportation/user/data',
+                            url: '/payroll/setting/allowances/transportation/user/data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -290,7 +290,7 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/payroll/allowances/transportation/user/selected/${this.editVal.id}`,
+                        url: `/payroll/setting/allowances/transportation/user/selected/${this.editVal.id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedUser.append(option).trigger('change').trigger({

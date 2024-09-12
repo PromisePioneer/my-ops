@@ -166,7 +166,7 @@
                 },
                 async searchData() {
                     try {
-                        this.slaDeductions = await axios.get('payroll/deduction/sla/search', {
+                        this.slaDeductions = await axios.get('/payroll/setting/deduction/sla/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -208,7 +208,7 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/payroll/deduction/sla/', new FormData(this.formCreate))
+                        await axios.post('/payroll/setting/deduction/sla/', new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
@@ -221,14 +221,14 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/payroll/deduction/sla/${id}`)
+                    const resp = await axios.get(`/payroll/setting/deduction/sla/${id}`)
                     this.editVal = resp.data;
                     await this.selectedRole();
                 },
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/payroll/deduction/sla/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/payroll/setting/deduction/sla/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formEdit.reset();
                         this.modalEdit.hide();
@@ -243,7 +243,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post('/payroll/deduction/sla/destroy', new FormData(this.formDelete));
+                            await axios.post('/payroll/setting/deduction/sla/destroy', new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -253,7 +253,7 @@
                     });
                 },
                 async getSlaDeductionData() {
-                    const resp = await axios.get('/payroll/deduction/sla/data');
+                    const resp = await axios.get('/payroll/setting/deduction/sla/data');
                     this.slaDeductions = resp.data
                     this.startIndex = this.slaDeductions.from
                 },
@@ -261,7 +261,7 @@
                     $(".users-select2").select2({
                         placeholder: "Pilih Jabatan",
                         ajax: {
-                            url: '/payroll/deduction/sla/user/data',
+                            url: '/payroll/setting/deduction/sla/user/data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -275,7 +275,7 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/payroll/deduction/sla/user/selected/${this.editVal.id}`,
+                        url: `/payroll/setting/deduction/sla/user/selected/${this.editVal.id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedUser.append(option).trigger('change').trigger({

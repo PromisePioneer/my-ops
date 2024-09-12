@@ -7,6 +7,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 /**
@@ -83,7 +84,6 @@ class JobInformation extends Model
         return self::formattedData($data);
     }
 
-
     private static function formattedData($positionAllowanceData)
     {
         $data = $positionAllowanceData->getCollection()->map(function ($item) {
@@ -96,11 +96,24 @@ class JobInformation extends Model
             ];
         });
 
-
         $positionAllowanceData->setCollection($data);
         return $positionAllowanceData;
     }
 
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+
+        $query = self::with('user');
+        if (!empty($search)) {
+            $query->whereHas('user', function ($query) use ($search) {
+                $query->where('name', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $data = $query->paginate(10);
+        return self::formattedData($data);
+    }
 
     public function getRelatedUserJobInformation(?int $userId): Model|Builder|null
     {

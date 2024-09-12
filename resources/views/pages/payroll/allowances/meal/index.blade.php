@@ -158,7 +158,7 @@
                 },
                 async searchData() {
                     try {
-                        this.mealAllowances = await axios.get('payroll/allowances/position/search', {
+                        this.mealAllowances = await axios.get('/payroll/setting/allowances/meal/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -200,7 +200,7 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/payroll/allowances/position/', new FormData(this.formCreate))
+                        await axios.post('/payroll/setting/allowances/meal/', new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
@@ -213,14 +213,14 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/payroll/allowances/position/${id}`)
+                    const resp = await axios.get(`/payroll/setting/allowances/meal/${id}`)
                     this.editVal = resp.data;
                     await this.selectedRole();
                 },
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/payroll/allowances/position/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/payroll/setting/allowances/meal/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formEdit.reset();
                         this.modalEdit.hide();
@@ -235,7 +235,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post('/payroll/allowances/position/destroy', new FormData(this.formDelete));
+                            await axios.post('/payroll/setting/allowances/meal/destroy', new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -245,7 +245,7 @@
                     });
                 },
                 async getPositionAllowancesData() {
-                    const resp = await axios.get('/payroll/allowances/position/data');
+                    const resp = await axios.get('/payroll/setting/allowances/meal/data');
                     this.mealAllowances = resp.data
                     this.startIndex = this.mealAllowances.from
                 },
@@ -253,7 +253,7 @@
                     $(".roles-select2").select2({
                         placeholder: "Pilih Jabatan",
                         ajax: {
-                            url: '/payroll/allowances/position/role/data',
+                            url: '/payroll/setting/allowances/meal/role/data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -267,7 +267,7 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/payroll/allowances/position/role/selected/${this.editVal.id}`,
+                        url: `/payroll/setting/allowances/meal/role/selected/${this.editVal.id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedRole.append(option).trigger('change').trigger({

@@ -31,23 +31,6 @@
                 </div>
             </div>
             <div class="card-body py-3">
-                <div class="col-12 ">
-                    <form id="form-delete" @submit.prevent="destroy()">
-                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
-                        <button type="submit" class="btn btn-light-danger btn-sm mt-5"
-                                x-show="selectedCheckBox.length > 0"
-                                x-transition x-cloak>
-                            <i class="ki-duotone ki-trash-square fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                                <span class="path4"></span>
-                            </i>
-                            Hapus
-                        </button>
-                    </form>
-
-                </div>
                 <div class="py-5">
                     <div class="table-responsive">
                         <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
@@ -150,7 +133,7 @@
                 async searchData() {
                     this.isLoading = true;
                     try {
-                        const response = await axios.get('/payroll/allowances/position/search', {
+                        const response = await axios.get('/payroll/setting/allowances/position/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -159,30 +142,6 @@
                         console.error('Error fetching data:', error);
                     } finally {
                         this.isLoading = false;
-                    }
-                },
-                toggleAllCheckBox() {
-                    this.selectAll = !this.selectAll;
-                    this.singleChecked = false;
-                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                    this.selectedCheckBox = [];
-                    checkboxes.forEach((checkbox) => {
-                        checkbox.checked = this.selectAll;
-                        if (this.selectAll) {
-                            this.selectedCheckBox.push(checkbox.value);
-                        }
-                    });
-                    this.selectedCheckBox.shift();
-                },
-                selectCheckBox(event) {
-                    const checkboxId = event.target.value;
-                    if (event.target.checked) {
-                        this.selectedCheckBox.push(checkboxId);
-                    } else {
-                        const index = this.selectedCheckBox.indexOf(checkboxId);
-                        if (index !== -1) {
-                            this.selectedCheckBox.splice(index, 1);
-                        }
                     }
                 },
                 async paginationEndPoint(url) {
@@ -196,7 +155,7 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/payroll/allowances/position/', new FormData(this.formCreate))
+                        await axios.post('/payroll/setting/allowances/position/', new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
@@ -209,14 +168,14 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/payroll/allowances/position/${id}`)
+                    const resp = await axios.get(`/payroll/setting/allowances/position/${id}`)
                     this.editVal = resp.data;
                     await this.selectedUser();
                 },
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/payroll/allowances/position/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/payroll/setting/allowances/position/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formEdit.reset();
                         this.modalEdit.hide();
@@ -231,7 +190,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post('/payroll/allowances/position/destroy', new FormData(this.formDelete));
+                            await axios.post('/payroll/setting/allowances/position/destroy', new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -241,7 +200,7 @@
                     });
                 },
                 async getPositionAllowancesData() {
-                    const resp = await axios.get('/payroll/allowances/position/data');
+                    const resp = await axios.get('/payroll/setting/allowances/position/data');
                     this.positionAllowances = resp.data
                     this.startIndex = this.positionAllowances.from
                 },
@@ -249,7 +208,7 @@
                     $(".users-select2").select2({
                         placeholder: "Pilih Karyawan",
                         ajax: {
-                            url: '/payroll/allowances/position/user/data',
+                            url: '/payroll/setting/allowances/position/user/data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -263,7 +222,7 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/payroll/allowances/position/user/selected/${this.editVal.id}`,
+                        url: `/payroll/setting/allowances/position/user/selected/${this.editVal.id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedUser.append(option).trigger('change').trigger({

@@ -677,21 +677,19 @@ Route::group(['middleware' => ['auth']], static function () {
     });
 
 
-    Route::prefix('payroll')->group(function () {
-        Route::prefix('/setting')->group(function () {
-            Route::get('/', [PayrollController::class, 'index']);
-            Route::get('/roles/data', [PayrollController::class, 'getRolesData']);
-            Route::get('/payroll-schedule/data', [PayrollScheduleController::class, 'data']);
-            Route::post('payroll-schedule/', [PayrollScheduleController::class, 'store']);
-            Route::get('/payroll-allowance/data', [PayrollAllowanceController::class, 'data']);
-            Route::post('/payroll-allowance/', [PayrollAllowanceController::class, 'store']);
-            Route::delete('/payroll-allowance/{payrollAllowance}', [PayrollAllowanceController::class, 'destroy']);
-            Route::get('/bpjs-ket/data', [BPJSKetController::class, 'data']);
-            Route::get('/bpjs-ket/{bpjsKet}', [BPJSketController::class, 'edit']);
-            Route::post('/bpjs-ket/{bpjsKet}', [BpjsketController::class, 'update']);
-            Route::get('/cut-off/data', [CutOffController::class, 'data']);
-            Route::post('/cut-off/save', [CutOffController::class, 'update']);
-        });
+    Route::prefix('payroll/setting')->group(function () {
+        Route::get('/', [PayrollController::class, 'index']);
+        Route::get('/roles/data', [PayrollController::class, 'getRolesData']);
+        Route::get('/payroll-schedule/data', [PayrollScheduleController::class, 'data']);
+        Route::post('payroll-schedule/', [PayrollScheduleController::class, 'store']);
+        Route::get('/payroll-allowance/data', [PayrollAllowanceController::class, 'data']);
+        Route::post('/payroll-allowance/', [PayrollAllowanceController::class, 'store']);
+        Route::delete('/payroll-allowance/{payrollAllowance}', [PayrollAllowanceController::class, 'destroy']);
+        Route::get('/bpjs-ket/data', [BPJSKetController::class, 'data']);
+        Route::get('/bpjs-ket/{bpjsKet}', [BPJSketController::class, 'edit']);
+        Route::post('/bpjs-ket/{bpjsKet}', [BpjsketController::class, 'update']);
+        Route::get('/cut-off/data', [CutOffController::class, 'data']);
+        Route::post('/cut-off/save', [CutOffController::class, 'update']);
 
 
         Route::prefix('allowances/position')->group(function () {
@@ -812,18 +810,18 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/destroy', [SalesBonusController::class, 'destroy']);
             Route::post('/{saleBonus}', [SalesBonusController::class, 'update']);
         });
+    });
 
 
-        Route::prefix('generate')->group(function () {
-            Route::get('/', [GeneratePayrollController::class, 'index']);
-            Route::post('/', [GeneratePayrollController::class, 'generatePayroll']);
-        });
+    Route::prefix('payroll/generate')->group(function () {
+        Route::get('/', [GeneratePayrollController::class, 'index']);
+        Route::post('/', [GeneratePayrollController::class, 'generatePayroll']);
+    });
 
 
-        Route::prefix('payroll-history')->group(function () {
-            Route::get('/', [PayrollHistoryController::class, 'index']);
-            Route::get('/data', [PayrollHistoryController::class, 'data']);
-        });
+    Route::prefix('payroll/payroll-history')->group(function () {
+        Route::get('/', [PayrollHistoryController::class, 'index']);
+        Route::get('/data', [PayrollHistoryController::class, 'data']);
     });
 });
 
