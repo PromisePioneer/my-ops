@@ -15,7 +15,8 @@ return new class extends Migration {
             $table->date('date');
             $table->foreignId('kca_id')->constrained('users');
             $table->foreignId('technician_id')->constrained('users');
-            $table->double('amount');
+            $table->integer('spk_amount');
+            $table->double('total_deduction_amount');
             $table->timestamps();
         });
     }

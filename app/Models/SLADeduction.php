@@ -18,7 +18,8 @@ class SLADeduction extends Model
         'date',
         'kca_id',
         'technician_id',
-        'amount',
+        'spk_amount',
+        'total_deduction_amount',
     ];
 
 
@@ -50,7 +51,8 @@ class SLADeduction extends Model
                 'kca' => $item->kca->name,
                 'date' => formatDate($item->date),
                 'technician' => $item->technician->name,
-                'amount' => number_format($item->amount),
+                'spk_amount' => $item->spk_amount,
+                'total_deduction_amount' => number_format($item->total_deduction_amount),
             ];
         });
 

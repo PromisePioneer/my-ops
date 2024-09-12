@@ -17,21 +17,20 @@
             <form id="form-create" @submit.prevent="save()">
                 <div class="modal-body">
                     <div class="mb-10">
+                        <label for="name" class="required form-label">Karyawan</label>
+                        <select name="technician_id[]" class="form-select form-select-solid users-select2" multiple
+                                data-dropdown-parent="#modal-create">
+                            <option></option>
+                        </select>
+                    </div>
+                    <div class="mb-10">
                         <label for="name" class="required form-label">Tanggal</label>
                         <input type="date" id="date" name="date" class="form-control form-control-solid date"
                                placeholder="Pilih Tanggal"/>
                     </div>
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Karyawan</label>
-                        <select name="technician_id" class="form-control form-control-solid users-select2"
-                                data-dropdown-parent="#modal-create">
-                            <option></option>
-                        </select>
-                    </div>
-
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Nominal Denda</label>
-                        <input type="number" id="amount" name="amount" class="form-control form-control-solid"
+                        <label for="name" class="required form-label">Jumlah SPK</label>
+                        <input type="number" id="spk_amount" name="spk_amount" class="form-control form-control-solid"
                                placeholder="Nominal"/>
                     </div>
                 </div>

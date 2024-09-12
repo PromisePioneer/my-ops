@@ -31,9 +31,9 @@
                     </div>
 
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Nominal Denda</label>
-                        <input type="number" id="amount" name="amount" class="form-control form-control-solid"
-                               placeholder="Nominal" :value="editVal.amount"/>
+                        <label for="name" class="required form-label">Jumlah SPK</label>
+                        <input type="number" id="spk_amount" name="spk_amount" class="form-control form-control-solid"
+                               placeholder="Nominal" :value="editVal.spk_amount"/>
                     </div>
                 </div>
 
