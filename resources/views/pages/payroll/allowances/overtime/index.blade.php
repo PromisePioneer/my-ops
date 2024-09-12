@@ -60,6 +60,9 @@
                                 </th>
                                 <th class="min-w-125px">Tanggal</th>
                                 <th class="min-w-125px">Karyawan</th>
+                                <th class="min-w-125px">Jumlah Lembur (Dalam Jam)</th>
+                                <th class="min-w-125px">Alasan Lembur</th>
+                                <th class="min-w-125px">Total Tunjangan</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -98,6 +101,9 @@
                                     </td>
                                     <td x-text="overtimeAllowance.date"></td>
                                     <td x-text="overtimeAllowance.user_name"></td>
+                                    <td x-text="overtimeAllowance.total_hours"></td>
+                                    <td x-text="overtimeAllowance.reason"></td>
+                                    <td x-text="overtimeAllowance.amount"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(overtimeAllowance.id)">
@@ -225,7 +231,7 @@
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/payroll/allowances/overtime/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/payroll/allowances/overtime/update/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formEdit.reset();
                         this.modalEdit.hide();

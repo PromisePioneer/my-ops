@@ -746,7 +746,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/', [OvertimeAllowanceController::class, 'store']);
             Route::get('/{userHasOvertime}', [OvertimeAllowanceController::class, 'edit']);
             Route::post('/destroy', [OvertimeAllowanceController::class, 'destroy']);
-            Route::post('/{userHasOvertimes}', [OvertimeAllowanceController::class, 'update']);
+            Route::post('update/{userHasOvertime}', [OvertimeAllowanceController::class, 'update']);
         });
 
 

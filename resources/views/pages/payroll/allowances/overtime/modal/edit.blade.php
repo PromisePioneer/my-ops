@@ -28,6 +28,18 @@
                         <input type="date" id="date" name="date" class="form-control form-control-solid date"
                                placeholder="Pilih tanggal" :value="editVal.date"/>
                     </div>
+
+
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Jumlah Lembur (Dalam Jam)</label>
+                        <input type="number" id="hours" name="hours" class="form-control form-control-solid"
+                               placeholder="Jumlah Lembur" :value="editVal.hours"/>
+                    </div>
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Alasan Lembur</label>
+                        <textarea class="form-control form-control-solid" name="reason"
+                                  data-kt-autosize="true" x-text="editVal.reason"></textarea>
+                    </div>
                 </div>
 
                 <div class="modal-footer">
