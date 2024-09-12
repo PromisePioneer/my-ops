@@ -2,8 +2,11 @@
 
 namespace App\Http\Requests\ALlowance;
 
+use App\Models\User;
+use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Request;
 
 class UserHasOvertimeRequest extends FormRequest
 {
@@ -20,14 +23,26 @@ class UserHasOvertimeRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array|string>
      */
-    public function rules(): array
+    public function rules(Request $request): array
     {
         return [
-            'user_id' => ['required', 'exists:users,id'],
-            'date' => ['required', 'date'],
+            'user_id' => [
+                'required', 'exists:users,id', $this->validateUserFixedSalary($request),
+            ],
+            'hours' => ['required', 'numeric'],
+            'reason' => ['required', 'string'],
         ];
     }
 
+    public function validateUserFixedSalary($request): Closure
+    {
+        return function ($attribute, $value, $fail) use ($request) {
+            $user = User::with('jobInformation')->where('id', $value)->first();
+            if (empty($user->jobInformation->fixed_salary)) {
+                $fail('data gaji pokok karyawan belum di input');
+            }
+        };
+    }
 
     public function messages(): array
     {
@@ -35,6 +50,9 @@ class UserHasOvertimeRequest extends FormRequest
             'user_id.required' => 'Karyawan tidak boleh kosong',
             'date.required' => 'Tanggal tidak boleh kosong',
             'date.date' => 'Tanggal tidak valid',
+            'hours.required' => 'Jam tidak boleh kosong',
+            'hours.numeric' => 'Jam tidak valid',
+            'reason.required' => 'alasan lembur tidak boleh kosong',
         ];
     }
 }

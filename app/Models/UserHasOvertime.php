@@ -18,6 +18,9 @@ class UserHasOvertime extends Model
     protected $fillable = [
         'user_id',
         'date',
+        'hours',
+        'reason',
+        'amount',
     ];
 
     public function user(): BelongsTo
@@ -38,6 +41,9 @@ class UserHasOvertime extends Model
                 'id' => $item->id,
                 'date' => formatDate($item->date),
                 'user_name' => $item->user->name,
+                'total_hours' => $item->hours,
+                'reason' => $item->reason,
+                'amount' => 'Rp '.number_format($item->amount),
             ];
         });
 

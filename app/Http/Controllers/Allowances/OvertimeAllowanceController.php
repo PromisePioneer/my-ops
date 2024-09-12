@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Allowances;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ALlowance\UserHasOvertimeRequest;
+use App\Models\CutOffPayrollSetting;
+use App\Models\NationalHoliday;
 use App\Models\User;
 use App\Models\UserHasOvertime;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -49,6 +52,21 @@ class OvertimeAllowanceController extends Controller
     public function store(UserHasOvertimeRequest $request): JsonResponse
     {
         $data = $request->validated();
+        $user = User::with('jobInformation')->where('id', $request->user_id)->first();
+
+
+        $getPeriodEndMonth = Carbon::now()->addMonth(1)->month;
+        $attendancePeriodStart = CutOffPayrollSetting::first()->attendance_period_start;
+        $attendancePeriodEnd = CutOffPayrollSetting::first()->attendance_period_end;
+        $periodStart = Carbon::parse(Carbon::now()->year.'-'.Carbon::now()->month.'-'.$attendancePeriodStart);
+        $periodEnd = Carbon::parse(Carbon::now()->year.'-'.$getPeriodEndMonth.'-'.$attendancePeriodEnd);
+        $nationalHoliday = NationalHoliday::whereMonth('date', $periodStart)->count();
+        $weekEndCount = $periodStart->diffInWeeks($periodEnd);
+        $getPeriodOfWork = $periodStart->diffInDays($periodEnd) - $weekEndCount - $nationalHoliday;
+
+
+        $data['date'] = Carbon::now();
+        $data['amount'] = ($user->jobInformation->fixed_salary / $getPeriodOfWork / 8) * $request->hours;
         UserHasOvertime::create($data);
 
         return response()->json([
@@ -63,8 +81,22 @@ class OvertimeAllowanceController extends Controller
 
     public function update(UserHasOvertimeRequest $request, UserHasOvertime $userHasOvertime): JsonResponse
     {
-        $data = $request->validated();
+        $user = User::with('jobInformation')->where('id', $request->user_id)->first();
+
+
+        $getPeriodEndMonth = Carbon::now()->addMonth(1)->month;
+        $attendancePeriodStart = CutOffPayrollSetting::first()->attendance_period_start;
+        $attendancePeriodEnd = CutOffPayrollSetting::first()->attendance_period_end;
+        $periodStart = Carbon::parse(Carbon::now()->year.'-'.Carbon::now()->month.'-'.$attendancePeriodStart);
+        $periodEnd = Carbon::parse(Carbon::now()->year.'-'.$getPeriodEndMonth.'-'.$attendancePeriodEnd);
+        $nationalHoliday = NationalHoliday::whereMonth('date', $periodStart)->count();
+        $weekEndCount = $periodStart->diffInWeeks($periodEnd);
+        $getPeriodOfWork = $periodStart->diffInDays($periodEnd) - $weekEndCount - $nationalHoliday;
+
+        $data['date'] = Carbon::now();
+        $data['amount'] = ($user->jobInformation->fixed_salary / $getPeriodOfWork / 8) * $request->hours;
         $userHasOvertime->update($data);
+
         return response()->json([
             'message' => 'data berhasil disimpan',
         ]);

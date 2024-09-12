@@ -12,10 +12,10 @@ return new class extends Migration {
     {
         Schema::create('cut_off_payroll_settings', function (Blueprint $table) {
             $table->id();
-            $table->integer('attendance_period_start')->default(1);
-            $table->integer('attendance_period_end')->default(31);
-            $table->integer('payroll_period_start')->default(1);
-            $table->integer('payroll_period_end')->default(31);
+            $table->integer('attendance_period_start')->default(28);
+            $table->integer('attendance_period_end')->default(28);
+            $table->integer('payroll_period_start')->default(28);
+            $table->integer('payroll_period_end')->default(28);
             $table->timestamps();
         });
     }

@@ -14,6 +14,9 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->date('date');
+            $table->integer('hours');
+            $table->text('reason');
+            $table->double('amount');
             $table->timestamps();
         });
     }
