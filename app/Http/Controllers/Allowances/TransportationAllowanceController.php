@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Allowances\TransportationAllowanceRequest;
 use App\Models\User;
 use App\Models\UserHasTransportationAllowance;
+use App\Service\HandleFileUploadService;
 use App\Service\TransportationAllowanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class TransportationAllowanceController extends Controller
@@ -16,11 +18,13 @@ class TransportationAllowanceController extends Controller
 
     private User $user;
     private TransportationAllowanceService $transportationAllowanceService;
+    private HandleFileUploadService $handleFileUploadService;
 
     public function __construct()
     {
         $this->user = new User();
         $this->transportationAllowanceService = new TransportationAllowanceService();
+        $this->handleFileUploadService = new HandleFileUploadService();
     }
 
     public function index(): View
@@ -46,9 +50,19 @@ class TransportationAllowanceController extends Controller
 
     public function store(TransportationAllowanceRequest $request): JsonResponse
     {
-        $data = $request->validated();
-        UserHasTransportationAllowance::create($data);
-
+        foreach ($request->user_id as $userId) {
+            UserHasTransportationAllowance::create([
+                'user_id' => $userId,
+                'date' => $request->date,
+                'transportation_type' => $request->transportation_type,
+                'spk_image' => $this->handleFileUploadService->upload(
+                    $request,
+                    'documents/user/spk-image',
+                    'spk_image',
+                ),
+                'amount' => $request->transportation_type === 'Dibawah 15 Km' ? 10000 : 12500,
+            ]);
+        }
         return response()->json([
             'message' => 'Data sukses disimpan.',
         ]);
@@ -78,7 +92,15 @@ class TransportationAllowanceController extends Controller
     ): JsonResponse {
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
+        $images = $userHasTransportationAllowance->whereIn('id', $explodeID)->get();
+
+        foreach ($images as $image) {
+            Storage::disk('public')->delete($image->spk_image);
+        }
+
+
         $userHasTransportationAllowance->whereIn('id', $explodeID)->delete();
+
         return response()->json([
             'message' => 'Data sukses dihapus.',
         ]);

@@ -6,7 +6,7 @@
                     @if(isset(Auth::user()->profile_pic) && Auth::user()->profile_pic)
                         <img src="{{ Storage::url(Auth::user()->profile_pic) }}" alt="image"/>
                     @else
-                        <img src="{{ asset('assets/media/dummy/dummy-picture.png') }}" alt="image"/>
+                        <img src="{{ asset('assets/media/avatars/blank.png') }}" alt="image"/>
                     @endif
                     <div
                             class="position-absolute translate-middle bottom-0 start-100 mb-6 bg-success rounded-circle border border-4 border-white h-20px w-20px"></div>

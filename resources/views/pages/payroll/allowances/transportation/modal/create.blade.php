@@ -18,8 +18,8 @@
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Karyawan</label>
-                        <select name="user_id" class="form-control form-control-solid users-select2"
-                                data-dropdown-parent="#modal-create">
+                        <select name="user_id[]" class="form-control form-control-solid users-select2"
+                                data-dropdown-parent="#modal-create" multiple>
                             <option></option>
                         </select>
                     </div>
@@ -29,9 +29,20 @@
                                placeholder="Pilih tanggal"/>
                     </div>
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Nominal Tunjangan</label>
-                        <input type="number" id="amount" name="amount" class="form-control form-control-solid"
-                               placeholder="Nominal"/>
+                        <label for="name" class="required form-label">Jarak SPK</label>
+                        <select class="form-select form-select-solid" name="transportation_type"
+                                x-model="transportationType">
+                            <option>Pilih</option>
+                            <option value="Dibawah 15 Km">Dibawah 15 Kilometer</option>
+                            <option value="Diatas 15 Km">Diatas 15 Kilometer</option>
+                        </select>
+                    </div>
+                    <div class="mb-10" x-show="transportationType === 'Diatas 15 Km'" x-transition>
+                        <label for="name" class="required form-label">SPK</label>
+                        <input type="file" id="spk_image"
+                               :name="transportationType === 'Diatas 15 Km' ? 'spk_image' : ''"
+                               class="form-control form-control-solid"
+                        />
                     </div>
                 </div>
 

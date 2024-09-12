@@ -31,6 +31,7 @@ class TransportationAllowanceService
                 'date' => formatDate($item->date),
                 'user_name' => $item->user->nip.' '.$item->user->name,
                 'amount' => number_format($item->amount, 2, ',', '.'),
+                'spk_image' => $item->spk_image,
             ];
         })->values();
 

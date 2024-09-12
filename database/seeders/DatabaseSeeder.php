@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
             BPJSKetSeeder::class,
             CutOffPayrollSettingSeeder::class,
             BroadbandPacketSeeder::class,
+            SalaryCalculationMethodSeeder::class,
         ]);
     }
 }

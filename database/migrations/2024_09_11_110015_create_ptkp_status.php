@@ -10,13 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('user_has_transportation_allowances', function (Blueprint $table) {
+        Schema::create('ptkp_status', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
-            $table->foreignId('user_id')->constrained('users');
-            $table->enum('transportation_type', ['Dibawah 15 Km', 'Diatas 15 Km']);
-            $table->string('spk_image')->nullable();
+            $table->string('name');
             $table->double('amount');
+            $table->float('rate');
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_has_transportation_allowances');
+        Schema::dropIfExists('ptkp_status');
     }
 };

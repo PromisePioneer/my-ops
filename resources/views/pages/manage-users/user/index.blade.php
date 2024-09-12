@@ -358,7 +358,7 @@
                 },
                 getImageURL(imagePath) {
                     if (imagePath === null) {
-                        const placeholders = 'assets/media/dummy/dummy-picture.png'
+                        const placeholders = 'assets/media/avatars/blank.png'
                         return "{{ asset('') }}" + placeholders;
                     }
                     return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
