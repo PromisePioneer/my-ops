@@ -18,7 +18,7 @@
                             @if(isset($user->profile_pic) && $user->profile_pic)
                                 <img src="{{ Storage::url($user->profile_pic) }}" alt="image"/>
                             @else
-                                <img src="{{ asset('assets/media/dummy/dummy-picture.png') }}" alt="image"/>
+                                <img src="{{ asset('assets/media/avatars/blank.png') }}" alt="image"/>
                             @endif
                         </div>
                         <a href="#" class="fs-3 text-gray-800 text-hover-primary fw-bolder mb-3">{{ $user->name }}</a>

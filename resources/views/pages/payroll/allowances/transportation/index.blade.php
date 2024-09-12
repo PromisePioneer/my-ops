@@ -99,7 +99,12 @@
                                     </td>
                                     <td x-text="transportationAllowance.date"></td>
                                     <td x-text="transportationAllowance.user_name"></td>
-                                    <td x-text="`Rp.${transportationAllowance.amount}`"></td>
+                                    <td class="gallery">
+                                        <img :src="getImageURL(transportationAllowance.spk_image)"
+                                             @click="$dispatch('lightbox', `${getImageURL(transportationAllowance.spk_image)}`)"
+                                             width="100"
+                                             height="100"/>
+                                    </td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(transportationAllowance.id)">
@@ -149,6 +154,7 @@
                 search: '',
                 editVal: '',
                 startIndex: null,
+                transportationType: false,
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formCreate: document.getElementById('form-create'),
@@ -223,6 +229,8 @@
                     const resp = await axios.get(`/payroll/allowances/transportation/${id}`)
                     this.editVal = resp.data;
                     await this.selectedUser();
+
+                    this.transportationType = this.editVal.transportation_type === 'Diatas 15 Km' ? 'Diatas 15 Km' : 'Dibawah 15 Km';
                 },
                 async update(id) {
                     this.buttonLoading = true;
@@ -268,6 +276,14 @@
                             cache: true
                         }
                     });
+                },
+                getImageURL(imagePath) {
+                    console.log(imagePath);
+                    if (imagePath === null) {
+                        const placeholders = '/assets/media/dummy/dummy-picture.png'
+                        return "{{ asset('') }}" + placeholders;
+                    }
+                    return imagePath ? "{{  (Storage::url('')) }}" + imagePath : '';
                 },
                 async selectedUser() {
                     const selectedUser = $('#selectedUser');

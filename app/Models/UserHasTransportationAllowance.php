@@ -13,8 +13,10 @@ class UserHasTransportationAllowance extends Model
 
     protected $table = 'user_has_transportation_allowances';
     protected $fillable = [
-        'user_id',
         'date',
+        'user_id',
+        'transportation_type',
+        'spk_image',
         'amount',
     ];
 
