@@ -23,17 +23,17 @@ class PositionAllowanceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'role_id' => ['required', 'exists:roles,id'],
-            'amount' => ['required'],
+            'user_id' => ['required', 'exists:users,id'],
+            'position_allowance' => ['required'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'role_id.required' => 'Jabatan tidak boleh kosong',
-            'role_id.exists' => 'Jabatan tidak ditemukan',
-            'amount.required' => 'Nominal tidak boleh kosong',
+            'user_id.required' => 'Karyawan tidak boleh kosong',
+            'user_id.exists' => 'Karyawan tidak ditemukan',
+            'position_allowance.required' => 'Nominal tidak boleh kosong',
         ];
     }
 }

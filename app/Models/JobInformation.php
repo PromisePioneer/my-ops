@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Eloquent;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -59,6 +60,7 @@ class JobInformation extends Model
         'absent_id',
         'user_id',
         'fixed_salary',
+        'position_allowance',
         'placement_id',
         'contract_status',
         'bank_account_number',
@@ -75,7 +77,32 @@ class JobInformation extends Model
     }
 
     //eloquent
-    public function getRelatedUserJobInformation(int $userId): Model|Builder|null
+    public function data(): LengthAwarePaginator
+    {
+        $data = self::with('user')->paginate(10);
+        return self::formattedData($data);
+    }
+
+
+    private static function formattedData($positionAllowanceData)
+    {
+        $data = $positionAllowanceData->getCollection()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'user_id' => $item->user->id,
+                'nip' => $item->user->nip,
+                'name' => $item->user->name,
+                'position_allowance' => 'Rp . '.number_format($item->position_allowance),
+            ];
+        });
+
+
+        $positionAllowanceData->setCollection($data);
+        return $positionAllowanceData;
+    }
+
+
+    public function getRelatedUserJobInformation(?int $userId): Model|Builder|null
     {
         return self::where('user_id', $userId)->first();
     }

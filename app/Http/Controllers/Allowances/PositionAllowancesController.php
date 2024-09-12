@@ -4,33 +4,32 @@ namespace App\Http\Controllers\Allowances;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Allowances\PositionAllowanceRequest;
-use App\Models\Role;
-use App\Models\RoleHasPositionAllowance;
+use App\Models\JobInformation;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PositionAllowancesController extends Controller
 {
-
-    public RoleHasPositionAllowance $roleHasPositionAllowances;
-    private Role $role;
+    private User $user;
+    private JobInformation $jobInformation;
 
     public function __construct()
     {
-        $this->roleHasPositionAllowances = new RoleHasPositionAllowance();
-        $this->role = new Role();
+        $this->user = new User();
+        $this->jobInformation = new JobInformation();
     }
 
 
-    public function getRoleData(Request $request): JsonResponse
+    public function getUser(Request $request): JsonResponse
     {
-        return response()->json($this->role->getData($request));
+        return response()->json($this->user->getUser($request));
     }
 
-    public function getSelectedRole(RoleHasPositionAllowance $roleHasPositionAllowance): JsonResponse
+    public function getSelectedUser(JobInformation $jobInformation): JsonResponse
     {
-        return response()->json($this->role->selectedRole($roleHasPositionAllowance->role_id));
+        return response()->json($this->user->getSelectedData($jobInformation->user_id));
     }
 
 
@@ -56,46 +55,36 @@ class PositionAllowancesController extends Controller
 
     public function data(): JsonResponse
     {
-        return response()->json($this->roleHasPositionAllowances->data()->paginate(10));
+        return response()->json($this->jobInformation->data());
     }
 
     public function store(PositionAllowanceRequest $request): JsonResponse
     {
         $data = $request->validated();
-        RoleHasPositionAllowance::create($data);
+        JobInformation::create([
+            'user_id' => $request->user_id,
+            'position_allowance' => $request->position_allowance,
+        ]);
 
         return response()->json([
             'message' => 'data berhasil disimpan',
         ]);
     }
 
-    public function edit(
-        RoleHasPositionAllowance $roleHasPositionAllowance
-    ): JsonResponse {
-        return response()->json($roleHasPositionAllowance);
-    }
-
-
-    public function update(
-        PositionAllowanceRequest $request,
-        RoleHasPositionAllowance $roleHasPositionAllowance
-    ): JsonResponse {
-        $data = $request->validated();
-        $roleHasPositionAllowance->update($data);
-        return response()->json([
-            'message' => 'data berhasil disimpan',
-        ]);
-    }
-
-
-    public function destroy(Request $request, RoleHasPositionAllowance $roleHasPositionAllowance): JsonResponse
+    public function edit(JobInformation $jobInformation): JsonResponse
     {
-        $implodeID = implode(',', $request->get('id'));
-        $explodeID = explode(',', $implodeID);
-        $roleHasPositionAllowance->whereIn('id', $explodeID)->delete();
+        return response()->json($jobInformation);
+    }
 
+
+    public function update(PositionAllowanceRequest $request, JobInformation $jobInformation): JsonResponse
+    {
+        $jobInformation->update([
+            'user_id' => $request->user_id,
+            'position_allowance' => $request->position_allowance,
+        ]);
         return response()->json([
-            'message' => 'data berhasil dihapus',
-        ], 200);
+            'message' => 'data berhasil disimpan',
+        ]);
     }
 }

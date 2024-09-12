@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form Tunjangan Jabatan</h5>
+                <h5 class="modal-title">Form Tunangan Jabatan</h5>
                 <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
@@ -18,15 +18,16 @@
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Jabatan</label>
-                        <select name="role_id" id="selectedRole" class="form-control form-control-solid roles-select2"
+                        <select name="user_id" id="selectedUser" class="form-control form-control-solid"
                                 data-dropdown-parent="#modal-edit">
                             <option></option>
                         </select>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nominal Tunjangan</label>
-                        <input type="number" id="amount" name="amount" class="form-control form-control-solid"
-                               placeholder="Nominal" :value="editVal.amount"/>
+                        <input type="number" id="position_allowance" name="position_allowance"
+                               class="form-control form-control-solid"
+                               placeholder="Nominal" :value="editVal.position_allowance"/>
                     </div>
                 </div>
 
