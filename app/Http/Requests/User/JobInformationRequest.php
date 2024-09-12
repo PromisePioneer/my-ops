@@ -23,6 +23,7 @@ class JobInformationRequest extends FormRequest
     {
         return [
             'fixed_salary' => ['required'],
+            'position_allowance' => ['nullable'],
             'contract_status' => [
                 'required',
                 Rule::in('Tetap', 'Kontrak', 'Vendor', 'Training', 'Magang', 'Freelance', 'Non Karyawan'),

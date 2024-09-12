@@ -697,14 +697,13 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('allowances/position')->group(function () {
             Route::get('/', [PositionAllowancesController::class, 'index']);
             Route::get('/data', [PositionAllowancesController::class, 'data']);
-            Route::get('/role/data', [PositionAllowancesController::class, 'getRoleData']);
-            Route::get('/role/selected/{roleHasPositionAllowance}',
-                [PositionAllowancesController::class, 'getSelectedRole']);
+            Route::get('/user/data', [PositionAllowancesController::class, 'getUser']);
+            Route::get('/user/selected/{jobInformation}',
+                [PositionAllowancesController::class, 'getSelectedUser']);
             Route::get('/search', [PositionAllowancesController::class, 'search']);
             Route::post('/', [PositionAllowancesController::class, 'store']);
-            Route::get('/{roleHasPositionAllowance}', [PositionAllowancesController::class, 'edit']);
-            Route::post('/destroy', [PositionAllowancesController::class, 'destroy']);
-            Route::post('/{roleHasPositionAllowance}', [PositionAllowancesController::class, 'update']);
+            Route::get('/{jobInformation}', [PositionAllowancesController::class, 'edit']);
+            Route::post('/{jobInformation}', [PositionAllowancesController::class, 'update']);
         });
 
 

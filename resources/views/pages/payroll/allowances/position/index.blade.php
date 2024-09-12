@@ -53,13 +53,9 @@
                         <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="w-10px pe-2">
-                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                        <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
-                                    </div>
-                                </th>
-                                <th class="min-w-125px">Jabatan</th>
-                                <th class="min-w-125px">Nominal</th>
+                                <th class="w-10px pe-2">#</th>
+                                <th class="min-w-125px">Nama</th>
+                                <th class="min-w-125px">Tunjangan Jabatan</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -84,21 +80,17 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-for="positionAllowance in positionAllowances?.data"
+                            <template x-for="(positionAllowance, index) in positionAllowances?.data"
                                       :key="positionAllowance.id">
                                 <tbody class="fw-bold">
                                 <tr>
+                                    <td x-text="startIndex + index++">
+                                    </td>
                                     <td>
-                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                             @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox"
-                                                   :value="positionAllowance.id"
-                                                   :id="'checkbox-' + positionAllowance.id"/>
-                                        </div>
+                                        <a :href="`/manage-users/users/detail/${positionAllowance.user_id}`"
+                                           x-text="`(${positionAllowance.nip}) ${positionAllowance.name}`"></a>
                                     </td>
-                                    <td x-text="positionAllowance.role.name"></td>
-                                    <td x-text="`Rp. ${positionAllowance.amount}`">
-                                    </td>
+                                    <td x-text="positionAllowance.position_allowance">
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(positionAllowance.id)">
@@ -153,7 +145,7 @@
                 formDelete: document.getElementById('form-delete'),
                 async init() {
                     await this.getPositionAllowancesData();
-                    await this.getRoleData();
+                    await this.getUserData();
                 },
                 async searchData() {
                     this.isLoading = true;
@@ -219,7 +211,7 @@
                 async edit(id) {
                     const resp = await axios.get(`/payroll/allowances/position/${id}`)
                     this.editVal = resp.data;
-                    await this.selectedRole();
+                    await this.selectedUser();
                 },
                 async update(id) {
                     this.buttonLoading = true;
@@ -253,11 +245,11 @@
                     this.positionAllowances = resp.data
                     this.startIndex = this.positionAllowances.from
                 },
-                async getRoleData() {
-                    $(".roles-select2").select2({
-                        placeholder: "Pilih Jabatan",
+                async getUserData() {
+                    $(".users-select2").select2({
+                        placeholder: "Pilih Karyawan",
                         ajax: {
-                            url: '/payroll/allowances/position/role/data',
+                            url: '/payroll/allowances/position/user/data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -266,15 +258,15 @@
                         }
                     });
                 },
-                async selectedRole() {
-                    const selectedRole = $('#selectedRole');
+                async selectedUser() {
+                    const selectedUser = $('#selectedUser');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/payroll/allowances/position/role/selected/${this.editVal.id}`,
+                        url: `/payroll/allowances/position/user/selected/${this.editVal.id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
-                    selectedRole.append(option).trigger('change').trigger({
+                    selectedUser.append(option).trigger('change').trigger({
                         type: 'select2:select',
                         params: {results: response}
                     });

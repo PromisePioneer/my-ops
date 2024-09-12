@@ -61,20 +61,19 @@
                             <label for="fixed_salary" class="required form-label">Gaji Pokok</label>
                             <input type="number" id="fixed_salary" name="fixed_salary"
                                    class="form-control form-control-solid"
-                                   placeholder="Tempat Lahir" :value="jobInformation.fixed_salary ?? 0"/>
+                                   placeholder="Gaji Pokok" :value="jobInformation.fixed_salary ?? 0"/>
                         </div>
                         <div class="col-md-6">
-                            <label for="bank_account_number" class="required form-label">Nomor Rekening</label>
-                            <input type="number" id="bank_account_number" name="bank_account_number"
+                            <label for="position_allowance" class="required form-label">Tunjangan Jabatan</label>
+                            <input type="number" id="position_allowance" name="position_allowance"
                                    class="form-control form-control-solid"
-                                   placeholder="Tempat Lahir" :value="jobInformation.bank_account_number ?? 0"/>
+                                   placeholder="Tunjangan Jabatan" :value="jobInformation.position_allowance ?? 0"/>
                         </div>
                     </div>
                     <div class="row mb-7">
                         <div class="col-md-6">
                             <label for="contract_status" class="required form-label">Status Kontrak</label>
-                            <select class="form-select form-select-solid" name="contract_status"
-                                    x-model="contractStatus">
+                            <select class="form-select form-select-solid" name="contract_status">
                                 <option value="0">Pilih</option>
                                 <option value="Tetap" :selected="jobInformation.contract_status === 'Tetap'">
                                     Tetap
@@ -100,17 +99,12 @@
                                 </option>
                             </select>
                         </div>
-
-                        <div class="col-md-6"
-                             x-show="contractStatus && contractStatus !== 'Tetap' && contractStatus !== '0'"
-                             x-transition x-cloak>
-                            <label for="contract_status" class="required form-label">Akhir Masa Kerja</label>
-                            <input type="date"
-                                   :name="`${contractStatus !== 'Tetap' && contractStatus !== '0' ? 'contract_end_date' : ''}`"
-                                   id="contract_end_date"
-                                   class="form-control form-control-solid">
+                        <div class="col-md-6">
+                            <label for="bank_account_number" class="required form-label">Nomor Rekening</label>
+                            <input type="number" id="bank_account_number" name="bank_account_number"
+                                   class="form-control form-control-solid"
+                                   placeholder="Tempat Lahir" :value="jobInformation.bank_account_number ?? 0"/>
                         </div>
-
                     </div>
                 </div>
 

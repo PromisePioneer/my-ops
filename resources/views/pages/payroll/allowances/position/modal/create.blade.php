@@ -18,14 +18,15 @@
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Jabatan</label>
-                        <select name="role_id" class="form-control form-control-solid roles-select2"
+                        <select name="user_id" class="form-control form-control-solid users-select2"
                                 data-dropdown-parent="#modal-create">
                             <option></option>
                         </select>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nominal Tunjangan</label>
-                        <input type="number" id="amount" name="amount" class="form-control form-control-solid"
+                        <input type="number" id="position_allowance" name="position_allowance"
+                               class="form-control form-control-solid"
                                placeholder="Nominal"/>
                     </div>
                 </div>
