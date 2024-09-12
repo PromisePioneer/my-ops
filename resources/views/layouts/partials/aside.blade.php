@@ -344,7 +344,7 @@
                 </x-dropdown-menu>
 
                 <x-menu-sections>Manajemen Karyawan</x-menu-sections>
-                <x-dropdown-menu :active="request()->segment(1) === 'payroll'">
+                <x-dropdown-menu :active="request()->is('payroll/*')">
                     @slot('parentIcon')
                         <i class="ki-duotone ki-profile-user fs-2">
                             <span class="path1"></span>
@@ -358,7 +358,7 @@
                     @endslot
                     @slot('menuItem')
                         <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'setting'"
+                                :active="request()->is('payroll/setting*')"
                                 href="{{ url('payroll/setting') }}">
                             Pengaturan
                         </x-dropdown-menu-item>

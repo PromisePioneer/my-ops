@@ -40,17 +40,7 @@ class PositionAllowancesController extends Controller
 
     public function search(Request $request): JsonResponse
     {
-        $search = $request->input('search');
-
-        $query = $this->roleHasPositionAllowances->data();
-        if (!empty($search)) {
-            $query->whereHas('role', function ($query) use ($search) {
-                $query->where('name', 'LIKE', "%{$search}%");
-            });
-        }
-
-        $data = $query->paginate(10);
-        return response()->json($data);
+        return response()->json($this->jobInformation->search($request));
     }
 
     public function data(): JsonResponse

@@ -205,7 +205,7 @@
                 async searchData() {
                     this.isLoading = true;
                     try {
-                        const response = await axios.get('/payroll/allowances/thr/search', {
+                        const response = await axios.get('/payroll/setting/allowances/thr/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -219,7 +219,7 @@
                 async generateTHR() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/payroll/allowances/thr', new FormData(this.formThr))
+                        await axios.post('/payroll/setting/allowances/thr', new FormData(this.formThr))
                         await showAlert('success', 'Data berhasil disimpan')
                         await this.init();
                         this.thrDataShow = true;
@@ -233,7 +233,7 @@
                 async getThrData() {
                     this.isLoading = true;
                     try {
-                        const resp = await axios.get('/payroll/allowances/thr/data');
+                        const resp = await axios.get('/payroll/setting/allowances/thr/data');
                         this.thrAllowances = resp.data;
                         this.startIndex = this.thrAllowances.from;
                     } catch (e) {

@@ -12,27 +12,27 @@
             <td>
                 <ol class="lh-xxl">
                     <li>
-                        <a href="{{ url('payroll/allowances/position') }}" class="fw-bold">
+                        <a href="{{ url('payroll/setting/allowances/position') }}" class="fw-bold">
                             Tunjangan Jabatan
                         </a>
                     </li>
                     <li>
-                        <a href="{{ url('payroll/allowances/meal') }}" class="fw-bold">
+                        <a href="{{ url('payroll/setting/allowances/meal') }}" class="fw-bold">
                             Tunjangan Makan
                         </a>
                     </li>
                     <li>
-                        <a href="{{ url('payroll/allowances/transportation') }}" class="fw-bold">
+                        <a href="{{ url('payroll/setting/allowances/transportation') }}" class="fw-bold">
                             Tunjangan Transportasi
                         </a>
                     </li>
                     <li>
-                        <a href="{{ url('payroll/allowances/overtime') }}" class="fw-bold">
+                        <a href="{{ url('payroll/setting/allowances/overtime') }}" class="fw-bold">
                             Tunjangan Lembur
                         </a>
                     </li>
                     <li>
-                        <a href="{{ url('payroll/allowances/thr') }}" class="fw-bold">
+                        <a href="{{ url('payroll/setting/allowances/thr') }}" class="fw-bold">
                             Tunjangan Hari Raya
                         </a>
                     </li>
@@ -41,19 +41,19 @@
             <td>
                 <ol class="lh-xxl">
                     <li>
-                        <a href="{{ url('payroll/deduction/sla') }}"
+                        <a href="{{ url('payroll/setting/deduction/sla') }}"
                            class="fw-bold">
                             Denda SLA
                         </a>
                     </li>
                     <li>
-                        <a href="{{ url('payroll/deduction/nine-past-fiveteen-late/') }}"
+                        <a href="{{ url('payroll/setting/deduction/nine-past-fiveteen-late/') }}"
                            class="fw-bold">
                             Denda 9.15
                         </a>
                     </li>
                     <li>
-                        <a href="{{ url('payroll/deduction/additional-deduction') }}"
+                        <a href="{{ url('payroll/setting/deduction/additional-deduction') }}"
                            class="fw-bold">
                             Denda Lainnya
                         </a>
@@ -63,7 +63,7 @@
             <td>
                 <ol class="lh-xxl">
                     <li>
-                        <a href="{{ url('payroll/benefit/sales-bonus') }}"
+                        <a href="{{ url('payroll/setting/benefit/sales-bonus') }}"
                            class="fw-bold">
                             Bonus Sales
                         </a>
