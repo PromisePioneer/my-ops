@@ -9,8 +9,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-use function PHPUnit\Framework\isEmpty;
-
 class MealAllowanceController extends Controller
 {
 
@@ -32,7 +30,7 @@ class MealAllowanceController extends Controller
         $query = $this->roleHasMealAllowance->data();
 
 
-        if (!isEmpty($search)) {
+        if (!empty($search)) {
             $query->whereHas('role', function ($query) use ($search) {
                 $query->where('name', 'like', "%".$search."%");
             })->where('name', 'like', "%".$search."%")

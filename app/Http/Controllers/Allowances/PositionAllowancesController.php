@@ -50,9 +50,9 @@ class PositionAllowancesController extends Controller
 
     public function store(PositionAllowanceRequest $request): JsonResponse
     {
-        $data = $request->validated();
-        JobInformation::create([
+        JobInformation::updateOrCreate([
             'user_id' => $request->user_id,
+        ], [
             'position_allowance' => $request->position_allowance,
         ]);
 
