@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Allowances;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Allowances\MealAllowanceRequest;
+use App\Models\Role;
 use App\Models\RoleHasMealAllowance;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,10 +14,23 @@ class MealAllowanceController extends Controller
 {
 
     private RoleHasMealAllowance $roleHasMealAllowance;
+    private Role $role;
 
     public function __construct()
     {
         $this->roleHasMealAllowance = new RoleHasMealAllowance();
+        $this->role = new Role();
+    }
+
+
+    public function getRoleData(Request $request): JsonResponse
+    {
+        return response()->json($this->role->getData($request));
+    }
+
+    public function selectedRoleData(RoleHasMealAllowance $roleHasMealAllowance): JsonResponse
+    {
+        return response()->json($roleHasMealAllowance);
     }
 
     public function index(): View
