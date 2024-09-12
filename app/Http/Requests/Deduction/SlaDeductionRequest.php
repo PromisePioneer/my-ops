@@ -24,8 +24,8 @@ class SlaDeductionRequest extends FormRequest
     {
         return [
             'date' => ['required', 'date'],
-            'technician_id' => ['required', 'integer', 'exists:users,id'],
-            'amount' => ['required'],
+            'technician_id.*' => ['required', 'integer', 'exists:users,id'],
+            'spk_amount' => ['required', 'numeric'],
         ];
     }
 
@@ -37,7 +37,8 @@ class SlaDeductionRequest extends FormRequest
             'date.date' => 'Tanggal tidak valid',
             'technician_id.required' => 'Teknisi tidak boleh kosong',
             'technician_id.exists' => 'Teknisi tidak valid',
-            'amount.required' => 'Total denda tidak boleh kosong',
+            'spk_amount.required' => 'Jumlah SPK tidak boleh kosong',
+            'spk_amount.numeric' => 'Jumlah SPK tidak valid',
         ];
     }
 }

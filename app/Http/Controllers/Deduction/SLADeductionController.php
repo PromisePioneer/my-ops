@@ -52,9 +52,15 @@ class SLADeductionController extends Controller
 
     public function store(SlaDeductionRequest $request): JsonResponse
     {
-        $data = $request->validated();
-        $data['kca_id'] = $request->user()->id;
-        SLADeduction::create($data);
+        foreach ($request->technician_id as $technician) {
+            SLADeduction::create([
+                'date' => $request->date,
+                'technician_id' => $technician,
+                'kca_id' => $request->user()->id,
+                'spk_amount' => $request->spk_amount,
+                'total_deduction_amount' => $request->spk_amount * 10000,
+            ]);
+        }
 
         return response()->json([
             'message' => 'Data berhasil disimpan',
@@ -71,6 +77,8 @@ class SLADeductionController extends Controller
     {
         $data = $request->validated();
         $data['kca_id'] = $request->user()->id;
+        $data['total_deduction_amount'] = $request->spk_amount * 10000;
+
         $SLADeduction->update($data);
 
         return response()->json([

@@ -62,6 +62,7 @@
                                 <th class="min-w-125px">Tanggal</th>
                                 <th class="min-w-125px">KCA</th>
                                 <th class="min-w-125px">Teknisi</th>
+                                <th class="min-w-125px">Jumlah SPK</th>
                                 <th class="min-w-125px">Total Denda</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
@@ -102,7 +103,8 @@
                                     <td x-text="slaDeduction.date"></td>
                                     <td x-text="slaDeduction.kca"></td>
                                     <td x-text="slaDeduction.technician"></td>
-                                    <td x-text="`Rp. ${slaDeduction.amount}`">
+                                    <td x-text="slaDeduction.spk_amount">
+                                    <td x-text="`Rp. ${slaDeduction.total_deduction_amount}`">
                                     </td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
