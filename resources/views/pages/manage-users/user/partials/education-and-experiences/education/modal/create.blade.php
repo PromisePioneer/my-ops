@@ -14,8 +14,19 @@
                     <div class="row mb-4">
                         <div class="col-md-6">
                             <label for="level" class="required form-label">Tingkat Pendidikan</label>
-                            <input type="text" id="level" name="level" class="form-control form-control-solid"
-                                   placeholder="Tingkat pendidikan" :value="education.level ?? ''"/>
+                            <select name="level" id="level" class="form-select form-select-solid">
+                                <option selected>Pilih</option>
+                                <option value="SD" :selected="education.level === 'SD'">SD</option>
+                                <option value="SMP" :selected="education.level === 'SMP'">SMP</option>
+                                <option value="SMA" :selected="education.level === 'SMA'">SMA</option>
+                                <option value="D1" :selected="education.level === 'D1'">D1</option>
+                                <option value="D2" :selected="education.level === 'D2'">D2</option>
+                                <option value="D3" :selected="education.level === 'D3'">D3</option>
+                                <option value="D4" :selected="education.level === 'D4'">D4</option>
+                                <option value="S1" :selected="education.level === 'S1'">S1</option>
+                                <option value="S2" :selected="education.level === 'S2'">S2</option>
+                                <option value="S3" :selected="education.level === 'S3'">S3</option>
+                            </select>
                         </div>
                         <div class="col-md-6">
                             <label for="institution" class="required form-label">Institusi Pendidikan</label>
