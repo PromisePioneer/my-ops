@@ -4,6 +4,8 @@ namespace App\Http\Requests\Allowances;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class MealAllowanceRequest extends FormRequest
 {
@@ -20,11 +22,19 @@ class MealAllowanceRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array|string>
      */
-    public function rules(): array
+    public function rules(Request $request): array
     {
         return [
-            'role_id' => ['required', 'exists:roles,id'],
-            'amount' => ['required'],
+            'user_id' => ['required', 'exists:users,id'],
+            'type' => [
+                'required',
+                Rule::in('Manual Input', 'Sesuai Kehadiran'),
+            ],
+            'amount' => [
+                Rule::requiredIf(function () use ($request) {
+                    return $request->type === 'Manual Input';
+                }),
+            ],
         ];
     }
 
@@ -32,8 +42,10 @@ class MealAllowanceRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'role_id.required' => 'Jabatan tidak boleh kosong',
-            'role_id.exists' => 'Jabatan tidak ditemukan',
+            'user_id.required' => 'Karyawan tidak boleh kosong',
+            'user_id.exists' => 'Karyawan tidak ditemukan',
+            'type.required' => 'Tipe tidak boleh kosong',
+            'type.in' => 'Tipe tidak valid',
             'amount.required' => 'Nominal tidak boleh kosong',
         ];
     }

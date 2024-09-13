@@ -16,18 +16,39 @@
 
             <form id="form-create" @submit.prevent="save()">
                 <div class="modal-body">
+
+                    <div class="mb-10" x-model="allowanceType">
+                        <label for="name" class="required form-label">Tipe</label>
+                        <select name="type" class="form-control form-control-solid">
+                            <option>Pilih</option>
+                            <option value="Sesuai Kehadiran">Sesuai Kehadiran</option>
+                            <option value="Manual Input">Manual Input</option>
+                        </select>
+                    </div>
+
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Jabatan</label>
-                        <select name="role_id" class="form-control form-control-solid roles-select2"
+                        <label for="name" class="required form-label">Karyawan</label>
+                        <select name="user_id" class="form-control form-control-solid users-select2"
                                 data-dropdown-parent="#modal-create">
                             <option></option>
                         </select>
                     </div>
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Nominal Tunjangan</label>
-                        <input type="number" id="amount" name="amount" class="form-control form-control-solid"
-                               placeholder="Nominal"/>
+
+                    <div x-show="allowanceType === 'Manual Input'" x-transition>
+                        <div class="mb-10">
+                            <label for="name" class="required form-label">Tanggal</label>
+                            <input type="date" id="date" name="date" class="form-control form-control-solid date"
+                                   placeholder="Tanggal"/>
+                        </div>
+
+                        <div class="mb-10">
+                            <label for="name" class="required form-label">Nominal Tunjangan</label>
+                            <input type="number" id="amount" name="amount" class="form-control form-control-solid"
+                                   placeholder="Nominal"/>
+                        </div>
                     </div>
+
+
                 </div>
 
                 <div class="modal-footer">

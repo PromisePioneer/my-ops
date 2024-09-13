@@ -62,6 +62,7 @@ class JobInformation extends Model
         'user_id',
         'fixed_salary',
         'position_allowance',
+        'meal_allowance',
         'placement_id',
         'contract_status',
         'bank_account_number',

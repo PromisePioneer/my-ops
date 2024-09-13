@@ -10,9 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('role_has_meal_allowances', function (Blueprint $table) {
+        Schema::create('user_has_meal_allowances', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('role_id')->constrained('roles');
+            $table->date('date')->nullable();
+            $table->foreignId('user_id')->constrained('users');
+            $table->enum('type', ['Sesuai Kehadiran', 'Manual Input']);
             $table->double('amount');
             $table->timestamps();
         });
