@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form Tunjangan Jabatan</h5>
+                <h5 class="modal-title">Form Tunjangan Makan</h5>
                 <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
@@ -16,18 +16,42 @@
 
             <form id="form-edit" @submit.prevent="update(editVal.id)">
                 <div class="modal-body">
+
+                    <div class="mb-10" x-model="allowanceType">
+                        <label for="name" class="required form-label">Tipe</label>
+                        <select name="type" class="form-control form-control-solid">
+                            <option>Pilih</option>
+                            <option value="Sesuai Kehadiran" :selected="editVal.type === 'Sesuai Kehadiran'">Sesuai
+                                Kehadiran
+                            </option>
+                            <option value="Manual Input" :selected="editVal.type === 'Manual Input'">Manual Input
+                            </option>
+                        </select>
+                    </div>
+
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Jabatan</label>
-                        <select name="role_id" id="selectedRole" class="form-control form-control-solid roles-select2"
-                                data-dropdown-parent="#modal-edit">
+                        <label for="name" class="required form-label">Karyawan</label>
+                        <select name="user_id" id="selectedUser" class="form-control form-control-solid users-select2"
+                                data-dropdown-parent="#modal-create">
                             <option></option>
                         </select>
                     </div>
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Nominal Tunjangan</label>
-                        <input type="number" id="amount" name="amount" class="form-control form-control-solid"
-                               placeholder="Nominal" :value="editVal.amount"/>
+
+                    <div x-show="allowanceType === 'Manual Input'" x-transition>
+                        <div class="mb-10">
+                            <label for="name" class="required form-label">Tanggal</label>
+                            <input type="date" id="date" name="date" class="form-control form-control-solid date"
+                                   placeholder="Tanggal" :value="editVal.date"/>
+                        </div>
+
+                        <div class="mb-10">
+                            <label for="name" class="required form-label">Nominal Tunjangan</label>
+                            <input type="number" id="amount" name="amount" class="form-control form-control-solid"
+                                   placeholder="Nominal" :value="editVal.amount"/>
+                        </div>
                     </div>
+
+
                 </div>
 
                 <div class="modal-footer">

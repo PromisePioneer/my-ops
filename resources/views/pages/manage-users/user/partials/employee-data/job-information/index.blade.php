@@ -24,6 +24,10 @@
                         <td x-text="`Rp. ${jobInformation.position_allowance ?? ''}`"></td>
                     </tr>
                     <tr>
+                        <td>Tunjangan Makan</td>
+                        <td x-text="`Rp. ${jobInformation.meal_allowance ?? ''}`"></td>
+                    </tr>
+                    <tr>
                         <td>Status Kontrak</td>
                         <td x-text="jobInformation.contract_status ?? ''"></td>
                     </tr>

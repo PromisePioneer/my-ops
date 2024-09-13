@@ -72,6 +72,14 @@
                     </div>
                     <div class="row mb-7">
                         <div class="col-md-6">
+                            <label for="meal_allowance" class="required form-label">Tunjangan Makan</label>
+                            <input type="number" id="meal_allowance" name="meal_allowance"
+                                   class="form-control form-control-solid"
+                                   placeholder="Tunjangan Jabatan" :value="jobInformation.meal_allowance ?? 0"/>
+                        </div>
+                    </div>
+                    <div class="row mb-7">
+                        <div class="col-md-6">
                             <label for="contract_status" class="required form-label">Status Kontrak</label>
                             <select class="form-select form-select-solid" name="contract_status">
                                 <option value="0">Pilih</option>

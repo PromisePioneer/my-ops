@@ -16,6 +16,7 @@ class JobInformationService
             'department_id' => $request->department_id,
             'fixed_salary' => $request->fixed_salary,
             'position_allowance' => $request->position_allowance,
+            'meal_allowance' => $request->meal_allowance,
             'contract_status' => $request->contract_status,
             'bank_account_number' => $request->bank_account_number,
             'bpjs_kes' => $request->bpjs_kes,

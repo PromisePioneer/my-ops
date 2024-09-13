@@ -708,14 +708,14 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('allowances/meal')->group(function () {
             Route::get('/', [MealAllowanceController::class, 'index']);
             Route::get('/data', [MealAllowanceController::class, 'data']);
-            Route::get('/role/data', [MealAllowanceController::class, 'getRoleData']);
-            Route::get('/role/selected/{roleHasMealAllowances}',
-                [MealAllowanceController::class, 'getSelectedRole']);
+            Route::get('/search', [MealAllowanceController::class, 'search']);
+            Route::get('/user/data', [MealAllowanceController::class, 'getUser']);
+            Route::get('/user/selected/{userHasMealAllowance}', [MealAllowanceController::class, 'selectedUser']);
             Route::get('/search', [MealAllowanceController::class, 'search']);
             Route::post('/', [MealAllowanceController::class, 'store']);
-            Route::get('/{roleHasMealAllowances}', [MealAllowanceController::class, 'edit']);
+            Route::get('/{userHasMealAllowance}', [MealAllowanceController::class, 'edit']);
             Route::post('/destroy', [MealAllowanceController::class, 'destroy']);
-            Route::post('/{roleHasMealAllowances}', [MealAllowanceController::class, 'update']);
+            Route::post('/{userHasMealAllowance}', [MealAllowanceController::class, 'update']);
         });
 
 

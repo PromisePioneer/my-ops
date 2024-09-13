@@ -59,7 +59,9 @@
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
-                                <th class="min-w-125px">Jabatan</th>
+                                <th class="min-w-125px">Tanggal</th>
+                                <th class="min-w-125px">Karyawan</th>
+                                <th class="min-w-125px">Tipe Tunjangan</th>
                                 <th class="min-w-125px">Nominal</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
@@ -97,7 +99,9 @@
                                                    :id="'checkbox-' + mealAllowance.id"/>
                                         </div>
                                     </td>
-                                    <td x-text="mealAllowance.role.name"></td>
+                                    <td x-text="mealAllowance.date ?? '-'"></td>
+                                    <td x-text="`(${mealAllowance.nip}) ${mealAllowance.user_name}`"></td>
+                                    <td x-text="mealAllowance.type"></td>
                                     <td x-text="`Rp. ${mealAllowance.amount}`">
                                     </td>
                                     <td>
@@ -136,6 +140,8 @@
 @endsection
 @push('script')
     <script>
+        $('.date').flatpickr();
+
         function mealAllowanceData() {
             return {
                 mealAllowances: [],
@@ -144,6 +150,7 @@
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
+                allowanceType: false,
                 search: '',
                 editVal: '',
                 startIndex: null,
@@ -216,6 +223,7 @@
                     const resp = await axios.get(`/payroll/setting/allowances/meal/${id}`)
                     this.editVal = resp.data;
                     await this.selectedRole();
+                    this.allowanceType = this.editVal.type === 'Manual Input' ? 'Manual Input' : 'Sesuai Kehadiran';
                 },
                 async update(id) {
                     this.buttonLoading = true;
@@ -250,10 +258,10 @@
                     this.startIndex = this.mealAllowances.from
                 },
                 async getRoleData() {
-                    $(".roles-select2").select2({
-                        placeholder: "Pilih Jabatan",
+                    $(".users-select2").select2({
+                        placeholder: "Pilih Karyawan",
                         ajax: {
-                            url: '/payroll/setting/allowances/meal/role/data',
+                            url: '/payroll/setting/allowances/meal/user/data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -263,14 +271,14 @@
                     });
                 },
                 async selectedRole() {
-                    const selectedRole = $('#selectedRole');
+                    const selectedUser = $('#selectedUser');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/payroll/setting/allowances/meal/role/selected/${this.editVal.id}`,
+                        url: `/payroll/setting/allowances/meal/user/selected/${this.editVal.id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
-                    selectedRole.append(option).trigger('change').trigger({
+                    selectedUser.append(option).trigger('change').trigger({
                         type: 'select2:select',
                         params: {results: response}
                     });
