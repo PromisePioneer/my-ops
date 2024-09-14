@@ -2812,9 +2812,6 @@ textarea.form-control-lg {
     opacity: .5
 }
 
-.form-check-label {
-    color: var(--bs-gray-500)
-}
 
 .form-switch {
     padding-left: 3.75rem

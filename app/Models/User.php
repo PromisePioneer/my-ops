@@ -143,14 +143,17 @@ class User extends Authenticatable
         return $this->hasOne(ContractManagement::class, 'user_id');
     }
 
-    //eloquent
-    public function getData()
+
+    public function getUserDataBasedOnUserBranch(): LengthAwarePaginator
     {
-        return self::with([
-            'branch' => function ($query) {
-                $query->select('id', 'name');
-            },
-        ])->with('roles');
+        return self::with('branch')->where('branch_id', $this->branch_id)->paginate(10);
+    }
+
+
+    //eloquent
+    public function getData(): Builder
+    {
+        return self::with('branch', 'roles');
     }
 
     public function getUserBasedOnBranch(Request $request): array
@@ -179,8 +182,7 @@ class User extends Authenticatable
 
         return self::with('roles')
             ->where('name', 'like', '%'.$search.'%')
-            ->orWhere('email', 'like', '%'.$search.'%')
-            ->get();
+            ->orWhere('email', 'like', '%'.$search.'%');
     }
 
     public function filterBasedOnUserBranch(int $branchId, int $perPage): LengthAwarePaginator

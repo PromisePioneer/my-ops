@@ -16,29 +16,27 @@ class WorkTimePolicy
 
     public function view(User $user): bool
     {
-        if ($user->hasRole('HR')) {
-            return $user->can('lihat semua shift');
-        }
-
-        if ($user->hasRole('Kepala Cabang')) {
-            return $user->can('lihat shift berdasarkan cabang');
-        }
-
-        return false;
+        return $user->can('Lihat Jam Kerja');
     }
 
     public function create(User $user): bool
     {
-        return $user->can('tambah shift');
+        return $user->can('Tambah Jam Kerja');
     }
 
     public function edit(User $user): bool
     {
-        return $user->can('update shift');
+        return $user->can('Update Jam Kerja');
     }
 
     public function destroy(User $user): bool
     {
-        return $user->can('hapus shift');
+        return $user->can('Hapus Jam Kerja');
+    }
+
+
+    public function viewDetail(User $user): bool
+    {
+        return $user->can('Lihat Jam Kerja Karyawan');
     }
 }

@@ -54,3 +54,15 @@ function formatDate($date): string
         ->settings(['formatFunction' => 'translatedFormat'])
         ->format('l, j F Y');
 }
+
+
+function randomDigits(): string
+{
+    $result = '';
+
+    for ($i = 0; $i < 3; $i++) {
+        $result .= random_int(0, 9);
+    }
+
+    return $result;
+}

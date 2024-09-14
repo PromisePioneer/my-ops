@@ -37,7 +37,6 @@ class WorkTimeController extends Controller
     public function index(): View
     {
         $this->authorize('view', WorkTime::class);
-
         return view('pages.adms.work-time.index');
     }
 
@@ -47,17 +46,24 @@ class WorkTimeController extends Controller
     public function data(Request $request): JsonResponse
     {
         $this->authorize('view', WorkTime::class);
-
         return response()->json($this->workTime->getDataWithPagination($request->user()->branch_id, $this->perPage));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function search(Request $request): JsonResponse
     {
+        $this->authorize('view', WorkTime::class);
         return response()->json($this->workTime->searchDataWithPagination($request, $this->perPage));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getUserData(Request $request): JsonResponse
     {
+        $this->authorize('view', User::class);
         return response()->json($this->user->getUserBasedOnBranch($request));
     }
 
@@ -82,7 +88,6 @@ class WorkTimeController extends Controller
     public function edit(WorkTime $workTime): JsonResponse
     {
         $this->authorize('update', $workTime);
-
         return response()->json($workTime);
     }
 
@@ -114,8 +119,12 @@ class WorkTimeController extends Controller
         ]);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getSelectedUserWorkTime(WorkTime $workTime): JsonResponse
     {
+        $this->authorize('update', WorkTime::class);
         return response()->json($this->userWorkTime->getSelectedUserShift($workTime->id));
     }
 
@@ -133,18 +142,30 @@ class WorkTimeController extends Controller
         ]);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function detail(WorkTime $workTime): View
     {
+        $this->authorize('viewDetail', WorkTime::class);
         return view('pages.adms.work-time.detail', compact('workTime'));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function detailData(WorkTime $workTime): JsonResponse
     {
+        $this->authorize('viewDetail', WorkTime::class);
         return response()->json($this->userWorkTime->getDetailUserOnSelectedWorkTime($workTime->id, $this->perPage));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function searchDetailData(Request $request, WorkTime $workTime): JsonResponse
     {
+        $this->authorize('viewDetail', WorkTime::class);
         return response()->json($this->userWorkTime->searchDetailUserOnSelectedWorkTIme(
             $request,
             $workTime->id,
@@ -152,10 +173,13 @@ class WorkTimeController extends Controller
         ));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function destroyDetailWorktimeUser(UserWorkTime $userWorkTime): JsonResponse
     {
+        $this->authorize('destroy', UserWorkTime::class);
         $userWorkTime->delete();
-
         return response()->json([
             'message' => 'Data berhasil dihapus',
         ]);

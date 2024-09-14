@@ -6,9 +6,6 @@ use App\Models\User;
 
 class BranchPolicy
 {
-    /**
-     * Create a new policy instance.
-     */
     public function __construct()
     {
         //
@@ -16,26 +13,26 @@ class BranchPolicy
 
     public function view(User $user): bool
     {
-        return $user->can('lihat cabang');
+        return $user->can('Lihat Cabang');
     }
 
     public function create(User $user): bool
     {
-        return $user->can('tambah cabang');
+        return $user->can('Tambah Cabang');
     }
 
     public function update(User $user): bool
     {
-        return $user->can('update cabang');
+        return $user->can('Update Cabang');
     }
 
     public function delete(User $user): bool
     {
-        return $user->can('hapus cabang');
+        return $user->can('Hapus Cabang');
     }
 
     public function import(User $user): bool
     {
-        return $user->can('import cabang');
+        return $user->can('Import Cabang');
     }
 }

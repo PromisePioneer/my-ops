@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 
 class PermissionSeeder extends Seeder
@@ -13,217 +15,178 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
-//
-//        $kacabRole = Role::where('name', 'Manager Cabang')->firstOrFail();
-//        $accountant = Role::where('name', 'Accounting')->firstOrFail();
-//        $directorRole = Role::where('name', 'Direktur')->firstOrFail();
-//        $financeManagerRole = Role::where('name', 'Manager Keuangan')->firstOrFail();
-//
-//        $branches = [
-//            'lihat cabang',
-//            'tambah cabang',
-//            'update cabang',
-//            'hapus cabang',
-//            'import cabang',
-//        ];
-//
-//        foreach ($branches as $permission) {
-//            Permission::create(['name' => $permission]);
-//            $financeManagerRole->givePermissionTo($permission);
-//            $directorRole->givePermissionTo($permission);
-//        }
-//
-//        $beginningBalances = [
-//            'lihat saldo awal',
-//            'tambah saldo awal',
-//            'update saldo awal',
-//            'hapus saldo awal',
-//        ];
-//
-//        foreach ($beginningBalances as $permission) {
-//            Permission::create(['name' => $permission]);
-//            $financeManagerRole->givePermissionTo($permission);
-//        }
-//
-//        $contact = [
-//            'lihat contact',
-//            'tambah contact',
-//            'update contact',
-//            'hapus contact',
-//        ];
-//
-//        foreach ($contact as $permission) {
-//            Permission::create(['name' => $permission]);
-//            $kacabRole->givePermissionTo($permission);
-//            $directorRole->givePermissionTo($permission);
-//            $financeManagerRole->givePermissionTo($permission);
-//            $accountant->givePermissionTo($permission);
-//        }
-//
-//        $department = [
-//            'lihat department',
-//            'tambah department',
-//            'update department',
-//            'hapus department',
-//        ];
-//
-//        foreach ($department as $permission) {
-//            Permission::create(['name' => $permission]);
-//        }
-//
-//        $product = [
-//            'lihat produk',
-//            'tambah produk',
-//            'update produk',
-//            'hapus produk',
-//        ];
-//
-//        foreach ($product as $permission) {
-//            Permission::create(['name' => $permission]);
-//            $kacabRole->givePermissionTo($permission);
-//            $directorRole->givePermissionTo($permission);
-//            $financeManagerRole->givePermissionTo($permission);
-//            $accountant->givePermissionTo($permission);
-//        }
-//
-//        $serviceCategories = [
-//            'lihat kategori layanan',
-//            'tambah kategori layanan',
-//            'update kategori layanan',
-//            'hapus kategori layanan',
-//        ];
-//
-//        foreach ($serviceCategories as $permission) {
-//            Permission::create(['name' => $permission]);
-//
-//            $kacabRole->givePermissionTo($permission);
-//            $directorRole->givePermissionTo($permission);
-//            $financeManagerRole->givePermissionTo($permission);
-//            $accountant->givePermissionTo($permission);
-//        }
-//
-//        $subAccount = [
-//            'lihat sub akun',
-//            'tambah sub akun',
-//            'update sub akun',
-//            'hapus sub akun',
-//        ];
-//
-//        foreach ($subAccount as $permission) {
-//            Permission::create(['name' => $permission]);
-//            $financeManagerRole->givePermissionTo($permission);
-//        }
-//
-//        $account = [
-//            'lihat akun',
-//            'tambah akun',
-//            'update akun',
-//            'hapus akun',
-//            'import akun',
-//        ];
-//
-//        foreach ($account as $permission) {
-//            Permission::create(['name' => $permission]);
-//            $financeManagerRole->givePermissionTo($permission);
-//        }
-//
-//        $accountTransaction = [
-//            'lihat transaksi akun',
-//            'tambah transaksi akun',
-//            'update transaksi akun',
-//            'hapus transaksi akun',
-//        ];
-//
-//        foreach ($accountTransaction as $permission) {
-//            Permission::create(['name' => $permission]);
-//            $financeManagerRole->givePermissionTo($permission);
-//        }
-//
-//        $offeringLetter = [
-//            'lihat penawaran',
-//            'tambah penawaran',
-//            'update penawaran',
-//            'hapus penawaran',
-//        ];
-//
-//        foreach ($offeringLetter as $permission) {
-//            Permission::create(['name' => $permission]);
-//            $financeManagerRole->givePermissionTo($permission);
-//            $accountant->givePermissionTo($permission);
-//            $directorRole->givePermissionTo($permission);
-//            $kacabRole->givePermissionTo($permission);
-//        }
-//
-//        $companyProfile = [
-//            'lihat profil perusahaan',
-//            'update profil perusahaan',
-//            'hapus profil perusahaan',
-//        ];
-//
-//        foreach ($companyProfile as $permission) {
-//            Permission::create(['name' => $permission]);
-//
-//            $kacabRole->givePermissionTo($permission);
-//            $financeManagerRole->givePermissionTo($permission);
-//            $directorRole->givePermissionTo($permission);
-//        }
-//
-//        $user = [
-//            'lihat user',
-//            'tambah user',
-//            'update user',
-//            'hapus user',
-//        ];
-//
-//        foreach ($user as $permission) {
-//            Permission::create(['name' => $permission]);
-//            $kacabRole->givePermissionTo($permission);
-//            $directorRole->givePermissionTo($permission);
-//            $financeManagerRole->givePermissionTo($permission);
-//        }
-//
-//        $roles = [
-//            'lihat role',
-//            'tambah role',
-//            'update role',
-//            'hapus role',
-//        ];
-//
-//        foreach ($roles as $permission) {
-//            Permission::create(['name' => $permission]);
-//            $kacabRole->givePermissionTo($permission);
-//            $directorRole->givePermissionTo($permission);
-//            $financeManagerRole->givePermissionTo($permission);
-//        }
-//
-//        $permissions = [
-//            'lihat permission',
-//            'tambah permission',
-//            'update permission',
-//            'hapus permission',
-//        ];
-//
-//        foreach ($permissions as $permission) {
-//            Permission::create(['name' => $permission]);
-//
-//            $kacabRole->givePermissionTo($permission);
-//            $directorRole->givePermissionTo($permission);
-//            $financeManagerRole->givePermissionTo($permission);
-//        }
-//
-//        $permissions = [
-//            'lihat SP',
-//            'update semua SP',
-//            'update sp sendiri',
-//            'hapus semua SP',
-//            'hapus sp sendiri',
-//        ];
-//
-//        foreach ($permissions as $permission) {
-//            Permission::create(['name' => $permission]);
-//            $directorRole->givePermissionTo($permission);
-//            $financeManagerRole->givePermissionTo($permission);
-//            $kacabRole->givePermissionTo($permission);
-//        }
+
+        $branchManagerRole = Role::where('name', 'Branch Manager')->first();
+
+        $branches = [
+            'Lihat Cabang',
+            'Tambah Cabang',
+            'Update Cabang',
+            'Hapus Cabang',
+            'Import Cabang',
+        ];
+
+
+        foreach ($branches as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
+
+        $contact = [
+            'Lihat Kontak',
+            'Tambah Kontak',
+            'Update Kontak',
+            'Hapus Kontak',
+        ];
+
+        foreach ($contact as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
+        $department = [
+            'Lihat Departemen',
+            'Tambah Departemen',
+            'Update Departemen',
+            'Hapus Departemen',
+        ];
+
+        foreach ($department as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
+        $product = [
+            'Lihat Produk',
+            'Tambah Produk',
+            'Update Produk',
+            'Hapus Produk',
+        ];
+
+        foreach ($product as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
+        $serviceCategories = [
+            'Lihat Kategori Layanan',
+            'Tambah Kategori Layanan',
+            'Update Kategori Layanan',
+            'Hapus Kategori Layanan',
+        ];
+
+        foreach ($serviceCategories as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
+        $subAccount = [
+            'Lihat Sub Akun',
+            'Tambah Sub Akun',
+            'Update Sub Akun',
+            'Hapus Sub Akun',
+        ];
+
+        foreach ($subAccount as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
+        $account = [
+            'Lihat Akun',
+            'Tambah Akun',
+            'Update Akun',
+            'Hapus Akun',
+            'import Akun',
+        ];
+
+        foreach ($account as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
+        $accountTransaction = [
+            'Lihat Transaksi Akun',
+            'Tambah Transaksi Akun',
+            'Update Transaksi Akun',
+            'Hapus Transaksi Akun',
+        ];
+
+        foreach ($accountTransaction as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
+        $offeringLetter = [
+            'Lihat Penawaran',
+            'Tambah Penawaran',
+            'Update Penawaran',
+            'Hapus Penawaran',
+        ];
+
+        foreach ($offeringLetter as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
+        $companyProfile = [
+            'Lihat Profil Perusahaan',
+            'Update Profil Perusahaan',
+            'Hapus Profil Perusahaan',
+        ];
+
+        foreach ($companyProfile as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
+        $roles = [
+            'Lihat Jabatan',
+            'Tambah Jabatan',
+            'Update Jabatan',
+            'Hapus Jabatan',
+        ];
+
+        foreach ($roles as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
+        $permissions = [
+            'Lihat Hak Akses',
+            'Tambah Hak Akses',
+            'Update Hak Akses',
+            'Hapus Hak Akses',
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
+        $sp = [
+            'Lihat Surat Peringatan',
+            'Update semua Surat Peringatan',
+            'Update Surat Peringatan Sendiri',
+            'Hapus Semua Surat Peringatan',
+            'Hapus Surat Peringatan Sendiri',
+        ];
+
+        foreach ($sp as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
+
+        $nationalHoliday = [
+            'Lihat Libur Nasional',
+            'Tambah Libur Nasional',
+        ];
+
+
+        foreach ($nationalHoliday as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
+
+        $user = [
+            'Lihat Karyawan',
+            'Tambah Karyawan',
+            'Update Karyawan',
+            'Hapus Karyawan',
+            'Aktifkan Karyawan',
+        ];
+
+        foreach ($user as $permission) {
+            Permission::create(['name' => $permission]);
+        }
     }
 }

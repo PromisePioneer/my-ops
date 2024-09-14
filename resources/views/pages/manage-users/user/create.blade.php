@@ -54,7 +54,8 @@
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">Tanggal Masuk</label>
                                 <input type="date" name="join_date"
-                                       class="form-control form-control-lg form-control-solid"/>
+                                       class="form-control form-control-lg form-control-solid date"
+                                       placeholder="Tanggal Masuk"/>
                             </div>
                         </div>
                         <div class="form-group row mb-6">
@@ -62,7 +63,7 @@
                             <div class="col-lg-12 fv-row">
                                 <div class="row">
                                     <template x-for="row in role" :key="row.id">
-                                        <div class="col-md-4 mt-2">
+                                        <div class="col-md-4 mt-2 form-check form-check-custom form-check-solid">
                                             <input class="form-check-input" type="radio" :value="row.name" multiple
                                                    name="role[]"/>
                                             <label class="form-check-label" for="flexCheckChecked">
@@ -91,6 +92,8 @@
 @endsection
 @push('script')
     <script defer>
+        $('.date').flatpickr();
+
         function generateUser() {
             return {
                 role: null,

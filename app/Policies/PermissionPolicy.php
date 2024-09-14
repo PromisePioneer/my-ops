@@ -4,7 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 
-class ContactPolicy
+class PermissionPolicy
 {
     /**
      * Create a new policy instance.
@@ -14,23 +14,27 @@ class ContactPolicy
         //
     }
 
+
     public function view(User $user): bool
     {
-        return $user->can('Lihat Kontak');
+        return $user->can('Lihat Hak Akses');
     }
+
 
     public function create(User $user): bool
     {
-        return $user->can('Tambah Kontak');
+        return $user->can('Tambah Hak Akses');
     }
+
 
     public function update(User $user): bool
     {
-        return $user->can('Update Kontak');
+        return $user->can('Update Hak Akses');
     }
+
 
     public function delete(User $user): bool
     {
-        return $user->can('Hapus Kontak');
+        return $user->can('Hapus Hak Akses');
     }
 }

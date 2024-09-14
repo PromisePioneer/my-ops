@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Master\Branch\BranchImportRequest;
 use App\Http\Requests\Master\Branch\BranchRequest;
-use App\Imports\BranchesImport;
 use App\Models\Branch;
 use App\Models\User;
 use Exception;
@@ -22,7 +20,6 @@ class BranchesController extends Controller
     public function index(): View
     {
         $this->authorize('view', Branch::class);
-
         return view('pages.master.branch.index');
     }
 

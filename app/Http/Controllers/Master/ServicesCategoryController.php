@@ -59,7 +59,7 @@ class ServicesCategoryController extends Controller
      */
     public function store(ServicesCategoryRequest $request): JsonResponse
     {
-        $this->authorize('tambah', ServiceCategory::class);
+        $this->authorize('create', ServiceCategory::class);
         $services = ServiceCategory::create($request->validated());
 
         return response()->json([
@@ -110,7 +110,6 @@ class ServicesCategoryController extends Controller
             }
         }
         $services = ServiceCategory::whereIn('id', $integerIDs)->delete();
-
         return response()->json([
             'message' => 'data berhasil di hapus',
             'data' => $services,

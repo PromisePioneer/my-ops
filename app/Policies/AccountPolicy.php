@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Auth\Access\Response;
 
 class AccountPolicy
 {
@@ -14,28 +15,30 @@ class AccountPolicy
         //
     }
 
-    public function view(User $user): bool
+    public function view(User $user): Response
     {
-        return $user->can('lihat akun');
+        return $user->can('Lihat Akun')
+            ? Response::allow()
+            : Response::deny('Anda tidak memiliki akses ke halaman ini');
     }
 
     public function create(User $user): bool
     {
-        return $user->can('tambah akun');
+        return $user->can('Tambah Akun');
     }
 
     public function update(User $user): bool
     {
-        return $user->can('update akun');
+        return $user->can('Update Akun');
     }
 
     public function delete(User $user): bool
     {
-        return $user->can('hapus akun');
+        return $user->can('Hapus Akun');
     }
 
     public function import(User $user): bool
     {
-        return $user->can('import akun');
+        return $user->can('Import Akun');
     }
 }
