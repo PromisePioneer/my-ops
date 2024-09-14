@@ -7,22 +7,28 @@ use App\Models\Account;
 use App\Models\Branch;
 use App\Models\Contact;
 use App\Models\Department;
+use App\Models\NationalHoliday;
 use App\Models\Product;
 use App\Models\ServiceCategory;
 use App\Models\SP;
+use App\Models\User;
 use App\Models\WorkTime;
 use App\Policies\AccountPolicy;
 use App\Policies\BranchPolicy;
 use App\Policies\ContactPolicy;
 use App\Policies\DepartmentPolicy;
+use App\Policies\NationalHolidayPolicy;
+use App\Policies\PermissionPolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\ServiceCategoriesPolicy;
 use App\Policies\SpPolicy;
+use App\Policies\UserPolicy;
 use App\Policies\WorkTimePolicy;
 use Carbon\Carbon;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class AuthServiceProvider extends ServiceProvider
@@ -42,6 +48,9 @@ class AuthServiceProvider extends ServiceProvider
         Role::class => RolePolicy::class,
         WorkTime::class => WorkTimePolicy::class,
         SP::class => SpPolicy::class,
+        NationalHoliday::class => NationalHolidayPolicy::class,
+        User::class => UserPolicy::class,
+        Permission::class => PermissionPolicy::class,
     ];
 
     /**

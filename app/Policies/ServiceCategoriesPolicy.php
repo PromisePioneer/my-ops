@@ -6,9 +6,6 @@ use App\Models\User;
 
 class ServiceCategoriesPolicy
 {
-    /**
-     * Create a new policy instance.
-     */
     public function __construct()
     {
         //
@@ -16,21 +13,21 @@ class ServiceCategoriesPolicy
 
     public function view(User $user): bool
     {
-        return $user->can('lihat kategori layanan');
+        return $user->can('Lihat Kategori Layanan');
     }
 
     public function create(User $user): bool
     {
-        return $user->can('tambah kategori layanan');
+        return $user->can('Tambah Kategori Layanan');
     }
 
     public function update(User $user): bool
     {
-        return $user->can('update kategori layanan');
+        return $user->can('Update Kategori Layanan');
     }
 
     public function delete(User $user): bool
     {
-        return $user->can('hapus kategori layanan');
+        return $user->can('Hapus Kategori Layanan');
     }
 }

@@ -16,21 +16,21 @@ class DepartmentPolicy
 
     public function view(User $user): bool
     {
-        return $user->can('lihat department');
+        return $user->can('Lihat Departemen');
     }
 
     public function create(User $user): bool
     {
-        return $user->can('tambah department');
+        return $user->can('Tambah Departemen');
     }
 
     public function update(User $user): bool
     {
-        return $user->can('update department');
+        return $user->can('Update Departemen');
     }
 
     public function delete(User $user): bool
     {
-        return $user->can('hapus department');
+        return $user->can('Hapus Departemen');
     }
 }

@@ -115,7 +115,7 @@
                             </template>
                         </table>
                     </div>
-                    <ul class="pagination float-end mb-4 mt-4">
+                    <ul class="pagination mb-4 mt-4">
                         <template x-for="pagination in branches.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                 <button class="page-link" @click="paginationEndPoint(pagination.url)"
@@ -137,7 +137,6 @@
                 branches: [],
                 isLoading: true,
                 buttonLoading: false,
-                startIndex: null,
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
@@ -151,7 +150,6 @@
                 async init() {
                     const branches = await axios.get('/master/branch/data');
                     this.branches = branches.data
-                    this.startIndex = this.branches.from;
                     this.isLoading = false;
                 },
                 async searchData() {
@@ -167,7 +165,6 @@
                 async paginationEndPoint(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
-                        this.startIndex = resp.data.from
                         this.branches = resp.data
                     }
                 },

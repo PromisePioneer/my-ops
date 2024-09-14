@@ -3,8 +3,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Form Permission</h5>
-                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
-                    <span class="svg-icon svg-icon-2x"></span>
+                <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
+                     aria-label="Close">
+                    <span class="svg-icon svg-icon-2x">
+                        <i class="fas fa-xmark-circle"></i>
+                    </span>
                 </div>
             </div>
 
@@ -12,15 +15,22 @@
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama Permission</label>
-                        <input type="text" id="name" name="name" class="form-control form-control-solid" placeholder="Nama"/>
+                        <input type="text" id="name" name="name" class="form-control form-control-solid"
+                               placeholder="Nama"/>
                     </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary btn-sm"
-                            :disabled="buttonLoading"
-                            x-text="buttonLoading ? 'Loading...' : 'Simpan'"></button>
+                    <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
+                        <i class="ki-duotone ki-click fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                            <span class="path4"></span>
+                            <span class="path5"></span>
+                        </i>
+                        <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
+                    </button>
                 </div>
             </form>
         </div>

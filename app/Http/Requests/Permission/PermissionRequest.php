@@ -32,8 +32,8 @@ class PermissionRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Nama permission tidak boleh kosong',
-            'name.unique' => 'Nama permission sudah terdaftar',
+            'name.required' => 'Hak Akses tidak boleh kosong',
+            'name.unique' => 'Hak Akses sudah terdaftar',
         ];
     }
 }

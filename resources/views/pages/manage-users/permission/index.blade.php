@@ -1,5 +1,5 @@
 ﻿@extends('layouts.template')
-@section('page-title', 'Data Permission')
+@section('page-title', 'Hak Akses')
 @section('content')
     <div x-data="permissionsData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
@@ -17,9 +17,14 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                        <button type="button" class="btn btn-light-primary btn-sm"
+                                data-bs-toggle="modal"
                                 data-bs-target="#modal-create">
-                            Tambah
+                            <i class="ki-duotone ki-message-add fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i> Tambah
                         </button>
                     </div>
                     <div class="d-flex justify-content-end align-items-center d-none"
@@ -34,15 +39,35 @@
                 </div>
             </div>
             <div class="card-body py-3">
+                <div class="col-12 ">
+                    <form id="form-delete" @submit.prevent="destroy()">
+                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                        <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                                x-show="selectedCheckBox.length > 0"
+                                x-transition x-cloak>
+                            <i class="ki-duotone ki-trash-square fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
+                            Hapus
+                        </button>
+                    </form>
+                </div>
                 <div class="py-5">
                     <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
                         <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                            <th class="w-10px pe-2">No</th>
-                            <th class="min-w-125px">Nama</th>
-                            <th class="min-w-125px">Actions</th>
+                            <th class="w-10px pe-2">
+                                <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                    <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
+                                </div>
+                            </th>
+                            <th class="min-w-125px text-center">Nama</th>
+                            <th class="min-w-125px text-center">Actions</th>
                         </thead>
-                        <tbody class="text-gray-600 fw-bold">
+                        <tbody class="fw-bold">
                         <template x-if="isLoading">
                             <tr>
                                 <td colspan="9">
@@ -63,28 +88,38 @@
                         </template>
                         <template x-for="(permission,index) in permissions?.data" :key="permission.id">
                             <tr>
-                                <td x-text="startIndex + index++"></td>
-                                <td class="d-flex align-items-center" x-text="permission.name"></td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                    <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                         @click="selectCheckBox($event)">
+                                        <input class="form-check-input" type="checkbox" :value="permission.id"
+                                               :id="'checkbox-' + permission.id"/>
+                                    </div>
+                                </td>
+                                <td class=" text-center" x-text="permission.name"></td>
+                                <td class="text-center">
+                                    <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                             data-bs-target="#modal-edit" @click="edit(permission.id)">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-danger btn-sm" @click="destroy(permission.id)">
-                                        <i class="bi bi-trash"></i>
+                                        <i class="ki-duotone ki-pencil fs-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
                                     </button>
                                 </td>
                             </tr>
                         </template>
                         </tbody>
                     </table>
-                    <ul class="pagination float-end mb-4">
-                        <li class="page-item previous">
-                            <button class="btn btn-light btn-sm" @click="previousPage()">Previous</button>
-                        </li>
-                        <li class="page-item next">
-                            <button class="btn btn-light btn-sm" @click="nextPage()">Next</button>
-                        </li>
+                    <ul class="pagination float-end mb-4 mt-4">
+                        <template x-for="pagination in permissions?.links">
+                            <ul class="pagination">
+                                <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                    <button
+                                            class="page-link"
+                                            @click="paginationEndPoint(pagination.url)"
+                                            x-html="pagination.label"></button>
+                                </li>
+                            </ul>
+                        </template>
                     </ul>
                 </div>
             </div>
@@ -99,37 +134,63 @@
                 buttonLoading: false,
                 permissions: null,
                 isLoading: true,
-                startIndex: null,
+                selectedCheckBox: [],
+                selectAll: false,
+                singleChecked: false,
                 search: '',
                 editVal: '',
                 formCreate: document.getElementById('form-create'),
                 formEdit: document.getElementById('form-edit'),
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
+                formDelete: document.getElementById('form-delete'),
                 async init() {
                     const permission = await axios.get('/manage-users/permissions/data');
                     this.permissions = permission.data
-                    this.startIndex = this.permissions.from;
                     this.isLoading = false;
                 },
                 async searchData() {
-                    this.permissions = await axios.get('/manage-users/permissions/search', {
-                        params: {search: this.search},
-                        headers: {'Content-Type': 'application/json'}
-                    });
-                },
-                async nextPage() {
-                    if (this.permissions.next_page_url) {
-                        const resp = await axios.get(`${this.permissions.next_page_url}`);
-                        this.permissions = resp.data
-                        this.startIndex = this.permissions.from
+                    this.isLoading = true;
+                    try {
+                        const response = await axios.get('/manage-users/permissions/search', {
+                            params: {search: this.search},
+                            headers: {'Content-Type': 'application/json'}
+                        });
+                        this.permissions = response.data;
+                    } catch (error) {
+                        console.error('Error fetching data:', error);
+                    } finally {
+                        this.isLoading = false;
                     }
                 },
-                async previousPage() {
-                    if (this.permissions.prev_page_url) {
-                        const resp = await axios.get(`${this.permissions.prev_page_url}`);
+                async paginationEndPoint(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
                         this.permissions = resp.data
-                        this.startIndex = this.permissions.from
+                    }
+                },
+                toggleAllCheckBox() {
+                    this.selectAll = !this.selectAll;
+                    this.singleChecked = false;
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    this.selectedCheckBox = [];
+                    checkboxes.forEach((checkbox) => {
+                        checkbox.checked = this.selectAll;
+                        if (this.selectAll) {
+                            this.selectedCheckBox.push(checkbox.value);
+                        }
+                    });
+                    this.selectedCheckBox.shift();
+                },
+                selectCheckBox(event) {
+                    const checkboxId = event.target.value;
+                    if (event.target.checked) {
+                        this.selectedCheckBox.push(checkboxId);
+                    } else {
+                        const index = this.selectedCheckBox.indexOf(checkboxId);
+                        if (index !== -1) {
+                            this.selectedCheckBox.splice(index, 1);
+                        }
                     }
                 },
                 async save() {
@@ -165,10 +226,10 @@
                         this.buttonLoading = false;
                     }
                 },
-                async destroy(id) {
+                async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.delete(`/manage-users/permissions/${id}`);
+                            await axios.post(`/manage-users/permissions/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {

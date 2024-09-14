@@ -95,7 +95,7 @@ Route::group(['middleware' => ['auth']], static function () {
     Route::prefix('/manage-users')->group(function () {
         Route::prefix('users')->group(function () {
             Route::get('/', [UserController::class, 'index']);
-            Route::get('/data', [UserController::class, 'usersData']);
+            Route::get('/data', [UserController::class, 'data']);
             Route::get('/roles/data', [UserController::class, 'rolesData']);
             Route::get('/branch/data', [UserController::class, 'branchData']);
             Route::get('/filter/branch/data/{branch}', [UserController::class, 'filterByBranch']);
@@ -166,10 +166,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [PermissionController::class, 'index']);
             Route::get('/data', [PermissionController::class, 'permissionData']);
             Route::get('/search', [PermissionController::class, 'search']);
+            Route::post('/destroy', [PermissionController::class, 'destroy']);
             Route::post('/', [PermissionController::class, 'store']);
             Route::get('/show/{permission}', [PermissionController::class, 'show']);
             Route::post('/update/{permission}', [PermissionController::class, 'update']);
-            Route::delete('/{permission}', [PermissionController::class, 'destroy']);
         });
 
 

@@ -3,219 +3,164 @@
 namespace App\Http\Controllers\ManageUser;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\User\IdentityInformationRequest;
 use App\Http\Requests\User\UserRequest;
 use App\Imports\UserImport;
 use App\Models\Attendances;
 use App\Models\Branch;
 use App\Models\Department;
-use App\Models\IdentityInformation;
 use App\Models\Role;
 use App\Models\User;
-use App\Service\IdentityInformationService;
-use Carbon\Carbon;
+use App\Service\UserService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
     public int $perPage = 10;
-
-    private IdentityInformationService $identityInformationService;
-
-    private IdentityInformation $identityInformation;
-
     private Branch $branch;
-
     private User $user;
-
     private Department $department;
-
     private Attendances $attendances;
+    private UserService $userService;
 
     public function __construct()
     {
-        $this->middleware('permission:lihat user', ['only' => ['index']]);
-        $this->middleware('permission:tambah user', ['only' => ['create', 'store']]);
-        $this->middleware('permission:update user', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:hapus user', ['only' => ['destroy']]);
-
         $this->user = new User();
         $this->branch = new Branch();
         $this->department = new Department();
-        $this->identityInformationService = new IdentityInformationService();
-        $this->identityInformation = new IdentityInformation();
         $this->attendances = new Attendances();
+        $this->userService = new UserService();
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function index(): View
     {
+        $this->authorize('view', User::class);
         return view('pages.manage-users.user.index');
     }
 
-    public function usersData(): JsonResponse
+    /**
+     * @throws AuthorizationException
+     */
+    public function data(): JsonResponse
     {
-        $user = $this->user->getData()->paginate($this->perPage)->onEachSide(1);
-
-        return response()->json($user);
+        $this->authorize('view', User::class);
+        $query = $this->user->getData()->paginate($this->perPage)->onEachSide(1);
+        return response()->json($query);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function search(Request $request): JsonResponse
     {
+        $this->authorize('view', User::class);
         return response()->json($this->user->searchData($request));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function branchData(Request $request): JsonResponse
     {
+        $this->authorize('view', User::class);
         return response()->json($this->branch->getData($request));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function rolesData(Request $request): JsonResponse
     {
+        $this->authorize('create', User::class);
         $roles = Role::all();
-
-        if ($request->user()->hasRole('Branch Manager')) {
-            $roles = $roles->filter(function ($role) {
-                return in_array($role->name, [
-                    'Finance & Accounting Staff', 'Stocker Staff', 'Customer Service Staff', 'Head Engineer',
-                    'Senior Engineer',
-                ]);
-            });
-        }
-
+        $this->userService->isUserHasRoleBranchManager($request, $roles);
         return response()->json($roles);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function filter(Request $request): JsonResponse
     {
-        $users = $this->user->getData()->where('active', $request->active ?? true);
-        if ($request->year) {
-            $users->where('branch_id', $request->branch_id);
-            $users->whereYear('join_date', $request->year);
-        }
+        $this->authorize('view', User::class);
 
-        if ($request->month) {
-            $users->where('branch_id', $request->branch_id);
-            $users->whereMonth('join_date', '=', $request->month);
-        }
-
-        if ($request->month && $request->year) {
-            $users->where('branch_id', $request->branch_id);
-            $users->whereDate('join_date', Carbon::parse('01-'.$request->month.'-'.$request->year));
-        }
-
-        $filteredData = $users->paginate($this->perPage)->onEachSide(1);
-
-        return response()->json($filteredData);
+        return response()->json($this->userService->filter($request)->paginate(10)->onEachSide(1));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function store(UserRequest $request): JsonResponse
     {
-        $branch = $this->branch->getSelectedData($request->branch_id);
-        $date = Carbon::parse($request->join_date)->format('d-m-y');
-
-        $handlingBranchIfDataNull = $branch['code'] ?? '100';
-        $format = $handlingBranchIfDataNull.$date.$request->absent_id;
-        $data = $request->validated();
-
-        $data['placement'] = $request->branch_id ? 'Cabang' : 'Pusat';
-        $data['branch_id'] = $request->user()->role('Manager Cabang') ? $request->user()->branch_id : $request->get('branch_id');
-        $data['password'] = Hash::make('mayatama');
-        $data['nip'] = str_replace('-', '', $format);
-        $user = User::create($data);
-        $user->syncRoles($request->role);
-
-        return response()->json([
-            'message' => 'data berhasil disimpan',
-        ]);
+        $this->authorize('create', User::class);
+        $this->userService->store($request);
+        return response()->json(['message' => 'data berhasil disimpan']);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function create(): View
     {
-        $randomAbsentId = $this->random_digits();
-
-        while (User::where('absent_id', $randomAbsentId)->count() > 0) {
-            $randomAbsentId = mt_rand();
-        }
+        $this->authorize('create', User::class);
+        $randomAbsentId = $this->userService->randomAbsentId();
 
         return view('pages.manage-users.user.create', compact('randomAbsentId'));
     }
 
-    private function random_digits(): string
-    {
-        $result = '';
-
-        for ($i = 0; $i < 3; $i++) {
-            $result .= random_int(0, 9);
-        }
-
-        return $result;
-    }
-
+    /**
+     * @throws AuthorizationException
+     */
     public function edit(User $user): View
     {
+        $this->authorize('update', User::class);
         $roles = Role::pluck('name', 'name')->all();
         $userRole = $user->roles->pluck('name', 'name')->all();
-
         return view('pages.manage-users.user.edit', compact('user', 'userRole', 'roles'));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function destroy(User $user): JsonResponse
     {
+        $this->authorize('delete', User::class);
         $user->delete();
-
         return response()->json([
             'message' => 'data sukses dihapus!',
             'data' => $user,
         ]);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getSelectedBranch(User $user): JsonResponse
     {
+        $this->authorize('update', User::class);
         $branch = $this->branch->getSelectedData($user->branch_id);
-
         return response()->json($branch);
     }
 
     public function detail(User $user): View
     {
-        $role = Role::with('department')->where('id', $user?->roles[0]?->id ?? null)->first();
+        $role = Role::with('department')->where('id', $user?->roles[0]?->id)->first();
         return view('pages.manage-users.user.detail', compact('user', 'role'));
     }
 
-    public function identityInformation(User $user): JsonResponse
+    /**
+     * @throws AuthorizationException
+     */
+    public function update(UserRequest $request, User $user): JsonResponse
     {
-        return response()->json($this->identityInformation->getRelatedUserIdentityInformation($user->id));
-    }
-
-    public function identityInformationUpdate(IdentityInformationRequest $request, User $user): JsonResponse
-    {
-        $this->identityInformationService->update($request, $user);
-
-        return response()->json([
-            'message' => 'data berhasil disimpan',
-        ]);
-    }
-
-    public function update(User $user, UserRequest $request): JsonResponse
-    {
-        $branch = $this->branch->getSelectedData($request->branch_id);
-        $date = Carbon::parse($request->join_date)->format('d-m-y');
-
-        $handlingBranchIfDataNull = $branch['code'] ?? '100';
-        $format = $handlingBranchIfDataNull.$date.$request->absent_id;
-        $data = $request->validated();
-
-        $data['placement'] = $request->branch_id ? 'Cabang' : 'Pusat';
-        $data['branch_id'] = $request->branch_id;
-        $data['password'] = Hash::make('mayatama');
-        $data['nip'] = str_replace('-', '', $format);
-        $user->update($data);
-        $user->syncRoles($request->role);
-
+        $this->authorize('viewDetail', User::class);
+        $this->userService->update($request, $user);
         return response()->json([
             'message' => 'data sukses diupdate!',
         ]);
@@ -234,7 +179,6 @@ class UserController extends Controller
     public function show(User $user): JsonResponse
     {
         $users = $user->with('roles')->find($user->id);
-
         return response()->json($users);
     }
 
@@ -242,21 +186,19 @@ class UserController extends Controller
     {
         ini_set('max_execution_time', 180);
         $file = $request->file('file_import');
-
         Excel::import(new UserImport(), $file);
-
-        return response()->json([
-            'message' => 'Data berhasil diimport',
-        ]);
+        return response()->json(['message' => 'Data berhasil diimport']);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function changeStatusActive(User $user): JsonResponse
     {
+        $this->authorize('setActive', User::class);
         $user->active = !$user->active;
         $user->save();
 
-        return response()->json([
-            'message' => 'data sukses diupdate!',
-        ]);
+        return response()->json(['message' => 'data sukses diupdate!']);
     }
 }
