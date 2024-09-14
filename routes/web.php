@@ -58,7 +58,7 @@ use App\Http\Controllers\Transaction\ExpenditureController;
 use App\Http\Controllers\Transaction\FabController;
 use App\Http\Controllers\Transaction\InvoiceController;
 use App\Http\Controllers\Transaction\OfferingLettersController;
-use App\Http\Controllers\UserProfile\LeaveAndPermissionController;
+use App\Http\Controllers\UserProfile\UserLeaveAndPermissionController;
 use App\Http\Controllers\Utilities\CompanyProfileController;
 use App\Http\Controllers\Utilities\LetterHeadController;
 use App\Http\Controllers\Utilities\NotificationsController;
@@ -166,10 +166,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [PermissionController::class, 'index']);
             Route::get('/data', [PermissionController::class, 'permissionData']);
             Route::get('/search', [PermissionController::class, 'search']);
-            Route::post('/destroy', [PermissionController::class, 'destroy']);
             Route::post('/', [PermissionController::class, 'store']);
             Route::get('/show/{permission}', [PermissionController::class, 'show']);
             Route::post('/update/{permission}', [PermissionController::class, 'update']);
+            Route::delete('/destroy', [PermissionController::class, 'destroy']);
         });
 
 
@@ -393,14 +393,14 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/sp/data', [UserProfileController::class, 'spData']);
 
             Route::prefix('leaves-and-permission')->group(function () {
-                Route::get('/', [LeaveAndPermissionController::class, 'index']);
-                Route::get('/data', [LeaveAndPermissionController::class, 'data']);
-                Route::get('/search', [LeaveAndPermissionController::class, 'search']);
-                Route::get('/create', [LeaveAndPermissionController::class, 'create']);
-                Route::post('/', [LeaveAndPermissionController::class, 'store']);
-                Route::get('/{leaveAndPermission}', [LeaveAndPermissionController::class, 'edit']);
-                Route::post('/{leaveAndPermission}', [LeaveAndPermissionController::class, 'update']);
-                Route::delete('/{leaveAndPermission}', [LeaveAndPermissionController::class, 'destroy']);
+                Route::get('/', [UserLeaveAndPermissionController::class, 'index']);
+                Route::get('/data', [UserLeaveAndPermissionController::class, 'data']);
+                Route::get('/search', [UserLeaveAndPermissionController::class, 'search']);
+                Route::get('/create', [UserLeaveAndPermissionController::class, 'create']);
+                Route::post('/', [UserLeaveAndPermissionController::class, 'store']);
+                Route::get('/{leaveAndPermission}', [UserLeaveAndPermissionController::class, 'edit']);
+                Route::post('/{leaveAndPermission}', [UserLeaveAndPermissionController::class, 'update']);
+                Route::delete('/{leaveAndPermission}', [UserLeaveAndPermissionController::class, 'destroy']);
             });
         });
     });
@@ -696,8 +696,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [PositionAllowancesController::class, 'index']);
             Route::get('/data', [PositionAllowancesController::class, 'data']);
             Route::get('/user/data', [PositionAllowancesController::class, 'getUser']);
-            Route::get('/user/selected/{jobInformation}',
-                [PositionAllowancesController::class, 'getSelectedUser']);
+            Route::get(
+                '/user/selected/{jobInformation}',
+                [PositionAllowancesController::class, 'getSelectedUser']
+            );
             Route::get('/search', [PositionAllowancesController::class, 'search']);
             Route::post('/', [PositionAllowancesController::class, 'store']);
             Route::get('/{jobInformation}', [PositionAllowancesController::class, 'edit']);
@@ -724,8 +726,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [TransportationAllowanceController::class, 'data']);
             Route::get('/search', [TransportationAllowanceController::class, 'search']);
             Route::get('/user/data', [TransportationAllowanceController::class, 'getUserData']);
-            Route::get('/user/selected/{userHasTransportationAllowance}',
-                [TransportationAllowanceController::class, 'getSelectedUser']);
+            Route::get(
+                '/user/selected/{userHasTransportationAllowance}',
+                [TransportationAllowanceController::class, 'getSelectedUser']
+            );
             Route::post('/', [TransportationAllowanceController::class, 'store']);
             Route::get('/{userHasTransportationAllowance}', [TransportationAllowanceController::class, 'edit']);
             Route::post('/destroy', [TransportationAllowanceController::class, 'destroy']);
@@ -738,8 +742,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [OvertimeAllowanceController::class, 'data']);
             Route::get('/search', [OvertimeAllowanceController::class, 'search']);
             Route::get('/user/data', [OvertimeAllowanceController::class, 'getUserData']);
-            Route::get('/user/selected/{userHasOvertime}',
-                [OvertimeAllowanceController::class, 'getSelectedUser']);
+            Route::get(
+                '/user/selected/{userHasOvertime}',
+                [OvertimeAllowanceController::class, 'getSelectedUser']
+            );
             Route::post('/', [OvertimeAllowanceController::class, 'store']);
             Route::get('/{userHasOvertime}', [OvertimeAllowanceController::class, 'edit']);
             Route::post('/destroy', [OvertimeAllowanceController::class, 'destroy']);
@@ -773,8 +779,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [NinePastFiveteenLateController::class, 'data']);
             Route::get('/search', [NinePastFiveteenLateController::class, 'search']);
             Route::get('/user/data', [NinePastFiveteenLateController::class, 'getUserData']);
-            Route::get('/user/selected/{ninePastFiveTeenLateDeduction}',
-                [NinePastFiveteenLateController::class, 'getSelectedUser']);
+            Route::get(
+                '/user/selected/{ninePastFiveTeenLateDeduction}',
+                [NinePastFiveteenLateController::class, 'getSelectedUser']
+            );
             Route::post('/', [NinePastFiveteenLateController::class, 'store']);
             Route::get('/{ninePastFiveTeenLateDeduction}', [NinePastFiveteenLateController::class, 'edit']);
             Route::post('/destroy', [NinePastFiveteenLateController::class, 'destroy']);
@@ -787,8 +795,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [AdditionalDeductionController::class, 'data']);
             Route::get('/search', [AdditionalDeductionController::class, 'search']);
             Route::get('/user/data', [AdditionalDeductionController::class, 'getUserData']);
-            Route::get('/user/selected/{additionalDeduction}',
-                [AdditionalDeductionController::class, 'getSelectedUser']);
+            Route::get(
+                '/user/selected/{additionalDeduction}',
+                [AdditionalDeductionController::class, 'getSelectedUser']
+            );
             Route::post('/', [AdditionalDeductionController::class, 'store']);
             Route::get('/{additionalDeduction}', [AdditionalDeductionController::class, 'edit']);
             Route::post('/destroy', [AdditionalDeductionController::class, 'destroy']);
@@ -803,8 +813,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/user/data', [SalesBonusController::class, 'getUserData']);
             Route::get('/user/selected/{saleBonus}', [SalesBonusController::class, 'getSelectedUser']);
             Route::get('/broadband-packet/data', [SalesBonusController::class, 'getBroadbandPacket']);
-            Route::get('/broadband-packet/selected/{saleBonus}',
-                [SalesBonusController::class, 'getSelectedBroadbandPacket']);
+            Route::get(
+                '/broadband-packet/selected/{saleBonus}',
+                [SalesBonusController::class, 'getSelectedBroadbandPacket']
+            );
             Route::post('/', [SalesBonusController::class, 'store']);
             Route::get('/{saleBonus}', [SalesBonusController::class, 'edit']);
             Route::post('/destroy', [SalesBonusController::class, 'destroy']);

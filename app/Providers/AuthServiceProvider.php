@@ -7,6 +7,7 @@ use App\Models\Account;
 use App\Models\Branch;
 use App\Models\Contact;
 use App\Models\Department;
+use App\Models\LeaveAndPermission;
 use App\Models\NationalHoliday;
 use App\Models\Product;
 use App\Models\ServiceCategory;
@@ -17,6 +18,7 @@ use App\Policies\AccountPolicy;
 use App\Policies\BranchPolicy;
 use App\Policies\ContactPolicy;
 use App\Policies\DepartmentPolicy;
+use App\Policies\LeaveAndPermissionPolicy;
 use App\Policies\NationalHolidayPolicy;
 use App\Policies\PermissionPolicy;
 use App\Policies\ProductPolicy;
@@ -51,6 +53,7 @@ class AuthServiceProvider extends ServiceProvider
         NationalHoliday::class => NationalHolidayPolicy::class,
         User::class => UserPolicy::class,
         Permission::class => PermissionPolicy::class,
+        LeaveAndPermission::class => LeaveAndPermissionPolicy::class,
     ];
 
     /**

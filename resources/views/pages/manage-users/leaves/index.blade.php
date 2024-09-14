@@ -34,7 +34,7 @@
                                 <th class="min-w-125px">Status Konfirmasi</th>
                                 <th class="min-w-125px">Status Cuti</th>
                             </thead>
-                            <tbody class="text-gray-600 fw-bold">
+                            <tbody class=" fw-bold">
                             <template x-if="isLoading">
                                 <tr>
                                     <td colspan="9">
@@ -56,7 +56,10 @@
                             <template x-for="(leave, index) in leaves?.data" :key="leave.id">
                                 <tr>
                                     <td x-text="startIndex + index++"></td>
-                                    <td x-text="leave.user.name"></td>
+                                    <td>
+                                        <a :href="`/manage-users/users/detail/${leave.user_id}`"
+                                           x-text="leave.user_name"></a>
+                                    </td>
                                     <td x-text="`${leave.start_date} - ${leave.end_date}`"></td>
                                     <td x-text="leave.reason"></td>
                                     <td x-text="leave.leaves_status"></td>
@@ -72,7 +75,7 @@
                                         </template>
                                     </td>
                                     <template
-                                        x-if="leave.confirmation_status === 'Diterima' || leave.confirmation_status === 'Ditolak'">
+                                            x-if="leave.confirmation_status === 'Diterima' || leave.confirmation_status === 'Ditolak'">
                                         <td>
                                             <button class="btn btn-info btn-sm" disabled>
                                                 <i class="bi bi-gear-fill"></i>
@@ -85,14 +88,20 @@
                                     </template>
                                     <template x-if="leave.confirmation_status === 'Diproses'">
                                         <td>
-                                            <button class="btn btn-info btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-confirm" @click="openConfirmModal(leave.id)">
-                                                <i class="bi bi-gear-fill"></i>
-                                            </button>
-                                            <button class="btn btn-dark btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-detail" @click="detail(leave.id)">
-                                                <i class="bi bi-eye-fill"></i>
-                                            </button>
+                                            @can('Acc Cuti')
+                                                <button class="btn btn-info btn-sm" data-bs-toggle="modal"
+                                                        data-bs-target="#modal-confirm"
+                                                        @click="openConfirmModal(leave.id)"
+                                                        :disabled="Number(currentLoginId) === Number(leave.user_id)">
+                                                    <i class="bi bi-gear-fill"></i>
+                                                </button>
+                                            @endcan
+                                            @can('Lihat Detail Cuti')
+                                                <button class="btn btn-dark btn-sm" data-bs-toggle="modal"
+                                                        data-bs-target="#modal-detail" @click="detail(leave.id)">
+                                                    <i class="bi bi-eye-fill"></i>
+                                                </button>
+                                            @endcan
                                         </td>
                                     </template>
                                 </tr>
@@ -101,12 +110,13 @@
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4">
-                        <li class="page-item previous">
-                            <button class="btn btn-light btn-sm" @click="previousPage">Previous</button>
-                        </li>
-                        <li class="page-item next">
-                            <button class="btn btn-light btn-sm" @click="nextPage">Next</button>
-                        </li>
+                        <template x-for="pagination in leaves.links">
+                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                        x-html="pagination.label">
+                                </button>
+                            </li>
+                        </template>
                     </ul>
                 </div>
             </div>
@@ -122,6 +132,7 @@
                 isLoading: false,
                 leaves: [],
                 search: '',
+                currentLoginId: "{{ Auth::id() }}",
                 id: '',
                 detailValue: '',
                 modalConfirm: new bootstrap.Modal(document.getElementById('modal-confirm')),
@@ -133,26 +144,22 @@
                     this.isLoading = false;
                 },
                 async searchData() {
+                    this.isLoading = true;
                     try {
-                        this.leaves = await axios.get('/manage-users/leaves/search', {
+                        const response = await axios.get('/manage-users/leaves/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
+                        this.leaves = response.data;
                     } catch (error) {
-                        console.log(error);
+                        console.error('Error fetching data:', error);
+                    } finally {
+                        this.isLoading = false;
                     }
                 },
-                async nextPage() {
-                    if (this.leaves.next_page_url) {
-                        const resp = await axios.get(`${this.leaves.next_page_url}`);
-                        this.startIndex = this.leaves.from
-                        this.leaves = resp.data
-                    }
-                },
-                async previousPage() {
-                    if (this.leaves.prev_page_url) {
-                        const resp = await axios.get(`${this.leaves.prev_page_url}`);
-                        this.startIndex = this.leaves.from
+                async paginationEndPoint(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
                         this.leaves = resp.data
                     }
                 },

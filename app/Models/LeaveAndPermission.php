@@ -2,15 +2,14 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -23,8 +22,8 @@ use Illuminate\Http\Request;
  * @property string|null $sick_letter
  * @property string|null $confirmation_reason
  * @property int|null $acc_by
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read User|null $accBy
  * @property-read User $user
  *
@@ -70,34 +69,10 @@ class LeaveAndPermission extends Model
         return $this->belongsTo(User::class, 'acc_by');
     }
 
-    public function getDataWithPagination(int $userId, int $perPage): LengthAwarePaginator
+    public function getData(): Builder
     {
-        $leaves = self::where('user_id', $userId)->paginate($perPage);
-
-        self::formattedData($leaves);
-
-        return $leaves;
+        return self::with('accBy', 'user');
     }
-
-    private static function formattedData(LengthAwarePaginator $data): LengthAwarePaginator
-    {
-        $formattedData = $data->getCollection()->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'start_date' => Carbon::parse($item->start_date)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
-                'end_date' => Carbon::parse($item->end_date)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
-                'leaves_status' => $item->leaves_status,
-                'confirmation_status' => $item->confirmation_status,
-            ];
-        });
-
-        $data->setCollection($formattedData);
-
-        return $data;
-    }
-
-
-    //eloquent
 
     public function searchDataBasedOnUserId(Request $request): Collection|array
     {
@@ -113,16 +88,11 @@ class LeaveAndPermission extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function getDataWithPaginationBasedOnBranch(?int $branchId, int $perPage): LengthAwarePaginator
-    {
-        return self::with('user')->whereHas('user', function ($query) use ($branchId) {
-            $query->where('branch_id', $branchId);
-        })->paginate($perPage);
-    }
 
+    //eloquent
     public function searchDataWithPaginationBasedOnBranch(Request $request): Collection
     {
         $search = $request->input('search');
