@@ -7,37 +7,42 @@ use App\Http\Requests\UserProfile\LeaveAndPermissionRequest;
 use App\Models\LeaveAndPermission;
 use App\Service\CalculateUserLeaves;
 use App\Service\HandleFileUploadService;
+use App\Service\LeaveAndPermission\UserLeaveAndPermissionService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-class LeaveAndPermissionController extends Controller
+class UserLeaveAndPermissionController extends Controller
 {
     public readonly int $perPage;
-
     private LeaveAndPermission $leavesAndPermission;
-
     private HandleFileUploadService $handleUploadFileService;
-
     private CalculateUserLeaves $calculateUserLeaves;
+    private UserLeaveAndPermissionService $userLeaveAndPermissionService;
 
     public function __construct()
     {
         $this->leavesAndPermission = new LeaveAndPermission();
         $this->handleUploadFileService = new HandleFileUploadService();
         $this->calculateUserLeaves = new CalculateUserLeaves();
+        $this->userLeaveAndPermissionService = new UserLeaveAndPermissionService();
         $this->perPage = 10;
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function index(Request $request): View
     {
+        $this->authorize('viewOwnLeaves', LeaveAndPermission::class);
         return view('pages.utilities.user-profile.leaves-and-permission.index');
     }
 
     public function data(Request $request): JsonResponse
     {
         $totalLeavesAllowance = $this->calculateUserLeaves->calculate($request);
-        $leaves = $this->leavesAndPermission->getDataWithPagination($request->user()->id, $this->perPage);
+        $leaves = $this->userLeaveAndPermissionService->data($request, $this->perPage);
 
         return response()->json([
             'totalLeavesAllowance' => $totalLeavesAllowance,
@@ -72,15 +77,22 @@ class LeaveAndPermissionController extends Controller
         return view('pages.utilities.user-profile.leaves-and-permission.create');
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function edit(LeaveAndPermission $leaveAndPermission): JsonResponse
     {
+        $this->authorize('update', $leaveAndPermission);
         return response()->json($leaveAndPermission);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function update(LeaveAndPermissionRequest $request, LeaveAndPermission $leaveAndPermission): JsonResponse
     {
+        $this->authorize('update', $leaveAndPermission);
         $leaveAndPermission->update($request->validated());
-
         return response()->json([
             'message' => 'data berhasil disimpan',
         ]);

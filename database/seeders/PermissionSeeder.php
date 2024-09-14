@@ -188,5 +188,16 @@ class PermissionSeeder extends Seeder
         foreach ($user as $permission) {
             Permission::create(['name' => $permission]);
         }
+
+
+        $leaves = [
+            'Lihat Manajemen Cuti',
+            'Acc Cuti',
+            'Lihat Detail Cuti',
+        ];
+
+        foreach ($leaves as $permission) {
+            Permission::create(['name' => $permission]);
+        }
     }
 }

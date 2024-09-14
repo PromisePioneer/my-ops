@@ -392,12 +392,13 @@
                                 href="{{ url('manage-users/permissions') }}">
                             Hak Akses
                         </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'leaves'"
-                                href="{{ url('manage-users/leaves') }}">
-                            Manajemen Cuti
-                        </x-dropdown-menu-item>
-
+                        @can('Lihat Manajemen Cuti')
+                            <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'leaves'"
+                                    href="{{ url('manage-users/leaves') }}">
+                                Manajemen Cuti
+                            </x-dropdown-menu-item>
+                        @endcan
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'sp'"
                                 href="{{ url('manage-users/sp') }}">

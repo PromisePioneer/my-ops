@@ -13,15 +13,20 @@
                         <span class="svg-icon svg-icon-1 position-absolute ms-6">
                            <i class="bi bi-search"></i>
                         </span>
-                        <h3>Sisa Cuti : <span x-text="totalLeavesAllowance"></span> </h3>
+                        <h3>Sisa Cuti : <span x-text="totalLeavesAllowance"></span></h3>
                     </div>
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-light-primary btn-sm"
+                                    data-bs-toggle="modal"
                                     data-bs-target="#modal-create">
-                                Tambah
+                                <i class="ki-duotone ki-message-add fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i> Tambah
                             </button>
                         </div>
                     </div>
@@ -39,7 +44,7 @@
                                 <th class="min-w-125px">Status Konfirmasi</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
-                            <tbody class="text-gray-600 fw-bold">
+                            <tbody class="fw-bold">
                             <template x-if="isLoading">
                                 <tr>
                                     <td colspan="9">
@@ -76,15 +81,21 @@
                                         </td>
                                     </template>
                                     <template x-if="leavesAndPermission.confirmation_status === 'Diproses'">
-                                    <td>
-                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(leavesAndPermission.id)">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-danger btn-sm" @click="destroy(leavesAndPermission.id)">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </td>
+                                        <td>
+                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-edit" @click="edit(leavesAndPermission.id)">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-light-danger btn-sm"
+                                                    @click="destroy(leavesAndPermission.id)">
+                                                <i class="ki-duotone ki-trash-square fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                    <span class="path3"></span>
+                                                    <span class="path4"></span>
+                                                </i>
+                                            </button>
+                                        </td>
                                     </template>
                                 </tr>
                             </template>
@@ -92,12 +103,13 @@
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4">
-                        <li class="page-item previous">
-                            <button class="btn btn-light btn-sm" @click="previousPage()">Previous</button>
-                        </li>
-                        <li class="page-item next">
-                            <button class="btn btn-light btn-sm" @click="nextPage()">Next</button>
-                        </li>
+                        <template x-for="pagination in leavesAndPermissions.links">
+                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                        x-html="pagination.label">
+                                </button>
+                            </li>
+                        </template>
                     </ul>
                 </div>
             </div>
@@ -108,6 +120,8 @@
 
 @push('script')
     <script>
+        $('.date').flatpickr();
+
         function leavesAndPermissionData() {
             return {
                 isLoading: false,
@@ -127,11 +141,11 @@
                     await this.getLeavePermissionData();
                     this.isLoading = false;
                 },
-                async nextPage() {
-
-                },
-                async previousPage() {
-
+                async paginationEndPoint(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
+                        this.branches = resp.data
+                    }
                 },
                 async save() {
                     this.buttonLoading = true;

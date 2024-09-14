@@ -12,12 +12,13 @@
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Tanggal Mulai</label>
-                        <input type="date" id="start_date" name="start_date" class="form-control form-control-solid"
+                        <input type="date" id="start_date" name="start_date"
+                               class="form-control form-control-solid date"
                                placeholder="Tanggal Mulai" :value="editVal.start_date"/>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Tanggal Selesai</label>
-                        <input type="date" id="end_date" name="end_date" class="form-control form-control-solid"
+                        <input type="date" id="end_date" name="end_date" class="form-control form-control-solid date"
                                placeholder="Tanggal Selesai" :value="editVal.end_date"/>
                     </div>
                     <div class="mb-10">
