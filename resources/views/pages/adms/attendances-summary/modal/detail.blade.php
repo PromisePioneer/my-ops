@@ -53,7 +53,7 @@
                                <span :class="attendance.check_out_timestamp
                                 ? 'badge bg-success text-white fs-7'
                                 : 'badge bg-danger text-white fs-7'"
-                                     x-text="attendance.check_out_timestamp ?? 'Tidak Checkin'"></span>
+                                     x-text="attendance.check_out_timestamp ?? 'Tidak Checkout'"></span>
                             </td>
                         </tr>
                     </template>
