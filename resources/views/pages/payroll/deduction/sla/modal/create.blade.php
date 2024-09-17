@@ -31,7 +31,7 @@
                     <div class="mb-10">
                         <label for="name" class="required form-label">Jumlah SPK</label>
                         <input type="number" id="spk_amount" name="spk_amount" class="form-control form-control-solid"
-                               placeholder="Nominal"/>
+                               placeholder="Jumlah SPK"/>
                     </div>
                 </div>
 
