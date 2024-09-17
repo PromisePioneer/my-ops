@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +24,13 @@ class Attendances extends Model
         'timestamp',
         'status1',
     ];
+
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'employee_id', 'absent_id');
+    }
+
 
     public function getAttendancesDataBasedOnUserId(int $perPage, int $absentId): LengthAwarePaginator
     {
@@ -43,7 +51,9 @@ class Attendances extends Model
         $formattedAttendances = $attedancesData->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
-                'timestamp' => Carbon::parse($item->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y H:i:s'),
+                'timestamp' => Carbon::parse($item->timestamp)->locale('id')->settings(
+                    ['formatFunction' => 'translatedFormat']
+                )->format('l, j F Y H:i:s'),
                 'status1' => $item->status1,
             ];
         });
@@ -126,7 +136,7 @@ class Attendances extends Model
                 'nip' => $items->first()->user_nip,
                 'name' => $items->first()->user_name,
                 'total_hadir' => $totalPresent,
-                'total_menit_terlambat' => (int) $totalMinutesLate,
+                'total_menit_terlambat' => (int)$totalMinutesLate,
             ];
         })->values();
     }
@@ -178,15 +188,19 @@ class Attendances extends Model
                 $expectedCheckIn = Carbon::parse($expectedCheckIn);
 
                 $actualCheckIn = Carbon::parse($checkIn->timestamp);
-                $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes($actualCheckIn) : 0;
+                $minutesLate = $actualCheckIn->greaterThan($expectedCheckIn) ? $expectedCheckIn->diffInMinutes(
+                    $actualCheckIn
+                ) : 0;
 
                 return [
                     'name' => $checkIn->user_name,
                     'work_time' => $userWorktime ? $userWorktime->name : $defaultWorkTime->name,
-                    'date' => Carbon::parse($checkIn->timestamp)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                    'date' => Carbon::parse($checkIn->timestamp)->locale('id')->settings(
+                        ['formatFunction' => 'translatedFormat']
+                    )->format('l, j F Y'),
                     'employee_id' => $checkIn->employee_id,
                     'checkin_time' => $actualCheckIn->format('H:i'),
-                    'late_checkin' => (int) $minutesLate,
+                    'late_checkin' => (int)$minutesLate,
                     'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
                 ];
             }

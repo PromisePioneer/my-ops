@@ -22,8 +22,10 @@ class AttendancesService
 
     public function attendancesLog(): LengthAwarePaginator
     {
-        $query = $this->attendances->getAttendancesLog()->whereMonth('attendances.timestamp',
-            Carbon::now())->get();
+        $query = $this->attendances->getAttendancesLog()->whereMonth(
+            'attendances.timestamp',
+            Carbon::now()
+        )->get();
 
         $groupedData = $query->groupBy(function ($item) {
             return $item->user_name;
@@ -64,7 +66,7 @@ class AttendancesService
                 'date' => formatDate($items->first()->timestamp),
                 'employee_id' => $checkIn->employee_id,
                 'checkin_time' => $checkIn ? Carbon::parse($checkIn?->timestamp)->format('H:i') : null,
-                'late_checkin' => (int) $calculateMinutesLate,
+                'late_checkin' => (int)$calculateMinutesLate,
                 'checkout_time' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
             ];
         })->filter()->values();

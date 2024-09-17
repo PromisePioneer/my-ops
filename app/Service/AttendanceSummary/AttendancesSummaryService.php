@@ -34,7 +34,7 @@ class AttendancesSummaryService
             'roles' => function ($query) {
                 $query->whereNotIn('name', ['Super Admin']);
             },
-        ])->paginate(10);
+        ])->paginate(10)->onEachSide(1);
 
         return self::formattedData($data, $startDate, $endDate);
     }
@@ -166,8 +166,13 @@ class AttendancesSummaryService
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $startDate = Carbon::parse($request->start_date) ?? $this->financialClosePeriodService->endDate();
-        $endDate = Carbon::parse($request->end_date) ?? $this->financialClosePeriodService->endDate();
+        $startDate = isset($request->start_date)
+            ? Carbon::parse($request->start_date)
+            : $this->financialClosePeriodService->startDate();
+
+        $endDate = isset($request->end_date)
+            ? Carbon::parse($request->end_date)
+            : $this->financialClosePeriodService->endDate();
 
         $query = User::with([
             'attendance' => function ($query) use ($startDate, $endDate) {
@@ -179,14 +184,14 @@ class AttendancesSummaryService
             },
         ]);
 
-
         if (!empty($search)) {
-            $query->where('name', 'like', "%".$search."%")
-                ->orWhere('nip', 'like', "%".$search."%");
+            $query->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%".$search."%")
+                    ->orWhere('nip', 'like', "%".$search."%");
+            });
         }
 
-
-        $data = $query->paginate(10);
+        $data = $query->paginate(10)->onEachSide(1);
         return self::formattedData($data, $startDate, $endDate);
     }
 

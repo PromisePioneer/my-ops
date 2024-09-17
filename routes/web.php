@@ -660,6 +660,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [AttendanceSummaryController::class, 'data']);
             Route::get('/search', [AttendanceSummaryController::class, 'search']);
             Route::post('/filter-date', [AttendanceSummaryController::class, 'filterByDate']);
+            Route::get('/detail/{user}', [AttendanceSummaryController::class, 'detail']);
         });
     });
 

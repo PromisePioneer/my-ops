@@ -2,6 +2,7 @@
 @section('content')
 
     <div x-data="attendancesSummary()">
+        @include('pages.adms.attendances-summary.modal.detail')
         <div class="card shadow-sm mb-4">
             <div class="card-body">
                 <div class="row">
@@ -30,17 +31,6 @@
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
-                    <div class="d-flex align-items-center justify-content-center position-relative my-1">
-                        <select name="" id="" class="form-select form-select-solid" data-control="select2"
-                                data-placeholder="Pilih Periode">
-                            <option></option>
-                            <template x-for="month in months" :key="month.value">
-                                <option :value="month.value" x-text="month.name"></option>
-                            </template>
-                        </select>
-                    </div>
-                </div>
-                <div class="card-toolbar">
                     <div class="d-flex align-items-center position-relative my-1">
                         <span class="svg-icon svg-icon-1 position-absolute ms-6">
                            <i class="bi bi-search"></i>
@@ -48,6 +38,9 @@
                         <input type="text" name="search" x-model="search" @input.debounce="searchData()"
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
+                </div>
+                <div class="card-toolbar">
+
                 </div>
             </div>
             <div class="card-body py-3">
@@ -97,8 +90,9 @@
                                     <td x-text="`${attendance.total_permission} Hari`"></td>
                                     <td x-text="attendance.work_time?.name ?? 'Default'"></td>
                                     <td>
-                                        <button class="btn btn-light-primary btn-sm">
-                                            E
+                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#modal-detail" @click="show(attendance.id)">
+                                            <i class="fa-solid fa-circle-info"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -107,12 +101,14 @@
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4">
-                        <li class="page-item previous">
-                            <button class="btn btn-light btn-sm" @click="previousPage()">Previous</button>
-                        </li>
-                        <li class="page-item next">
-                            <button class="btn btn-light btn-sm" @click="nextPage()">Next</button>
-                        </li>
+                        <template x-for="pagination in attendanceSummary.links">
+                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                <button class="page-link"
+                                        @click="paginationEndPointForAttendanceSummary(pagination.url)"
+                                        x-html="pagination.label">
+                                </button>
+                            </li>
+                        </template>
                     </ul>
                 </div>
             </div>
@@ -131,10 +127,23 @@
                 startIndex: null,
                 search: '',
                 months: [],
+                attendanceSummaryDetail: [],
                 filterDateForm: document.getElementById('form-filter-date'),
                 async init() {
                     await this.getAttendanceSummary();
                     await this.getMonths();
+                },
+                async paginationEndPointForAttendanceSummaryDetail(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
+                        this.attendanceSummaryDetail = resp.data
+                    }
+                },
+                async paginationEndPointForAttendanceSummary(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
+                        this.attendanceSummary = resp.data
+                    }
                 },
                 getMonths() {
                     this.months = [
@@ -151,6 +160,17 @@
                         {"value": 11, "name": "November"},
                         {"value": 12, "name": "Desember"}
                     ]
+                },
+                async show(id) {
+                    const startDate = document.getElementById('start_date').value;
+                    const endDate = document.getElementById('end_date').value;
+                    const resp = await axios.get(`/adms/attendances-summary/detail/${id}`, {
+                        params: {
+                            start_date: startDate,
+                            end_date: endDate,
+                        },
+                    });
+                    this.attendanceSummaryDetail = resp.data
                 },
                 async getAttendanceSummary() {
                     this.isLoading = true;
@@ -176,12 +196,12 @@
                     } finally {
                         this.isLoading = false;
                     }
-                },
+                }
+                ,
                 async searchData() {
                     this.isLoading = true;
                     const startDate = document.getElementById('start_date').value;
                     const endDate = document.getElementById('end_date').value;
-                    console.log(endDate);
                     try {
                         const response = await axios.get('/adms/attendances-summary/search', {
                             params: {
@@ -197,12 +217,14 @@
                     } finally {
                         this.isLoading = false;
                     }
-                },
+                }
+                ,
                 formatDate(val) {
                     const [month, year] = val.split('-');
                     const date = new Date(year, month - 1, 1);
                     return `${this.getMonthName(date.getMonth())} ${date.getFullYear()}`;
-                },
+                }
+                ,
                 async filter() {
 
                 },
@@ -212,20 +234,6 @@
                         "Juli", "Agustus", "September", "Oktober", "November", "December"
                     ];
                     return monthNames[monthIndex];
-                },
-                async nextPage() {
-                    if (this.attendanceSummary.next_page_url) {
-                        const resp = await axios.get(`${this.attendanceSummary.next_page_url}`);
-                        this.startIndex = this.attendanceSummary.from
-                        this.attendanceSummary = resp.data
-                    }
-                },
-                async previousPage() {
-                    if (this.attendanceSummary.prev_page_url) {
-                        const resp = await axios.get(`${this.attendanceSummary.prev_page_url}`);
-                        this.startIndex = this.attendanceSummary.from
-                        this.attendanceSummary = resp.data
-                    }
                 },
             }
         }
