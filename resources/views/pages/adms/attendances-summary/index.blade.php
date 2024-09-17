@@ -63,6 +63,7 @@
                                 <th class="min-w-125px">Alpha</th>
                                 <th class="min-w-125px">Sakit</th>
                                 <th class="min-w-125px">Izin</th>
+                                <th class="min-w-125px">Jam Kerja</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class=" fw-bold">
