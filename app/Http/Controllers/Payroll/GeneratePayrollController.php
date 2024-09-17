@@ -8,7 +8,7 @@ use App\Models\Attendances;
 use App\Models\GeneratePayroll;
 use App\Models\PayrollSchedule;
 use App\Models\User;
-use App\Service\AttendancesSummaryService;
+use App\Service\AttendanceSummary\AttendancesSummaryService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
@@ -39,8 +39,11 @@ class GeneratePayrollController extends Controller
         $year = Carbon::now()->year;
 
         $attendances = $this->attendance->getAttendancesSummaryInAMonth($month, $year);
-        $attendancesSummary = $this->attendanceSummaryService->attendancesDataInAMonthFormattedData($attendances,
-            $month, $year);
+        $attendancesSummary = $this->attendanceSummaryService->attendancesDataInAMonthFormattedData(
+            $attendances,
+            $month,
+            $year
+        );
 
         $users = User::with('jobInformation')->get();
 

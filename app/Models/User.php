@@ -98,7 +98,8 @@ class User extends Authenticatable
 
 
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
 
@@ -126,15 +127,15 @@ class User extends Authenticatable
         return $this->hasOne(Education::class);
     }
 
-    public function manageShift(): HasOne
+    public function userHasWorkTime(): hasOne
     {
-        return $this->hasOne(WorkTime::class, 'user_id');
+        return $this->hasOne(UserWorkTime::class, 'user_id');
     }
 
 
     public function attendance(): HasMany
     {
-        return $this->hasMany(Attendances::class, 'employee_id');
+        return $this->hasMany(Attendances::class, 'employee_id', 'absent_id');
     }
 
 

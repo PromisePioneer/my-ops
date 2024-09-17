@@ -657,22 +657,9 @@ Route::group(['middleware' => ['auth']], static function () {
 
         Route::prefix('/attendances-summary')->group(function () {
             Route::get('/', [AttendanceSummaryController::class, 'index']);
-            Route::get('/period-data', [AttendanceSummaryController::class, 'selectPeriodData']);
-            Route::get('/detail/{time}', [AttendanceSummaryController::class, 'detail']);
-            Route::get('/detail/data/01-{month}-{year}', [AttendanceSummaryController::class, 'detailData']);
-            Route::get(
-                '/detail/data/search/01-{month}-{year}',
-                [AttendanceSummaryController::class, 'searchDetailData']
-            );
-            Route::post('/detail/data/filter-date/{month}/{year}', [AttendanceSummaryController::class, 'filterDate']);
-            Route::post(
-                '/detail/data/assign-sp/{employeeId}',
-                [AttendanceSummaryController::class, 'assignSPToEmployee']
-            );
-            Route::get(
-                '/detail/data/user/detail/{month}/{year}/{employeeId}',
-                [AttendanceSummaryController::class, 'attendanceSummaryDetailForOneMonthBasedOnUserId']
-            );
+            Route::get('/data', [AttendanceSummaryController::class, 'data']);
+            Route::get('/search', [AttendanceSummaryController::class, 'search']);
+            Route::post('/filter-date', [AttendanceSummaryController::class, 'filterByDate']);
         });
     });
 

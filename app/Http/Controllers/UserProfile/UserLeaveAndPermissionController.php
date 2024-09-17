@@ -35,7 +35,7 @@ class UserLeaveAndPermissionController extends Controller
      */
     public function index(Request $request): View
     {
-        $this->authorize('viewOwnLeaves', LeaveAndPermission::class);
+//        $this->authorize('viewOwnLeaves', LeaveAndPermission::class);
         return view('pages.utilities.user-profile.leaves-and-permission.index');
     }
 
@@ -82,7 +82,7 @@ class UserLeaveAndPermissionController extends Controller
      */
     public function edit(LeaveAndPermission $leaveAndPermission): JsonResponse
     {
-        $this->authorize('update', $leaveAndPermission);
+//        $this->authorize('update', $leaveAndPermission);
         return response()->json($leaveAndPermission);
     }
 
@@ -91,7 +91,6 @@ class UserLeaveAndPermissionController extends Controller
      */
     public function update(LeaveAndPermissionRequest $request, LeaveAndPermission $leaveAndPermission): JsonResponse
     {
-        $this->authorize('update', $leaveAndPermission);
         $leaveAndPermission->update($request->validated());
         return response()->json([
             'message' => 'data berhasil disimpan',
