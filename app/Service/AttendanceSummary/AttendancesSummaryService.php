@@ -166,8 +166,8 @@ class AttendancesSummaryService
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $startDate = $this->financialClosePeriodService->startDate();
-        $endDate = $this->financialClosePeriodService->endDate();
+        $startDate = Carbon::parse($request->start_date) ?? $this->financialClosePeriodService->endDate();
+        $endDate = Carbon::parse($request->end_date) ?? $this->financialClosePeriodService->endDate();
 
         $query = User::with([
             'attendance' => function ($query) use ($startDate, $endDate) {

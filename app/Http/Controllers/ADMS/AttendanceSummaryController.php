@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ADMS;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AttendancesSummaryFilterByDateRequest;
 use App\Service\AttendanceSummary\AttendancesSummaryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -37,7 +38,7 @@ class AttendanceSummaryController extends Controller
     }
 
 
-    public function filterByDate(Request $request): JsonResponse
+    public function filterByDate(AttendancesSummaryFilterByDateRequest $request): JsonResponse
     {
         return response()->json($this->attendanceSummaryService->filterByDate($request));
     }

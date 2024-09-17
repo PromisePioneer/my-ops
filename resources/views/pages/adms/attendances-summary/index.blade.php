@@ -8,11 +8,13 @@
                     <form id="form-filter-date" @submit.prevent="filterDate()">
                         <div class="row col-md-6 align-items-center">
                             <div class="col-md-4">
-                                <input type="date" name="start_date" class="form-control form-control-solid date"
+                                <input type="date" name="start_date" id="start_date"
+                                       class="form-control form-control-solid date"
                                        placeholder="Tanggal Awal">
                             </div>
                             <div class="col-md-4">
-                                <input type="date" name="end_date" class="form-control form-control-solid date"
+                                <input type="date" name="end_date" id="end_date"
+                                       class="form-control form-control-solid date"
                                        placeholder="Tanggal Akhir">
                             </div>
                             <div class="col-md-4">
@@ -156,7 +158,7 @@
                         this.attendanceSummary = resp.data;
                         this.startIndex = this.attendanceSummary.from;
                     } catch (e) {
-                        console.log(error)
+                        console.log(e)
                     } finally {
                         this.isLoading = false;
                     }
@@ -167,17 +169,25 @@
                         const resp = await axios.post('/adms/attendances-summary/filter-date', new FormData(this.filterDateForm));
                         this.attendanceSummary = resp.data;
                         this.startIndex = this.attendanceSummary.from;
-                    } catch (e) {
-                        console.log(error)
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
                     } finally {
                         this.isLoading = false;
                     }
                 },
                 async searchData() {
                     this.isLoading = true;
+                    const startDate = document.getElementById('start_date').value;
+                    const endDate = document.getElementById('end_date').value;
+                    console.log(endDate);
                     try {
                         const response = await axios.get('/adms/attendances-summary/search', {
-                            params: {search: this.search},
+                            params: {
+                                search: this.search,
+                                start_date: startDate,
+                                end_date: endDate,
+                            },
                             headers: {'Content-Type': 'application/json'}
                         });
                         this.attendanceSummary = response.data;

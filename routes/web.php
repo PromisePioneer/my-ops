@@ -825,8 +825,8 @@ Route::group(['middleware' => ['auth']], static function () {
 });
 
 Route::prefix('/iclock')->group(function () {
-    Route::get('cdata', [IclockController::class, 'handshake']);
     Route::post('cdata', [IclockController::class, 'receiveRecords']);
+    Route::get('cdata', [IclockController::class, 'handshake']);
     Route::get('test', [IclockController::class, 'test']);
     Route::get('getrequest', [IclockController::class, 'getrequest']);
 });
