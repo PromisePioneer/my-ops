@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\User;
 
 use App\Http\Requests\User\IdentityInformationRequest;
 use App\Models\IdentityInformation;
 use App\Models\User;
+use App\Service\HelperService\HandleFileUploadService;
 
 class IdentityInformationService
 {

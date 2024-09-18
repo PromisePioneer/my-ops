@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Service\AttendanceSummary;
+namespace App\Service\Attendances;
 
 use App\Models\LeaveAndPermission;
 use App\Models\NationalHoliday;
 use App\Models\User;
 use App\Models\WorkTime;
-use App\Service\FinancialClosePeriodService;
+use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;

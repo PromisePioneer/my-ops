@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\EducationCertificateRequest;
 use App\Models\EducationCertificate;
 use App\Models\User;
-use App\Service\HandleFileUploadService;
+use App\Service\HelperService\HandleFileUploadService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -29,9 +29,11 @@ class EducationCertificateController extends Controller
 
     public function getEducationCertificate(Request $request): JsonResponse
     {
-        return response()->json($this->educationCertificate->getRelatedUserEducationCertificate(
-            $request->user()->id
-        ));
+        return response()->json(
+            $this->educationCertificate->getRelatedUserEducationCertificate(
+                $request->user()->id
+            )
+        );
     }
 
     public function store(EducationCertificateRequest $request, User $user): JsonResponse

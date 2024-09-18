@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Attendances;
 
 use App\Models\Attendances;
 use App\Models\WorkTime;

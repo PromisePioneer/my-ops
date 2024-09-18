@@ -8,6 +8,7 @@ use App\Models\Contact;
 use App\Models\Invoice;
 use App\Models\InvoiceProductService;
 use App\Models\SubAccount;
+use App\Service\HelperService\HandleFileUploadService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -86,13 +87,13 @@ class InvoiceService
         if ($invoice) {
             $convertInvNumberToArray = explode('/', $invoice->invoice_number);
             $startingNumber = $convertInvNumberToArray[0];
-            $startValue = str_pad((int) $startingNumber + 1, 3, '0', STR_PAD_LEFT);
+            $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
             return $startValue.'/'.'INV/'.'MYT-'.$acronym.'/'.$invoiceDate.'/'.$invoiceYear;
         }
 
         $startingNumber = '000';
-        $startValue = str_pad((int) $startingNumber + 1, 3, '0', STR_PAD_LEFT);
+        $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
         return $startValue.'/'.'INV/'.'MYT-'.$acronym.'/'.$invoiceDate.'/'.$invoiceYear;
     }

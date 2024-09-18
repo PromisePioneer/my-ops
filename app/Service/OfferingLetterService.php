@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Models\OfferingLetter;
 use App\Models\OfferingLetterProduct;
+use App\Service\HelperService\HandleFileUploadService;
 use Illuminate\Support\Facades\DB;
 
 class OfferingLetterService
@@ -27,24 +28,29 @@ class OfferingLetterService
         });
     }
 
-    public function update($request, $offeringLetter): void
-    {
-        DB::transaction(function () use ($request, $offeringLetter) {
-            $data = $request->validated();
-            $data['file'] = $this->handleFileUploadService->upload($request, 'documents/offering-letters', 'file', $offeringLetter->file);
-            $data['created_by'] = $request->user()->id;
-            $data['branch_id'] = $request->user()->branch_id;
-            $offeringLetter->update($data);
-            OfferingLetterProduct::whereIn('offering_letter_id', [$offeringLetter->id])->delete();
-            $this->offeringProductServiceStore($request, $offeringLetter);
-        });
-    }
-
     public function offeringProductServiceStore($request, $offeringLetter): void
     {
         foreach ($request['data'] as $key => $value) {
             $value['offering_letter_id'] = $offeringLetter->id;
             OfferingLetterProduct::create($value);
         }
+    }
+
+    public function update($request, $offeringLetter): void
+    {
+        DB::transaction(function () use ($request, $offeringLetter) {
+            $data = $request->validated();
+            $data['file'] = $this->handleFileUploadService->upload(
+                $request,
+                'documents/offering-letters',
+                'file',
+                $offeringLetter->file
+            );
+            $data['created_by'] = $request->user()->id;
+            $data['branch_id'] = $request->user()->branch_id;
+            $offeringLetter->update($data);
+            OfferingLetterProduct::whereIn('offering_letter_id', [$offeringLetter->id])->delete();
+            $this->offeringProductServiceStore($request, $offeringLetter);
+        });
     }
 }

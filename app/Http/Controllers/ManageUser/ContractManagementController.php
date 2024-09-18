@@ -7,7 +7,7 @@ use App\Http\Requests\User\ContractManagementRequest;
 use App\Models\Branch;
 use App\Models\ContractManagement;
 use App\Models\User;
-use App\Service\ContractManagementService;
+use App\Service\User\ContractManagementService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -90,13 +90,18 @@ class ContractManagementController extends Controller
 
     public function contractFile(User $user): Response
     {
-        $contract = ContractManagement::with('user', 'user.education', 'user.identityInformation')->where('user_id',
-            $user->id)->first();
-        $directorRole = User::role('Director')->with('identityInformation')->where('branch_id',
-            $user->branch_id)->first();
+        $contract = ContractManagement::with('user', 'user.education', 'user.identityInformation')->where(
+            'user_id',
+            $user->id
+        )->first();
+        $directorRole = User::role('Director')->with('identityInformation')->where(
+            'branch_id',
+            $user->branch_id
+        )->first();
         $branchManagerRole = User::role('Branch Manager')->with('identityInformation')->first();
 
-        $pdf = Pdf::loadView('pages.manage-users.contract-management.contract-file',
+        $pdf = Pdf::loadView(
+            'pages.manage-users.contract-management.contract-file',
             compact('contract', 'directorRole', 'branchManagerRole')
         )->setPaper('A4', 'portrait');
 

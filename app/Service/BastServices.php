@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Models\Bast;
 use App\Models\BastProduct;
+use App\Service\HelperService\HandleFileUploadService;
 use Illuminate\Support\Facades\DB;
 
 class BastServices
@@ -28,6 +29,14 @@ class BastServices
         });
     }
 
+    public function bastProductCreateOrUpdate($request, $bast): void
+    {
+        foreach ($request['data'] as $key => $value) {
+            $value['bast_id'] = $bast->id;
+            BastProduct::create($value);
+        }
+    }
+
     public function update($request, $bast): void
     {
         DB::transaction(function () use ($request, $bast) {
@@ -39,13 +48,5 @@ class BastServices
             BastProduct::whereIn('bast_id', [$bast->id])->delete();
             $this->bastProductCreateOrUpdate($request, $bast);
         });
-    }
-
-    public function bastProductCreateOrUpdate($request, $bast): void
-    {
-        foreach ($request['data'] as $key => $value) {
-            $value['bast_id'] = $bast->id;
-            BastProduct::create($value);
-        }
     }
 }

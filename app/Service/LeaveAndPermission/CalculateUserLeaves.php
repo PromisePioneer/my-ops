@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\LeaveAndPermission;
 
 use App\Models\LeaveAndPermission;
 use App\Models\User;
@@ -18,6 +18,19 @@ class CalculateUserLeaves
         $leaveQuota = $this->leaveQuota($yearsOfService);
 
         return $this->getDiffDays($request, $leaveQuota, $now);
+    }
+
+    public function leaveQuota(int $yearsOfService): int
+    {
+        if ($yearsOfService >= 1 && $yearsOfService <= 4) {
+            return 12;
+        }
+
+        if ($yearsOfService >= 5) {
+            return 14;
+        }
+
+        return 0;
     }
 
     public function getDiffDays(Request $request, int $leaveQuota, Carbon $now): int
@@ -39,18 +52,5 @@ class CalculateUserLeaves
         }
 
         return $leaveQuota;
-    }
-
-    public function leaveQuota(int $yearsOfService): int
-    {
-        if ($yearsOfService >= 1 && $yearsOfService <= 4) {
-            return 12;
-        }
-
-        if ($yearsOfService >= 5) {
-            return 14;
-        }
-
-        return 0;
     }
 }

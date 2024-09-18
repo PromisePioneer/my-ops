@@ -3,7 +3,7 @@
 namespace App\Http\Requests\UserProfile;
 
 use App\Models\LeaveAndPermission;
-use App\Service\CalculateUserLeaves;
+use App\Service\LeaveAndPermission\CalculateUserLeaves;
 use Carbon\Carbon;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -60,7 +60,7 @@ class LeaveAndPermissionRequest extends FormRequest
             'reason' => ['required'],
             'leaves_status' => ['required'],
             'sick_letter' => [
-                Rule::requiredIf(fn () => $request->leaves_status === 'Sakit'),
+                Rule::requiredIf(fn() => $request->leaves_status === 'Sakit'),
             ],
         ];
     }
@@ -165,7 +165,9 @@ class LeaveAndPermissionRequest extends FormRequest
                 return $fail('Jatah cuti bulan ini telah habis');
             }
 
-            if ($getLeavesDaysInThisMonth + $getDiffDaysBetweenStartDateAndEndDate + 1 > 6 && $request->leaves_status === 'Cuti' && Carbon::parse($value)->month === Carbon::now()->month) {
+            if ($getLeavesDaysInThisMonth + $getDiffDaysBetweenStartDateAndEndDate + 1 > 6 && $request->leaves_status === 'Cuti' && Carbon::parse(
+                    $value
+                )->month === Carbon::now()->month) {
                 return $fail('Jatah cuti bulan ini telah habis');
             }
 

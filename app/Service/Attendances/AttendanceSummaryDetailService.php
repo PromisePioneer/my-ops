@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Service\AttendanceSummary;
+namespace App\Service\Attendances;
 
 use App\Models\Attendances;
-use App\Service\FinancialClosePeriodService;
+use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;

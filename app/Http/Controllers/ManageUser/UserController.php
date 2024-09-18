@@ -10,7 +10,7 @@ use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Role;
 use App\Models\User;
-use App\Service\UserService;
+use App\Service\User\UserService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

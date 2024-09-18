@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\User;
 
 use App\Models\ContractManagement;
 use App\Models\User;
@@ -49,7 +49,9 @@ class ContractManagementService
             return [
                 'id' => $contractManagement->id,
                 'name' => "$contractManagement->name",
-                'contract_date' => Carbon::parse($startDate)->format('d/m/Y')." - ".Carbon::parse($endDate)->format('d/m/Y'),
+                'contract_date' => Carbon::parse($startDate)->format('d/m/Y')." - ".Carbon::parse($endDate)->format(
+                        'd/m/Y'
+                    ),
                 'expired' => $expired,
 
             ];
@@ -122,13 +124,13 @@ class ContractManagementService
         if ($userData && $isContractUserExist) {
             $convertInvNumberToArray = explode('/', $isContractUserExist->contract_number);
             $startingNumber = $convertInvNumberToArray[0];
-            $startValue = str_pad((int) $startingNumber + 1, 3, '0', STR_PAD_LEFT);
+            $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
             return $branchCode.'-'.$startValue.'/MY-PKWT/'.$contractRenewalMonth.'/'.$contractRenewalYear;
         }
 
         $startingNumber = '000';
-        $startValue = str_pad((int) $startingNumber + 1, 3, '0', STR_PAD_LEFT);
+        $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
         return $branchCode.'-'.$startValue.'/MY-PKWT/'.$contractRenewalMonth.'/'.$contractRenewalYear;
     }

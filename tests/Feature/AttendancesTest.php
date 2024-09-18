@@ -6,7 +6,7 @@ use App\Models\FpDevice;
 use App\Models\User;
 use App\Models\UserWorkTime;
 use App\Models\WorkTime;
-use App\Service\IclockService;
+use App\Service\Attendances\IclockService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 

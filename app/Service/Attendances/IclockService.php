@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Attendances;
 
 use App\Models\Attendances;
 use App\Models\DeviceLog;
@@ -185,7 +185,7 @@ class IclockService
 
     private function validateAndFormatInteger($value): ?int
     {
-        return isset($value) && $value !== '' ? (int) $value : null;
+        return isset($value) && $value !== '' ? (int)$value : null;
     }
 
     private function getShiftForUser(string $employeeId)

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\ADMS;
 
 use App\Http\Controllers\Controller;
 use App\Models\FingerLog;
-use App\Service\IclockService;
+use App\Service\Attendances\IclockService;
 use Illuminate\Http\Request;
 use Throwable;
 

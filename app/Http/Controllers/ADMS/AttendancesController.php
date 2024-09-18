@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\ADMS;
 
 use App\Http\Controllers\Controller;
-use App\Service\AttendancesService;
+use App\Service\Attendances\AttendancesService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 

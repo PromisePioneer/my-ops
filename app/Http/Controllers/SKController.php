@@ -7,7 +7,7 @@ use App\Models\Branch;
 use App\Models\Role;
 use App\Models\SK;
 use App\Models\User;
-use App\Service\SKService;
+use App\Service\User\SKService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -106,7 +106,8 @@ class SKController extends Controller
     public function exportToPDF(SK $sk): Response
     {
         $operationalManager = User::role('Operational Manager')->first();
-        $pdf = Pdf::loadView('pages.manage-users.sk.sk-pdf',
+        $pdf = Pdf::loadView(
+            'pages.manage-users.sk.sk-pdf',
             compact('operationalManager', 'sk')
         )->setPaper('A4', 'portrait');
 

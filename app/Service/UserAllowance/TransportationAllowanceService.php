@@ -1,20 +1,23 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\UserAllowance;
 
+use App\Http\Requests\Allowances\TransportationAllowanceRequest;
 use App\Models\UserHasTransportationAllowance;
+use App\Service\HelperService\HandleFileUploadService;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 use function App\Helper\formatDate;
 
 class TransportationAllowanceService
 {
-
     private UserHasTransportationAllowance $userHasTransportationAllowance;
+    private HandleFileUploadService $handleFileUploadService;
 
     public function __construct()
     {
         $this->userHasTransportationAllowance = new UserHasTransportationAllowance();
+        $this->handleFileUploadService = new HandleFileUploadService();
     }
 
     public function data(): LengthAwarePaginator
@@ -37,6 +40,29 @@ class TransportationAllowanceService
 
         $transportationAllowance->setCollection($data);
         return $transportationAllowance;
+    }
+
+
+    public function store(TransportationAllowanceRequest $request): void
+    {
+        foreach ($request->user_id as $userId) {
+            UserHasTransportationAllowance::create([
+                'user_id' => $userId,
+                'date' => $request->date,
+                'transportation_type' => $request->transportation_type,
+                'spk_image' => $this->handleFileUploadService->upload(
+                    $request,
+                    'documents/user/spk-image',
+                    'spk_image',
+                ),
+                'amount' => $request->transportation_type === 'Dibawah 15 Km' ? 10000 : 12500,
+            ]);
+        }
+    }
+
+
+    public function update()
+    {
     }
 
 }

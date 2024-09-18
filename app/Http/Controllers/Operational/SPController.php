@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SPRequest;
 use App\Models\SP;
 use App\Models\User;
-use App\Service\SpService;
+use App\Service\User\SpService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;

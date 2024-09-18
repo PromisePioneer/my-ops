@@ -7,7 +7,7 @@ use App\Http\Requests\Master\Role\RoleRequest;
 use App\Models\Department;
 use App\Models\Role;
 use App\Models\RoleHasDepartment;
-use App\Service\RoleService;
+use App\Service\User\RoleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\User;
 
 use App\Http\Requests\ADMS\AttendancesSummaryAssignSPRequest;
 use App\Http\Requests\SPRequest;
@@ -23,13 +23,13 @@ class SpService
         if ($sp) {
             $convertInvNumberToArray = explode('/', $sp->sp_number);
             $startingNumber = $convertInvNumberToArray[0];
-            $startValue = str_pad((int) $startingNumber + 1, 3, '0', STR_PAD_LEFT);
+            $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
             return $startValue.'/MY-SP/'.$spMonth.'/'.$spYear;
         }
 
         $startingNumber = '000';
-        $startValue = str_pad((int) $startingNumber + 1, 3, '0', STR_PAD_LEFT);
+        $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
         return $startValue.'/MY-SP/'.$spMonth.'/'.$spYear;
     }

@@ -8,7 +8,7 @@ use App\Models\Attendances;
 use App\Models\GeneratePayroll;
 use App\Models\PayrollSchedule;
 use App\Models\User;
-use App\Service\AttendanceSummary\AttendancesSummaryService;
+use App\Service\Attendances\AttendancesSummaryService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;

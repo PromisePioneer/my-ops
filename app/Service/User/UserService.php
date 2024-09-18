@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\User;
 
 use App\Http\Requests\User\UserRequest;
 use App\Models\Branch;
@@ -69,7 +69,10 @@ class UserService
         if ($request->user()->hasRole('Branch Manager')) {
             $roles = $roles->filter(function ($role) {
                 return in_array($role->name, [
-                    'Finance & Accounting Staff', 'Stocker Staff', 'Customer Service Staff', 'Head Engineer',
+                    'Finance & Accounting Staff',
+                    'Stocker Staff',
+                    'Customer Service Staff',
+                    'Head Engineer',
                     'Senior Engineer',
                 ]);
             });

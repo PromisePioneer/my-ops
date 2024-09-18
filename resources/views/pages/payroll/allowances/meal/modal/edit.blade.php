@@ -32,7 +32,7 @@
                     <div class="mb-10">
                         <label for="name" class="required form-label">Karyawan</label>
                         <select name="user_id" id="selectedUser" class="form-control form-control-solid users-select2"
-                                data-dropdown-parent="#modal-create">
+                                data-dropdown-parent="#modal-edit">
                             <option></option>
                         </select>
                     </div>

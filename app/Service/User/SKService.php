@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\User;
 
 use App\Http\Requests\User\SKRequest;
 use App\Models\Role;
@@ -40,16 +40,16 @@ class SKService
                 'sk_number' => $item->sk_number,
                 'user_name' => '('.$item->user->nip.')'.$item->user->name,
                 'sk_type' => $item->sk_type,
-                'date' => Carbon::parse($item->date)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y'),
+                'date' => Carbon::parse($item->date)->locale('id')->settings(['formatFunction' => 'translatedFormat']
+                )->format('l, j F Y'),
             ];
         });
 
         $sk->setCollection($data);
-
         return $sk;
     }
 
-    public function search(Request $request)
+    public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
         $query = $this->sk->getData();
@@ -106,13 +106,13 @@ class SKService
         if ($sk) {
             $convertInvNumberToArray = explode('/', $sk->sk_number);
             $startingNumber = $convertInvNumberToArray[0];
-            $startValue = str_pad((int) $startingNumber + 1, 3, '0', STR_PAD_LEFT);
+            $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
             return $startValue.'/MY-SP/'.$skMonth.'/'.$skYear;
         }
 
         $startingNumber = '000';
-        $startValue = str_pad((int) $startingNumber + 1, 3, '0', STR_PAD_LEFT);
+        $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
         return $startValue.'/MY-SK/'.$skMonth.'/'.$skYear;
     }

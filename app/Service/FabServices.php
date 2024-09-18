@@ -6,6 +6,7 @@ use App\Models\Contact;
 use App\Models\Fab;
 use App\Models\FabService;
 use App\Models\SubAccount;
+use App\Service\HelperService\HandleFileUploadService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -41,11 +42,17 @@ class FabServices
         });
     }
 
+    private function fabServiceStoreOrUpdate($request, $fab): void
+    {
+        foreach ($request['data'] as $key => $value) {
+            $value['fab_id'] = $fab->id;
+            FabService::create($value);
+        }
+    }
+
     public function update($request, $fab): void
     {
-
         DB::transaction(function () use ($request, $fab) {
-
             $data = $request->validated();
             $data['branch_id'] = $request->user()->branch_id;
             $data['file'] = $this->handleFileUploadService->upload($request, 'documents/fab', 'file');
@@ -56,14 +63,6 @@ class FabServices
         });
     }
 
-    private function fabServiceStoreOrUpdate($request, $fab): void
-    {
-        foreach ($request['data'] as $key => $value) {
-            $value['fab_id'] = $fab->id;
-            FabService::create($value);
-        }
-    }
-
     public function confirm($fab, $fabService): void
     {
         $contact = $this->contact->getSelectedData($fab->contact_id);
@@ -72,8 +71,18 @@ class FabServices
         $creditAccount = $this->subAccount->findPiutangPelangganSubAccount($fab->branch_id);
 
         DB::transaction(function () use ($description, $fab, $fabService, $debitAccount, $creditAccount) {
-            $this->accountTransactionService->createDebitTransaction($description, $fabService->sum('total_price'), null, $debitAccount->id);
-            $this->accountTransactionService->createCreditTransaction($description, $fabService->sum('total_price'), null, $creditAccount->id);
+            $this->accountTransactionService->createDebitTransaction(
+                $description,
+                $fabService->sum('total_price'),
+                null,
+                $debitAccount->id
+            );
+            $this->accountTransactionService->createCreditTransaction(
+                $description,
+                $fabService->sum('total_price'),
+                null,
+                $creditAccount->id
+            );
             $fab->status_confirmation = true;
             $fab->save();
         });
@@ -84,7 +93,12 @@ class FabServices
         $jurnalEntry = DB::table('account_transactions')
             ->join('sub_accounts', 'sub_accounts.id', '=', 'account_transactions.sub_account_id')
             ->where('account_transactions.description', 'like', '%'.$fab->fab_number.'%')
-            ->select('account_transactions.*', 'sub_accounts.name', 'sub_accounts.code', 'sub_accounts.id as sub_account_id')
+            ->select(
+                'account_transactions.*',
+                'sub_accounts.name',
+                'sub_accounts.code',
+                'sub_accounts.id as sub_account_id'
+            )
             ->get();
 
         return response()->json($jurnalEntry);

@@ -9,7 +9,7 @@ use App\Models\IdentityInformation;
 use App\Models\JobInformation;
 use App\Models\SP;
 use App\Models\User;
-use App\Service\HandleFileUploadService;
+use App\Service\HelperService\HandleFileUploadService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;

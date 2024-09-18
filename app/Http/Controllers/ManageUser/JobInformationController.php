@@ -7,7 +7,7 @@ use App\Http\Requests\User\JobInformationRequest;
 use App\Models\Department;
 use App\Models\JobInformation;
 use App\Models\User;
-use App\Service\JobInformationService;
+use App\Service\User\JobInformationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -59,7 +59,8 @@ class JobInformationController extends Controller
     {
         $contractNumber = $this->jobInformationService->generateContractNumber($user);
 
-        $pdf = Pdf::loadView('pages.manage-users.user.partials.employee-data.job-information.contract-file',
+        $pdf = Pdf::loadView(
+            'pages.manage-users.user.partials.employee-data.job-information.contract-file',
             compact('user')
         )->setPaper(
             'A4',
