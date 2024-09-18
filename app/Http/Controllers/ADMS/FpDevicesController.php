@@ -73,12 +73,14 @@ class FpDevicesController extends Controller
         ]);
     }
 
-    public function destroy(FpDevice $fpDevice): JsonResponse
+    public function destroy(Request $request, FpDevice $fpDevice): JsonResponse
     {
-        $fpDevice->delete();
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $fpDevice->whereIn('id', $explodeID)->delete();
 
         return response()->json([
             'message' => 'data berhasil dihapus',
-        ]);
+        ], 200);
     }
 }

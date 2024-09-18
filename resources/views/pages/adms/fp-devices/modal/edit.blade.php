@@ -33,8 +33,15 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary btn-sm" :disabled="buttonLoading"
-                            x-text="buttonLoading ? 'Loading...' : 'Simpan'">
+                    <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
+                        <i class="ki-duotone ki-click fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                            <span class="path4"></span>
+                            <span class="path5"></span>
+                        </i>
+                        <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
                     </button>
                 </div>
             </form>

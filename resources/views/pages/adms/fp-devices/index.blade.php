@@ -19,25 +19,48 @@
             <div class="card-body py-3">
                 <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                        <button type="button" class="btn btn-light-primary btn-sm"
+                                data-bs-toggle="modal"
                                 data-bs-target="#modal-create">
-                            Tambah
+                            <i class="ki-duotone ki-message-add fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i> Tambah
                         </button>
                     </div>
                 </div>
                 <div class="py-5">
+                    <div class="col-12 ">
+                        <form id="deleteForm" @submit.prevent="destroy()">
+                            <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                            <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                                    x-show="selectedCheckBox.length > 0"
+                                    x-transition x-cloak>
+                                <i class="ki-duotone ki-trash-square fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                    <span class="path4"></span>
+                                </i>
+                                Hapus
+                            </button>
+                        </form>
+                    </div>
                     <div class="table-responsive">
                         <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
-                                    No
+                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                        <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
+                                    </div>
                                 </th>
-                                <th class="min-w-125px">Cabang</th>
-                                <th class="min-w-125px">Nama Mesin</th>
-                                <th class="min-w-125px">Serial Number</th>
-                                <th class="min-w-125px">Terakhir Handshake</th>
-                                <th class="min-w-125px">Actions</th>
+                                <th class="min-w-125px text-center">Cabang</th>
+                                <th class="min-w-125px text-center">Nama Mesin</th>
+                                <th class="min-w-125px text-center">Serial Number</th>
+                                <th class="min-w-125px text-center">Terakhir Handshake</th>
+                                <th class="min-w-125px text-center">Actions</th>
                             </thead>
                             <tbody class="fw-bold">
                             <template x-if="isLoading">
@@ -60,18 +83,21 @@
                             </template>
                             <template x-for="(device, index) in devices?.data" :key="device.id">
                                 <tr>
-                                    <td x-text="startIndex + index++"></td>
-                                    <td x-text="device.branch?.name ?? 'Belum Diset'"></td>
-                                    <td x-text="device.name"></td>
-                                    <td x-text="device.serial_number"></td>
-                                    <td x-text="device.online"></td>
                                     <td>
-                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                             @click="selectCheckBox($event)">
+                                            <input class="form-check-input" type="checkbox" :value="device.id"
+                                                   :id="'checkbox-' + device.id"/>
+                                        </div>
+                                    </td>
+                                    <td class="text-center" x-text="device.branch?.name ?? 'Belum Diset'"></td>
+                                    <td class="text-center" x-text="device.name"></td>
+                                    <td class="text-center" x-text="device.serial_number"></td>
+                                    <td class="text-center" x-text="device.online ?? '-'"></td>
+                                    <td>
+                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(device.id)">
                                             <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-danger btn-sm" @click="destroy(device.id)">
-                                            <i class="bi bi-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -79,13 +105,14 @@
                             </tbody>
                         </table>
                     </div>
-                    <ul class="pagination float-end mb-4">
-                        <li class="page-item previous">
-                            <button class="btn btn-light btn-sm" @click="previousPage()">Previous</button>
-                        </li>
-                        <li class="page-item next">
-                            <button class="btn btn-light btn-sm" @click="nextPage()">Next</button>
-                        </li>
+                    <ul class="pagination float-end mb-4 mt-4">
+                        <template x-for="pagination in devices.links">
+                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                        x-html="pagination.label">
+                                </button>
+                            </li>
+                        </template>
                     </ul>
                 </div>
             </div>
@@ -116,6 +143,36 @@
                     this.isLoading = false;
                     await this.getBranchData();
                 },
+                async paginationEndPoint(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
+                        this.devices = resp.data
+                    }
+                },
+                toggleAllCheckBox() {
+                    this.selectAll = !this.selectAll;
+                    this.singleChecked = false;
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    this.selectedCheckBox = [];
+                    checkboxes.forEach((checkbox) => {
+                        checkbox.checked = this.selectAll;
+                        if (this.selectAll) {
+                            this.selectedCheckBox.push(checkbox.value);
+                        }
+                    });
+                    this.selectedCheckBox.shift();
+                },
+                selectCheckBox(event) {
+                    const checkboxId = event.target.value;
+                    if (event.target.checked) {
+                        this.selectedCheckBox.push(checkboxId);
+                    } else {
+                        const index = this.selectedCheckBox.indexOf(checkboxId);
+                        if (index !== -1) {
+                            this.selectedCheckBox.splice(index, 1);
+                        }
+                    }
+                },
                 async searchData() {
                     try {
                         this.devices = await axios.get('/adms/fp-devices/search', {
@@ -124,20 +181,6 @@
                         });
                     } catch (error) {
                         console.log(error);
-                    }
-                },
-                async nextPage() {
-                    if (this.devices.next_page_url) {
-                        const resp = await axios.get(`${this.devices.next_page_url}`);
-                        this.devices = resp.data
-                        this.startIndex = this.devices.from
-                    }
-                },
-                async previousPage() {
-                    if (this.devices.prev_page_url) {
-                        const resp = await axios.get(`${this.devices.prev_page_url}`);
-                        this.devices = resp.data
-                        this.startIndex = this.devices.from
                     }
                 },
                 async save() {
@@ -175,10 +218,10 @@
                         this.buttonLoading = false;
                     }
                 },
-                async destroy(id) {
+                async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.delete(`/adms/fp-devices/${id}`);
+                            await axios.post(`/adms/fp-devices/destroy`, new FormData(this.deleteForm));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {

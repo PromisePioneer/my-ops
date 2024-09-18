@@ -623,8 +623,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/{fpDevice}', [FpDevicesController::class, 'edit']);
             Route::get('/branch/data', [FpDevicesController::class, 'getBranchData']);
             Route::get('/branch/selected/{fpDevice}', [FpDevicesController::class, 'selectedBranchData']);
+            Route::post('/destroy', [FpDevicesController::class, 'destroy']);
             Route::post('/{fpDevice}', [FpDevicesController::class, 'update']);
-            Route::delete('/{fpDevice}', [FpDevicesController::class, 'destroy']);
         });
 
         Route::prefix('attendances')->group(function () {
