@@ -11,9 +11,9 @@ class CutOffPayrollSettingSeeder extends Seeder
     {
         CutOffPayrollSetting::create([
             'attendance_period_start' => 28,
-            'attendance_period_end' => 28,
+            'attendance_period_end' => 27,
             'payroll_period_start' => 28,
-            'payroll_period_end' => 28,
+            'payroll_period_end' => 27,
         ]);
     }
 }

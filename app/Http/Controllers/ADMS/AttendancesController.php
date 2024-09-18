@@ -28,4 +28,6 @@ class AttendancesController extends Controller
     {
         return response()->json($this->attendanceService->attendancesLog());
     }
+
+
 }
