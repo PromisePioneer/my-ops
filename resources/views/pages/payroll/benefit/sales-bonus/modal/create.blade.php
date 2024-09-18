@@ -47,14 +47,6 @@
                             </select>
                         </div>
                     </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="name" class="form-label">Diskon (Dalam % jika ada)</label>
-                            <input type="number" id="discount" name="discount" class="form-control form-control-solid"
-                                   placeholder="Nominal"/>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="modal-footer">

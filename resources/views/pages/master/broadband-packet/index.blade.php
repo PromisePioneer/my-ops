@@ -62,6 +62,7 @@
                                 <th class="min-w-125px">Cabang</th>
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Kapasitas</th>
+                                <th class="min-w-125px">Harga</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -99,6 +100,7 @@
                                     <td x-text="broadbandPackets.branch?.name ?? 'Pusat'"></td>
                                     <td x-text="broadbandPacket.name"></td>
                                     <td x-text="`${broadbandPacket.capacity} / Mbps`"></td>
+                                    <td x-text="broadbandPacket.price"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(broadbandPacket.id)">

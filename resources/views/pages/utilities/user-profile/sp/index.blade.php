@@ -4,20 +4,6 @@
     @include('pages.utilities.user-profile.partials.header')
     <div x-data="spData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            <div class="card-header border-0 pt-6">
-                <div class="card-title">
-                </div>
-                <div class="card-toolbar">
-                    <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                        <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
-                                Tambah
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="card-body py-3">
                 <div class="py-5">
                     <div class="table-responsive">
@@ -30,7 +16,7 @@
                                 <th class="min-w-125px">Yg Memberi Sanksi</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
-                            <tbody class="text-gray-600 fw-bold">
+                            <tbody class="fw-bold">
                             <template x-if="isLoading">
                                 <tr>
                                     <td colspan="9">

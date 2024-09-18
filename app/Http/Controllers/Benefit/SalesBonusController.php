@@ -4,27 +4,35 @@ namespace App\Http\Controllers\Benefit;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Benefit\SalesBonusRequest;
+use App\Imports\SalesBonusImport;
 use App\Models\BroadbandPacket;
 use App\Models\SaleBonus;
 use App\Models\User;
+use App\Service\SalesBonus\SalesBonusService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SalesBonusController extends Controller
 {
 
+    private static int $bonusPercentage = 20;
     private User $user;
     private SaleBonus $saleBonus;
     private BroadbandPacket $broadbandPacket;
+    private SalesBonusService $salesBonusService;
+
 
     public function __construct()
     {
         $this->user = new User();
         $this->saleBonus = new SaleBonus();
         $this->broadbandPacket = new BroadbandPacket();
+        $this->salesBonusService = new SalesBonusService();
     }
 
-    public function index()
+    public function index(): View
     {
         return view('pages.payroll.benefit.sales-bonus.index');
     }
@@ -55,30 +63,18 @@ class SalesBonusController extends Controller
 
     public function data(): JsonResponse
     {
-        return response()->json($this->saleBonus->data());
+        return response()->json($this->salesBonusService->data());
     }
 
-    public function search()
+    public function search(Request $request): JsonResponse
     {
+        return response()->json($this->salesBonusService->search($request));
     }
 
     public function store(SalesBonusRequest $request): JsonResponse
     {
-        $percentageBonus = 20;
-        $packet = BroadbandPacket::where('id', $request->packet_id)->first();
-        $data = $request->validated();
-        $discount = (int) $request->discount;
-        $calculatePacketDiscount = ($packet->price / 100) * $discount;
-        if ($request->discount) {
-            $data['amount'] = ($calculatePacketDiscount / 100) * $percentageBonus;
-        } else {
-            $data['amount'] = $packet->price / 100 * $percentageBonus;
-        }
-
-        SaleBonus::create($data);
-        return response()->json([
-            'message' => 'data berhasil disimpan',
-        ]);
+        $this->salesBonusService->store($request);
+        return response()->json(['message' => 'data berhasil disimpan']);
     }
 
 
@@ -90,21 +86,8 @@ class SalesBonusController extends Controller
 
     public function update(SalesBonusRequest $request, SaleBonus $saleBonus): JsonResponse
     {
-        $percentageBonus = 20;
-        $packet = BroadbandPacket::where('id', $request->packet_id)->first();
-        $data = $request->validated();
-        $discount = (int) $request->discount;
-        $calculatePacketDiscount = ($packet->price / 100) * $discount;
-        if ($request->discount) {
-            $data['amount'] = ($calculatePacketDiscount / 100) * $percentageBonus;
-        } else {
-            $data['amount'] = $packet->price / 100 * $percentageBonus;
-        }
-
-        $saleBonus->update($data);
-        return response()->json([
-            'message' => 'data berhasil disimpan',
-        ]);
+        $this->salesBonusService->update($request, $saleBonus);
+        return response()->json(['message' => 'data berhasil disimpan']);
     }
 
     public function destroy(Request $request, SaleBonus $saleBonus): JsonResponse
@@ -115,6 +98,17 @@ class SalesBonusController extends Controller
 
         return response()->json([
             'message' => 'Data sukses dihapus.',
+        ]);
+    }
+
+
+    public function import(Request $request): JsonResponse
+    {
+        $file = $request->file('file_import');
+        Excel::import(new SalesBonusImport(), $file);
+
+        return response()->json([
+            'message' => 'Data berhasil diimport',
         ]);
     }
 }

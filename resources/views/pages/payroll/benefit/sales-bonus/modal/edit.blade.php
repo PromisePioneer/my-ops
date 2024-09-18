@@ -49,14 +49,6 @@
                             </select>
                         </div>
                     </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for="name" class="form-label">Diskon (Dalam % jika ada)</label>
-                            <input type="number" id="discount" name="discount" class="form-control form-control-solid"
-                                   placeholder="Diskon Paket" :value="editVal?.discount ?? ''"/>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="modal-footer">

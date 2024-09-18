@@ -805,6 +805,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 '/broadband-packet/selected/{saleBonus}',
                 [SalesBonusController::class, 'getSelectedBroadbandPacket']
             );
+            Route::post('/import', [SalesBonusController::class, 'import']);
             Route::post('/', [SalesBonusController::class, 'store']);
             Route::get('/{saleBonus}', [SalesBonusController::class, 'edit']);
             Route::post('/destroy', [SalesBonusController::class, 'destroy']);

@@ -5,20 +5,21 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BroadbandPacketRequest;
 use App\Models\BroadbandPacket;
+use App\Service\Master\BroadbandPacketService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-
-use function PHPUnit\Framework\isEmpty;
 
 class BroadbandPacketController extends Controller
 {
 
     private BroadbandPacket $broadbandPacket;
+    private BroadbandPacketService $broadbandPacketService;
 
     public function __construct()
     {
         $this->broadbandPacket = new BroadbandPacket();
+        $this->broadbandPacketService = new BroadbandPacketService();
     }
 
     public function index(): View
@@ -31,7 +32,7 @@ class BroadbandPacketController extends Controller
         $search = $request->input('search');
         $query = $this->broadbandPacket->data($request);
 
-        if (!isEmpty($search)) {
+        if (!empty($search)) {
             $query->where('name', 'like', '%'.$search.'%')->orWhereHas('branch', function ($query) use ($search) {
                 $query->where('name', 'like', '%'.$search.'%');
             })->orWhere('capacity', 'like', '%'.$search.'%');
@@ -43,7 +44,7 @@ class BroadbandPacketController extends Controller
 
     public function data(Request $request): JsonResponse
     {
-        return response()->json($this->broadbandPacket->data($request)->paginate(10));
+        return response()->json($this->broadbandPacketService->data($request));
     }
 
     public function store(BroadbandPacketRequest $request): JsonResponse

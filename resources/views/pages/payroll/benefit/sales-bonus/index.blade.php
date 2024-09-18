@@ -5,6 +5,7 @@
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             @include('pages.payroll.benefit.sales-bonus.modal.create')
             @include('pages.payroll.benefit.sales-bonus.modal.edit')
+            @include('pages.payroll.benefit.sales-bonus.modal.import')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -17,17 +18,22 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                        <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            <button type="button" class="btn btn-light-primary btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
-                                <i class="ki-duotone ki-message-add fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                </i> Tambah
-                            </button>
-                        </div>
+                        <button type="button" class="btn btn-light-primary btn-sm me-3" data-bs-toggle="modal"
+                                data-bs-target="#modal-import">
+                            <span class="svg-icon svg-icon-2">
+                                <i class="bi bi-file-earmark-excel-fill"></i>
+                            </span>
+                            Import
+                        </button>
+                        <button type="button" class="btn btn-light-primary btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-create">
+                            <i class="ki-duotone ki-message-add fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i> Tambah
+                        </button>
                     </div>
                 </div>
             </div>
@@ -63,8 +69,7 @@
                                 <th>Pelanggan</th>
                                 <th>Sales</th>
                                 <th>Nama Paket</th>
-                                <th>Harga Paket (Normal)</th>
-                                <th>Harga Paket (Setelah Diskon)</th>
+                                <th>Harga Paket</th>
                                 <th>Total Bonus</th>
                                 <th>Actions</th>
                             </thead>
@@ -107,8 +112,6 @@
                                     <td x-text="late.sales"></td>
                                     <td x-text="`${late.packet_name}`"></td>
                                     <td x-text="`Rp.${late.packet_price}`"></td>
-                                    <td x-text="`${late?.discount === 0 ? 'Tidak ada diskon' : `Rp. ${late.discount}`}`">
-                                    </td>
                                     <td x-text="`Rp. ${late.amount}`">
                                     </td>
                                     <td>
@@ -162,22 +165,28 @@
                 startIndex: null,
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
+                modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
                 formCreate: document.getElementById('form-create'),
                 formEdit: document.getElementById('form-edit'),
                 formDelete: document.getElementById('form-delete'),
+                formImport: document.getElementById('form-import'),
                 async init() {
-                    await this.getSlaDeductionData();
+                    await this.getSalesBonus();
                     await this.getUserData();
                     await this.getBroadbandPacketData();
                 },
                 async searchData() {
+                    this.isLoading = true;
                     try {
-                        this.salesBonuses = await axios.get('payroll/benefit/sales-bonus/search', {
+                        const response = await axios.get('/payroll/setting/benefit/sales-bonus/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
+                        this.salesBonuses = response.data;
                     } catch (error) {
-                        console.log(error);
+                        console.error('Error fetching data:', error);
+                    } finally {
+                        this.isLoading = false;
                     }
                 },
                 toggleAllCheckBox() {
@@ -211,10 +220,25 @@
                         this.salesBonuses = resp.data
                     }
                 },
+                async importData() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/payroll/setting/benefit/sales-bonus/import', new FormData(this.formImport))
+                        await showAlert('success', 'Data berhasil disimpan');
+                        this.formImport.reset();
+                        this.modalImport.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/payroll/benefit/sales-bonus/', new FormData(this.formCreate))
+                        await axios.post('/payroll/setting/benefit/sales-bonus/', new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
@@ -227,7 +251,7 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/payroll/benefit/sales-bonus/${id}`)
+                    const resp = await axios.get(`/payroll/setting/benefit/sales-bonus/${id}`)
                     this.editVal = resp.data;
                     await this.selectedUser();
                     await this.selectedBroadbandPacketData();
@@ -235,7 +259,7 @@
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/payroll/benefit/sales-bonus/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/payroll/setting/benefit/sales-bonus/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formEdit.reset();
                         this.modalEdit.hide();
@@ -250,7 +274,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post('/payroll/benefit/sales-bonus/destroy', new FormData(this.formDelete));
+                            await axios.post('/payroll/setting/benefit/sales-bonus/destroy', new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -259,8 +283,8 @@
                         }
                     });
                 },
-                async getSlaDeductionData() {
-                    const resp = await axios.get('/payroll/benefit/sales-bonus/data');
+                async getSalesBonus() {
+                    const resp = await axios.get('/payroll/setting/benefit/sales-bonus/data');
                     this.salesBonuses = resp.data
                     this.startIndex = this.salesBonuses.from
                 },
@@ -268,7 +292,7 @@
                     $(".users-select2").select2({
                         placeholder: "Pilih Karyawan",
                         ajax: {
-                            url: '/payroll/benefit/sales-bonus/user/data',
+                            url: '/payroll/setting/benefit/sales-bonus/user/data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -282,7 +306,7 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/payroll/benefit/sales-bonus/user/selected/${this.editVal.id}`,
+                        url: `/payroll/setting/benefit/sales-bonus/user/selected/${this.editVal.id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedUser.append(option).trigger('change').trigger({
@@ -294,7 +318,7 @@
                     $(".packet-select2").select2({
                         placeholder: "Pilih Paket",
                         ajax: {
-                            url: '/payroll/benefit/sales-bonus/broadband-packet/data',
+                            url: '/payroll/setting/benefit/sales-bonus/broadband-packet/data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -308,7 +332,7 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/payroll/benefit/sales-bonus/broadband-packet/selected/${this.editVal.id}`,
+                        url: `/payroll/setting/benefit/sales-bonus/broadband-packet/selected/${this.editVal.id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedBroadbandPacket.append(option).trigger('change').trigger({

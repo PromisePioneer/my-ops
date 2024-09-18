@@ -25,11 +25,6 @@ class BroadbandPacket extends Model
         return $this->belongsTo(Branch::class, 'branch_id');
     }
 
-    public function data(Request $request)
-    {
-        return self::with('branch')->where('branch_id', $request->user()->branch_id);
-    }
-
 
     public function getData(Request $request): array
     {

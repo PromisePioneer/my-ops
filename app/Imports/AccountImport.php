@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\Account;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -10,7 +11,7 @@ use Maatwebsite\Excel\Concerns\WithValidation;
 
 class AccountImport implements ToModel, WithHeadingRow, WithValidation
 {
-    private $account;
+    private Collection $account;
 
     public function __construct()
     {
@@ -49,6 +50,5 @@ class AccountImport implements ToModel, WithHeadingRow, WithValidation
             'name' => $row['nama'],
             'code' => $row['kode'],
         ]);
-
     }
 }
