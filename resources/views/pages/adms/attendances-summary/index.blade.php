@@ -80,7 +80,10 @@
                             </template>
                             <template x-for="(attendance, index) in attendanceSummary?.data" :key="index">
                                 <tr>
-                                    <td x-text="`(${attendance.user_nip}) ${attendance.user_name}`"></td>
+                                    <td>
+                                        <a :href="`/manage-users/users/detail/${attendance.id}`"
+                                           x-text="`(${attendance.user_nip}) ${attendance.user_name}`"></a>
+                                    </td>
                                     <td x-text="attendance.total_present"></td>
                                     p[kasdkasd
                                     <td x-text="`${attendance.total_late_in_minutes} Menit`"></td>

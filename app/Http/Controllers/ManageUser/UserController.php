@@ -150,7 +150,7 @@ class UserController extends Controller
 
     public function detail(User $user): View
     {
-        $role = Role::with('department')->where('id', $user?->roles[0]?->id)->first();
+        $role = Role::with('department')->where('id', $user->roles[0]->id ?? null)->first();
         return view('pages.manage-users.user.detail', compact('user', 'role'));
     }
 
