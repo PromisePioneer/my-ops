@@ -130,7 +130,7 @@
                                         </tbody>
                                     </template>
                                     <template x-for="sp in spList.data" :key="sp.id">
-                                        <tbody class="fw-bold text-gray-600">
+                                        <tbody class="fw-bold">
                                         <tr @click="spDetail(sp.id)" style="cursor: pointer"
                                             :class="{'table-active': spDetailCard.id === sp.id}">
                                             <td x-text="sp.sp_number"></td>
@@ -138,7 +138,7 @@
                                             <td x-text="sp.user_id"></td>
                                             <td>
                                             <span x-text="sp.expired  ? 'Masih Berlaku' : 'Sudah Habis'"
-                                                  :class="sp.expired ? 'badge bg-success'  : 'badge bg-danger'"></span>
+                                                  :class="sp.expired ? 'badge bg-success text-white fs-6'  : 'badge bg-danger text-white fs-6'"></span>
                                             </td>
                                             <td class="text-end">
                                                 <a :href="`/manage-users/sp/${sp.id}`"
@@ -154,20 +154,15 @@
                                     </template>
                                 </table>
                             </div>
-                            <div class="text-center mt-10">
-                                <div class="col-sm-12  d-flex align-items-center justify-content-center">
-                                    <template x-for="pagination in spList.links">
-                                        <ul class="pagination">
-                                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                                <button
-                                                        class="page-link"
-                                                        @click="paginationEndPoint(pagination.url)"
-                                                        x-html="pagination.label"></button>
-                                            </li>
-                                        </ul>
-                                    </template>
-                                </div>
-                            </div>
+                            <ul class="pagination float-end mb-4 mt-4">
+                                <template x-for="pagination in spList.links">
+                                    <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                        <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                                x-html="pagination.label">
+                                        </button>
+                                    </li>
+                                </template>
+                            </ul>
                         </div>
                     </div>
                 </div>

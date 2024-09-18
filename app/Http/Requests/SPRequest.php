@@ -43,7 +43,7 @@ class SPRequest extends FormRequest
             'start_date.date' => 'Tanggal tidak valid',
             'sp_type.required' => 'Karyawan tidak boleh kosong',
             'sp_type.in' => 'Tipe SP tidak valid',
-            'list_of_reason.required' => 'Alasan tidak boleh kosong',
+            'data.*.list_of_reason.required' => 'Alasan tidak boleh kosong',
         ];
     }
 }

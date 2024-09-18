@@ -36,6 +36,7 @@ class BranchRequest extends FormRequest
             'code.unique' => 'Kode sudah terdaftar.',
             'name.required' => 'Nama tidak boleh kosong',
             'name.unique' => 'Nama sudah terdaftar.',
+            'address.required' => 'Alamat tidak boleh kosong',
         ];
     }
 }

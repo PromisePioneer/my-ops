@@ -9,7 +9,7 @@
                 <div class="card card-flush">
                     <div class="card-header">
                         <div class="card-title">
-                            <h2 class="mb-0">Data Karyawan </h2>
+                            <h2 class="mb-0">Data Karyawan</h2>
                         </div>
                     </div>
                     <form id="form-filter" @submit.prevent="filter()">

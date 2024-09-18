@@ -19,14 +19,12 @@ class SKController extends Controller
 {
 
     private SKService $SKService;
-    private SK $sk;
     private User $user;
     private Role $role;
     private Branch $branch;
 
     public function __construct()
     {
-        $this->sk = new SK();
         $this->SKService = new SKService();
         $this->user = new User();
         $this->role = new Role();
@@ -44,7 +42,7 @@ class SKController extends Controller
         return response()->json($this->SKService->data());
     }
 
-    public function search(Request $request)
+    public function search(Request $request): JsonResponse
     {
         return response()->json($this->SKService->search($request));
     }

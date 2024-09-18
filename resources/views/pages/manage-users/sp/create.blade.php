@@ -12,11 +12,11 @@
                     <div class="card-body p-12">
                         <div class="row">
                             <div class="col-lg-6">
-                                <div class="d-flex align-items-center flex-equal fw-row me-4 order-2"
+                                <div class="row"
                                      data-bs-toggle="tooltip" data-bs-trigger="hover">
-                                    <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal:</div>
-                                    <div class="position-relative d-flex align-items-center w-150px">
-                                        <input type="date" class="form-control form-control-white fw-bolder pe-5 date"
+                                    <div class="col-md-6">
+                                        <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">Tanggal</label>
+                                        <input type="date" class="form-control form-control-solid fw-bolder pe-5 date"
                                                placeholder="Tanggal" name="start_date" id="start_date"
                                                :value="currentSP?.reset_date ?? ''"/>
                                     </div>

@@ -115,7 +115,7 @@
                             </template>
                         </table>
                     </div>
-                    <ul class="pagination mb-4 mt-4">
+                    <ul class="pagination float-end mb-4 mt-4">
                         <template x-for="pagination in branches.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                 <button class="page-link" @click="paginationEndPoint(pagination.url)"

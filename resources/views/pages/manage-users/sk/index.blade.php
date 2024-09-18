@@ -121,20 +121,15 @@
                                     </template>
                                 </table>
                             </div>
-                            <div class="text-center mt-10">
-                                <div class="col-sm-12  d-flex align-items-center justify-content-center">
-                                    <template x-for="pagination in skData.links">
-                                        <ul class="pagination">
-                                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                                <button
-                                                        class="page-link"
-                                                        @click="paginationEndPoint(pagination.url)"
-                                                        x-html="pagination.label"></button>
-                                            </li>
-                                        </ul>
-                                    </template>
-                                </div>
-                            </div>
+                            <ul class="pagination float-end mb-4 mt-4">
+                                <template x-for="pagination in skData.links">
+                                    <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                        <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                                x-html="pagination.label">
+                                        </button>
+                                    </li>
+                                </template>
+                            </ul>
                         </div>
                     </div>
                 </div>
