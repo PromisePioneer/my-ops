@@ -33,18 +33,38 @@
                 </div>
             </div>
             <div class="card-body py-3">
+                <div class="col-12 ">
+                    <form id="form-delete" @submit.prevent="destroy()">
+                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                        <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                                x-show="selectedCheckBox.length > 0"
+                                x-transition x-cloak>
+                            <i class="ki-duotone ki-trash-square fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
+                            Hapus
+                        </button>
+                    </form>
+                </div>
                 <div class="py-5">
-                    <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
+                    <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped">
                         <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                            <th class="w-10px pe-2">No</th>
+                            <th class="w-10px pe-2">
+                                <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                    <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
+                                </div>
+                            </th>
                             <th class="min-w-125px">Kode</th>
                             <th class="min-w-125px">Nama</th>
                             <th class="min-w-125px">Debit</th>
                             <th class="min-w-125px">Credit</th>
                             <th class="min-w-125px">Total</th>
                         </thead>
-                        <tbody class="text-gray-600 fw-bold">
+                        <tbody class="fw-bold">
                         <template x-if="isLoading">
                             <tr>
                                 <td colspan="9">
@@ -65,19 +85,25 @@
                         </template>
                         <template x-for="(subAccount,index) in subAccounts?.data" :key="subAccount.id">
                             <tr>
-                                <td x-text="startIndex + index++"></td>
+                                <td>
+                                    <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                         @click="selectCheckBox($event)">
+                                        <input class="form-check-input" type="checkbox" :value="subAccount.id"
+                                               :id="'checkbox-' + subAccount.id"/>
+                                    </div>
+                                </td>
                                 <td x-text="subAccount.code"></td>
                                 <td x-text="subAccount.name"></td>
                                 <td x-text="`Rp. ${subAccount.debit_balance}`"></td>
                                 <td x-text="`Rp. ${subAccount.credit_balance}`"></td>
                                 <td x-text="`Rp. ${subAccount.balance}`"></td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                    <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                             data-bs-target="#modal-edit" @click="edit(subAccount.id)">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-danger btn-sm" @click="destroy(subAccount.id)">
-                                        <i class="bi bi-trash"></i>
+                                        <i class="ki-duotone ki-pencil fs-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                        </i>
                                     </button>
                                 </td>
                             </tr>
@@ -108,6 +134,9 @@
                 startIndex: null,
                 search: '',
                 editVal: '',
+                selectedCheckBox: [],
+                selectAll: false,
+                singleChecked: false,
                 subAccountId: '',
                 formCreate: document.getElementById('form-create'),
                 formEdit: document.getElementById('form-edit'),
@@ -115,6 +144,7 @@
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
                 formImport: document.getElementById('form-import'),
+                formDelete: document.getElementById('form-delete'),
                 async init() {
                     const subAccounts = await axios.get('/account-master/sub-account/data');
                     this.subAccounts = subAccounts.data
@@ -133,6 +163,30 @@
                         console.error('Error fetching data:', error);
                     } finally {
                         this.isLoading = false;
+                    }
+                },
+                toggleAllCheckBox() {
+                    this.selectAll = !this.selectAll;
+                    this.singleChecked = false;
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    this.selectedCheckBox = [];
+                    checkboxes.forEach((checkbox) => {
+                        checkbox.checked = this.selectAll;
+                        if (this.selectAll) {
+                            this.selectedCheckBox.push(checkbox.value);
+                        }
+                    });
+                    this.selectedCheckBox.shift();
+                },
+                selectCheckBox(event) {
+                    const checkboxId = event.target.value;
+                    if (event.target.checked) {
+                        this.selectedCheckBox.push(checkboxId);
+                    } else {
+                        const index = this.selectedCheckBox.indexOf(checkboxId);
+                        if (index !== -1) {
+                            this.selectedCheckBox.splice(index, 1);
+                        }
                     }
                 },
                 async add() {
@@ -232,7 +286,7 @@
                 async destroy(id) {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.delete(`/account-master/sub-account/${id}`);
+                            await axios.post(`/account-master/sub-account/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {

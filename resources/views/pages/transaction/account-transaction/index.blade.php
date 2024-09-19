@@ -21,7 +21,10 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-                    <div class="mb-4 float-end">
+                    <div class="d-flex align-items-center position-relative my-1">
+                         <span class="svg-icon svg-icon-1 position-absolute ms-6">
+                           <i class="bi bi-search"></i>
+                        </span>
                         <input type="text" name="search" x-model="search" @input.debounce="searchData"
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
@@ -58,7 +61,8 @@
                                     </td>
                                 </tr>
                             </template>
-                            <template x-for="(accountTransaction,index) in accountTransactions?.data" :key="accountTransaction.id">
+                            <template x-for="(accountTransaction,index) in accountTransactions?.data"
+                                      :key="accountTransaction.id">
                                 <tr>
                                     <td x-text="accountTransaction.date"></td>
                                     <td x-text="accountTransaction.description"></td>

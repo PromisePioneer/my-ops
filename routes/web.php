@@ -44,6 +44,7 @@ use App\Http\Controllers\Master\ProductController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\ServicesCategoryController;
 use App\Http\Controllers\Master\SubAccountController;
+use App\Http\Controllers\Master\TaxSettingController;
 use App\Http\Controllers\Operational\SPController;
 use App\Http\Controllers\Payroll\BPJSKetController;
 use App\Http\Controllers\Payroll\CutOffController;
@@ -251,9 +252,9 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/search', [AccountController::class, 'search']);
             Route::post('/', [AccountController::class, 'store']);
             Route::post('/import', [AccountController::class, 'import']);
+            Route::post('/destroy', [AccountController::class, 'destroy']);
             Route::get('/edit/{account}', [AccountController::class, 'edit']);
             Route::post('/update/{account}', [AccountController::class, 'update']);
-            Route::delete('/{account}', [AccountController::class, 'destroy']);
         });
 
         // subaccount
@@ -266,7 +267,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/account/selected/{subAccount}', [SubAccountController::class, 'selectedAccount']);
             Route::get('/edit/{subAccount}', [SubAccountController::class, 'edit']);
             Route::post('/update/{subAccount}', [SubAccountController::class, 'update']);
-            Route::delete('/{subAccount}', [SubAccountController::class, 'destroy']);
+            Route::post('/destroy', [SubAccountController::class, 'destroy']);
             Route::post('/import/', [SubAccountController::class, 'import']);
         });
 
@@ -364,6 +365,17 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/{broadbandPacket}', [BroadbandPacketController::class, 'edit']);
             Route::post('/destroy', [BroadbandPacketController::class, 'destroy']);
             Route::post('/{broadbandPacket}', [BroadbandPacketController::class, 'update']);
+        });
+
+
+        Route::prefix('tax-settings')->group(function () {
+            Route::get('/', [TaxSettingController::class, 'index']);
+            Route::get('/data', [TaxSettingController::class, 'data']);
+            Route::get('/search', [TaxSettingController::class, 'search']);
+            Route::post('/', [TaxSettingController::class, 'store']);
+            Route::get('/{taxSetting}', [TaxSettingController::class, 'edit']);
+            Route::post('/destroy', [TaxSettingController::class, 'destroy']);
+            Route::post('/update/{taxSetting}', [TaxSettingController::class, 'update']);
         });
     });
 

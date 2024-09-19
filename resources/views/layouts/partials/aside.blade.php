@@ -144,6 +144,11 @@
                                 href="{{ url('master/broadband-packet') }}">
                             Paket Broadband
                         </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'tax-settings'"
+                                href="{{ url('master/tax-settings') }}">
+                            Pajak
+                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
 

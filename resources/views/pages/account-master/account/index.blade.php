@@ -67,12 +67,32 @@
             </div>
             <div class="separator my-10"></div>
             <div class="card-body py-3">
+                <div class="col-12 ">
+                    <form id="form-delete" @submit.prevent="destroy()">
+                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                        <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                                x-show="selectedCheckBox.length > 0"
+                                x-transition x-cloak>
+                            <i class="ki-duotone ki-trash-square fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
+                            Hapus
+                        </button>
+                    </form>
+                </div>
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table table-bordered table-hover">
+                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="w-10px pe-2"></th>
+                                <th class="w-10px pe-2">
+                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                        <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
+                                    </div>
+                                </th>
                                 <th class="min-w-125px">Akun</th>
                                 <th class="min-w-125px">Saldo Debit</th>
                                 <th class="min-w-125px">Saldo Kredit</th>
@@ -84,7 +104,11 @@
                                 <tbody @click="expand($event)" style="cursor:pointer" class="fw-bold">
                                 <tr :id="account.account_id">
                                     <td>
-                                        <i class="bi bi-plus fs-2"></i>
+                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                             @click="selectCheckBox($event)">
+                                            <input class="form-check-input" type="checkbox" :value="account.account_id"
+                                                   :id="'checkbox-' + account.account_id"/>
+                                        </div>
                                     </td>
                                     <td>
                                         <a href="#" x-text="`${account.account_code} - ${account.account_name}`"></a>
@@ -93,12 +117,12 @@
                                     <td x-text="`Rp. ${account.account_credit_balance}`"></td>
                                     <td x-text="`Rp. ${account.account_balance}`"></td>
                                     <td>
-                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(account.account_id)">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-danger btn-sm" @click="destroy(account.account_id)">
-                                            <i class="bi bi-trash"></i>
+                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#modal-edit" @click="edit(account.id)">
+                                            <i class="ki-duotone ki-pencil fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
                                         </button>
                                     </td>
                                 </tr>
@@ -143,6 +167,9 @@
                 startIndex: null,
                 search: '',
                 editVal: '',
+                selectedCheckBox: [],
+                selectAll: false,
+                singleChecked: false,
                 akunId: '',
                 branchId: '',
                 selectedRow: [],
@@ -153,11 +180,36 @@
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formImport: document.getElementById('form-import'),
                 modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
+                deleteForm: document.getElementById('form-delete'),
                 async init() {
                     this.isLoading = true;
                     await this.getAccountData();
                     await this.filterByBranch();
                     this.isLoading = false;
+                },
+                toggleAllCheckBox() {
+                    this.selectAll = !this.selectAll;
+                    this.singleChecked = false;
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    this.selectedCheckBox = [];
+                    checkboxes.forEach((checkbox) => {
+                        checkbox.checked = this.selectAll;
+                        if (this.selectAll) {
+                            this.selectedCheckBox.push(checkbox.value);
+                        }
+                    });
+                    this.selectedCheckBox.shift();
+                },
+                selectCheckBox(event) {
+                    const checkboxId = event.target.value;
+                    if (event.target.checked) {
+                        this.selectedCheckBox.push(checkboxId);
+                    } else {
+                        const index = this.selectedCheckBox.indexOf(checkboxId);
+                        if (index !== -1) {
+                            this.selectedCheckBox.splice(index, 1);
+                        }
+                    }
                 },
                 async searchData() {
                     this.isLoading = true;
@@ -231,10 +283,10 @@
                         this.buttonLoading = false;
                     }
                 },
-                async destroy(id) {
+                async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.delete(`/account-master/account/${id}`);
+                            await axios.post(`/account-master/account/destroy`, new FormData(this.deleteForm));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -306,6 +358,7 @@
                         params: {results: response}
                     });
                 },
+
             }
         }
     </script>

@@ -8,6 +8,7 @@ use App\Http\Requests\Master\AccountCategory\SubAccountRequest;
 use App\Imports\SubAccountImport;
 use App\Models\Account;
 use App\Models\SubAccount;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -86,9 +87,11 @@ class SubAccountController extends Controller
         ]);
     }
 
-    public function destroy(SubAccount $subAccount): JsonResponse
+    public function destroy(Request $request, SubAccount $subAccount): JsonResponse
     {
-        $subAccount->delete();
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $subAccount->whereIn('id', $explodeID)->delete();
 
         return response()->json([
             'message' => 'Data berhasil dihapus',
@@ -111,7 +114,7 @@ class SubAccountController extends Controller
             return response()->json([
                 'message' => 'Data berhasil diimport',
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
 
             return response()->json([

@@ -35,9 +35,6 @@
                     <div class="card-body">
                         <canvas id="kt_chartjs_1" class="mh-400px"></canvas>
                     </div>
-                    <div class="card-footer">
-                        Footer
-                    </div>
                 </div>
 
 

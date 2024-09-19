@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             CutOffPayrollSettingSeeder::class,
             BroadbandPacketSeeder::class,
             SalaryCalculationMethodSeeder::class,
+            TaxSettingSeeder::class,
         ]);
     }
 }

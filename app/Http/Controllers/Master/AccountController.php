@@ -108,11 +108,16 @@ class AccountController extends Controller
     }
 
 
-    public function destroy(Account $account): JsonResponse
+    public function destroy(Request $request, Account $account): JsonResponse
     {
         $this->authorize('delete', $account);
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $account->whereIn('id', $explodeID)->delete();
 
-        return response()->json($account->delete());
+        return response()->json([
+            'message' => 'data berhasil dihapus',
+        ]);
     }
 
     public function import(AccountImportRequest $request): JsonResponse

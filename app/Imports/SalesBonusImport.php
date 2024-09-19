@@ -13,7 +13,6 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class SalesBonusImport implements ToModel, WithHeadingRow
 {
-
     private Collection $user;
     private Collection $packet;
 
