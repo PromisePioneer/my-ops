@@ -12,6 +12,7 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class SalesBonusImport implements ToModel, WithHeadingRow
 {
+    private static int $bonusPercentage = 20;
     private User $user;
     private BroadbandPacket $packet;
 
@@ -49,12 +50,14 @@ class SalesBonusImport implements ToModel, WithHeadingRow
 
     public function model(array $row): SaleBonus
     {
+        $packet = $this->packet->where('name', $row['paket'])->first();
+
         return SaleBonus::create([
             'date_active' => Carbon::instance(Date::excelToDateTimeObject((int)$row['tanggal_aktif'])),
             'customer_name' => $row['nama_pelanggan'],
             'packet_id' => (int)$this->packet->where('name', $row['paket'])->pluck('id')->first(),
             'user_id' => (int)$this->user->where('name', $row['sales'])->pluck('id')->first(),
-            'amount' => $row['bonus'],
+            'amount' => $packet->price / 100 * self::$bonusPercentage,
         ]);
     }
 }

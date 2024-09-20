@@ -173,6 +173,7 @@
                 async init() {
                     await this.getProjectBonus();
                     await this.getBroadbandPacketData();
+                    await this.getUserData();
                 },
                 async searchData() {
                     this.isLoading = true;
@@ -299,6 +300,19 @@
                     selectedUser.append(option).trigger('change').trigger({
                         type: 'select2:select',
                         params: {results: response}
+                    });
+                },
+                async getUserData() {
+                    $(".users-select2").select2({
+                        placeholder: "Pilih Paket",
+                        ajax: {
+                            url: '/payroll/setting/benefit/sales-bonus/user/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
                     });
                 },
                 async getBroadbandPacketData() {
