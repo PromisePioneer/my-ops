@@ -165,13 +165,17 @@
                     await this.getUserData();
                 },
                 async searchData() {
+                    this.isLoading = true;
                     try {
-                        this.slaDeductions = await axios.get('/payroll/setting/deduction/sla/search', {
+                        const response = await axios.get('/payroll/setting/deduction/sla/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
+                        this.slaDeductions = response.data;
                     } catch (error) {
-                        console.log(error);
+                        console.error('Error fetching data:', error);
+                    } finally {
+                        this.isLoading = false;
                     }
                 },
                 toggleAllCheckBox() {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Transaction;
 
 use App\Http\Requests\Transaction\Invoice\InvoiceRequest;
 use App\Models\AccountTransaction;
@@ -8,6 +8,7 @@ use App\Models\Contact;
 use App\Models\Invoice;
 use App\Models\InvoiceProductService;
 use App\Models\SubAccount;
+use App\Service\AccountTransactionService;
 use App\Service\HelperService\HandleFileUploadService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;

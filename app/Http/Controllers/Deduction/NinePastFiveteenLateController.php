@@ -6,35 +6,36 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\NinePastFiveTeenLateDeductionRequest;
 use App\Models\NinePastFiveTeenLateDeduction;
 use App\Models\User;
+use App\Service\UserDeduction\NinePastFiveteenLateDeductionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class NinePastFiveteenLateController extends Controller
 {
-
-    private const int AMOUNT_OF_LATE = 10000;
-    private NinePastFiveTeenLateDeduction $ninePastFiveTeenLateDeduction;
     private User $user;
+    private NinePastFiveteenLateDeductionService $ninePastFiveteenLateDeductionService;
 
     public function __construct()
     {
-        $this->ninePastFiveTeenLateDeduction = new NinePastFiveTeenLateDeduction();
         $this->user = new User();
+        $this->ninePastFiveteenLateDeductionService = new NinePastFiveteenLateDeductionService();
     }
 
-    public function index()
+    public function index(): View
     {
         return view('pages.payroll.deduction.nine-past-fiveteen-late.index');
     }
 
-    public function search()
+    public function search(Request $request): JsonResponse
     {
+        return response()->json($this->ninePastFiveteenLateDeductionService->search($request));
     }
 
 
     public function data(): JsonResponse
     {
-        return response()->json($this->ninePastFiveTeenLateDeduction->data());
+        return response()->json($this->ninePastFiveteenLateDeductionService->data());
     }
 
     public function getUserData(Request $request): JsonResponse
@@ -49,13 +50,9 @@ class NinePastFiveteenLateController extends Controller
     }
 
 
-    public function store(NinePastFiveTeenLateDeductionRequest $request)
+    public function store(NinePastFiveTeenLateDeductionRequest $request): JsonResponse
     {
-        $data = $request->validated();
-        $data['kca_id'] = $request->user()->id;
-        $data['total_deduction_amount'] = $data['total_amount_of_late'] * self::AMOUNT_OF_LATE;
-        NinePastFiveTeenLateDeduction::create($data);
-
+        $this->ninePastFiveteenLateDeductionService->store($request);
         return response()->json([
             'message' => 'data berhasil disimpan',
         ]);
@@ -72,12 +69,8 @@ class NinePastFiveteenLateController extends Controller
         NinePastFiveTeenLateDeductionRequest $request,
         NinePastFiveTeenLateDeduction $ninePastFiveTeenLateDeduction
     ): JsonResponse {
-        $data = $request->validated();
-        $data['total_deduction_amount'] = $data['total_amount_of_late'] * self::AMOUNT_OF_LATE;
-        $ninePastFiveTeenLateDeduction->update($data);
-        return response()->json([
-            'message' => 'data berhasil disimpan',
-        ]);
+        $this->ninePastFiveteenLateDeductionService->update($request, $ninePastFiveTeenLateDeduction);
+        return response()->json(['message' => 'data berhasil disimpan']);
     }
 
 

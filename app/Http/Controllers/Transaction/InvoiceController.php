@@ -12,7 +12,7 @@ use App\Models\InvoiceProductService;
 use App\Models\LetterHead;
 use App\Models\SubAccount;
 use App\Service\CompanyProfileServices;
-use App\Service\InvoiceService;
+use App\Service\Transaction\InvoiceService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -156,7 +156,10 @@ class InvoiceController extends Controller
         $letterHead = LetterHead::where('id', 1)->first();
         $companyProfile = $this->companyProfileServices->getCompanyProfile();
 
-        return view('pages.transaction.invoice.detail', compact('invoice', 'invoiceServiceList', 'letterHead', 'companyProfile'));
+        return view(
+            'pages.transaction.invoice.detail',
+            compact('invoice', 'invoiceServiceList', 'letterHead', 'companyProfile')
+        );
     }
 
     public function updatePaymentStatus(Request $request, Invoice $invoice): JsonResponse
@@ -173,7 +176,12 @@ class InvoiceController extends Controller
         $jurnalEntry = DB::table('account_transactions')
             ->join('sub_accounts', 'sub_accounts.id', '=', 'account_transactions.sub_account_id')
             ->where('account_transactions.description', 'like', '%'.$invoice->invoice_number.'%')
-            ->select('account_transactions.*', 'sub_accounts.name', 'sub_accounts.code', 'sub_accounts.id as sub_account_id')
+            ->select(
+                'account_transactions.*',
+                'sub_accounts.name',
+                'sub_accounts.code',
+                'sub_accounts.id as sub_account_id'
+            )
             ->get();
 
         return response()->json($jurnalEntry);
@@ -192,7 +200,10 @@ class InvoiceController extends Controller
 
         $companyProfile = CompanyProfile::where('id', 1)->first();
 
-        $pdf = Pdf::loadView('pages.transaction.invoice.export-pdf', compact('invoice', 'invoiceServiceList', 'companyProfile'))->setPaper('A4', 'portrait');
+        $pdf = Pdf::loadView(
+            'pages.transaction.invoice.export-pdf',
+            compact('invoice', 'invoiceServiceList', 'companyProfile')
+        )->setPaper('A4', 'portrait');
 
         return $pdf->stream();
     }

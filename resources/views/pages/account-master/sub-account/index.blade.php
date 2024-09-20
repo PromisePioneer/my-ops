@@ -256,7 +256,8 @@
                 async update(subAccountId) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/account-master/sub-account/update/${subAccountId}`, new FormData(this.formEdit))
+                        await axios.post(`/account-master/sub-account/update/${subAccountId}`,
+                            new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil diubah');
                         this.formEdit.reset();
                         this.modalEdit.hide();

@@ -1,5 +1,5 @@
 @extends('layouts.template')
-@section('page-title', 'Denda SLA')
+@section('page-title', 'Denda 9.15')
 @section('content')
     <div x-data="slaDeduction()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
@@ -165,13 +165,17 @@
                     await this.getUserData();
                 },
                 async searchData() {
+                    this.isLoading = true;
                     try {
-                        this.nineFiveteenLateness = await axios.get('/payroll/setting/deduction/nine-past-fiveteen-late/search', {
+                        const response = await axios.get('/payroll/setting/deduction/nine-past-fiveteen-late/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
+                        this.nineFiveteenLateness = response.data;
                     } catch (error) {
-                        console.log(error);
+                        console.error('Error fetching data:', error);
+                    } finally {
+                        this.isLoading = false;
                     }
                 },
                 toggleAllCheckBox() {

@@ -8,7 +8,7 @@ use App\Models\Bast;
 use App\Models\BastProduct;
 use App\Models\Branch;
 use App\Models\Contact;
-use App\Service\BastServices;
+use App\Service\Transaction\BastServices;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

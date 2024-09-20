@@ -70,7 +70,7 @@
                                     </tr>
                                     </thead>
                                     <template x-if="isLoading">
-                                        <tbody class="fw-bold text-gray-600">
+                                        <tbody class="fw-bold">
                                         <tr>
                                             <td colspan="5">
                                                 <div style="text-align: center;">
@@ -83,7 +83,7 @@
                                         </tbody>
                                     </template>
                                     <template x-if="!isLoading && skData.data?.length === 0">
-                                        <tbody class="fw-bold text-gray-600">
+                                        <tbody class="fw-bold">
                                         <tr>
                                             <td colspan="9">
                                                 <center>Data Tidak Ditemukan</center>

@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Transaction;
 
 use App\Models\Bast;
 use App\Models\BastProduct;
 use App\Service\HelperService\HandleFileUploadService;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class BastServices
 {
@@ -16,6 +17,9 @@ class BastServices
         $this->handleFileUploadService = new HandleFileUploadService();
     }
 
+    /**
+     * @throws Throwable
+     */
     public function store($request): void
     {
         DB::transaction(function () use ($request) {
@@ -37,6 +41,9 @@ class BastServices
         }
     }
 
+    /**
+     * @throws Throwable
+     */
     public function update($request, $bast): void
     {
         DB::transaction(function () use ($request, $bast) {

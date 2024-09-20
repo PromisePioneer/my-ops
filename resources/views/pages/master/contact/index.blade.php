@@ -35,7 +35,7 @@
                                     <label class="form-label fs-6 fw-bold">Cabang:</label>
                                     <select name="" id=""
                                             class="form-select form-select-solid filter-branch-select2">
-                                        <option value="0">Pilih Cabang</option>
+                                        <option></option>
                                     </select>
                                 </div>
                             </div>
@@ -163,7 +163,7 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                formCreate: document.getElementById('contact-create'),
+                formCreate: document.getElementById('contactFormCreate'),
                 modalCreate: new bootstrap.Modal(document.getElementById('contact-create')),
                 formEdit: document.getElementById('contactFormEdit'),
                 modalEdit: new bootstrap.Modal(document.getElementById('contact-edit')),
@@ -262,6 +262,8 @@
                 async filterByBranch() {
                     const self = this;
                     $(".filter-branch-select2").select2({
+                        placeholder: "Pilih Cabang",
+                        allowClear: true,
                         ajax: {
                             url: '/master/contact/branch/data',
                             dataType: "json",

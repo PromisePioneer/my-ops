@@ -102,7 +102,7 @@
                                         </th>
                                     </tr>
                                     </thead>
-                                    <tbody class="fw-bold text-gray-600">
+                                    <tbody class="fw-bold">
                                     <template x-if="isLoading">
                                         <tr>
                                             <td colspan="5">

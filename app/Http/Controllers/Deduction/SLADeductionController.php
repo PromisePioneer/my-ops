@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Deduction\SlaDeductionRequest;
 use App\Models\SLADeduction;
 use App\Models\User;
+use App\Service\UserDeduction\SLADeductionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -15,11 +16,12 @@ class SLADeductionController extends Controller
 
     private SLADeduction $slaDeduction;
     private User $user;
+    private SLADeductionService $SLADeductionService;
 
     public function __construct()
     {
-        $this->slaDeduction = new SLADeduction();
         $this->user = new User();
+        $this->SLADeductionService = new SLADeductionService();
     }
 
     public function index(): View
@@ -29,12 +31,13 @@ class SLADeductionController extends Controller
 
     public function data(): JsonResponse
     {
-        return response()->json($this->slaDeduction->data());
+        return response()->json($this->SLADeductionService->data());
     }
 
 
-    public function search(): JsonResponse
+    public function search(Request $request): JsonResponse
     {
+        return response()->json($this->SLADeductionService->search($request));
     }
 
 
@@ -52,19 +55,8 @@ class SLADeductionController extends Controller
 
     public function store(SlaDeductionRequest $request): JsonResponse
     {
-        foreach ($request->technician_id as $technician) {
-            SLADeduction::create([
-                'date' => $request->date,
-                'technician_id' => $technician,
-                'kca_id' => $request->user()->id,
-                'spk_amount' => $request->spk_amount,
-                'total_deduction_amount' => $request->spk_amount * 10000,
-            ]);
-        }
-
-        return response()->json([
-            'message' => 'Data berhasil disimpan',
-        ]);
+        $this->SLADeductionService->store($request);
+        return response()->json(['message' => 'Data berhasil disimpan']);
     }
 
 
@@ -75,15 +67,8 @@ class SLADeductionController extends Controller
 
     public function update(SlaDeductionRequest $request, SLADeduction $SLADeduction): JsonResponse
     {
-        $data = $request->validated();
-        $data['kca_id'] = $request->user()->id;
-        $data['total_deduction_amount'] = $request->spk_amount * 10000;
-
-        $SLADeduction->update($data);
-
-        return response()->json([
-            'message' => 'Data berhasil disimpan',
-        ]);
+        $this->SLADeductionService->update($request, $SLADeduction);
+        return response()->json(['message' => 'Data berhasil disimpan']);
     }
 
 

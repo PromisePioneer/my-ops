@@ -1,4 +1,5 @@
 @extends('layouts.template')
+@section('page-title', 'Tunjangan Jabatan')
 @section('content')
     <div x-data="positionAllowancesData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
