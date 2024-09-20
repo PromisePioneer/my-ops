@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Eloquent;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -77,110 +76,9 @@ class Account extends Model
     }
 
     // eloquent
-    public function getAccountsBasedOnUserBranch(?int $branchId, int $perPage): LengthAwarePaginator
-    {
-        $accounts = self::with([
-            'subAccount' => static function ($query) {
-                $query->orderBy('code', 'ASC');
-            },
-        ])->where('branch_id', $branchId)
-            ->paginate($perPage);
-
-        return self::formatAccounts($accounts);
-    }
-
-    private static function formatAccounts(LengthAwarePaginator $accounts): LengthAwarePaginator
-    {
-        $formattedAccounts = $accounts->getCollection()->map(static function ($account) {
-            $formattedSubAccounts = $account->subAccount->map(static function ($subAccount) {
-                return [
-                    'sub_account_id' => $subAccount->id,
-                    'sub_account_code' => $subAccount->code,
-                    'sub_account_name' => $subAccount->name,
-                    'sub_account_debit_balance' => number_format($subAccount->debit_balance, 2, ',', '.'),
-                    'sub_account_credit_balance' => number_format($subAccount->credit_balance, 2, ',', '.'),
-                    'sub_account_balance' => number_format($subAccount->balance, 2, ',', '.'),
-                ];
-            });
-
-            return [
-                'account_id' => $account->id,
-                'account_code' => $account->code,
-                'account_name' => $account->name,
-                'account_debit_balance' => number_format($account->debit_balance, 2, ',', '.'),
-                'account_credit_balance' => number_format($account->credit_balance, 2, ',', '.'),
-                'account_balance' => number_format($account->balance, 2, ',', '.'),
-                'sub_accounts' => $formattedSubAccounts,
-            ];
-        });
-        $accounts->setCollection($formattedAccounts);
-
-        return $accounts;
-    }
-
-    public function filteringAccountBasedOnBranch(int $branchId, int $perPage): LengthAwarePaginator
-    {
-        $accounts = self::with([
-            'subAccount' => static function ($query) {
-                $query->orderBy('code', 'ASC');
-            },
-        ])->where('branch_id', $branchId)
-            ->paginate($perPage);
-
-        return self::formatAccounts($accounts);
-    }
-
-    public function searchAccounts(Request $request, int $perPage): LengthAwarePaginator
-    {
-        $searchTerm = $request->input('search');
-        $query = self::with([
-            'subAccount' => function ($query) {
-                $query->orderBy('code', 'ASC');
-            },
-        ])->where('branch_id', Auth::user()->branch_id);
-
-        if (! empty($searchTerm)) {
-            $query->where(function ($query) use ($searchTerm) {
-                $query->where('code', 'like', '%'.$searchTerm.'%')
-                    ->orWhere('name', 'like', '%'.$searchTerm.'%');
-            });
-        }
-        $accounts = $query->paginate($perPage);
-        $formattedAccounts = $accounts->getCollection()->map(function ($account) {
-            $formattedSubAccounts = $account->subAccount->map(function ($subAccount) {
-                return [
-                    'sub_account_id' => $subAccount->id,
-                    'sub_account_code' => $subAccount->code,
-                    'sub_account_name' => $subAccount->name,
-                    'sub_account_debit_balance' => number_format($subAccount->debit_balance, 2, ',', '.'),
-                    'sub_account_credit_balance' => number_format($subAccount->credit_balance, 2, ',', '.'),
-                    'sub_account_balance' => number_format($subAccount->balance, 2, ',', '.'),
-                ];
-            });
-
-            return [
-                'account_id' => $account->id,
-                'account_code' => $account->code,
-                'account_name' => $account->name,
-                'account_debit_balance' => number_format($account->debit_balance, 2, ',', '.'),
-                'account_credit_balance' => number_format($account->credit_balance, 2, ',', '.'),
-                'account_balance' => number_format($account->balance, 2, ',', '.'),
-                'sub_accounts' => $formattedSubAccounts,
-            ];
-        });
-
-        return new \Illuminate\Pagination\LengthAwarePaginator(
-            $formattedAccounts,
-            $accounts->total(),
-            $accounts->currentPage(),
-            ['path' => $request->url(), 'query' => $request->query()]
-        );
-    }
-
     public function getAccountDataAndSpecificBranchWithoutPagination(Request $request): array
     {
         $search = $request->input('search');
-
         $query = self::orderby('name', 'asc')
             ->select('id', 'name')
             ->where('branch_id', Auth::user()->branch_id)

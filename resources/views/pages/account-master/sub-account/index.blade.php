@@ -25,9 +25,14 @@
                             </span>
                             Import
                         </button>
-                        <button type="button" @click="add()" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                        <button type="button" class="btn btn-light-primary btn-sm"
+                                data-bs-toggle="modal"
                                 data-bs-target="#modal-create">
-                            Tambah
+                            <i class="ki-duotone ki-message-add fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i> Tambah
                         </button>
                     </div>
                 </div>
@@ -83,7 +88,7 @@
                                 </td>
                             </tr>
                         </template>
-                        <template x-for="(subAccount,index) in subAccounts?.data" :key="subAccount.id">
+                        <template x-for="subAccount in subAccounts?.data" :key="subAccount.id">
                             <tr>
                                 <td>
                                     <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -111,12 +116,13 @@
                         </tbody>
                     </table>
                     <ul class="pagination float-end mb-4">
-                        <li class="page-item previous">
-                            <button class="page-link" @click="previousPage()">Previous</button>
-                        </li>
-                        <li class="page-item next">
-                            <button class="page-link" @click="nextPage()">Next</button>
-                        </li>
+                        <template x-for="pagination in subAccounts?.links">
+                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                        x-html="pagination.label">
+                                </button>
+                            </li>
+                        </template>
                     </ul>
                 </div>
             </div>
@@ -131,7 +137,6 @@
                 subAccounts: null,
                 buttonLoading: false,
                 isLoading: true,
-                startIndex: null,
                 search: '',
                 editVal: '',
                 selectedCheckBox: [],
@@ -146,10 +151,8 @@
                 formImport: document.getElementById('form-import'),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
-                    const subAccounts = await axios.get('/account-master/sub-account/data');
-                    this.subAccounts = subAccounts.data
-                    this.startIndex = this.subAccounts.from;
-                    this.isLoading = false;
+                    await this.getSubAccountData();
+                    await this.getAccountData();
                 },
                 async searchData() {
                     this.isLoading = true;
@@ -163,6 +166,12 @@
                         console.error('Error fetching data:', error);
                     } finally {
                         this.isLoading = false;
+                    }
+                },
+                async paginationEndPoint(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
+                        this.subAccounts = resp.data
                     }
                 },
                 toggleAllCheckBox() {
@@ -189,11 +198,10 @@
                         }
                     }
                 },
-                async add() {
-                    await this.accountData();
-                },
-                async accountData() {
+                async getAccountData() {
                     $(".account-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Akun',
                         ajax: {
                             url: '/account-master/sub-account/account/data',
                             dataType: "json",
@@ -203,20 +211,6 @@
                             cache: true
                         }
                     });
-                },
-                async nextPage() {
-                    if (this.subAccounts.next_page_url) {
-                        const resp = await axios.get(`${this.subAccounts.next_page_url}`);
-                        this.startIndex = resp.data.from
-                        this.subAccounts = resp.data
-                    }
-                },
-                async previousPage() {
-                    if (this.subAccounts.prev_page_url) {
-                        const resp = await axios.get(`${this.subAccounts.prev_page_url}`);
-                        this.startIndex = resp.data.from
-                        this.subAccounts = resp.data
-                    }
                 },
                 async save() {
                     this.buttonLoading = true;
@@ -234,10 +228,9 @@
                     }
                 },
                 async edit(id) {
-                    this.subAccountId = id;
                     const resp = await axios.get(`/account-master/sub-account/edit/${id}`);
                     this.editVal = resp.data;
-                    await this.accountData();
+                    await this.getAccountData();
                     await this.selectedAccount();
                 },
                 async selectedAccount() {
@@ -296,6 +289,18 @@
                         }
                     });
                 },
+                async getSubAccountData() {
+                    this.isLoading = true;
+                    try {
+                        const subAccounts = await axios.get('/account-master/sub-account/data');
+                        this.subAccounts = subAccounts.data
+                        this.isLoading = false;
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
+                }
             }
         }
     </script>

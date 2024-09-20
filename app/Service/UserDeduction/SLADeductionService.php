@@ -11,9 +11,8 @@ use function App\Helper\formatDate;
 
 class SLADeductionService
 {
-
     private static int $perPage = 10;
-
+    
     public function data(): LengthAwarePaginator
     {
         $data = SLADeduction::with('kca', 'technician')->paginate(self::$perPage);

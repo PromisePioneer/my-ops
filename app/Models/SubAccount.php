@@ -9,9 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * @property int $id
@@ -67,52 +65,12 @@ class SubAccount extends Model
         return $this->hasMany(AccountTransaction::class, 'sub_account_id', 'id');
     }
 
-    public function accountTransactions()
+    public function accountTransactions(): HasMany
     {
         return $this->hasMany(AccountTransaction::class);
     }
 
     //eloquent
-    public function getSubAccountBasedOnUserBranch(): LengthAwarePaginator
-    {
-        $query = self::whereHas('account', static function ($query) {
-            $query->where('branch_id', Auth::user()->branch_id);
-        })->orderBy('code', 'ASC')->paginate(10);
-
-        self::formattedData($query);
-
-        return $query;
-    }
-
-    private static function formattedData($query): void
-    {
-        $formattedData = $query->getCollection()->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'code' => $item->code,
-                'name' => $item->name,
-                'debit_balance' => number_format($item->debit_balance, 2, ',', '.'),
-                'credit_balance' => number_format($item->credit_balance, 2, ',', '.'),
-                'balance' => number_format($item->balance, 2, ',', '.'),
-            ];
-        });
-        $query->setCollection($formattedData);
-    }
-
-    public function searchSubAccountBasedOnUserBranch(Request $request): LengthAwarePaginator
-    {
-        $subAccount = self::whereHas('account', static function ($query) {
-            $query->where('branch_id', Auth::user()->branch_id);
-        })->where('name', 'like', '%'.$request->search.'%')
-            ->orWhere('code', 'like', '%'.$request->search.'%')
-            ->orderBy('code', 'ASC')
-            ->paginate(10);
-
-        self::formattedData($subAccount);
-
-        return $subAccount;
-    }
-
     public function getSubAccountForInvoiceStore(Request $request): array
     {
         $elo = self::with('account')->whereHas('account', function ($query) use ($request) {
