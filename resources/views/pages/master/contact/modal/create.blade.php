@@ -15,7 +15,7 @@
             </div>
 
             <div class="modal-body">
-                <form id="form-create" @submit.prevent="save()">
+                <form id="contactFormCreate" @submit.prevent="saveContact()">
                     <div class="d-flex flex-column mb-8 fv-row">
                         <label class="d-flex align-items-center fs-6 fw-bold mb-2">
                             <span class="required">Nama Lengkap</span>

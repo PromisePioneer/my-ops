@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\ALlowance;
+namespace App\Http\Requests\Allowances;
 
 use App\Models\User;
 use Closure;
@@ -27,7 +27,9 @@ class UserHasOvertimeRequest extends FormRequest
     {
         return [
             'user_id' => [
-                'required', 'exists:users,id', $this->validateUserFixedSalary($request),
+                'required',
+                'exists:users,id',
+                $this->validateUserFixedSalary($request),
             ],
             'hours' => ['required', 'numeric'],
             'reason' => ['required', 'string'],

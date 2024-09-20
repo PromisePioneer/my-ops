@@ -90,7 +90,7 @@
                                                           x-model="field.product_name" id="product_name"
                                                           class="form-control form-control-solid"
                                                           data-kt-autosize="true"
-                                                          data-kt-autosize="true"></textarea>
+                                                ></textarea>
                                             </td>
                                             <td style='text-align:center; vertical-align:middle'>
                                                 <textarea class="form-control form-control-solid"
@@ -166,6 +166,7 @@
 @push('script')
     <script>
         $("#date").flatpickr();
+
         function generateBAST() {
             return {
                 buttonLoading: false,
@@ -204,7 +205,7 @@
                 async generateBAST() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/income-transactions/bast/`, new FormData(form))
+                        await axios.post(`/income-transactions/bast/`, new FormData(this.form))
                         await showAlert('success', 'Data sukses disimpan')
                             .then(() => window.location.href = '/income-transactions/bast/');
                     } catch (error) {
@@ -217,13 +218,15 @@
                 async saveContact() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/master/contact`, new FormData(contactForm))
+                        await axios.post(`/master/contact`, new FormData(this.contactForm))
                         await showAlert('success', 'Data sukses disimpan');
-                        contactForm.reset();
-                        contactModal.hide();
+                        this.contactForm.reset();
+                        this.contactModal.hide();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                    } finally {
+                        this.buttonLoading = false;
                     }
                 },
                 add() {

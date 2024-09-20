@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Allowances;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ALlowance\UserHasOvertimeRequest;
+use App\Http\Requests\Allowances\UserHasOvertimeRequest;
 use App\Models\User;
 use App\Models\UserHasOvertime;
 use App\Service\UserAllowance\OvertimeAllowanceService;

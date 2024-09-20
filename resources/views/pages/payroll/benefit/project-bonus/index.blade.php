@@ -1,11 +1,8 @@
 @extends('layouts.template')
-@section('page-title', 'Data Bonus Sales')
+@section('page-title', 'Data Bonus Project')
 @section('content')
-    <div x-data="salesBonusData()">
+    <div x-data="projectBonusData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.payroll.benefit.sales-bonus.modal.create')
-            @include('pages.payroll.benefit.sales-bonus.modal.edit')
-            @include('pages.payroll.benefit.sales-bonus.modal.import')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -18,22 +15,14 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                        <button type="button" class="btn btn-light-primary btn-sm me-3" data-bs-toggle="modal"
-                                data-bs-target="#modal-import">
-                            <span class="svg-icon svg-icon-2">
-                                <i class="bi bi-file-earmark-excel-fill"></i>
-                            </span>
-                            Import
-                        </button>
-                        <button type="button" class="btn btn-light-primary btn-sm"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-create">
+                        <a href="{{ url('/payroll/setting/benefit/project-bonus/create') }}"
+                           class="btn btn-light-primary btn-sm">
                             <i class="ki-duotone ki-message-add fs-2">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                                 <span class="path3"></span>
                             </i> Tambah
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -67,10 +56,9 @@
                                 </th>
                                 <th>Tanggal Aktif</th>
                                 <th>Pelanggan</th>
-                                <th>Sales</th>
-                                <th>Nama Paket</th>
-                                <th>Harga Paket</th>
-                                <th>Total Bonus</th>
+                                <th>Karyawan</th>
+                                <th>Deskripsi Pekerjaan</th>
+                                <th>File</th>
                                 <th>Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -86,7 +74,7 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-if="!isLoading && salesBonuses.data?.length === 0">
+                            <template x-if="!isLoading && projectBonuses.data?.length === 0">
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td colspan="9">
@@ -95,33 +83,44 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-for="late in salesBonuses?.data"
-                                      :key="late.id">
+                            <template x-for="projectBonus in projectBonuses?.data"
+                                      :key="projectBonus.id">
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
                                             <input class="form-check-input" type="checkbox"
-                                                   :value="late.id"
-                                                   :id="'checkbox-' + late.id"/>
+                                                   :value="projectBonus.id"
+                                                   :id="'checkbox-' + projectBonus.id"/>
                                         </div>
                                     </td>
-                                    <td x-text="late.date_active"></td>
-                                    <td x-text="late.customer_name"></td>
-                                    <td x-text="late.sales"></td>
-                                    <td x-text="`${late.packet_name}`"></td>
-                                    <td x-text="`Rp.${late.packet_price}`"></td>
-                                    <td x-text="`Rp. ${late.amount}`">
+                                    <td x-text="projectBonus.date_active"></td>
+                                    <td x-text="projectBonus.customer_name"></td>
+                                    <td>
+                                        <template x-for="employee in projectBonus.user_has_project_bonus"
+                                                  :key="employee.id">
+                                            <div class="d-flex justify-content-around align-items-center">
+                                                <div class="col-sm">
+                                                    <span x-text="employee.user.name"></span>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </td>
+                                    <td x-text="projectBonus.work_description"></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-danger">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </button>
                                     </td>
                                     <td>
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(late.id)">
+                                        <a class="btn btn-light-primary btn-sm"
+                                           :href="`/payroll/setting/benefit/project-bonus/${projectBonus.id}`">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
                                             </i>
-                                        </button>
+                                        </a>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -133,7 +132,7 @@
                             <i class="ki-duotone ki-black-left"></i>
                         </a>
                         <ul class="pagination float-end mb-4 mt-4">
-                            <template x-for="pagination in salesBonuses.links">
+                            <template x-for="pagination in projectBonuses.links">
                                 <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                     <button class="page-link" @click="paginationEndPoint(pagination.url)"
                                             x-html="pagination.label">
@@ -152,9 +151,9 @@
     <script>
         $('.date').flatpickr();
 
-        function salesBonusData() {
+        function projectBonusData() {
             return {
-                salesBonuses: [],
+                projectBonuses: [],
                 isLoading: false,
                 buttonLoading: false,
                 selectedCheckBox: [],
@@ -163,25 +162,20 @@
                 search: '',
                 editVal: '',
                 startIndex: null,
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
-                modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
-                formCreate: document.getElementById('form-create'),
-                formEdit: document.getElementById('form-edit'),
                 formDelete: document.getElementById('form-delete'),
-                formImport: document.getElementById('form-import'),
                 async init() {
                     await this.getProjectBonus();
+                    await this.getUserData();
                     await this.getBroadbandPacketData();
                 },
                 async searchData() {
                     this.isLoading = true;
                     try {
-                        const response = await axios.get('/payroll/setting/benefit/sales-bonus/search', {
+                        const response = await axios.get('/payroll/setting/benefit/project-bonus/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
-                        this.salesBonuses = response.data;
+                        this.projectBonuses = response.data;
                     } catch (error) {
                         console.error('Error fetching data:', error);
                     } finally {
@@ -216,28 +210,13 @@
                     if (url) {
                         const resp = await axios.get(`${url}`);
                         this.startIndex = resp.data.from
-                        this.salesBonuses = resp.data
-                    }
-                },
-                async importData() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post('/payroll/setting/benefit/sales-bonus/import', new FormData(this.formImport))
-                        await showAlert('success', 'Data berhasil disimpan');
-                        this.formImport.reset();
-                        this.modalImport.hide();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]));
-                    } finally {
-                        this.buttonLoading = false;
+                        this.projectBonuses = resp.data
                     }
                 },
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/payroll/setting/benefit/sales-bonus/', new FormData(this.formCreate))
+                        await axios.post('/payroll/setting/benefit/project-bonus/', new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
@@ -250,7 +229,7 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/payroll/setting/benefit/sales-bonus/${id}`)
+                    const resp = await axios.get(`/payroll/setting/benefit/project-bonus/${id}`)
                     this.editVal = resp.data;
                     await this.selectedUser();
                     await this.selectedBroadbandPacketData();
@@ -258,7 +237,7 @@
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/payroll/setting/benefit/sales-bonus/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/payroll/setting/benefit/project-bonus/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formEdit.reset();
                         this.modalEdit.hide();
@@ -273,7 +252,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post('/payroll/setting/benefit/sales-bonus/destroy', new FormData(this.formDelete));
+                            await axios.post('/payroll/setting/benefit/project-bonus/destroy', new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -283,29 +262,15 @@
                     });
                 },
                 async getProjectBonus() {
-                    const resp = await axios.get('/payroll/setting/benefit/sales-bonus/data');
-                    this.salesBonuses = resp.data
-                    this.startIndex = this.salesBonuses.from
+                    const resp = await axios.get('/payroll/setting/benefit/project-bonus/data');
+                    this.projectBonuses = resp.data
+                    this.startIndex = this.projectBonuses.from
                 },
-
-                async selectedUser() {
-                    const selectedUser = $('#selectedUser');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/payroll/setting/benefit/sales-bonus/user/selected/${this.editVal.id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedUser.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
-                async getBroadbandPacketData() {
-                    $(".packet-select2").select2({
-                        placeholder: "Pilih Paket",
+                async getUserData() {
+                    $(".users-select2").select2({
+                        placeholder: "Pilih Karyawan",
                         ajax: {
-                            url: '/payroll/setting/benefit/sales-bonus/broadband-packet/data',
+                            url: '/payroll/setting/benefit/project-bonus/user/data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -314,15 +279,15 @@
                         }
                     });
                 },
-                async selectedBroadbandPacketData() {
-                    const selectedBroadbandPacket = $('#selectedBroadbandPacket');
+                async selectedUser() {
+                    const selectedUser = $('#selectedUser');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/payroll/setting/benefit/sales-bonus/broadband-packet/selected/${this.editVal.id}`,
+                        url: `/payroll/setting/benefit/project-bonus/user/selected/${this.editVal.id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
-                    selectedBroadbandPacket.append(option).trigger('change').trigger({
+                    selectedUser.append(option).trigger('change').trigger({
                         type: 'select2:select',
                         params: {results: response}
                     });

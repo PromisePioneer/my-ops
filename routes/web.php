@@ -12,6 +12,7 @@ use App\Http\Controllers\Allowances\PositionAllowancesController;
 use App\Http\Controllers\Allowances\ThrAllowancesController;
 use App\Http\Controllers\Allowances\TransportationAllowanceController;
 use App\Http\Controllers\Benefit\SalesBonusController;
+use App\Http\Controllers\Bonus\ProjectBonusController;
 use App\Http\Controllers\Deduction\AdditionalDeductionController;
 use App\Http\Controllers\Deduction\NinePastFiveteenLateController;
 use App\Http\Controllers\Deduction\SLADeductionController;
@@ -822,6 +823,27 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/{saleBonus}', [SalesBonusController::class, 'edit']);
             Route::post('/destroy', [SalesBonusController::class, 'destroy']);
             Route::post('/{saleBonus}', [SalesBonusController::class, 'update']);
+        });
+
+
+        Route::prefix('benefit/project-bonus')->group(function () {
+            Route::get('/', [ProjectBonusController::class, 'index']);
+            Route::get('/create', [ProjectBonusController::class, 'create']);
+            Route::get('/data', [ProjectBonusController::class, 'data']);
+            Route::get('/search', [ProjectBonusController::class, 'search']);
+            Route::get('/user/data', [ProjectBonusController::class, 'getUserData']);
+            Route::post('/', [ProjectBonusController::class, 'store']);
+            Route::get('/{projectBonus}', [ProjectBonusController::class, 'edit']);
+            Route::get(
+                'user-has-project-bonus/{projectBonus}',
+                [ProjectBonusController::class, 'getUserhasProjectBonus']
+            );
+            Route::get(
+                'user-has-project-bonus/show/{projectBonus}',
+                [ProjectBonusController::class, 'getSelectedProjectBonus']
+            );
+            Route::post('/destroy', [ProjectBonusController::class, 'destroy']);
+            Route::post('/{projectBonus}', [ProjectBonusController::class, 'update']);
         });
     });
 

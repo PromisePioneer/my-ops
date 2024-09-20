@@ -163,7 +163,7 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                formCreate: document.getElementById('form-create'),
+                formCreate: document.getElementById('contact-create'),
                 modalCreate: new bootstrap.Modal(document.getElementById('contact-create')),
                 formEdit: document.getElementById('contactFormEdit'),
                 modalEdit: new bootstrap.Modal(document.getElementById('contact-edit')),
@@ -213,7 +213,7 @@
                         }
                     }
                 },
-                async save() {
+                async saveContact() {
                     this.buttonLoading = true;
                     try {
                         await axios.post(`/master/contact`, new FormData(this.formCreate))

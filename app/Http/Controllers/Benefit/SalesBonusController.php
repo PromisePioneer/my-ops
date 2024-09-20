@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Benefit;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Benefit\SalesBonusRequest;
+use App\Http\Requests\SalesBonusImportRequest;
 use App\Imports\SalesBonusImport;
 use App\Models\BroadbandPacket;
 use App\Models\SaleBonus;
@@ -102,7 +103,7 @@ class SalesBonusController extends Controller
     }
 
 
-    public function import(Request $request): JsonResponse
+    public function import(SalesBonusImportRequest $request): JsonResponse
     {
         $file = $request->file('file_import');
         Excel::import(new SalesBonusImport(), $file);

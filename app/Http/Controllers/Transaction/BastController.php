@@ -94,19 +94,9 @@ class BastController extends Controller
         return view('pages.transaction.bast.edit', compact('bast'));
     }
 
-    public function update(BastRequest $request, Bast $bast): JsonResponse
-    {
-        $this->bastService->update($request, $bast);
-
-        return response()->json([
-            'message' => 'Data berhasil disimpan',
-        ]);
-    }
-
     public function detail(Bast $bast): View
     {
         $bastProducts = $this->bastProduct->getData($bast->id);
-
         return view('pages.transaction.bast.detail', compact('bast', 'bastProducts'));
     }
 
@@ -131,6 +121,15 @@ class BastController extends Controller
         ], 201);
     }
 
+    public function update(BastRequest $request, Bast $bast): JsonResponse
+    {
+        $this->bastService->update($request, $bast);
+
+        return response()->json([
+            'message' => 'Data berhasil disimpan',
+        ]);
+    }
+
     public function destroy(Bast $bast): JsonResponse
     {
         Storage::delete($bast->file);
@@ -150,7 +149,10 @@ class BastController extends Controller
     {
         $bastProducts = $this->bastProduct->getData($bast->id);
 
-        $pdf = PDF::loadView('pages.transaction.bast.export-pdf', compact('bastProducts', 'bast'))->setPaper('A4', 'portrait');
+        $pdf = PDF::loadView('pages.transaction.bast.export-pdf', compact('bastProducts', 'bast'))->setPaper(
+            'A4',
+            'portrait'
+        );
 
         return $pdf->stream();
     }

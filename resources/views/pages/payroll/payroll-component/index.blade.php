@@ -75,7 +75,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#"
+                        <a href="{{ url('/payroll/setting/benefit/project-bonus') }}"
                            class="fw-bold">
                             Bonus Project
                         </a>

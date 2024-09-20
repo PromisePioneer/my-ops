@@ -2,7 +2,7 @@
 
 namespace App\Service\UserAllowance;
 
-use App\Http\Requests\ALlowance\UserHasOvertimeRequest;
+use App\Http\Requests\Allowances\UserHasOvertimeRequest;
 use App\Models\NationalHoliday;
 use App\Models\User;
 use App\Models\UserHasOvertime;

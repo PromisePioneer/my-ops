@@ -187,6 +187,7 @@ class UserController extends Controller
         ini_set('max_execution_time', 180);
         $file = $request->file('file_import');
         Excel::import(new UserImport(), $file);
+
         return response()->json(['message' => 'Data berhasil diimport']);
     }
 

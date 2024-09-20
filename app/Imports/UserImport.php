@@ -7,11 +7,12 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
-class UserImport implements ToModel, WithHeadingRow, WithValidation
+class UserImport implements ToModel, WithHeadingRow, WithValidation, WithChunkReading
 {
 
     private Branch $branch;
@@ -49,12 +50,17 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation
     {
         return new User([
             'branch_id' => $this->branch->where('name', $row['cabang'])->pluck('id')->first() ?? null,
-            'absent_id' => (int) $row['absen_id'],
-            'nip' => (int) $row['nik'],
+            'absent_id' => (int)$row['absen_id'],
+            'nip' => (int)$row['nik'],
             'name' => $row['nama'],
             'placement' => $row['penempatan'],
-            'join_date' => Carbon::instance(Date::excelToDateTimeObject((int) $row['tanggal_masuk'])),
+            'join_date' => Carbon::instance(Date::excelToDateTimeObject((int)$row['tanggal_masuk'])),
             'password' => Hash::make('password'),
         ]);
+    }
+
+    public function chunkSize(): int
+    {
+        return 1000;
     }
 }
