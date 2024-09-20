@@ -32,10 +32,7 @@
                                 :x-text="buttonLoading ? 'Loading...' : 'Simpan'"></button>
                     </div>
                 </form>
-
             </div>
-
-
         </div>
     </div>
 </div>

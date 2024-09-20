@@ -8,6 +8,7 @@ use App\Http\Requests\Master\Account\AccountRequest;
 use App\Imports\AccountImport;
 use App\Models\Account;
 use App\Models\Branch;
+use App\Service\Accounts\AccountService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Http\JsonResponse;
@@ -25,11 +26,13 @@ class AccountController extends Controller
     private Branch $branch;
 
     private Account $account;
+    private AccountService $accountService;
 
     public function __construct()
     {
         $this->account = new Account();
         $this->branch = new Branch();
+        $this->accountService = new AccountService();
     }
 
     public function index(): View
@@ -39,10 +42,13 @@ class AccountController extends Controller
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function data(Request $request): JsonResponse
     {
         $this->authorize('view', Account::class);
-        $accounts = $this->account->getAccountsBasedOnUserBranch($request->branch_id, $this->perPage);
+        $accounts = $this->accountService->data($request->user()->branch_id);
         return response()->json($accounts);
     }
 
@@ -57,21 +63,25 @@ class AccountController extends Controller
         return response()->json($response);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', Account::class);
-        $accounts = $this->account->searchAccounts($request, $this->perPage);
-
+        $accounts = $this->accountService->search($request);
         return response()->json($accounts);
     }
 
     public function filter(Branch $branch): JsonResponse
     {
-        $filter = $this->account->filteringAccountBasedOnBranch($branch->id, $this->perPage);
-
+        $filter = $this->accountService->filterByBranch($branch->id);
         return response()->json($filter);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function store(AccountRequest $request): JsonResponse
     {
         $this->authorize('create', Account::class);
@@ -85,18 +95,22 @@ class AccountController extends Controller
     public function getSelectedBranch(Account $account): JsonResponse
     {
         $selectedBranch = $this->branch->getSelectedData($account->branch_id);
-
         return response()->json($selectedBranch);
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function edit(Account $account): JsonResponse
     {
         $this->authorize('update', $account);
-
         return response()->json($account);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function update(AccountRequest $request, Account $account): JsonResponse
     {
         $this->authorize('update', $account);
@@ -108,6 +122,9 @@ class AccountController extends Controller
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function destroy(Request $request, Account $account): JsonResponse
     {
         $this->authorize('delete', $account);
@@ -120,6 +137,9 @@ class AccountController extends Controller
         ]);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function import(AccountImportRequest $request): JsonResponse
     {
         $this->authorize('import', Account::class);

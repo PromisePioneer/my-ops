@@ -3,17 +3,24 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Form Akun</h5>
-                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
+                <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
-                    <span class="svg-icon svg-icon-2x"></span>
+                    <span class="svg-icon svg-icon-2x">
+                        <i class="ki-duotone ki-technology-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </span>
                 </div>
             </div>
 
             <form id="form-create" @submit.prevent="save()">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <select name="branch_id" class="form-select form-select-solid branch-select2" data-dropdown-parent="#modal-create" >
-                            <option value='0'>Pilih</option>
+                        <label for="name" class="required form-label">Cabang</label>
+                        <select name="branch_id" class="form-select form-select-solid branch-select2"
+                                data-dropdown-parent="#modal-create">
+                            <option></option>
                         </select>
                     </div>
                     <div class="mb-10">
@@ -29,9 +36,16 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary btn-sm" :disabled="buttonLoading"
-                            x-text="buttonLoading ? 'Loading...' : 'Save'"></button>
+                    <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
+                        <i class="ki-duotone ki-click fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                            <span class="path4"></span>
+                            <span class="path5"></span>
+                        </i>
+                        <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
+                    </button>
                 </div>
             </form>
         </div>

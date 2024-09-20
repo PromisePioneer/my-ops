@@ -35,7 +35,7 @@
                                     <label class="form-label fs-6 fw-bold">Cabang:</label>
                                     <select name="" id=""
                                             class="form-select form-select-solid filter-branch-select2">
-                                        <option value="0">Pilih Cabang</option>
+                                        <option></option>
                                     </select>
                                 </div>
                             </div>
@@ -49,9 +49,14 @@
                             </span>
                             Import
                         </button>
-                        <button type="button" @click="add()" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                        <button type="button" class="btn btn-light-primary btn-sm"
+                                data-bs-toggle="modal"
                                 data-bs-target="#modal-create">
-                            Tambah
+                            <i class="ki-duotone ki-message-add fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i> Tambah
                         </button>
                     </div>
                     <div class="d-flex justify-content-end align-items-center d-none"
@@ -100,6 +105,28 @@
                                 <th class="min-w-125px">Aksi</th>
                             </tr>
                             </thead>
+                            <template x-if="isLoading">
+                                <tbody class="fw-bold">
+                                <tr>
+                                    <td colspan="9">
+                                        <div style="text-align: center;">
+                                            <div class="spinner-border" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </template>
+                            <template x-if="!isLoading && accounts.data?.length === 0">
+                                <tbody class="fw-bold">
+                                <tr>
+                                    <td colspan="9">
+                                        <center>Data Tidak Ditemukan</center>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </template>
                             <template x-for="(account, index) in accounts.data" :key="account.account_id">
                                 <tbody @click="expand($event)" style="cursor:pointer" class="fw-bold">
                                 <tr :id="account.account_id">
@@ -118,7 +145,7 @@
                                     <td x-text="`Rp. ${account.account_balance}`"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(account.id)">
+                                                data-bs-target="#modal-edit" @click="edit(account.account_id)">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
@@ -143,13 +170,14 @@
                         </table>
                     </div>
 
-                    <ul class="pagination float-end mb-4">
-                        <li class="page-item previous">
-                            <button class="page-link" @click="previousPage()">Previous</button>
-                        </li>
-                        <li class="page-item next">
-                            <button class="page-link" @click="nextPage()">Next</button>
-                        </li>
+                    <ul class="pagination float-end mb-4 mt-4">
+                        <template x-for="pagination in accounts.links">
+                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                        x-html="pagination.label">
+                                </button>
+                            </li>
+                        </template>
                     </ul>
                 </div>
             </div>
@@ -182,10 +210,9 @@
                 modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
                 deleteForm: document.getElementById('form-delete'),
                 async init() {
-                    this.isLoading = true;
                     await this.getAccountData();
                     await this.filterByBranch();
-                    this.isLoading = false;
+                    await this.getBranchData();
                 },
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
@@ -225,17 +252,9 @@
                         this.isLoading = false;
                     }
                 },
-                async nextPage() {
-                    if (this.accounts.next_page_url) {
-                        const resp = await axios.get(`${this.accounts.next_page_url}`);
-                        this.startIndex = resp.data.from
-                        this.accounts = resp.data
-                    }
-                },
-                async previousPage() {
-                    if (this.accounts.prev_page_url) {
-                        const resp = await axios.get(`${this.accounts.prev_page_url}`);
-                        this.startIndex = resp.data.from
+                async paginationEndPoint(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
                         this.accounts = resp.data
                     }
                 },
@@ -243,9 +262,6 @@
                     const expandedData = event.target.parentNode.id;
                     this.selectedRow.push(Number(expandedData));
                     this.selectedRow = this.selectedRow.filter((val) => val === Number(expandedData))
-                },
-                async add() {
-                    await this.getBranchData();
                 },
                 async save() {
                     this.buttonLoading = true;
@@ -263,6 +279,7 @@
                     }
                 },
                 async edit(id) {
+                    console.log(id)
                     const resp = await axios.get(`/account-master/account/edit/${id}`);
                     this.editVal = resp.data;
                     await this.selectedBranch();
@@ -311,12 +328,21 @@
                     }
                 },
                 async getAccountData() {
-                    const accounts = await axios.get('/account-master/account/data');
-                    this.accounts = accounts.data
-                    this.startIndex = this.accounts.from;
+                    this.isLoading = true;
+                    try {
+                        const accounts = await axios.get('/account-master/account/data');
+                        this.accounts = accounts.data
+                        this.startIndex = this.accounts.from;
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async getBranchData() {
                     $(".branch-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Cabang',
                         ajax: {
                             url: '/account-master/account/branch/data',
                             dataType: "json",
@@ -330,6 +356,8 @@
                 async filterByBranch() {
                     const self = this;
                     $(".filter-branch-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Cabang',
                         ajax: {
                             url: '/account-master/account/branch/data',
                             dataType: "json",
