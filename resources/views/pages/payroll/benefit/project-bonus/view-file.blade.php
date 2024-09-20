@@ -12,7 +12,7 @@
 
     <div class="card-header border-0 pt-6">
         <div class="card-header border-0 pt-10">
-            <a class="btn btn-info btn-sm mb-6" href="{{ url('income-transactions/invoice/') }}">Kembali</a>
+            <a class="btn btn-info btn-sm mb-6" href="{{ url('/payroll/setting/benefit/project-bonus') }}">Kembali</a>
         </div>
         <div class="card-body py-3">
             <div class="row">
