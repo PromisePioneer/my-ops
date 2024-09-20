@@ -844,6 +844,7 @@ Route::group(['middleware' => ['auth']], static function () {
             );
             Route::post('/destroy', [ProjectBonusController::class, 'destroy']);
             Route::post('/{projectBonus}', [ProjectBonusController::class, 'update']);
+            Route::get('/view-file/{projectBonus}', [ProjectBonusController::class, 'viewFile']);
         });
     });
 

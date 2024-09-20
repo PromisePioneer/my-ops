@@ -91,6 +91,12 @@ class ProjectBonusController extends Controller
     }
 
 
+    public function viewFile(ProjectBonus $projectBonus): View
+    {
+        return view('pages.payroll.benefit.project-bonus.view-file', compact('projectBonus'));
+    }
+
+
     public function destroy(Request $request, ProjectBonus $projectBonus): JsonResponse
     {
         return response()->json($this->projectBonusService->destroy($request, $projectBonus));

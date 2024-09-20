@@ -109,9 +109,10 @@
                                     </td>
                                     <td x-text="projectBonus.work_description"></td>
                                     <td>
-                                        <button class="btn btn-sm btn-danger">
+                                        <a :href="`/payroll/setting/benefit/project-bonus/view-file/${projectBonus.id}`"
+                                           class="btn btn-sm btn-danger">
                                             <i class="fas fa-file-pdf"></i>
-                                        </button>
+                                        </a>
                                     </td>
                                     <td>
                                         <a class="btn btn-light-primary btn-sm"

@@ -71,7 +71,7 @@
                                 <th class="min-w-125px">Deadline</th>
                                 <th class="min-w-125px">Dibuat Oleh</th>
                             </thead>
-                            <tbody class="text-gray-600 fw-bold">
+                            <tbody class="fw-bold">
                             <template x-if="isLoading">
                                 <tr>
                                     <td colspan="9">
@@ -121,13 +121,14 @@
                             </tbody>
                         </table>
                     </div>
-                    <ul class="pagination float-end mb-4">
-                        <li class="page-item previous">
-                            <button class="page-link" @click="previousPage()">Previous</button>
-                        </li>
-                        <li class="page-item next">
-                            <button class="page-link" @click="nextPage()">Next</button>
-                        </li>
+                    <ul class="pagination float-end mb-4 mt-4">
+                        <template x-for="pagination in invoice.links">
+                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                        x-html="pagination.label">
+                                </button>
+                            </li>
+                        </template>
                     </ul>
                 </div>
             </div>
