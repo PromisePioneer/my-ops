@@ -14,14 +14,11 @@
     <div class="d-flex flex-column flex-lg-row" x-data="FABDetail">
         @include('pages.transaction.fab.modal.jurnal-entry')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
-            @if(isset($letterHead->header))
-                <img class="w-100" src="{{ Storage::url($letterHead->header) }}" alt="">
-            @else
-                <img class="w-100" src="{{ asset('assets/media/logos/kop-placeholder.png') }}" alt="">
-            @endif
-            <div class="card">
+            <div class="card border-top-0">
+                <div class="card-header p-0 border-0">
+                    <img class="w-100" src="{{ asset('assets/media/logos/kop-header.png') }}" alt="">
+                </div>
                 <div class="card-body">
-
                     <div class="text-center mb-20">
                         <h1><u>FORMULIR APLIKASI BERLANGGANAN</u></h1>
                     </div>
@@ -91,7 +88,7 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        @forelse($fabServices as $service)
+                                        @forelse($fabHasServiceCategories as $service)
                                             <tr class="fw-bolder fs-6 text-gray-800 border border-dark">
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $service->service->name }}</td>
@@ -109,7 +106,7 @@
                                         <tr class="fw-bolder fs-6 text-gray-800 border border-dark">
                                             <td colspan="4" class="text-end  py-1">TOTAL</td>
                                             <td class="py-1">
-                                                Rp. {{ number_format($fabServices->sum('total_price')) }}</td>
+                                                Rp. {{ number_format($fabHasServiceCategories->sum('total_price')) }}</td>
                                         </tr>
                                         </tfoot>
                                     </table>
@@ -131,14 +128,12 @@
                             </div>
                         </div>
                     </div>
-
+                </div>
+                <div class="card-footer p-0 border-0">
+                    <img class="w-100" src="{{ asset('assets/media/logos/kop-footer.png') }}" alt="">
                 </div>
             </div>
-            @if(isset($letterHead))
-                <img class="w-100" src="{{ Storage::url($letterHead->footer) }}" alt="">
-            @else
-                <img class="w-100" src="{{ asset('assets/media/logos/kop-placeholder.png') }}" alt="">
-            @endif
+
         </div>
         <div class="flex-lg-auto min-w-lg-300px">
             <div class="card" data-kt-sticky="true" data-kt-sticky-name="invoice"

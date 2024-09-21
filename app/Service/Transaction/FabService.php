@@ -4,6 +4,7 @@ namespace App\Service\Transaction;
 
 use App\Models\Contact;
 use App\Models\Fab;
+use App\Models\FabHasServiceCategories;
 use App\Models\SubAccount;
 use App\Service\Accounts\AccountTransactionService;
 use App\Service\HelperService\HandleFileUploadService;
@@ -15,7 +16,7 @@ use Throwable;
 
 use function App\Helper\formatDate;
 
-class FabServices
+class FabService
 {
 
     private const string FAB_SENT_DESCRIPTION = 'FAB telah terbit ke %s No. Fab %s';
@@ -43,7 +44,6 @@ class FabServices
         return self::formattedData($data);
     }
 
-
     public function formattedData(LengthAwarePaginator $fabData): LengthAwarePaginator
     {
         $data = $fabData->getCollection()->map(function ($item) {
@@ -61,6 +61,11 @@ class FabServices
 
         $fabData->setCollection($data);
         return $fabData;
+    }
+
+    public function filterByBranch(int $branchId): LengthAwarePaginator
+    {
+        return Fab::where('branch_id', $branchId)->paginate(self::$perPage);
     }
 
     public function search(Request $request): LengthAwarePaginator
@@ -90,15 +95,15 @@ class FabServices
             $data['file'] = $this->handleFileUploadService->upload($request, 'documents/fab', 'file');
             $data['created_by'] = $request->user()->id;
             $fab = Fab::create($data);
-            $this->fabServiceStoreOrUpdate($request, $fab);
+            $this->fabHasServiceCategoriesStoreOrUpdate($request, $fab);
         });
     }
 
-    private function fabServiceStoreOrUpdate($request, $fab): void
+    private function fabHasServiceCategoriesStoreOrUpdate($request, $fab): void
     {
         foreach ($request['data'] as $key => $value) {
             $value['fab_id'] = $fab->id;
-            FabServices::create($value);
+            FabHasServiceCategories::create($value);
         }
     }
 
@@ -110,11 +115,11 @@ class FabServices
         DB::transaction(function () use ($request, $fab) {
             $data = $request->validated();
             $data['branch_id'] = $request->user()->branch_id;
-            $data['file'] = $this->handleFileUploadService->upload($request, 'documents/fab', 'file');
+            $data['file'] = $this->handleFileUploadService->upload($request, 'documents/fab', 'file', $fab->file);
             $data['created_by'] = $request->user()->id;
             $fab->update($data);
-            FabServices::whereIn('fab_id', [$fab->id])->delete();
-            $this->fabServiceStoreOrUpdate($request, $fab);
+            FabHasServiceCategories::whereIn('fab_id', [$fab->id])->delete();
+            $this->fabHasServiceCategoriesStoreOrUpdate($request, $fab);
         });
     }
 

@@ -99,8 +99,4 @@ class Fab extends Model
     }
 
 
-    public function filterDataBasedOnBranch(int $branchId, int $perPage): LengthAwarePaginator
-    {
-        return self::where('branch_id', $branchId)->paginate($perPage);
-    }
 }

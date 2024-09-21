@@ -6,15 +6,15 @@
         @include('pages.master.contact.modal.create')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
-                <form id="form" @submit.prevent="generateFAB()">
+                <form id="form" @submit.prevent="save()">
                     <div class="card-body p-12">
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="d-flex align-items-center flex-equal fw-row me-4 order-2"
                                      data-bs-toggle="tooltip" data-bs-trigger="hover" title="Specify invoice date">
                                     <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal:</div>
-                                    <div class="position-relative d-flex align-items-center w-150px">
-                                        <input type="date" class="form-control form-control-white fw-bolder pe-5"
+                                    <div class="position-relative d-flex align-items-center ms-4">
+                                        <input type="date" class="form-control form-control-solid fw-bolder pe-5"
                                                placeholder="Pilih Tanggal" name="date" id="date"
                                                value="{{ $fab->date }}"/>
                                     </div>
@@ -41,15 +41,15 @@
                                         <select name="subscription_status" class="form-select form-select-solid"
                                                 data-placeholder="Select an option">
                                             <option
-                                                value="baru" {{ $fab->subscription_status === 'baru' ? 'selected' : '' }}>
+                                                    value="baru" {{ $fab->subscription_status === 'baru' ? 'selected' : '' }}>
                                                 Baru
                                             </option>
                                             <option
-                                                value="perubahan jenis layanan" {{ $fab->subscription_status === 'perubahan jenis layanan' ? 'selected' : ""}}>
+                                                    value="perubahan jenis layanan" {{ $fab->subscription_status === 'perubahan jenis layanan' ? 'selected' : ""}}>
                                                 Perubahan Jenis Layanan
                                             </option>
                                             <option
-                                                value="daftar ulang" {{ $fab->subscription_status === 'daftar ulang' ? 'selected' : '' }}>
+                                                    value="daftar ulang" {{ $fab->subscription_status === 'daftar ulang' ? 'selected' : '' }}>
                                                 Daftar Ulang
                                             </option>
                                         </select>
@@ -171,8 +171,15 @@
                     <div class="float-end">
                         <a href="{{ url('income-transactions/fab/detail/' . $fab->id) }}"
                            class="btn btn-sm btn-light">Cancel</a>
-                        <button type="submit" class="btn btn-sm btn-primary" :disabled="buttonLoading"
-                                x-text="buttonLoading ? 'Loading...' : 'Generate Surat Penawaran'">
+                        <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
+                            <i class="ki-duotone ki-click fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                                <span class="path5"></span>
+                            </i>
+                            <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
                         </button>
                     </div>
                 </form>
@@ -185,10 +192,10 @@
 
     <script>
         $('#date').flatpickr();
-        const form = document.getElementById('form');
 
         function generateFAB() {
             return {
+                form: document.getElementById('form'),
                 buttonLoading: false,
                 contactId: "{{ $fab->contact_id }}",
                 id: "{{ $fab->id }}",
@@ -237,10 +244,10 @@
                 calculateTotalAll() {
                     return this.fields.reduce((total, field) => total + (field.qty * field.unit_price), 0);
                 },
-                async generateFAB() {
+                async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/income-transactions/fab/update/${this.id}`, new FormData(form))
+                        await axios.post(`/income-transactions/fab/update/${this.id}`, new FormData(this.form))
                         await showAlert('success', 'Data berhasil disimpan').then(() => {
                             window.location.href = '/income-transactions/fab';
                         });

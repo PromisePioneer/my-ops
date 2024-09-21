@@ -194,7 +194,7 @@ class SPController extends Controller
     public function exportToPDF(Request $request, SP $sp): Response
     {
         $punishedBy = User::with('roles')->where('id', $sp->punished_by)->first();
-        $operationalManager = User::role('Manager Operasional')->with('roles')->first();
+        $operationalManager = User::role('Operational Manager')->with('roles')->first();
 
         $spReasonList = json_decode($sp?->list_of_reason);
 

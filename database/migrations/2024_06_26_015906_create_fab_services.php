@@ -11,26 +11,22 @@ class CreateFabServices extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('fab_services', static function (Blueprint $table) {
+        Schema::create('fab_has_service_categories', static function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('fab_id');
-            $table->unsignedBigInteger('service_category_id');
+            $table->foreignId('fab_id')
+                ->constrained('fab')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('service_category_id')
+                ->constrained('services_categories')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->integer('qty');
             $table->double('unit_price');
             $table->double('total_price');
             $table->timestamps();
-
-            $table->foreign('fab_id')
-                ->references('id')
-                ->on('fab')
-                ->onDelete('cascade');
-
-            $table->foreign('service_category_id')
-                ->references('id')
-                ->on('services_categories')
-                ->onDelete('cascade');
         });
     }
 
@@ -39,8 +35,8 @@ class CreateFabServices extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('fab_services');
+        Schema::dropIfExists('fab_has_service_categories');
     }
 }

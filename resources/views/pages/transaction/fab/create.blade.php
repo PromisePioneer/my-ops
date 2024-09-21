@@ -1,6 +1,11 @@
 @extends('layouts.template')
 @section('page-title', 'FAB Manager')
 @section('content')
+    <style>
+        .modal-open .select2-container--bootstrap5 .select2-dropdown {
+            z-index: 1020 !important;
+        }
+    </style>
 
     <div class="d-flex flex-column flex-lg-row" x-data="generateFAB">
         @include('pages.master.contact.modal.create')
@@ -51,9 +56,9 @@
                                         Pelanggan
                                     </label>
                                     <div class="mb-5">
-                                        <select name="contact_id" class="form-select form-select-solid contactSelect2"
-                                                data-placeholder="Select an option">
-                                            <option selected>Pilih Pelanggan</option>
+                                        <select name="contact_id"
+                                                class="form-select form-select-solid contacts-select2">
+                                            <option></option>
                                         </select>
                                     </div>
                                 </div>
@@ -161,8 +166,15 @@
                             </i>
                             Kembali
                         </a>
-                        <button type="submit" class="btn btn-sm btn-primary" :disabled="buttonLoading"
-                                x-text="buttonLoading ? 'Loading...' : 'Generate FAB'">
+                        <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
+                            <i class="ki-duotone ki-click fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                                <span class="path5"></span>
+                            </i>
+                            <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
                         </button>
                     </div>
                 </form>
@@ -174,10 +186,12 @@
 @push('script')
     <script>
         $('#date').flatpickr();
-        const form = document.getElementById('form');
 
         function generateFAB() {
             return {
+                form: document.getElementById('form'),
+                contactForm: document.getElementById('contactFormCreate'),
+                contactModal: new bootstrap.Modal(document.getElementById('contact-create')),
                 buttonLoading: false,
                 fields: [{
                     service_category_id: '',
@@ -198,6 +212,20 @@
                         })
                     } catch (error) {
                         this.buttonLoading = false;
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async saveContact() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/master/contact`, new FormData(this.contactForm))
+                        this.contactForm.reset();
+                        await showAlert('success', 'Data berhasil disimpan');
+                        this.contactModal.hide();
+                    } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
                     } finally {
@@ -237,7 +265,9 @@
                     return this.fields.reduce((total, field) => total + (field.qty * field.unit_price), 0);
                 },
                 async getContactData() {
-                    $(".contactSelect2").select2({
+                    $(".contacts-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Contact",
                         escapeMarkup: function (markup) {
                             return markup;
                         },
