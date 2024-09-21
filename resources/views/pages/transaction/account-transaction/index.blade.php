@@ -16,7 +16,7 @@
                                    id="endDate"/>
                         </div>
                         <div class="mb-4 ms-5">
-                            <button class="btn btn-primary btn-sm">Filter</button>
+                            <button class="btn btn-light-primary btn-sm">Filter</button>
                         </div>
                     </div>
                 </div>
@@ -42,7 +42,7 @@
                                 <th class="min-w-125px">Nominal Kredit</th>
                                 <th class="min-w-125px">Total</th>
                             </thead>
-                            <tbody class="text-gray-600 fw-bold">
+                            <tbody class="fw-bold">
                             <template x-if="isLoading">
                                 <tr>
                                     <td colspan="9">
@@ -75,12 +75,13 @@
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4">
-                        <li class="page-item previous">
-                            <button class="page-link" @click="previousPage()">Previous</button>
-                        </li>
-                        <li class="page-item next">
-                            <button class="page-link" @click="nextPage()">Next</button>
-                        </li>
+                        <template x-for="pagination in accountTransactions.links">
+                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                        x-html="pagination.label">
+                                </button>
+                            </li>
+                        </template>
                     </ul>
                 </div>
             </div>
@@ -94,6 +95,7 @@
 
         function accountTransactionHistory() {
             return {
+                buttonLoading: false,
                 accountTransactions: [],
                 startIndex: 0,
                 isLoading: true,

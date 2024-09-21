@@ -59,14 +59,6 @@
                        href="{{ url('utility/user-profile/profile-detail') }}">Detail Profil</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-active-primary me-6 {{ Request::segment(3) === 'identity-information' ? 'active' : '' }}"
-                       href="{{ url('utility/user-profile/identity-information') }}">Informasi Identitas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-active-primary me-6 {{ Request::segment(3) === 'job-information' ? 'active' : '' }}"
-                       href="{{ url('utility/user-profile/job-information') }}">Informasi Pekerjaan</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link text-active-primary me-6 {{ Request::segment(3) === 'notification-detail' ? 'active' : '' }}"
                        href="{{ url('utility/user-profile/notification-detail') }}">Aktifitas</a>
                 </li>
