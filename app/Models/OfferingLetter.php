@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -23,33 +23,33 @@ use Illuminate\Support\Facades\Auth;
  * @property string $file
  * @property int $status
  * @property int $created_by
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Branch|null $branch
- * @property-read \App\Models\Contact $contact
- * @property-read \App\Models\ServiceCategory|null $serviceCategory
- * @property-read \App\Models\User $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Branch|null $branch
+ * @property-read Contact $contact
+ * @property-read ServiceCategory|null $serviceCategory
+ * @property-read User $user
  *
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter query()
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereAttachment($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereBranchId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereContactId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereCreatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereFile($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereForeword($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereMarketingAgentContact($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereMarketingAgentName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereNotes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereOfferingNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|OfferingLetter whereUpdatedAt($value)
+ * @method static Builder|OfferingLetter newModelQuery()
+ * @method static Builder|OfferingLetter newQuery()
+ * @method static Builder|OfferingLetter query()
+ * @method static Builder|OfferingLetter whereAttachment($value)
+ * @method static Builder|OfferingLetter whereBranchId($value)
+ * @method static Builder|OfferingLetter whereContactId($value)
+ * @method static Builder|OfferingLetter whereCreatedAt($value)
+ * @method static Builder|OfferingLetter whereCreatedBy($value)
+ * @method static Builder|OfferingLetter whereDate($value)
+ * @method static Builder|OfferingLetter whereFile($value)
+ * @method static Builder|OfferingLetter whereForeword($value)
+ * @method static Builder|OfferingLetter whereId($value)
+ * @method static Builder|OfferingLetter whereMarketingAgentContact($value)
+ * @method static Builder|OfferingLetter whereMarketingAgentName($value)
+ * @method static Builder|OfferingLetter whereNotes($value)
+ * @method static Builder|OfferingLetter whereOfferingNumber($value)
+ * @method static Builder|OfferingLetter whereStatus($value)
+ * @method static Builder|OfferingLetter whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class OfferingLetter extends Model
 {
@@ -90,64 +90,5 @@ class OfferingLetter extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
-    }
-
-    //eloquent
-    public function getOfferingLettersBasedOnUserBranch(Request $request, int $perPage): LengthAwarePaginator
-    {
-        $offeringLetters = self::with('contact', 'user', 'branch')
-            ->where('branch_id', $request->user()->branch_id)
-            ->select('id', 'offering_number', 'status', 'created_at', 'created_by', 'contact_id', 'branch_id')
-            ->paginate($perPage);
-
-        self::formatOfferingLettersData($offeringLetters);
-
-        return $offeringLetters;
-    }
-
-    public function searchOfferingLettersBasedOnUserBranch(Request $request, $perPage): LengthAwarePaginator
-    {
-        $offeringLetter = self::where('offering_number', 'like', '%'.$request->search.'%')
-            ->orWhereHas('contact', function ($query) use ($request) {
-                $query->where('full_name', 'like', '%'.$request->search.'%');
-                $query->orWhere('company_name', 'like', '%'.$request->search.'%');
-            })
-            ->orWhere('date', 'like', '%'.$request->search.'%')
-            ->orWhere('attachment', 'like', '%'.$request->search.'%')
-            ->orWhere('foreword', 'like', '%'.$request->search.'%')
-            ->orWhere('notes', 'like', '%'.$request->search.'%')
-            ->orWhere('marketing_agent_name', 'like', '%'.$request->search.'%')
-            ->orWhere('marketing_agent_contact', 'like', '%'.$request->search.'%')
-            ->where('branch_id', Auth::user()->branch_id)
-            ->paginate($perPage);
-
-        self::formatOfferingLettersData($offeringLetter);
-
-        return $offeringLetter;
-    }
-
-    private static function formatOfferingLettersData(LengthAwarePaginator $offeringLetter): LengthAwarePaginator
-    {
-        $formattedData = $offeringLetter->getCollection()->map(function ($offeringLetter) {
-            return [
-                'id' => $offeringLetter->id,
-                'offering_number' => $offeringLetter->offering_number,
-                'status' => $offeringLetter->status,
-                'created_at' => $offeringLetter->created_at,
-                'created_by' => $offeringLetter->user->name,
-                'company_name' => $offeringLetter->contact->company_name,
-                'branch' => $offeringLetter->branch?->name,
-            ];
-        });
-        $offeringLetter->setCollection($formattedData);
-
-        return $offeringLetter;
-    }
-
-    public function filteringDataBasedOnBranch(int $branchId, int $perPage): LengthAwarePaginator
-    {
-        $query = self::where('branch_id', $branchId)->paginate($perPage);
-
-        return self::formatOfferingLettersData($query);
     }
 }
