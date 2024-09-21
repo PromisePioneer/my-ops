@@ -15,10 +15,6 @@ class AccountTransactionsController extends Controller
 
     public function __construct()
     {
-        $this->middleware('permission:lihat transaksi akun', ['only' => ['index']]);
-        $this->middleware('permission:tambah transaksi akun', ['only' => ['create', 'store']]);
-        $this->middleware('permission:update transaksi akun', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:hapus transaksi akun', ['only' => ['destroy']]);
         $this->accountTransaction = new AccountTransaction();
     }
 
@@ -34,8 +30,10 @@ class AccountTransactionsController extends Controller
 
     public function search(Request $request): JsonResponse
     {
-        $accountTransaction = $this->accountTransaction->searchAccountTransactionBasedOnUserBranch($request,
-            $this->perPage);
+        $accountTransaction = $this->accountTransaction->searchAccountTransactionBasedOnUserBranch(
+            $request,
+            $this->perPage
+        );
 
         return response()->json($accountTransaction);
     }

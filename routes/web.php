@@ -398,9 +398,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/change-profile', [UserProfileController::class, 'changeProfile']);
             Route::post('/update-profile/{user}', [UserProfileController::class, 'updateProfilePic']);
             Route::post('/update-password/{user}', [UserProfileController::class, 'updatePassword']);
-            Route::get('/identity-information', [UserProfileController::class, 'identityInformationPage']);
             Route::get('/identity-information/data', [UserProfileController::class, 'identityInformation']);
-            Route::get('/job-information', [UserProfileController::class, 'jobInformationPage']);
             Route::get('/job-information/data', [UserProfileController::class, 'jobInformation']);
             Route::get('/sp', [UserProfileController::class, 'spPage']);
             Route::get('/sp/data', [UserProfileController::class, 'spData']);

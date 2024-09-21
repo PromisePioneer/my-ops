@@ -1,21 +1,13 @@
-@extends('layouts.template')
-@section('page-title', 'Informasi Identitas')
-@section('content')
-    @include('pages.utilities.user-profile.partials.header')
-
-    <div class="card mb-5 mb-xl-10" x-data="identityInformation">
-        <div class="card-header cursor-pointer">
-            <div class="card-title m-0">
-                <h3 class="fw-bolder m-0">Informasi Identitas</h3>
-            </div>
+<div class="card mb-5 mb-xl-10">
+    <div class="card-header border-0 cursor-pointer" role="button" data-bs-toggle="collapse"
+         data-bs-target="#identityInformation" aria-expanded="true"
+         aria-controls="identityInformation">
+        <div class="card-title m-0">
+            <h3 class="fw-bolder m-0">Informasi Identitas</h3>
         </div>
-        <div class="card-body p-9">
-            <div class="row mb-7">
-                <label class="col-lg-4 fw-bold text-muted">NIK</label>
-                <div class="col-lg-8">
-                    <span class="fw-bolder fs-6 text-gray-800" x-text="`${identityInformation.nik ?? '-'}`"></span>
-                </div>
-            </div>
+    </div>
+    <div id="identityInformation" class="collapse show" style="">
+        <div class="card-body border-top p-9">
             <div class="row mb-7">
                 <label class="col-lg-4 fw-bold text-muted">Tanggal Lahir</label>
                 <div class="col-lg-8 fv-row">
@@ -54,23 +46,4 @@
             </div>
         </div>
     </div>
-@endsection
-@push('script')
-    <script>
-        function identityInformation() {
-            return {
-                identityInformation: {},
-                async init() {
-                    const response = await axios.get('/utility/user-profile/identity-information/data');
-                    this.identityInformation = response.data;
-                },
-                getImageURL(imagePath) {
-                    if (imagePath === null) {
-                        return "{{ asset('assets/media/placeholders/ktp.png') }}" + placeholders;
-                    }
-                    return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
-                },
-            }
-        }
-    </script>
-@endpush
+</div>

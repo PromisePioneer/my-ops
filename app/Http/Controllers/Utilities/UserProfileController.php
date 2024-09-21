@@ -66,20 +66,12 @@ class UserProfileController extends Controller
         return response()->json(['message' => 'foto profile telah di update']);
     }
 
-    public function identityInformationPage(): View
-    {
-        return view('pages.utilities.user-profile.identity-information.index');
-    }
 
     public function identityInformation(Request $request): JsonResponse
     {
         return response()->json($this->identityInformation->getRelatedUserIdentityInformation($request->user()->id));
     }
 
-    public function jobInformationPage(): View
-    {
-        return view('pages.utilities.user-profile.job-information.index');
-    }
 
     public function jobInformation(Request $request): JsonResponse
     {
@@ -95,4 +87,5 @@ class UserProfileController extends Controller
     {
         return response()->json($this->sp->getSPBasedOnUserId($request->user()->id));
     }
+    
 }
