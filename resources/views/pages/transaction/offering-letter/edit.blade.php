@@ -26,8 +26,8 @@
                                 <div class="d-flex align-items-center flex-equal fw-row me-4 order-2"
                                      data-bs-toggle="tooltip" data-bs-trigger="hover" title="Specify invoice date">
                                     <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal:</div>
-                                    <div class="position-relative d-flex align-items-center w-150px">
-                                        <input type="date" class="form-control form-control-white fw-bolder pe-5"
+                                    <div class="position-relative d-flex align-items-center ms-4">
+                                        <input type="date" class="form-control form-control-solid fw-bolder pe-5"
                                                placeholder="Select date" name="date" id="date"
                                                value="{{ $offeringLetter->date }}"/>
                                     </div>
@@ -46,7 +46,7 @@
 
 
                         <div class="separator separator-dashed my-10"></div>
-                        <div class="mb-0">
+                        <div class="mb-4">
                             <div class="row gx-10 mb-5">
                                 <div class="col-lg-6">
                                     <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">Calon Klien</label>
@@ -68,7 +68,8 @@
                                 </div>
                             </div>
                             <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">Kata Pengantar</label>
-                            <textarea name="foreword" id="foreword">{{ $offeringLetter->foreword }}</textarea>
+                            <textarea name="foreword" id="foreword"
+                                      class="form-control form-control-solid">{{ $offeringLetter->foreword }}</textarea>
                         </div>
                         <div class="table-responsive mb-20">
                             <table class="table g-5 gs-0 mb-0 fw-bolder text-gray-700" data-kt-element="items">
@@ -165,10 +166,23 @@
                         </div>
                     </div>
                     <div class="float-end">
-                        <button class="btn btn-sm btn-light">Cancel</button>
-                        <button type="submit" class="btn btn-sm btn-primary" :disabled="buttonLoading"
-                                x-text="buttonLoading ? 'Loading...' : 'Generate Surat Penawaran'">Generate Surat
-                            Penawaran
+                        <a href="{{ url('/income-transactions/offering-letters/') }}"
+                           class="btn btn-light-danger btn-sm">
+                            <i class="ki-duotone ki-technology-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                            Kembali
+                        </a>
+                        <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
+                            <i class="ki-duotone ki-click fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                                <span class="path5"></span>
+                            </i>
+                            <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
                         </button>
                     </div>
                 </form>
@@ -180,8 +194,6 @@
 @push('script')
     <script>
         $("#date").flatpickr();
-        let notes;
-        let foreWord;
 
         function generateOfferingLetter() {
             return {
@@ -194,9 +206,7 @@
                 contactModal: new bootstrap.Modal(document.getElementById('contact-create')),
                 async init() {
                     await this.getContactData();
-                    await this.generateForeWordEditor();
                     await this.getServicesCategories();
-                    await this.generateNotesEditor();
                     await this.selectedContact();
                     await this.getSelectedServicesCategories();
                 },
@@ -257,38 +267,6 @@
                         });
                     });
                 },
-                async generateForeWordEditor() {
-                    ClassicEditor.create(document.getElementById('foreword'), {
-                        toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
-                        heading: {
-                            options: [
-                                {model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph'},
-                                {model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1'},
-                                {model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2'}
-                            ]
-                        }
-                    }).then((newForeWord) => {
-                        foreWord = newForeWord;
-                    }).catch(error => {
-                        console.error(error);
-                    });
-                },
-                async generateNotesEditor() {
-                    ClassicEditor.create(document.getElementById('notes'), {
-                        toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote'],
-                        heading: {
-                            options: [
-                                {model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph'},
-                                {model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1'},
-                                {model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2'}
-                            ]
-                        }
-                    }).then((newNotes) => {
-                        notes = newNotes;
-                    }).catch(error => {
-                        console.error(error);
-                    });
-                },
                 async getServicesCategories() {
                     this.fields.forEach((field, index) => {
                         this.$nextTick(() => {
@@ -322,11 +300,6 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        const forewordData = await foreWord.getData();
-                        const notesData = await notes.getData();
-
-                        document.getElementById('foreword').value = forewordData;
-                        document.getElementById('notes').value = notesData;
                         await axios.post(`/income-transactions/offering-letters/update/${this.id}`, new FormData(this.form))
                         await showAlert('success', 'Data berhasil disimpan').then(() => {
                             window.location.href = `/income-transactions/offering-letters/detail/${this.id}`

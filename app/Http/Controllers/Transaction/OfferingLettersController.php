@@ -14,6 +14,7 @@ use App\Service\OfferingLetterService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 
 class OfferingLettersController extends Controller
@@ -23,22 +24,20 @@ class OfferingLettersController extends Controller
     protected OfferingLetterService $OfferingLetterService;
 
     private OfferingLetter $offeringLetter;
-
     private Contact $contact;
-
     private serviceCategory $serviceCategory;
-
     private OfferingLetterProduct $offeringLetterProduct;
-
     private Branch $branch;
+    private OfferingLetterService $offeringLetterService;
 
     public function __construct()
     {
-        $this->OfferingLetterService = new OfferingLetterService();
+        $this->offeringLetterService = new OfferingLetterService();
         $this->offeringLetter = new OfferingLetter();
         $this->contact = new Contact();
         $this->serviceCategory = new ServiceCategory();
         $this->offeringLetterProduct = new OfferingLetterProduct();
+
         $this->branch = new Branch();
     }
 
@@ -49,9 +48,7 @@ class OfferingLettersController extends Controller
 
     public function data(Request $request): JsonResponse
     {
-        $offeringLetters = $this->offeringLetter->getOfferingLettersBasedOnUserBranch($request, $this->perPage);
-
-        return response()->json($offeringLetters);
+        return response()->json($this->offeringLetterService->data($request));
     }
 
     public function branchData(Request $request): JsonResponse
@@ -61,16 +58,14 @@ class OfferingLettersController extends Controller
 
     public function filterByBranch(Branch $branch): JsonResponse
     {
-        $filter = $this->offeringLetter->filteringDataBasedOnBranch($branch->id, $this->perPage);
+        $filter = $this->offeringLetterService->filterByBranch($branch->id);
 
         return response()->json($filter);
     }
 
     public function search(Request $request): JsonResponse
     {
-        $query = $this->offeringLetter->searchOfferingLettersBasedOnUserBranch($request, $this->perPage);
-
-        return response()->json($query);
+        return response()->json($this->offeringLetterService->search($request));
     }
 
     public function create(): View
@@ -80,21 +75,17 @@ class OfferingLettersController extends Controller
 
     public function getContactData(Request $request): JsonResponse
     {
-        $contactData = $this->contact->getData($request);
-
-        return response()->json($contactData);
+        return response()->json($this->contact->getData($request));
     }
 
     public function getServicesCategoriesData(Request $request): JsonResponse
     {
-        $servicesCategory = $this->serviceCategory->getData($request);
-
-        return response()->json($servicesCategory);
+        return response()->json($this->serviceCategory->getData($request));
     }
 
     public function store(OfferingLetterRequest $request): JsonResponse
     {
-        $this->OfferingLetterService->store($request);
+        $this->offeringLetterService->store($request);
 
         return response()->json([
             'message' => 'data berhasil disimpan',
@@ -103,14 +94,17 @@ class OfferingLettersController extends Controller
 
     public function show(OfferingLetter $offeringLetter): View
     {
-        $offeringLetterServices = $this->offeringLetterProduct->getOfferingLetterProductServiceAttribute($offeringLetter->id);
+        $offeringLetterServices = OfferingLetterProduct::where('offering_letter_id', $offeringLetter->id)->get();
         $letterHead = LetterHead::where('id', 1)->first();
 
-        return view('pages.transaction.offering-letter.detail', compact(
-            'offeringLetter',
-            'letterHead',
-            'offeringLetterServices'
-        ));
+        return view(
+            'pages.transaction.offering-letter.detail',
+            compact(
+                'offeringLetter',
+                'letterHead',
+                'offeringLetterServices'
+            )
+        );
     }
 
     public function viewFile(OfferingLetter $offeringLetter): View
@@ -132,18 +126,10 @@ class OfferingLettersController extends Controller
 
     public function getOfferingLetterProductServices(OfferingLetter $offeringLetter): JsonResponse
     {
-        return response()->json(
-            $this->offeringLetterProduct->getOfferingLetterProductServiceAttribute($offeringLetter->id)
-        );
-    }
-
-    public function update(OfferingLetterRequest $request, OfferingLetter $offeringLetter): JsonResponse
-    {
-        $this->OfferingLetterService->update($request, $offeringLetter);
-
-        return response()->json([
-            'message' => 'data berhasil disimpan',
-        ]);
+        $data = OfferingLetterProduct::with('offeringLetter', 'serviceCategory')
+            ->where('offering_letter_id', $offeringLetter->id)
+            ->get();
+        return response()->json($data);
     }
 
     public function confirm(OfferingLetter $offeringLetter): JsonResponse
@@ -157,6 +143,15 @@ class OfferingLettersController extends Controller
         ], 200);
     }
 
+    public function update(OfferingLetterRequest $request, OfferingLetter $offeringLetter): JsonResponse
+    {
+        $this->offeringLetterService->update($request, $offeringLetter);
+
+        return response()->json([
+            'message' => 'data berhasil disimpan',
+        ]);
+    }
+
     public function destroy(OfferingLetter $offeringLetter): JsonResponse
     {
         $offeringLetter->delete();
@@ -166,12 +161,19 @@ class OfferingLettersController extends Controller
         ]);
     }
 
-    public function exportToPDF(OfferingLetter $offeringLetter): \Illuminate\Http\Response
+    public function exportToPDF(OfferingLetter $offeringLetter): Response
     {
-        $offeringLetterProduct = $this->offeringLetterProduct->getOfferingLetterProductServiceAttribute($offeringLetter->id);
-        $pdf = Pdf::loadView('pages.transaction.offering-letter.export-pdf', compact('offeringLetter', 'offeringLetterProduct'))
+        $offeringLetterProduct = $this->offeringLetterProduct->getOfferingLetterProductServiceAttribute(
+            $offeringLetter->id
+        );
+        $pdf = Pdf::loadView(
+            'pages.transaction.offering-letter.export-pdf',
+            compact('offeringLetter', 'offeringLetterProduct')
+        )
             ->setPaper('A4', 'portrait');
 
         return $pdf->stream();
     }
+
+
 }

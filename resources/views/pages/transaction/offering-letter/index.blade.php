@@ -6,9 +6,9 @@
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
-                        <spawn class="svg-icon svg-icon-1 position-absolute ms-6">
-                           <i class="bi bi-search"></i>
-                        </spawn>
+                        <span class="svg-icon svg-icon-1 position-absolute ms-6">
+                            <i class="bi bi-search"></i>
+                        </span>
                         <input type="text" name="search" x-model="search" @input.debounce="searchData"
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
@@ -32,7 +32,7 @@
                                     <label class="form-label fs-6 fw-bold">Cabang:</label>
                                     <select name="" id=""
                                             class="form-select form-select-solid filter-branch-select2">
-                                        <option value="0">Pilih Cabang</option>
+                                        <option></option>
                                     </select>
                                 </div>
                             </div>
@@ -40,7 +40,13 @@
                     </div>
                     <div class="d-flex justify-content-end" data-kt-product-table-toolbar="base">
                         <a href="{{ url('/income-transactions/offering-letters/create') }}"
-                           class="btn btn-primary btn-sm">Tambah</a>
+                           class="btn btn-light-primary btn-sm">
+                            <i class="ki-duotone ki-message-add fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i> Tambah
+                        </a>
                     </div>
                 </div>
             </div>
@@ -60,7 +66,7 @@
                                 <th class="min-w-125px">Tgl Dibuat</th>
                                 <th class="min-w-125px">Dibuat Oleh</th>
                             </thead>
-                            <tbody class="text-gray-600 fw-bold">
+                            <tbody class=" fw-bold">
                             <template x-if="isLoading">
                                 <tr>
                                     <td colspan="9">
@@ -115,12 +121,13 @@
                         </table>
                     </div>
                     <ul class="pagination float-end mb-5">
-                        <li class="page-item previous">
-                            <button class="btn btn-light btn-sm" @click="previousPage()">Previous</button>
-                        </li>
-                        <li class="page-item next">
-                            <button class="btn btn-light btn-sm" @click="nextPage()">Next</button>
-                        </li>
+                        <template x-for="pagination in offeringLetters.links">
+                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                        x-html="pagination.label">
+                                </button>
+                            </li>
+                        </template>
                     </ul>
                 </div>
             </div>
@@ -155,17 +162,9 @@
                         this.isLoading = false;
                     }
                 },
-                async nextPage() {
-                    if (this.offeringLetters.next_page_url) {
-                        const resp = await axios.get(`${this.offeringLetters.next_page_url}`);
-                        this.startIndex = this.offeringLetters.from
-                        this.offeringLetters = resp.data
-                    }
-                },
-                async previousPage() {
-                    if (this.offeringLetters.prev_page_url) {
-                        const resp = await axios.get(`${this.offeringLetters.prev_page_url}`);
-                        this.startIndex = this.offeringLetters.from
+                async paginationEndPoint(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
                         this.offeringLetters = resp.data
                     }
                 },
@@ -184,6 +183,8 @@
                 async filterByBranch() {
                     const self = this;
                     $(".filter-branch-select2").select2({
+                        placeholder: 'Pilih Cabang',
+                        allowClear: true,
                         ajax: {
                             url: '/income-transactions/offering-letters/branch/data',
                             dataType: "json",
@@ -192,8 +193,7 @@
                             processResults: (data) => ({results: data}),
                             cache: true
                         }
-                    });
-                    $(".filter-branch-select2").on('change', async function (e) {
+                    }).on('change', async function (e) {
                         const selectedBranch = $(this).select2('data')[0];
                         const response = await axios.get(`/income-transactions/offering-letters/filter/branch/data/${selectedBranch.id}`);
                         self.offeringLetters = response.data;
