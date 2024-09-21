@@ -9,7 +9,6 @@ use App\Models\Contact;
 use App\Models\Fab;
 use App\Models\FabService;
 use App\Models\ServiceCategory;
-use App\Service\FabServices;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,39 +18,34 @@ use Illuminate\View\View;
 class FabController extends Controller
 {
     public int $perPage = 10;
-
     private ServiceCategory $serviceCategory;
-
-    private FabServices $fabServices;
-
+    private FabService $fabService;
     private Fab $fab;
-
     private Contact $contact;
-
     private Branch $branch;
 
     public function __construct()
     {
-        $this->fabServices = new FabServices();
         $this->serviceCategory = new ServiceCategory();
         $this->fab = new Fab();
         $this->contact = new Contact();
         $this->branch = new Branch();
+        $this->fabService = new FabService();
     }
 
-    public function index()
+    public function index(): View
     {
         return view('pages.transaction.fab.index');
     }
 
     public function data(Request $request): JsonResponse
     {
-        return response()->json($this->fab->getDataBasedOnUserBranch($request, $this->perPage));
+        return response()->json($this->fabService->data($request));
     }
 
     public function search(Request $request): JsonResponse
     {
-        return response()->json($this->fab->searchDataBasedOnUserBranch($request));
+        return response()->json($this->fabService->search($request));
     }
 
     public function branchData(Request $request): JsonResponse
@@ -64,7 +58,7 @@ class FabController extends Controller
         return response()->json($this->fab->filterDataBasedOnBranch($branch->id, $this->perPage));
     }
 
-    public function create()
+    public function create(): View
     {
         return view('pages.transaction.fab.create');
     }
@@ -162,7 +156,10 @@ class FabController extends Controller
     {
         $fabServices = FabService::where('fab_id', $fab->id)->get();
 
-        $pdf = Pdf::loadView('pages.transaction.fab.export-pdf', compact('fab', 'fabServices'))->setPaper('A4', 'portrait');
+        $pdf = Pdf::loadView('pages.transaction.fab.export-pdf', compact('fab', 'fabServices'))->setPaper(
+            'A4',
+            'portrait'
+        );
 
         return $pdf->stream();
     }

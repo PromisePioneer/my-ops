@@ -8,7 +8,7 @@ use App\Models\Branch;
 use App\Models\Goods;
 use App\Models\SubAccount;
 use App\Models\UnitType;
-use App\Service\GoodsServices;
+use App\Service\Inventory\GoodsServices;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

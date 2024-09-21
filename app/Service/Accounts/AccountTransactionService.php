@@ -1,13 +1,17 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Accounts;
 
 use App\Models\AccountTransaction;
 
 class AccountTransactionService
 {
-    public function createDebitTransaction(string $description, float|int $amount, ?int $accountId = null, ?int $subAccountId = null): void
-    {
+    public function createDebitTransaction(
+        string $description,
+        float|int $amount,
+        ?int $accountId = null,
+        ?int $subAccountId = null
+    ): void {
         AccountTransaction::create([
             'date' => date('y-m-d'),
             'account_id' => $accountId,
@@ -18,8 +22,12 @@ class AccountTransactionService
         ]);
     }
 
-    public function createCreditTransaction(string $description, int $amount, ?int $accountId = null, ?int $subAccountId = null): void
-    {
+    public function createCreditTransaction(
+        string $description,
+        int $amount,
+        ?int $accountId = null,
+        ?int $subAccountId = null
+    ): void {
         AccountTransaction::create([
             'date' => date('y-m-d'),
             'account_id' => $accountId,

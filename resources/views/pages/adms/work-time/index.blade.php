@@ -104,12 +104,13 @@
                            Note: Jika karyawan tidak dijadwalkan dalam jam kerja tertentu maka jam kerja akan diset secara otomatis ke default
                         </span>
                         <ul class="pagination">
-                            <li class="page-item previous">
-                                <button class="btn btn-light btn-sm" @click="previousPage">Previous</button>
-                            </li>
-                            <li class="page-item next">
-                                <button class="btn btn-light btn-sm" @click="nextPage">Next</button>
-                            </li>
+                            <template x-for="pagination in shifts?.links">
+                                <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                    <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                            x-html="pagination.label">
+                                    </button>
+                                </li>
+                            </template>
                         </ul>
                     </div>
                 </div>
@@ -156,6 +157,12 @@
                         console.log(error)
                     } finally {
                         this.isLoading = false;
+                    }
+                },
+                async paginationEndPoint(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
+                        this.shifts = resp.data
                     }
                 },
                 async nextPage() {

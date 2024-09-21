@@ -13,8 +13,8 @@
                                 <div class="d-flex align-items-center flex-equal fw-row me-4 order-2"
                                      data-bs-toggle="tooltip" data-bs-trigger="hover" title="Specify invoice date">
                                     <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal:</div>
-                                    <div class="position-relative d-flex align-items-center w-150px">
-                                        <input type="date" class="form-control form-control-white fw-bolder pe-5"
+                                    <div class="position-relative d-flex align-items-center ms-4">
+                                        <input type="date" class="form-control form-control-solid fw-bolder pe-5"
                                                placeholder="Pilih Tanggal" name="date" id="date"/>
                                     </div>
                                 </div>
@@ -153,7 +153,14 @@
                         </div>
                     </div>
                     <div class="float-end">
-                        <button class="btn btn-sm btn-light">Cancel</button>
+                        <a href="{{ url('/income-transactions/fab/') }}"
+                           class="btn btn-light-danger btn-sm">
+                            <i class="ki-duotone ki-technology-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                            Kembali
+                        </a>
                         <button type="submit" class="btn btn-sm btn-primary" :disabled="buttonLoading"
                                 x-text="buttonLoading ? 'Loading...' : 'Generate FAB'">
                         </button>

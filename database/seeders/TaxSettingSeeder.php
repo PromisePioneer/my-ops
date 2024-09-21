@@ -14,7 +14,7 @@ class TaxSettingSeeder extends Seeder
     {
         TaxSetting::create([
             'name' => 'PPN',
-            'rate' => 12,
+            'rate' => 11,
         ]);
 
         TaxSetting::create([
