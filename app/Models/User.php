@@ -206,12 +206,12 @@ class User extends Authenticatable
             });
         }
 
-        if ($request->user()->hasRole('Manager Keuangan')) {
+        if ($request->user()->hasRole('FA & Tax Manager')) {
             $query->whereNot('id', $request->user()->id)
                 ->role(['Accounting']);
         }
 
-        if ($request->user()->hasRole('Manager Cabang')) {
+        if ($request->user()->hasRole('Branch Manager')) {
             $query->whereNot('id', $request->user()->id)
                 ->where('branch_id', $request->user()->branch_id)
                 ->role(['KCA', 'WKCA', 'Teknisi', 'Accounting', 'Stocker']);

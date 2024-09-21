@@ -39,8 +39,14 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-end" data-kt-product-table-toolbar="base">
-                        <a href="{{ url('income-transactions/fab/create') }}"
-                           class="btn btn-primary btn-sm">Tambah</a>
+                        <a href="{{ url('/income-transactions/fab/create') }}"
+                           class="btn btn-light-primary btn-sm">
+                            <i class="ki-duotone ki-message-add fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i> Tambah
+                        </a>
                     </div>
                     <div class="d-flex justify-content-end align-items-center d-none"
                          data-kt-product-table-toolbar="selected">
@@ -67,7 +73,7 @@
                                 <th class="min-w-125px">Tgl Dibuat</th>
                                 <th class="min-w-125px">Dibuat Oleh</th>
                             </thead>
-                            <tbody class="text-gray-600 fw-bold">
+                            <tbody class="fw-bold">
                             <template x-if="isLoading">
                                 <tr>
                                     <td colspan="9">
@@ -92,16 +98,16 @@
                                     </td>
                                     <td>
                                         <a :href="`/income-transactions/fab/detail/${fab.id}`"
-                                           x-text="fab.fab_number"></a>
+                                           x-text="fab.code"></a>
                                     </td>
-                                    <td x-text="fab.contact.full_name"></td>
+                                    <td x-text="fab.company_name"></td>
                                     <td class="text-capitalize" x-text="fab.subscription_status"></td>
                                     <td>
                                         <a :href="`/income-transactions/fab/view-file/${fab.id}`"
                                            class="btn btn-sm btn-info"><i class="bi bi-file-earmark-break-fill"></i></a>
                                     </td>
-                                    <td x-text="formatDate(fab.created_at)"></td>
-                                    <td x-text="fab.user.name"></td>
+                                    <td x-text="formatDate(fab.date)"></td>
+                                    <td x-text="fab.created_by"></td>
                                 </tr>
                             </template>
                             </tbody>
@@ -110,12 +116,13 @@
 
                     </div>
                     <ul class="pagination float-end mb-5">
-                        <li class="page-item previous">
-                            <button class="btn btn-light btn-sm" @click="previousPage()">Previous</button>
-                        </li>
-                        <li class="page-item next">
-                            <button class="btn btn-light btn-sm" @click="nextPage()">Next</button>
-                        </li>
+                        <template x-for="pagination in subcriptions.links">
+                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                        x-html="pagination.label">
+                                </button>
+                            </li>
+                        </template>
                     </ul>
                 </div>
             </div>
@@ -131,34 +138,36 @@
                 startIndex: null,
                 isLoading: true,
                 search: '',
-                async init(){
+                async init() {
                     await this.getFABData();
                     await this.filterByBranch();
                     this.isLoading = false;
                 },
-                async searchData(){
-                    this.subcriptions = await axios.get('/income-transactions/fab/search', {
-                        params: {search: this.search},
-                        headers: {'Content-Type': 'application/json'}
-                    });
-                },
-                async nextPage(){
-                    if (this.subcriptions.next_page_url) {
-                        const resp = await axios.get(`${this.subcriptions.next_page_url}`);
-                        this.startIndex = resp.data.from
-                        this.subcriptions = resp.data
+                async searchData() {
+                    this.isLoading = true;
+                    try {
+                        const response = await axios.get('/income-transactions/fab/search', {
+                            params: {search: this.search},
+                            headers: {'Content-Type': 'application/json'}
+                        });
+                        this.subcriptions = response.data;
+                    } catch (error) {
+                        console.error('Error fetching data:', error);
+                    } finally {
+                        this.isLoading = false;
                     }
                 },
-                async previousPage(){
-                    if (this.subcriptions.prev_page_url) {
-                        const resp = await axios.get(`${this.subcriptions.prev_page_url}`);
-                        this.startIndex = resp.data.from
+                async paginationEndPoint(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
                         this.subcriptions = resp.data
                     }
                 },
                 async filterByBranch() {
                     const self = this;
                     $(".filter-branch-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Cabang",
                         ajax: {
                             url: '/income-transactions/fab/branch/data',
                             dataType: "json",
@@ -179,10 +188,14 @@
                     this.subcriptions = fab.data;
                     this.startIndex = this.subcriptions.from;
                 },
-                formatDate(val){
-                    if(val){
+                formatDate(val) {
+                    if (val) {
                         const date = new Date(val);
-                        const formatter = new Intl.DateTimeFormat('en-US', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                        const formatter = new Intl.DateTimeFormat('en-US', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                        });
                         return formatter.format(date);
                     }
                 },

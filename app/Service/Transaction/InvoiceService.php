@@ -8,34 +8,26 @@ use App\Models\Contact;
 use App\Models\Invoice;
 use App\Models\InvoiceProductService;
 use App\Models\SubAccount;
-use App\Service\AccountTransactionService;
+use App\Service\Accounts\AccountTransactionService;
 use App\Service\HelperService\HandleFileUploadService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 use function App\Helper\convertToRoman;
 
 class InvoiceService
 {
     private const string INVOICE_SENT_DESCRIPTION = 'Invoice dikirim ke %s No. Inv %s';
-
     private const string CALCULATE_PPN_AFTER_INVOICE_SENT_DESCRIPTION = 'PPN Keluaran Invoice %s No. Inv %s';
-
     private const string INCLUDE_PPH23_AFTER_INVOICE_PAID_DESCRIPTION = 'Diterima Bupot dari %s No. Inv %s Bupot';
-
     private const float PPN_RATE = 0.11;
-
     private const string PAID_STATUS = 'Lunas';
-
     private SubAccount $subAccount;
-
     private Contact $contact;
-
     private AccountTransaction $accountTransaction;
-
     private AccountTransactionService $accountTransactionService;
-
     private HandleFileUploadService $handleFileUploadService;
 
     public function __construct()
@@ -144,6 +136,9 @@ class InvoiceService
         });
     }
 
+    /**
+     * @throws Throwable
+     */
     public function accountTransactionAfterInvoiceSent(Invoice $invoice): void
     {
         $piutangPelanggan = $this->subAccount->findPiutangPelangganSubAccount($invoice->branch_id);
@@ -170,6 +165,9 @@ class InvoiceService
         });
     }
 
+    /**
+     * @throws Throwable
+     */
     public function calculatePPNAccountTransactionAfterInvoiceSent(Invoice $invoice): void
     {
         $piutangPelanggan = $this->subAccount->findPiutangPelangganSubAccount($invoice->branch_id);
@@ -193,6 +191,9 @@ class InvoiceService
         });
     }
 
+    /**
+     * @throws Throwable
+     */
     public function updatePaymentStatus(Request $request, Invoice $invoice): void
     {
         $selectedContact = $this->contact->getSelectedData($invoice->contact_id);
@@ -235,6 +236,9 @@ class InvoiceService
         });
     }
 
+    /**
+     * @throws Throwable
+     */
     public function includePPh23AfterInvoicePaid(Request $request, Invoice $invoice, string $companyName): void
     {
         $pph23Account = $this->subAccount->findPPH23SubAccount($invoice->branch_id);

@@ -22,14 +22,10 @@
 
     <div class="d-flex flex-column flex-lg-row" x-data="offeringLetterDetail">
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
-            <div>
-                @if(isset($letterHead->header) && $letterHead->header)
-                    <img class='img-fluid w-100' src="{{ Storage::url($letterHead->header) }}" alt=""/>
-                @else
-                    <img class='img-fluid w-100' src="{{ asset('assets/media/logos/kop-placeholder.png') }}" alt=""/>
-                @endif
-            </div>
             <div class="card">
+                <div class="card-header p-0 border-0">
+                    <img class="w-100" src="{{ asset('assets/media/logos/kop-header.png') }}" alt="">
+                </div>
                 <div class="card-body p-12">
                     <div class="row mb-10">
                         <div class="col-lg-6">
@@ -52,7 +48,7 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="text-black fs-6 fw-normal mb-3">
-                                Kepada Yth, {{ $offeringLetter->contact->nama_lengkap }},
+                                Kepada Yth, {{ $offeringLetter->contact->full_name }},
                                 <div class="mt-10">
                                     {!! $offeringLetter->foreword !!}
                                 </div>
@@ -133,11 +129,9 @@
                         </div>
                     </div>
                 </div>
-                @if(isset($letterHead->header) && $letterHead->header)
-                    <img class='img-fluid w-100' src="{{ Storage::url($letterHead->header) }}" alt=""/>
-                @else
-                    <img class='img-fluid w-100' src="{{ asset('assets/media/logos/kop-placeholder.png') }}" alt=""/>
-                @endif
+                <div class="card-footer p-0 border-0">
+                    <img class="w-100" src="{{ asset('assets/media/logos/kop-footer.png') }}" alt="">
+                </div>
             </div>
         </div>
         @if($offeringLetter->status === 0)
