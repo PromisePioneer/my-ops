@@ -206,21 +206,6 @@
                         this.isLoading = false;
                     }
                 },
-                async nextPage() {
-                    if (this.invoices.next_page_url) {
-                        const resp = await axios.get(`${this.invoices.next_page_url}`);
-                        this.startIndex = this.invoices.from
-                        this.invoices = resp.data
-                    }
-                },
-                async previousPage() {
-                    if (this.invoices.prev_page_url) {
-                        const resp = await axios.get(`${this.invoices.prev_page_url}`);
-                        this.startIndex = this.invoices.from
-                        this.invoices = resp.data
-
-                    }
-                },
                 formatDate(val) {
                     if (val) {
                         const date = new Date(val);
