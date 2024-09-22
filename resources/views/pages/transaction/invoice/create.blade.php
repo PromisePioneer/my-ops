@@ -18,8 +18,8 @@
                                 <div class="d-flex align-items-center flex-equal fw-row me-4 order-2"
                                      data-bs-toggle="tooltip" data-bs-trigger="hover">
                                     <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal Jatuh Tempo:</div>
-                                    <div class="position-relative d-flex align-items-center w-150px">
-                                        <input type="date" class="form-control form-control-white fw-bolder pe-5"
+                                    <div class="position-relative d-flex align-items-center ms-4">
+                                        <input type="date" class="form-control form-control-solid fw-bolder pe-5"
                                                placeholder="Jatuh Tempo" name="due_date" id="dueDate"/>
                                     </div>
                                 </div>
@@ -161,6 +161,7 @@
     <script>
         $("#invoiceDate").flatpickr();
         $("#dueDate").flatpickr();
+
         function generateInvoice() {
             return {
                 buttonLoading: false,
