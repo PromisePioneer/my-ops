@@ -5,14 +5,10 @@
 
     <div class="d-flex flex-column flex-lg-row" x-data="BASTDetail()">
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
-            <div>
-                @if(isset($letterHead->header))
-                    <img class="w-100" src="{{ Storage::url($letterHead->header) }}" alt="">
-                @else
-                    <img class="w-100" src="{{ asset('assets/media/logos/kop-placeholder.png') }}" alt="">
-                @endif
-            </div>
             <div class="card">
+                <div class="card-header p-0 border-0">
+                    <img class="w-100" src="{{ asset('assets/media/logos/kop-header.png') }}" alt="">
+                </div>
                 <div class="card-body p-12">
                     <div class="row mb-10">
                         <div class="text-center">
@@ -173,14 +169,11 @@
                                 </table>
                             </div>
                         </div>
-
                     </div>
                 </div>
-                @if(isset($letterHead->header))
-                    <img class="w-100" src="{{ Storage::url($letterHead->header) }}" alt="">
-                @else
-                    <img class="w-100" src="{{ asset('assets/media/logos/kop-placeholder.png') }}" alt="">
-                @endif
+                <div class="card-footer p-0 border-0">
+                    <img class="w-100" src="{{ asset('assets/media/logos/kop-footer.png') }}" alt="">
+                </div>
             </div>
         </div>
 
