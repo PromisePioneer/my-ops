@@ -58,12 +58,12 @@ class InvoiceController extends Controller
 
     public function data(Request $request): JsonResponse
     {
-        return response()->json($this->invoice->getDataWithPagination($request, $this->perPage));
+        return response()->json($this->invoiceService->data($request));
     }
 
     public function search(Request $request): JsonResponse
     {
-        return response()->json($this->invoice->searchDataBasedOnUserBranch($request));
+        return response()->json($this->invoiceService->search($request));
     }
 
     public function branchData(Request $request): JsonResponse

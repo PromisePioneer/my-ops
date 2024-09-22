@@ -12,6 +12,7 @@ use App\Service\Accounts\AccountTransactionService;
 use App\Service\HelperService\HandleFileUploadService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -24,6 +25,7 @@ class InvoiceService
     private const string INCLUDE_PPH23_AFTER_INVOICE_PAID_DESCRIPTION = 'Diterima Bupot dari %s No. Inv %s Bupot';
     private const float PPN_RATE = 0.11;
     private const string PAID_STATUS = 'Lunas';
+    private static int $perPage = 10;
     private SubAccount $subAccount;
     private Contact $contact;
     private AccountTransaction $accountTransaction;
@@ -39,6 +41,66 @@ class InvoiceService
         $this->handleFileUploadService = new HandleFileUploadService();
     }
 
+
+    public function data(Request $request)
+    {
+        $data = Invoice::with('contact', 'user')
+            ->where('branch_id', $request->user()->branch_id)
+            ->latest()
+            ->paginate(self::$perPage);
+
+        return self::formattedData($data);
+    }
+
+
+    public function formattedData(LengthAwarePaginator $invoiceData): LengthAwarePaginator
+    {
+        $data = $invoiceData->getCollection()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'invoice_number' => $item->invoice_number,
+                'contact' => $item->contact->company_name,
+                'payment_status' => $item->payment_status,
+                'file' => $item->file,
+                'due_date' => $item->due_date,
+                'created_by' => $item->user->name,
+                'created_at' => $item->created_at,
+            ];
+        });
+
+        $invoiceData->setCollection($data);
+        return $invoiceData;
+    }
+
+
+    public function search(Request $request): LengthAwarePaginator
+    {
+        $search = $request->input('search');
+        $query = Invoice::with('contact', 'user')
+            ->where('branch_id', $request->user()->branch_id);
+
+        if (!empty($search)) {
+            $query->where('invoice_number', 'like', '%'.$search.'%')
+                ->where('branch_id', $request->user()->branch_id)
+                ->orWhereHas('contact', function ($query) use ($search) {
+                    $query->where('company_name', 'like', '%'.$search.'%');
+                })
+                ->orWhereHas('branch', function ($query) use ($search) {
+                    $query->where('name', 'like', '%'.$search.'%');
+                })
+                ->orWhere('due_date', 'like', '%'.$search.'%')
+                ->orWhere('description', 'like', '%'.$search.'%')
+                ->orWhere('grand_total', 'like', '%'.$search.'%')
+                ->orWhere('created_by', 'like', '%'.$search.'%');
+        }
+
+        $data = $query->paginate(self::$perPage);
+        return self::formattedData($data);
+    }
+
+    /**
+     * @throws Throwable
+     */
     public function store(InvoiceRequest $request): void
     {
         DB::transaction(function () use ($request) {

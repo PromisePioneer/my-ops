@@ -33,7 +33,7 @@
                                     <label class="form-label fs-6 fw-bold">Cabang:</label>
                                     <select name="" id=""
                                             class="form-select form-select-solid filter-branch-select2">
-                                        <option value="0">Pilih Cabang</option>
+                                        <option></option>
                                     </select>
                                 </div>
                             </div>
@@ -98,7 +98,7 @@
                                         <a :href="`/income-transactions/invoice/detail/${invoice.id}`"
                                            x-text="invoice.invoice_number"></a>
                                     </td>
-                                    <td x-text="invoice.contact.company_name"></td>
+                                    <td x-text="invoice.contact"></td>
                                     <template x-if="invoice.payment_status === 'Belum Lunas'">
                                         <td>
                                             <span class="badge bg-warning">Belum Lunas</span>
@@ -113,16 +113,16 @@
                                         <a :href="`/income-transactions/invoice/view-file/${invoice.id}`"
                                            class="btn btn-sm btn-info"><i class="bi bi-file-earmark-break-fill"></i></a>
                                     </td>
-                                    <td x-text="formatDate(invoice.due_date)"></td>
+                                    <td x-text="invoice.due_date"></td>
                                     <td x-html="differenceBetweenDate(invoice.created_at,invoice.due_date)"></td>
-                                    <td x-text="invoice.user.name"></td>
+                                    <td x-text="invoice.created_by"></td>
                                 </tr>
                             </template>
                             </tbody>
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4 mt-4">
-                        <template x-for="pagination in invoice.links">
+                        <template x-for="pagination in invoices.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                 <button class="page-link" @click="paginationEndPoint(pagination.url)"
                                         x-html="pagination.label">
@@ -175,6 +175,8 @@
                 async filterByBranch() {
                     const self = this;
                     $(".filter-branch-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Cabang',
                         ajax: {
                             url: '/income-transactions/invoice/branch/data',
                             dataType: "json",
@@ -183,18 +185,26 @@
                             processResults: (data) => ({results: data}),
                             cache: true
                         }
-                    });
-                    $(".filter-branch-select2").on('change', async function (e) {
+                    }).on('change', async function (e) {
                         const selectedBranch = $(this).select2('data')[0];
                         const response = await axios.get(`/income-transactions/invoice/filter/branch/data/${selectedBranch.id}`);
                         self.invoices = response.data;
                     });
                 },
                 async searchData() {
-                    this.invoices = await axios.get('/income-transactions/invoice/search', {
-                        params: {search: this.search},
-                        headers: {'Content-Type': 'application/json'}
-                    });
+
+                    this.isLoading = true;
+                    try {
+                        const response = await axios.get('/income-transactions/invoice/search', {
+                            params: {search: this.search},
+                            headers: {'Content-Type': 'application/json'}
+                        });
+                        this.invoices = response.data;
+                    } catch (error) {
+                        console.error('Error fetching data:', error);
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async nextPage() {
                     if (this.invoices.next_page_url) {
@@ -244,10 +254,10 @@
 
 
                     if (diffDays > 7) {
-                        return `<span class="badge bg-info">${diffDays} Hari</span>`
+                        return `<span class="badge bg-info text-white fs-7">${diffDays} Hari</span>`
                     }
 
-                    return `<span class="badge bg-danger">${diffDays} Hari</span>`
+                    return `<span class="badge bg-danger text-white fs-7">${diffDays} Hari</span>`
                 },
             }
         }
