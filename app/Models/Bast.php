@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -20,31 +23,31 @@ use Illuminate\Pagination\LengthAwarePaginator;
  * @property string|null $file
  * @property int $status
  * @property int $created_by
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Contact $contact
- * @property-read \App\Models\Fab|null $fab
- * @property-read \App\Models\User $user
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Contact $contact
+ * @property-read Fab|null $fab
+ * @property-read User $user
  *
- * @method static \Illuminate\Database\Eloquent\Builder|Bast newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Bast newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Bast query()
- * @method static \Illuminate\Database\Eloquent\Builder|Bast whereBastNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Bast whereBranchId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Bast whereContactId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Bast whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Bast whereCreatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Bast whereDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Bast whereFabId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Bast whereFile($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Bast whereFirstPartyIdentityName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Bast whereFirstPartyPosition($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Bast whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Bast whereObjective($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Bast whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Bast whereUpdatedAt($value)
+ * @method static Builder|Bast newModelQuery()
+ * @method static Builder|Bast newQuery()
+ * @method static Builder|Bast query()
+ * @method static Builder|Bast whereBastNumber($value)
+ * @method static Builder|Bast whereBranchId($value)
+ * @method static Builder|Bast whereContactId($value)
+ * @method static Builder|Bast whereCreatedAt($value)
+ * @method static Builder|Bast whereCreatedBy($value)
+ * @method static Builder|Bast whereDate($value)
+ * @method static Builder|Bast whereFabId($value)
+ * @method static Builder|Bast whereFile($value)
+ * @method static Builder|Bast whereFirstPartyIdentityName($value)
+ * @method static Builder|Bast whereFirstPartyPosition($value)
+ * @method static Builder|Bast whereId($value)
+ * @method static Builder|Bast whereObjective($value)
+ * @method static Builder|Bast whereStatus($value)
+ * @method static Builder|Bast whereUpdatedAt($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 class Bast extends Model
 {
@@ -80,11 +83,6 @@ class Bast extends Model
         return $this->belongsTo(Fab::class, 'fab_id');
     }
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
     public function getDataWithPagination(Request $request, int $perPage): LengthAwarePaginator
     {
         return self::with('contact', 'user')
@@ -92,23 +90,9 @@ class Bast extends Model
             ->paginate($perPage);
     }
 
-    public function searchDataBasedOnUserBranch(Request $request)
+    public function user(): BelongsTo
     {
-        $search = $request->input('search');
-
-        return self::where('bast_number', 'like', '%'.$search.'%')
-            ->where('branch_id', $request->user()->branch_id)
-            ->orWhereHas('contact', function ($query) use ($search) {
-                $query->where('full_name', 'like', '%'.$search.'%');
-                $query->orWhere('company_name', 'like', '%'.$search.'%');
-            })
-            ->orWhere('date', 'like', '%'.$search.'%')
-            ->orWhere('first_party_identity_name', 'like', '%'.$search.'%')
-            ->orWhere('first_party_position', 'like', '%'.$search.'%')
-            ->orWhere('objective', 'like', '%'.$search.'%')
-            ->orWhere('file', 'like', '%'.$search.'%')
-            ->orWhere('status', 'like', '%'.$search.'%')
-            ->get();
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function filterDataBasedOnBranch(int $branchId, int $perPage): LengthAwarePaginator

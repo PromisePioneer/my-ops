@@ -19,8 +19,8 @@
                                 <div class="d-flex align-items-center flex-equal fw-row me-4 order-2"
                                      data-bs-toggle="tooltip" data-bs-trigger="hover" title="Specify invoice date">
                                     <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tgl. Transaksi:</div>
-                                    <div class="position-relative d-flex align-items-center w-150px">
-                                        <input type="date" class="form-control form-control-white fw-bolder pe-5"
+                                    <div class="position-relative d-flex align-items-center ms-4">
+                                        <input type="date" class="form-control form-control-solid fw-bolder pe-5"
                                                placeholder="Select date" name="date" id="date"
                                                value="{{ $bast->date }}"/>
                                     </div>
@@ -28,7 +28,7 @@
                             </div>
                             <div class="col-lg-6">
                                 <div class="d-flex justify-content-end fw-row text-nowrap order-1 order-xxl-2 me-4 "
-                                     data-bs-toggle="tooltip" data-bs-trigger="hover" title="Enter invoice number">
+                                     data-bs-toggle="tooltip" data-bs-trigger="hover" title="Masukkan Nomor BAST">
                                     <span class="fs-2x fw-bolder text-gray-800">NO #</span>
                                     <input type="text" name="bast_number"
                                            class="form-control form-control-flush fw-bolder text-muted fs-3 w-125px"
@@ -117,7 +117,7 @@
 
                                             <td class="pt-5 text-end" style='text-align:center; vertical-align:middle'>
                                                 <button type="button"
-                                                        class="btn btn-sm btn-icon btn-active-color-primary"
+                                                        class="btn btn-sm btn-icon btn-active-color-danger"
                                                         @click="removeField(index)">
                                                     <span class="svg-icon svg-icon-3">
                                                         <i class="bi bi-trash"></i>
@@ -147,8 +147,8 @@
                             </div>
                         </div>
 
-                        <div class="row ">
-                            <div class="col-lg-6">
+                        <div class="row mb-10">
+                            <div class="col-lg-12">
                                 <div class="mb-0">
                                     <label class="form-label fs-6 fw-bolder text-gray-700 required">
                                         Tujuan BAST

@@ -71,9 +71,9 @@
                                 <th class="min-w-125px">Status</th>
                                 <th class="min-w-125px">Lampiran</th>
                                 <th class="min-w-125px">Tgl Dibuat</th>
-                                <th class="min-w-125px">Tgl Diubah</th>
+                                <th class="min-w-125px">Dibuat Oleh</th>
                             </thead>
-                            <tbody class="text-gray-600 fw-bold">
+                            <tbody class="fw-bold">
                             <template x-if="isLoading">
                                 <tr>
                                     <td colspan="9">
@@ -85,7 +85,7 @@
                                     </td>
                                 </tr>
                             </template>
-                            <template x-if="!isLoading && bastList.data?.length === 0">
+                            <template x-if="!isLoading && bastList?.data?.length === 0">
                                 <tr>
                                     <td colspan="9">
                                         <center>Data Tidak Ditemukan</center>
@@ -103,14 +103,7 @@
                                         <a :href="`/income-transactions/bast/detail/${bast.id}`"
                                            x-text="bast.bast_number"></a>
                                     </td>
-                                    <td x-text="bast.contact.full_name"></td>
-                                    <template x-if="bast.payment_status === 'Belum Lunas'">
-                                        <td>
-                                            <button type="button" @click="updatePaymentStatus(bast.id)"
-                                                    class="btn btn-sm btn-warning">Belum Lunas
-                                            </button>
-                                        </td>
-                                    </template>
+                                    <td x-text="bast.contact"></td>
                                     <template x-if="bast.status === 0">
                                         <td>
                                             <span class="badge bg-warning">Pending</span>
@@ -121,29 +114,25 @@
                                             <span class="badge bg-success">Terkonfirmasi</span>
                                         </td>
                                     </template>
-                                    <template x-if="bast.payment_status === 'Lunas'">
-                                        <td>
-                                            <span class="badge bg-warning">Lunas</span>
-                                        </td>
-                                    </template>
                                     <td>
                                         <a :href="`/income-transactions/bast/view-file/${bast.id}`"
                                            class="btn btn-sm btn-info"><i class="bi bi-file-earmark-break-fill"></i></a>
                                     </td>
-                                    <td x-text="formatDate(bast.created_at)"></td>
-                                    <td x-text="bast.user.name"></td>
+                                    <td x-text="bast.created_at"></td>
+                                    <td x-text="bast.created_by"></td>
                                 </tr>
                             </template>
                             </tbody>
                         </table>
                     </div>
-                    <ul class="pagination float-end mb-5">
-                        <li class="page-item previous">
-                            <button class="btn btn-light btn-sm" @click="previousPage()">Previous</button>
-                        </li>
-                        <li class="page-item next">
-                            <button class="btn btn-light btn-sm" @click="nextPage()">Next</button>
-                        </li>
+                    <ul class="pagination float-end mb-4 mt-4">
+                        <template x-for="pagination in bastList?.links">
+                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                        x-html="pagination.label">
+                                </button>
+                            </li>
+                        </template>
                     </ul>
                 </div>
             </div>
@@ -152,18 +141,22 @@
     @include('components.toast')
 @endsection
 @push('script')
-
     <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('BastData', () => ({
+        function BastData() {
+            return {
                 bastList: null,
-                isLoading: true,
-                startIndex: null,
+                isLoading: false,
                 search: '',
                 filterCategory: '',
                 async init() {
                     await this.getBastData();
                     await this.filterByBranch();
+                },
+                async paginationEndPoint(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
+                        this.bastList = resp.data
+                    }
                 },
                 async filterData() {
                     this.isLoading = true;
@@ -174,23 +167,17 @@
                     this.isLoading = false;
                 },
                 async searchData() {
-                    this.bastList = await axios.get('/income-transactions/bast/search', {
-                        params: {search: this.search},
-                        headers: {'Content-Type': 'application/json'}
-                    });
-                },
-                async nextPage() {
-                    if (this.bastList.next_page_url) {
-                        const resp = await axios.get(`${this.bastList.next_page_url}`);
-                        this.startIndex = this.bastList.from
-                        this.bastList = resp.data
-                    }
-                },
-                async previousPage() {
-                    if (this.bastList.prev_page_url) {
-                        const resp = await axios.get(`${this.bastList.prev_page_url}`);
-                        this.startIndex = this.bastList.from
-                        this.bastList = resp.data
+                    this.isLoading = true;
+                    try {
+                        const response = await axios.get('/income-transactions/bast/search', {
+                            params: {search: this.search},
+                            headers: {'Content-Type': 'application/json'}
+                        });
+                        this.bastList = response.data;
+                    } catch (error) {
+                        console.error('Error fetching data:', error);
+                    } finally {
+                        this.isLoading = false;
                     }
                 },
                 async updatePaymentStatus(id) {
@@ -222,8 +209,7 @@
                             processResults: (data) => ({results: data}),
                             cache: true
                         }
-                    });
-                    $(".filter-branch-select2").on('change', async function (e) {
+                    }).on('change', async function (e) {
                         const selectedBranch = $(this).select2('data')[0];
                         const response = await axios.get(`/income-transactions/bast/filter/branch/data/${selectedBranch.id}`);
                         self.bastList = response.data;
@@ -240,7 +226,7 @@
                         return formatter.format(date);
                     }
                 },
-            }))
-        })
+            }
+        }
     </script>
 @endpush

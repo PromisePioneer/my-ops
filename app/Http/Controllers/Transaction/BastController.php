@@ -8,7 +8,7 @@ use App\Models\Bast;
 use App\Models\BastProduct;
 use App\Models\Branch;
 use App\Models\Contact;
-use App\Service\Transaction\BastServices;
+use App\Service\Transaction\BastService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,7 +22,7 @@ class BastController extends Controller
 
     private Contact $contact;
 
-    private BastServices $bastService;
+    private BastService $bastService;
 
     private Bast $bast;
 
@@ -33,7 +33,7 @@ class BastController extends Controller
     public function __construct()
     {
         $this->contact = new Contact();
-        $this->bastService = new BastServices();
+        $this->bastService = new BastService();
         $this->bast = new Bast();
         $this->bastProduct = new BastProduct();
         $this->branch = new Branch();
@@ -46,15 +46,14 @@ class BastController extends Controller
 
     public function data(Request $request): JsonResponse
     {
-        $bast = $this->bast->getDataWithPagination($request, $this->perPage);
+        $bast = $this->bastService->data($request);
 
         return response()->json($bast);
     }
 
     public function search(Request $request): JsonResponse
     {
-        $searchQuery = $this->bast->searchDataBasedOnUserBranch($request);
-
+        $searchQuery = $this->bastService->search($request);
         return response()->json($searchQuery);
     }
 
