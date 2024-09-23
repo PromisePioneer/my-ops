@@ -382,6 +382,7 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
         Route::prefix('assets')->group(function () {
+            Route::post('/destroy', [AssetController::class, 'destroy']);
             Route::get('/', [AssetController::class, 'index']);
             Route::get('/data', [AssetController::class, 'data']);
             Route::get('/search', [AssetController::class, 'search']);
@@ -391,7 +392,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/branch/selected/{asset}', [AssetController::class, 'selectedBranch']);
             Route::post('/', [AssetController::class, 'store']);
             Route::get('/{asset}', [AssetController::class, 'edit']);
-            Route::post('/destroy', [AssetController::class, 'destroy']);
             Route::post('/update/{asset}', [AssetController::class, 'update']);
             Route::post('/confirm/{asset}', [AssetController::class, 'confirm']);
         });

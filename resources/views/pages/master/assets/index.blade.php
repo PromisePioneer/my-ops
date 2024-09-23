@@ -32,6 +32,22 @@
                 </div>
             </div>
             <div class="card-body py-3">
+                <div class="col-12 ">
+                    <form id="form-delete" @submit.prevent="destroy()">
+                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                        <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                                x-show="selectedCheckBox.length > 0"
+                                x-transition x-cloak>
+                            <i class="ki-duotone ki-trash-square fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
+                            Hapus
+                        </button>
+                    </form>
+                </div>
                 <div class="py-5">
                     <div class="table-responsive">
                         <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
@@ -76,8 +92,10 @@
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="asset.id"
-                                                   :id="'checkbox-' + asset.id"/>
+                                            <template x-if="asset.status === 0">
+                                                <input class="form-check-input" type="checkbox" :value="asset.id"
+                                                       :id="'checkbox-' + asset.id"/>
+                                            </template>
                                         </div>
                                     </td>
                                     <td x-text="`${asset.branch_name ?? 'Pusat'}`"></td>
@@ -132,16 +150,44 @@
                 isLoading: false,
                 buttonLoading: false,
                 startIndex: null,
+                selectedCheckBox: [],
+                selectAll: false,
+                singleChecked: false,
                 search: '',
                 editVal: '',
                 formCreate: document.getElementById('form-create'),
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
+                formDelete: document.getElementById('form-delete'),
                 formEdit: document.getElementById('form-edit'),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 async init() {
                     await this.getAssetsData();
                     await this.getBranchData();
                     await this.getAccountData();
+                },
+                toggleAllCheckBox() {
+                    this.selectAll = !this.selectAll;
+                    this.singleChecked = false;
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    this.selectedCheckBox = [];
+                    checkboxes.forEach((checkbox) => {
+                        checkbox.checked = this.selectAll;
+                        if (this.selectAll) {
+                            this.selectedCheckBox.push(checkbox.value);
+                        }
+                    });
+                    this.selectedCheckBox.shift();
+                },
+                selectCheckBox(event) {
+                    const checkboxId = event.target.value;
+                    if (event.target.checked) {
+                        this.selectedCheckBox.push(checkboxId);
+                    } else {
+                        const index = this.selectedCheckBox.indexOf(checkboxId);
+                        if (index !== -1) {
+                            this.selectedCheckBox.splice(index, 1);
+                        }
+                    }
                 },
                 async paginationEndPoint(url) {
                     if (url) {
@@ -202,7 +248,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/master/branch/destroy`, new FormData(this.deleteForm));
+                            await axios.post(`/master/assets/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
