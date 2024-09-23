@@ -18,9 +18,14 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-light-primary btn-sm"
+                                    data-bs-toggle="modal"
                                     data-bs-target="#modal-create">
-                                Tambah
+                                <i class="ki-duotone ki-message-add fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i> Tambah
                             </button>
                         </div>
                     </div>
@@ -145,13 +150,17 @@
                     }
                 },
                 async searchData() {
+                    this.isLoading = true;
                     try {
-                        this.assets = await axios.get('/master/assets/search', {
+                        const response = await axios.get('/master/assets/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
+                        this.assets = response.data;
                     } catch (error) {
-                        console.log(error);
+                        console.error('Error fetching data:', error);
+                    } finally {
+                        this.isLoading = false;
                     }
                 },
                 async save() {
