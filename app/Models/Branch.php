@@ -42,8 +42,8 @@ class Branch extends Model
     //eloquent
     public function getData(Request $request): array
     {
-        $search = $request->search;
-        $query = self::orderby('name', 'asc')->select('id', 'name', 'code');
+        $search = $request->input('search');
+        $query = self::orderby('name')->select('id', 'name', 'code');
 
         if ($search !== '') {
             $query->where('name', 'like', '%'.$search.'%');

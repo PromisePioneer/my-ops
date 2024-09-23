@@ -37,6 +37,7 @@ use App\Http\Controllers\ManageUser\PermissionController;
 use App\Http\Controllers\ManageUser\UserController;
 use App\Http\Controllers\Master\AccountController;
 use App\Http\Controllers\Master\AccountTransactionsController;
+use App\Http\Controllers\Master\AssetController;
 use App\Http\Controllers\Master\BranchesController;
 use App\Http\Controllers\Master\BroadbandPacketController;
 use App\Http\Controllers\Master\ContactController;
@@ -377,6 +378,22 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/{taxSetting}', [TaxSettingController::class, 'edit']);
             Route::post('/destroy', [TaxSettingController::class, 'destroy']);
             Route::post('/update/{taxSetting}', [TaxSettingController::class, 'update']);
+        });
+
+
+        Route::prefix('assets')->group(function () {
+            Route::get('/', [AssetController::class, 'index']);
+            Route::get('/data', [AssetController::class, 'data']);
+            Route::get('/search', [AssetController::class, 'search']);
+            Route::get('/branch/data', [AssetController::class, 'getBranchData']);
+            Route::get('/accounts/data', [AssetController::class, 'getAccountData']);
+            Route::get('/account/selected/{asset}', [AssetController::class, 'selectedAccount']);
+            Route::get('/branch/selected/{asset}', [AssetController::class, 'selectedBranch']);
+            Route::post('/', [AssetController::class, 'store']);
+            Route::get('/{asset}', [AssetController::class, 'edit']);
+            Route::post('/destroy', [AssetController::class, 'destroy']);
+            Route::post('/update/{asset}', [AssetController::class, 'update']);
+            Route::post('/confirm/{asset}', [AssetController::class, 'confirm']);
         });
     });
 

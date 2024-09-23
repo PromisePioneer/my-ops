@@ -149,6 +149,11 @@
                                 href="{{ url('master/tax-settings') }}">
                             Pajak
                         </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'assets'"
+                                href="{{ url('master/assets') }}">
+                            Aset
+                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
 
