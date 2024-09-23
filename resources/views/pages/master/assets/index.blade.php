@@ -91,9 +91,12 @@
                                             </button>
                                         </template>
                                         <button :class="`${asset.status  === 1  ? 'btn btn-success btn-sm' : 'btn btn-danger btn-sm'}`"
-                                                @click="asset.status ? check(asset.id) : ''"
+                                                @click="asset.status === 0 ? check(asset.id) : ''"
                                                 :disabled="asset.status === 1">
-                                            <i class="bi bi-check fs-3"></i>
+                                            <i class="ki-duotone ki-check-square">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
                                         </button>
                                     </td>
                                 </tr>
