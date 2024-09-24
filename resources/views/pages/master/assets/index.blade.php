@@ -58,15 +58,9 @@
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
-                                <th class="min-w-125px">Cabang</th>
-                                <th class="min-w-125px">Kategori</th>
                                 <th class="min-w-125px">Nama</th>
-                                <th class="min-w-125px">Unit</th>
-                                <th class="min-w-125px">Masa Manfaat</th>
-                                <th class="min-w-125px">Harga / Unit</th>
-                                <th class="min-w-125px">Harga Perolehan</th>
-                                <th class="min-w-125px">Tarif Penyesuaian</th>
-                                <th class="min-w-125px">Actions</th>
+                                <th class="min-w-125px">Tahun</th>
+                                <th class="min-w-125px">Penyusutan</th>
                             </thead>
                             <tbody class="fw-bold">
                             <template x-if="isLoading">
@@ -100,12 +94,12 @@
                                     </td>
                                     <td x-text="`${asset.branch_name ?? 'Pusat'}`"></td>
                                     <td x-text="asset.account_name"></td>
-                                    <td x-text="asset.name"></td>
+                                    <td>
+                                        <a :href="`/master/assets/detail/${asset.id}`" x-text="asset.name"></a>
+                                    </td>
                                     <td x-text="asset.unit"></td>
                                     <td x-text="asset.useful_life"></td>
                                     <td x-text="asset.price_per_unit"></td>
-                                    <td x-text="asset.price_at_first_recieved"></td>
-                                    <td x-text="`${asset.depreciation_rate} %`"></td>
                                     <td>
                                         <template x-if="asset.status == 0">
                                             <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
@@ -144,6 +138,8 @@
 @endsection
 @push('script')
     <script defer>
+        $('.date').flatpickr();
+
         function assetsData() {
             return {
                 assets: [],

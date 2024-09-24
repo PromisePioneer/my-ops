@@ -7,6 +7,7 @@ use App\Http\Requests\AssetRequest;
 use App\Models\Account;
 use App\Models\Asset;
 use App\Models\Branch;
+use App\Service\Assets\AssetDepreciationService;
 use App\Service\Master\AssetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,12 +20,14 @@ class AssetController extends Controller
     private AssetService $assetService;
     private Branch $branch;
     private Account $account;
+    private AssetDepreciationService $assetDepreciationService;
 
     public function __construct()
     {
         $this->assetService = new AssetService();
         $this->branch = new Branch();
         $this->account = new Account();
+        $this->assetDepreciationService = new AssetDepreciationService();
     }
 
 
@@ -33,18 +36,10 @@ class AssetController extends Controller
         return view('pages.master.assets.index');
     }
 
-
-    public function data(Request $request): JsonResponse
-    {
-        return response()->json($this->assetService->data($request));
-    }
-
-
     public function search(Request $request): JsonResponse
     {
         return response()->json($this->assetService->search($request));
     }
-
 
     public function getBranchData(Request $request): JsonResponse
     {
@@ -55,7 +50,6 @@ class AssetController extends Controller
     {
         return response()->json($this->account->getAssetAccount($request));
     }
-
 
     public function selectedBranch(Asset $asset): JsonResponse
     {
@@ -75,7 +69,6 @@ class AssetController extends Controller
         $this->assetService->store($request);
         return response()->json(['message' => 'Data berhasil ditambahkan.']);
     }
-
 
     public function edit(Asset $asset): JsonResponse
     {
@@ -104,5 +97,20 @@ class AssetController extends Controller
     {
         $this->assetService->update($request, $asset);
         return response()->json(['message' => 'Data berhasil diubah.']);
+    }
+
+    public function detail(Asset $asset): View
+    {
+        return view('pages.master.assets.detail', compact('asset'));
+    }
+
+    public function getDetailData(Asset $asset): JsonResponse
+    {
+        return response()->json($this->assetDepreciationService->data($asset));
+    }
+
+    public function data(Request $request): JsonResponse
+    {
+        return response()->json($this->assetService->data($request));
     }
 }

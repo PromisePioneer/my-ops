@@ -58,20 +58,19 @@
                                    placeholder="Nama Aset" :value="editVal.useful_life"/>
                         </div>
                         <div class="col-md-6">
+                            <label for="name" class="required form-label">Tanggal Perolehan</label>
+                            <input type="date" id="date_received" name="date_received"
+                                   class="form-control form-control-solid date"
+                                   placeholder="Tanggal Perolehan" :value="editVal.date_recieved"/>
+                        </div>
+                    </div>
+
+                    <div class="row mb-7">
+                        <div class="col-md-6">
                             <label for="name" class="required form-label">Harga / Unit</label>
                             <input type="number" id="price_per_unit" name="price_per_unit"
                                    class="form-control form-control-solid"
                                    placeholder="Jumlah unit" :value="editVal.price_per_unit"/>
-                        </div>
-                    </div>
-
-
-                    <div class="row mb-7">
-                        <div class="col-md-6">
-                            <label for="name" class="required form-label">Tarif Penyesuaian</label>
-                            <input type="number" id="depreciation_rate" name="depreciation_rate"
-                                   class="form-control form-control-solid"
-                                   placeholder="Tarif Penyesuaian" :value="editVal.depreciation_rate"/>
                         </div>
                     </div>
                 </div>

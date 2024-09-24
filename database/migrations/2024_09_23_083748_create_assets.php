@@ -14,12 +14,13 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('branch_id')->nullable()->constrained('branches');
             $table->foreignId('account_id')->constrained('accounts');
+            $table->date('date_received');
             $table->string('name');
             $table->integer('unit');
             $table->integer('useful_life');
             $table->double('price_per_unit');
-            $table->double('price_at_first_recieved');
-            $table->float('depreciation_rate');
+            $table->double('residu')->nullable();
+            $table->double('total_price')->nullable();
             $table->boolean('status')->default(false);
             $table->timestamps();
         });

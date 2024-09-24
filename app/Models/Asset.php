@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Asset extends Model
 {
@@ -14,12 +15,15 @@ class Asset extends Model
     protected $fillable = [
         'branch_id',
         'account_id',
+        'date_received',
         'name',
         'unit',
         'useful_life',
         'price_per_unit',
-        'price_at_first_recieved',
-        'depreciation_rate',
+        'total_price',
+        'residu',
+        'status',
+
     ];
 
 
@@ -31,5 +35,11 @@ class Asset extends Model
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'account_id');
+    }
+
+
+    public function assetDepreciations(): HasMany
+    {
+        return $this->hasMany(AssetDepreciation::class, 'asset_id');
     }
 }

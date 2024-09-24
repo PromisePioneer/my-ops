@@ -25,11 +25,11 @@ class AssetRequest extends FormRequest
         return [
             'branch_id' => ['nullable', 'exists:branches,id'],
             'account_id' => ['required', 'exists:accounts,id'],
+            'date_received' => ['required', 'date'],
             'name' => ['required'],
             'unit' => ['required', 'numeric'],
             'useful_life' => ['required'],
             'price_per_unit' => ['required', 'numeric'],
-            'depreciation_rate' => ['required', 'numeric'],
         ];
     }
 
@@ -47,8 +47,8 @@ class AssetRequest extends FormRequest
             'useful_life.numeric' => 'Masa manfaat harus berupa angka',
             'price_per_unit.required' => 'Harga per unit tidak boleh kosong',
             'price_per_unit.numeric' => 'Harga per unit harus berupa angka',
-            'depreciation_rate.required' => 'Tarif penyesuaian tidak boleh kosong',
-            'depreciation_rate.numeric' => 'Tarif penyesuaian tidak boleh kosong',
+            'date_recieved.required' => 'Tanggal Perolehan tidak boleh kosong',
+            'date_recieved.date' => 'Tanggal Perolehan harus berupa tanggal',
         ];
     }
 }

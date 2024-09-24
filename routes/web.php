@@ -11,6 +11,7 @@ use App\Http\Controllers\Allowances\OvertimeAllowanceController;
 use App\Http\Controllers\Allowances\PositionAllowancesController;
 use App\Http\Controllers\Allowances\ThrAllowancesController;
 use App\Http\Controllers\Allowances\TransportationAllowanceController;
+use App\Http\Controllers\Asset\AssetDepreciationController;
 use App\Http\Controllers\Benefit\SalesBonusController;
 use App\Http\Controllers\Bonus\ProjectBonusController;
 use App\Http\Controllers\Deduction\AdditionalDeductionController;
@@ -394,6 +395,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/{asset}', [AssetController::class, 'edit']);
             Route::post('/update/{asset}', [AssetController::class, 'update']);
             Route::post('/confirm/{asset}', [AssetController::class, 'confirm']);
+            Route::get('/detail/{asset}', [AssetController::class, 'detail']);
+            Route::get('/detail/data/{asset}', [AssetController::class, 'getDetailData']);
         });
     });
 
@@ -450,7 +453,14 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/detail/{account}', 'detail');
                 Route::get('detail-akun/{account}', 'detailAkunData');
             });
+
+
+        Route::prefix('assets-depreciation')->group(function () {
+            Route::get('/', [AssetDepreciationController::class, 'index']);
+            Route::get('/data', [AssetDepreciationController::class, 'data']);
+        });
     });
+
 
     Route::prefix('inventory')->group(function () {
         Route::prefix('goods')->group(function () {

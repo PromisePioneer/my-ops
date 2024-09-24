@@ -5,7 +5,9 @@ namespace App\Service\Master;
 use App\Http\Requests\AssetRequest;
 use App\Models\Account;
 use App\Models\Asset;
+use App\Models\AssetDepreciation;
 use App\Service\Accounts\AccountTransactionService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -42,7 +44,6 @@ class AssetService
                 'useful_life' => $item->useful_life,
                 'price_per_unit' => number_format($item->price_per_unit, 2),
                 'price_at_first_recieved' => number_format($item->price_at_first_recieved, 2),
-                'depreciation_rate' => number_format($item->depreciation_rate, 2),
                 'status' => $item->status,
             ];
         });
@@ -78,7 +79,8 @@ class AssetService
     public function store(AssetRequest $request): void
     {
         $data = $request->validated();
-        $data['price_at_first_recieved'] = $data['price_per_unit'] * $data['unit'];
+        $data['total_price'] = $data['price_per_unit'] * $data['unit'];
+        $data['residu'] = $data['total_price'] / $data['useful_life'];
         Asset::create($data);
     }
 
@@ -90,16 +92,31 @@ class AssetService
         $creditAccount = Account::where('code', '111')->first();
         $description = sprintf(self::PURCHASE_ASSET_DESCRIPTION, $asset->unit, $asset->name);
         DB::transaction(function () use ($description, $asset, $creditAccount) {
+            $residu = $asset->total_price / $asset->useful_life;
+            $depreciation = ($asset->total_price - $residu) / $asset->useful_life;
+            $price = $asset->total_price;
+
+            for ($i = 1; $i <= $asset->useful_life; $i++) {
+                $date = Carbon::parse($asset->date_recieved)->addYear($i);
+                $price -= $depreciation;
+
+                AssetDepreciation::create([
+                    'asset_id' => $asset->id,
+                    'depreciation_date' => $date,
+                    'depreciation_amount' => $price,
+                ]);
+            }
+
             $asset->status = 1;
             $asset->save();
             $this->accountTransactionService->createDebitTransaction(
                 $description,
-                $asset->price_at_first_recieved,
+                $asset->total_price,
                 $asset->account_id
             );
             $this->accountTransactionService->createCreditTransaction(
                 $description,
-                $asset->price_at_first_recieved,
+                $asset->total_price,
                 $creditAccount->id
             );
         });
