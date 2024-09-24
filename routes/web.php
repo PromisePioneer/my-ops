@@ -451,7 +451,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/', 'index');
                 Route::get('/data', 'data');
                 Route::get('/detail/{account}', 'detail');
-                Route::get('detail-akun/{account}', 'detailAkunData');
+                Route::get('detail-akun/{account}', 'detailAccountTransaction');
             });
 
 

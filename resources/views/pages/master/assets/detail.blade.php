@@ -72,7 +72,7 @@
                     </table>
                 </div>
                 <div class="card-toolbar">
-                    <div class="d-flex " data-kt-user-table-toolbar="base">
+                    <div class="d-flex" data-kt-user-table-toolbar="base">
                         <div class="d-flex" data-kt-user-table-toolbar="base">
                             <a href="{{ url('/master/assets/') }}" class="btn btn-light-danger btn-sm">
                                 Kembali

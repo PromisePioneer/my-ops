@@ -5,10 +5,8 @@ namespace App\Http\Controllers\Journals;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\AccountTransaction;
-use App\Models\SubAccount;
-use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class GeneralLedgerController extends Controller
@@ -32,42 +30,52 @@ class GeneralLedgerController extends Controller
         return view('pages.journals.general-ledger.detail', compact('accountTransaction', 'account'));
     }
 
-    public function detailAkunData(Account $account): JsonResponse
+    public function detailAccountTransaction(Account $account): JsonResponse
     {
-        $currentYear = date('Y');
-
-        $subAccounts = SubAccount::where('account_id', $account->id)->pluck('id')->toArray();
-
-        $period = CarbonPeriod::create("$currentYear-01-01", '1 month', "$currentYear-12-31");
-        $months = collect($period)->map(function ($date) {
-            return $date->format('Y-m');
-        });
-
-        $transactions = DB::table('account_transactions')
-            ->whereIn('sub_account_id', $subAccounts)
-            ->orWhere('account_id', $account->id)
-            ->select(
-                DB::raw('DATE_FORMAT(date, "%Y-%m") as month'),
-                DB::raw('SUM(debit) as total_debit'),
-                DB::raw('SUM(credit) as total_credit')
-            )
-            ->groupBy('month')
-            ->orderBy('month')
-            ->get()
-            ->keyBy('month');
-
-        $monthlyData = $months->map(function ($month) use ($transactions) {
+        $accountTransaction = AccountTransaction::with('account', 'account.subAccount')->whereHas(
+            'account',
+            function ($query) use ($account) {
+                $query->where('id', $account->id);
+            }
+        )->get()->groupBy('description')->map(function (Collection $item) {
             return [
-                'month' => $month,
-                'total_debit' => $transactions->has($month) ? $transactions->get($month)->total_debit : 0,
-                'total_credit' => $transactions->has($month) ? $transactions->get($month)->total_credit : 0,
+                'date' => $item->first()->created_at->format('d/m/Y'),
+                'description' => $item->first()->description,
+                'debit' => $item->where('debit', '>', 0)->map(function ($transaction) {
+                    return [
+                        'amount' => 'Rp.'.number_format($transaction->debit) ?? '-',
+                    ];
+                })->values(),
+                'credit' => $item->where('credit', '>', 0)->map(function ($transaction) {
+                    return [
+                        'amount' => 'Rp.'.number_format($transaction->credit) ?? '-',
+                    ];
+                })->values(),
             ];
-        });
+        })->filter()->values();
+
+
+        $totalCredit = AccountTransaction::with('account', 'account.subAccount')->whereHas(
+            'account',
+            function ($query) use ($account) {
+                $query->where('id', $account->id);
+            }
+        )->sum('credit');
+
+
+        $totalDebit = AccountTransaction::with('account', 'account.subAccount')->whereHas(
+            'account',
+            function ($query) use ($account) {
+                $query->where('id', $account->id);
+            }
+        )->sum('debit');
+
 
         return response()->json([
-            'transactions' => $monthlyData,
-            'account' => $account->name,
-            'year' => $currentYear,
+            'account_transaction' => $accountTransaction,
+            'total_credit' => 'Rp.'.number_format($totalCredit),
+            'total_debit' => 'Rp.'.number_format($totalDebit),
+            'total_balance' => 'Rp.'.number_format($totalDebit - $totalCredit),
         ]);
     }
 }
