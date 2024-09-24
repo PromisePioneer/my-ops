@@ -1,3 +1,4 @@
+@php use function App\Helper\formatDate; @endphp
 @extends('layouts.template')
 @section('content')
     <div x-data="assetDepreciationDetail()">
@@ -19,6 +20,16 @@
                             <th>Harga perolehan</th>
                             <th>:</th>
                             <th>Rp {{ number_format($asset->total_price)  }}</th>
+                        </tr>
+                        <tr>
+                            <th>Tahun Perolehan</th>
+                            <th>:</th>
+                            <th>{{ formatDate($asset->date_received)  }}</th>
+                        </tr>
+                        <tr>
+                            <th>Masa Manfaat</th>
+                            <th>:</th>
+                            <th>{{ $asset->useful_life }} Tahun</th>
                         </tr>
                         <tr>
                         </tr>
@@ -77,7 +88,7 @@
                                     </td>
                                 </tr>
                             </template>
-                            <template x-if="!isLoading && assets.data?.length === 0">
+                            <template x-if="!isLoading && assetDepreciationData.data?.length === 0">
                                 <tr>
                                     <td colspan="9">
                                         <center>Data Tidak Ditemukan</center>
@@ -94,7 +105,7 @@
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4">
-                        <template x-for="pagination in assets.links">
+                        <template x-for="pagination in assetDepreciationData.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                 <button class="page-link" @click="paginationEndPoint(pagination.url)"
                                         x-html="pagination.label">
@@ -120,7 +131,13 @@
                 async getDepreciationData() {
                     const resp = await axios.get(`/master/assets/detail/data/${this.id}`);
                     this.assetDepreciationData = resp.data;
-                }
+                },
+                async paginationEndPoint(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
+                        this.assetDepreciationData = resp.data
+                    }
+                },
             }
         }
     </script>

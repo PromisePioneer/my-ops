@@ -97,7 +97,7 @@ class AssetService
             $price = $asset->total_price;
 
             for ($i = 1; $i <= $asset->useful_life; $i++) {
-                $date = Carbon::parse($asset->date_recieved)->addYear($i);
+                $date = Carbon::parse($asset->date_received)->addYear($i);
                 $price -= $depreciation;
 
                 AssetDepreciation::create([
