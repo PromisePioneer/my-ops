@@ -446,12 +446,16 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/search', 'search');
             });
 
+
+        Route::prefix('general-ledger')->group(function () {
+            Route::get('/', [GeneralLedgerController::class, 'index']);
+            Route::get('/data', [GeneralLedgerController::class, 'data']);
+            Route::get('/detail/{account}', [GeneralLedgerController::class, 'detail']);
+            Route::get('detail-akun/{account}', [GeneralLedgerController::class, 'detailAccountTransaction']);
+        });
+
         Route::controller(GeneralLedgerController::class)
             ->prefix('general-ledger')->group(function () {
-                Route::get('/', 'index');
-                Route::get('/data', 'data');
-                Route::get('/detail/{account}', 'detail');
-                Route::get('detail-akun/{account}', 'detailAccountTransaction');
             });
 
 

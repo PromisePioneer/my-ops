@@ -78,4 +78,6 @@ class GeneralLedgerController extends Controller
             'total_balance' => 'Rp.'.number_format($totalDebit - $totalCredit),
         ]);
     }
+
+
 }

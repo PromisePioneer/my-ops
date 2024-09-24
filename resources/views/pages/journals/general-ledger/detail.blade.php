@@ -75,6 +75,11 @@
                         </tr>
                         </tfoot>
                     </table>
+
+                    <div class="d-flex justify-content-end">
+                        <a href="{{ url('journals/general-ledger') }}"
+                           class="btn btn-sm btn-light-danger btn-sm">Kembali</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -129,7 +134,7 @@
                         style: 'currency',
                         currency: "IDR"
                     });
-
+                    
                     return IDR.format(curr);
                 },
             }
