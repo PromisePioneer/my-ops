@@ -12,9 +12,27 @@
                             <th>{{ $asset->name }}</th>
                         </tr>
                         <tr>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                        </tr>
+                        <tr>
                             <th>Nilai residu</th>
                             <th>:</th>
                             <th> Rp. {{ number_format($asset->residu) }}</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th></th>
                         </tr>
                         <tr>
                             <th>Harga perolehan</th>
@@ -22,9 +40,27 @@
                             <th>Rp {{ number_format($asset->total_price)  }}</th>
                         </tr>
                         <tr>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                        </tr>
+                        <tr>
                             <th>Tahun Perolehan</th>
                             <th>:</th>
                             <th>{{ formatDate($asset->date_received)  }}</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th></th>
                         </tr>
                         <tr>
                             <th>Masa Manfaat</th>
@@ -36,8 +72,11 @@
                     </table>
                 </div>
                 <div class="card-toolbar">
-                    <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                        <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                    <div class="d-flex " data-kt-user-table-toolbar="base">
+                        <div class="d-flex" data-kt-user-table-toolbar="base">
+                            <a href="{{ url('/master/assets/') }}" class="btn btn-light-danger btn-sm">
+                                Kembali
+                            </a>
                         </div>
                     </div>
                 </div>
