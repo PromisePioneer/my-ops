@@ -58,9 +58,13 @@
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
+                                <th class="min-w-125px">Cabang</th>
+                                <th class="min-w-125px">Kategori</th>
                                 <th class="min-w-125px">Nama</th>
-                                <th class="min-w-125px">Tahun</th>
-                                <th class="min-w-125px">Penyusutan</th>
+                                <th class="min-w-125px">Unit</th>
+                                <th class="min-w-125px">Masa Manfaat</th>
+                                <th class="min-w-125px">Harga / Unit</th>
+                                <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class="fw-bold">
                             <template x-if="isLoading">
