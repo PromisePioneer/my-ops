@@ -13,11 +13,8 @@
                     <button type="button" class="btn btn-light-primary btn-sm"
                             data-bs-toggle="modal"
                             data-bs-target="#modal-filter">
-                        <i class="ki-duotone ki-message-add fs-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                            <span class="path3"></span>
-                        </i> Filter
+                        <i class="bi bi-funnel-fill"></i>
+                        Filter
                     </button>
                 </div>
             </div>
