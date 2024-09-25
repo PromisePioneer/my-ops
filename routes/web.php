@@ -26,6 +26,7 @@ use App\Http\Controllers\JournalAdjustment\JournalAdjustmentController;
 use App\Http\Controllers\Journals\FinancialReportController;
 use App\Http\Controllers\Journals\GeneralJournalController;
 use App\Http\Controllers\Journals\GeneralLedgerController;
+use App\Http\Controllers\Journals\IncomeStatementController;
 use App\Http\Controllers\ManageUser\ContractManagementController;
 use App\Http\Controllers\ManageUser\EducationCertificateController;
 use App\Http\Controllers\ManageUser\EducationController;
@@ -466,6 +467,12 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('assets-depreciation')->group(function () {
             Route::get('/', [AssetDepreciationController::class, 'index']);
             Route::get('/data', [AssetDepreciationController::class, 'data']);
+        });
+
+
+        Route::prefix('income-statement')->group(function () {
+            Route::get('/', [IncomeStatementController::class, 'index']);
+            Route::get('/data', [IncomeStatementController::class, 'data']);
         });
     });
 
