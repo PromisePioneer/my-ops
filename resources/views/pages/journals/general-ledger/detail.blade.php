@@ -3,19 +3,22 @@
 @section('content')
 
     <div x-data="bigBookDetail">
+        @include('pages.journals.general-ledger.modal.filter')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <h4>Akun : ({{ $account->code  }}) {{ $account->name }}</h4>
                 </div>
                 <div class="card-toolbar">
-                    <select class="form-select form-select-solid" data-control="select2"
-                            data-placeholder="Pilih Periode">
-                        <option></option>
-                        <template x-for="(period,index) in periods" :key="index">
-                            <option :value="period.value" x-text="period.name"></option>
-                        </template>
-                    </select>
+                    <button type="button" class="btn btn-light-primary btn-sm"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-filter">
+                        <i class="ki-duotone ki-message-add fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                        </i> Filter
+                    </button>
                 </div>
             </div>
             <div class="card-body">
@@ -90,11 +93,14 @@
     <script>
         function bigBookDetail() {
             return {
+                buttonLoading: false,
                 isLoading: false,
                 generalLedger: [],
                 id: "{{ $account->id }}",
                 startIndex: null,
                 periods: [],
+                modalFilter: new bootstrap.Modal(document.getElementById('modal-filter')),
+                formFilter: document.getElementById('form-filter'),
                 async init() {
                     await this.getPeriod();
                     await this.getGeneralLedgerDetailData();
@@ -102,6 +108,26 @@
                 async getGeneralLedgerDetailData() {
                     const resp = await axios.get(`/journals/general-ledger/detail-akun/${this.id}`);
                     this.generalLedger = resp.data;
+                },
+                async filter() {
+                    const year = document.getElementById('year')?.value ?? '-';
+                    const month = document.getElementById('month')?.value ?? '';
+
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get(`/journals/general-ledger/filter/${this.id}`, {
+                            params: {
+                                month: month,
+                                year: year,
+                            }
+                        });
+                        this.generalLedger = resp.data;
+                    } catch (e) {
+                        console.log(e);
+                    } finally {
+                        this.isLoading = false;
+                    }
+
                 },
                 getPeriod() {
                     this.periods.push(
@@ -134,7 +160,7 @@
                         style: 'currency',
                         currency: "IDR"
                     });
-                    
+
                     return IDR.format(curr);
                 },
             }

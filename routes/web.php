@@ -23,6 +23,7 @@ use App\Http\Controllers\Inventory\UnitTypesController;
 use App\Http\Controllers\Inventory\UsedItemsController;
 use App\Http\Controllers\JournalAdjustment\InitialJournalController;
 use App\Http\Controllers\JournalAdjustment\JournalAdjustmentController;
+use App\Http\Controllers\Journals\FinancialReportController;
 use App\Http\Controllers\Journals\GeneralJournalController;
 use App\Http\Controllers\Journals\GeneralLedgerController;
 use App\Http\Controllers\ManageUser\ContractManagementController;
@@ -452,12 +453,13 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [GeneralLedgerController::class, 'data']);
             Route::get('/detail/{account}', [GeneralLedgerController::class, 'detail']);
             Route::get('detail-akun/{account}', [GeneralLedgerController::class, 'detailAccountTransaction']);
+            Route::get('/filter/{account}', [GeneralLedgerController::class, 'filter']);
         });
 
-        Route::controller(GeneralLedgerController::class)
-            ->prefix('general-ledger')->group(function () {
-            });
 
+        Route::prefix('financial-report')->group(function () {
+            Route::get('/', [FinancialReportController::class, 'index']);
+        });
 
         Route::prefix('assets-depreciation')->group(function () {
             Route::get('/', [AssetDepreciationController::class, 'index']);

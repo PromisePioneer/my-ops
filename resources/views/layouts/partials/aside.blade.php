@@ -215,6 +215,11 @@
                                 href="{{ url('/journals/general-ledger/') }}">
                             Buku Besar
                         </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'financial-report'"
+                                href="{{ url('/journals/financial-report/') }}">
+                            Laporan Keuangan
+                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
 
