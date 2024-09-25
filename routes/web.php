@@ -459,6 +459,8 @@ Route::group(['middleware' => ['auth']], static function () {
 
         Route::prefix('financial-report')->group(function () {
             Route::get('/', [FinancialReportController::class, 'index']);
+            Route::get('/data/aktiva', [FinancialReportController::class, 'getAktiva']);
+            Route::get('/data/passiva', [FinancialReportController::class, 'getPassiva']);
         });
 
         Route::prefix('assets-depreciation')->group(function () {
