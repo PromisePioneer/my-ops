@@ -25,39 +25,12 @@ class IncomeStatementController extends Controller
 
     public function data(Request $request): JsonResponse
     {
-        $pendapatanBrutoUsaha = $this->incomeStatementService
-                ->getPendapatanUsaha($request)['pendapatanUsahaLayananInternet']
-                ->credit_balance
-            + $this->incomeStatementService
-                ->getPendapatanUsaha($request)['pendapatanUsahaLayananInternet']
-                ->credit_balance;
-
-        $labaBrutoUsaha = $pendapatanBrutoUsaha -
-            $this->incomeStatementService->getPendapatanUsaha($request)['bebanPokokPendapatan']->debit_balance;
-
-
-        $labaOperasional = $labaBrutoUsaha - (
-                $this->incomeStatementService->getLabaOperasional($request)['bebanPenjualan']->debit_balance
-                +
-                $this->incomeStatementService->getLabaOperasional($request)['bebanPenyusutan']->debit_balance
-            );
-
-
-        $bebanLainLain = $this->incomeStatementService->getLabaOperasional(
-                $request
-            )['bebanLainLain']->debit_balance + $this->incomeStatementService->getLabaOperasional(
-                $request
-            )['bebanBunga']->debit_balance;
-
-
-        $labaSebelumPajak = $labaOperasional + ($this->incomeStatementService->getLabaOperasional(
-                    $request
-                )['pendapatanLainnya']->credit_balance - $bebanLainLain);
-
-
-        $labaBersih = $labaSebelumPajak - $this->incomeStatementService->getLabaOperasional(
-                $request
-            )['bebanPajakPenghasilan']->debit_balance;
+        $pendapatanBrutoUsaha = $this->incomeStatementService->getpendapatanBrutoUsaha($request);
+        $labaBrutoUsaha = $this->incomeStatementService->getLabaBrutoUsaha($request, $pendapatanBrutoUsaha);
+        $labaOperasional = $this->incomeStatementService->getTotalLabaOperasional($request, $labaBrutoUsaha);
+        $bebanLainLain = $this->incomeStatementService->getBebanLainLain($request);
+        $labaSebelumPajak = $this->incomeStatementService->getLabaSebelumPajak($request, $labaBrutoUsaha);
+        $labaBersih = $this->incomeStatementService->getLabaBersih($request, $labaSebelumPajak);
 
         return response()->json([
             'pendapatan_usaha_layanan_internet' => $this->incomeStatementService->getPendapatanUsaha(

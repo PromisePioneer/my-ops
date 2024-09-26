@@ -10,12 +10,14 @@
                         <table class="table align-middle table-bordered fs-6 table-striped" id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="text-center w-50">Aktiva</th>
-                                <th class="text-center">Nominal</th>
+                                <th class="text-center w-50"></th>
+                                <th class="text-center"></th>
                             </thead>
                             <tbody class="fw-bold">
                             <tr>
-                                <td class="text-center" colspan="2">Aset Lancar</td>
+                                <td class="text-center text-uppercase" colspan="2">
+                                    <u>Aset Lancar</u>
+                                </td>
                             </tr>
                             <tr>
                                 <td class="text-center" x-text="aktiva.kas_account.name"></td>
@@ -42,32 +44,52 @@
                                 <td class="text-center" x-text="formatNumber(aktiva.total_aset_lancar)"></td>
                             </tr>
                             <tr>
-                                <td class="text-center" colspan="2">Aset Tetap</td>
+                                <td class="text-center text-uppercase" colspan="2">
+                                    <u>Aset Tetap</u>
+                                </td>
                             </tr>
                             <tr>
                                 <td class="text-center" x-text="aktiva.tanah.name"></td>
-                                <td class="text-center"
-                                    x-text="formatNumber(aktiva.tanah.balance)"></td>
+                                <td class="text-center" x-text="formatNumber(aktiva.tanah.debit_balance)"></td>
                             </tr>
                             <tr>
                                 <td class="text-center" x-text="aktiva.bangunan.name"></td>
-                                <td class="text-center" x-text="formatNumber(aktiva.bangunan.balance)"></td>
+                                <td class="text-center" x-text="formatNumber(aktiva.bangunan.debit_balance)"></td>
                             </tr>
                             <tr>
                                 <td class="text-center" x-text="aktiva.kendaraan.name"></td>
-                                <td class="text-center" x-text="formatNumber(aktiva.kendaraan.balance)"></td>
+                                <td class="text-center" x-text="formatNumber(aktiva.kendaraan.debit_balance)"></td>
                             </tr>
                             <tr>
                                 <td class="text-center" x-text="aktiva.mesin.name"></td>
-                                <td class="text-center" x-text="formatNumber(aktiva.mesin.balance)"></td>
+                                <td class="text-center" x-text="formatNumber(aktiva.mesin.debit_balance)"></td>
                             </tr>
                             <tr>
-                                <td class="text-center" x-text="aktiva.inventaris.name"></td>
-                                <td class="text-center" x-text="formatNumber(aktiva.inventaris.balance)"></td>
+                                <td class="text-center" x-text="aktiva.inventaris_kantor.name"></td>
+                                <td class="text-center"
+                                    x-text="formatNumber(aktiva.inventaris_kantor.debit_balance)"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center" x-text="aktiva.inventaris_jaringan.name"></td>
+                                <td class="text-center"
+                                    x-text="formatNumber(aktiva.inventaris_jaringan.debit_balance)"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center" x-text="aktiva.penyusutan_aset_tetap.name"></td>
+                                <td class="text-center"
+                                    x-text="formatNumber(aktiva.penyusutan_aset_tetap.credit_balance)"></td>
                             </tr>
                             <tr>
                                 <td class="text-center">Total Aset Lancar</td>
                                 <td class="text-center" x-text="formatNumber(aktiva.total_aset_tetap)"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center"></td>
+                                <td class="text-center"></td>
                             </tr>
                             <tr class="bg-danger">
                                 <td class="text-center text-white text-uppercase fw-bold">Total Aktifa</td>
@@ -77,15 +99,6 @@
                             </tbody>
                         </table>
                     </div>
-                    <ul class="pagination float-end mb-4 mt-4">
-                        <template x-for="pagination in branches.links">
-                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
-                                        x-html="pagination.label">
-                                </button>
-                            </li>
-                        </template>
-                    </ul>
                 </div>
             </div>
         </div>
@@ -101,7 +114,9 @@
                             </thead>
                             <tbody class="fw-bold">
                             <tr>
-                                <td class="text-center" colspan="2">Utang Lancar</td>
+                                <td class="text-center text-uppercase" colspan="2">
+                                    <u>Utang Lancar</u>
+                                </td>
                             </tr>
                             <tr>
                                 <td class="text-center" x-text="passiva.utang_usaha.name"></td>
@@ -138,7 +153,9 @@
                                 <td class="text-center" x-text="formatNumber(passiva.total_utang_lancar)"></td>
                             </tr>
                             <tr>
-                                <td class="text-center" colspan="2">Utang Jangka Panjang</td>
+                                <td class="text-center text-uppercase" colspan="2">
+                                    <u> Utang Jangka Panjang</u>
+                                </td>
                             </tr>
                             <tr>
                                 <td class="text-center" x-text="passiva.utang_bank.name"></td>
@@ -160,7 +177,9 @@
                                     x-text="formatNumber(passiva.total_utang_jangka_panjang)"></td>
                             </tr>
                             <tr>
-                                <td class="text-center" colspan="2">Modal</td>
+                                <td class="text-center text-uppercase" colspan="2">
+                                    <u>Modal</u>
+                                </td>
                             </tr>
                             <tr>
                                 <td class="text-center" x-text="passiva.modal_saham.name"></td>

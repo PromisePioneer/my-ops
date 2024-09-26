@@ -225,6 +225,11 @@
                                 href="{{ url('/journals/income-statement/') }}">
                             Laba Rugi
                         </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'cashflow-statement'"
+                                href="{{ url('/journals/cashflow-statement/') }}">
+                            Laporan Arus Kas
+                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
 
