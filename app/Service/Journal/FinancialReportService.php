@@ -52,7 +52,16 @@ class FinancialReportService
         $getMesinAccount = Account::where('code', '124')
             ->where('branch_id', $request->user()->branch_id)
             ->first();
-        $getInventarisAccount = Account::where('code', '125')
+        $getInventarisKantorAccount = Account::where('code', '125')
+            ->where('branch_id', $request->user()->branch_id)
+            ->first();
+
+        $getInventarisJaringanAccount = Account::where('code', '126')
+            ->where('branch_id', $request->user()->branch_id)
+            ->first();
+
+
+        $getAkumulasiPenyusutanAsetTetap = Account::where('code', '130')
             ->where('branch_id', $request->user()->branch_id)
             ->first();
 
@@ -62,7 +71,9 @@ class FinancialReportService
             'getBangunanAccount' => $getBangunanAccount,
             'getKendaraanAccount' => $getKendaraanAccount,
             'getMesinAccount' => $getMesinAccount,
-            'getInventarisAccount' => $getInventarisAccount,
+            'getInventarisKantorAccount' => $getInventarisKantorAccount,
+            'getInventarisJaringanAccount' => $getInventarisJaringanAccount,
+            'getAkumulasiPenyusutanAsetTetap' => $getAkumulasiPenyusutanAsetTetap,
         ];
     }
 
@@ -149,4 +160,6 @@ class FinancialReportService
             'labaRugiBersihPeriodeBerjalan' => $getLabaRugiBersihPeriodeBerjalan,
         ];
     }
+
+
 }

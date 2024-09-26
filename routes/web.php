@@ -23,6 +23,7 @@ use App\Http\Controllers\Inventory\UnitTypesController;
 use App\Http\Controllers\Inventory\UsedItemsController;
 use App\Http\Controllers\JournalAdjustment\InitialJournalController;
 use App\Http\Controllers\JournalAdjustment\JournalAdjustmentController;
+use App\Http\Controllers\Journals\CashflowStatementController;
 use App\Http\Controllers\Journals\FinancialReportController;
 use App\Http\Controllers\Journals\GeneralJournalController;
 use App\Http\Controllers\Journals\GeneralLedgerController;
@@ -473,6 +474,12 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('income-statement')->group(function () {
             Route::get('/', [IncomeStatementController::class, 'index']);
             Route::get('/data', [IncomeStatementController::class, 'data']);
+        });
+
+
+        Route::prefix('cashflow-statement')->group(function () {
+            Route::get('/', [CashflowStatementController::class, 'index']);
+            Route::get('/data', [CashflowStatementController::class, 'data']);
         });
     });
 

@@ -36,7 +36,8 @@ class FinancialReportController extends Controller
             + $this->financialReportService->getAsetTetap($request)['getBangunanAccount']->balance
             + $this->financialReportService->getAsetTetap($request)['getKendaraanAccount']->balance
             + $this->financialReportService->getAsetTetap($request)['getMesinAccount']->balance
-            + $this->financialReportService->getAsetTetap($request)['getInventarisAccount']->balance;
+            + $this->financialReportService->getAsetTetap($request)['getInventarisKantorAccount']->balance;
+        +$this->financialReportService->getAsetTetap($request)['getInventarisJaringanAccount']->balance;
 
         return response()->json([
             'kas_account' => $this->financialReportService->getAsetLancar($request)['getKasAccount'],
@@ -51,7 +52,13 @@ class FinancialReportController extends Controller
             'bangunan' => $this->financialReportService->getAsetTetap($request)['getBangunanAccount'],
             'kendaraan' => $this->financialReportService->getAsetTetap($request)['getKendaraanAccount'],
             'mesin' => $this->financialReportService->getAsetTetap($request)['getMesinAccount'],
-            'inventaris' => $this->financialReportService->getAsetTetap($request)['getInventarisAccount'],
+            'inventaris_kantor' => $this->financialReportService->getAsetTetap($request)['getInventarisKantorAccount'],
+            'inventaris_jaringan' => $this->financialReportService->getAsetTetap(
+                $request
+            )['getInventarisJaringanAccount'],
+            'penyusutan_aset_tetap' => $this->financialReportService->getAsetTetap(
+                $request
+            )['getAkumulasiPenyusutanAsetTetap'],
             'total_aset_tetap' => $sumTotalAssetTetap,
             'total_aktiva' => $sumTotalAssetLancar + $sumTotalAssetTetap,
         ]);
@@ -60,12 +67,12 @@ class FinancialReportController extends Controller
 
     public function getPassiva(Request $request): JsonResponse
     {
-        $sumTotalUtangLancar = $this->financialReportService->getUtangLancar($request)['utangUsaha']->balance
-            + $this->financialReportService->getUtangLancar($request)['utangDepositAlat']->balance
-            + $this->financialReportService->getUtangLancar($request)['utangPajak']->balance
-            + $this->financialReportService->getUtangLancar($request)['pendapatanDiterimaDimuka']->balance
-            + $this->financialReportService->getUtangLancar($request)['biayaYangHarusDibayar']->balance
-            + $this->financialReportService->getUtangLancar($request)['utangLancarLainnya']->balance;
+        $sumTotalUtangLancar = $this->financialReportService->getUtangLancar($request)['utangUsaha']->credit_balance
+            + $this->financialReportService->getUtangLancar($request)['utangDepositAlat']->credit_balance
+            + $this->financialReportService->getUtangLancar($request)['utangPajak']->credit_balance
+            + $this->financialReportService->getUtangLancar($request)['pendapatanDiterimaDimuka']->credit_balance
+            + $this->financialReportService->getUtangLancar($request)['biayaYangHarusDibayar']->credit_balance
+            + $this->financialReportService->getUtangLancar($request)['utangLancarLainnya']->credit_balance;
 
 
         $sumTotalUtangJangkaPanjang = $this->financialReportService
