@@ -31,9 +31,11 @@ class GeneralLedgerService
 
     public function getAccountTransaction(Account $account): Builder
     {
-        return AccountTransaction::with('account', 'account.subAccount')
+        return AccountTransaction::with('account', 'subAccount')
             ->whereHas('account', function ($query) use ($account) {
                 $query->where('id', $account->id);
+            })->orWhereHas('subAccount', function ($query) use ($account) {
+                $query->where('account_id', $account->id);
             });
     }
 

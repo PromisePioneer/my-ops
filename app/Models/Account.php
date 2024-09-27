@@ -110,7 +110,8 @@ class Account extends Model
     public function getAssetAccount(Request $request): array
     {
         $search = $request->input('search');
-        $account = self::where('branch_id', $request->user()->branch_id)->whereBetween('code', ['121', '126']);
+        $account = self::where('branch_id', $request->user()->branch_id)
+            ->whereBetween('code', ['121', '126']);
 
         if ($search !== '') {
             $account->where('branch_id', $request->user()->branch_id)

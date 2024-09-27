@@ -11,10 +11,11 @@ class CreateAccountTransactions extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('account_transactions', static function (Blueprint $table) {
             $table->id();
+            $table->foreignId('branch_id')->nullable()->constrained('branches');
             $table->date('date');
             $table->foreignId('account_id')->nullable()->constrained('accounts');
             $table->foreignId('sub_account_id')->nullable()->constrained('sub_accounts');
