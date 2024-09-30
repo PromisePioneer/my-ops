@@ -36,8 +36,8 @@ class TrialBalanceController extends Controller
 
         return response()->json([
             'trial_balances' => $this->trialBalanceService->data(),
-            'total_debit' => number_format($totalDebit, 2),
-            'total_credit' => number_format($totalCredit, 2),
+            'total_debit' => 'Rp.'.number_format($totalDebit, 2),
+            'total_credit' => 'Rp.'.number_format($totalCredit, 2),
         ]);
     }
 
@@ -52,8 +52,8 @@ class TrialBalanceController extends Controller
     {
         return response()->json([
             'trial_balances' => $this->trialBalanceService->filter($request)['trial_balance'],
-            'total_debit' => number_format($this->trialBalanceService->filter($request)['total_debit'], 2),
-            'total_credit' => number_format($this->trialBalanceService->filter($request)['total_credit'], 2),
+            'total_debit' => $this->trialBalanceService->filter($request)['total_debit'],
+            'total_credit' => $this->trialBalanceService->filter($request)['total_credit'],
         ]);
     }
 

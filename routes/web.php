@@ -462,8 +462,6 @@ Route::group(['middleware' => ['auth']], static function () {
                 '/accumulated-depreciation-of-fixed-assets-account',
                 [FinancialReportController::class, 'accumulatedDepreciationOfFixedAssetsAccount']
             );
-            Route::get('/data/aktiva', [FinancialReportController::class, 'getAktiva']);
-            Route::get('/data/passiva', [FinancialReportController::class, 'getPassiva']);
         });
 
         Route::prefix('assets-depreciation')->group(function () {

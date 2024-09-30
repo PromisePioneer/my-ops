@@ -14,7 +14,7 @@
                 </div>
             </div>
 
-            <form id="form-edit" @submit.prevent="update()">
+            <form id="form-edit" @submit.prevent="updateParent(editVal.id)">
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Kode</label>

@@ -88,10 +88,8 @@
                                     <tfoot>
                                     <tr class="fw-bold">
                                         <td colspan="2" class="text-center">Jumlah</td>
-                                        <td class="text-center" x-text="trialBalance.total_debit">Jumlah</td>
-                                        <td colspan="2" class="text-center" x-text="trialBalance.total_credit">
-                                            Jumlah
-                                        </td>
+                                        <td class="text-center" x-text="trialBalance.total_debit"></td>
+                                        <td colspan="2" class="text-center" x-text="trialBalance.total_credit"></td>
                                     </tr>
                                     </tfoot>
                                 </table>

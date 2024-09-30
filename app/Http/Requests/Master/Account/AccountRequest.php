@@ -25,8 +25,7 @@ class AccountRequest extends FormRequest
             ],
             'beginning_balances' => ['nullable', 'numeric'],
             'parent_id' => [
-                Rule::exists('accounts', 'id'),
-                Rule::requiredIf($request->route('account')),
+                'nullable',
             ],
         ];
     }
@@ -38,7 +37,6 @@ class AccountRequest extends FormRequest
             'name.unique' => 'Nama sudah terdaftar',
             'code.required' => 'Kode tidak boleh kosong',
             'code.unique' => 'Kode sudah terdaftar',
-            'parent_id.required_if' => 'Akun tidak boleh kosong',
         ];
     }
 }

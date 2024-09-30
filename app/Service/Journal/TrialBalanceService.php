@@ -40,7 +40,7 @@ class TrialBalanceService
                 'account_name' => $account->name,
                 'debit' => 'Rp.'.number_format($debit + $childDebit, 2),
                 'credit' => 'Rp.'.number_format($credit + $childCredit, 2),
-                'balance' => ($debit + $childDebit) - ($credit + $childCredit),
+                'balance' => 'Rp.'.number_format(($debit + $childDebit) - ($credit + $childCredit), 2),
             ];
         });
     }
@@ -64,9 +64,7 @@ class TrialBalanceService
         return $transactions->sum('amount');
     }
 
-    // Helper function to sum transactions based on filter
-
-    public function filter(Request $request)
+    public function filter(Request $request): array
     {
         $branch = $request->input('branch_id');
         $year = $request->input('year');
@@ -104,8 +102,8 @@ class TrialBalanceService
 
         return [
             'trial_balance' => $this->formattedData($query, $request),
-            'total_debit' => $this->getTotalDebit($request)->sum('amount'),
-            'total_credit' => $this->getTotalCredit($request)->sum('amount'),
+            'total_debit' => number_format($this->getTotalDebit($request)->sum('amount'), 2),
+            'total_credit' => number_format($this->getTotalCredit($request)->sum('amount'), 2),
         ];
     }
 

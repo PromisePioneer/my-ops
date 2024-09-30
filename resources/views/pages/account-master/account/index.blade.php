@@ -118,7 +118,7 @@
                                                 <span class="path2"></span>
                                             </i>
                                         </button>
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                        <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-create-children"
                                                 @click="edit(account.account_id)">
                                             <i class="ki-duotone ki-add-folder">
@@ -295,6 +295,23 @@
                         await showAlert('success', 'Data berhasil diubah')
                         this.formEditChildren.reset();
                         this.modalEditChildren.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+
+                async updateParent(id) {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/account-master/account/update/${id}`,
+                            new FormData(this.formEdit))
+                        await showAlert('success', 'Data berhasil diubah')
+                        this.formEdit.reset();
+                        this.modalEdit.hide();
                         await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;

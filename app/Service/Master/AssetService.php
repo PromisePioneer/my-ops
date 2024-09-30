@@ -91,12 +91,17 @@ class AssetService
     {
         $description = sprintf(self::PURCHASE_ASSET_DESCRIPTION, $asset->unit, $asset->name);
         DB::transaction(function () use ($request, $description, $asset) {
-            $residu = $asset->total_price / $asset->useful_life;
-            $depreciation = ($asset->total_price - $residu) / $asset->useful_life;
+            $yearsStart = Carbon::parse($request->date_received);
+            $yearsEnd = Carbon::parse($request->date_received)->addYears($asset->useful_life);
+            $diffInMonth = $yearsStart->diffInMonths($yearsEnd);
+
+
+            $residu = $asset->total_price / $diffInMonth;
+            $depreciation = ($asset->total_price - $residu) / $diffInMonth;
             $price = $asset->total_price;
 
-            for ($i = 1; $i <= $asset->useful_life; $i++) {
-                $date = Carbon::parse($asset->date_received)->addYear($i);
+            for ($i = 1; $i <= $diffInMonth; $i++) {
+                $date = Carbon::parse($asset->date_received)->addMonths($i);
                 $price -= $depreciation;
 
                 AssetDepreciation::create([
