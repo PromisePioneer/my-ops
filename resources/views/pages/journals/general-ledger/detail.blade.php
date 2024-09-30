@@ -58,8 +58,8 @@
                                 <td x-text="1 + index++"></td>
                                 <td class="text-center" x-text="journal.date"></td>
                                 <td class="text-center" x-text="journal.description"></td>
-                                <td class="text-center" x-text="`${journal.debit[0]?.amount ?? '-'}`"></td>
-                                <td class="text-center" x-text="`${journal.credit[0]?.amount ?? '-'}`"></td>
+                                <td x-text="journal.type === 'debit' ? journal.amount : '-'"></td>
+                                <td x-text="journal.type === 'credit' ? journal.amount : '-'"></td>
                             </tr>
                             </tbody>
                         </template>

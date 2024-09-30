@@ -14,7 +14,8 @@ class Asset extends Model
     protected $table = 'assets';
     protected $fillable = [
         'branch_id',
-        'account_id',
+        'debit_account_id',
+        'credit_account_id',
         'date_received',
         'name',
         'unit',
@@ -32,9 +33,14 @@ class Asset extends Model
         return $this->belongsTo(Branch::class, 'branch_id');
     }
 
-    public function account(): BelongsTo
+    public function debitAccount(): BelongsTo
     {
-        return $this->belongsTo(Account::class, 'account_id');
+        return $this->belongsTo(Account::class, 'debit_account_id');
+    }
+
+    public function creditAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'credit_account_id');
     }
 
 

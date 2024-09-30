@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Master\Account;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class AccountRequest extends FormRequest
@@ -12,22 +13,20 @@ class AccountRequest extends FormRequest
         return true;
     }
 
-    public function rules(): array
+    public function rules(Request $request): array
     {
         return [
-            'branch_id' => [
-                'nullable',
-                Rule::exists('branches', 'id'),
-            ],
             'name' => [
                 'required',
             ],
             'code' => [
                 'required',
-                Rule::unique('accounts', 'code')
-                    ->where(function ($query) {
-                        return $query->where('branch_id', $this->branch_id);
-                    })->ignore($this->route('account')),
+                Rule::unique('accounts', 'code')->ignore($this->route('account')),
+            ],
+            'beginning_balances' => ['nullable', 'numeric'],
+            'parent_id' => [
+                Rule::exists('accounts', 'id'),
+                Rule::requiredIf($request->route('account')),
             ],
         ];
     }
@@ -39,8 +38,7 @@ class AccountRequest extends FormRequest
             'name.unique' => 'Nama sudah terdaftar',
             'code.required' => 'Kode tidak boleh kosong',
             'code.unique' => 'Kode sudah terdaftar',
-            'branch_id.required' => 'Branch tidak boleh kosong',
-            'branch_id.exists' => 'Branch tidak ditemukan',
+            'parent_id.required_if' => 'Akun tidak boleh kosong',
         ];
     }
 }

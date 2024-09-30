@@ -18,10 +18,9 @@ class CreateAccountTransactions extends Migration
             $table->foreignId('branch_id')->nullable()->constrained('branches');
             $table->date('date');
             $table->foreignId('account_id')->nullable()->constrained('accounts');
-            $table->foreignId('sub_account_id')->nullable()->constrained('sub_accounts');
             $table->string('description');
-            $table->double('debit')->default(0);
-            $table->double('credit')->default(0);
+            $table->enum('type', ['debit', 'credit']);
+            $table->double('amount');
             $table->timestamps();
         });
     }

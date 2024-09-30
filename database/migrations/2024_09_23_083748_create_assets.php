@@ -13,7 +13,8 @@ return new class extends Migration {
         Schema::create('assets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('branch_id')->nullable()->constrained('branches');
-            $table->foreignId('account_id')->constrained('accounts');
+            $table->foreignId('debit_account_id')->constrained('accounts');
+            $table->foreignId('credit_account_id')->constrained('accounts');
             $table->date('date_received');
             $table->string('name');
             $table->integer('unit');

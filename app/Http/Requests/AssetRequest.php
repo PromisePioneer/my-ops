@@ -24,7 +24,8 @@ class AssetRequest extends FormRequest
     {
         return [
             'branch_id' => ['nullable', 'exists:branches,id'],
-            'account_id' => ['required', 'exists:accounts,id'],
+            'debit_account_id' => ['required', 'exists:accounts,id'],
+            'credit_account_id' => ['required', 'exists:accounts,id'],
             'date_received' => ['required', 'date'],
             'name' => ['required'],
             'unit' => ['required', 'numeric'],
@@ -38,8 +39,10 @@ class AssetRequest extends FormRequest
     {
         return [
             'branch_id.exists' => 'Cabang ini tidak terdaftar',
-            'account_id.required' => 'Akun tidak boleh kosong',
-            'account_id.exists' => 'Akun ini tidak terdaftar',
+            'debit_account_id.required' => 'Akun Debit tidak boleh kosong',
+            'debit_account_id.exists' => 'Akun Debit ini tidak terdaftar',
+            'credit_account_id.required' => 'Akun Kredit tidak boleh kosong',
+            'credit_account_id.exists' => 'Akun Kredit ini tidak terdaftar',
             'name.required' => 'Nama tidak boleh kosong',
             'unit.required' => 'Unit tidak boleh kosong',
             'unit.numeric' => 'Unit harus berupa angka',

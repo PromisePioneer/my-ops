@@ -97,7 +97,7 @@
                                         </div>
                                     </td>
                                     <td x-text="`${asset.branch_name ?? 'Pusat'}`"></td>
-                                    <td x-text="asset.account_name"></td>
+                                    <td x-text="asset.debit_account"></td>
                                     <td>
                                         <a :href="`/master/assets/detail/${asset.id}`" x-text="asset.name"></a>
                                     </td>
@@ -163,7 +163,8 @@
                 async init() {
                     await this.getAssetsData();
                     await this.getBranchData();
-                    await this.getAccountData();
+                    await this.getDebitAccountData();
+                    await this.getCreditAccountData();
                 },
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
@@ -282,12 +283,26 @@
                         }
                     });
                 },
-                async getAccountData() {
-                    $(".accounts-select2").select2({
+                async getDebitAccountData() {
+                    $(".debit-accounts-select2").select2({
                         allowClear: true,
                         placeholder: 'Pilih Akun',
                         ajax: {
-                            url: '/master/assets/accounts/data',
+                            url: '/master/assets/debit-account/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async getCreditAccountData() {
+                    $(".credit-accounts-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Akun',
+                        ajax: {
+                            url: '/master/assets/credit-account/data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),

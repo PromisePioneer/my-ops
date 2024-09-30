@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Journals;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Service\Journal\GeneralLedgerService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -35,15 +36,48 @@ class GeneralLedgerController extends Controller
 
     public function detailAccountTransaction(Account $account): JsonResponse
     {
-        $accountTransaction = $this->generalLedgerService->getDetailGeneralLedger($account);
-        $totalCredit = $this->generalLedgerService->getAccountTransaction($account)->sum('credit');
-        $totalDebit = $this->generalLedgerService->getAccountTransaction($account)->sum('debit');
+        $accountTransaction = $this->generalLedgerService
+            ->getDetailGeneralLedger($account)
+            ->get()
+            ->map(function ($query) {
+                return [
+                    'id' => $query->id,
+                    'date' => Carbon::parse($query->date)->format('d/m/Y'),
+                    'description' => $query->description,
+                    'type' => $query->type,
+                    'amount' => number_format($query->amount, 2),
+                ];
+            });
+
+        $totalDebit = $this->generalLedgerService->getDetailGeneralLedger($account)
+            ->where('type', 'debit')
+            ->sum('amount');
+
+        $totalCredit = $this->generalLedgerService->getDetailGeneralLedger($account)
+            ->where('type', 'credit')
+            ->sum('amount');
+
 
         return response()->json([
             'account_transaction' => $accountTransaction,
-            'total_credit' => 'Rp.'.number_format($totalCredit),
-            'total_debit' => 'Rp.'.number_format($totalDebit),
-            'total_balance' => 'Rp.'.number_format($totalDebit - $totalCredit),
+            'total_credit' => 'Rp.'.number_format(
+                    $totalCredit,
+                    2,
+                    ",",
+                    "."
+                ),
+            'total_debit' => 'Rp.'.number_format(
+                    $totalDebit,
+                    2,
+                    ",",
+                    "."
+                ),
+            'total_balance' => 'Rp.'.number_format(
+                    $totalDebit - $totalCredit,
+                    2,
+                    ",",
+                    "."
+                ),
         ]);
     }
 

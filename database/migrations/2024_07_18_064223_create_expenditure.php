@@ -15,8 +15,8 @@ class CreateExpenditure extends Migration
             $table->id();
             $table->foreignId('branch_id')->constrained('branches');
             $table->string('description');
-            $table->foreignId('debit_account_id')->constrained('sub_accounts');
-            $table->foreignId('credit_account_id')->constrained('sub_accounts');
+            $table->foreignId('debit_account_id')->constrained('accounts');
+            $table->foreignId('credit_account_id')->constrained('accounts');
             $table->string('amount');
             $table->boolean('status_confirmation')->default(0);
             $table->string('file');

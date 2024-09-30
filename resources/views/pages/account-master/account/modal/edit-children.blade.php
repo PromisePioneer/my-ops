@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="modal-create">
+<div class="modal fade" tabindex="-1" id="modal-edit-children">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -14,24 +14,23 @@
                 </div>
             </div>
 
-            <form id="form-create" @submit.prevent="save()">
+            <form id="form-edit-children" @submit.prevent="update(editVal.id)">
                 <div class="modal-body">
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Cabang</label>
-                        <select name="branch_id" class="form-select form-select-solid branch-select2"
-                                data-dropdown-parent="#modal-create">
-                            <option></option>
-                        </select>
-                    </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Kode</label>
                         <input type="text" id="code" name="code" class="form-control form-control-solid"
-                               placeholder="Kode"/>
+                               placeholder="Kode" :value="`${editVal.code}`"/>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama</label>
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama akun"/>
+                               placeholder="Nama akun" :value="editVal.name"/>
+                    </div>
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Parent Account</label>
+                        <select name="parent_id" class="form-select form-select-solid">
+                            <option :value="editVal.parent.id" x-text="editVal.parent.name"></option>
+                        </select>
                     </div>
                 </div>
 

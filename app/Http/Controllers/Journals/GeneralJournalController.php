@@ -3,50 +3,42 @@
 namespace App\Http\Controllers\Journals;
 
 use App\Http\Controllers\Controller;
-use App\Models\AccountTransaction;
+use App\Models\Branch;
+use App\Service\Journal\GeneralJournalService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class GeneralJournalController extends Controller
 {
     public int $perPage = 10;
 
-    private AccountTransaction $accountTransaction;
+    private GeneralJournalService $generalJournalService;
+    private Branch $branch;
 
     public function __construct()
     {
-        $this->accountTransaction = new AccountTransaction();
+        $this->generalJournalService = new GeneralJournalService();
+        $this->branch = new Branch();
     }
 
-    public function index()
+    public function index(): View
     {
         return view('pages.journals.general-journal.index');
     }
 
-    public function period(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
-        $generalJournal = $this->accountTransaction->getGeneralJournalPeriodBasedOnUserBranch($this->perPage);
-
-        return response()->json($generalJournal);
+        return response()->json($this->generalJournalService->data($request));
     }
 
-    public function detail(Request $request, $time)
+    public function getBranchData(Request $request): JsonResponse
     {
-        $month = date('m', strtotime($time));
-        $year = date('Y', strtotime($time));
-
-        $generalJournal = $this->accountTransaction->getGeneralJournalDataBasedOnUserBranchAndPeriod($month, $year);
-
-        return view('pages.journals.general-journal.detail', compact('generalJournal', 'time'));
+        return response()->json($this->branch->getData($request));
     }
 
-    public function detailJournal($time): JsonResponse
+    public function filter(Request $request): JsonResponse
     {
-        $month = date('m', strtotime($time));
-        $year = date('Y', strtotime($time));
-
-        $generalJournal = $this->accountTransaction->getGeneralJournalDataDetails($month, $year);
-
-        return response()->json($generalJournal);
+        return response()->json($this->generalJournalService->filter($request));
     }
 }

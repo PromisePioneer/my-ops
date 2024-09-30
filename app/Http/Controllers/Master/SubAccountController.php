@@ -41,7 +41,7 @@ class SubAccountController extends Controller
 
     public function accountData(Request $request): JsonResponse
     {
-        $accounts = $this->account->getAccountDataAndSpecificBranchWithoutPagination($request);
+        $accounts = $this->account->getAccount($request);
         return response()->json($accounts);
     }
 

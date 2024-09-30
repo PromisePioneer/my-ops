@@ -179,11 +179,6 @@
                             Akun
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'sub-account'"
-                                href="{{ url('account-master/sub-account') }}">
-                            Sub-Akun
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'account-transaction'"
                                 href="{{ url('account-master/account-transaction') }}">
                             Riwayat Transaksi Akun
@@ -209,6 +204,11 @@
                                 :active="request()->segment(2) === 'general-journal'"
                                 href="{{ url('/journals/general-journal/') }}">
                             Jurnal Umum
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'trial-balance'"
+                                href="{{ url('/journals/trial-balance/') }}">
+                            Neraca Saldo
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'general-ledger'"

@@ -16,8 +16,8 @@ class CreateInitialJournal extends Migration
         Schema::create('initial_journal', function (Blueprint $table) {
             $table->id();
             $table->string('description');
-            $table->foreignId('sub_account_debit')->constrained('sub_accounts')->onDelete('cascade');
-            $table->foreignId('sub_account_credit')->constrained('sub_accounts')->onDelete('cascade');
+            $table->foreignId('account_debit_id')->constrained('accounts')->onDelete('cascade');
+            $table->foreignId('account_credit_id')->constrained('accounts')->onDelete('cascade');
             $table->double('initial_payment')->default(0);
             $table->boolean('status_confirmation')->default(0);
             $table->timestamps();

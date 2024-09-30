@@ -26,7 +26,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="name" class="required form-label">Kategori Akun</label>
-                            <select name="account_id" class="form-select form-select-solid accounts-select2"
+                            <select name="debit_account_id" class="form-select form-select-solid debit-accounts-select2"
                                     data-dropdown-parent="#modal-create">
                                 <option></option>
                             </select>
@@ -68,6 +68,14 @@
                             <input type="number" id="price_per_unit" name="price_per_unit"
                                    class="form-control form-control-solid"
                                    placeholder="Jumlah unit"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="name" class="required form-label">Akun Kas</label>
+                            <select name="credit_account_id"
+                                    class="form-select form-select-solid credit-accounts-select2"
+                                    data-dropdown-parent="#modal-create">
+                                <option></option>
+                            </select>
                         </div>
                     </div>
                 </div>

@@ -16,9 +16,9 @@ class SubAccountService
 {
     public function data(): LengthAwarePaginator
     {
-        $query = SubAccount::whereHas('account', static function ($query) {
-            $query->where('branch_id', Auth::user()->branch_id);
-        })->orderBy('code', 'ASC')->paginate(10);
+        $query = SubAccount::whereHas('account')
+            ->orderBy('code', 'ASC')
+            ->paginate(10);
 
         self::formattedData($query);
 

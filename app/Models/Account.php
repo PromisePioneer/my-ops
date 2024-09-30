@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * @property int $id
@@ -26,7 +25,6 @@ use Illuminate\Support\Facades\Auth;
  * @property-read Collection<int, AccountTransaction> $accountTransaction
  * @property-read int|null $account_transaction_count
  * @property-read Branch|null $branch
- * @property-read Collection<int, SubAccount> $subAccount
  * @property-read int|null $sub_account_count
  *
  * @method static Builder|Account newModelQuery()
@@ -51,19 +49,29 @@ class Account extends Model
     protected $table = 'accounts';
 
     protected $fillable = [
-        'branch_id',
         'name',
         'code',
-        'debit_balance',
-        'credit_balance',
-        'balance',
+        'parent_id',
+        'beginning_balances',
     ];
 
-    // relationship
-    public function subAccount(): HasMany
+
+    protected $with = [
+        'parent',
+    ];
+
+
+    public function parent(): BelongsTo
     {
-        return $this->hasMany(SubAccount::class);
+        return $this->belongsTo(self::class, 'parent_id');
     }
+
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id');
+    }
+
 
     public function branch(): BelongsTo
     {
@@ -76,12 +84,11 @@ class Account extends Model
     }
 
     // eloquent
-    public function getAccountDataAndSpecificBranchWithoutPagination(Request $request): array
+    public function getAccount(Request $request): array
     {
         $search = $request->input('search');
         $query = self::orderby('name', 'asc')
             ->select('id', 'name')
-            ->where('branch_id', Auth::user()->branch_id)
             ->limit(5);
 
         if ($search !== '') {
@@ -110,12 +117,10 @@ class Account extends Model
     public function getAssetAccount(Request $request): array
     {
         $search = $request->input('search');
-        $account = self::where('branch_id', $request->user()->branch_id)
-            ->whereBetween('code', ['121', '126']);
+        $account = self::whereBetween('code', ['121', '126']);
 
         if ($search !== '') {
-            $account->where('branch_id', $request->user()->branch_id)
-                ->whereBetween('code', ['121', '126'])
+            $account->whereBetween('code', ['121', '126'])
                 ->where('name', 'like', '%'.$search.'%');
         }
 
@@ -123,6 +128,73 @@ class Account extends Model
             return [
                 'id' => $item->id,
                 'text' => $item->name,
+            ];
+        })->toArray();
+    }
+
+
+    public function getKasAccount(Request $request): array
+    {
+        $search = $request->input('search');
+
+        $account = self::with('parent')
+            ->whereHas('parent', function ($query) use ($request) {
+                $query->where('code', '111');
+            });
+
+        if (!empty($search)) {
+            $account->where('name', 'like', '%'.$search.'%');
+        }
+
+        return $account->get()->map(function ($account) {
+            return [
+                'id' => $account->id,
+                'text' => $account->name,
+            ];
+        })->toArray();
+    }
+
+
+    public function findPiutangPelangganSubAccount()
+    {
+        return self::where('code', '113-01')->first();
+    }
+
+
+    public function findPPNSubAccount()
+    {
+        return self::where('code', '213-01')->first();
+    }
+
+
+    public function findRekeningMayatamaPusatSubAccount()
+    {
+        return self::where('code', '111-04')->first();
+    }
+
+
+    public function findPPH23SubAccount()
+    {
+        return self::where('code', '115-02')->first();
+    }
+
+
+    public function getSubAccountForInvoiceStore(Request $request): array
+    {
+        $search = $request->input('search');
+        $account = self::with('parent')
+            ->whereHas('parent', function ($query) use ($request) {
+                $query->whereBetween('code', ['401', '402']);
+            });
+
+        if (!empty($search)) {
+            $account->where('name', 'like', '%'.$search.'%');
+        }
+
+        return $account->get()->map(function ($account) {
+            return [
+                'id' => $account->id,
+                'text' => $account->name,
             ];
         })->toArray();
     }

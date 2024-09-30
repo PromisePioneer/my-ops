@@ -3,7 +3,6 @@
 namespace App\Service\Master;
 
 use App\Http\Requests\AssetRequest;
-use App\Models\Account;
 use App\Models\Asset;
 use App\Models\AssetDepreciation;
 use App\Service\Accounts\AccountTransactionService;
@@ -28,7 +27,7 @@ class AssetService
 
     public function data(Request $request): LengthAwarePaginator
     {
-        $data = Asset::with('branch', 'account')->paginate(self::$perPage);
+        $data = Asset::with('branch', 'debitAccount', 'creditAccount')->paginate(self::$perPage);
         return self::formattedData($data);
     }
 
@@ -39,7 +38,8 @@ class AssetService
                 'id' => $item->id,
                 'branch_name' => $item->branch->name ?? null,
                 'name' => $item->name,
-                'account_name' => $item->account->name,
+                'debit_account' => $item->debitAccount->name,
+                'credit_account' => $item->creditAccount->name,
                 'unit' => $item->unit,
                 'useful_life' => $item->useful_life,
                 'price_per_unit' => number_format($item->price_per_unit, 2),
@@ -87,11 +87,10 @@ class AssetService
     /**
      * @throws Throwable
      */
-    public function confirm(Asset $asset): void
+    public function confirm(Request $request, Asset $asset): void
     {
-        $creditAccount = Account::where('code', '111')->first();
         $description = sprintf(self::PURCHASE_ASSET_DESCRIPTION, $asset->unit, $asset->name);
-        DB::transaction(function () use ($description, $asset, $creditAccount) {
+        DB::transaction(function () use ($request, $description, $asset) {
             $residu = $asset->total_price / $asset->useful_life;
             $depreciation = ($asset->total_price - $residu) / $asset->useful_life;
             $price = $asset->total_price;
@@ -110,14 +109,16 @@ class AssetService
             $asset->status = 1;
             $asset->save();
             $this->accountTransactionService->createDebitTransaction(
+                $request,
                 $description,
                 $asset->total_price,
-                $asset->account_id
+                $asset->debit_account_id
             );
             $this->accountTransactionService->createCreditTransaction(
+                $request,
                 $description,
                 $asset->total_price,
-                $creditAccount->id
+                $asset->credit_account_id
             );
         });
     }

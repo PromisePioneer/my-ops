@@ -2,12 +2,9 @@
 
 namespace App\Models;
 
-use App\Observers\AccountTransactionObserver;
 use Eloquent;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,7 +24,6 @@ use Illuminate\Support\Facades\Auth;
  * @property Carbon|null $updated_at
  * @property-read Account|null $account
  * @property-read Branch|null $branch
- * @property-read SubAccount|null $subAccount
  *
  * @method static Builder|AccountTransaction newModelQuery()
  * @method static Builder|AccountTransaction newQuery()
@@ -39,34 +35,28 @@ use Illuminate\Support\Facades\Auth;
  * @method static Builder|AccountTransaction whereDebit($value)
  * @method static Builder|AccountTransaction whereDescription($value)
  * @method static Builder|AccountTransaction whereId($value)
- * @method static Builder|AccountTransaction whereSubAccountId($value)
  * @method static Builder|AccountTransaction whereUpdatedAt($value)
  *
  * @mixin Eloquent
  */
-#[ObservedBy([AccountTransactionObserver::class])]
+//#[ObservedBy([AccountTransactionObserver::class])]
 class AccountTransaction extends Model
 {
     use HasFactory;
 
     protected $table = 'account_transactions';
     protected $fillable = [
+        'branch_id',
         'date',
         'account_id',
-        'sub_account_id',
         'description',
-        'debit',
-        'credit',
+        'type',
+        'amount',
     ];
 
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'account_id', 'id');
-    }
-
-    public function subAccount(): BelongsTo
-    {
-        return $this->belongsTo(SubAccount::class, 'sub_account_id', 'id');
     }
 
     public function branch(): BelongsTo
@@ -77,10 +67,8 @@ class AccountTransaction extends Model
     //eloquent
     public function getAccountTransactionBasedOnUserBranch(): LengthAwarePaginator
     {
-        $accountTransaction = self::with('account', 'subAccount')
+        $accountTransaction = self::with('account')
             ->whereHas('account', static function ($query) {
-                $query->where('branch_id', Auth::user()->branch_id);
-            })->orWhereHas('subAccount.account', function ($query) {
                 $query->where('branch_id', Auth::user()->branch_id);
             })->paginate(10);
 
@@ -95,7 +83,7 @@ class AccountTransaction extends Model
             return [
                 'id' => $item->id,
                 'date' => $item->date,
-                'account' => $item->account->name ?? $item->subAccount->name,
+                'account' => $item->account->name,
                 'description' => $item->description,
                 'debit' => number_format($item->debit, 2, ',', '.'),
                 'credit' => number_format($item->credit, 2, ',', '.'),
@@ -111,12 +99,9 @@ class AccountTransaction extends Model
     public function searchAccountTransactionBasedOnUserBranch(Request $request, int $perPage): LengthAwarePaginator
     {
         $search = $request->search;
-        $accountTransaction = self::with('account', 'subAccount')
-            ->whereHas('account', static function ($query) {
-                $query->where('branch_id', Auth::user()->branch_id);
-            })->orWhereHas('subAccount.account', function ($query) {
-                $query->where('branch_id', Auth::user()->branch_id);
-            })->where('description', 'like', '%'.$search.'%')->paginate($perPage);
+        $accountTransaction = self::with('account')
+            ->where('description', 'like', '%'.$search.'%')
+            ->paginate($perPage);
 
         self::formattedAccounTransactionData($accountTransaction);
 
@@ -125,69 +110,57 @@ class AccountTransaction extends Model
 
     public function getGeneralJournalPeriodBasedOnUserBranch(int $perPage): LengthAwarePaginator
     {
-        return self::with('account', 'subAccount')->whereHas('account', static function ($query) {
-            $query->where('branch_id', Auth::user()->branch_id);
-        })->orWhereHas('subAccount.account', static function ($query) {
-            $query->where('branch_id', Auth::user()->branch_id);
-        })->selectRaw("CONCAT(MONTH(date), '-', YEAR(date)) as waktu")
+        return self::with('account')
+            ->selectRaw("CONCAT(MONTH(date), '-', YEAR(date)) as waktu")
             ->distinct()
             ->paginate($perPage);
     }
 
-    public function getGeneralJournalDataBasedOnUserBranchAndPeriod(string $month, string $year): LengthAwarePaginator
+
+    public function getGeneralJournalDataDetails()
     {
-        return self::with('account', 'subAccount')->whereHas('account', static function ($query) {
-            $query->where('branch_id', Auth::user()->branch_id);
-        })->orWhereHas('subAccount.account', static function ($query) {
-            $query->where('branch_id', Auth::user()->branch_id);
-        })->whereMonth('created_at', $month)
-            ->whereYear('created_at', $year)
-            ->orderBy('date')
-            ->paginate($this->perPage);
     }
 
-    public function getGeneralJournalDataDetails($month, $year)
-    {
-        return self::whereMonth('date', $month)
-            ->whereYear('date', $year)
-            ->orderBy('date', 'asc')
-            ->leftJoin('accounts', 'accounts.id', '=', 'account_transactions.account_id')
-            ->leftJoin('sub_accounts', 'sub_accounts.id', '=', 'account_transactions.sub_account_id')
-            ->select(
-                'account_transactions.*',
-                'sub_accounts.code as sub_account_code',
-                'sub_accounts.name as sub_account_name',
-                'accounts.code as account_code',
-                'accounts.name as account_name'
-            )->get()
-            ->groupBy('description')
-            ->map(function (Collection $group) {
-                return [
-                    'tanggal' => $group->first()->created_at->format('d/m/Y'),
-                    'description' => $group->first()->description,
-                    'debit' => $group->where('debit', '>', 0)->map(function ($transaction) {
-                        return [
-                            'code' => $transaction->account_code ?? $transaction->sub_account_code,
-                            'account_name' => $transaction->account_name ?? $transaction->sub_account_name,
-                            'amount' => number_format($transaction->debit),
-                        ];
-                    }),
-                    'credit' => $group->where('credit', '>', 0)->map(function ($transaction) {
-                        return [
-                            'code' => $transaction->account_code ?? $transaction->sub_account_code,
-                            'account_name' => $transaction->account_name ?? $transaction->sub_account_name,
-                            'amount' => number_format($transaction->credit),
-                        ];
-                    })->values(),
-                ];
-            })->values();
-    }
+//    public function getGeneralJournalDataDetails($month, $year)
+//    {
+//        return self::whereMonth('date', $month)
+//            ->whereYear('date', $year)
+//            ->orderBy('date', 'asc')
+//            ->leftJoin('accounts', 'accounts.id', '=', 'account_transactions.account_id')
+//            ->leftJoin('sub_accounts', 'sub_accounts.id', '=', 'account_transactions.sub_account_id')
+//            ->select(
+//                'account_transactions.*',
+//                'sub_accounts.code as sub_account_code',
+//                'sub_accounts.name as sub_account_name',
+//                'accounts.code as account_code',
+//                'accounts.name as account_name'
+//            )->get()
+//            ->groupBy('description')
+//            ->map(function (Collection $group) {
+//                return [
+//                    'tanggal' => $group->first()->created_at->format('d/m/Y'),
+//                    'description' => $group->first()->description,
+//                    'debit' => $group->where('type', 'debit')->map(function ($transaction) {
+//                        return [
+//                            'code' => $transaction->account_code ?? $transaction->sub_account_code,
+//                            'account_name' => $transaction->account_name ?? $transaction->sub_account_name,
+//                            'amount' => number_format($transaction->amount),
+//                        ];
+//                    }),
+//                    'credit' => $group->where('type', 'credit')->map(function ($transaction) {
+//                        return [
+//                            'code' => $transaction->account_code ?? $transaction->sub_account_code,
+//                            'account_name' => $transaction->account_name ?? $transaction->sub_account_name,
+//                            'amount' => number_format($transaction->amount),
+//                        ];
+//                    })->values(),
+//                ];
+//            })->values();
+//    }
 
-    public function getCurrentPPNOnInvoice($branchId, $description): self
+    public function getCurrentPPNOnInvoice($description): self
     {
-        return self::whereHas('subAccount.account', static function ($query) use ($branchId) {
-            $query->where('branch_id', $branchId);
-        })->whereHas('subAccount', function ($query) {
+        return self::whereHas('account')->whereHas('account', function ($query) {
             $query->where('code', '213-01');
         })->where('description', $description)->first();
     }

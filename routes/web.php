@@ -28,6 +28,7 @@ use App\Http\Controllers\Journals\FinancialReportController;
 use App\Http\Controllers\Journals\GeneralJournalController;
 use App\Http\Controllers\Journals\GeneralLedgerController;
 use App\Http\Controllers\Journals\IncomeStatementController;
+use App\Http\Controllers\Journals\TrialBalanceController;
 use App\Http\Controllers\ManageUser\ContractManagementController;
 use App\Http\Controllers\ManageUser\EducationCertificateController;
 use App\Http\Controllers\ManageUser\EducationController;
@@ -49,7 +50,6 @@ use App\Http\Controllers\Master\DepartmentController;
 use App\Http\Controllers\Master\ProductController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\ServicesCategoryController;
-use App\Http\Controllers\Master\SubAccountController;
 use App\Http\Controllers\Master\TaxSettingController;
 use App\Http\Controllers\Operational\SPController;
 use App\Http\Controllers\Payroll\BPJSKetController;
@@ -249,32 +249,14 @@ Route::group(['middleware' => ['auth']], static function () {
     Route::prefix('/account-master')->group(function () {
         Route::prefix('/account')->group(function () {
             Route::get('/', [AccountController::class, 'index']);
+            Route::post('/create-child/{account}', [AccountController::class, 'createChildAccount']);
             Route::get('/data', [AccountController::class, 'data']);
-            Route::get('/category/data', [AccountController::class, 'categoriesData']);
-            Route::get('/branch/data', [AccountController::class, 'branchData']);
-            Route::get('/filter/branch/{branch}', [AccountController::class, 'filter']);
-            Route::get('/branch/selected/{account}', [AccountController::class, 'getSelectedBranch']);
-            Route::get('/getSelectedKategori/{id}', [AccountController::class, 'getSelectedCategory']);
             Route::get('/search', [AccountController::class, 'search']);
             Route::post('/', [AccountController::class, 'store']);
             Route::post('/import', [AccountController::class, 'import']);
             Route::post('/destroy', [AccountController::class, 'destroy']);
             Route::get('/edit/{account}', [AccountController::class, 'edit']);
             Route::post('/update/{account}', [AccountController::class, 'update']);
-        });
-
-        // subaccount
-        Route::prefix('sub-account')->group(function () {
-            Route::get('/', [SubAccountController::class, 'index']);
-            Route::get('/data', [SubAccountController::class, 'data']);
-            Route::get('account/data', [SubAccountController::class, 'accountData']);
-            Route::get('/search', [SubAccountController::class, 'search']);
-            Route::post('/', [SubAccountController::class, 'store']);
-            Route::get('/account/selected/{subAccount}', [SubAccountController::class, 'selectedAccount']);
-            Route::get('/edit/{subAccount}', [SubAccountController::class, 'edit']);
-            Route::post('/update/{subAccount}', [SubAccountController::class, 'update']);
-            Route::post('/destroy', [SubAccountController::class, 'destroy']);
-            Route::post('/import/', [SubAccountController::class, 'import']);
         });
 
         Route::prefix('account-transaction')->group(function () {
@@ -391,7 +373,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [AssetController::class, 'data']);
             Route::get('/search', [AssetController::class, 'search']);
             Route::get('/branch/data', [AssetController::class, 'getBranchData']);
-            Route::get('/accounts/data', [AssetController::class, 'getAccountData']);
+            Route::get('/debit-account/data', [AssetController::class, 'getDebitAccount']);
+            Route::get('/credit-account/data', [AssetController::class, 'getCreditAccount']);
             Route::get('/account/selected/{asset}', [AssetController::class, 'selectedAccount']);
             Route::get('/branch/selected/{asset}', [AssetController::class, 'selectedBranch']);
             Route::post('/', [AssetController::class, 'store']);
@@ -443,11 +426,16 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::controller(GeneralJournalController::class)
             ->prefix('general-journal')->group(function () {
                 Route::get('/', 'index');
-                Route::get('/periode', 'period');
-                Route::get('/detail/{time}', 'detail');
-                Route::get('/detail/data/{time}', 'detailJournal');
+                Route::get('/data', 'data');
                 Route::get('/search', 'search');
             });
+
+        Route::prefix('general-journal')->group(function () {
+            Route::get('/', [GeneralJournalController::class, 'index']);
+            Route::get('/data', [GeneralJournalController::class, 'data']);
+            Route::get('/branch/data', [GeneralJournalController::class, 'getBranchData']);
+            Route::get('/filter', [GeneralJournalController::class, 'filter']);
+        });
 
 
         Route::prefix('general-ledger')->group(function () {
@@ -459,8 +447,21 @@ Route::group(['middleware' => ['auth']], static function () {
         });
 
 
+        Route::prefix('trial-balance')->group(function () {
+            Route::get('/', [TrialBalanceController::class, 'index']);
+            Route::get('/branch/data', [TrialBalanceController::class, 'getBranchData']);
+            Route::get('/data', [TrialBalanceController::class, 'data']);
+            Route::get('/filter', [TrialBalanceController::class, 'filter']);
+        });
+
+
         Route::prefix('financial-report')->group(function () {
             Route::get('/', [FinancialReportController::class, 'index']);
+            Route::get('/fixed-assets/data', [FinancialReportController::class, 'getFixedAsset']);
+            Route::get(
+                '/accumulated-depreciation-of-fixed-assets-account',
+                [FinancialReportController::class, 'accumulatedDepreciationOfFixedAssetsAccount']
+            );
             Route::get('/data/aktiva', [FinancialReportController::class, 'getAktiva']);
             Route::get('/data/passiva', [FinancialReportController::class, 'getPassiva']);
         });

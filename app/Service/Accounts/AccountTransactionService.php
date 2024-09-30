@@ -3,38 +3,39 @@
 namespace App\Service\Accounts;
 
 use App\Models\AccountTransaction;
+use Illuminate\Http\Request;
 
 class AccountTransactionService
 {
     public function createDebitTransaction(
+        Request $request,
         string $description,
         float|int $amount,
         ?int $accountId = null,
-        ?int $subAccountId = null
     ): void {
         AccountTransaction::create([
+            'branch_id' => $request?->branch_id ?? $request->user()->branch_id,
             'date' => date('y-m-d'),
             'account_id' => $accountId,
-            'sub_account_id' => $subAccountId,
             'description' => $description,
-            'debit' => $amount,
-            'credit' => 0,
+            'type' => 'debit',
+            'amount' => $amount,
         ]);
     }
 
     public function createCreditTransaction(
+        Request $request,
         string $description,
         int $amount,
         ?int $accountId = null,
-        ?int $subAccountId = null
     ): void {
         AccountTransaction::create([
+            'branch_id' => $request?->branch_id ?? $request->user()->branch_id,
             'date' => date('y-m-d'),
             'account_id' => $accountId,
-            'sub_account_id' => $subAccountId,
             'description' => $description,
-            'debit' => 0,
-            'credit' => $amount,
+            'type' => 'credit',
+            'amount' => $amount,
         ]);
     }
 }

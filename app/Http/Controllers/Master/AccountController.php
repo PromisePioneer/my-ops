@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Master\Account\AccountImportRequest;
 use App\Http\Requests\Master\Account\AccountRequest;
-use App\Imports\AccountImport;
 use App\Models\Account;
 use App\Models\Branch;
 use App\Service\Accounts\AccountService;
@@ -14,7 +12,6 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Maatwebsite\Excel\Facades\Excel;
 
 class AccountController extends Controller
 {
@@ -22,9 +19,7 @@ class AccountController extends Controller
     use HandlesAuthorization;
 
     public int $perPage = 10;
-
     private Branch $branch;
-
     private Account $account;
     private AccountService $accountService;
 
@@ -35,6 +30,9 @@ class AccountController extends Controller
         $this->accountService = new AccountService();
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function index(): View
     {
         $this->authorize('view', Account::class);
@@ -42,25 +40,24 @@ class AccountController extends Controller
     }
 
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function data(Request $request): JsonResponse
+    public function createChildAccount(AccountRequest $request, Account $account): JsonResponse
     {
-        $this->authorize('view', Account::class);
-        $accounts = $this->accountService->data($request->user()->branch_id);
-        return response()->json($accounts);
+        Account::create([
+            'name' => $request->name,
+            'code' => $request->code,
+            'parent_id' => $account->id,
+        ]);
+        return response()->json(['message' => 'Data berhasil disimpan']);
     }
 
     /**
      * @throws AuthorizationException
      */
-    public function branchData(Request $request): JsonResponse
+    public function data(): JsonResponse
     {
         $this->authorize('view', Account::class);
-        $response = $this->branch->getData($request);
-
-        return response()->json($response);
+        $accounts = $this->accountService->data();
+        return response()->json($accounts);
     }
 
     /**
@@ -71,12 +68,6 @@ class AccountController extends Controller
         $this->authorize('view', Account::class);
         $accounts = $this->accountService->search($request);
         return response()->json($accounts);
-    }
-
-    public function filter(Branch $branch): JsonResponse
-    {
-        $filter = $this->accountService->filterByBranch($branch->id);
-        return response()->json($filter);
     }
 
     /**
@@ -90,12 +81,6 @@ class AccountController extends Controller
         return response()->json([
             'message' => 'Data berhasil disimpan',
         ]);
-    }
-
-    public function getSelectedBranch(Account $account): JsonResponse
-    {
-        $selectedBranch = $this->branch->getSelectedData($account->branch_id);
-        return response()->json($selectedBranch);
     }
 
 
@@ -137,17 +122,4 @@ class AccountController extends Controller
         ]);
     }
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function import(AccountImportRequest $request): JsonResponse
-    {
-        $this->authorize('import', Account::class);
-        $file = $request->file('file_import');
-        Excel::import(new AccountImport(), $file);
-
-        return response()->json([
-            'message' => 'Data berhasil diimport',
-        ]);
-    }
 }

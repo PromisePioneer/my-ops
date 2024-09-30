@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Transaction;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaction\Invoice\InvoiceRequest;
+use App\Models\Account;
 use App\Models\Branch;
 use App\Models\CompanyProfile;
 use App\Models\Contact;
 use App\Models\Invoice;
 use App\Models\InvoiceProductService;
 use App\Models\LetterHead;
-use App\Models\SubAccount;
 use App\Service\CompanyProfileServices;
 use App\Service\Transaction\InvoiceService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -19,25 +19,18 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Throwable;
 
 class InvoiceController extends Controller
 {
     public int $perPage = 10;
-
     private InvoiceProductService $invoiceProductService;
-
     private Invoice $invoice;
-
     private Contact $contact;
-
     private CompanyProfileServices $companyProfileServices;
-
-    private SubAccount $subAccount;
-
     private InvoiceService $invoiceService;
-
     private Branch $branch;
-
+    private Account $account;
     private InvoiceProductService $invoiceProductServices;
 
     public function __construct()
@@ -45,10 +38,10 @@ class InvoiceController extends Controller
         $this->invoiceProductServices = new InvoiceProductService();
         $this->invoiceService = new InvoiceService();
         $this->invoice = new Invoice();
-        $this->subAccount = new SubAccount();
         $this->contact = new Contact();
         $this->companyProfileServices = new CompanyProfileServices();
         $this->branch = new Branch();
+        $this->account = new Account();
     }
 
     public function index(): View
@@ -88,9 +81,9 @@ class InvoiceController extends Controller
         return response()->json($contact);
     }
 
-    public function getAccountData(Request $request): array
+    public function getAccountData(Request $request): JsonResponse
     {
-        return $this->subAccount->getSubAccountForInvoiceStore($request);
+        return response()->json($this->account->getSubAccountForInvoiceStore($request));
     }
 
     public function store(InvoiceRequest $request): JsonResponse
@@ -138,9 +131,12 @@ class InvoiceController extends Controller
         ]);
     }
 
-    public function confirm(Invoice $invoice): JsonResponse
+    /**
+     * @throws Throwable
+     */
+    public function confirm(Request $request, Invoice $invoice): JsonResponse
     {
-        $this->invoiceService->confirm($invoice);
+        $this->invoiceService->confirm($request, $invoice);
 
         return response()->json([
             'message' => 'data berhasil diubah',

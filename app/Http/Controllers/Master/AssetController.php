@@ -46,10 +46,17 @@ class AssetController extends Controller
         return response()->json($this->branch->getData($request));
     }
 
-    public function getAccountData(Request $request): JsonResponse
+    public function getDebitAccount(Request $request): JsonResponse
     {
         return response()->json($this->account->getAssetAccount($request));
     }
+
+
+    public function getCreditAccount(Request $request): JsonResponse
+    {
+        return response()->json($this->account->getKasAccount($request));
+    }
+
 
     public function selectedBranch(Asset $asset): JsonResponse
     {
@@ -87,9 +94,9 @@ class AssetController extends Controller
     /**
      * @throws Throwable
      */
-    public function confirm(Asset $asset): JsonResponse
+    public function confirm(Request $request, Asset $asset): JsonResponse
     {
-        $this->assetService->confirm($asset);
+        $this->assetService->confirm($request, $asset);
         return response()->json(['message' => 'Data berhasil dikonfirmasi.']);
     }
 

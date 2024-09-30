@@ -1,10 +1,9 @@
 @extends('layouts.template')
-@section('page-title', 'Jurnal Umum')
 @section('content')
 
-    <div x-data="generalJournals()">
+    <div x-data="trialBalanceData">
         <div class="d-flex flex-column flex-xl-row">
-            <div class="flex-column flex-lg-row-auto mb-10" x-show="filterButton" x-transition>
+            <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
                 <div class="card card-flush">
                     <div class="card-header">
                         <div class="card-title">
@@ -45,21 +44,6 @@
             </div>
             <div class="flex-lg-row-fluid ms-lg-10">
                 <div class="card card-flush mb-6 mb-xl-9">
-                    <div class="card-header border-0 pt-6">
-                        <div class="card-title">
-                        </div>
-                        <div class="card-toolbar">
-                            <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                                <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                                    <button type="button" class="btn btn-light-primary btn-sm"
-                                            @click="filterButton = !filterButton">
-                                        <i class="bi bi-funnel-fill"></i>
-                                        Filter
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div class="card-body pt-5">
                         <div id="kt_roles_view_table_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                             <div class="table-responsive">
@@ -67,9 +51,8 @@
                                        id="kt_roles_view_table">
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                        <th class="min-w-125px text-center">Tanggal</th>
+                                        <th class="min-w-125 text-center">No</th>
                                         <th class="min-w-125px text-center">Akun</th>
-                                        <th class="min-w-125px text-center">Deskripsi</th>
                                         <th class="min-w-125px text-center">Debit</th>
                                         <th class="min-w-125px text-center">Kredit</th>
                                     </tr>
@@ -86,25 +69,31 @@
                                             </td>
                                         </tr>
                                     </template>
-                                    <template x-if="!isLoading && generalJournal?.length === 0">
+                                    <template x-if="!isLoading && trialBalance.trial_balances?.length === 0">
                                         <tr>
                                             <td colspan="9">
                                                 <center>Data Tidak Ditemukan</center>
                                             </td>
                                         </tr>
                                     </template>
-                                    <template x-for="(journal, index) in generalJournal" :key="index">
+                                    <template x-for="(journal, index) in trialBalance.trial_balances" :key="index">
                                         <tr>
-                                            <td class="text-center" x-text="journal.date"></td>
-                                            <td x-text="journal.account"></td>
-                                            <td x-text="journal.description"></td>
-                                            <td class="text-center"
-                                                x-text="journal.type === 'debit' ? journal.amount : '-'"></td>
-                                            <td class="text-center"
-                                                x-text="journal.type === 'credit' ? journal.amount : '-'"></td>
+                                            <td class="text-center" x-text="1 + index++"></td>
+                                            <td class="text-center" x-text="journal.account_name"></td>
+                                            <td class="text-center" x-text="journal.debit"></td>
+                                            <td class="text-center" x-text="journal.credit"></td>
                                         </tr>
                                     </template>
                                     </tbody>
+                                    <tfoot>
+                                    <tr class="fw-bold">
+                                        <td colspan="2" class="text-center">Jumlah</td>
+                                        <td class="text-center" x-text="trialBalance.total_debit">Jumlah</td>
+                                        <td colspan="2" class="text-center" x-text="trialBalance.total_credit">
+                                            Jumlah
+                                        </td>
+                                    </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </div>
@@ -117,27 +106,24 @@
 @endsection
 @push('script')
     <script>
-        function generalJournals() {
+        function trialBalanceData() {
             return {
-                isLoading: false,
-                generalJournal: [],
-                search: '',
-                startIndex: null,
-                filterButton: false,
                 months: [],
+                trialBalance: [],
+                formFilter: document.getElementById('form-filter'),
                 async init() {
-                    await this.getGeneralJournalData();
-                    await this.getBranchData()
-                    this.getMonth();
+                    await this.getTrialBalance();
+                    await this.getMonth();
+                    await this.getBranchData();
                 },
-                async getGeneralJournalData() {
+                async getTrialBalance() {
+
                     this.isLoading = true;
                     try {
-                        const resp = await axios.get(`/journals/general-journal/data/`);
-                        this.generalJournal = resp.data;
-                        this.startIndex = this.generalJournal.from;
+                        const resp = await axios.get('/journals/trial-balance/data')
+                        this.trialBalance = resp.data;
                     } catch (e) {
-                        console.log(e)
+
                     } finally {
                         this.isLoading = false;
                     }
@@ -146,16 +132,17 @@
                     const year = document.getElementById('year')?.value ?? '';
                     const month = document.getElementById('month')?.value ?? '';
                     const branch_id = $(".branch-select2")?.val();
+                    const active = document.getElementById('active')?.value;
                     this.isLoading = true;
                     try {
-                        const resp = await axios.get('/journals/general-journal/filter', {
+                        const resp = await axios.get('/journals/trial-balance/filter', {
                             params: {
                                 month: month,
                                 year: year,
                                 branch_id: branch_id,
                             }
                         });
-                        this.generalJournal = resp.data;
+                        this.trialBalance = resp.data;
                     } catch (e) {
                         console.log(e);
                     } finally {
@@ -178,18 +165,12 @@
                         {name: "Desember", number: '12'},
                     )
                 },
-                formatNumber(val) {
-                    return new Intl.NumberFormat("id-ID", {
-                        style: "currency",
-                        currency: "IDR"
-                    }).format(val);
-                },
                 async getBranchData() {
                     $(".branch-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Cabang",
                         ajax: {
-                            url: '/journals/general-journal/branch/data',
+                            url: '/journals/trial-balance/branch/data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),

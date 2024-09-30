@@ -13,12 +13,10 @@ class CreateAccounts extends Migration
     {
         Schema::create('accounts', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('branch_id')->nullable()->constrained('branches');
             $table->string('code', 10);
             $table->string('name', 100);
-            $table->double('debit_balance')->default(0);
-            $table->double('credit_balance')->default(0);
-            $table->double('balance')->default(0);
+            $table->foreignId('parent_id')->nullable()->constrained('accounts')->cascadeOnDelete();
+            $table->double('beginning_balances')->nullable();
             $table->timestamps();
         });
     }

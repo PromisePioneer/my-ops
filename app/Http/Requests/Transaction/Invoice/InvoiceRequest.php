@@ -24,20 +24,22 @@ class InvoiceRequest extends FormRequest
 
             'contact_id' => ['required', Rule::exists('contacts', 'id')],
             'due_date' => ['required', 'date', 'after:today'],
-            'account_id' => ['required', Rule::exists('sub_accounts', 'id')],
+            'account_id' => ['required', Rule::exists('accounts', 'id')],
             'description' => ['nullable'],
             'baa_file' => [
                 'mimes:pdf',
                 'max:2048',
                 Rule::requiredIf(static function () {
                     return request()->route('invoice') === null;
-                })],
+                }),
+            ],
             'cooperative_contract_file' => [
                 'mimes:pdf',
                 'max:2048',
                 Rule::requiredIf(static function () {
                     return request()->route('invoice') === null;
-                })],
+                }),
+            ],
             'data.*.description' => ['required', 'string'],
             'data.*.qty' => ['required', 'numeric'],
             'data.*.unit_price' => ['required', 'numeric'],
