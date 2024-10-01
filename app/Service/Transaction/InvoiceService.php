@@ -194,11 +194,11 @@ class InvoiceService
     /**
      * @throws Throwable
      */
-    public function confirm(Request $request, Invoice $invoice): void
+    public function confirm(Invoice $invoice): void
     {
-        DB::transaction(function () use ($request, $invoice) {
-            $this->accountTransactionAfterInvoiceSent($request, $invoice);
-            $this->calculatePPNAccountTransactionAfterInvoiceSent($request, $invoice);
+        DB::transaction(function () use ($invoice) {
+            $this->accountTransactionAfterInvoiceSent($invoice);
+            $this->calculatePPNAccountTransactionAfterInvoiceSent($invoice);
             $invoice->status = 1;
             $invoice->save();
         });
@@ -207,7 +207,7 @@ class InvoiceService
     /**
      * @throws Throwable
      */
-    public function accountTransactionAfterInvoiceSent(Request $request, Invoice $invoice): void
+    public function accountTransactionAfterInvoiceSent(Invoice $invoice): void
     {
         $piutangPelanggan = $this->account->findPiutangPelangganSubAccount();
         $selectedContact = $this->contact->getSelectedData($invoice->contact_id);
@@ -217,15 +217,15 @@ class InvoiceService
             $invoice->invoice_number
         );
 
-        DB::transaction(function () use ($request, $piutangPelanggan, $description, $invoice) {
+        DB::transaction(function () use ($piutangPelanggan, $description, $invoice) {
             $this->accountTransactionService->createDebitTransaction(
-                $request,
+                $invoice->branch_id,
                 $description,
                 $invoice->grand_total,
                 $piutangPelanggan->id
             );
             $this->accountTransactionService->createCreditTransaction(
-                $request,
+                $invoice->branch_id,
                 $description,
                 $invoice->grand_total,
                 $invoice->account_id
@@ -236,7 +236,7 @@ class InvoiceService
     /**
      * @throws Throwable
      */
-    public function calculatePPNAccountTransactionAfterInvoiceSent(Request $request, Invoice $invoice): void
+    public function calculatePPNAccountTransactionAfterInvoiceSent(Invoice $invoice): void
     {
         $piutangPelanggan = $this->account->findPiutangPelangganSubAccount();
         $selectedContact = $this->contact->getSelectedData($invoice->contact_id);
@@ -248,15 +248,15 @@ class InvoiceService
         );
         $ppn = $this->account->findPPNSubAccount();
 
-        DB::transaction(function () use ($request, $ppn, $piutangPelanggan, $description, $totalPlusTax) {
+        DB::transaction(function () use ($invoice, $ppn, $piutangPelanggan, $description, $totalPlusTax) {
             $this->accountTransactionService->createDebitTransaction(
-                $request,
+                $invoice->branch_id,
                 $description,
                 $totalPlusTax,
                 $piutangPelanggan->id
             );
             $this->accountTransactionService->createCreditTransaction(
-                $request,
+                $invoice->branch_id,
                 $description,
                 $totalPlusTax,
                 $ppn->id
@@ -293,13 +293,13 @@ class InvoiceService
             }
             $totalAfterInvoicePaid = $invoice->grand_total + $currentPPN->credit - ($request->pph23_form ?? 0);
             $this->accountTransactionService->createDebitTransaction(
-                $request,
+                $invoice->branch_id,
                 $description,
                 $totalAfterInvoicePaid,
                 $rekeningMayatamaPusat->id
             );
             $this->accountTransactionService->createCreditTransaction(
-                $request,
+                $invoice->branch_id,
                 $description,
                 $totalAfterInvoicePaid,
                 $piutangPelanggan->id
@@ -322,15 +322,15 @@ class InvoiceService
             $invoice->invoice_number
         );
 
-        DB::transaction(function () use ($pph23Account, $piutangPelanggan, $description, $request) {
+        DB::transaction(function () use ($invoice, $pph23Account, $piutangPelanggan, $description, $request) {
             $this->accountTransactionService->createDebitTransaction(
-                $request,
+                $invoice->branch_id,
                 $description,
                 $request->pph23_form,
                 $pph23Account->id
             );
             $this->accountTransactionService->createCreditTransaction(
-                $request,
+                $invoice->branch_id,
                 $description,
                 $request->pph23_form,
                 $piutangPelanggan->id

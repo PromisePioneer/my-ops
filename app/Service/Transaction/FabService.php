@@ -2,6 +2,8 @@
 
 namespace App\Service\Transaction;
 
+use App\Models\Account;
+use App\Models\AccountTransaction;
 use App\Models\Contact;
 use App\Models\Fab;
 use App\Models\FabHasServiceCategories;
@@ -24,15 +26,15 @@ class FabService
     private HandleFileUploadService $handleFileUploadService;
     private Contact $contact;
     private AccountTransactionService $accountTransactionService;
-    private SubAccount $subAccount;
+    private Account $account;
 
 
     public function __construct()
     {
         $this->handleFileUploadService = new HandleFileUploadService();
         $this->accountTransactionService = new AccountTransactionService();
-        $this->subAccount = new SubAccount();
         $this->contact = new Contact();
+        $this->account = new Account();
     }
 
 
@@ -130,20 +132,20 @@ class FabService
     {
         $contact = $this->contact->getSelectedData($fab->contact_id);
         $description = sprintf(self::FAB_SENT_DESCRIPTION, $contact['company_name'], $fab->fab_number);
-        $debitAccount = $this->subAccount->getPenjualanAtauPendapatanJasaLainnyaSubAccount($fab->branch_id);
-        $creditAccount = $this->subAccount->findPiutangPelangganSubAccount($fab->branch_id);
+        $debitAccount = $this->account->getPenjualanAtauPendapatanJasaLainnyaAccount();
+        $creditAccount = $this->account->findPiutangPelangganSubAccount();
 
         DB::transaction(function () use ($description, $fab, $fabService, $debitAccount, $creditAccount) {
             $this->accountTransactionService->createDebitTransaction(
+                $fab->branch_id,
                 $description,
                 $fabService->sum('total_price'),
-                null,
                 $debitAccount->id
             );
             $this->accountTransactionService->createCreditTransaction(
+                $fab->branch_id,
                 $description,
                 $fabService->sum('total_price'),
-                null,
                 $creditAccount->id
             );
             $fab->status_confirmation = true;
@@ -153,15 +155,17 @@ class FabService
 
     public function jurnalEntry(Fab $fab): JsonResponse
     {
-        $jurnalEntry = DB::table('account_transactions')
-            ->join('sub_accounts', 'sub_accounts.id', '=', 'account_transactions.sub_account_id')
-            ->where('account_transactions.description', 'like', '%'.$fab->fab_number.'%')
-            ->select(
-                'account_transactions.*',
-                'sub_accounts.name',
-                'sub_accounts.code',
-                'sub_accounts.id as sub_account_id'
-            )->get();
+        $jurnalEntry = AccountTransaction::with('account')
+            ->where('description', 'like', '%'.$fab->fab_number.'%')
+            ->get()
+            ->map(function ($query) {
+                return [
+                    'id' => $query->id,
+                    'type' => $query->type,
+                    'account_name' => $query->account->code.' '.$query->account->name,
+                    'amount' => 'Rp.'.number_format($query->amount, 2),
+                ];
+            });
 
         return response()->json($jurnalEntry);
     }

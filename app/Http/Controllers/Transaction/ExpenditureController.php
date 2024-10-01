@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaction\Expenditure\ExpenditureRequest;
 use App\Models\Branch;
 use App\Models\Expenditure;
-use App\Models\SubAccount;
 use App\Service\ExpenditureServices;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,7 +18,6 @@ class ExpenditureController extends Controller
 
     private Expenditure $expenditure;
 
-    private SubAccount $subAccount;
 
     private Branch $branch;
 
@@ -27,7 +25,6 @@ class ExpenditureController extends Controller
     {
         $this->expenditureService = new ExpenditureServices();
         $this->expenditure = new Expenditure();
-        $this->subAccount = new SubAccount();
         $this->branch = new Branch();
     }
 
@@ -38,7 +35,9 @@ class ExpenditureController extends Controller
 
     public function data(Request $request): JsonResponse
     {
-        return response()->json($this->expenditure->getDataWithPaginationBasedOnUserBranch($request->user()->branch_id, $this->perPage));
+        return response()->json(
+            $this->expenditure->getDataWithPaginationBasedOnUserBranch($request->user()->branch_id, $this->perPage)
+        );
     }
 
     public function search(Request $request): JsonResponse

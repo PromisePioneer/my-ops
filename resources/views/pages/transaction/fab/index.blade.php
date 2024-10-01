@@ -106,7 +106,7 @@
                                         <a :href="`/income-transactions/fab/view-file/${fab.id}`"
                                            class="btn btn-sm btn-info"><i class="bi bi-file-earmark-break-fill"></i></a>
                                     </td>
-                                    <td x-text="formatDate(fab.date)"></td>
+                                    <td x-text="fab.date"></td>
                                     <td x-text="fab.created_by"></td>
                                 </tr>
                             </template>

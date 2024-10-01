@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Transaction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaction\Invoice\InvoiceRequest;
 use App\Models\Account;
+use App\Models\AccountTransaction;
 use App\Models\Branch;
 use App\Models\CompanyProfile;
 use App\Models\Contact;
@@ -69,7 +70,7 @@ class InvoiceController extends Controller
         return response()->json($this->invoice->filterDataBasedOnBranch($branch->id, $this->perPage));
     }
 
-    public function create()
+    public function create(): View
     {
         return view('pages.transaction.invoice.create');
     }
@@ -86,6 +87,9 @@ class InvoiceController extends Controller
         return response()->json($this->account->getSubAccountForInvoiceStore($request));
     }
 
+    /**
+     * @throws Throwable
+     */
     public function store(InvoiceRequest $request): JsonResponse
     {
         $this->invoiceService->store($request);
@@ -95,7 +99,7 @@ class InvoiceController extends Controller
         ]);
     }
 
-    public function edit(Invoice $invoice)
+    public function edit(Invoice $invoice): View
     {
         return view('pages.transaction.invoice.edit', compact('invoice'));
     }
@@ -122,6 +126,9 @@ class InvoiceController extends Controller
         return response()->json($this->invoiceProductServices->getSelectedInvoiceProductServices($invoice));
     }
 
+    /**
+     * @throws Throwable
+     */
     public function update(InvoiceRequest $request, Invoice $invoice): JsonResponse
     {
         $this->invoiceService->update($request, $invoice);
@@ -134,16 +141,16 @@ class InvoiceController extends Controller
     /**
      * @throws Throwable
      */
-    public function confirm(Request $request, Invoice $invoice): JsonResponse
+    public function confirm(Invoice $invoice): JsonResponse
     {
-        $this->invoiceService->confirm($request, $invoice);
+        $this->invoiceService->confirm($invoice);
 
         return response()->json([
             'message' => 'data berhasil diubah',
         ]);
     }
 
-    public function detail(Invoice $invoice)
+    public function detail(Invoice $invoice): View
     {
         $invoiceServiceList = DB::table('invoice_services')
             ->where('invoice_id', $invoice->id)
@@ -158,6 +165,9 @@ class InvoiceController extends Controller
         );
     }
 
+    /**
+     * @throws Throwable
+     */
     public function updatePaymentStatus(Request $request, Invoice $invoice): JsonResponse
     {
         $this->invoiceService->updatePaymentStatus($request, $invoice);
@@ -169,16 +179,19 @@ class InvoiceController extends Controller
 
     public function jurnalEntry(Invoice $invoice): JsonResponse
     {
-        $jurnalEntry = DB::table('account_transactions')
-            ->join('sub_accounts', 'sub_accounts.id', '=', 'account_transactions.sub_account_id')
-            ->where('account_transactions.description', 'like', '%'.$invoice->invoice_number.'%')
-            ->select(
-                'account_transactions.*',
-                'sub_accounts.name',
-                'sub_accounts.code',
-                'sub_accounts.id as sub_account_id'
-            )
-            ->get();
+        $jurnalEntry = AccountTransaction::with('account')->where(
+            'description',
+            'like',
+            '%'.$invoice->invoice_number.'%'
+        )->get()
+            ->map(function ($query) {
+                return [
+                    'id' => $query->id,
+                    'account_name' => $query->account->code.' '.$query->account->name,
+                    'type' => $query->type,
+                    'amount' => 'Rp.'.number_format($query->amount, 2),
+                ];
+            });
 
         return response()->json($jurnalEntry);
     }

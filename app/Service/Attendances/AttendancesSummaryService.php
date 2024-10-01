@@ -162,7 +162,6 @@ class AttendancesSummaryService
         return Carbon::parse($startPeriod?->start_date)->diffInDays($endPeriod?->end_date);
     }
 
-
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
@@ -194,7 +193,6 @@ class AttendancesSummaryService
         $data = $query->paginate(10)->onEachSide(1);
         return self::formattedData($data, $startDate, $endDate);
     }
-
 
     public function filterByDate(Request $request): LengthAwarePaginator
     {

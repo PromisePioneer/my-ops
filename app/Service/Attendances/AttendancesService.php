@@ -37,6 +37,7 @@ class AttendancesService
             $formattedData->forPage(Paginator::resolveCurrentPage(), self::$perPage),
             $formattedData->count(),
             self::$perPage,
+
         );
 
         $paginator->withPath(url("adms/attendances/data"));

@@ -5,10 +5,9 @@ namespace App\Service\Attendances;
 use App\Models\Attendances;
 use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-
-use function App\Helper\formatDate;
 
 class AttendanceSummaryDetailService
 {
@@ -69,8 +68,14 @@ class AttendanceSummaryDetailService
             $checkIn = $dayAttendances->firstWhere('status1', 0);
             $checkOut = $dayAttendances->firstWhere('status1', 1);
 
+            $period = CarbonPeriod::create(
+                $this->financialClosePeriodService->startDate(),
+                $this->financialClosePeriodService->endDate()
+            );
+
+
             return [
-                'date' => formatDate($date),
+                'date' => $period,
                 'check_in_timestamp' => $checkIn ? Carbon::parse($checkIn->timestamp)->format('H:i') : null,
                 'check_out_timestamp' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
             ];

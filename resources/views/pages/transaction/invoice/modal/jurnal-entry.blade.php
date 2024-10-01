@@ -3,7 +3,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">{{ $invoice->invoice_number }}</h5>
-                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
+                     aria-label="Close">
                     <span class="svg-icon svg-icon-2x"></span>
                 </div>
             </div>
@@ -17,14 +18,14 @@
                         <th>Kredit</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="fw-bold">
                     <template x-for="row in jurnalEntry" :key="row.id">
                         <tr>
                             <td>
-                                <a :href="`/account-master/account-transaction/detail/${row.account_id}`" x-text="`${row.code} - ${row.name}`"></a>
+                                <a href="#" x-text="row.account_name"></a>
                             </td>
-                            <td x-text="formatNumber(row.debit)"></td>
-                            <td x-text="formatNumber(row.credit)"></td>
+                            <td x-text="row.type === 'debit' ? row.amount : '-' "></td>
+                            <td x-text="row.type === 'credit' ? row.amount : '-' "></td>
                         </tr>
                     </template>
                     </tbody>

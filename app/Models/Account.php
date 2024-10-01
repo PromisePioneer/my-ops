@@ -198,4 +198,10 @@ class Account extends Model
             ];
         })->toArray();
     }
+
+
+    public function getPenjualanAtauPendapatanJasaLainnyaAccount()
+    {
+        return self::where('code', '403-04')->first();
+    }
 }

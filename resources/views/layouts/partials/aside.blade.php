@@ -288,6 +288,10 @@
                                 href="{{ url('/expenditure-transactions/expenditure') }}">
                             Pengeluaran
                         </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                href="#">
+                            Invoice
+                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
 
