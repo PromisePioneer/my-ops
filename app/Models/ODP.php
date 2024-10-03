@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class ODP extends Model
+{
+    use HasFactory;
+
+    protected $table = 'odp';
+    protected $fillable = [
+        'area_id',
+        'name',
+        'classification',
+        'passive_splitter',
+        'long',
+        'lat',
+        'max_capacity',
+        'used_capacity',
+        'cut_off_date',
+    ];
+
+
+    public function area(): BelongsTo
+    {
+        return $this->belongsTo(ODPArea::class, 'area_id');
+    }
+}

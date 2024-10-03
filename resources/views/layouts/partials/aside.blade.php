@@ -154,6 +154,16 @@
                                 href="{{ url('master/assets') }}">
                             Aset
                         </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'odp-areas'"
+                                href="{{ url('master/odp-areas') }}">
+                            ODP Area
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'odp'"
+                                href="{{ url('master/odp') }}">
+                            ODP
+                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
 

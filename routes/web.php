@@ -47,10 +47,13 @@ use App\Http\Controllers\Master\BranchesController;
 use App\Http\Controllers\Master\BroadbandPacketController;
 use App\Http\Controllers\Master\ContactController;
 use App\Http\Controllers\Master\DepartmentController;
+use App\Http\Controllers\Master\ODPAreaController;
+use App\Http\Controllers\Master\ODPController;
 use App\Http\Controllers\Master\ProductController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\ServicesCategoryController;
 use App\Http\Controllers\Master\TaxSettingController;
+use App\Http\Controllers\ODP\ODPMapController;
 use App\Http\Controllers\Operational\SPController;
 use App\Http\Controllers\Payroll\BPJSKetController;
 use App\Http\Controllers\Payroll\CutOffController;
@@ -383,6 +386,36 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/confirm/{asset}', [AssetController::class, 'confirm']);
             Route::get('/detail/{asset}', [AssetController::class, 'detail']);
             Route::get('/detail/data/{asset}', [AssetController::class, 'getDetailData']);
+        });
+
+
+        Route::prefix('odp-areas')->group(function () {
+            Route::get('/', [ODPAreaController::class, 'index']);
+            Route::get('/data', [ODPAreaController::class, 'data']);
+            Route::get('/search', [ODPAreaController::class, 'search']);
+            Route::post('/', [ODPAreaController::class, 'store']);
+            Route::get('/{odpArea}', [ODPAreaController::class, 'edit']);
+            Route::post('/destroy', [ODPAreaController::class, 'destroy']);
+            Route::post('/update/{odpArea}', [ODPAreaController::class, 'update']);
+        });
+
+
+        Route::prefix('odp')->group(function () {
+            Route::get('/', [ODPController::class, 'index']);
+            Route::get('/data', [ODPController::class, 'data']);
+            Route::get('/search', [ODPController::class, 'search']);
+            Route::get('/odp-area/data', [ODPController::class, 'getODPAreaData']);
+            Route::get('/odp-area/selected/{odp}', [ODPController::class, 'getSelectedODPArea']);
+            Route::post('/', [ODPController::class, 'store']);
+            Route::get('/{odp}', [ODPController::class, 'edit']);
+            Route::post('/{odp}', [ODPController::class, 'update']);
+        });
+
+
+        Route::prefix('odp-map')->group(function () {
+            Route::get('/', [ODPMapController::class, 'index']);
+            Route::get('/data', [ODPMapController::class, 'data']);
+            Route::get('/filter', [ODPMapController::class, 'filter']);
         });
     });
 

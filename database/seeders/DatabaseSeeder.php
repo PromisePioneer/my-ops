@@ -35,6 +35,8 @@ class DatabaseSeeder extends Seeder
             BroadbandPacketSeeder::class,
             SalaryCalculationMethodSeeder::class,
             TaxSettingSeeder::class,
+            ODPAreaSeeder::class,
+            ODPSeeder::class,
         ]);
     }
 }

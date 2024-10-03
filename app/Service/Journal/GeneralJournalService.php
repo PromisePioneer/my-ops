@@ -44,19 +44,20 @@ class GeneralJournalService
         $query = AccountTransaction::with('account')->orderBy('date');
 
         if ($branch) {
-            $query->where('branch_id', $branch);
+            $query->orWhere('branch_id', $branch);
         }
 
         if ($year) {
-            $query->whereYear('date', $year);
+            $query->orWhereYear('date', $year);
         }
 
         if ($month) {
-            $query->whereMonth('date', $month);
+            $query->orWhereMonth('date', $month);
         }
 
         if ($year && $month) {
-            $query->whereYear('date', $year)->whereMonth('date', $month);
+            $query->orWhereYear('date', $year)
+                ->whereMonth('date', $month);
         }
 
         $data = $query->get();
