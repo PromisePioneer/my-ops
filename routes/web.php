@@ -63,6 +63,8 @@ use App\Http\Controllers\Master\ProductController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\ServicesCategoryController;
 use App\Http\Controllers\Master\TaxSettingController;
+use App\Http\Controllers\Operational\FOCable\FOCableController;
+use App\Http\Controllers\Operational\FOCable\FOCableMapController;
 use App\Http\Controllers\Operational\Inventory\GoodsController;
 use App\Http\Controllers\Operational\Inventory\UnitTypesController;
 use App\Http\Controllers\Operational\Inventory\UsedItemsController;
@@ -432,8 +434,22 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/filter', [PoleMapController::class, 'filter']);
         });
 
+        Route::prefix('fo-cables-map')->group(function () {
+            Route::get('/', [FOCableMapController::class, 'index']);
+            Route::get('/data', [FOCableMapController::class, 'data']);
+            Route::get('/filter', [FOCableMapController::class, 'filter']);
+        });
+
 
         Route::prefix('fo-cables')->group(function () {
+            Route::get('/', [FOCableController::class, 'index']);
+            Route::get('/data', [FOCableController::class, 'data']);
+            Route::get('/search', [FOCableController::class, 'search']);
+            Route::post('/', [FOCableController::class, 'store']);
+            Route::post('/destroy', [FOCableController::class, 'destroy']);
+            Route::get('/{FOCable}', [FOCableController::class, 'edit']);
+            Route::post('update/{FOCable}', [FOCableController::class, 'update']);
+            Route::post('/destroy', [FOCableController::class, 'destroy']);
         });
 
         Route::prefix('poles')->group(function () {

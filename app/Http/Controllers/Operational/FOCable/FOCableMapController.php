@@ -1,25 +1,24 @@
 <?php
 
-namespace App\Http\Controllers\Operational\Pole;
+namespace App\Http\Controllers\Operational\FOCable;
 
 use App\Http\Controllers\Controller;
-use App\Models\Pole;
+use App\Models\FOCable;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-class PoleMapController extends Controller
+class FOCableMapController extends Controller
 {
-
     public function index(): View
     {
-        return view('pages.operational.poles.pole-map.index');
+        return view('pages.operational.fo-cables.fo-cable-map.index');
     }
 
     public function data(): JsonResponse
     {
-        $odpMap = Pole::whereYear('cut_off_date', Carbon::now())->get();
+        $odpMap = FOCable::whereYear('cut_off_date', Carbon::now())->get();
         return response()->json($odpMap);
     }
 
@@ -29,7 +28,12 @@ class PoleMapController extends Controller
         $year = $request->input('year');
         $month = $request->input('month');
 
-        $query = Pole::orderBy('cut_off_date');
+        $query = FOCable::orderBy('cut_off_date');
+
+
+        if ($year && $month) {
+            $query->whereMonth('cut_off_date', $month)->whereYear('cut_off_date', $year);
+        }
 
         if ($year) {
             $query->whereYear('cut_off_date', $year);
@@ -44,6 +48,4 @@ class PoleMapController extends Controller
 
         return response()->json($data);
     }
-
-
 }

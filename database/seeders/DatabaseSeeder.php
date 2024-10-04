@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
             TaxSettingSeeder::class,
             ODPAreaSeeder::class,
             ODPSeeder::class,
+//            FOCableSeeder::class,
         ]);
     }
 }

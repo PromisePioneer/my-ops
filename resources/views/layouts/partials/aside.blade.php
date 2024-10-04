@@ -182,8 +182,8 @@
                             ODP & Homepass
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'fab'"
-                                href="{{ url('/income-transactions/fab') }}">
+                                :active="request()->is('operational/fo-cables*')"
+                                href="{{ url('operational/fo-cables') }}">
                             Kabel FO
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
