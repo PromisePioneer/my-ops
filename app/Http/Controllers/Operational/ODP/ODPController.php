@@ -69,7 +69,14 @@ class ODPController extends Controller
 
     public function destroy(Request $request, ODP $odp): JsonResponse
     {
-    w
+        $this->authorize('delete', $odp);
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $odp->whereIn('id', $explodeID)->delete();
+
+        return response()->json([
+            'message' => 'data berhasil dihapus',
+        ], 200);
     }
 
 

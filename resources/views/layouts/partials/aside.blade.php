@@ -187,7 +187,7 @@
                             Kabel FO
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'operational/poles'"
+                                :active="request()->is('operational/poles*')"
                                 href="{{ url('operational/poles') }}">
                             Tiang
                         </x-dropdown-menu-item>
