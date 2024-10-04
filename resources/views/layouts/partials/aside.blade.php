@@ -159,10 +159,58 @@
                                 href="{{ url('master/odp-areas') }}">
                             ODP Area
                         </x-dropdown-menu-item>
+                    @endslot
+                </x-dropdown-menu>
+
+                <x-menu-sections>Operasional</x-menu-sections>
+
+                <x-dropdown-menu :active="request()->is('operational/*')">
+                    @slot('parentIcon')
+                        <i class="ki-duotone ki-dollar fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                        </i>
+                    @endslot
+                    @slot('menuTitle')
+                        Data Operasional
+                    @endslot
+                    @slot('menuItem')
                         <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'odp'"
-                                href="{{ url('master/odp') }}">
-                            ODP
+                                :active="request()->is('operational/odp*')"
+                                href="{{ url('operational/odp') }}">
+                            ODP & Homepass
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'fab'"
+                                href="{{ url('/income-transactions/fab') }}">
+                            Kabel FO
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'operational/poles'"
+                                href="{{ url('operational/poles') }}">
+                            Tiang
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'invoice'"
+                                href="{{ url('/income-transactions/invoice') }}">
+                            Join Closure
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'invoice'"
+                                href="{{ url('/income-transactions/invoice') }}">
+                            Aset Lapangan
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'invoice'"
+                                href="{{ url('/income-transactions/invoice') }}">
+                            Data Core
+                        </x-dropdown-menu-item>
+
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'invoice'"
+                                href="{{ url('/income-transactions/invoice') }}">
+                            Coverage Area
                         </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>

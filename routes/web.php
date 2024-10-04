@@ -1,45 +1,55 @@
 <?php
 
-use App\Http\Controllers\ADMS\AttendancesController;
-use App\Http\Controllers\ADMS\AttendanceSummaryController;
-use App\Http\Controllers\ADMS\FpDevicesController;
-use App\Http\Controllers\ADMS\IclockController;
-use App\Http\Controllers\ADMS\NationalHolidayController;
-use App\Http\Controllers\ADMS\WorkTimeController;
-use App\Http\Controllers\Allowances\MealAllowanceController;
-use App\Http\Controllers\Allowances\OvertimeAllowanceController;
-use App\Http\Controllers\Allowances\PositionAllowancesController;
-use App\Http\Controllers\Allowances\ThrAllowancesController;
-use App\Http\Controllers\Allowances\TransportationAllowanceController;
-use App\Http\Controllers\Asset\AssetDepreciationController;
-use App\Http\Controllers\Benefit\SalesBonusController;
-use App\Http\Controllers\Bonus\ProjectBonusController;
-use App\Http\Controllers\Deduction\AdditionalDeductionController;
-use App\Http\Controllers\Deduction\NinePastFiveteenLateController;
-use App\Http\Controllers\Deduction\SLADeductionController;
+use App\Http\Controllers\Accounting\Asset\AssetDepreciationController;
+use App\Http\Controllers\Accounting\JournalAdjustment\InitialJournalController;
+use App\Http\Controllers\Accounting\JournalAdjustment\JournalAdjustmentController;
+use App\Http\Controllers\Accounting\Journals\CashflowStatementController;
+use App\Http\Controllers\Accounting\Journals\FinancialReportController;
+use App\Http\Controllers\Accounting\Journals\GeneralJournalController;
+use App\Http\Controllers\Accounting\Journals\GeneralLedgerController;
+use App\Http\Controllers\Accounting\Journals\IncomeStatementController;
+use App\Http\Controllers\Accounting\Journals\TrialBalanceController;
+use App\Http\Controllers\Accounting\Transaction\BastController;
+use App\Http\Controllers\Accounting\Transaction\ExpenditureController;
+use App\Http\Controllers\Accounting\Transaction\FabController;
+use App\Http\Controllers\Accounting\Transaction\InvoiceController;
+use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Inventory\GoodsController;
-use App\Http\Controllers\Inventory\UnitTypesController;
-use App\Http\Controllers\Inventory\UsedItemsController;
-use App\Http\Controllers\JournalAdjustment\InitialJournalController;
-use App\Http\Controllers\JournalAdjustment\JournalAdjustmentController;
-use App\Http\Controllers\Journals\CashflowStatementController;
-use App\Http\Controllers\Journals\FinancialReportController;
-use App\Http\Controllers\Journals\GeneralJournalController;
-use App\Http\Controllers\Journals\GeneralLedgerController;
-use App\Http\Controllers\Journals\IncomeStatementController;
-use App\Http\Controllers\Journals\TrialBalanceController;
-use App\Http\Controllers\ManageUser\ContractManagementController;
-use App\Http\Controllers\ManageUser\EducationCertificateController;
-use App\Http\Controllers\ManageUser\EducationController;
-use App\Http\Controllers\ManageUser\FamilyInformationController;
-use App\Http\Controllers\ManageUser\HealthInformationController;
-use App\Http\Controllers\ManageUser\IdentityInformationController;
-use App\Http\Controllers\ManageUser\JobExperiencesController;
-use App\Http\Controllers\ManageUser\JobInformationController;
-use App\Http\Controllers\ManageUser\ManageUserLeavesController;
-use App\Http\Controllers\ManageUser\PermissionController;
-use App\Http\Controllers\ManageUser\UserController;
+use App\Http\Controllers\HRIS\Attendances\AttendancesController;
+use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
+use App\Http\Controllers\HRIS\Attendances\FpDevicesController;
+use App\Http\Controllers\HRIS\Attendances\IclockController;
+use App\Http\Controllers\HRIS\Attendances\WorkTimeController;
+use App\Http\Controllers\HRIS\Correspondence\ContractManagementController;
+use App\Http\Controllers\HRIS\Correspondence\ManageUserLeavesController;
+use App\Http\Controllers\HRIS\Correspondence\SKController;
+use App\Http\Controllers\HRIS\Correspondence\SPController;
+use App\Http\Controllers\HRIS\EmployeesData\EducationCertificateController;
+use App\Http\Controllers\HRIS\EmployeesData\EducationController;
+use App\Http\Controllers\HRIS\EmployeesData\FamilyInformationController;
+use App\Http\Controllers\HRIS\EmployeesData\HealthInformationController;
+use App\Http\Controllers\HRIS\EmployeesData\IdentityInformationController;
+use App\Http\Controllers\HRIS\EmployeesData\JobExperiencesController;
+use App\Http\Controllers\HRIS\EmployeesData\JobInformationController;
+use App\Http\Controllers\HRIS\EmployeesData\UserController;
+use App\Http\Controllers\HRIS\Payroll\GeneratePayrollController;
+use App\Http\Controllers\HRIS\Payroll\PayrollComponent\Allowances\MealAllowanceController;
+use App\Http\Controllers\HRIS\Payroll\PayrollComponent\Allowances\OvertimeAllowanceController;
+use App\Http\Controllers\HRIS\Payroll\PayrollComponent\Allowances\PositionAllowancesController;
+use App\Http\Controllers\HRIS\Payroll\PayrollComponent\Allowances\ThrAllowancesController;
+use App\Http\Controllers\HRIS\Payroll\PayrollComponent\Allowances\TransportationAllowanceController;
+use App\Http\Controllers\HRIS\Payroll\PayrollComponent\Bonuses\ProjectBonusController;
+use App\Http\Controllers\HRIS\Payroll\PayrollComponent\Bonuses\SalesBonusController;
+use App\Http\Controllers\HRIS\Payroll\PayrollComponent\Deductions\AdditionalDeductionController;
+use App\Http\Controllers\HRIS\Payroll\PayrollComponent\Deductions\NinePastFiveteenLateController;
+use App\Http\Controllers\HRIS\Payroll\PayrollComponent\Deductions\SLADeductionController;
+use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\BPJSKetController;
+use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\CutOffController;
+use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollAllowanceController;
+use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollController;
+use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollHistoryController;
+use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollScheduleController;
+use App\Http\Controllers\HRIS\PermissionController;
 use App\Http\Controllers\Master\AccountController;
 use App\Http\Controllers\Master\AccountTransactionsController;
 use App\Http\Controllers\Master\AssetController;
@@ -47,32 +57,24 @@ use App\Http\Controllers\Master\BranchesController;
 use App\Http\Controllers\Master\BroadbandPacketController;
 use App\Http\Controllers\Master\ContactController;
 use App\Http\Controllers\Master\DepartmentController;
+use App\Http\Controllers\Master\NationalHolidayController;
 use App\Http\Controllers\Master\ODPAreaController;
-use App\Http\Controllers\Master\ODPController;
 use App\Http\Controllers\Master\ProductController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\ServicesCategoryController;
 use App\Http\Controllers\Master\TaxSettingController;
-use App\Http\Controllers\ODP\ODPMapController;
-use App\Http\Controllers\Operational\SPController;
-use App\Http\Controllers\Payroll\BPJSKetController;
-use App\Http\Controllers\Payroll\CutOffController;
-use App\Http\Controllers\Payroll\GeneratePayrollController;
-use App\Http\Controllers\Payroll\PayrollAllowanceController;
-use App\Http\Controllers\Payroll\PayrollController;
-use App\Http\Controllers\Payroll\PayrollHistoryController;
-use App\Http\Controllers\Payroll\PayrollScheduleController;
-use App\Http\Controllers\SKController;
-use App\Http\Controllers\Transaction\BastController;
-use App\Http\Controllers\Transaction\ExpenditureController;
-use App\Http\Controllers\Transaction\FabController;
-use App\Http\Controllers\Transaction\InvoiceController;
-use App\Http\Controllers\Transaction\OfferingLettersController;
+use App\Http\Controllers\Operational\Inventory\GoodsController;
+use App\Http\Controllers\Operational\Inventory\UnitTypesController;
+use App\Http\Controllers\Operational\Inventory\UsedItemsController;
+use App\Http\Controllers\Operational\ODP\ODPController;
+use App\Http\Controllers\Operational\ODP\ODPMapController;
+use App\Http\Controllers\Operational\Pole\PoleController;
+use App\Http\Controllers\Operational\Pole\PoleMapController;
 use App\Http\Controllers\UserProfile\UserLeaveAndPermissionController;
-use App\Http\Controllers\Utilities\CompanyProfileController;
-use App\Http\Controllers\Utilities\LetterHeadController;
-use App\Http\Controllers\Utilities\NotificationsController;
-use App\Http\Controllers\Utilities\UserProfileController;
+use App\Http\Controllers\UserProfile\UserProfileController;
+use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
+use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
+use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -398,16 +400,21 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/destroy', [ODPAreaController::class, 'destroy']);
             Route::post('/update/{odpArea}', [ODPAreaController::class, 'update']);
         });
+    });
 
 
+    Route::prefix('operational')->group(function () {
         Route::prefix('odp')->group(function () {
             Route::get('/', [ODPController::class, 'index']);
             Route::get('/data', [ODPController::class, 'data']);
             Route::get('/search', [ODPController::class, 'search']);
             Route::get('/odp-area/data', [ODPController::class, 'getODPAreaData']);
+            Route::get('/export', [ODPController::class, 'export']);
             Route::get('/odp-area/selected/{odp}', [ODPController::class, 'getSelectedODPArea']);
             Route::post('/', [ODPController::class, 'store']);
             Route::get('/{odp}', [ODPController::class, 'edit']);
+            Route::post('/import', [ODPController::class, 'import']);
+            Route::post('/destroy', [ODPController::class, 'destroy']);
             Route::post('/{odp}', [ODPController::class, 'update']);
         });
 
@@ -416,6 +423,36 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [ODPMapController::class, 'index']);
             Route::get('/data', [ODPMapController::class, 'data']);
             Route::get('/filter', [ODPMapController::class, 'filter']);
+        });
+
+
+        Route::prefix('poles-map')->group(function () {
+            Route::get('/', [PoleMapController::class, 'index']);
+            Route::get('/data', [PoleMapController::class, 'data']);
+            Route::get('/filter', [PoleMapController::class, 'filter']);
+        });
+
+
+        Route::prefix('fo-cables')->group(function () {
+        });
+
+        Route::prefix('poles')->group(function () {
+            Route::get('/', [PoleController::class, 'index']);
+            Route::get('/data', [PoleController::class, 'data']);
+            Route::get('/search', [PoleController::class, 'search']);
+            Route::post('/', [PoleController::class, 'store']);
+            Route::post('/destroy', [PoleController::class, 'destroy']);
+            Route::get('/{pole}', [PoleController::class, 'edit']);
+            Route::post('/{pole}', [PoleController::class, 'update']);
+        });
+
+        Route::prefix('joint-closures')->group(function () {
+        });
+
+        Route::prefix('core-data')->group(function () {
+        });
+
+        Route::prefix('coverage-area')->group(function () {
         });
     });
 

@@ -13,7 +13,7 @@ class ODPAreaController extends Controller
 {
     public function index(): View
     {
-        return view('pages.master.odp.areas.index');
+        return view('pages.operational.odp.areas.index');
     }
 
 
