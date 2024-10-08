@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form Joint Closure Area</h5>
+                <h5 class="modal-title">Form Saldo Awal</h5>
                 <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
@@ -17,7 +17,7 @@
             <form id="form-create" @submit.prevent="save()">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Kode</label>
+                        <label for="name" class="required form-label">Akun</label>
                         <input type="number" id="code" name="code" class="form-control form-control-solid"
                                placeholder="Kode"/>
                     </div>

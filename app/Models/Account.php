@@ -110,6 +110,28 @@ class Account extends Model
         })->toArray();
     }
 
+
+    public function getParentAccount(Request $request): array
+    {
+        $search = $request->input('search');
+        $query = self::orderby('name', 'asc')
+            ->whereNull('parent_id')
+            ->select('id', 'name')
+            ->limit(5);
+
+        if ($search !== '') {
+            $query->where('name', 'like', '%'.$search.'%');
+        }
+        $account = $query->get();
+
+        return $account->map(function ($c) {
+            return [
+                'id' => $c->id,
+                'text' => $c->name,
+            ];
+        })->toArray();
+    }
+
     public function getSelectedAccount(int $accountId): array
     {
         $account = self::where('id', $accountId)->first();

@@ -17,8 +17,7 @@
     "laravel/ui": "^4.5",
     "maatwebsite/excel": "^3.1",
     "simplesoftwareio/simple-qrcode": "^4.2",
-    "spatie/laravel-permission": "^6.9",
-    "ext-http": "*"
+    "spatie/laravel-permission": "^6.9"
   },
   "require-dev": {
     "barryvdh/laravel-ide-helper": "^3.1",

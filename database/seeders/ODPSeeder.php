@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\ODP;
 use App\Models\ODPArea;
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 class ODPSeeder extends Seeder
@@ -23,7 +22,7 @@ class ODPSeeder extends Seeder
             'long' => 101.441150,
             'max_capacity' => 100,
             'used_capacity' => 1,
-            'cut_off_date' => Carbon::now(),
+            'cut_off' => "MEI",
 
         ]);
 
@@ -37,7 +36,7 @@ class ODPSeeder extends Seeder
             'long' => 101.443132,
             'max_capacity' => 100,
             'used_capacity' => 1,
-            'cut_off_date' => Carbon::now(),
+            'cut_off' => "MEI",
         ]);
     }
 }

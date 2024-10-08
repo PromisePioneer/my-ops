@@ -199,7 +199,7 @@
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'invoice'"
                                 href="{{ url('/income-transactions/invoice') }}">
-                            Joint Closure
+                            Joint Closure Area
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'invoice'"
@@ -240,6 +240,11 @@
                                 :active="request()->segment(2) === 'account'"
                                 href="{{ url('account-master/account') }}">
                             Akun
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'initial-balances'"
+                                href="{{ url('account-master/initial-balances') }}">
+                            Saldo Awal
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'account-transaction'"
