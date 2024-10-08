@@ -12,6 +12,7 @@ use App\Http\Controllers\Accounting\Journals\TrialBalanceController;
 use App\Http\Controllers\Accounting\Transaction\BastController;
 use App\Http\Controllers\Accounting\Transaction\ExpenditureController;
 use App\Http\Controllers\Accounting\Transaction\FabController;
+use App\Http\Controllers\Accounting\Transaction\InitialBalanceController;
 use App\Http\Controllers\Accounting\Transaction\InvoiceController;
 use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
 use App\Http\Controllers\HomeController;
@@ -272,6 +273,11 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [AccountTransactionsController::class, 'data']);
             Route::get('/search', [AccountTransactionsController::class, 'search']);
             Route::get('detail/{account}', [AccountTransactionsController::class, 'detail']);
+        });
+
+        Route::prefix('initial-balances')->group(function () {
+            Route::get('/', [InitialBalanceController::class, 'index']);
+            Route::get('/data', [InitialBalanceController::class, 'data']);
         });
     });
 

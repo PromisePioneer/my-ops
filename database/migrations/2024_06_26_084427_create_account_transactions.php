@@ -18,8 +18,9 @@ class CreateAccountTransactions extends Migration
             $table->foreignId('branch_id')->nullable()->constrained('branches');
             $table->date('date');
             $table->foreignId('account_id')->nullable()->constrained('accounts');
-            $table->string('description');
-            $table->enum('type', ['debit', 'credit']);
+            $table->enum('type_transaction', ['TR', 'SA'])->default('TR');
+            $table->string('description')->nullable();
+            $table->enum('type', ['debit', 'credit'])->nullable();
             $table->double('amount');
             $table->timestamps();
         });
@@ -30,7 +31,7 @@ class CreateAccountTransactions extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('account_transactions');
     }

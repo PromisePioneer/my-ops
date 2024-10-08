@@ -121,43 +121,6 @@ class AccountTransaction extends Model
     {
     }
 
-//    public function getGeneralJournalDataDetails($month, $year)
-//    {
-//        return self::whereMonth('date', $month)
-//            ->whereYear('date', $year)
-//            ->orderBy('date', 'asc')
-//            ->leftJoin('accounts', 'accounts.id', '=', 'account_transactions.account_id')
-//            ->leftJoin('sub_accounts', 'sub_accounts.id', '=', 'account_transactions.sub_account_id')
-//            ->select(
-//                'account_transactions.*',
-//                'sub_accounts.code as sub_account_code',
-//                'sub_accounts.name as sub_account_name',
-//                'accounts.code as account_code',
-//                'accounts.name as account_name'
-//            )->get()
-//            ->groupBy('description')
-//            ->map(function (Collection $group) {
-//                return [
-//                    'tanggal' => $group->first()->created_at->format('d/m/Y'),
-//                    'description' => $group->first()->description,
-//                    'debit' => $group->where('type', 'debit')->map(function ($transaction) {
-//                        return [
-//                            'code' => $transaction->account_code ?? $transaction->sub_account_code,
-//                            'account_name' => $transaction->account_name ?? $transaction->sub_account_name,
-//                            'amount' => number_format($transaction->amount),
-//                        ];
-//                    }),
-//                    'credit' => $group->where('type', 'credit')->map(function ($transaction) {
-//                        return [
-//                            'code' => $transaction->account_code ?? $transaction->sub_account_code,
-//                            'account_name' => $transaction->account_name ?? $transaction->sub_account_name,
-//                            'amount' => number_format($transaction->amount),
-//                        ];
-//                    })->values(),
-//                ];
-//            })->values();
-//    }
-
     public function getCurrentPPNOnInvoice($description): self
     {
         return self::whereHas('account')->whereHas('account', function ($query) {

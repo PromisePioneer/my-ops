@@ -34,7 +34,7 @@ class AssetImport implements ToModel, WithHeadingRow
             'credit_account_id' => Account::where('name', $row['akun_debit'])->first()->id,
             'date_received' => Carbon::instance(Date::excelToDateTimeObject((int)$row['tanggal_perolehan'])),
             'name' => $row['nama'],
-            'unit' => $row[w'unit'],
+            'unit' => $row['unit'],
             'useful_life' => $row['masa_manfaat'],
             'price_per_unit' => $row['harga_per_unit'],
             'total_price' => $row['harga_per_unit'] * $row['unit'],
