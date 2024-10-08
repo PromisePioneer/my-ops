@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ODPController extends Controller
 {
@@ -32,7 +33,7 @@ class ODPController extends Controller
 
     public function data(): JsonResponse
     {
-        return response()->json(ODP::with('area')->paginate(10));
+        return response()->json(ODP::with('area', 'area.branch')->paginate(10));
     }
 
     public function getODPAreaData(Request $request): JsonResponse
@@ -84,12 +85,12 @@ class ODPController extends Controller
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
-    public function export(Request $request)
+    public function export(Request $request): BinaryFileResponse
     {
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        return Excel::download(new ODPExport($startDate, $endDate), 'data-odp.xlsx');
+        return Excel::download(new ODPExport($startDate, $endDate), 'data-.xlsx');
     }
 
 

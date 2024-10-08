@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('odp_areas', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('branch_id')->nullable()->constrained('branches');
             $table->string('code')->unique();
             $table->timestamps();
         });

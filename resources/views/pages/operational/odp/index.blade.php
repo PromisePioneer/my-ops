@@ -129,6 +129,11 @@
                                         <div class="d-flex align-items-center">
                                             <table class="table table-bordered">
                                                 <tr>
+                                                    <th>Cabang</th>
+                                                    <th>:</th>
+                                                    <th x-text="odp.area.branch.name"></th>
+                                                </tr>
+                                                <tr>
                                                     <th>Kode area</th>
                                                     <th>:</th>
                                                     <th x-text="odp.area.code"></th>

@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form Export Data Tiang</h5>
+                <h5 class="modal-title">Form Export Kabel FO</h5>
                 <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x"></span>
@@ -10,7 +10,7 @@
             </div>
 
             <div class="modal-body">
-                <form id="form-export" action="{{ url('operational/poles/export') }}">
+                <form id="form-export" action="{{ url('operational/fo-cables/export') }}">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Tanggal Awal</label>
                         <input type="date" id="start_date" name="start_date"

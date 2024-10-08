@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ODPAreaRequest;
+use App\Models\Branch;
 use App\Models\ODPArea;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,6 +12,14 @@ use Illuminate\View\View;
 
 class ODPAreaController extends Controller
 {
+
+    private Branch $branch;
+
+    public function __construct()
+    {
+        $this->branch = new Branch();
+    }
+
     public function index(): View
     {
         return view('pages.operational.odp.areas.index');
@@ -19,13 +28,25 @@ class ODPAreaController extends Controller
 
     public function data(): JsonResponse
     {
-        return response()->json(ODPArea::paginate(10));
+        return response()->json(ODPArea::with('branch')->paginate(10));
     }
 
 
     public function search(): JsonResponse
     {
         return response()->json();
+    }
+
+
+    public function getBranchData(Request $request): JsonResponse
+    {
+        return response()->json($this->branch->getData($request));
+    }
+
+
+    public function selectedBranchData(ODPArea $odpArea): JsonResponse
+    {
+        return response()->json($this->branch->getSelectedData($odpArea->branch_id));
     }
 
 

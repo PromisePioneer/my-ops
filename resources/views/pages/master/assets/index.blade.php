@@ -5,6 +5,8 @@
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             @include('pages.master.assets.modal.create')
             @include('pages.master.assets.modal.edit')
+            @include('pages.master.assets.modal.import')
+
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -18,6 +20,12 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                            <button type="button" class="btn btn-light-success btn-sm me-3"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-import">
+                                <i class="bi bi-file-earmark-excel"></i>
+                                Import
+                            </button>
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-create">
@@ -160,6 +168,8 @@
                 formDelete: document.getElementById('form-delete'),
                 formEdit: document.getElementById('form-edit'),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
+                formImport: document.getElementById('form-import'),
+                modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
                 async init() {
                     await this.getAssetsData();
                     await this.getBranchData();
@@ -267,6 +277,21 @@
                         console.log(e)
                     } finally {
                         this.isLoading = false;
+                    }
+                },
+                async importData() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/master/assets/import', new FormData(this.formImport))
+                        await showAlert('success', 'Data berhasil diimport')
+                        this.formImport.reset();
+                        this.modalImport.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
                     }
                 },
                 async getBranchData() {

@@ -23,21 +23,13 @@
                                    id="segment_id" placeholder="Segmen" :value="editVal.segment_id">
                         </div>
                         <div class="col-lg-6">
-                            <label for="name" class="required form-label">Klasifikasi</label>
-                            <select name="classification" id="classification" class="form-select form-select-solid">
-                                <option value="Backbone"
-                                        :selected="`${editVal.classification === 'Backbone'}`">
-                                    Backbone
-                                </option>
-                                <option value="Backhaul" :selected="`${editVal.classification === 'Backhaul'}`">
-                                    Backhaul
-                                </option>
-                                <option value="Fronthaul" :selected="`${editVal.classification === 'Fronthaul'}`">
-                                    Fronthaul
-                                </option>
-                                <option value="Akses" :selected="`${editVal.classification === 'Akses'}`">Akses</option>
+                            <label for="name" class="required form-label">Cabang</label>
+                            <select name="branch_id" id="selectedBranch"
+                                    class="form-select form-select-solid branch-select2">
+                                <option></option>
                             </select>
                         </div>
+
                     </div>
                     <div class="row mb-10">
                         <div class="col-lg-6">
@@ -51,7 +43,7 @@
                         <div class="col-lg-6">
                             <label for="name" class="required form-label">Panjang Kabel</label>
                             <input type="number" class="form-control form-control-solid" name="length"
-                                   id="length" :value="editVal.length">
+                                   id="length" :value="editVal.length" placeholder="Panjang Kabel">
                         </div>
                     </div>
 
@@ -70,10 +62,29 @@
                     </div>
 
 
-                    <div class="col-lg-6 mb-10">
-                        <label for="name" class="required form-label">Tanggal Cutoff</label>
-                        <input type="date" class="form-control form-control-solid" name="cut_off_date"
-                               id="cut_off_date" :value="editVal.cut_off_date">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label for="name" class="required form-label">Klasifikasi</label>
+                            <select name="classification" id="classification" class="form-select form-select-solid">
+                                <option value="Backbone"
+                                        :selected="`${editVal.classification === 'Backbone'}`">
+                                    Backbone
+                                </option>
+                                <option value="Backhaul" :selected="`${editVal.classification === 'Backhaul'}`">
+                                    Backhaul
+                                </option>
+                                <option value="Fronthaul" :selected="`${editVal.classification === 'Fronthaul'}`">
+                                    Fronthaul
+                                </option>
+                                <option value="Akses" :selected="`${editVal.classification === 'Akses'}`">Akses</option>
+                            </select>
+                        </div>
+
+                        <div class="col-lg-6 mb-10">
+                            <label for="name" class="required form-label">Tanggal Cutoff</label>
+                            <input type="date" class="form-control form-control-solid date" name="cut_off_date"
+                                   id="cut_off_date" :value="editVal.cut_off_date">
+                        </div>
                     </div>
 
                     <div class="row mb-10 align-items-center">

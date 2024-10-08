@@ -13,6 +13,7 @@ class ODPAreaSeeder extends Seeder
     public function run(): void
     {
         ODPArea::create([
+            'branch_id' => 1,
             'code' => 'AM011748',
         ]);
     }

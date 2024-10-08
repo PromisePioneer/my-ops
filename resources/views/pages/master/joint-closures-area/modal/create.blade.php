@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form ODP Area</h5>
+                <h5 class="modal-title">Form Cabang</h5>
                 <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
@@ -17,15 +17,20 @@
             <form id="form-create" @submit.prevent="save()">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Cabang</label>
-                        <select name="branch_id" id="branch_id"
-                                class="form-select form-select-solid branch-select2"
-                                data-dropdown-parent="#modal-create"></select>
+                        <label for="name" class="required form-label">Kode</label>
+                        <input type="number" id="code" name="code" class="form-control form-control-solid"
+                               placeholder="Kode"/>
                     </div>
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Kode</label>
-                        <input type="text" id="code" name="code" class="form-control form-control-solid"
-                               placeholder="Kode"/>
+                        <label for="name" class="required form-label">Nama</label>
+                        <input type="text" id="name" name="name" class="form-control form-control-solid"
+                               placeholder="Nama Cabang"/>
+                    </div>
+
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Alamat</label>
+                        <textarea class="form-control form-control-solid" name="address" id="address"
+                                  data-kt-autosize="true" placeholder="Alamat Cabang"></textarea>
                     </div>
                 </div>
 

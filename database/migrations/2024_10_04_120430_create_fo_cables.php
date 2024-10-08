@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('fo_cables', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('branch_id')->nullable()->constrained('branches');
             $table->string('segment_id');
             $table->enum('classification', ['Backbone', 'Backhaul', 'Fronthaul', 'Akses']);
             $table->enum('cable_placement', ['Udara', 'Underground']);

@@ -67,6 +67,12 @@ class Account extends Model
     }
 
 
+    public function account(): HasMany
+    {
+        return $this->hasMany(InitialBalance::class, 'account_id');
+    }
+
+
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id');

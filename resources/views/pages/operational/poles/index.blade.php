@@ -11,6 +11,8 @@
     <div x-data="polesData()">
         @include('pages.operational.poles.modal.create')
         @include('pages.operational.poles.modal.edit')
+        @include('pages.operational.poles.modal.import')
+        @include('pages.operational.poles.modal.export')
 
 
         <div class="card mb-5 mb-xl-10" id="kt_profile_details_view">
@@ -27,22 +29,22 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                            {{--                            <button type="button" class="btn btn-light-danger btn-sm me-3" data-bs-toggle="modal"--}}
-                            {{--                                    data-bs-target="#modal-export">--}}
-                            {{--                            <span class="svg-icon svg-icon-2">--}}
-                            {{--                                <i class="bi bi-file-earmark-excel-fill"></i>--}}
-                            {{--                            </span>--}}
-                            {{--                                Export--}}
-                            {{--                            </button>--}}
+                            <button type="button" class="btn btn-light-danger btn-sm me-3" data-bs-toggle="modal"
+                                    data-bs-target="#modal-export">
+                                                        <span class="svg-icon svg-icon-2">
+                                                            <i class="bi bi-file-earmark-excel-fill"></i>
+                                                        </span>
+                                Export
+                            </button>
 
 
-                            {{--                            <button type="button" class="btn btn-light-success btn-sm me-3" data-bs-toggle="modal"--}}
-                            {{--                                    data-bs-target="#modal-import">--}}
-                            {{--                            <span class="svg-icon svg-icon-2">--}}
-                            {{--                                <i class="bi bi-file-earmark-excel-fill"></i>--}}
-                            {{--                            </span>--}}
-                            {{--                                Import--}}
-                            {{--                            </button>--}}
+                            <button type="button" class="btn btn-light-success btn-sm me-3" data-bs-toggle="modal"
+                                    data-bs-target="#modal-import">
+                                                        <span class="svg-icon svg-icon-2">
+                                                            <i class="bi bi-file-earmark-excel-fill"></i>
+                                                        </span>
+                                Import
+                            </button>
                             <button type="button" class="btn btn-light-primary btn-sm mr-4" @click="add()"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-create">
@@ -88,7 +90,6 @@
                                 <th class="text-center">Panjang</th>
                                 <th class="text-center">Wilayah</th>
                                 <th class="text-center">Kode Tiang</th>
-                                <th class="text-center">Sewa</th>
                                 <th class="text-center">Koordinat</th>
                                 <th class="text-center">Cut Off Data</th>
                                 <th class="text-center">Actions</th>
@@ -129,7 +130,6 @@
                                     <td class="text-center" x-text="`${pole.length} Meter`"></td>
                                     <td class="text-center" x-text="pole.region"></td>
                                     <td class="text-center" x-text="pole.code"></td>
-                                    <td class="text-center"></td>
                                     <td class="text-center" x-text="`${pole.lat}, ${pole.long}`"></td>
                                     <td class="text-center" x-text="pole.cut_off_date"></td>
                                     <td class="text-center">
@@ -183,11 +183,11 @@
                 formEdit: document.getElementById('form-edit'),
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
-                // modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
-                // formImport: document.getElementById('form-import'),
+                modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
+                formImport: document.getElementById('form-import'),
                 formDelete: document.getElementById('form-delete'),
-                // modalExport: new bootstrap.Modal(document.getElementById('modal-export')),
-                // formExport: document.getElementById('form-export'),
+                modalExport: new bootstrap.Modal(document.getElementById('modal-export')),
+                formExport: document.getElementById('form-export'),
                 map: null,
                 async init() {
                     await this.getPolesData();
@@ -208,7 +208,7 @@
                 async importData() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/operational/odp/import', new FormData(this.formImport))
+                        await axios.post('/operational/poles/import', new FormData(this.formImport))
                         await showAlert('success', 'Data berhasil diimport')
                         this.formImport.reset();
                         this.modalImport.hide();

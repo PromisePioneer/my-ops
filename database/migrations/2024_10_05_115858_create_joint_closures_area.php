@@ -10,16 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('poles', function (Blueprint $table) {
+        Schema::create('joint_closures_area', function (Blueprint $table) {
             $table->id();
             $table->foreignId('branch_id')->nullable()->constrained('branches');
-            $table->double('diameter');
-            $table->double('length');
-            $table->string('region');
-            $table->double('code');
-            $table->double('lat');
-            $table->double('long');
-            $table->date('cut_off_date');
+            $table->string('code')->unique();
             $table->timestamps();
         });
     }
@@ -29,6 +23,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('poles');
+        Schema::dropIfExists('joint_closures');
     }
 };

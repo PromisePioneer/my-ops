@@ -4,14 +4,17 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AssetRequest;
+use App\Imports\AssetImport;
 use App\Models\Account;
 use App\Models\Asset;
 use App\Models\Branch;
 use App\Service\Assets\AssetDepreciationService;
 use App\Service\Master\AssetService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
 
 class AssetController extends Controller
@@ -119,5 +122,18 @@ class AssetController extends Controller
     public function data(Request $request): JsonResponse
     {
         return response()->json($this->assetService->data($request));
+    }
+
+
+    public function import(Request $request)
+    {
+        try {
+            ini_set('max_execution_time', 180);
+            $file = $request->file('file_import');
+            Excel::import(new AssetImport(), $file);
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()]);
+        }
+        return response()->json(['message' => 'Data berhasil diimport']);
     }
 }

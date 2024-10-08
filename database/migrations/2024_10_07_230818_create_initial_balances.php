@@ -10,7 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        DB::statement("ALTER TABLE odp ADD COLUMN location POINT");
+        Schema::create('initial_balances', function (Blueprint $table) {
+            $table->id();
+            $table->date('date');
+            $table->foreignId('account_id')->constrained('accounts');
+            $table->double('balances');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -18,8 +24,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('odp', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('initial_balances');
     }
 };

@@ -17,6 +17,13 @@
             <form id="form-edit" @submit.prevent="update(editVal.id)">
                 <div class="modal-body">
                     <div class="mb-10">
+                        <label for="name" class="required form-label">Cabang</label>
+                        <select name="branch_id" id="selectedBranch"
+                                class="form-select form-select-solid branch-select2"
+                                data-dropdown-parent="#modal-edit"></select>
+                    </div>
+
+                    <div class="mb-10">
                         <label for="name" class="required form-label">Kode</label>
                         <input type="text" id="code" name="code" class="form-control form-control-solid"
                                placeholder="Kode" :value="editVal.code"/>

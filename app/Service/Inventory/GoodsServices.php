@@ -3,10 +3,12 @@
 namespace App\Service\Inventory;
 
 use App\Http\Requests\Inventory\GoodsRequest;
+use App\Models\Account;
 use App\Models\Goods;
 use App\Models\SubAccount;
 use App\Models\UnitType;
 use App\Service\Accounts\AccountTransactionService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,13 +20,11 @@ class GoodsServices
 
     private UnitType $unitType;
 
-    private SubAccount $subAccount;
 
     public function __construct()
     {
         $this->accountTransactionService = new AccountTransactionService();
         $this->unitType = new UnitType();
-        $this->subAccount = new SubAccount();
     }
 
     public function store(GoodsRequest $request): void
@@ -67,17 +67,37 @@ class GoodsServices
             $this->accountTransactionService->createDebitTransaction(
                 $description,
                 $goods->total_price,
-                null,
                 $goods->account_id
             );
             $this->accountTransactionService->createCreditTransaction(
                 $description,
                 $goods->total_price,
-                null,
                 $kasAccount->id
             );
             $goods->confirmation_status = 1;
             $goods->save();
+        });
+    }
+
+
+    public function getPersediaanAccount(Request $request)
+    {
+        $search = $request->input('search');
+        $account = Account::with('parent')->whereHas('parent', function ($query) use ($search) {
+            $query->where('code', 112);
+        });
+
+
+        if (!empty($search)) {
+            $account->where('name', 'like', '%'.$search.'%');
+        }
+
+        $data = $account->get();
+        return $data->map(function ($account) {
+            return [
+                'text' => $account->name,
+                'id' => $account->id,
+            ];
         });
     }
 }

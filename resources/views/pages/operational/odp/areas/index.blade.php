@@ -57,6 +57,7 @@
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
+                                <th class="min-w-125px">Cabang</th>
                                 <th class="min-w-125px">Kode</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
@@ -92,6 +93,7 @@
                                                    :id="'checkbox-' + area.id"/>
                                         </div>
                                     </td>
+                                    <td x-text="area.branch?.name ?? 'Pusat'"></td>
                                     <td x-text="area.code"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
@@ -141,6 +143,7 @@
                 formDelete: document.getElementById('form-delete'),
                 async init() {
                     await this.getOdpAreaData();
+                    await this.getBranchData();
                 },
                 async paginationEndPoint(url) {
                     if (url) {
@@ -151,6 +154,22 @@
                 async getOdpAreaData() {
                     const resp = await axios.get('/master/odp-areas/data');
                     this.odpAreasData = resp.data;
+                },
+                async selectedBranchData(id) {
+                    const selectedBranch = $('#selectedBranch');
+                    $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/master/odp-areas/branch/selected/${id}`,
+                    }).then(function (response) {
+                        const option = new Option(response.name, response.id, true, true);
+                        selectedBranch.append(option).trigger('change');
+
+                        selectedBranch.trigger({
+                            type: 'select2:select',
+                            params: {results: response}
+                        });
+                    });
                 },
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
@@ -176,6 +195,20 @@
                         }
                     }
                 },
+                async getBranchData() {
+                    $(".branch-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pillih Cabang',
+                        ajax: {
+                            url: '/master/odp-areas/branch/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
                 async save() {
                     this.buttonLoading = true;
                     try {
@@ -194,6 +227,7 @@
                 async edit(id) {
                     const resp = await axios.get(`/master/odp-areas/${id}`);
                     this.editVal = resp.data;
+                    await this.selectedBranchData(id);
                 },
                 async update(id) {
                     this.buttonLoading = true;

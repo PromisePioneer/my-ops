@@ -78,6 +78,11 @@
     <script src="{{ url('assets/plugins/custom/leaflet/leaflet.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/tokml@0.4.0/tokml.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+
+    <script>
+        const x = document.getElementById("demo");
+    </script>
     <script>
         $('.date').flatpickr();
 
@@ -98,6 +103,14 @@
                         await this.odpMarker(this.map);
                     }
                 },
+                getLocation() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(this.showPosition);
+                    } else {
+                        x.innerHTML = "Geolocation is not supported by this browser.";
+                    }
+                },
+
                 async getMonth() {
                     this.months.push(
                         {name: "Januari", number: '01'},
@@ -186,7 +199,6 @@
                     const month = document.getElementById('month')?.value ?? '';
                     this.isLoading = true;
                     try {
-                        this.map = null;
                         const resp = await axios.get('/operational/odp-map/filter', {
                             params: {
                                 month: month,
@@ -194,8 +206,6 @@
                             }
                         });
                         this.odpData = resp.data;
-
-
                         if (this.odpData.length > 0) {
                             this.map = L.map('map').setView([this.odpData[0].lat, this.odpData[0].long], 16);
                             this.map.invalidateSize();

@@ -57,6 +57,7 @@ use App\Http\Controllers\Master\BranchesController;
 use App\Http\Controllers\Master\BroadbandPacketController;
 use App\Http\Controllers\Master\ContactController;
 use App\Http\Controllers\Master\DepartmentController;
+use App\Http\Controllers\Master\JointClosureAreaController;
 use App\Http\Controllers\Master\NationalHolidayController;
 use App\Http\Controllers\Master\ODPAreaController;
 use App\Http\Controllers\Master\ProductController;
@@ -390,17 +391,38 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/confirm/{asset}', [AssetController::class, 'confirm']);
             Route::get('/detail/{asset}', [AssetController::class, 'detail']);
             Route::get('/detail/data/{asset}', [AssetController::class, 'getDetailData']);
+            Route::post('/import', [AssetController::class, 'import']);
         });
 
 
         Route::prefix('odp-areas')->group(function () {
             Route::get('/', [ODPAreaController::class, 'index']);
+            Route::get('/branch/data', [ODPAreaController::class, 'getBranchData']);
+            Route::get('/branch/selected/{odpArea}', [ODPAreaController::class, 'selectedBranchData']);
             Route::get('/data', [ODPAreaController::class, 'data']);
             Route::get('/search', [ODPAreaController::class, 'search']);
             Route::post('/', [ODPAreaController::class, 'store']);
             Route::get('/{odpArea}', [ODPAreaController::class, 'edit']);
             Route::post('/destroy', [ODPAreaController::class, 'destroy']);
             Route::post('/update/{odpArea}', [ODPAreaController::class, 'update']);
+        });
+
+
+        Route::prefix('joint-closures-area')->group(function () {
+            Route::get('/', [JointClosureAreaController::class, 'index']);
+            Route::get('/branch/data', [JointClosureAreaController::class, 'getBranchData']
+            );
+            Route::get(
+                '/branch/selected/{odpArea}',
+                [JointClosureAreaController::class, 'selectedBranchData']
+            );
+            Route::get('/data', [JointClosureAreaController::class, 'data']);
+            Route::get('/search', [JointClosureAreaController::class, 'search']);
+            Route::post('/', [JointClosureAreaController::class, 'store']);
+            Route::get('/{odpArea}', [JointClosureAreaController::class, 'edit']);
+            Route::post('/destroy', [JointClosureAreaController::class, 'destroy']);
+            Route::post('/update/{odpArea}', [JointClosureAreaController::class, 'update']
+            );
         });
     });
 
@@ -445,8 +467,12 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [FOCableController::class, 'index']);
             Route::get('/data', [FOCableController::class, 'data']);
             Route::get('/search', [FOCableController::class, 'search']);
+            Route::get('/branch/data', [FoCableController::class, 'getBranchData']);
+            Route::get('/branch/selected/{FOCable}', [FoCableController::class, 'selectedBranchData']);
             Route::post('/', [FOCableController::class, 'store']);
             Route::post('/destroy', [FOCableController::class, 'destroy']);
+            Route::post('/import', [FOCableController::class, 'import']);
+            Route::get('/export', [FOCableController::class, 'export']);
             Route::get('/{FOCable}', [FOCableController::class, 'edit']);
             Route::post('update/{FOCable}', [FOCableController::class, 'update']);
             Route::post('/destroy', [FOCableController::class, 'destroy']);
@@ -458,6 +484,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/search', [PoleController::class, 'search']);
             Route::post('/', [PoleController::class, 'store']);
             Route::post('/destroy', [PoleController::class, 'destroy']);
+            Route::post('/import', [PoleController::class, 'import']);
+            Route::get('/export', [PoleController::class, 'export']);
             Route::get('/{pole}', [PoleController::class, 'edit']);
             Route::post('/{pole}', [PoleController::class, 'update']);
         });

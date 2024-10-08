@@ -1,10 +1,10 @@
-﻿@extends('layouts.template')
+@extends('layouts.template')
 @section('page-title', 'Data Cabang')
 @section('content')
     <div x-data="branchesData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.master.joint-closures-area.modal.create')
-            @include('pages.master.joint-closures-area.modal.edit')
+            @include('pages.master.branch.modal.create')
+            @include('pages.master.branch.modal.edit')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -58,9 +58,8 @@
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
+                                <th class="min-w-125px">Cabang</th>
                                 <th class="min-w-125px">Kode</th>
-                                <th class="min-w-125px">Nama</th>
-                                <th class="min-w-125px">Alamat</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">

@@ -12,14 +12,6 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class ODPImport implements ToModel, WithHeadingRow
 {
-
-    private ODPArea $odpArea;
-
-    public function __construct()
-    {
-        $this->odpArea = new ODPArea();
-    }
-
     /**
      * @param  array  $row
      *

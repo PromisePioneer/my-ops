@@ -159,6 +159,11 @@
                                 href="{{ url('master/odp-areas') }}">
                             ODP Area
                         </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'joint-closures-area'"
+                                href="{{ url('master/joint-closures-area') }}">
+                            Kode Joint Closure
+                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
 
@@ -194,7 +199,7 @@
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'invoice'"
                                 href="{{ url('/income-transactions/invoice') }}">
-                            Join Closure
+                            Joint Closure
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'invoice'"

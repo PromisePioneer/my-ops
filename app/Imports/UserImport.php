@@ -5,7 +5,9 @@ namespace App\Imports;
 use App\Models\Branch;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -15,11 +17,13 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 class UserImport implements ToModel, WithHeadingRow, WithValidation, WithChunkReading
 {
 
-    private Branch $branch;
+    use Importable;
+
+    private Collection $branch;
 
     public function __construct()
     {
-        $this->branch = new Branch();
+        $this->branch = Branch::all(['id', 'name'])->pluck('id');
     }
 
     public function rules(): array
@@ -49,7 +53,7 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, WithChunkRe
     public function model(array $row): User
     {
         return new User([
-            'branch_id' => $this->branch->where('name', $row['cabang'])->pluck('id')->first() ?? null,
+            'branch_id' => $this->branch->where('name', $row['cabang'])->first()->id ?? null,
             'absent_id' => (int)$row['absen_id'],
             'nip' => (int)$row['nik'],
             'name' => $row['nama'],
@@ -61,6 +65,6 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, WithChunkRe
 
     public function chunkSize(): int
     {
-        return 1000;
+        return 5000;
     }
 }

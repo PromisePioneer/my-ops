@@ -22,15 +22,15 @@
                             <input type="text" class="form-control form-control-solid" name="segment_id"
                                    id="segment_id" placeholder="Segmen">
                         </div>
+
                         <div class="col-lg-6">
-                            <label for="name" class="required form-label">Klasifikasi</label>
-                            <select name="classification" id="classification" class="form-select form-select-solid">
-                                <option value="Backbone">Backbone</option>
-                                <option value="Backhaul">Backhaul</option>
-                                <option value="Fronthaul">Fronthaul</option>
-                                <option value="Akses">Akses</option>
+                            <label for="name" class="required form-label">Cabang</label>
+                            <select name="branch_id" id="branch_id"
+                                    class="form-select form-select-solid branch-select2">
+                                <option></option>
                             </select>
                         </div>
+
                     </div>
                     <div class="row mb-10">
                         <div class="col-lg-6">
@@ -43,7 +43,7 @@
                         <div class="col-lg-6">
                             <label for="name" class="required form-label">Panjang Kabel</label>
                             <input type="number" class="form-control form-control-solid" name="length"
-                                   id="length">
+                                   id="length" placeholder="Panjang Kabel">
                         </div>
                     </div>
 
@@ -60,12 +60,22 @@
                                    placeholder="Jumlah Core">
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label for="name" class="required form-label">Klasifikasi</label>
+                            <select name="classification" id="classification" class="form-select form-select-solid">
+                                <option value="Backbone">Backbone</option>
+                                <option value="Backhaul">Backhaul</option>
+                                <option value="Fronthaul">Fronthaul</option>
+                                <option value="Akses">Akses</option>
+                            </select>
+                        </div>
 
-
-                    <div class="col-lg-6 mb-10">
-                        <label for="name" class="required form-label">Tanggal Cutoff</label>
-                        <input type="date" class="form-control form-control-solid" name="cut_off_date"
-                               id="cut_off_date">
+                        <div class="col-lg-6 mb-10">
+                            <label for="name" class="required form-label">Tanggal Cutoff</label>
+                            <input type="date" class="form-control form-control-solid date" name="cut_off_date"
+                                   id="cut_off_date">
+                        </div>
                     </div>
 
                     <div class="row mb-10 align-items-center">

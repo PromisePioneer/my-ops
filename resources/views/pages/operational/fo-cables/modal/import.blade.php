@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form Import Data Tiang</h5>
+                <h5 class="modal-title">Form Import Kabel FO</h5>
                 <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x"></span>
@@ -20,7 +20,7 @@
                         <label for="name" class="required form-label">Download Template</label>
                         <br>
                         <div class="d-grid gap-2">
-                            <a href="{{ asset('assets/template-excel/tiang  .xlsx') }}"
+                            <a href="{{ asset('assets/template-excel/kabel-fo.xlsx') }}"
                                class="btn btn-primary btn-sm">Download</a>
                             <span class="text-danger">Wajib menggunakan template ini.</span>
                         </div>
@@ -32,7 +32,10 @@
                                 x-text="buttonLoading ? 'Loading...' : 'Simpan'"></button>
                     </div>
                 </form>
+
             </div>
+
+
         </div>
     </div>
 </div>

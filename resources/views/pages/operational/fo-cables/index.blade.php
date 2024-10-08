@@ -11,8 +11,8 @@
     <div x-data="odpData()">
         @include('pages.operational.fo-cables.modal.create')
         @include('pages.operational.fo-cables.modal.edit')
-        {{--        @include('pages.operational.fo-cables.modal.import')--}}
-        {{--        @include('pages.operational.fo-cables.modal.export')--}}
+        @include('pages.operational.fo-cables.modal.import')
+        @include('pages.operational.fo-cables.modal.export')
 
 
         <div class="card mb-5 mb-xl-10" id="kt_profile_details_view">
@@ -100,7 +100,7 @@
                             <template x-if="isLoading">
                                 <tbody class="fw-bold">
                                 <tr>
-                                    <td colspan="9">
+                                    <td colspan="11">
                                         <div style="text-align: center;">
                                             <div class="spinner-border" role="status">
                                                 <span class="visually-hidden">Loading...</span>
@@ -113,7 +113,7 @@
                             <template x-if="!isLoading && cables.data?.length === 0">
                                 <tbody class="fw-bold">
                                 <tr>
-                                    <td colspan="9">
+                                    <td colspan="11">
                                         <center>Data Tidak Ditemukan</center>
                                     </td>
                                 </tr>
@@ -191,11 +191,11 @@
                 formEdit: document.getElementById('form-edit'),
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
-                // modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
-                // formImport: document.getElementById('form-import'),
+                modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
+                formImport: document.getElementById('form-import'),
                 formDelete: document.getElementById('form-delete'),
-                // modalExport: new bootstrap.Modal(document.getElementById('modal-export')),
-                // formExport: document.getElementById('form-export'),
+                modalExport: new bootstrap.Modal(document.getElementById('modal-export')),
+                formExport: document.getElementById('form-export'),
                 map: null,
                 startingPointLat: null,
                 startingPointLong: null,
@@ -204,6 +204,7 @@
                 polyline: null,
                 async init() {
                     await this.getFoCablesData();
+                    await this.getBranchData();
                 },
                 add() {
                     this.map = null;
@@ -230,7 +231,8 @@
                     } finally {
                         this.buttonLoading = false;
                     }
-                }, async exportData() {
+                },
+                async exportData() {
                     this.buttonLoading = true;
                     try {
                         await axios.post('/operational/fo-cables/export', new FormData(this.formExport))
@@ -293,16 +295,10 @@
                     }
                 },
                 checkCoords() {
-                    const startingPointLat = this.editVal.starting_point_lat; // Ambil langsung dari Alpine.js state
+                    const startingPointLat = this.editVal.starting_point_lat;
                     const startingPointLong = this.editVal.starting_point_long;
                     const endingPointLat = this.editVal.ending_point_lat;
                     const endingPointLong = this.editVal.ending_point_long;
-
-
-                    if (!startingPointLat || !startingPointLong || !endingPointLat || !endingPointLong) {
-                        console.error('Koordinat tidak lengkap atau tidak valid');
-                        return;
-                    }
 
 
                     const latlngs = [[this.startingPointLat ?? startingPointLat, this.startingPointLong ?? startingPointLong], [this.endingPointLat ?? endingPointLat, this.endingPointLong ?? endingPointLong]];
@@ -380,6 +376,36 @@
                         }
                     });
                 },
+                async getBranchData() {
+                    $(".branch-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pillih Cabang',
+                        ajax: {
+                            url: '/operational/fo-cables/branch/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async selectedBranchData() {
+                    const selectedBranch = $('#selectedBranch');
+                    $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/master/odp-areas/branch/selected/${id}`,
+                    }).then(function (response) {
+                        const option = new Option(response.name, response.id, true, true);
+                        selectedBranch.append(option).trigger('change');
+
+                        selectedBranch.trigger({
+                            type: 'select2:select',
+                            params: {results: response}
+                        });
+                    });
+                }
             }
         }
     </script>

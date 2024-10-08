@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\Operational\Pole;
 
+use App\Exports\PoleExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PoleRequest;
+use App\Imports\PoleImport;
 use App\Models\Pole;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class PoleController extends Controller
 {
@@ -52,5 +57,28 @@ class PoleController extends Controller
         $pole->whereIn('id', $explodeID)->delete();
 
         return response()->json(['message' => 'data berhasil dihapus']);
+    }
+
+
+    public function import(Request $request): JsonResponse
+    {
+        try {
+            ini_set('max_execution_time', 180);
+            $file = $request->file('file_import');
+            Excel::import(new PoleImport(), $file);
+        } catch (Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()]);
+        }
+
+        return response()->json(['message' => 'Data berhasil diimport']);
+    }
+
+
+    public function export(Request $request): BinaryFileResponse
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        return Excel::download(new PoleExport($startDate, $endDate), 'data-tiang.xlsx');
     }
 }

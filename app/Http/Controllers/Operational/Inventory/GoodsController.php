@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Operational\Inventory;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Inventory\GoodsRequest;
+use App\Models\Account;
 use App\Models\Branch;
 use App\Models\Goods;
-use App\Models\SubAccount;
 use App\Models\UnitType;
 use App\Service\Inventory\GoodsServices;
 use Illuminate\Http\JsonResponse;
@@ -32,8 +32,8 @@ class GoodsController extends Controller
         $this->unitType = new UnitType();
         $this->goodsService = new GoodsServices();
         $this->goods = new Goods();
-        $this->subAccount = new SubAccount();
         $this->branch = new Branch();
+        $this->account = new Account();
     }
 
     public function index(): View
@@ -66,9 +66,9 @@ class GoodsController extends Controller
         return response()->json($this->unitType->getData($request));
     }
 
-    public function getRelatedAccounts(Request $request): array
+    public function getRelatedAccounts(Request $request)
     {
-        return $this->subAccount->getAllPersediaanSubAccount($request);
+        return $this->goodsService->getPersediaanAccount($request);
     }
 
     public function edit(Goods $goods): View
@@ -83,7 +83,7 @@ class GoodsController extends Controller
 
     public function getSelectedSubAccount(Request $request, Goods $goods): JsonResponse
     {
-        return response()->json($this->subAccount->getSelectedSubAccount($request, $goods->account_id));
+        return response()->json($this->account->getSelectedAccount($goods->account_id));
     }
 
     public function show(Goods $goods): JsonResponse

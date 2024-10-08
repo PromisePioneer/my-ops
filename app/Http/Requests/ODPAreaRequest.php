@@ -25,6 +25,7 @@ class ODPAreaRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
+            'branch_id' => ['nullable', Rule::exists('branches', 'id')],
             'code' => [
                 'required',
                 Rule::unique('odp_areas', 'code')->ignore($request->route('odpArea')),
@@ -36,6 +37,7 @@ class ODPAreaRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'branch_id.exists' => ['Cabang tidak ditemukan'],
             'code.required' => ['Kode area tidak boleh kosong.'],
             'code.unique' => ['Kode area sudah terdaftar.'],
         ];
