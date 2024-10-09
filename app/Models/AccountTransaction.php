@@ -50,7 +50,8 @@ class AccountTransaction extends Model
         'date',
         'account_id',
         'description',
-        'type',
+        'transaction_type',
+        'entries_type',
         'amount',
     ];
 

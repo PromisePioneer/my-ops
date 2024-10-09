@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ODPAreaRequest;
+use App\Imports\ODPAreaImport;
+use App\Imports\UserImport;
 use App\Models\Branch;
 use App\Models\ODPArea;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ODPAreaController extends Controller
 {
@@ -22,7 +25,7 @@ class ODPAreaController extends Controller
 
     public function index(): View
     {
-        return view('pages.operational.odp.areas.index');
+        return view('pages.master.odp-areas.index');
     }
 
 
@@ -78,4 +81,14 @@ class ODPAreaController extends Controller
 
         return response()->json(['message' => 'data berhasil dihapus']);
     }
+
+    public function import(Request $request): JsonResponse
+    {
+        ini_set('max_execution_time', 180);
+        $file = $request->file('file_import');
+        Excel::import(new ODPAreaImport(), $file);
+
+        return response()->json(['message' => 'Data berhasil diimport']);
+    }
+
 }

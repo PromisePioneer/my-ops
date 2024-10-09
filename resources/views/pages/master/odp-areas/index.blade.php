@@ -2,8 +2,9 @@
 @section('content')
     <div x-data="odpArea()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.operational.odp.areas.modal.create')
-            @include('pages.operational.odp.areas.modal.edit')
+            @include('pages.master.odp-areas.modal.create')
+            @include('pages.master.odp-areas.modal.edit')
+            @include('pages.master.odp-areas.modal.import')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -17,6 +18,12 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                            <button type="button" class="btn btn-light-success btn-sm me-3"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-import">
+                                <i class="bi bi-file-earmark-excel-fill"></i>
+                                Import
+                            </button>
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-create">
@@ -138,6 +145,8 @@
                 singleChecked: false,
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
+                modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
+                formImport: document.getElementById('form-import'),
                 formCreate: document.getElementById('form-create'),
                 formEdit: document.getElementById('form-edit'),
                 formDelete: document.getElementById('form-delete'),
@@ -193,6 +202,22 @@
                         if (index !== -1) {
                             this.selectedCheckBox.splice(index, 1);
                         }
+                    }
+                },
+
+                async importData() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/master/odp-areas/import/', new FormData(this.formImport))
+                        await showAlert('success', 'Data berhasil diimport')
+                        this.formImport.reset();
+                        this.modalImport.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
                     }
                 },
                 async getBranchData() {

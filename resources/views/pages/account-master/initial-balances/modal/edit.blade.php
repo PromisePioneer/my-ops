@@ -14,23 +14,33 @@
                 </div>
             </div>
 
-            <form id="form-edit" @submit.prevent="save()">
+            <form id="form-edit" @submit.prevent="update(editVal.id)">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Kode</label>
-                        <input type="number" id="code" name="code" class="form-control form-control-solid"
-                               placeholder="Kode"/>
+                        <label for="name" class="required form-label">Cabang</label>
+                        <select name="branch_id" id="selectedBranch"
+                                class="form-select form-select-solid branches-select2"
+                                data-dropdown-parent="#modal-edit">
+                            <option></option>
+                        </select>
                     </div>
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Nama</label>
-                        <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama Cabang"/>
+                        <label for="name" class="required form-label">Tanggal</label>
+                        <input type="date" class="form-control form-control-solid date" id="date" name="date"
+                               placeholder="Tanggal" :value="editVal.date">
                     </div>
-
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Alamat</label>
-                        <textarea class="form-control form-control-solid" name="address" id="address"
-                                  data-kt-autosize="true" placeholder="Alamat Cabang"></textarea>
+                        <label for="account_id" class="required form-label">Akun</label>
+                        <select name="account_id" id="selectedAccount"
+                                class="form-select form-select-solid accounts-select2"
+                                data-dropdown-parent="#modal-edit">
+                            <option></option>
+                        </select>
+                    </div>
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Saldo</label>
+                        <input type="number" id="amount" name="amount" class="form-control form-control-solid"
+                               placeholder="Saldo" :value="editVal.amount"/>
                     </div>
                 </div>
 

@@ -33,7 +33,7 @@
             </div>
             <div class="card-body py-3">
                 <div class="col-12 ">
-                    <form id="deleteForm" @submit.prevent="destroy()">
+                    <form id="form-delete" @submit.prevent="destroy()">
                         <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                 x-show="selectedCheckBox.length > 0"
@@ -58,8 +58,9 @@
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
-                                <th class="min-w-125px">Tanggal</th>
+                                <th class="min-w-125px">Tahun</th>
                                 <th class="min-w-125px">Akun</th>
+                                <th class="min-w-125px">Saldo</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -94,15 +95,12 @@
                                                    :id="'checkbox-' + balance.id"/>
                                         </div>
                                     </td>
-                                    <td x-text="branch.code"></td>
-                                    <td>
-                                        <a :href="`/master/branch/structure-orgranization/${branch.id}`"
-                                           x-text="branch.name"></a>
-                                    </td>
-                                    <td x-text="`${branch.address.substring(0, 30)}...`"></td>
+                                    <td x-text="balance.date"></td>
+                                    <td x-text="balance.account"></td>
+                                    <td x-text="balance.amount"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(branch.id)">
+                                                data-bs-target="#modal-edit" @click="edit(balance.id)">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
@@ -131,10 +129,12 @@
 @endsection
 @push('script')
     <script defer>
+        $('.date').flatpickr();
+
         function InitialBalancesData() {
             return {
                 initialBalances: [],
-                isLoading: true,
+                isLoading: false,
                 buttonLoading: false,
                 selectedCheckBox: [],
                 selectAll: false,
@@ -145,11 +145,23 @@
                 formEdit: document.getElementById('form-edit'),
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
-                deleteForm: document.getElementById('deleteForm'),
+                formDelete: document.getElementById('form-delete'),
                 async init() {
-                    const resp = await axios.get('/account-master/initial-balances/data');
-                    this.initialBalances = resp.data
-                    this.isLoading = false;
+                    await this.getAccountData();
+                    await this.getInitialBalances();
+                    await this.getBranchData();
+                },
+                async getInitialBalances() {
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/account-master/initial-balances/data');
+                        this.initialBalances = resp.data
+                        this.isLoading = false;
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async searchData() {
                     try {
@@ -191,10 +203,64 @@
                         }
                     }
                 },
+                async getAccountData() {
+                    $(".accounts-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Akun',
+                        ajax: {
+                            url: '/account-master/initial-balances/account/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async getBranchData() {
+                    $(".branches-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Cabang',
+                        ajax: {
+                            url: '/account-master/initial-balances/branch/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async selectedBranch() {
+                    const selectedBranch = $('#selectedBranch');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/account-master/initial-balances/branch/selected/${this.editVal.id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedBranch.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
+                async selectedAccount() {
+                    const selectedAccount = $('#selectedAccount');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/account-master/initial-balances/account/selected/${this.editVal.id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedAccount.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/master/branch', new FormData(this.formCreate))
+                        await axios.post('/account-master/initial-balances/', new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
@@ -207,13 +273,15 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/master/branch/show/${id}`);
+                    const resp = await axios.get(`/account-master/initial-balances/${id}`);
                     this.editVal = resp.data;
+                    await this.selectedBranch();
+                    await this.selectedAccount();
                 },
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/master/branch/update/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/account-master/initial-balances/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.modalEdit.hide();
                         this.formEdit.reset();
@@ -228,7 +296,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/master/branch/destroy`, new FormData(this.deleteForm));
+                            await axios.post(`/account-master/initial-balances/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {

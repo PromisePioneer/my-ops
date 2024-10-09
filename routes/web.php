@@ -278,6 +278,17 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('initial-balances')->group(function () {
             Route::get('/', [InitialBalanceController::class, 'index']);
             Route::get('/data', [InitialBalanceController::class, 'data']);
+            Route::get('/account/data', [InitialBalanceController::class, 'getAccountData']);
+            Route::get('/branch/data', [InitialBalanceController::class, 'getBranchData']);
+            Route::post('/', [InitialBalanceController::class, 'store']);
+            Route::get('/{accountTransaction}', [InitialBalanceController::class, 'edit']);
+            Route::get('/branch/selected/{accountTransaction}', [InitialBalanceController::class, 'selectedBranch']);
+            Route::get(
+                '/account/selected/{accountTransaction}',
+                [InitialBalanceController::class, 'selectedAccountData']
+            );
+            Route::post('/destroy', [InitialBalanceController::class, 'destroy']);
+            Route::post('/{accountTransaction}', [InitialBalanceController::class, 'update']);
         });
     });
 
@@ -405,6 +416,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [ODPAreaController::class, 'index']);
             Route::get('/branch/data', [ODPAreaController::class, 'getBranchData']);
             Route::get('/branch/selected/{odpArea}', [ODPAreaController::class, 'selectedBranchData']);
+            Route::post('/import', [ODPAreaController::class, 'import']);
             Route::get('/data', [ODPAreaController::class, 'data']);
             Route::get('/search', [ODPAreaController::class, 'search']);
             Route::post('/', [ODPAreaController::class, 'store']);
@@ -416,19 +428,13 @@ Route::group(['middleware' => ['auth']], static function () {
 
         Route::prefix('joint-closures-area')->group(function () {
             Route::get('/', [JointClosureAreaController::class, 'index']);
-            Route::get('/branch/data', [JointClosureAreaController::class, 'getBranchData']
-            );
-            Route::get(
-                '/branch/selected/{odpArea}',
-                [JointClosureAreaController::class, 'selectedBranchData']
-            );
             Route::get('/data', [JointClosureAreaController::class, 'data']);
-            Route::get('/search', [JointClosureAreaController::class, 'search']);
+            Route::get('/branch/data', [JointClosureAreaController::class, 'getBranchData']);
             Route::post('/', [JointClosureAreaController::class, 'store']);
-            Route::get('/{odpArea}', [JointClosureAreaController::class, 'edit']);
+            Route::get('/{jointClosureArea}', [JointClosureAreaController::class, 'edit']);
+            Route::get('/branch/selected/{jointClosureArea}', [JointClosureAreaController::class, 'selectedBranch']);
             Route::post('/destroy', [JointClosureAreaController::class, 'destroy']);
-            Route::post('/update/{odpArea}', [JointClosureAreaController::class, 'update']
-            );
+            Route::post('/{jointClosureArea}', [JointClosureAreaController::class, 'update']);
         });
     });
 
