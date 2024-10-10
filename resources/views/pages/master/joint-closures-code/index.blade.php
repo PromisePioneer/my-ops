@@ -3,8 +3,9 @@
 @section('content')
     <div x-data="jointClosureArea()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.master.joint-closures-area.modal.create')
-            @include('pages.master.joint-closures-area.modal.edit')
+            @include('pages.master.joint-closures-code.modal.create')
+            @include('pages.master.joint-closures-code.modal.edit')
+            @include('pages.master.joint-closures-code.modal.import')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -21,7 +22,7 @@
 
                             <button type="button" class="btn btn-light-success btn-sm me-3"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
+                                    data-bs-target="#modal-import">
                                 <i class="bi bi-file-earmark-excel-fill"></i>
                                 Import
                             </button>
@@ -157,7 +158,7 @@
                 async jointClosureData() {
                     this.isLoading = true;
                     try {
-                        const resp = await axios.get('/master/joint-closures-area/data');
+                        const resp = await axios.get('/master/joint-closures-code/data');
                         this.jcArea = resp.data
                     } catch (e) {
                         console.log(e)
@@ -208,7 +209,7 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/master/joint-closures-area/', new FormData(this.formCreate))
+                        await axios.post('/master/joint-closures-code/', new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
@@ -221,7 +222,7 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/master/joint-closures-area/${id}`);
+                    const resp = await axios.get(`/master/joint-closures-code/${id}`);
                     this.editVal = resp.data;
                     await this.selectedBranch()
                 },
@@ -230,7 +231,7 @@
                         allowClear: true,
                         placeholder: 'Pilih Cabang',
                         ajax: {
-                            url: '/master/joint-closures-area/branch/data',
+                            url: '/master/joint-closures-code/branch/data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -244,7 +245,7 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/master/joint-closures-area/branch/selected/${this.editVal.id}`,
+                        url: `/master/joint-closures-code/branch/selected/${this.editVal.id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedBranch.append(option).trigger('change').trigger({
@@ -255,7 +256,7 @@
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/master/joint-closures-area/${id}`, new FormData(this.formEdit));
+                        await axios.post(`/master/joint-closures-code/${id}`, new FormData(this.formEdit));
                         await showAlert('success', 'Data berhasil disimpan');
                         this.modalEdit.hide();
                         this.formEdit.reset();
@@ -270,7 +271,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/master/joint-closures-area/destroy`, new FormData(this.formDelete));
+                            await axios.post(`/master/joint-closures-code/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {

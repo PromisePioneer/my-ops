@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-class JointClosureAreaRequest extends FormRequest
+class JointClosureCodeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -20,15 +20,15 @@ class JointClosureAreaRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(Request $request): array
     {
         return [
             'code' => [
                 'required',
-                Rule::unique('joint_closures_area', 'code')
-                    ->ignore($request->route('jointClosureArea')),
+                Rule::unique('joint_closures_code', 'code')
+                    ->ignore($request->route('jointClosureCode')),
             ],
             'branch_id' => [
                 'required',

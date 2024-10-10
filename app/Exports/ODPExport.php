@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use AllowDynamicProperties;
 use App\Models\ODP;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -48,7 +49,9 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
                     'max_capacity' => $item->max_capacity,
                     'used_capacity' => $item->used_capacity,
                     'capacities_left' => $item->max_capacity - $item->used_capacity,
-                    'cut_off_date' => $item->cut_off_date,
+                    'cut_off_date' => Carbon::parse($item->cut_off_date)->locale('id')
+                        ->settings(['formatFunction' => 'translatedFormat'])
+                        ->format('F Y'),
                 ];
             });
 

@@ -23,7 +23,7 @@ return new class extends Migration {
             $table->double('ending_point_lat');
             $table->double('ending_point_long');
             $table->double('length');
-            $table->date('cut_off_date');
+            $table->string('cut_off_date');
             $table->timestamps();
         });
     }

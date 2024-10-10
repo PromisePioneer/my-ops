@@ -51,6 +51,7 @@ use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollController;
 use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollHistoryController;
 use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollScheduleController;
 use App\Http\Controllers\HRIS\PermissionController;
+use App\Http\Controllers\JointClosure\JointClosureController;
 use App\Http\Controllers\Master\AccountController;
 use App\Http\Controllers\Master\AccountTransactionsController;
 use App\Http\Controllers\Master\AssetController;
@@ -58,7 +59,7 @@ use App\Http\Controllers\Master\BranchesController;
 use App\Http\Controllers\Master\BroadbandPacketController;
 use App\Http\Controllers\Master\ContactController;
 use App\Http\Controllers\Master\DepartmentController;
-use App\Http\Controllers\Master\JointClosureAreaController;
+use App\Http\Controllers\Master\JointClosureCodeController;
 use App\Http\Controllers\Master\NationalHolidayController;
 use App\Http\Controllers\Master\ODPAreaController;
 use App\Http\Controllers\Master\ProductController;
@@ -426,15 +427,15 @@ Route::group(['middleware' => ['auth']], static function () {
         });
 
 
-        Route::prefix('joint-closures-area')->group(function () {
-            Route::get('/', [JointClosureAreaController::class, 'index']);
-            Route::get('/data', [JointClosureAreaController::class, 'data']);
-            Route::get('/branch/data', [JointClosureAreaController::class, 'getBranchData']);
-            Route::post('/', [JointClosureAreaController::class, 'store']);
-            Route::get('/{jointClosureArea}', [JointClosureAreaController::class, 'edit']);
-            Route::get('/branch/selected/{jointClosureArea}', [JointClosureAreaController::class, 'selectedBranch']);
-            Route::post('/destroy', [JointClosureAreaController::class, 'destroy']);
-            Route::post('/{jointClosureArea}', [JointClosureAreaController::class, 'update']);
+        Route::prefix('joint-closures-code')->group(function () {
+            Route::get('/', [JointClosureCodeController::class, 'index']);
+            Route::get('/data', [JointClosureCodeController::class, 'data']);
+            Route::get('/branch/data', [JointClosureCodeController::class, 'getBranchData']);
+            Route::get('/{jointClosureCode}', [JointClosureCodeController::class, 'edit']);
+            Route::get('/branch/selected/{jointClosureCode}', [JointClosureCodeController::class, 'selectedBranch']);
+            Route::post('/', [JointClosureCodeController::class, 'store']);
+            Route::post('/destroy', [JointClosureCodeController::class, 'destroy']);
+            Route::post('/{jointClosureCode}', [JointClosureCodeController::class, 'update']);
         });
     });
 
@@ -444,6 +445,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [ODPController::class, 'index']);
             Route::get('/data', [ODPController::class, 'data']);
             Route::get('/search', [ODPController::class, 'search']);
+            Route::get('/create', [ODPController::class, 'create']);
             Route::get('/odp-area/data', [ODPController::class, 'getODPAreaData']);
             Route::get('/export', [ODPController::class, 'export']);
             Route::get('/odp-area/selected/{odp}', [ODPController::class, 'getSelectedODPArea']);
@@ -503,6 +505,19 @@ Route::group(['middleware' => ['auth']], static function () {
         });
 
         Route::prefix('joint-closures')->group(function () {
+            Route::get('/', [JointClosureController::class, 'index']);
+            Route::get('/data', [JointClosureController::class, 'data']);
+            Route::get('/code/data', [JointClosureController::class, 'getJointClosuresCode']);
+            Route::get('/fo-cables/data', [JointClosureController::class, 'getFoCable']);
+            Route::get('/code/selected/{jointClosure}', [JointClosureController::class, 'getSelectedCode']);
+            Route::get('/fo-cable/selected/{jointClosure}', [JointClosureController::class, 'getSelectedFoCable']);
+            Route::get('/search', [JointClosureController::class, 'search']);
+            Route::post('/', [JointClosureController::class, 'store']);
+            Route::post('/destroy', [JointClosureController::class, 'destroy']);
+            Route::post('/import', [JointClosureController::class, 'import']);
+            Route::get('/export', [JointClosureController::class, 'export']);
+            Route::get('/{jointClosure}', [JointClosureController::class, 'edit']);
+            Route::post('/{jointClosure}', [JointClosureController::class, 'update']);
         });
 
         Route::prefix('core-data')->group(function () {

@@ -10,10 +10,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('joint_closures_area', function (Blueprint $table) {
+        Schema::create('joint_closures', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('branch_id')->nullable()->constrained('branches');
-            $table->string('code')->unique();
+            $table->foreignId('code_id')->constrained('joint_closures_code');
+            $table->string('region');
+            $table->foreignId('fo_cable_id')->constrained('fo_cables');
+            $table->double('lat');
+            $table->double('long');
+            $table->date('cut_off_date');
             $table->timestamps();
         });
     }

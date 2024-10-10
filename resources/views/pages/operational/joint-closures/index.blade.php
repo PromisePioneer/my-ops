@@ -1,10 +1,20 @@
 @extends('layouts.template')
 @section('page-title', 'Data ODP')
 @section('content')
-    @include('pages.operational.odp.header')
-    <div x-data="odpData()">
-        @include('pages.operational.odp.modal.import')
-        @include('pages.operational.odp.modal.export')
+    @push('styles')
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+              integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+              crossorigin=""/>
+    @endpush
+
+    @include('pages.operational.joint-closures.header')
+    <div x-data="jointClosureData()">
+        @include('pages.operational.joint-closures.modal.create')
+        @include('pages.operational.joint-closures.modal.edit')
+        @include('pages.operational.joint-closures.modal.import')
+        @include('pages.operational.joint-closures.modal.export')
+
+
         <div class="card mb-5 mb-xl-10" id="kt_profile_details_view">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -35,14 +45,16 @@
                             </span>
                                 Import
                             </button>
-                            <a href="{{ url('/operational/odp/create') }}" class="btn btn-light-primary btn-sm mr-4">
+                            <button type="button" class="btn btn-light-primary btn-sm mr-4" @click="add()"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-create">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
                                     <span class="path3"></span>
                                 </i>
                                 Tambah
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -74,10 +86,10 @@
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
-                                <th class="text-center">Keterangan</th>
-                                <th class="text-center">Kapasitas Pelanggan</th>
-                                <th class="text-center">Kapasitas Terpakai</th>
-                                <th class="text-center">Kapasitas Tersisa</th>
+                                <th class="text-center">Kode</th>
+                                <th class="text-center">Wilayah</th>
+                                <th class="text-center">Nama Kabel</th>
+                                <th class="text-center">Koordinat</th>
                                 <th class="text-center">Cut Off</th>
                                 <th class="text-center">Actions</th>
                             </thead>
@@ -94,7 +106,7 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-if="!isLoading && odpList.data?.length === 0">
+                            <template x-if="!isLoading && jointClosures.data?.length === 0">
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td colspan="9">
@@ -103,63 +115,29 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-for="odp in odpList?.data" :key="odp.id">
+                            <template x-for="jc in jointClosures?.data" :key="jc.id">
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="odp.id"
-                                                   :id="'checkbox-' + odp.id"/>
+                                            <input class="form-check-input" type="checkbox" :value="jc.id"
+                                                   :id="'checkbox-' + jc.id"/>
                                         </div>
                                     </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <table class="table table-bordered">
-                                                <tr>
-                                                    <th>Cabang</th>
-                                                    <th>:</th>
-                                                    <th x-text="odp.branch"></th>
-                                                </tr>
-                                                <tr>
-                                                    <th>Kode area</th>
-                                                    <th>:</th>
-                                                    <th x-text="odp.area"></th>
-                                                </tr>
-                                                <tr>
-                                                    <th> Nama ODP</th>
-                                                    <th>:</th>
-                                                    <th x-text="odp.name"></th>
-                                                </tr>
-                                                <tr>
-                                                    <th>Klasifikasi</th>
-                                                    <th>:</th>
-                                                    <th x-text="odp.classification"></th>
-                                                </tr>
-                                                <tr>
-                                                    <th>Passive Splitter</th>
-                                                    <th>:</th>
-                                                    <th x-text="odp.passive_splitter"></th>
-                                                </tr>
-                                                <tr>
-                                                    <th>Coordinates</th>
-                                                    <th>:</th>
-                                                    <th x-text="odp.coordinates"></th>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                    </td>
-                                    <td class="text-center" x-text="odp.max_capacity"></td>
-                                    <td class="text-center" x-text="odp.used_capacity"></td>
-                                    <td class="text-center" x-text="`${odp.max_capacity - odp.used_capacity}`"></td>
-                                    <td class="text-center" x-text="odp.cut_off_date"></td>
+                                    <td class="text-center" x-text="jc.code"></td>
+                                    <td class="text-center" x-text="jc.region"></td>
+                                    <td class="text-center" x-text="jc.fo_cable"></td>
+                                    <td class="text-center" x-text="jc.coordinates"></td>
+                                    <td class="text-center" x-text="jc.cut_off_date"></td>
                                     <td class="text-center">
-                                        <a :href="`/operational/odp/${odp.id}`" class="btn btn-light-primary btn-sm">
+                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#modal-edit" @click="edit(jc.id)">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
                                             </i>
-                                        </a>
+                                        </button>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -167,7 +145,7 @@
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4 mt-4">
-                        <template x-for="pagination in odpList.links">
+                        <template x-for="pagination in jointClosures.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                 <button class="page-link" @click="paginationEndPoint(pagination.url)"
                                         x-html="pagination.label">
@@ -182,55 +160,48 @@
     @include('components.toast')
 @endsection
 @push('script')
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/tokml@0.4.0/tokml.min.js"></script>
     <script>
-        function odpData() {
+        $('.date').flatpickr();
+
+        function jointClosureData() {
             return {
                 search: '',
                 editVal: '',
                 isLoading: false,
-                odpList: [],
+                jointClosures: [],
                 buttonLoading: false,
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
+                formCreate: document.getElementById('form-create'),
+                formEdit: document.getElementById('form-edit'),
+                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
+                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
                 formImport: document.getElementById('form-import'),
                 formDelete: document.getElementById('form-delete'),
                 modalExport: new bootstrap.Modal(document.getElementById('modal-export')),
                 formExport: document.getElementById('form-export'),
+                map: null,
                 async init() {
-                    await this.getODPData();
+                    await this.getJointClosureData();
+                    await this.getCodeData();
+                    await this.getFoCablesData();
                 },
-                async searchData() {
-                    this.isLoading = true;
-                    try {
-                        const response = await axios.get('/operational/odp/search', {
-                            params: {search: this.search},
-                            headers: {'Content-Type': 'application/json'}
-                        });
-                        this.odpList = response.data;
-                    } catch (error) {
-                        console.error('Error fetching data:', error);
-                    } finally {
-                        this.isLoading = false;
-                    }
-                },
-                async getODPData() {
-                    this.isLoading = true;
-                    try {
-                        const resp = await axios.get('/operational/odp/data');
-                        this.odpList = resp.data;
-                    } catch (e) {
-                        console.log(e)
-                    } finally {
-                        this.isLoading = false;
-                    }
-                },
-                async paginationEndPoint(url) {
-                    if (url) {
-                        const resp = await axios.get(`${url}`);
-                        this.odpList = resp.data
-                    }
+                add() {
+                    this.map = null;
+                    this.map = L.map('map-create').setView([1.6704852, 101.4394371], 16);
+                    this.mapTileLayer(this.map);
+
+                    $('#modal-create').on('shown.bs.modal', () => {
+                        setTimeout(() => {
+                            this.map.invalidateSize();
+                        }, 10);
+                    });
                 },
                 async importData() {
                     this.buttonLoading = true;
@@ -246,8 +217,7 @@
                     } finally {
                         this.buttonLoading = false;
                     }
-                },
-                async exportData() {
+                }, async exportData() {
                     this.buttonLoading = true;
                     try {
                         await axios.post('/operational/odp/export', new FormData(this.formExport))
@@ -260,6 +230,65 @@
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
                     } finally {
                         this.buttonLoading = false;
+                    }
+                },
+                mapTileLayer(map) {
+                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    }).addTo(map);
+                },
+                async getJointClosureData() {
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/operational/joint-closures/data');
+                        this.jointClosures = resp.data;
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+                async selectedCode() {
+                    const selectedCode = $('#selectedCode');
+                    $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/operational/joint-closures/code/selected/${this.editVal.id}`,
+                    }).then(function (response) {
+                        const option = new Option(response.code, response.id, true, true);
+                        selectedCode.append(option).trigger('change');
+
+                        selectedCode.trigger({
+                            type: 'select2:select',
+                            params: {
+                                results: response
+                            }
+                        });
+                    });
+                },
+                async selectedFoCable() {
+                    const selectedFoCable = $('#selectedFoCable');
+                    $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/operational/joint-closures/fo-cable/selected/${this.editVal.id}`,
+                    }).then(function (response) {
+                        const option = new Option(response.code, response.id, true, true);
+                        selectedFoCable.append(option).trigger('change');
+
+                        selectedFoCable.trigger({
+                            type: 'select2:select',
+                            params: {
+                                results: response
+                            }
+                        });
+                    });
+                },
+                async paginationEndPoint(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
+                        this.jointClosures = resp.data
                     }
                 },
                 toggleAllCheckBox() {
@@ -286,10 +315,98 @@
                         }
                     }
                 },
+                checkCoords() {
+                    const lat = document.getElementById('lat').value;
+                    const long = document.getElementById('long').value;
+
+                    if ((this.map && lat && long) || (this.map && this.editVal.lat && this.editVal.long)) {
+                        L.marker(L.latLng(this.editVal.lat ?? Number(lat), this.editVal.long ?? Number(long)), {
+                            iconSize: [20, 20]
+                        }).addTo(this.map).bindPopup(`<b>Lokasi ODP</b>`).openPopup();
+                    } else {
+                        console.error('Map or coordinates are undefined');
+                    }
+                },
+                async getCodeData() {
+                    $(".code-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Kode Area",
+                        ajax: {
+                            url: '/operational/joint-closures/code/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async getFoCablesData() {
+                    $(".foCable-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Kabel",
+                        ajax: {
+                            url: '/operational/joint-closures/fo-cables/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async save() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/operational/joint-closures', new FormData(this.formCreate))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.formCreate.reset();
+                        this.modalCreate.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async edit(id) {
+                    const resp = await axios.get(`/operational/joint-closures/${id}`);
+                    this.editVal = resp.data
+                    await this.selectedCode();
+                    await this.selectedFoCable();
+                    this.map = L.map('map-edit').setView([this.editVal.lat, this.editVal.long], 16);
+                    this.mapTileLayer(this.map);
+
+                    L.marker(L.latLng(this.editVal.lat, this.editVal.long), {
+                        iconSize: [20, 20]
+                    }).addTo(this.map).bindPopup(`<b>Lokasi ODP</b>`).openPopup();
+
+                    $('#modal-edit').on('shown.bs.modal', () => {
+                        setTimeout(() => {
+                            this.map.invalidateSize();
+                        }, 10);
+                    });
+                },
+                async update(id) {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/operational/joint-closures/${id}`, new FormData(this.formEdit))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.formEdit.reset();
+                        this.modalEdit.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/operational/odp/destroy`, new FormData(this.formDelete));
+                            await axios.post(`/operational/joint-closures/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {

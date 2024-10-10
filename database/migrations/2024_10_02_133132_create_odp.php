@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->double('long');
             $table->integer('max_capacity');
             $table->integer('used_capacity');
-            $table->string('cut_off');
+            $table->date('cut_off_date');
             $table->timestamps();
         });
     }

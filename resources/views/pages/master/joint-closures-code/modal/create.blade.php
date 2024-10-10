@@ -26,7 +26,7 @@
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Kode</label>
-                        <input type="number" id="code" name="code" class="form-control form-control-solid"
+                        <input type="text" id="code" name="code" class="form-control form-control-solid"
                                placeholder="Kode"/>
                     </div>
                 </div>
