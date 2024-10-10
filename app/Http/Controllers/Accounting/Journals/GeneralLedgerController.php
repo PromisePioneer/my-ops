@@ -50,11 +50,11 @@ class GeneralLedgerController extends Controller
             });
 
         $totalDebit = $this->generalLedgerService->getDetailGeneralLedger($account)
-            ->where('type', 'debit')
+            ->where('transaction_type', 'debit')
             ->sum('amount');
 
         $totalCredit = $this->generalLedgerService->getDetailGeneralLedger($account)
-            ->where('type', 'credit')
+            ->where('transaction_type', 'credit')
             ->sum('amount');
 
 

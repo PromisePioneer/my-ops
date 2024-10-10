@@ -1,8 +1,8 @@
-<div class="modal fade" tabindex="-1" id="modal-create">
+<div class="modal fade" tabindex="-1" id="modal-edit">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form Joint Closure Area</h5>
+                <h5 class="modal-title">Form JC Area</h5>
                 <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
@@ -14,23 +14,20 @@
                 </div>
             </div>
 
-            <form id="form-create" @submit.prevent="save()">
+            <form id="form-edit" @submit.prevent="update(editVal.id)">
                 <div class="modal-body">
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Cabang</label>
+                        <select name="branch_id" id="selectedBranch"
+                                class="form-select form-select-solid branches-select2"
+                                data-dropdown-parent="#modal-edit">
+                            <option></option>
+                        </select>
+                    </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Kode</label>
                         <input type="number" id="code" name="code" class="form-control form-control-solid"
-                               placeholder="Kode"/>
-                    </div>
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Nama</label>
-                        <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama Cabang"/>
-                    </div>
-
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Alamat</label>
-                        <textarea class="form-control form-control-solid" name="address" id="address"
-                                  data-kt-autosize="true" placeholder="Alamat Cabang"></textarea>
+                               placeholder="Kode" :value="editVal.code"/>
                     </div>
                 </div>
 

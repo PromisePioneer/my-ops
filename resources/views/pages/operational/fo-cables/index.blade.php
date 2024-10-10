@@ -353,8 +353,8 @@
                     try {
                         await axios.post(`/operational/fo-cables/update/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
-                        this.map.remove(); // Remove existing map if it exists
-                        this.map = null;    // Set map reference to null
+                        this.map.remove();
+                        this.map = null;
                         this.modalEdit.hide();
                         await this.init();
                     } catch (error) {

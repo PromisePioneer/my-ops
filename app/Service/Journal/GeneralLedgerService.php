@@ -24,7 +24,7 @@ class GeneralLedgerService
             'accounts.id',
             '=',
             'account_transactions.account_id'
-        );
+        )->where('entries_type', 'TR');
 
         if ($isAccountHasParent) {
             $data->where('accounts.parent_id', $account->id);
@@ -44,9 +44,10 @@ class GeneralLedgerService
         return $this->formattedData($generalLedger);
     }
 
-    public function getAccountTransaction(Account $account): Builder
+    public function getAccountTransaction(Account $account)
     {
         return AccountTransaction::with('account', 'subAccount')
+            ->where('entries_type', 'TR')
             ->whereHas('account', function ($query) use ($account) {
                 $query->where('id', $account->id);
             })->orWhereHas('subAccount', function ($query) use ($account) {

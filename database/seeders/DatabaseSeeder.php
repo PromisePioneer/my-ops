@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\JointClosureCode;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -38,6 +39,9 @@ class DatabaseSeeder extends Seeder
             ODPAreaSeeder::class,
             ODPSeeder::class,
 //            FOCableSeeder::class,
+            JointClosureCodeSeeder::class,
+            FoCableSeeder::class,
+            JointClosureSeeder::class,
         ]);
     }
 }

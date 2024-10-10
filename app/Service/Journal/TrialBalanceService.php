@@ -47,7 +47,7 @@ class TrialBalanceService
 
     public function getFilteredTransactionSum($account, $type, ?Request $request): float
     {
-        $transactions = $account->accountTransaction()->where('type', $type);
+        $transactions = $account->accountTransaction()->where('entries_type', $type);
 
         if ($request?->branch_id) {
             $transactions->where('branch_id', $request->branch_id);
@@ -114,7 +114,7 @@ class TrialBalanceService
 
     private function getFilteredTotal(string $type, Request $request): Builder
     {
-        $query = AccountTransaction::where('type', $type);
+        $query = AccountTransaction::where('entries_type', $type);
 
         if ($request->branch_id) {
             $query->where('branch_id', $request->branch_id);

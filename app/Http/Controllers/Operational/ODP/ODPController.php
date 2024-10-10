@@ -8,6 +8,7 @@ use App\Http\Requests\ODPRequest;
 use App\Imports\ODPImport;
 use App\Models\ODP;
 use App\Models\ODPArea;
+use App\Service\ODPService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,10 +19,12 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class ODPController extends Controller
 {
     private ODPArea $ODPArea;
+    private ODPService $ODPService;
 
     public function __construct()
     {
         $this->ODPArea = new ODPArea();
+        $this->ODPService = new ODPService();
     }
 
 
@@ -33,7 +36,18 @@ class ODPController extends Controller
 
     public function data(): JsonResponse
     {
-        return response()->json(ODP::with('area', 'area.branch')->paginate(10));
+        return response()->json($this->ODPService->data());
+    }
+
+    public function search(Request $request): JsonResponse
+    {
+        return response()->json($this->ODPService->search($request));
+    }
+
+
+    public function create(): View
+    {
+        return view('pages.operational.odp.create');
     }
 
     public function getODPAreaData(Request $request): JsonResponse
@@ -49,9 +63,9 @@ class ODPController extends Controller
     }
 
 
-    public function edit(ODP $odp): JsonResponse
+    public function edit(ODP $odp): View
     {
-        return response()->json($odp);
+        return view('pages.operational.odp.edit', compact('odp'));
     }
 
 

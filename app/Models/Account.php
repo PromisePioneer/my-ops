@@ -116,8 +116,7 @@ class Account extends Model
         $search = $request->input('search');
         $query = self::orderby('name', 'asc')
             ->whereNull('parent_id')
-            ->select('id', 'name')
-            ->limit(5);
+            ->select('id', 'name');
 
         if ($search !== '') {
             $query->where('name', 'like', '%'.$search.'%');

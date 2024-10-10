@@ -160,8 +160,8 @@
                             ODP Area
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'joint-closures-area'"
-                                href="{{ url('master/joint-closures-area') }}">
+                                :active="request()->segment(2) === 'joint-closures-code'"
+                                href="{{ url('master/joint-closures-code') }}">
                             Kode Joint Closure
                         </x-dropdown-menu-item>
                     @endslot
@@ -197,9 +197,9 @@
                             Tiang
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'invoice'"
-                                href="{{ url('/income-transactions/invoice') }}">
-                            Joint Closure Area
+                                :active="request()->segment(2) === 'joint-closures'"
+                                href="{{ url('/operational/joint-closures') }}">
+                            Joint Closure
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'invoice'"
