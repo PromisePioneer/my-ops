@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Models\ODP;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -49,7 +50,9 @@ class ODPService
                 'coordinates' => $item->lat.','.$item->long,
                 'max_capacity' => $item->max_capacity,
                 'used_capacity' => $item->used_capacity,
-                'cut_off_date' => $item->cut_off_date,
+                'cut_off_date' => Carbon::parse($item->cut_off_date)->locale('id')
+                    ->settings(['formatFunction' => 'translatedFormat'])
+                    ->format('F Y'),
             ];
         });
 
