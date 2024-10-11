@@ -8,6 +8,7 @@ use App\Http\Requests\FoCableRequest;
 use App\Imports\FOCableImport;
 use App\Models\Branch;
 use App\Models\FOCable;
+use App\Service\FOCableService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,12 +18,13 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class FOCableController extends Controller
 {
-
     private Branch $branch;
+    private FoCableService $FOCableService;
 
     public function __construct()
     {
         $this->branch = new Branch();
+        $this->FOCableService = new FOCableService();
     }
 
     public function index(): View
@@ -32,7 +34,17 @@ class FOCableController extends Controller
 
     public function data(): JsonResponse
     {
-        return response()->json(FOCable::paginate(10));
+        return response()->json($this->FOCableService->data());
+    }
+
+    public function search(Request $request): JsonResponse
+    {
+        return response()->json($this->FOCableService->search($request));
+    }
+
+    public function create(): View
+    {
+        return view('pages.operational.fo-cables.create');
     }
 
 
@@ -52,9 +64,9 @@ class FOCableController extends Controller
         return response()->json(['message' => 'Data berhasil disimpan']);
     }
 
-    public function edit(FOCable $FOCable): JsonResponse
+    public function edit(FOCable $FOCable): View
     {
-        return response()->json($FOCable);
+        return view('pages.operational.fo-cables.edit', compact('FOCable'));
     }
 
     public function update(FoCableRequest $request, FOCable $FOCable): JsonResponse

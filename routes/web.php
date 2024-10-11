@@ -481,6 +481,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [FOCableController::class, 'index']);
             Route::get('/data', [FOCableController::class, 'data']);
             Route::get('/search', [FOCableController::class, 'search']);
+            Route::get('/create', [FOCableController::class, 'create']);
             Route::get('/branch/data', [FoCableController::class, 'getBranchData']);
             Route::get('/branch/selected/{FOCable}', [FoCableController::class, 'selectedBranchData']);
             Route::post('/', [FOCableController::class, 'store']);

@@ -8,13 +8,9 @@
     @endpush
 
     @include('pages.operational.fo-cables.header')
-    <div x-data="odpData()">
-        @include('pages.operational.fo-cables.modal.create')
-        @include('pages.operational.fo-cables.modal.edit')
+    <div x-data="foCablesData()">
         @include('pages.operational.fo-cables.modal.import')
         @include('pages.operational.fo-cables.modal.export')
-
-
         <div class="card mb-5 mb-xl-10" id="kt_profile_details_view">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -45,16 +41,15 @@
                             </span>
                                 Import
                             </button>
-                            <button type="button" class="btn btn-light-primary btn-sm mr-4" @click="add()"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
+                            <a href="{{ url('/operational/fo-cables/create') }}" type="button"
+                               class="btn btn-light-primary btn-sm mr-4">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
                                     <span class="path3"></span>
                                 </i>
                                 Tambah
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -129,25 +124,23 @@
                                                    :id="'checkbox-' + cable.id"/>
                                         </div>
                                     </td>
-                                    <td class="text-center" x-text="cable.segment_id"></td>
+                                    <td class="text-center" x-text="cable.segment"></td>
                                     <td class="text-center" x-text="cable.classification"></td>
                                     <td class="text-center" x-text="cable.cable_placement"></td>
                                     <td class="text-center" x-text="cable.cable_address"></td>
                                     <td class="text-center" x-text="cable.total_core"></td>
-                                    <td class="text-center"
-                                        x-text="`${cable.starting_point_lat}, ${cable.starting_point_long}`"></td>
-                                    <td class="text-center"
-                                        x-text="`${cable.ending_point_lat}, ${cable.ending_point_long}`"></td>
+                                    <td class="text-center" x-text="cable.coordinates_start_at"></td>
+                                    <td class="text-center" x-text="cable.coordinates_end_at"></td>
                                     <td class="text-center" x-text="cable.length"></td>
                                     <td class="text-center" x-text="cable.cut_off_date"></td>
                                     <td class="text-center">
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(cable.id)">
+                                        <a :href="`/operational/fo-cables/${cable.id}`"
+                                           class="btn btn-light-primary btn-sm">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
                                             </i>
-                                        </button>
+                                        </a>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -177,7 +170,7 @@
     <script>
         $('.date').flatpickr();
 
-        function odpData() {
+        function foCablesData() {
             return {
                 search: '',
                 editVal: '',
@@ -187,10 +180,6 @@
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
-                formCreate: document.getElementById('form-create'),
-                formEdit: document.getElementById('form-edit'),
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
                 formImport: document.getElementById('form-import'),
                 formDelete: document.getElementById('form-delete'),
@@ -204,7 +193,6 @@
                 polyline: null,
                 async init() {
                     await this.getFoCablesData();
-                    await this.getBranchData();
                 },
                 add() {
                     this.map = null;
@@ -247,12 +235,6 @@
                         this.buttonLoading = false;
                     }
                 },
-                mapTileLayer(map) {
-                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        maxZoom: 19,
-                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    }).addTo(map);
-                },
                 async getFoCablesData() {
                     this.isLoading = true;
                     try {
@@ -293,29 +275,6 @@
                             this.selectedCheckBox.splice(index, 1);
                         }
                     }
-                },
-                checkCoords() {
-                    const startingPointLat = this.editVal.starting_point_lat;
-                    const startingPointLong = this.editVal.starting_point_long;
-                    const endingPointLat = this.editVal.ending_point_lat;
-                    const endingPointLong = this.editVal.ending_point_long;
-
-
-                    const latlngs = [[this.startingPointLat ?? startingPointLat, this.startingPointLong ?? startingPointLong], [this.endingPointLat ?? endingPointLat, this.endingPointLong ?? endingPointLong]];
-
-
-                    if (this.polyline && this.map.hasLayer(this.polyline)) {
-                        this.map.removeLayer(this.polyline);
-                    }
-
-                    try {
-                        this.polyline = L.polyline(latlngs, {color: 'red'}).addTo(this.map);
-                        this.map.fitBounds(this.polyline.getBounds());
-
-                    } catch (error) {
-                        console.error('Gagal membuat polyline: ', error);
-                    }
-
                 },
                 async save() {
                     this.buttonLoading = true;
@@ -376,26 +335,12 @@
                         }
                     });
                 },
-                async getBranchData() {
-                    $(".branch-select2").select2({
-                        allowClear: true,
-                        placeholder: 'Pillih Cabang',
-                        ajax: {
-                            url: '/operational/fo-cables/branch/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
                 async selectedBranchData() {
                     const selectedBranch = $('#selectedBranch');
                     $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/master/odp-areas/branch/selected/${id}`,
+                        url: `/master/fo-cables/branch/selected/${id}`,
                     }).then(function (response) {
                         const option = new Option(response.name, response.id, true, true);
                         selectedBranch.append(option).trigger('change');
