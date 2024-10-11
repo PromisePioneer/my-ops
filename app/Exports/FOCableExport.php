@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use AllowDynamicProperties;
 use App\Models\FOCable;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -36,7 +37,9 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
                     'ending_point_lat' => $item->ending_point_lat,
                     'ending_point_long' => $item->ending_point_long,
                     'length' => $item->length,
-                    'cut_off_date' => $item->cut_off_date,
+                    'cut_off_date' => Carbon::parse($item->cut_off_date)->locale('id')
+                        ->settings(['formatFunction' => 'translatedFormat'])
+                        ->format('l, j F Y'),
                 ];
             });
 
