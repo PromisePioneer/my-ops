@@ -7,7 +7,7 @@ use App\Models\AttendancesSummary;
 use App\Models\User;
 use Carbon\Carbon;
 
-class AttendancesSummaryObserver
+class AttendanceSummaryObserver
 {
     /**
      * Handle the Attendances "created" event.
