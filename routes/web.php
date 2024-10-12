@@ -82,6 +82,7 @@ use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Jmrashed\Zkteco\Lib\ZKTeco;
 
 /*
 |--------------------------------------------------------------------------
@@ -1048,6 +1049,17 @@ Route::group(['middleware' => ['auth']], static function () {
     Route::prefix('payroll/payroll-history')->group(function () {
         Route::get('/', [PayrollHistoryController::class, 'index']);
         Route::get('/data', [PayrollHistoryController::class, 'data']);
+    });
+
+
+
+
+    Route::get('/test', function () {
+        $zk = new ZKTeco('203.153.21.78', '4370');
+
+        $connected = $zk->connect();
+
+        dd($connected);
     });
 });
 
