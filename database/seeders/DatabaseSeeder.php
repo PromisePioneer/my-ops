@@ -37,8 +37,6 @@ class DatabaseSeeder extends Seeder
             SalaryCalculationMethodSeeder::class,
             TaxSettingSeeder::class,
             JointClosureCodeSeeder::class,
-            FoCableSeeder::class,
-            JointClosureSeeder::class,
         ]);
     }
 }
