@@ -12,7 +12,11 @@ return new class extends Migration {
     {
         Schema::create('odp', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('area_id')->constrained('odp_areas');
+            $table->foreignId('branch_id')
+                ->nullable()
+                ->constrained('branches')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->string('name')->unique();
             $table->enum('classification', ['AS', 'Turunan']);
             $table->enum('passive_splitter', ['ODP', 'FAT', 'ODU']);

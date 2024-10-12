@@ -2,8 +2,8 @@
 
 namespace App\Imports;
 
+use App\Models\Branch;
 use App\Models\ODP;
-use App\Models\ODPArea;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -20,7 +20,7 @@ class ODPImport implements ToModel, WithHeadingRow
     public function model(array $row): Model|ODP
     {
         return new ODP([
-            'area_id' => ODPArea::where('code', $row['nama_area'])->first()->id,
+            'branch_id' => Branch::where('name', $row['cabang'])->first()->id,
             'name' => $row['nama_odp'],
             'classification' => $row['klasifikasi'],
             'passive_splitter' => $row['jenis_passive_splitter'],

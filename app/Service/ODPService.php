@@ -15,7 +15,7 @@ class ODPService
 
     public function data(): LengthAwarePaginator
     {
-        $data = ODP::with('area', 'area.branch')->paginate(self::$perPage);
+        $data = ODP::with('branch')->paginate(self::$perPage);
         return self::formattedData($data);
     }
 
@@ -26,10 +26,8 @@ class ODPService
         $data = ODP::with('area', 'area.branch')->orderBy('cut_off_date');
 
         if ($search) {
-            $data->whereHas('area', function ($query) use ($search) {
+            $data->whereHas('branch', function ($query) use ($search) {
                 $query->where('code', 'like', '%'.$search.'%');
-            })->orWhereHas('area.branch', function ($query) use ($search) {
-                $query->where('name', 'like', '%'.$search.'%');
             });
         }
 
@@ -42,8 +40,7 @@ class ODPService
         $data = $odp->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
-                'branch' => $item->area->branch->name,
-                'area' => $item->area->code,
+                'branch' => $item->branch?->name,
                 'name' => $item->name,
                 'classification' => $item->classification,
                 'passive_splitter' => $item->passive_splitter,

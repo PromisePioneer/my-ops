@@ -21,7 +21,7 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
     public function headings(): array
     {
         return [
-            'Nama Area',
+            'Cabang',
             'Nama ODP',
             'Klasifikasi',
             'Jenis Passive Splitter',
@@ -36,11 +36,11 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 
     public function collection(): Collection
     {
-        $odp = ODP::with('area')->whereBetween('cut_off_date', [$this->startDate, $this->endDate])
+        $odp = ODP::with('branch')->whereBetween('cut_off_date', [$this->startDate, $this->endDate])
             ->get()
             ->map(function ($item) {
                 return [
-                    'nama_area' => $item->area->code,
+                    'branch' => $item->branch->name,
                     'name' => $item->name,
                     'classification' => $item->classification,
                     'passive_splitter' => $item->passive_splitter,

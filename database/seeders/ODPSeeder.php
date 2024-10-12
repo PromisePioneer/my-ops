@@ -15,7 +15,6 @@ class ODPSeeder extends Seeder
     public function run(): void
     {
         ODP::create([
-            'area_id' => ODPArea::first()->id,
             'name' => fake()->unique()->name(),
             'classification' => 'Turunan',
             'passive_splitter' => 'ODP',
@@ -29,7 +28,6 @@ class ODPSeeder extends Seeder
 
 
         ODP::create([
-            'area_id' => ODPArea::first()->id,
             'name' => fake()->unique()->name(),
             'classification' => 'Turunan',
             'passive_splitter' => 'ODP',

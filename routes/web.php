@@ -424,20 +424,6 @@ Route::group(['middleware' => ['auth']], static function () {
         });
 
 
-        Route::prefix('odp-areas')->group(function () {
-            Route::get('/', [ODPAreaController::class, 'index']);
-            Route::get('/branch/data', [ODPAreaController::class, 'getBranchData']);
-            Route::get('/branch/selected/{odpArea}', [ODPAreaController::class, 'selectedBranchData']);
-            Route::post('/import', [ODPAreaController::class, 'import']);
-            Route::get('/data', [ODPAreaController::class, 'data']);
-            Route::get('/search', [ODPAreaController::class, 'search']);
-            Route::post('/', [ODPAreaController::class, 'store']);
-            Route::get('/{odpArea}', [ODPAreaController::class, 'edit']);
-            Route::post('/destroy', [ODPAreaController::class, 'destroy']);
-            Route::post('/update/{odpArea}', [ODPAreaController::class, 'update']);
-        });
-
-
         Route::prefix('joint-closures-code')->group(function () {
             Route::get('/', [JointClosureCodeController::class, 'index']);
             Route::get('/data', [JointClosureCodeController::class, 'data']);
@@ -457,7 +443,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [ODPController::class, 'data']);
             Route::get('/search', [ODPController::class, 'search']);
             Route::get('/create', [ODPController::class, 'create']);
-            Route::get('/odp-area/data', [ODPController::class, 'getODPAreaData']);
+            Route::get('/branch/data', [ODPController::class, 'getBranchData']);
+            Route::get('/branch/selected/{odp}', [ODPController::class, 'selectedBranchData']);
             Route::get('/export', [ODPController::class, 'export']);
             Route::get('/odp-area/selected/{odp}', [ODPController::class, 'getSelectedODPArea']);
             Route::post('/', [ODPController::class, 'store']);

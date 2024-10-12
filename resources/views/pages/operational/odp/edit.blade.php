@@ -14,9 +14,9 @@
                     <div class="card-body p-12">
                         <div class="row mb-10">
                             <div class="col-lg-6">
-                                <label for="name" class="required form-label">Area</label>
-                                <select name="area_id" id="selectedArea"
-                                        class="form-select form-select-solid areas-select2">
+                                <label for="name" class="required form-label">Cabang</label>
+                                <select name="branch_id" id="selectedBranch"
+                                        class="form-select form-select-solid branches-select2">
                                     <option></option>
                                 </select>
                             </div>
@@ -133,11 +133,11 @@
                 id: "{{ $odp->id }}",
                 form: document.getElementById('form'),
                 async init() {
-                    await this.getAreaData();
                     this.map = L.map('map').setView([-5.2360628, 112.8290825], 4);
                     this.mapTileLayer(this.map);
                     this.map.invalidateSize();
-                    await this.selectedArea();
+                    await this.getBranchData();
+                    await this.selectedBranch();
                 },
                 async save() {
                     this.buttonLoading = true;
@@ -169,12 +169,12 @@
                     }).addTo(this.map).bindPopup(`<b>Lokasi ODP</b>`).openPopup();
 
                 },
-                async getAreaData() {
-                    $(".areas-select2").select2({
+                async getBranchData() {
+                    $(".branches-select2").select2({
                         allowClear: true,
-                        placeholder: "Pilih Kode Area",
+                        placeholder: "Pilih Cabang",
                         ajax: {
-                            url: '/operational/odp/odp-area/data',
+                            url: '/operational/odp/branch/data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),
@@ -183,17 +183,17 @@
                         }
                     });
                 },
-                async selectedArea() {
-                    const selectedArea = $('#selectedArea');
+                async selectedBranch() {
+                    const selectedBranch = $('#selectedBranch');
                     $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/operational/odp/odp-area/selected/${this.id}`,
+                        url: `/operational/odp/branch/selected/${this.id}`,
                     }).then(function (response) {
-                        const option = new Option(response.code, response.id, true, true);
-                        selectedArea.append(option).trigger('change');
+                        const option = new Option(response.name, response.id, true, true);
+                        selectedBranch.append(option).trigger('change');
 
-                        selectedArea.trigger({
+                        selectedBranch.trigger({
                             type: 'select2:select',
                             params: {
                                 results: response

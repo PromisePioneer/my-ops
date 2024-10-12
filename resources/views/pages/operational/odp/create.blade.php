@@ -13,8 +13,8 @@
                     <div class="card-body p-12">
                         <div class="row mb-10">
                             <div class="col-lg-6">
-                                <label for="name" class="required form-label">Area</label>
-                                <select name="area_id" id="area_id" class="form-select form-select-solid areas-select2">
+                                <label for="name" class="required form-label">Cabang</label>
+                                <select name="branch_id" id="branch_id" class="form-select form-select-solid branches-select2">
                                     <option></option>
                                 </select>
                             </div>
@@ -122,7 +122,7 @@
                 marker: null,
                 form: document.getElementById('form'),
                 async init() {
-                    await this.getAreaData();
+                    await this.getBranchData();
                     this.map = L.map('map').setView([-5.2360628, 112.8290825], 4);
                     this.mapTileLayer(this.map);
                     this.map.invalidateSize();
@@ -157,12 +157,12 @@
                     }).addTo(this.map).bindPopup(`<b>Lokasi ODP</b>`).openPopup();
 
                 },
-                async getAreaData() {
-                    $(".areas-select2").select2({
+                async getBranchData() {
+                    $(".branches-select2").select2({
                         allowClear: true,
-                        placeholder: "Pilih Kode Area",
+                        placeholder: "Pilih Cabang",
                         ajax: {
-                            url: '/operational/odp/odp-area/data',
+                            url: '/operational/odp/branch/data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),
@@ -171,6 +171,7 @@
                         }
                     });
                 },
+
             }
         }
     </script>

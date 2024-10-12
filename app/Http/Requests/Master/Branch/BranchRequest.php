@@ -15,6 +15,7 @@ class BranchRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'branch_id' => ['nullable'],
             'code' => [
                 'required',
                 Rule::unique('branches', 'code')

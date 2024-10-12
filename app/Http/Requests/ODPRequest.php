@@ -16,7 +16,6 @@ class ODPRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
-            'area_id' => ['required', Rule::exists('odp_areas', 'id')],
             'name' => ['required'],
             'classification' => ['required', Rule::in('AS', 'Turunan')],
             'passive_splitter' => ['required', Rule::in('ODP', 'FAT', 'ODU')],
@@ -38,8 +37,6 @@ class ODPRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'area_id.required' => 'Area tidak boleh kosong.',
-            'area_id.exists' => 'Area tidak ditemukan.',
             'name.required' => 'Nama ODP tidak boleh kosong.',
             'classification.required' => 'Kelas ODP tidak boleh kosong.',
             'classification.in' => 'Kasifikasi ODP tidak valid.',

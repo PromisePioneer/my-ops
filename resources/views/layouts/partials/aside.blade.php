@@ -155,11 +155,6 @@
                             Aset
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'odp-areas'"
-                                href="{{ url('master/odp-areas') }}">
-                            ODP Area
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'joint-closures-code'"
                                 href="{{ url('master/joint-closures-code') }}">
                             Kode Joint Closure

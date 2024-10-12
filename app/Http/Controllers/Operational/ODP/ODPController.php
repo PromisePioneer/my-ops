@@ -6,6 +6,7 @@ use App\Exports\ODPExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ODPRequest;
 use App\Imports\ODPImport;
+use App\Models\Branch;
 use App\Models\ODP;
 use App\Models\ODPArea;
 use App\Service\ODPService;
@@ -25,6 +26,7 @@ class ODPController extends Controller
     {
         $this->ODPArea = new ODPArea();
         $this->ODPService = new ODPService();
+        $this->branch = new Branch();
     }
 
 
@@ -39,6 +41,17 @@ class ODPController extends Controller
         return response()->json($this->ODPService->data());
     }
 
+
+    public function getBranchData(Request $request): JsonResponse
+    {
+        return response()->json($this->branch->getData($request));
+    }
+
+    public function selectedBranchData(ODP $odp): JsonResponse
+    {
+        return response()->json($this->branch->getSelectedData($odp->branch_id));
+    }
+
     public function search(Request $request): JsonResponse
     {
         return response()->json($this->ODPService->search($request));
@@ -50,15 +63,11 @@ class ODPController extends Controller
         return view('pages.operational.odp.create');
     }
 
-    public function getODPAreaData(Request $request): JsonResponse
-    {
-        return response()->json($this->ODPArea->getData($request));
-    }
-
-
     public function store(ODPRequest $request): JsonResponse
     {
-        ODP::create($request->validated());
+        $data = $request->validated();
+        $data['branch_id'] = $request->branch_id;
+        ODP::create($data);
         return response()->json(['message' => 'Data ODP berhasil ditambahkan.']);
     }
 
@@ -77,7 +86,9 @@ class ODPController extends Controller
 
     public function update(ODPRequest $request, ODP $odp): JsonResponse
     {
-        $odp->update($request->validated());
+        $data = $request->validated();
+        $data['branch_id'] = $request->branch_id;
+        $odp->update($data);
         return response()->json(['message' => 'Data ODP berhasil diubah.']);
     }
 

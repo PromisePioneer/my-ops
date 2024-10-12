@@ -12,7 +12,7 @@ class ODP extends Model
 
     protected $table = 'odp';
     protected $fillable = [
-        'area_id',
+        'branch_id',
         'name',
         'classification',
         'passive_splitter',
@@ -24,8 +24,8 @@ class ODP extends Model
     ];
 
 
-    public function area(): BelongsTo
+    public function branch(): BelongsTo
     {
-        return $this->belongsTo(ODPArea::class, 'area_id');
+        return $this->belongsTo(Branch::class, 'area_id');
     }
 }

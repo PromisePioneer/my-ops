@@ -119,12 +119,7 @@
                                                 <tr>
                                                     <th>Cabang</th>
                                                     <th>:</th>
-                                                    <th x-text="odp.branch"></th>
-                                                </tr>
-                                                <tr>
-                                                    <th>Kode area</th>
-                                                    <th>:</th>
-                                                    <th x-text="odp.area"></th>
+                                                    <th x-text="odp.branch ?? 'Pusat'"></th>
                                                 </tr>
                                                 <tr>
                                                     <th> Nama ODP</th>
@@ -142,7 +137,7 @@
                                                     <th x-text="odp.passive_splitter"></th>
                                                 </tr>
                                                 <tr>
-                                                    <th>Coordinates</th>
+                                                    <th>Koordinat</th>
                                                     <th>:</th>
                                                     <th x-text="odp.coordinates"></th>
                                                 </tr>
