@@ -26,7 +26,46 @@ class AttendanceSummaryObserver
         }
 
         $attendancesSummary->save();
-    }
+
+
+
+        // if ($attendances->status1 === 0) {
+        //      AttendancesSummary::create([
+        //         'user_id' => $user->id,
+        //         'date' => $attendances->timestamp,
+        //         'clock_in' => Carbon::parse($attendances->timestamp)->format('H:i'),
+        //     ]);
+        // }
+
+        // $date = Carbon::parse($attendances->timestamp)->toDateString();
+
+        // if ($attendances->status1 === 1) {
+        //     $update = AttendancesSummary::join('users', 'users.id', '=',
+        //         'attendances_summary.user_id')
+        //     ->join('attendances', 'attendances.employee_id', '=' ,'users.absent_id')
+        //     ->where('attendances_summary.user_id', $user?->id)
+        //     ->whereDate('attendances_summary.date', $date)
+        //     ->select('attendances_summary.*')
+        //     ->first();
+
+
+
+        //     if($attendances->where('status1', 1)->where('employee_id', $user->absent_id)->where('timestamp', $update->date)->exists()){
+        //         AttendancesSummary::create([
+        //             'user_id' => $user->id,
+        //             'date' => $attendances->timestamp,
+        //             'clock_out' => Carbon::parse($attendances->timestamp)->format('H:i'),
+        //         ]);
+        //     }else{
+        //         $update->clock_out =  Carbon::parse($attendances->timestamp)->format('H:i');
+        //         $update->save();
+        //     }
+
+
+
+
+        }
+
 
 
     /**

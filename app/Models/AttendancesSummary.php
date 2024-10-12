@@ -11,7 +11,7 @@ class AttendancesSummary extends Model
 
     protected $table = 'attendances_summary';
     protected $fillable = [
-        'user_id',
+        'employee_id',
         'date',
         'clock_in',
         'clock_out',
