@@ -27,7 +27,7 @@ class IclockController extends Controller
 
     public function receiveRecords(Request $request): string
     {
-        return $this->iclockService->receiveRecords($request);
+        return $this->iclockService->recieveRecords($request);
     }
 
     public function test(Request $request): void

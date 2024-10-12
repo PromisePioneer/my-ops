@@ -14,50 +14,20 @@ class AttendanceSummaryObserver
      */
     public function created(Attendances $attendances): void
     {
-        $user = User::with('branch')
-            ->join('attendances', 'users.absent_id', '=',
-                'attendances.employee_id')
-            ->where('attendances.employee_id', $attendances->employee_id)
-            ->select('users.*', 'attendances.*')
-            ->first();
+        $attendancesSummary = AttendancesSummary::updateOrCreate([
+            'date' => Carbon::parse($attendances->timestamp)->format('Y-m-d'),
+            'employee_id' => $attendances->employee_id,
+        ], []);
 
         if ($attendances->status1 === 0) {
-             AttendancesSummary::create([
-                'user_id' => $user->id,
-                'date' => $attendances->timestamp,
-                'clock_in' => Carbon::parse($attendances->timestamp)->format('H:i'),
-            ]);
+            $attendancesSummary->clock_in = Carbon::parse($attendances->timestamp)->format('H:i');
+        } elseif ($attendances->status1 === 1) {
+            $attendancesSummary->clock_out = Carbon::parse($attendances->timestamp)->format('H:i');
         }
 
-        $date = Carbon::parse($attendances->timestamp)->toDateString();
-
-        if ($attendances->status1 === 1) {
-            $update = AttendancesSummary::join('users', 'users.id', '=',
-                'attendances_summary.user_id')
-            ->join('attendances', 'attendances.employee_id', '=' ,'users.absent_id')
-            ->where('attendances_summary.user_id', $user->id)
-            ->whereDate('attendances_summary.date', $date)
-            ->select('attendances_summary.*')
-            ->first();
-
-
-
-            if($attendances->where('status1', 1)->where('employee_id', $user->absent_id)->where('timestamp', $update->date)->exists()){
-                AttendancesSummary::create([
-                    'user_id' => $user->id,
-                    'date' => $attendances->timestamp,
-                    'clock_out' => Carbon::parse($attendances->timestamp)->format('H:i'),
-                ]);
-            }else{
-                $update->clock_out =  Carbon::parse($attendances->timestamp)->format('H:i');
-                $update->save();
-            }
-
-
-
-
-        }
+        $attendancesSummary->save();
     }
+
 
     /**
      * Handle the Attendances "updated" event.
