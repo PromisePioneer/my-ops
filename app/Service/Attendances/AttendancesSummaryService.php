@@ -61,7 +61,7 @@ class AttendancesSummaryService
                 'user_name' => $attendance->name ?? null,
                 'work_time' => $attendance?->userHasWorkTime?->workTime,
                 'total_present' => $totalPresent ?? 0,
-                'total_late_in_minutes' => (int)$totalPresent ?? $totalMinutesLate ?? 0,
+                'total_late_in_minutes' => (int) $totalMinutesLate ?? 0,
                 'total_leaves' => $totalLeaves ?? 0,
                 'total_sick' => $totalSick ?? 0,
                 'total_absent' => $totalAbsent ?? 0,
@@ -88,10 +88,20 @@ class AttendancesSummaryService
         });
 
 
+        $totalMinutesLate = 0;
+
+
         foreach ($calculateLateGroupBy as $day => $dailyItems) {
+
             $checkIn = $dailyItems->where('status1', 0)->first();
+
+
+            if (empty($checkIn)) {
+                continue;
+            }
+
+
             $userWorktime = WorkTime::where('name', 'Default')->first();
-            if ($checkIn) {
                 $expectedCheckInTime = $userWorktime->clock_in;
                 $expectedCheckIn = Carbon::parse($checkIn->first()->timestamp)->format(
                         'Y-m-d'
@@ -99,11 +109,14 @@ class AttendancesSummaryService
                 $actualCheckIn = Carbon::parse($checkIn->first()->timestamp);
 
                 if ($actualCheckIn->greaterThan($expectedCheckIn)) {
-                    return Carbon::parse($expectedCheckIn)->diffInMinutes($actualCheckIn);
+                    $minutesLate =  Carbon::parse($expectedCheckIn)->diffInMinutes($actualCheckIn);
+                    $totalMinutesLate += $minutesLate;
                 }
-            }
+
+
+
         }
-        return 0;
+        return $totalMinutesLate;
     }
 
     private static function calculateLeaves(int $userId, $startDate, $endDate): int

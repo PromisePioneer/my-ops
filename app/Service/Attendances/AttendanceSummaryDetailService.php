@@ -75,9 +75,9 @@ class AttendanceSummaryDetailService
 
 
             return [
-                'date' => $period,
-                'check_in_timestamp' => $checkIn ? Carbon::parse($checkIn->timestamp)->format('H:i') : null,
-                'check_out_timestamp' => $checkOut ? Carbon::parse($checkOut->timestamp)->format('H:i') : null,
+                'date' => Carbon::parse($checkIn?->timestamp)->format('d/m/y')  ?? Carbon::parse($checkOut?->timestamp)->format('d/m/y'),
+                'check_in_timestamp' => $checkIn ? Carbon::parse($checkIn?->timestamp)->format('H:i') : null,
+                'check_out_timestamp' => $checkOut ? Carbon::parse($checkOut?->timestamp)->format('H:i') : null,
             ];
         })->values();
     }
