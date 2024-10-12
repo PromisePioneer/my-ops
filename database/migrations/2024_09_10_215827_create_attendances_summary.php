@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('attendances_summary', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->date('date');
             $table->time('clock_in')->nullable();
             $table->time('clock_out')->nullable();

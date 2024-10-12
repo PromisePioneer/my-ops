@@ -50,115 +50,183 @@ class IclockService
             'Encrypt=0';
     }
 
-    public function recieveRecords(Request $request): string
+
+
+
+    public function receiveRecords(Request $request)
     {
-        //        try {
-        //            // $post_content = $request->getContent();
-        //            //$arr = explode("\n", $post_content);
-        //            $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
-        //            //$tot = count($arr);
-        //            $tot = 0;
-        //            //operation log
-        //            if ($request->input('table') == "OPERLOG") {
-        //                // $tot = count($arr) - 1;
-        //                foreach ($arr as $rey) {
-        //                    if (isset($rey)) {
-        //                        $tot++;
-        //                    }
-        //                }
-        //                return "OK: ".$tot;
-        //            }
-        //            //attendance
-        //            foreach ($arr as $rey) {
-        //                // $data = preg_split('/\s+/', trim($rey));
-        //                if (empty($rey)) {
-        //                    continue;
-        //                }
-        //                // $data = preg_split('/\s+/', trim($rey));
-        //                $data = explode("\t", $rey);
-        ////                dd($data);
-        //                //dd($data);
-        //                $q['sn'] = $request->input('SN');
-        //                $q['table'] = $request->input('table');
-        //                $q['stamp'] = $request->input('Stamp');
-        //                $q['employee_id'] = $data[0];
-        //                $q['timestamp'] = $data[1];
-        //                $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
-        //                $q['status2'] = $this->validateAndFormatInteger($data[3] ?? null);
-        //                $q['status3'] = $this->validateAndFormatInteger($data[4] ?? null);
-        //                $q['status4'] = $this->validateAndFormatInteger($data[5] ?? null);
-        //                $q['status5'] = $this->validateAndFormatInteger($data[6] ?? null);
-        //                $q['created_at'] = now();
-        //                $q['updated_at'] = now();
-        //                //dd($q);
-        //                Attendances::create($q);
-        //                $tot++;
-        //                // dd(DB::getQueryLog());
-        //            }
-        //            return "OK: ".$tot;
-        //        } catch (Throwable $e) {
-        //            $data['error'] = $e;
-        //            DB::table('error_logs')->insert($data);
-        //            report($e);
-        //            return "ERROR: ".$tot."\n";
-        //        }
 
-        //        // Log incoming request data
+        //DB::connection()->enableQueryLog();
         $content['url'] = json_encode($request->all());
-        $content['data'] = $request->getContent();
-        FingerLog::create($content);
-
-        $processedCount = 0;
+        $content['data'] = $request->getContent();;
+        DB::table('finger_logs')->insert($content);
         try {
-            DB::transaction(function () use ($processedCount, $request) {
-                // Split input lines by various line breaks
-                $inputLines = preg_split('/\r\n|\r|\n/', $request->getContent());
-
-                // Handle OPERLOG case separately
-                if ($request->input('table') == 'OPERLOG') {
-                    return $this->handleOperLog($inputLines);
-                }
-
-                // Process each line for attendance records
-                foreach ($inputLines as $line) {
-                    // Skip empty lines
-                    if (empty(trim($line))) {
-                        continue;
+            // $post_content = $request->getContent();
+            //$arr = explode("\n", $post_content);
+            $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
+            //$tot = count($arr);
+            $tot = 0;
+            //operation log
+            if($request->input('table') == "OPERLOG"){
+                // $tot = count($arr) - 1;
+                foreach ($arr as $rey) {
+                    if(isset($rey)){
+                        $tot++;
                     }
-
-                    // Prepare attendance data
-                    $attendanceData = $this->prepareAttendanceData($line, $request);
-                    //                    dd($attendanceData);
-
-                    //                    dd($this->isValidUserShift($attendanceData['employee_id']));
-                    //                    // Check if user shift is valid
-                    //                    if (!$this->isValidUserShift($attendanceData['employee_id'])) {
-                    //                        continue;
-                    //                    }
-
-                    // Get shift information for the user
-                    $shift = $this->getShiftForUser($attendanceData['employee_id']);
-                    //                    dd(!$shift);
-                    //                    if (!$shift) {
-                    //                        continue;
-                    //                    }
-
-                    // Process the attendance record
-                    $this->processAttendanceRecord($attendanceData, $shift);
-                    $processedCount++;
                 }
-
-                return 'OK: '.$processedCount;
-            });
-
-            return 'OK: '.$processedCount;
+                return "OK: ".$tot;
+            }
+            //attendance
+            foreach ($arr as $rey) {
+                // $data = preg_split('/\s+/', trim($rey));
+                if(empty($rey)){
+                    continue;
+                }
+                    // $data = preg_split('/\s+/', trim($rey));
+                    $data = explode(" ",$rey);
+                    // dd($data);
+                    $q['sn'] = $request->input('SN');
+                    $q['table'] = $request->input('table');
+                    $q['stamp'] = $request->input('Stamp');
+                    $q['employee_id'] = $data[0];
+                    $q['timestamp'] = $data[1]. ' ' . $data[2];
+                    $q['status1'] = $this->validateAndFormatInteger($data[3] ?? null);
+                    $q['status2'] = $this->validateAndFormatInteger($data[4] ?? null);
+                    $q['status3'] = $this->validateAndFormatInteger($data[5] ?? null);
+                    $q['status4'] = $this->validateAndFormatInteger($data[6] ?? null);
+                    $q['status5'] = $this->validateAndFormatInteger($data[7] ?? null);
+                    $q['created_at'] = now();
+                    $q['updated_at'] = now();
+                    //dd($q);
+                    Attendances::create($q);
+                    $tot++;
+                // dd(DB::getQueryLog());
+            }
+            return "OK: ".$tot;
         } catch (Throwable $e) {
-            // Log and report any errors
-            $this->logError($e);
-
-            return 'ERROR: '.$processedCount."\n";
+            $data['error'] = $e;
+            // DB::table('error_log')->insert($data);
+            report($e);
+            return "ERROR: ".$e."\n";
         }
     }
+
+    // public function recieveRecords(Request $request): string
+    // {
+    //            try {
+    //                // $post_content = $request->getContent();
+    //                //$arr = explode("\n", $post_content);
+    //                $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
+    //                //$tot = count($arr);
+    //                $tot = 0;
+    //                //operation log
+    //                if ($request->input('table') == "OPERLOG") {
+    //                    // $tot = count($arr) - 1;
+    //                    foreach ($arr as $rey) {
+    //                        if (isset($rey)) {
+    //                            $tot++;
+    //                        }
+    //                    }
+    //                    return "OK: ".$tot;
+    //                }
+    //                //attendance
+    //                foreach ($arr as $rey) {
+    //                    // $data = preg_split('/\s+/', trim($rey));
+    //                    if (empty($rey)) {
+    //                        continue;
+    //                    }
+    //                    // $data = preg_split('/\s+/', trim($rey));
+    //                    $data = explode("\t", $rey);
+
+    //                    dd($data);
+    //     //                dd($data);
+    //                    //dd($data);
+    //                    $q['sn'] = $request->input('SN');
+    //                    $q['table'] = $request->input('table');
+    //                    $q['stamp'] = $request->input('Stamp');
+    //                    $q['employee_id'] = $data[0];
+    //                    $q['timestamp'] = $data[1];
+    //                    $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
+    //                    $q['status2'] = $this->validateAndFormatInteger($data[3] ?? null);
+    //                    $q['status3'] = $this->validateAndFormatInteger($data[4] ?? null);
+    //                    $q['status4'] = $this->validateAndFormatInteger($data[5] ?? null);
+    //                    $q['status5'] = $this->validateAndFormatInteger($data[6] ?? null);
+    //                    $q['created_at'] = now();
+    //                    $q['updated_at'] = now();
+    //                    //dd($q);
+    //                    Attendances::create($q);
+    //                    $tot++;
+    //                    // dd(DB::getQueryLog());
+    //                }
+    //                return "OK: ".$tot;
+    //            } catch (Throwable $e) {
+    //                $data['error'] = $e;
+    //             //    DB::table('error_logs')->insert($data);
+    //                report($e);
+    //                return "ERROR: ".$e."\n";
+    //            }
+
+    //            // Log incoming request data
+
+
+
+
+
+    //     // $content['url'] = json_encode($request->all());
+    //     // $content['data'] = $request->getContent();
+    //     // FingerLog::create($content);
+
+    //     // $processedCount = 0;
+    //     // try {
+    //     //     DB::transaction(function () use ($processedCount, $request) {
+    //     //         // Split input lines by various line breaks
+    //     //         $inputLines = preg_split('/\r\n|\r|\n/', $request->getContent());
+
+    //     //         // Handle OPERLOG case separately
+    //     //         if ($request->input('table') == 'OPERLOG') {
+    //     //             return $this->handleOperLog($inputLines);
+    //     //         }
+
+    //     //         // Process each line for attendance records
+    //     //         foreach ($inputLines as $line) {
+    //     //             // Skip empty lines
+    //     //             if (empty(trim($line))) {
+    //     //                 continue;
+    //     //             }
+
+    //     //             // Prepare attendance data
+    //     //             $attendanceData = $this->prepareAttendanceData($line, $request);
+    //     //             //                    dd($attendanceData);
+
+    //     //             //                    dd($this->isValidUserShift($attendanceData['employee_id']));
+    //     //             //                    // Check if user shift is valid
+    //     //             //                    if (!$this->isValidUserShift($attendanceData['employee_id'])) {
+    //     //             //                        continue;
+    //     //             //                    }
+
+    //     //             // Get shift information for the user
+    //     //             $shift = $this->getShiftForUser($attendanceData['employee_id']);
+    //     //             //                    dd(!$shift);
+    //     //             //                    if (!$shift) {
+    //     //             //                        continue;
+    //     //             //                    }
+
+    //     //             // Process the attendance record
+    //     //             $this->processAttendanceRecord($attendanceData, $shift);
+    //     //             $processedCount++;
+    //     //         }
+
+    //     //         return 'OK: '.$processedCount;
+    //     //     });
+
+    //     //     return 'OK: '.$processedCount;
+    //     // } catch (Throwable $e) {
+    //     //     // Log and report any errors
+    //     //     $this->logError($e);
+
+    //     //     return 'ERROR: '.$processedCount."\n";
+    //     // }
+    // }
 
     private function handleOperLog(array $lines): string
     {

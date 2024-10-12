@@ -104,6 +104,17 @@ Route::get('/', function () {
 
 Auth::routes();
 
+
+
+
+Route::prefix('/iclock')->group(function () {
+    Route::post('/cdata', [IclockController::class, 'receiveRecords']);
+    Route::get('/cdata', [IclockController::class, 'handshake']);
+    Route::get('test', [IclockController::class, 'test']);
+    Route::get('getrequest', [IclockController::class, 'getrequest']);
+});
+
+
 Route::group(['middleware' => ['auth']], static function () {
     //dashboard
     Route::get('home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -1053,9 +1064,4 @@ Route::group(['middleware' => ['auth']], static function () {
     });
 });
 
-Route::prefix('/iclock')->group(function () {
-    Route::post('cdata', [IclockController::class, 'receiveRecords']);
-    Route::get('cdata', [IclockController::class, 'handshake']);
-    Route::get('test', [IclockController::class, 'test']);
-    Route::get('getrequest', [IclockController::class, 'getrequest']);
-});
+
