@@ -139,6 +139,12 @@ class User extends Authenticatable
     }
 
 
+    public function attendancesSummary(): HasMany
+    {
+        return $this->hasMany(AttendancesSummary::class, 'employee_id', 'absent_id');
+    }
+
+
     public function contract(): HasOne
     {
         return $this->hasOne(ContractManagement::class, 'user_id');

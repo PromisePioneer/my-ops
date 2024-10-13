@@ -50,13 +50,6 @@
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="min-w-125px">Nama Karyawan</th>
-                                <th class="min-w-125px">Hadir</th>
-                                <th class="min-w-125px">Terlambat</th>
-                                <th class="min-w-125px">Cuti</th>
-                                <th class="min-w-125px">Alpha</th>
-                                <th class="min-w-125px">Sakit</th>
-                                <th class="min-w-125px">Izin</th>
-                                <th class="min-w-125px">Jam Kerja</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class=" fw-bold">
@@ -84,14 +77,6 @@
                                         <a :href="`/manage-users/users/detail/${attendance.id}`"
                                            x-text="`(${attendance.user_nip}) ${attendance.user_name}`"></a>
                                     </td>
-                                    <td x-text="attendance.total_present"></td>
-                                    p[kasdkasd
-                                    <td x-text="`${attendance.total_late_in_minutes} Menit`"></td>
-                                    <td x-text="`${attendance.total_leaves} Hari`"></td>
-                                    <td x-text="`${attendance.total_absent} Hari`"></td>
-                                    <td x-text="`${attendance.total_sick} Hari`"></td>
-                                    <td x-text="`${attendance.total_permission} Hari`"></td>
-                                    <td x-text="attendance.work_time?.name ?? 'Default'"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-detail" @click="show(attendance.id)">

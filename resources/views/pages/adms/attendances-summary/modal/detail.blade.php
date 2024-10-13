@@ -1,5 +1,5 @@
 <div class="modal fade" tabindex="-1" id="modal-detail">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Karyawan</h5>
@@ -17,9 +17,9 @@
                 <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
                     <thead>
                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                        <th class="min-w-125px">Tanggal</th>
-                        <th class="min-w-125px">Waktu C/In</th>
-                        <th class="min-w-125px">Waktu C/Out</th>
+                        <th class="min-w-125px text-center" >Tanggal</th>
+                        <th class="min-w-125px text-center">Waktu C/In</th>
+                        <th class="min-w-125px text-center">Waktu C/Out</th>
                     </thead>
                     <tbody class="fw-bold">
                     <template x-if="isLoading">
@@ -40,20 +40,20 @@
                             </td>
                         </tr>
                     </template>
-                    <template x-for="(attendance, index) in attendanceSummaryDetail.data" :key="index">
+                    <template x-for="(attendance, index) in attendanceSummaryDetail" :key="index">
                         <tr>
-                            <td x-text="attendance.date"></td>
-                            <td>
-                                <span :class="attendance.check_in_timestamp
+                            <td class="text-center" x-text="attendance.date_period"></td>
+                            <td class="text-center">
+                                <span :class="attendance.clock_in
                                 ? 'badge bg-success text-white fs-7'
                                 : 'badge bg-danger text-white fs-7'"
-                                      x-text="attendance.check_in_timestamp ?? 'Tidak Checkin'"></span>
+                                      x-text="attendance.clock_in ?? '-'"></span>
                             </td>
-                            <td>
-                               <span :class="attendance.check_out_timestamp
+                            <td class="text-center">
+                               <span :class="attendance.clock_out
                                 ? 'badge bg-success text-white fs-7'
                                 : 'badge bg-danger text-white fs-7'"
-                                     x-text="attendance.check_out_timestamp ?? 'Tidak Checkout'"></span>
+                                     x-text="attendance.clock_out  ?? '-'"></span>
                             </td>
                         </tr>
                     </template>

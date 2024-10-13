@@ -52,40 +52,44 @@ class IclockService
 
     public function recieveRecords(Request $request): string
     {
-               try {
-                   $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
-                   $tot = 0;
-                   if ($request->input('table') == "OPERLOG") {
-                       // $tot = count($arr) - 1;
-                       foreach ($arr as $rey) {
-                           if (isset($rey)) {
-                               $tot++;
-                           }
-                       }
-                       return "OK: ".$tot;
-                   }
-                       foreach ($arr as $rey) {
-                       if (empty($rey)) {
-                           continue;
-                       }
-                       $data = explode("\t", $rey);
-                       $q['sn'] = $request->input('SN');
-                       $q['table'] = $request->input('table');
-                       $q['stamp'] = $request->input('Stamp');
-                       $q['employee_id'] = $data[0];
-                       $q['timestamp'] = $data[1];
-                       $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
-                       Attendances::create($q);
-                       $tot++;
-                       // dd(DB::getQueryLog());
-                   }
-                   return "OK: ".$tot;
-               } catch (Throwable $e) {
-                   report($e);
-                   return "ERROR: ".$e."\n";
-               }
+        try {
+            $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
+            $tot = 0;
+            $this->handleOperLog($request, $arr, $tot);
+            foreach ($arr as $rey) {
+                if (empty($rey)) {
+                    continue;
+                }
+                $data = explode("\t", $rey);
+                $q['sn'] = $request->input('SN');
+                $q['table'] = $request->input('table');
+                $q['stamp'] = $request->input('Stamp');
+                $q['employee_id'] = $data[0];
+                $q['timestamp'] = $data[1];
+                $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
+                Attendances::create($q);
+                $tot++;
+            }
+            return "OK: ".$tot;
+        } catch (Throwable $e) {
+            report($e);
+            return "ERROR: ".$e."\n";
+        }
+    }
 
 
+    public function handleOperLog(Request $request, $arr, $tot): string
+    {
+        if ($request->input('table') == "OPERLOG") {
+            // $tot = count($arr) - 1;
+            foreach ($arr as $rey) {
+                if (isset($rey)) {
+                    $tot++;
+                }
+            }
+            return "OK: ".$tot;
+        }
+        return "";
     }
 
 

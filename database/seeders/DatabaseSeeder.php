@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\JointClosureCode;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -37,6 +36,7 @@ class DatabaseSeeder extends Seeder
             SalaryCalculationMethodSeeder::class,
             TaxSettingSeeder::class,
             JointClosureCodeSeeder::class,
+            AttendancesSummarySeeder::class,
         ]);
     }
 }
