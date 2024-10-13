@@ -53,57 +53,6 @@ class IclockService
 
     public function recieveRecords(Request $request): string
     {
-        //        try {
-        //            // $post_content = $request->getContent();
-        //            //$arr = explode("\n", $post_content);
-        //            $arr = preg_split('/\\r\\n|\\r|,|\\n/', $request->getContent());
-        //            //$tot = count($arr);
-        //            $tot = 0;
-        //            //operation log
-        //            if ($request->input('table') == "OPERLOG") {
-        //                // $tot = count($arr) - 1;
-        //                foreach ($arr as $rey) {
-        //                    if (isset($rey)) {
-        //                        $tot++;
-        //                    }
-        //                }
-        //                return "OK: ".$tot;
-        //            }
-        //            //attendance
-        //            foreach ($arr as $rey) {
-        //                // $data = preg_split('/\s+/', trim($rey));
-        //                if (empty($rey)) {
-        //                    continue;
-        //                }
-        //                // $data = preg_split('/\s+/', trim($rey));
-        //                $data = explode("\t", $rey);
-        ////                dd($data);
-        //                //dd($data);
-        //                $q['sn'] = $request->input('SN');
-        //                $q['table'] = $request->input('table');
-        //                $q['stamp'] = $request->input('Stamp');
-        //                $q['employee_id'] = $data[0];
-        //                $q['timestamp'] = $data[1];
-        //                $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
-        //                $q['status2'] = $this->validateAndFormatInteger($data[3] ?? null);
-        //                $q['status3'] = $this->validateAndFormatInteger($data[4] ?? null);
-        //                $q['status4'] = $this->validateAndFormatInteger($data[5] ?? null);
-        //                $q['status5'] = $this->validateAndFormatInteger($data[6] ?? null);
-        //                $q['created_at'] = now();
-        //                $q['updated_at'] = now();
-        //                //dd($q);
-        //                Attendances::create($q);
-        //                $tot++;
-        //                // dd(DB::getQueryLog());
-        //            }
-        //            return "OK: ".$tot;
-        //        } catch (Throwable $e) {
-        //            $data['error'] = $e;
-        //            DB::table('error_logs')->insert($data);
-        //            report($e);
-        //            return "ERROR: ".$tot."\n";
-        //        }
-
         //        // Log incoming request data
         $content['url'] = json_encode($request->all());
         $content['data'] = $request->getContent();
@@ -174,7 +123,6 @@ class IclockService
         // Split line by tab character
         $data = explode("\t", $line);
 
-        // Log::info($data[0]);
 
         return [
             'sn' => $request->input('SN'),
@@ -217,8 +165,6 @@ class IclockService
 
     private function processCheckIn(array $attendanceData, $shift, string $date, string $time): void
     {
-
-        Log::info($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin));
         if ($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin)) {
             $existingRecord = $this->getAttendanceRecord($attendanceData['employee_id'], $date);
             if (!$existingRecord) {
