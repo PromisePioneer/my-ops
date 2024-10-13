@@ -11,6 +11,7 @@ use App\Models\WorkTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class IclockService
@@ -173,6 +174,8 @@ class IclockService
         // Split line by tab character
         $data = explode("\t", $line);
 
+        // Log::info($data[0]);
+
         return [
             'sn' => $request->input('SN'),
             'table' => $request->input('table'),
@@ -201,6 +204,7 @@ class IclockService
 
     private function processAttendanceRecord(array $attendanceData, $shift): void
     {
+
         $date = date('Y-m-d', strtotime($attendanceData['timestamp']));
         $time = date('H:i:s', strtotime($attendanceData['timestamp']));
 
@@ -213,6 +217,8 @@ class IclockService
 
     private function processCheckIn(array $attendanceData, $shift, string $date, string $time): void
     {
+
+        Log::info($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin));
         if ($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin)) {
             $existingRecord = $this->getAttendanceRecord($attendanceData['employee_id'], $date);
             if (!$existingRecord) {
@@ -223,7 +229,7 @@ class IclockService
 
     private function isValidTime(string $time, string $startTime, string $endTime): bool
     {
-        return $time >= $startTime && $time <= $endTime;
+        return $time >= $startTime && $time < $endTime;
     }
 
     private function getAttendanceRecord(string $employeeId, string $date, string $order = 'asc')
