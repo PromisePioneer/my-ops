@@ -61,13 +61,14 @@ class IclockService
                     continue;
                 }
                 $data = explode("\t", $rey);
-                $q['sn'] = $request->input('SN');
-                $q['table'] = $request->input('table');
-                $q['stamp'] = $request->input('Stamp');
-                $q['employee_id'] = $data[0];
-                $q['timestamp'] = $data[1];
-                $q['status1'] = $this->validateAndFormatInteger($data[2] ?? null);
-                Attendances::create($q);
+                Attendances::create([
+                    'sn' => $request->input('SN'),
+                    'table' => $request->input('table'),
+                    'stamp' => $request->input('Stamp'),
+                    'employee_id' => $data[0],
+                    'timestamp' => $data[1],
+                    'status1' => $this->validateAndFormatInteger($data[2] ?? null),
+                ]);
                 $tot++;
             }
             return "OK: ".$tot;
@@ -75,6 +76,12 @@ class IclockService
             report($e);
             return "ERROR: ".$e."\n";
         }
+    }
+
+
+    public function getuserShift()
+    {
+
     }
 
 
