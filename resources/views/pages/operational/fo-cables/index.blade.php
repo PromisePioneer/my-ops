@@ -109,7 +109,7 @@
                             <template x-if="!isLoading && cables.data?.length === 0">
                                 <tbody class="fw-bold">
                                 <tr>
-                                    <td colspan="11">
+                                    <td colspan="12">
                                         <center>Data Tidak Ditemukan</center>
                                     </td>
                                 </tr>
