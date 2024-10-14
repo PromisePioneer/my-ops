@@ -121,13 +121,10 @@ class ODPController extends Controller
 
     public function import(Request $request): JsonResponse
     {
-        try {
-            ini_set('max_execution_time', 180);
-            $file = $request->file('file_import');
-            Excel::import(new ODPImport(), $file);
-        } catch (Exception $exception) {
-            return response()->json(['message' => $exception->getMessage()]);
-        }
+        ini_set('max_execution_time', 180);
+        $file = $request->file('file_import');
+        Excel::import(new ODPImport(), $file);
+
         return response()->json(['message' => 'Data berhasil diimport']);
     }
 }
