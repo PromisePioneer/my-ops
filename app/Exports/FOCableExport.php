@@ -23,10 +23,11 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
      */
     public function collection(): Collection
     {
-        $odp = FOCable::whereBetween('cut_off_date', [$this->startDate, $this->endDate])
+        $odp = FOCable::with('branch')->whereBetween('cut_off_date', [$this->startDate, $this->endDate])
             ->get()
             ->map(function ($item) {
                 return [
+                    'branch_id' => $item->branch?->name,
                     'segment_id' => $item->segment_id,
                     'classification' => $item->classification,
                     'cable_placement' => $item->cable_placement,
@@ -50,6 +51,7 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
     public function headings(): array
     {
         return [
+            'CABANG',
             'SEGMEN',
             'KLASIFIKASI',
             'LETAK KABEL',

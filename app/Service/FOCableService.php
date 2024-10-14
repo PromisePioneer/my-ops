@@ -46,6 +46,7 @@ class FOCableService
         $data = $foCable->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
+                'branch' => $item->branch?->name,
                 'segment' => $item->segment_id,
                 'classification' => $item->classification,
                 'cable_placement' => $item->cable_placement,

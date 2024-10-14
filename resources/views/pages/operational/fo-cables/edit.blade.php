@@ -179,7 +179,7 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/operational/fo-cables', new FormData(this.form))
+                        await axios.post(`/operational/fo-cables/update/${this.id}`, new FormData(this.form))
                         await showAlert('success', 'Data berhasil disimpan')
                         window.location.href = "/operational/fo-cables";
                         this.form.reset();

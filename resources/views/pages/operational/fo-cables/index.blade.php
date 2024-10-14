@@ -81,6 +81,7 @@
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
+                                <th class="text-center">Cabang</th>
                                 <th class="text-center">Segmen</th>
                                 <th class="text-center">Klasifikasi</th>
                                 <th class="text-center">Letak Kabel</th>
@@ -125,6 +126,7 @@
                                                    :id="'checkbox-' + cable.id"/>
                                         </div>
                                     </td>
+                                    <td class="text-center" x-text="cable.branch ?? 'Pusat'"></td>
                                     <td class="text-center" x-text="cable.segment"></td>
                                     <td class="text-center" x-text="cable.classification"></td>
                                     <td class="text-center" x-text="cable.cable_placement"></td>

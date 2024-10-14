@@ -25,6 +25,7 @@ class FoCableRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
+            'branch_id' => ['nullable'],
             'segment_id' => ['required'],
             'classification' => [
                 'required',
