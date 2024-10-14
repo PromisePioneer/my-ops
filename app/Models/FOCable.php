@@ -19,6 +19,7 @@ class FOCable extends Model
         'cable_placement',
         'cable_address',
         'total_core',
+        'used_core',
         'starting_point_lat',
         'starting_point_long',
         'ending_point_lat',

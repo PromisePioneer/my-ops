@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class FoCableRequest extends FormRequest
@@ -21,7 +22,7 @@ class FoCableRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array|string>
      */
-    public function rules(): array
+    public function rules(Request $request): array
     {
         return [
             'segment_id' => ['required'],
@@ -37,7 +38,8 @@ class FoCableRequest extends FormRequest
             'ending_point_long' => ['required', 'between:-180,180'],
             'length' => ['required'],
             'cut_off_date' => ['required', 'date'],
-            'total_core' => ['required'],
+            'total_core' => ['required', 'numeric'],
+            'used_core' => ['required', 'max:'.$request->total_core],
         ];
     }
 

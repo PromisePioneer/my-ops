@@ -86,6 +86,7 @@
                                 <th class="text-center">Letak Kabel</th>
                                 <th class="text-center">Jalur Kabel</th>
                                 <th class="text-center">Jumlah Core</th>
+                                <th class="text-center">Jumlah Core Terpakai</th>
                                 <th class="text-center">Titik Awal</th>
                                 <th class="text-center">Titik Akhir</th>
                                 <th class="text-center">Panjang Kabel</th>
@@ -129,6 +130,7 @@
                                     <td class="text-center" x-text="cable.cable_placement"></td>
                                     <td class="text-center" x-text="cable.cable_address"></td>
                                     <td class="text-center" x-text="cable.total_core"></td>
+                                    <td class="text-center" x-text="cable.used_core"></td>
                                     <td class="text-center" x-text="cable.coordinates_start_at"></td>
                                     <td class="text-center" x-text="cable.coordinates_end_at"></td>
                                     <td class="text-center" x-text="cable.length"></td>
