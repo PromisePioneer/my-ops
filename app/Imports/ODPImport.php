@@ -48,6 +48,12 @@ class ODPImport implements ToModel, WithHeadingRow, WithValidation
     {
         return [
             'cabang' => ['required', Rule::exists('branches', 'name')],
+            'nama_odp' => ['required'],
+            'klasifikasi' => ['required', Rule::in('AS', 'Turunan')],
+            'jenis_passive_splitter' => ['required', Rule::in('ODP', 'FAT', 'ODU')],
+            'kapasitas_maksimal' => ['required'],
+            'used_capacity' => ['required'],
+            'cutoff_data' => ['required'],
         ];
     }
 }

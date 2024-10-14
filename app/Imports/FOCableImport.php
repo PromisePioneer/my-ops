@@ -25,6 +25,7 @@ class FOCableImport implements ToModel, WithHeadingRow
             'classification' => $row['klasifikasi'],
             'cable_placement' => $row['letak_kabel'],
             'total_core' => $row['jumlah_core'],
+        'used_core' => $row['jumlah_core_terpakai'],
             'cable_address' => $row['jalur_kabel'],
             'starting_point_lat' => $row['titik_awal_latitude'],
             'starting_point_long' => $row['titik_awal_longitude'],
