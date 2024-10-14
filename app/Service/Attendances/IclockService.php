@@ -152,7 +152,6 @@ class IclockService
 
     private function processAttendanceRecord(array $attendanceData, $shift): void
     {
-
         $date = date('Y-m-d', strtotime($attendanceData['timestamp']));
         $time = date('H:i:s', strtotime($attendanceData['timestamp']));
 
@@ -188,13 +187,19 @@ class IclockService
 
     private function processCheckOut(array $attendanceData, $shift, string $date, string $time): void
     {
-        if ($this->isValidTime($time, $shift->time_to_checkout, $shift->end_time_to_checkout)) {
+        if ($this->isValidTimeToCheckOut($time, $shift->end_time_to_checkout)) {
             $existingCheckOut = $this->getAttendanceRecord($attendanceData['employee_id'], $date, 'desc');
 
             if (!$existingCheckOut || $existingCheckOut->status1 != 1) {
                 Attendances::create($attendanceData);
             }
         }
+    }
+
+
+    public function isValidTimeToCheckOut($time, $endTime): bool
+    {
+        return $time < $endTime;
     }
 
     private function logError(Exception $exception): void

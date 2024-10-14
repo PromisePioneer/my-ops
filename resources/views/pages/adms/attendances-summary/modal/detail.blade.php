@@ -14,12 +14,13 @@
                 </div>
             </div>
             <div class="modal-body">
-                <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
+                <table class="table align-middle fs-6 gy-5 table-bordered" id="kt_table_users">
                     <thead>
                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                        <th class="min-w-125px text-center" >Tanggal</th>
+                        <th class="min-w-125px text-center">Tanggal</th>
                         <th class="min-w-125px text-center">Waktu C/In</th>
                         <th class="min-w-125px text-center">Waktu C/Out</th>
+                        <th class="min-w-125px text-center">Terlambat</th>
                     </thead>
                     <tbody class="fw-bold">
                     <template x-if="isLoading">
@@ -43,18 +44,9 @@
                     <template x-for="(attendance, index) in attendanceSummaryDetail" :key="index">
                         <tr>
                             <td class="text-center" x-text="attendance.date_period"></td>
-                            <td class="text-center">
-                                <span :class="attendance.clock_in
-                                ? 'badge bg-success text-white fs-7'
-                                : 'badge bg-danger text-white fs-7'"
-                                      x-text="attendance.clock_in ?? '-'"></span>
-                            </td>
-                            <td class="text-center">
-                               <span :class="attendance.clock_out
-                                ? 'badge bg-success text-white fs-7'
-                                : 'badge bg-danger text-white fs-7'"
-                                     x-text="attendance.clock_out  ?? '-'"></span>
-                            </td>
+                            <td class="text-center" x-text="attendance.clock_in"></td>
+                            <td class="text-center" x-text="attendance.clock_out"></td>
+                            <td class="text-center" x-text="`${attendance.late ?? ' '}`"></td>
                         </tr>
                     </template>
                     </tbody>

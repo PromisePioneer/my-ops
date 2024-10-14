@@ -23,4 +23,5 @@ class AttendancesSummary extends Model
     {
         return $this->belongsTo(User::class, 'employee_id', 'absent_id');
     }
+
 }
