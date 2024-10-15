@@ -38,7 +38,6 @@ class AttendanceSummaryDetailService
         $startDate = $this->financialClosePeriodService->startDate();
         $endDate = $this->financialClosePeriodService->endDate();
 
-        // Fetch attendances data
         $attendancesData = AttendancesSummary::with('user')
             ->where('employee_id', $empId)
             ->whereBetween('date', [$startDate, $endDate])
@@ -75,6 +74,7 @@ class AttendanceSummaryDetailService
                 'clock_in' => $item['attendanceData']?->clock_in,
                 'clock_out' => $item['attendanceData']?->clock_out,
                 'late' => $this->calculateLate($item, $userWorktime) ?? null,
+                'work_time' => $item['attendanceData']?->work_time ?? $userWorktime->name,
             ];
         });
     }
@@ -97,4 +97,35 @@ class AttendanceSummaryDetailService
 
         return null;
     }
+
+
+    public function filterByDate(Request $request, User $user)
+    {
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+
+
+        $attendancesData = AttendancesSummary::with('user')
+            ->where('employee_id', $user->absent_id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->orderBy('date', 'asc')
+            ->get()
+            ->keyBy('date');
+
+        $period = CarbonPeriod::create($startDate, $endDate);
+
+        $dates = [];
+
+        foreach ($period as $date) {
+            $formattedDate = $date->format('Y-m-d');
+            $dates[$formattedDate] = collect([
+                'attendancesDate' => $formattedDate,
+                'attendanceData' => $attendancesData->get($formattedDate),
+            ]);
+        }
+
+        return self::formattedData(collect($dates), $user->absent_id);
+    }
+
+
 }

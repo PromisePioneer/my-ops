@@ -16,7 +16,10 @@ class PermissionSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $branchManagerRole = Role::where('name', 'Branch Manager')->first();
+
+        $director = Role::where('name', 'Director')->first();
+        $FAManager = Role::where('name', 'FA & Tax Manager')->first();
+        $operationalManager = Role::where('name', 'Operational Manager')->first();
 
         $branches = [
             'Lihat Cabang',
@@ -198,6 +201,17 @@ class PermissionSeeder extends Seeder
 
         foreach ($leaves as $permission) {
             Permission::create(['name' => $permission]);
+        }
+
+        $attendancesRecord = [
+            'Lihat Riwayat Absensi',
+        ];
+
+        foreach ($attendancesRecord as $permission) {
+            Permission::create(['name' => $permission]);
+            $director->givePermissionTo($permission);
+            $FAManager->givePermissionTo($permission);
+            $operationalManager->givePermissionTo($permission);
         }
     }
 }

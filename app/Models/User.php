@@ -186,7 +186,6 @@ class User extends Authenticatable
     public function searchData(Request $request): Collection
     {
         $search = $request->input('search');
-
         return self::with('roles')
             ->where('name', 'like', '%'.$search.'%')
             ->orWhere('email', 'like', '%'.$search.'%');

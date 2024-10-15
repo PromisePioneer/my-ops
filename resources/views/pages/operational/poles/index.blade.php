@@ -9,8 +9,6 @@
 
     @include('pages.operational.poles.header')
     <div x-data="polesData()">
-        @include('pages.operational.poles.modal.create')
-        @include('pages.operational.poles.modal.edit')
         @include('pages.operational.poles.modal.import')
         @include('pages.operational.poles.modal.export')
 
@@ -45,16 +43,14 @@
                                                         </span>
                                 Import
                             </button>
-                            <button type="button" class="btn btn-light-primary btn-sm mr-4" @click="add()"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
+                            <a href="{{ url('operational/poles/create') }}" class="btn btn-light-primary btn-sm mr-4">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
                                     <span class="path3"></span>
                                 </i>
                                 Tambah
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -86,6 +82,7 @@
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
+                                <th class="text-center">Cabang</th>
                                 <th class="text-center">Diameter</th>
                                 <th class="text-center">Panjang</th>
                                 <th class="text-center">Wilayah</th>
@@ -126,20 +123,20 @@
                                                    :id="'checkbox-' + pole.id"/>
                                         </div>
                                     </td>
+                                    <td class="text-center" x-text="`${pole.branch_name}`"></td>
                                     <td class="text-center" x-text="`${pole.diameter} Inci`"></td>
                                     <td class="text-center" x-text="`${pole.length} Meter`"></td>
                                     <td class="text-center" x-text="pole.region"></td>
                                     <td class="text-center" x-text="pole.code"></td>
-                                    <td class="text-center" x-text="`${pole.lat}, ${pole.long}`"></td>
+                                    <td class="text-center" x-text="pole.coordinates"></td>
                                     <td class="text-center" x-text="pole.cut_off_date"></td>
                                     <td class="text-center">
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(pole.id)">
+                                        <a :href="`/operational/poles/${pole.id}`" class="btn btn-light-primary btn-sm">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
                                             </i>
-                                        </button>
+                                        </a>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -179,10 +176,6 @@
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
-                formCreate: document.getElementById('form-create'),
-                formEdit: document.getElementById('form-edit'),
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
                 formImport: document.getElementById('form-import'),
                 formDelete: document.getElementById('form-delete'),
@@ -193,17 +186,19 @@
                     await this.getPolesData();
                     await this.getAreaData();
                 },
-
-                add() {
-                    this.map = null;
-                    this.map = L.map('map-create').setView([1.6704852, 101.4394371], 16);
-                    this.mapTileLayer(this.map);
-
-                    $('#modal-create').on('shown.bs.modal', () => {
-                        setTimeout(() => {
-                            this.map.invalidateSize();
-                        }, 10);
-                    });
+                async searchData() {
+                    this.isLoading = true;
+                    try {
+                        const response = await axios.get('/operational/poles/search', {
+                            params: {search: this.search},
+                            headers: {'Content-Type': 'application/json'}
+                        });
+                        this.poles = response.data;
+                    } catch (error) {
+                        console.error('Error fetching data:', error);
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async importData() {
                     this.buttonLoading = true;

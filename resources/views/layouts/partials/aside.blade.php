@@ -508,6 +508,7 @@
                         </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
+
                 <x-dropdown-menu :active="request()->segment(1) === 'adms'">
                     @slot('parentIcon')
                         <i class="bi bi-app-indicator"></i>
@@ -536,11 +537,13 @@
                                 href="{{ url('adms/work-time') }}">
                             Pengaturan Jam Kerja
                         </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'attendances-summary'"
-                                href="{{ url('adms/attendances-summary') }}">
-                            Riwayat Absensi
-                        </x-dropdown-menu-item>
+                        @can('Lihat Riawayat Absensi')
+                            <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'attendances-summary'"
+                                    href="{{ url('adms/attendances-summary') }}">
+                                Riwayat Absensi
+                            </x-dropdown-menu-item>
+                        @endcan
                     @endslot
                 </x-dropdown-menu>
             </div>

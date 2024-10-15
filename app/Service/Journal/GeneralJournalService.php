@@ -11,7 +11,7 @@ class GeneralJournalService
     public function data(Request $request)
     {
         $generalJournal = AccountTransaction::with('account')
-            ->where('entries_type', 'TR')
+            ->where('transaction_type', 'TR')
             ->where('branch_id', $request->user()->branch_id)
             ->whereYear('date', Carbon::now())
             ->orderBy('date')
@@ -23,14 +23,14 @@ class GeneralJournalService
 
     private static function formattedData($generalJournal)
     {
-        return $generalJournal->map(function ($query) {
+        return $generalJournal->map(function ($item) {
             return [
-                'id' => $query->id,
-                'date' => $query->date,
-                'amount' => 'Rp.'.number_format($query->amount, 2),
-                'type' => $query->type,
-                'account' => $query->account->code.' '.$query->account->name,
-                'description' => $query->description,
+                'id' => $item->id,
+                'date' => $item->date,
+                'amount' => 'Rp.'.number_format($item->amount, 2),
+                'type' => $item->entries_type,
+                'account' => $item->account->code.' '.$item->account->name,
+                'description' => $item->description,
             ];
         });
     }

@@ -3,31 +3,6 @@
 
     <div x-data="attendancesSummary()">
         @include('pages.adms.attendances-summary.modal.detail')
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <div class="row">
-                    <form id="form-filter-date" @submit.prevent="filterDate()">
-                        <div class="row col-md-6 align-items-center">
-                            <div class="col-md-4">
-                                <input type="date" name="start_date" id="start_date"
-                                       class="form-control form-control-solid date"
-                                       placeholder="Tanggal Awal">
-                            </div>
-                            <div class="col-md-4">
-                                <input type="date" name="end_date" id="end_date"
-                                       class="form-control form-control-solid date"
-                                       placeholder="Tanggal Akhir">
-                            </div>
-                            <div class="col-md-4">
-                                <button class="btn btn-light-primary btn-sm">Filter</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -86,10 +61,10 @@
                                     <td x-text="`${attendance.total_not_check_in}`"></td>
                                     <td x-text="`${attendance.total_not_check_out}`"></td>
                                     <td>
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-detail" @click="show(attendance.id)">
+                                        <a :href="`/adms/attendances-summary/detail/${attendance.id}`"
+                                           class="btn btn-light-primary btn-sm">
                                             <i class="fa-solid fa-circle-info"></i>
-                                        </button>
+                                        </a>
                                     </td>
                                 </tr>
                             </template>

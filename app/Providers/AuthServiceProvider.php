@@ -4,6 +4,7 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 use App\Models\Account;
+use App\Models\AttendancesSummary;
 use App\Models\Branch;
 use App\Models\Contact;
 use App\Models\Department;
@@ -15,6 +16,7 @@ use App\Models\SP;
 use App\Models\User;
 use App\Models\WorkTime;
 use App\Policies\AccountPolicy;
+use App\Policies\AttendanceRecordPolicy;
 use App\Policies\BranchPolicy;
 use App\Policies\ContactPolicy;
 use App\Policies\DepartmentPolicy;
@@ -54,6 +56,7 @@ class AuthServiceProvider extends ServiceProvider
         User::class => UserPolicy::class,
         Permission::class => PermissionPolicy::class,
         LeaveAndPermission::class => LeaveAndPermissionPolicy::class,
+        AttendancesSummary::class => AttendanceRecordPolicy::class,
     ];
 
     /**

@@ -75,6 +75,7 @@ use App\Http\Controllers\Operational\ODP\ODPController;
 use App\Http\Controllers\Operational\ODP\ODPMapController;
 use App\Http\Controllers\Operational\Pole\PoleController;
 use App\Http\Controllers\Operational\Pole\PoleMapController;
+use App\Http\Controllers\UserProfile\AttendanceRecordController;
 use App\Http\Controllers\UserProfile\UserLeaveAndPermissionController;
 use App\Http\Controllers\UserProfile\UserProfileController;
 use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
@@ -104,8 +105,6 @@ Route::get('/', function () {
 //});
 
 Auth::routes();
-
-
 
 
 Route::prefix('/iclock')->group(function () {
@@ -495,7 +494,10 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('poles')->group(function () {
             Route::get('/', [PoleController::class, 'index']);
             Route::get('/data', [PoleController::class, 'data']);
+            Route::get('/create', [PoleController::class, 'create']);
             Route::get('/search', [PoleController::class, 'search']);
+            Route::get('/branch/data', [PoleController::class, 'getBranchData']);
+            Route::get('/branch/selected/{pole}', [PoleController::class, 'selectedBranch']);
             Route::post('/', [PoleController::class, 'store']);
             Route::post('/destroy', [PoleController::class, 'destroy']);
             Route::post('/import', [PoleController::class, 'import']);
@@ -559,6 +561,13 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/{leaveAndPermission}', [UserLeaveAndPermissionController::class, 'edit']);
                 Route::post('/{leaveAndPermission}', [UserLeaveAndPermissionController::class, 'update']);
                 Route::delete('/{leaveAndPermission}', [UserLeaveAndPermissionController::class, 'destroy']);
+            });
+
+
+            Route::prefix('attendance-records')->group(function () {
+                Route::get('/', [AttendanceRecordController::class, 'index']);
+                Route::get('/data/{user?}', [AttendanceRecordController::class, 'data']);
+                Route::get('/filter/{user?}', [AttendanceRecordController::class, 'filter']);
             });
         });
     });
@@ -865,6 +874,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/search', [AttendanceSummaryController::class, 'search']);
             Route::post('/filter-date', [AttendanceSummaryController::class, 'filterByDate']);
             Route::get('/detail/{user}', [AttendanceSummaryController::class, 'detail']);
+            Route::get('/detail/data/{user}', [AttendanceSummaryController::class, 'detailData']);
+            Route::get('/detail/filter/{user}', [AttendanceSummaryController::class, 'filterByDate']);
         });
     });
 

@@ -70,6 +70,10 @@
                     <a class="nav-link text-active-primary me-6 {{ Request::segment(3) === 'sp' ? 'active' : '' }}"
                        href="{{ url('utility/user-profile/sp') }}">Surat Peringatan</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link text-active-primary me-6 {{ Request::segment(3) === 'attendance-records' ? 'active' : '' }}"
+                       href="{{ url('utility/user-profile/attendance-records') }}">Riwayat Absensi</a>
+                </li>
             </ul>
         </div>
     </div>
