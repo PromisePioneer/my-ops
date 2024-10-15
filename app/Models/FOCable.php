@@ -39,7 +39,6 @@ class FOCable extends Model
     {
         $search = $request->input('search');
         $query = self::orderby('segment_id')
-            ->where('branch_id', $request->user()->branch_id)
             ->select('id', 'segment_id');
 
         if ($search !== '') {

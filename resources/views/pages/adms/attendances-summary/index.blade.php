@@ -2,7 +2,6 @@
 @section('content')
 
     <div x-data="attendancesSummary()">
-        @include('pages.adms.attendances-summary.modal.detail')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -99,7 +98,6 @@
                 search: '',
                 months: [],
                 attendanceSummaryDetail: [],
-                filterDateForm: document.getElementById('form-filter-date'),
                 async init() {
                     await this.getAttendanceSummary();
                     await this.getMonths();
@@ -132,17 +130,6 @@
                         {"value": 12, "name": "Desember"}
                     ]
                 },
-                async show(id) {
-                    const startDate = document.getElementById('start_date').value;
-                    const endDate = document.getElementById('end_date').value;
-                    const resp = await axios.get(`/adms/attendances-summary/detail/${id}`, {
-                        params: {
-                            start_date: startDate,
-                            end_date: endDate,
-                        },
-                    });
-                    this.attendanceSummaryDetail = resp.data
-                },
                 async getAttendanceSummary() {
                     this.isLoading = true;
                     try {
@@ -167,8 +154,7 @@
                     } finally {
                         this.isLoading = false;
                     }
-                }
-                ,
+                },
                 async searchData() {
                     this.isLoading = true;
                     const startDate = document.getElementById('start_date').value;
@@ -188,14 +174,12 @@
                     } finally {
                         this.isLoading = false;
                     }
-                }
-                ,
+                },
                 formatDate(val) {
                     const [month, year] = val.split('-');
                     const date = new Date(year, month - 1, 1);
                     return `${this.getMonthName(date.getMonth())} ${date.getFullYear()}`;
-                }
-                ,
+                },
                 async filter() {
 
                 },

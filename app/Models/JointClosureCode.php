@@ -27,7 +27,7 @@ class JointClosureCode extends Model
     public function getData(Request $request): array
     {
         $search = $request->input('search');
-        $query = self::orderby('code')->where('branch_id', $request->user()->branch_id)->select('id', 'code');
+        $query = self::orderby('code')->select('id', 'code');
 
         if ($search !== '') {
             $query->where('code', 'like', '%'.$search.'%');

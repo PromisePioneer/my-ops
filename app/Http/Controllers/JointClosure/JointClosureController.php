@@ -38,6 +38,11 @@ class JointClosureController extends Controller
         return response()->json($this->jointClosureService->data());
     }
 
+    public function create(): View
+    {
+        return view('pages.operational.joint-closures.create');
+    }
+
 
     public function getJointClosuresCode(Request $request): JsonResponse
     {

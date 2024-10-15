@@ -514,6 +514,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/code/selected/{jointClosure}', [JointClosureController::class, 'getSelectedCode']);
             Route::get('/fo-cable/selected/{jointClosure}', [JointClosureController::class, 'getSelectedFoCable']);
             Route::get('/search', [JointClosureController::class, 'search']);
+            Route::get('/create', [JointClosureController::class, 'create']);
             Route::post('/', [JointClosureController::class, 'store']);
             Route::post('/destroy', [JointClosureController::class, 'destroy']);
             Route::post('/import', [JointClosureController::class, 'import']);
@@ -876,6 +877,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/detail/{user}', [AttendanceSummaryController::class, 'detail']);
             Route::get('/detail/data/{user}', [AttendanceSummaryController::class, 'detailData']);
             Route::get('/detail/filter/{user}', [AttendanceSummaryController::class, 'filterByDate']);
+            Route::get('/detail/correction/{datePeriod}', [AttendanceSummaryController::class, 'correction']);
+            Route::post('/detail/correction/save/{user}/{datePeriod?}', [AttendanceSummaryController::class, 'saveCorrection']);
         });
     });
 

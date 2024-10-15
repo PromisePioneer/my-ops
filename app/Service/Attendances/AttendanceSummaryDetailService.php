@@ -70,7 +70,7 @@ class AttendanceSummaryDetailService
             })->first() ?? WorkTime::where('name', 'Default')->first();
 
             return [
-                'date_period' => formatDate($item['attendancesDate']),
+                'date_period' => $item['attendancesDate'],
                 'clock_in' => $item['attendanceData']?->clock_in,
                 'clock_out' => $item['attendanceData']?->clock_out,
                 'late' => $this->calculateLate($item, $userWorktime) ?? null,
