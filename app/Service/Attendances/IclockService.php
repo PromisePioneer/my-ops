@@ -104,7 +104,7 @@ class IclockService
             return 'OK: '.$processedCount;
         } catch (Throwable $e) {
             // Log and report any errors
-            $this->logError($e);
+           Log::info($e);
 
             return 'ERROR: '.$e."\n";
         }
@@ -190,9 +190,9 @@ class IclockService
         if ($this->isValidTimeToCheckOut($time, $shift->end_time_to_checkout)) {
             $existingCheckOut = $this->getAttendanceRecord($attendanceData['employee_id'], $date, 'desc');
 
+            if (!$existingCheckOut) {
                 Attendances::create($attendanceData);
-//            if (!$existingCheckOut || $existingCheckOut->status1 != 1) {
-//            }
+           }
         }
     }
 

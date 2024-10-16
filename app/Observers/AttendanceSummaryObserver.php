@@ -7,6 +7,7 @@ use App\Models\AttendancesSummary;
 use App\Models\User;
 use App\Models\WorkTime;
 use Carbon\Carbon;
+use Log;
 
 class AttendanceSummaryObserver
 {
@@ -15,11 +16,14 @@ class AttendanceSummaryObserver
      */
     public function created(Attendances $attendances): void
     {
-        $user = User::where('absent_id', $attendances->id)->first() ?? null;
+        $user = User::where('absent_id', $attendances->employee_id)->first() ?? null;
 
-        $userWorktime = WorkTime::with('userWorktime', function ($item) use ($attendances, $user) {
+        $userWorktime = WorkTime::whereHas('userWorktime', function ($item) use ($attendances, $user) {
             $item->where('user_id', $user->id);
         })->first() ?? WorkTime::where('name', 'Default')->first();
+
+
+        Log::info($userWorktime);
 
         $attendancesSummary = AttendancesSummary::updateOrCreate([
             'date' => Carbon::parse($attendances->timestamp)->format('Y-m-d'),
