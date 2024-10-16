@@ -11,18 +11,13 @@ use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
-
-use function App\Helper\formatDate;
 
 class AttendanceSummaryDetailService
 {
-
-    private AttendancesSummaryService $attendaceSummaryService;
+    private FinancialClosePeriodService $financialClosePeriodService;
 
     public function __construct()
     {
-        $this->attendanceSummaryService = new AttendancesSummaryService();
         $this->financialClosePeriodService = new FinancialClosePeriodService();
     }
 
@@ -65,16 +60,17 @@ class AttendanceSummaryDetailService
         return $attendanceSummary->map(function ($item) use ($empId) {
             $user = User::where('absent_id', $empId)->first();
 
-            $userWorktime = WorkTime::whereHas('userWorktime', function ($item) use ($user) {
-                $item->where('user_id', $user->id);
-            })->first() ?? WorkTime::where('name', 'Default')->first();
+            $userWorktime = WorkTime::where('id', $item['attendanceData']?->work_time_id)->first() ?? WorkTime::where(
+                'name',
+                'Default'
+            )->first();
 
             return [
                 'date_period' => $item['attendancesDate'],
                 'clock_in' => $item['attendanceData']?->clock_in,
                 'clock_out' => $item['attendanceData']?->clock_out,
                 'late' => $this->calculateLate($item, $userWorktime) ?? null,
-                'work_time' => $item['attendanceData']?->work_time ?? $userWorktime->name,
+                'work_time' => $userWorktime->name,
             ];
         });
     }

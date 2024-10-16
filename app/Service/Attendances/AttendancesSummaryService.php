@@ -2,6 +2,7 @@
 
 namespace App\Service\Attendances;
 
+use App\Models\AttendancesSummary;
 use App\Models\LeaveAndPermission;
 use App\Models\NationalHoliday;
 use App\Models\User;
@@ -106,9 +107,10 @@ class AttendancesSummaryService
 
     public function getUserWorktime($user)
     {
-        return WorkTime::whereHas('userWorktime', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })->first() ?? WorkTime::where('name', 'Default')->first();
+        $attendancesSummary = AttendancesSummary::where('employee_id', $user->absent_id)->first();
+
+        return WorkTime::where('id', $attendancesSummary?->work_time_id)->first() ??
+            WorkTime::where('name', 'Default')->first();
     }
 
 

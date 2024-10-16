@@ -25,4 +25,9 @@ class AttendancesSummary extends Model
         return $this->belongsTo(User::class, 'employee_id', 'absent_id');
     }
 
+    public function workTime()
+    {
+        return $this->belongsTo(WorkTime::class, 'work_time_id');
+    }
+
 }
