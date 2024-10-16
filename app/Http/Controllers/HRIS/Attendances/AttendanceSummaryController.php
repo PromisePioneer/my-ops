@@ -107,7 +107,7 @@ class AttendanceSummaryController extends Controller
     }
 
 
-    public function simpanAbsenTanpaMesin(Request $request)
+    public function simpanAbsenTanpaMesin(Request $request): \Illuminate\Http\RedirectResponse
     {
         $userShift = UserWorkTime::whereHas('user', function ($query) use ($request) {
             $query->where('absent_id', $request->input('employee_id'));
@@ -115,12 +115,13 @@ class AttendanceSummaryController extends Controller
 
         $workTime = WorkTime::find($userShift->work_time_id)->first() ?? WorkTime::where('name', 'Default')->first();
 
-        AttendancesSummary::create([
+        AttendancesSummary::updateOrCreate([
+            'date' => date('y-m-d'),
             'employee_id' => $request->input('employee_id'),
-            'date' => Carbon::today()->format('Y-m-d'),
+            'work_time_id' => $workTime->id,
+        ], [
             'clock_in' => $request->input('clock_in'),
             'clock_out' => $request->input('clock_out'),
-            'work_time_id' => $workTime->id,
         ]);
 
 

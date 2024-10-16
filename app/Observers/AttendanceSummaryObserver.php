@@ -22,9 +22,6 @@ class AttendanceSummaryObserver
             $item->where('user_id', $user->id);
         })->first() ?? WorkTime::where('name', 'Default')->first();
 
-
-        Log::info($userWorktime);
-
         $attendancesSummary = AttendancesSummary::updateOrCreate([
             'date' => Carbon::parse($attendances->timestamp)->format('Y-m-d'),
             'employee_id' => $attendances->employee_id,
