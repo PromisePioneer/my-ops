@@ -14,23 +14,23 @@
                 </div>
             </div>
 
-            <form id="form-attendance-correction" @submit.prevent="saveCorrection(correctionVal.date ?? correctionVal)">
+            <form id="form-attendance-correction" @submit.prevent="saveCorrection(correctionVal?.date ?? correctionVal)">
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Tanggal</label>
                         <input type="date" id="date" name="date" class="form-control form-control-solid date"
-                               placeholder="Tanggal" :value="correctionVal.date ?? correctionVal"/>
+                               placeholder="Tanggal" :value="correctionVal?.date ?? correctionVal"/>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Clock In</label>
                         <input type="time" id="clock_in" name="clock_in" class="form-control form-control-solid"
-                               placeholder="Nama Cabang" :value="correctionVal.clock_in"/>
+                               placeholder="Nama Cabang" :value="correctionVal?.clock_in"/>
                     </div>
 
                     <div class="mb-10">
                         <label for="name" class="required form-label">Clock Out</label>
                         <input type="time" id="clock_out" name="clock_out" class="form-control form-control-solid"
-                               placeholder="Nama Cabang" :value="correctionVal.clock_out"/>
+                               placeholder="Nama Cabang" :value="correctionVal?.clock_out"/>
                     </div>
                 </div>
 
