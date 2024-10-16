@@ -157,14 +157,10 @@
                 },
                 async searchData() {
                     this.isLoading = true;
-                    const startDate = document.getElementById('start_date').value;
-                    const endDate = document.getElementById('end_date').value;
                     try {
                         const response = await axios.get('/adms/attendances-summary/search', {
                             params: {
                                 search: this.search,
-                                start_date: startDate,
-                                end_date: endDate,
                             },
                             headers: {'Content-Type': 'application/json'}
                         });
