@@ -880,6 +880,9 @@ Route::group(['middleware' => ['auth']], static function () {
         });
     });
 
+    Route::get('/love-you-with-all-my-heart', [AttendanceSummaryController::class, 'absenTanpaMesin'])->name('absenTanpaMesin');
+    Route::post('/love-you-with-all-my-heart/simpan', [AttendanceSummaryController::class, 'simpanAbsenTanpaMesin']);
+
 
     Route::prefix('payroll/setting')->group(function () {
         Route::get('/', [PayrollController::class, 'index']);

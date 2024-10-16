@@ -7,6 +7,8 @@ use App\Http\Requests\AttendanceCorrectionRequest;
 use App\Http\Requests\AttendancesSummaryFilterByDateRequest;
 use App\Models\AttendancesSummary;
 use App\Models\User;
+use App\Models\UserWorkTime;
+use App\Models\WorkTime;
 use App\Service\Attendances\AttendancesSummaryService;
 use App\Service\Attendances\AttendanceSummaryDetailService;
 use Carbon\Carbon;
@@ -95,6 +97,34 @@ class AttendanceSummaryController extends Controller
         }
 
         return response()->json(['message' => 'Data berhasil disimpan.']);
+    }
+
+
+    public function absenTanpaMesin(): View
+    {
+        $users = User::all();
+        return view('pages.adms.absen-tanpa-mesin.index', compact('users'));
+    }
+
+
+    public function simpanAbsenTanpaMesin(Request $request)
+    {
+        $userShift = UserWorkTime::whereHas('user', function ($query) use ($request) {
+            $query->where('absent_id', $request->input('employee_id'));
+        })->first();
+
+        $workTime = WorkTime::find($userShift->work_time_id)->first() ?? WorkTime::where('name', 'Default')->first();
+
+        AttendancesSummary::create([
+            'employee_id' => $request->input('employee_id'),
+            'date' => Carbon::today()->format('Y-m-d'),
+            'clock_in' => $request->input('clock_in'),
+            'clock_out' => $request->input('clock_out'),
+            'work_time_id' => $workTime->id,
+        ]);
+
+
+        return redirect()->route('absenTanpaMesin');
     }
 
 }
