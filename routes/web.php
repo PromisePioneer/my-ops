@@ -841,11 +841,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/{fpDevice}', [FpDevicesController::class, 'update']);
         });
 
-        Route::prefix('attendances')->group(function () {
-            Route::get('/', [AttendancesController::class, 'index']);
-            Route::get('/data', [AttendancesController::class, 'data']);
-        });
-
         Route::prefix('/work-time')->group(function () {
             Route::get('/', [WorkTimeController::class, 'index']);
             Route::get('/data', [WorkTimeController::class, 'data']);
@@ -878,7 +873,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/detail/data/{user}', [AttendanceSummaryController::class, 'detailData']);
             Route::get('/detail/filter/{user}', [AttendanceSummaryController::class, 'filterByDate']);
             Route::get('/detail/correction/{datePeriod}', [AttendanceSummaryController::class, 'correction']);
-            Route::post('/detail/correction/save/{user}/{datePeriod?}', [AttendanceSummaryController::class, 'saveCorrection']);
+            Route::post(
+                '/detail/correction/save/{user}/{datePeriod?}',
+                [AttendanceSummaryController::class, 'saveCorrection']
+            );
         });
     });
 

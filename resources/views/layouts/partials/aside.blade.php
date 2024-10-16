@@ -528,11 +528,6 @@
                             Mesin Absen
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'attendances'"
-                                href="{{ url('adms/attendances') }}">
-                            Log Fingerprint
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'work-time'"
                                 href="{{ url('adms/work-time') }}">
                             Pengaturan Jam Kerja
