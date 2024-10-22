@@ -1,5 +1,5 @@
 @extends('layouts.template')
-@section('page-title', 'Data Departemen')
+@section('page-title', 'Master Umum - Departemen')
 @section('content')
     <div x-data="departmentsData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
@@ -90,8 +90,8 @@
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="branch.id"
-                                                   :id="'checkbox-' + branch.id"/>
+                                            <input class="form-check-input" type="checkbox" :value="department.id"
+                                                   :id="'checkbox-' + department.id"/>
                                         </div>
                                     </td>
                                     <td x-text="department.code"></td>
@@ -136,6 +136,9 @@
                 departments: [],
                 search: '',
                 editVal: '',
+                selectedCheckBox: [],
+                selectAll: false,
+                singleChecked: false,
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 formCreate: document.getElementById('form-create'),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),

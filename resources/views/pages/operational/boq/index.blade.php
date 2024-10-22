@@ -1,5 +1,5 @@
 @extends('layouts.template')
-@section('page-title', 'Data Cabang')
+@section('page-title', 'Data BoQ')
 @section('content')
     <div x-data="boqData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">

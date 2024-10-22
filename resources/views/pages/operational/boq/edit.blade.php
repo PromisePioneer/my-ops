@@ -7,7 +7,6 @@
         }
     </style>
     <div class="d-flex flex-column flex-lg-row" x-data="generateBoQ()">
-        @include('pages.master.contact.modal.create')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
                 <form id="form" @submit.prevent="generateBoQ()">
@@ -254,8 +253,6 @@
             return {
                 buttonLoading: false,
                 form: document.getElementById('form'),
-                contactForm: document.getElementById('contactFormCreate'),
-                contactModal: new bootstrap.Modal(document.getElementById('contact-create')),
                 id: "{{ $boq->id }}",
                 boqCommodities: [],
                 projectTimeline: [{
@@ -304,6 +301,7 @@
                     const resp = await axios.get(`/inventory/boq/get-project-timeline/${this.id}`);
                     this.projectTimeline = resp.data;
 
+
                     this.projectTimeline.forEach((field, index) => {
                         this.$nextTick(() => {
                             const selectedUnitType = $(`#selectedUnitType-${index}`);
@@ -322,15 +320,13 @@
                                 });
                                 field.unit_type_id = response.id;
                             });
-
-
                             const selectedPic = $(`#selectedPic-${index}`);
                             $.ajax({
                                 type: 'GET',
                                 dataType: "JSON",
                                 url: `/inventory/boq/users/selected/${field.pic}`,
                             }).then(function (response) {
-                                var option = new Option(response.name, response.id, true, true);
+                                const option = new Option(response.name, response.id, true, true);
                                 selectedPic.append(option).trigger('change');
                                 selectedPic.trigger({
                                     type: 'select2:select',

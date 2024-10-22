@@ -706,8 +706,11 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/users/data', [BoqController::class, 'getUserData']);
             Route::get('/detail/{boq}', [BoqController::class, 'detail']);
             Route::get('/get-boq-commodity/{boq}', [BoqController::class, 'getBoqCommodity']);
+            Route::get('/get-project-timeline/{boq}', [BoqController::class, 'getProjectTimeline']);
             Route::get('/unit-type/selected/{boq}', [BoqController::class, 'selectedUnitType']);
+            Route::get('/users/selected/{id}', [BoqController::class, 'selectedUser']);
             Route::get('/{boq}', [BoqController::class, 'edit']);
+            Route::post('/{boq}', [BoqController::class, 'update']);
             Route::post('/destroy', [BoqController::class, 'destroy']);
         });
     });
@@ -908,7 +911,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/detail/{user}', [AttendanceSummaryController::class, 'detail']);
             Route::get('/detail/data/{user}', [AttendanceSummaryController::class, 'detailData']);
             Route::get('/detail/filter/{user}', [AttendanceSummaryController::class, 'filterByDate']);
-            Route::get('/detail/correction/{datePeriod}', [AttendanceSummaryController::class, 'correction']);
+            Route::get('/detail/correction/{datePeriod}/{user}', [AttendanceSummaryController::class, 'correction']);
             Route::post(
                 '/detail/correction/save/{user}/{datePeriod?}',
                 [AttendanceSummaryController::class, 'saveCorrection']

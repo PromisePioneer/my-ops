@@ -1,5 +1,5 @@
 ﻿@extends('layouts.template')
-@section('page-title', 'Data Produk')
+@section('page-title', 'Master Umum - Produk')
 @section('content')
     <div x-data="productData()">
         @include('pages.general-master-data.product.modal.create')

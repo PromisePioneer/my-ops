@@ -153,7 +153,7 @@
                     }
                 },
                 async correction(datePeriod) {
-                    const resp = await axios.get(`/adms/attendances-summary/detail/correction/${datePeriod}`);
+                    const resp = await axios.get(`/adms/attendances-summary/detail/correction/${datePeriod}/${this.id}`);
                     this.correctionVal = resp.data;
                     console.log(this.correctionVal);
                 },

@@ -1,5 +1,5 @@
 ﻿@extends('layouts.template')
-@section('page-title', 'Data Kontak')
+@section('page-title', 'Master Umum - Data Kontak')
 @section('content')
 
     <div x-data="contactData()">
