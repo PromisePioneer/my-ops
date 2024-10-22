@@ -74,15 +74,15 @@
                                        id="kt_table_users">
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                        <th class="w-10px pe-2">
-                                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                                <input class="form-check-input" type="checkbox"
-                                                       @click="toggleAllCheckBox()">
-                                            </div>
-                                        </th>
+{{--                                        <th class="w-10px pe-2">--}}
+{{--                                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">--}}
+{{--                                                <input class="form-check-input" type="checkbox"--}}
+{{--                                                       @click="toggleAllCheckBox()">--}}
+{{--                                            </div>--}}
+{{--                                        </th>--}}
                                         <th class="min-w-125px">Akun</th>
                                         <th class="min-w-125px">Saldo</th>
-                                        <th class="min-w-125px">Actions</th>
+                                    {{--                                        <th class="min-w-125px">Actions</th>--}}
                                     </thead>
                                     <template x-if="isLoading">
                                         <tbody class="fw-bold">
@@ -109,13 +109,13 @@
                                     <template x-for="(balance, index) in initialBalances?.data" :key="index">
                                         <tbody class="fw-bold">
                                         <tr>
-                                            <td>
-                                                <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                                     @click="selectCheckBox($event)">
-                                                    <input class="form-check-input" type="checkbox" :value="balance.id"
-                                                           :id="'checkbox-' + balance.id"/>
-                                                </div>
-                                            </td>
+{{--                                            <td>--}}
+                                            {{--                                                <div class="form-check form-check-sm form-check-custom form-check-solid"--}}
+                                            {{--                                                     @click="selectCheckBox($event)">--}}
+                                            {{--                                                    <input class="form-check-input" type="checkbox" :value="balance.id"--}}
+                                            {{--                                                           :id="'checkbox-' + balance.id"/>--}}
+                                            {{--                                                </div>--}}
+                                            {{--                                            </td>--}}
                                             <td x-text="balance.account"></td>
                                             <td x-text="`Rp.${balance?.initial_balance}`"></td>
                                             <td>
