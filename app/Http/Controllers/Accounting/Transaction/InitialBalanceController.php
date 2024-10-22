@@ -29,7 +29,7 @@ class InitialBalanceController extends Controller
 
     public function index(): View
     {
-        return view('pages.account-master.initial-balances.index');
+        return view('pages.finance-master-data.initial-balances.index');
     }
 
 

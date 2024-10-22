@@ -98,7 +98,7 @@
                     @endslot
                 </x-single-menu-item>
                 <x-menu-sections>Master Data</x-menu-sections>
-                <x-dropdown-menu :active="request()->segment(1) === 'master'">
+                <x-dropdown-menu :active="request()->segment(1) === 'general-master-data'">
                     @slot('parentIcon')
                         <i class="ki-duotone ki-element-7 fs-2">
                             <span class="path1"></span>
@@ -106,75 +106,108 @@
                         </i>
                     @endslot
                     @slot('menuTitle')
-                        Master
+                        Master Umum
                     @endslot
                     @slot('menuItem')
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'branch'"
-                                href="{{ url('master/branch') }}">
+                                href="{{ url('general-master-data/branch') }}">
                             Cabang
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'contact'"
-                                href="{{ url('master/contact') }}">
+                                href="{{ url('general-master-data/contact') }}">
                             Contact
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'product'"
-                                href="{{ url('master/product') }}">
+                                href="{{ url('general-master-data/product') }}">
                             Produk
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'service-categories'"
-                                href="{{ url('master/service-categories') }}">
+                                href="{{ url('general-master-data/service-categories') }}">
                             Kategori Layanan
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'department'"
-                                href="{{ url('master/department') }}">
+                                href="{{ url('general-master-data/department') }}">
                             Department
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'roles'"
-                                href="{{ url('master/roles') }}">
+                                href="{{ url('general-master-data/roles') }}">
                             Jabatan
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'broadband-packet'"
-                                href="{{ url('master/broadband-packet') }}">
+                                href="{{ url('general-master-data/broadband-packet') }}">
                             Paket Broadband
+                        </x-dropdown-menu-item>
+                    @endslot
+                </x-dropdown-menu>
+                <x-dropdown-menu :active="request()->segment(1) === 'finances-master-data'">
+                    @slot('parentIcon')
+                        <i class="ki-duotone ki-element-7 fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    @endslot
+                    @slot('menuTitle')
+                        Master Keuangan
+                    @endslot
+                    @slot('menuItem')
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'account'"
+                                href="{{ url('finances-master-data/account') }}">
+                            Daftar Akun
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'initial-balances'"
+                                href="{{ url('finances-master-data/initial-balances') }}">
+                            Saldo Awal
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'tax-settings'"
-                                href="{{ url('master/tax-settings') }}">
-                            Pajak
+                                href="{{ url('finances-master-data/tax-settings') }}">
+                            Pengaturan Pajak
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'assets'"
-                                href="{{ url('master/assets') }}">
-                            Aset
+                                href="{{ url('finances-master-data/assets') }}">
+                            Daftar Aset
                         </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'joint-closures-code'"
-                                href="{{ url('master/joint-closures-code') }}">
-                            Kode Joint Closure
-                        </x-dropdown-menu-item>
+                    @endslot
+                </x-dropdown-menu>
+                <x-dropdown-menu :active="request()->segment(1) === 'operational-master-data'">
+                    @slot('parentIcon')
+                        <i class="ki-duotone ki-element-7 fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    @endslot
+                    @slot('menuTitle')
+                        Master Operasional
+                    @endslot
+                    @slot('menuItem')
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'suppliers'"
-                                href="{{ url('master/suppliers') }}">
+                                href="{{ url('operational-master-data/suppliers') }}">
                             Supplier
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'inventory-categories'"
-                                href="{{ url('master/inventory-categories') }}">
+                                href="{{ url('operational-master-data/inventory-categories') }}">
                             Kategori Barang
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'joint-closures-code'"
+                                href="{{ url('operational-master-data/joint-closures-code') }}">
+                            Kode Joint Closure
                         </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
-
-                <x-menu-sections>Operasional</x-menu-sections>
-
-
+                <x-menu-sections>Inventory</x-menu-sections>
                 <x-dropdown-menu :active="request()->is('inventory/*')">
                     @slot('parentIcon')
                         <i class="ki-duotone ki-dollar fs-2">
@@ -257,40 +290,6 @@
                                 :active="request()->segment(2) === 'invoice'"
                                 href="{{ url('/income-transactions/invoice') }}">
                             Coverage Area
-                        </x-dropdown-menu-item>
-                    @endslot
-                </x-dropdown-menu>
-
-                <x-menu-sections>Akun Management</x-menu-sections>
-
-                <x-dropdown-menu :active="request()->segment(1) === 'account-master'">
-                    @slot('parentIcon')
-                        <i class="ki-duotone ki-element-plus fs-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                            <span class="path3"></span>
-                            <span class="path4"></span>
-                            <span class="path5"></span>
-                        </i>
-                    @endslot
-                    @slot('menuTitle')
-                        Manajemen Akun
-                    @endslot
-                    @slot('menuItem')
-                        <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'account'"
-                                href="{{ url('account-master/account') }}">
-                            Akun
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'initial-balances'"
-                                href="{{ url('account-master/initial-balances') }}">
-                            Saldo Awal
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'account-transaction'"
-                                href="{{ url('account-master/account-transaction') }}">
-                            Riwayat Transaksi Akun
                         </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>

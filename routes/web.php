@@ -51,34 +51,32 @@ use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollController;
 use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollHistoryController;
 use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollScheduleController;
 use App\Http\Controllers\HRIS\PermissionController;
-use App\Http\Controllers\JointClosure\JointClosureController;
-use App\Http\Controllers\Master\AccountController;
+use App\Http\Controllers\Inventory\BoQ\BoqController;
+use App\Http\Controllers\Inventory\FieldAssets\JointClosureController;
+use App\Http\Controllers\Inventory\FOCable\FOCableController;
+use App\Http\Controllers\Inventory\FOCable\FOCableMapController;
+use App\Http\Controllers\Inventory\Stock\GoodsController;
+use App\Http\Controllers\Inventory\Stock\InventoryCategoryController;
+use App\Http\Controllers\Inventory\Stock\UnitTypesController;
+use App\Http\Controllers\Inventory\Stock\UsedItemsController;
+use App\Http\Controllers\Inventory\ODP\ODPController;
+use App\Http\Controllers\Inventory\ODP\ODPMapController;
+use App\Http\Controllers\Inventory\Pole\PoleController;
+use App\Http\Controllers\Inventory\Pole\PoleMapController;
 use App\Http\Controllers\Master\AccountTransactionsController;
-use App\Http\Controllers\Master\AssetController;
-use App\Http\Controllers\Master\BranchesController;
-use App\Http\Controllers\Master\BroadbandPacketController;
-use App\Http\Controllers\Master\ContactController;
-use App\Http\Controllers\Master\DepartmentController;
-use App\Http\Controllers\Master\JointClosureCodeController;
-use App\Http\Controllers\Master\NationalHolidayController;
-use App\Http\Controllers\Master\ODPAreaController;
-use App\Http\Controllers\Master\ProductController;
-use App\Http\Controllers\Master\RoleController;
-use App\Http\Controllers\Master\ServicesCategoryController;
-use App\Http\Controllers\Master\SupplierController;
-use App\Http\Controllers\Master\TaxSettingController;
-use App\Http\Controllers\Operational\BoQ\BoqController;
-use App\Http\Controllers\Operational\FOCable\FOCableController;
-use App\Http\Controllers\Operational\FOCable\FOCableMapController;
-use App\Http\Controllers\Operational\Inventory\GoodsController;
-use App\Http\Controllers\Operational\Inventory\InventoryCategoryController;
-use App\Http\Controllers\Operational\Inventory\InventoryController;
-use App\Http\Controllers\Operational\Inventory\UnitTypesController;
-use App\Http\Controllers\Operational\Inventory\UsedItemsController;
-use App\Http\Controllers\Operational\ODP\ODPController;
-use App\Http\Controllers\Operational\ODP\ODPMapController;
-use App\Http\Controllers\Operational\Pole\PoleController;
-use App\Http\Controllers\Operational\Pole\PoleMapController;
+use App\Http\Controllers\Master\Finance\AccountController;
+use App\Http\Controllers\Master\Finance\AssetController;
+use App\Http\Controllers\Master\Finance\TaxSettingController;
+use App\Http\Controllers\Master\General\BranchesController;
+use App\Http\Controllers\Master\General\BroadbandPacketController;
+use App\Http\Controllers\Master\General\ContactController;
+use App\Http\Controllers\Master\General\DepartmentController;
+use App\Http\Controllers\Master\General\NationalHolidayController;
+use App\Http\Controllers\Master\General\ProductController;
+use App\Http\Controllers\Master\General\RoleController;
+use App\Http\Controllers\Master\General\ServicesCategoryController;
+use App\Http\Controllers\Master\Operational\JointClosureCodeController;
+use App\Http\Controllers\Master\Operational\SupplierController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
 use App\Http\Controllers\UserProfile\UserLeaveAndPermissionController;
 use App\Http\Controllers\UserProfile\UserProfileController;
@@ -87,7 +85,6 @@ use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Jmrashed\Zkteco\Lib\ZKTeco;
 
 /*
 |--------------------------------------------------------------------------
@@ -270,49 +267,9 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::post('/mark-as-read', [NotificationsController::class, 'markAsRead']);
     });
 
-    // account
-    Route::prefix('/account-master')->group(function () {
-        Route::prefix('/account')->group(function () {
-            Route::get('/', [AccountController::class, 'index']);
-            Route::post('/create-child/{account}', [AccountController::class, 'createChildAccount']);
-            Route::get('/data', [AccountController::class, 'data']);
-            Route::get('/search', [AccountController::class, 'search']);
-            Route::post('/', [AccountController::class, 'store']);
-            Route::post('/import', [AccountController::class, 'import']);
-            Route::post('/destroy', [AccountController::class, 'destroy']);
-            Route::get('/edit/{account}', [AccountController::class, 'edit']);
-            Route::post('/update/{account}', [AccountController::class, 'update']);
-        });
 
-        Route::prefix('account-transaction')->group(function () {
-            Route::get('/', [AccountTransactionsController::class, 'index']);
-            Route::get('/data', [AccountTransactionsController::class, 'data']);
-            Route::get('/search', [AccountTransactionsController::class, 'search']);
-            Route::get('detail/{account}', [AccountTransactionsController::class, 'detail']);
-        });
-
-        Route::prefix('initial-balances')->group(function () {
-            Route::get('/filter', [InitialBalanceController::class, 'filter']);
-            Route::get('/', [InitialBalanceController::class, 'index']);
-            Route::get('/data', [InitialBalanceController::class, 'data']);
-            Route::get('/account/data', [InitialBalanceController::class, 'getAccountData']);
-            Route::get('/branch/data', [InitialBalanceController::class, 'getBranchData']);
-            Route::post('/', [InitialBalanceController::class, 'store']);
-            Route::get('/{accountTransaction}', [InitialBalanceController::class, 'edit']);
-            Route::get('/branch/selected/{accountTransaction}', [InitialBalanceController::class, 'selectedBranch']);
-            Route::get(
-                '/account/selected/{accountTransaction}',
-                [InitialBalanceController::class, 'selectedAccountData']
-            );
-
-            Route::post('/destroy', [InitialBalanceController::class, 'destroy']);
-            Route::post('/{accountTransaction}', [InitialBalanceController::class, 'update']);
-        });
-    });
-
-    // branch
-    Route::prefix('master')->group(function () {
-        Route::prefix('branch/')->group(function () {
+    Route::prefix('general-master-data')->group(function () {
+        Route::prefix('branch')->group(function () {
             Route::get('/', [BranchesController::class, 'index']);
             Route::get('/data', [BranchesController::class, 'data']);
             Route::get('/search', [BranchesController::class, 'search']);
@@ -351,6 +308,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/destroy', [ProductController::class, 'destroy']);
         });
 
+
         Route::prefix('service-categories')->group(function () {
             Route::get('/', [ServicesCategoryController::class, 'index']);
             Route::get('/data', [ServicesCategoryController::class, 'data']);
@@ -361,6 +319,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/destroy', [ServicesCategoryController::class, 'destroy']);
         });
 
+
         Route::prefix('department')->group(function () {
             Route::get('/', [DepartmentController::class, 'index']);
             Route::get('/data', [DepartmentController::class, 'data']);
@@ -370,6 +329,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/destroy', [DepartmentController::class, 'destroy']);
             Route::post('/{department}', [DepartmentController::class, 'update']);
         });
+
 
         Route::prefix('roles')->group(function () {
             Route::get('/', [RoleController::class, 'index']);
@@ -397,6 +357,38 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/destroy', [BroadbandPacketController::class, 'destroy']);
             Route::post('/{broadbandPacket}', [BroadbandPacketController::class, 'update']);
         });
+    });
+
+
+    Route::prefix('finances-master-data')->group(function () {
+        Route::prefix('account')->group(function () {
+            Route::get('/', [AccountController::class, 'index']);
+            Route::post('/create-child/{account}', [AccountController::class, 'createChildAccount']);
+            Route::get('/data', [AccountController::class, 'data']);
+            Route::get('/search', [AccountController::class, 'search']);
+            Route::post('/', [AccountController::class, 'store']);
+            Route::post('/import', [AccountController::class, 'import']);
+            Route::post('/destroy', [AccountController::class, 'destroy']);
+            Route::get('/edit/{account}', [AccountController::class, 'edit']);
+            Route::post('/update/{account}', [AccountController::class, 'update']);
+        });
+        Route::prefix('initial-balances')->group(function () {
+            Route::get('/filter', [InitialBalanceController::class, 'filter']);
+            Route::get('/', [InitialBalanceController::class, 'index']);
+            Route::get('/data', [InitialBalanceController::class, 'data']);
+            Route::get('/account/data', [InitialBalanceController::class, 'getAccountData']);
+            Route::get('/branch/data', [InitialBalanceController::class, 'getBranchData']);
+            Route::post('/', [InitialBalanceController::class, 'store']);
+            Route::get('/{accountTransaction}', [InitialBalanceController::class, 'edit']);
+            Route::get('/branch/selected/{accountTransaction}', [InitialBalanceController::class, 'selectedBranch']);
+            Route::get(
+                '/account/selected/{accountTransaction}',
+                [InitialBalanceController::class, 'selectedAccountData']
+            );
+
+            Route::post('/destroy', [InitialBalanceController::class, 'destroy']);
+            Route::post('/{accountTransaction}', [InitialBalanceController::class, 'update']);
+        });
 
 
         Route::prefix('tax-settings')->group(function () {
@@ -408,8 +400,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/destroy', [TaxSettingController::class, 'destroy']);
             Route::post('/update/{taxSetting}', [TaxSettingController::class, 'update']);
         });
-
-
         Route::prefix('assets')->group(function () {
             Route::post('/destroy', [AssetController::class, 'destroy']);
             Route::get('/', [AssetController::class, 'index']);
@@ -428,8 +418,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/detail/data/{asset}', [AssetController::class, 'getDetailData']);
             Route::post('/import', [AssetController::class, 'import']);
         });
+    });
 
 
+    Route::prefix('operational-master-data')->group(function () {
         Route::prefix('joint-closures-code')->group(function () {
             Route::get('/', [JointClosureCodeController::class, 'index']);
             Route::get('/data', [JointClosureCodeController::class, 'data']);
@@ -440,8 +432,29 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/destroy', [JointClosureCodeController::class, 'destroy']);
             Route::post('/{jointClosureCode}', [JointClosureCodeController::class, 'update']);
         });
-    });
 
+
+        Route::prefix('suppliers')->group(function () {
+            Route::get('/', [SupplierController::class, 'index']);
+            Route::get('/data', [SupplierController::class, 'data']);
+            Route::get('/search', [SupplierController::class, 'search']);
+            Route::post('/', [SupplierController::class, 'store']);
+            Route::get('/{supplier}', [SupplierController::class, 'edit']);
+            Route::post('/destroy', [SupplierController::class, 'destroy']);
+            Route::get('/{supplier}', [SupplierController::class, 'update']);
+        });
+
+
+        Route::prefix('inventory-categories')->group(function () {
+            Route::get('/', [InventoryCategoryController::class, 'index']);
+            Route::get('/data', [InventoryCategoryController::class, 'data']);
+            Route::get('/search', [InventoryCategoryController::class, 'search']);
+            Route::post('/', [InventoryCategoryController::class, 'store']);
+            Route::get('/{inventoryCategory}', [InventoryCategoryController::class, 'edit']);
+            Route::post('/destroy', [InventoryCategoryController::class, 'destroy']);
+            Route::post('/{inventoryCategory}', [InventoryCategoryController::class, 'update']);
+        });
+    });
 
     Route::prefix('operational')->group(function () {
         Route::prefix('odp')->group(function () {
