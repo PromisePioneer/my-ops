@@ -69,7 +69,6 @@
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Akun</th>
-                                <th class="min-w-125px">Saldo awal</th>
                                 <th class="min-w-125px">Aksi</th>
                             </tr>
                             </thead>
@@ -109,7 +108,6 @@
                                     <td>
                                         <a href="#" x-text="`${account.account_code} - ${account.account_name}`"></a>
                                     </td>
-                                    <td x-text="account.balance"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(account.account_id)">

@@ -119,15 +119,15 @@
                                             <td x-text="balance.account"></td>
                                             <td x-text="`Rp.${balance?.initial_balance}`"></td>
                                             <td>
-                                                <template x-if="balance.initial_balance.length !== 0">
-                                                    <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                            data-bs-target="#modal-edit" @click="edit(balance.id)">
-                                                        <i class="ki-duotone ki-pencil fs-2">
-                                                            <span class="path1"></span>
-                                                            <span class="path2"></span>
-                                                        </i>
-                                                    </button>
-                                                </template>
+{{--                                                <template x-if="balance.initial_balance.length !== 0">--}}
+{{--                                                    <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"--}}
+{{--                                                            data-bs-target="#modal-edit" @click="edit(balance.id)">--}}
+{{--                                                        <i class="ki-duotone ki-pencil fs-2">--}}
+{{--                                                            <span class="path1"></span>--}}
+{{--                                                            <span class="path2"></span>--}}
+{{--                                                        </i>--}}
+{{--                                                    </button>--}}
+{{--                                                </template>--}}
                                             </td>
                                         </tr>
                                         </tbody>

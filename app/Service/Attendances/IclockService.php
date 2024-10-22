@@ -104,7 +104,7 @@ class IclockService
             return 'OK: '.$processedCount;
         } catch (Throwable $e) {
             // Log and report any errors
-           Log::info($e);
+            Log::info($e);
 
             return 'ERROR: '.$e."\n";
         }
@@ -187,19 +187,13 @@ class IclockService
 
     private function processCheckOut(array $attendanceData, $shift, string $date, string $time): void
     {
-        if ($this->isValidTimeToCheckOut($time, $shift->end_time_to_checkout)) {
+        if ($this->isValidTime($time, $shift->time_to_checkout, $shift->end_time_to_checkout)) {
             $existingCheckOut = $this->getAttendanceRecord($attendanceData['employee_id'], $date, 'desc');
 
             if (!$existingCheckOut) {
                 Attendances::create($attendanceData);
-           }
+            }
         }
-    }
-
-
-    public function isValidTimeToCheckOut($time, $endTime): bool
-    {
-        return $time < $endTime;
     }
 
     private function logError(Exception $exception): void
