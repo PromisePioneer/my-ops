@@ -199,5 +199,16 @@ class PermissionSeeder extends Seeder
         foreach ($leaves as $permission) {
             Permission::create(['name' => $permission]);
         }
+
+        $attendancesRecord = [
+            'Lihat Riwayat Absensi',
+        ];
+
+        foreach ($attendancesRecord as $permission) {
+            Permission::create(['name' => $permission]);
+            $director->givePermissionTo($permission);
+            $FAManager->givePermissionTo($permission);
+            $operationalManager->givePermissionTo($permission);
+        }
     }
 }

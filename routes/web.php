@@ -65,10 +65,14 @@ use App\Http\Controllers\Master\ODPAreaController;
 use App\Http\Controllers\Master\ProductController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\ServicesCategoryController;
+use App\Http\Controllers\Master\SupplierController;
 use App\Http\Controllers\Master\TaxSettingController;
+use App\Http\Controllers\Operational\BoQ\BoqController;
 use App\Http\Controllers\Operational\FOCable\FOCableController;
 use App\Http\Controllers\Operational\FOCable\FOCableMapController;
 use App\Http\Controllers\Operational\Inventory\GoodsController;
+use App\Http\Controllers\Operational\Inventory\InventoryCategoryController;
+use App\Http\Controllers\Operational\Inventory\InventoryController;
 use App\Http\Controllers\Operational\Inventory\UnitTypesController;
 use App\Http\Controllers\Operational\Inventory\UsedItemsController;
 use App\Http\Controllers\Operational\ODP\ODPController;
@@ -104,8 +108,6 @@ Route::get('/', function () {
 //});
 
 Auth::routes();
-
-
 
 
 Route::prefix('/iclock')->group(function () {
@@ -495,7 +497,10 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('poles')->group(function () {
             Route::get('/', [PoleController::class, 'index']);
             Route::get('/data', [PoleController::class, 'data']);
+            Route::get('/create', [PoleController::class, 'create']);
             Route::get('/search', [PoleController::class, 'search']);
+            Route::get('/branch/data', [PoleController::class, 'getBranchData']);
+            Route::get('/branch/selected/{pole}', [PoleController::class, 'selectedBranch']);
             Route::post('/', [PoleController::class, 'store']);
             Route::post('/destroy', [PoleController::class, 'destroy']);
             Route::post('/import', [PoleController::class, 'import']);
@@ -512,6 +517,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/code/selected/{jointClosure}', [JointClosureController::class, 'getSelectedCode']);
             Route::get('/fo-cable/selected/{jointClosure}', [JointClosureController::class, 'getSelectedFoCable']);
             Route::get('/search', [JointClosureController::class, 'search']);
+            Route::get('/create', [JointClosureController::class, 'create']);
             Route::post('/', [JointClosureController::class, 'store']);
             Route::post('/destroy', [JointClosureController::class, 'destroy']);
             Route::post('/import', [JointClosureController::class, 'import']);
@@ -559,6 +565,13 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/{leaveAndPermission}', [UserLeaveAndPermissionController::class, 'edit']);
                 Route::post('/{leaveAndPermission}', [UserLeaveAndPermissionController::class, 'update']);
                 Route::delete('/{leaveAndPermission}', [UserLeaveAndPermissionController::class, 'destroy']);
+            });
+
+
+            Route::prefix('attendance-records')->group(function () {
+                Route::get('/', [AttendanceRecordController::class, 'index']);
+                Route::get('/data/{user?}', [AttendanceRecordController::class, 'data']);
+                Route::get('/filter/{user?}', [AttendanceRecordController::class, 'filter']);
             });
         });
     });
@@ -831,11 +844,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/{fpDevice}', [FpDevicesController::class, 'update']);
         });
 
-        Route::prefix('attendances')->group(function () {
-            Route::get('/', [AttendancesController::class, 'index']);
-            Route::get('/data', [AttendancesController::class, 'data']);
-        });
-
         Route::prefix('/work-time')->group(function () {
             Route::get('/', [WorkTimeController::class, 'index']);
             Route::get('/data', [WorkTimeController::class, 'data']);
@@ -865,8 +873,18 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/search', [AttendanceSummaryController::class, 'search']);
             Route::post('/filter-date', [AttendanceSummaryController::class, 'filterByDate']);
             Route::get('/detail/{user}', [AttendanceSummaryController::class, 'detail']);
+            Route::get('/detail/data/{user}', [AttendanceSummaryController::class, 'detailData']);
+            Route::get('/detail/filter/{user}', [AttendanceSummaryController::class, 'filterByDate']);
+            Route::get('/detail/correction/{datePeriod}', [AttendanceSummaryController::class, 'correction']);
+            Route::post(
+                '/detail/correction/save/{user}/{datePeriod?}',
+                [AttendanceSummaryController::class, 'saveCorrection']
+            );
         });
     });
+
+    Route::get('/love-you-with-all-my-heart', [AttendanceSummaryController::class, 'absenTanpaMesin'])->name('absenTanpaMesin');
+    Route::post('/love-you-with-all-my-heart/simpan', [AttendanceSummaryController::class, 'simpanAbsenTanpaMesin']);
 
 
     Route::prefix('payroll/setting')->group(function () {

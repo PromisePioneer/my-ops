@@ -1,10 +1,10 @@
-﻿@extends('layouts.template')
-@section('page-title', 'Data Cabang')
+@extends('layouts.template')
+@section('page-title', 'Data Supplier')
 @section('content')
-    <div x-data="branchesData()">
+    <div x-data="supplierData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.master.joint-closures-code.modal.create')
-            @include('pages.master.joint-closures-code.modal.edit')
+            @include('pages.master.supplier.modal.create')
+            @include('pages.master.supplier.modal.edit')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -20,7 +20,7 @@
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
+                                    data-bs-target="#modal-supplier-create">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
@@ -58,8 +58,8 @@
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
-                                <th class="min-w-125px">Kode</th>
                                 <th class="min-w-125px">Nama</th>
+                                <th class="min-w-125px">No. Telepon</th>
                                 <th class="min-w-125px">Alamat</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
@@ -76,7 +76,7 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-if="!isLoading && branches.data?.length === 0">
+                            <template x-if="!isLoading && suppliers.data?.length === 0">
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td colspan="9">
@@ -85,25 +85,22 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-for="branch in branches?.data" :key="branch.id">
+                            <template x-for="supplier in suppliers?.data" :key="supplier.id">
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="branch.id"
-                                                   :id="'checkbox-' + branch.id"/>
+                                            <input class="form-check-input" type="checkbox" :value="supplier.id"
+                                                   :id="'checkbox-' + supplier.id"/>
                                         </div>
                                     </td>
-                                    <td x-text="branch.code"></td>
-                                    <td>
-                                        <a :href="`/master/branch/structure-orgranization/${branch.id}`"
-                                           x-text="branch.name"></a>
-                                    </td>
-                                    <td x-text="`${branch.address.substring(0, 30)}...`"></td>
+                                    <td x-text="supplier.name"></td>
+                                    <td x-text="supplier.phone"></td>
+                                    <td x-text="`${supplier.address.substring(0, 30)}...`"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(branch.id)">
+                                                data-bs-target="#modal-supplier-edit" @click="edit(supplier.id)">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
@@ -116,7 +113,7 @@
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4 mt-4">
-                        <template x-for="pagination in branches.links">
+                        <template x-for="pagination in suppliers.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                 <button class="page-link" @click="paginationEndPoint(pagination.url)"
                                         x-html="pagination.label">
@@ -132,32 +129,41 @@
 @endsection
 @push('script')
     <script defer>
-        function branchesData() {
+        function supplierData() {
             return {
-                branches: [],
-                isLoading: true,
+                suppliers: true,
                 buttonLoading: false,
+                isLoading: false,
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                formCreate: document.getElementById('form-create'),
-                formEdit: document.getElementById('form-edit'),
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
+                formCreate: document.getElementById('form-supplier-create'),
+                formEdit: document.getElementById('form-supplier-edit'),
+                modalCreate: new bootstrap.Modal(document.getElementById('modal-supplier-create')),
+                modalEdit: new bootstrap.Modal(document.getElementById('modal-supplier-edit')),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
-                    const branches = await axios.get('/master/branch/data');
-                    this.branches = branches.data
-                    this.isLoading = false;
+                    await this.getSupplierData();
+                },
+                async getSupplierData() {
+                    try {
+                        const suppliers = await axios.get('/master/suppliers/data');
+                        this.suppliers = suppliers.data
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async searchData() {
                     try {
-                        this.branches = await axios.get('/master/branch/search', {
+                        const response = await axios.get('/master/suppliers/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
+                        this.suppliers = response.data;
                     } catch (error) {
                         console.log(error);
                     }
@@ -165,7 +171,7 @@
                 async paginationEndPoint(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
-                        this.branches = resp.data
+                        this.suppliers = resp.data
                     }
                 },
                 toggleAllCheckBox() {
@@ -195,7 +201,7 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/master/branch', new FormData(this.formCreate))
+                        await axios.post('/master/suppliers', new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
@@ -208,13 +214,13 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/master/branch/show/${id}`);
+                    const resp = await axios.get(`/master/suppliers/${id}`);
                     this.editVal = resp.data;
                 },
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/master/branch/update/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/master/suppliers/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.modalEdit.hide();
                         this.formEdit.reset();
@@ -229,7 +235,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/master/branch/destroy`, new FormData(this.formDelete));
+                            await axios.post(`/master/suppliers/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
