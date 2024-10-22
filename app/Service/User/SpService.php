@@ -13,10 +13,7 @@ class SpService
 {
     public function generateSpNumber(SPRequest|AttendancesSummaryAssignSPRequest $request): string
     {
-        $sp = SP::where('branch_id', $request->user()->branch_id)->where(
-            'user_id',
-            $request->user_id
-        )->latest()->first();
+        $sp = SP::latest()->first();
         $spMonth = convertToRoman(Carbon::parse($request->due_date)->format('m'));
         $spYear = Carbon::parse($request->due_date)->format('Y');
 
@@ -28,8 +25,10 @@ class SpService
             return $startValue.'/MY-SP/'.$spMonth.'/'.$spYear;
         }
 
-        $startingNumber = '000';
-        $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
+        $startingNumber = '001';
+        $startValue = str_pad((int)$startingNumber, 3, '0', STR_PAD_LEFT);
+
+
 
         return $startValue.'/MY-SP/'.$spMonth.'/'.$spYear;
     }

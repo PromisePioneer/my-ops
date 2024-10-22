@@ -55,7 +55,7 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, WithChunkRe
     public function model(array $row): User
     {
         return new User([
-            'branch_id' => $this->branch->where('name', $row['cabang'])->first()->id ?? null,
+            'branch_id' => $this->branch->where('code', $row['cabang'])->first()->id ?? null,
             'absent_id' => $row['absen_id'],
             'nip' => (int)$row['nik'],
             'name' => $row['nama'],
