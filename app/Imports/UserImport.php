@@ -58,7 +58,7 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, WithChunkRe
             'nip' => (int)$row['nik'],
             'name' => $row['nama'],
             'placement' => $row['penempatan'],
-            'join_date' => Carbon::instance(Date::excelToDateTimeObject((int)$row['tanggal_masuk'])),
+            'join_date' => Carbon::parse($row['tanggal_masuk']),
             'password' => Hash::make('password'),
         ]);
     }
