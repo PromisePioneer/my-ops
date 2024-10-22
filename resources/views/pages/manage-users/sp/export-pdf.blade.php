@@ -271,7 +271,7 @@
         @endif
 
         <br>
-        @if($punishedBy->hasAnyRole(['Manager Keuangan', 'Direktur', 'Manager Operasional']))
+        @if($punishedBy->hasAnyRole(['FA & Tax Manager', 'Director', 'Operational Manager']))
             <div style="margin-right: 30px;float: right">
                 <table>
                     <tr>
@@ -306,7 +306,7 @@
             </div>
         @endif
 
-        @if($punishedBy->hasAnyRole(['Manager Cabang']))
+        @if($punishedBy->hasAnyRole(['Branch Manager']))
             <div class="heading-separator table-heading-container">
                 <table>
                     <tr>
