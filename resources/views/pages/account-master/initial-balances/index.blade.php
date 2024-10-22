@@ -299,7 +299,6 @@
                 async filter() {
                     const year = document.getElementById('year')?.value ?? '';
                     const branch_id = $(".filter-branch-select2").val();
-
                     this.isLoading = true;
                     try {
                         const resp = await axios.get('/account-master/initial-balances/filter', {

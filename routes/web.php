@@ -292,6 +292,7 @@ Route::group(['middleware' => ['auth']], static function () {
         });
 
         Route::prefix('initial-balances')->group(function () {
+            Route::get('/filter', [InitialBalanceController::class, 'filter']);
             Route::get('/', [InitialBalanceController::class, 'index']);
             Route::get('/data', [InitialBalanceController::class, 'data']);
             Route::get('/account/data', [InitialBalanceController::class, 'getAccountData']);
@@ -303,6 +304,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 '/account/selected/{accountTransaction}',
                 [InitialBalanceController::class, 'selectedAccountData']
             );
+
             Route::post('/destroy', [InitialBalanceController::class, 'destroy']);
             Route::post('/{accountTransaction}', [InitialBalanceController::class, 'update']);
         });
@@ -678,6 +680,23 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/{unitType}', [UnitTypesController::class, 'update']);
             Route::delete('/{unitType}', [UnitTypesController::class, 'destroy']);
         });
+
+
+        Route::prefix('/boq')->group(function () {
+            Route::get('/', [BoqController::class, 'index']);
+            Route::get('/data', [BoqController::class, 'data']);
+            Route::get('/search', [BoqController::class, 'search']);
+            Route::get('/create', [BoqController::class, 'create']);
+            Route::post('/', [BoqController::class, 'store']);
+            Route::get('/unit-type/data', [BoqController::class, 'getUnitTypes']);
+            Route::get('/unit-type/selected/{id}', [BoqController::class, 'selectedUnitType']);
+            Route::get('/users/data', [BoqController::class, 'getUserData']);
+            Route::get('/detail/{boq}', [BoqController::class, 'detail']);
+            Route::get('/get-boq-commodity/{boq}', [BoqController::class, 'getBoqCommodity']);
+            Route::get('/unit-type/selected/{boq}', [BoqController::class, 'selectedUnitType']);
+            Route::get('/{boq}', [BoqController::class, 'edit']);
+            Route::post('/destroy', [BoqController::class, 'destroy']);
+        });
     });
 
     Route::prefix('journal-adjustment')->group(function () {
@@ -884,7 +903,9 @@ Route::group(['middleware' => ['auth']], static function () {
         });
     });
 
-    Route::get('/love-you-with-all-my-heart', [AttendanceSummaryController::class, 'absenTanpaMesin'])->name('absenTanpaMesin');
+    Route::get('/love-you-with-all-my-heart', [AttendanceSummaryController::class, 'absenTanpaMesin'])->name(
+        'absenTanpaMesin'
+    );
     Route::post('/love-you-with-all-my-heart/simpan', [AttendanceSummaryController::class, 'simpanAbsenTanpaMesin']);
 
 

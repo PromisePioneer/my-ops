@@ -3,9 +3,6 @@
 namespace App\Service;
 
 use App\Models\Account;
-use App\Models\AccountTransaction;
-use App\Models\Branch;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
