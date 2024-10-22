@@ -9,12 +9,14 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithPreCalculateFormulas;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
-class UserImport implements ToModel, WithHeadingRow, WithValidation, WithChunkReading
+class UserImport implements ToModel, WithHeadingRow, WithValidation, WithChunkReading, WithCalculatedFormulas
 {
 
     use Importable;
@@ -54,7 +56,7 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, WithChunkRe
     {
         return new User([
             'branch_id' => $this->branch->where('name', $row['cabang'])->first()->id ?? null,
-            'absent_id' => (int)$row['absen_id'],
+            'absent_id' => $row['absen_id'],
             'nip' => (int)$row['nik'],
             'name' => $row['nama'],
             'placement' => $row['penempatan'],
