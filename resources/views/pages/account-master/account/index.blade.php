@@ -140,7 +140,6 @@
                                         </td>
                                         <td placement="center"
                                             x-text="`${subAccount.sub_account_code} ${subAccount.sub_account_name}`"></td>
-                                        <td></td>
                                         <td>
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modal-edit-children"
