@@ -83,8 +83,6 @@ class SPController extends Controller
             ->first();
         $endData = Carbon::parse($request->start_date)->addMonth(6);
         DB::transaction(function () use ($request, $currentSP, $endData) {
-//            dd($this->spService->generateSpNumber($request));
-
             $sp = SP::create([
                 'start_date' => $request->start_date,
                 'end_date' => $endData,

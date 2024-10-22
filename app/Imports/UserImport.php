@@ -25,7 +25,7 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, WithChunkRe
 
     public function __construct()
     {
-        $this->branch = Branch::all(['id', 'name'])->pluck('id');
+        $this->branch = Branch::all(['id', 'name', 'code'])->pluck('id');
     }
 
     public function rules(): array
@@ -55,7 +55,7 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, WithChunkRe
     public function model(array $row): User
     {
         return new User([
-            'branch_id' => $this->branch->where('code', $row['cabang'])->first()->id ?? null,
+            'branch_id' => Branch::where('code', $row['cabang'])->first()?->id,
             'absent_id' => $row['absen_id'],
             'nip' => (int)$row['nik'],
             'name' => $row['nama'],
