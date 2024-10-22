@@ -2,22 +2,42 @@
 @section('page-title', 'Data Saldo Awal')
 @section('content')
     <div x-data="InitialBalancesData()">
-        <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.account-master.initial-balances.modal.create')
-            @include('pages.account-master.initial-balances.modal.edit')
-            <div class="card-header border-0 pt-6">
-                <div class="card-title">
-                    <div class="d-flex align-items-center position-relative my-1">
-                        <span class="svg-icon svg-icon-1 position-absolute ms-6">
-                           <i class="bi bi-search"></i>
-                        </span>
-                        <input type="text" name="search" x-model="search" @input.debounce="searchData()"
-                               class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
+        @include('pages.account-master.initial-balances.modal.create')
+        @include('pages.account-master.initial-balances.modal.edit')
+        <div class="d-flex flex-column flex-xl-row">
+            <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
+                <div class="card card-flush">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2 class="mb-0">Filter</h2>
+                        </div>
                     </div>
+                    <form id="form-filter" @submit.prevent="filter()">
+                        <div class="card-body pt-0">
+                            <div class="d-flex flex-column text-gray-600">
+                                <div class="d-flex align-items-center py-2">
+                                    <select class="form-select form-select-solid filter-branch-select2"
+                                            name="branch_id">
+                                    </select>
+                                </div>
+                                <div class="d-flex align-items-center py-2">
+                                    <input type="number" name="year" id="year" class="form-control form-control-solid"
+                                           placeholder="Filter Berdasarkan Tahun">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer pt-4 text-end">
+                            <button type="submit" class="btn btn-light btn-active-primary btn-sm">
+                                Filter
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <div class="card-toolbar">
-                    <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                        <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+            </div>
+            <div class="flex-lg-row-fluid ms-lg-10">
+                <div class="card card-flush mb-6 mb-xl-9">
+                    <div class="card-header pt-5">
+                        <div class="card-title">
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-create">
@@ -28,99 +48,103 @@
                                 </i> Tambah
                             </button>
                         </div>
+                        <div class="card-toolbar">
+                            <div class="d-flex align-items-center position-relative my-1"
+                                 data-kt-view-roles-table-toolbar="base">
+                                <span class="svg-icon svg-icon-1 position-absolute ms-6">
+															<svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                                 height="24" viemanagewBox="0 0 24 24" fill="none">
+																<rect opacity="0.5" x="17.0365" y="15.1223"
+                                                                      width="8.15546" height="2" rx="1"
+                                                                      transform="rotate(45 17.0365 15.1223)"
+                                                                      fill="black"></rect>
+																<path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
+                                                                      fill="black"></path>
+															</svg>
+														</span>
+                                <input type="text" class="form-control form-control-solid w-250px ps-15"
+                                       x-model="search" @input.debounce="searchData()" placeholder="Cari...">
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="card-body py-3">
-                <div class="col-12 ">
-                    <form id="form-delete" @submit.prevent="destroy()">
-                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
-                        <button type="submit" class="btn btn-light-danger btn-sm mt-5"
-                                x-show="selectedCheckBox.length > 0"
-                                x-transition x-cloak>
-                            <i class="ki-duotone ki-trash-square fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                                <span class="path4"></span>
-                            </i>
-                            Hapus
-                        </button>
-                    </form>
-                </div>
-                <div class="py-5">
-                    <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
-                            <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="w-10px pe-2">
-                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                        <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
-                                    </div>
-                                </th>
-                                <th class="min-w-125px">Tahun</th>
-                                <th class="min-w-125px">Akun</th>
-                                <th class="min-w-125px">Saldo</th>
-                                <th class="min-w-125px">Actions</th>
-                            </thead>
-                            <template x-if="isLoading">
-                                <tbody class="fw-bold">
-                                <tr>
-                                    <td colspan="9">
-                                        <div style="text-align: center;">
-                                            <div class="spinner-border" role="status">
-                                                <span class="visually-hidden">Loading...</span>
+                    <div class="card-body pt-0">
+                        <div id="kt_roles_view_table_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+                            <div class="table-responsive">
+                                <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped"
+                                       id="kt_table_users">
+                                    <thead>
+                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="w-10px pe-2">
+                                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                                <input class="form-check-input" type="checkbox"
+                                                       @click="toggleAllCheckBox()">
                                             </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </template>
-                            <template x-if="!isLoading && initialBalances.data?.length === 0">
-                                <tbody class="fw-bold">
-                                <tr>
-                                    <td colspan="9">
-                                        <center>Data Tidak Ditemukan</center>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </template>
-                            <template x-for="(balance, index) in initialBalances?.data" :key="index">
-                                <tbody class="fw-bold">
-                                <tr>
-                                    <td>
-                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                             @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="balance.id"
-                                                   :id="'checkbox-' + balance.id"/>
-                                        </div>
-                                    </td>
-                                    <td x-text="balance.date"></td>
-                                    <td x-text="balance.account"></td>
-                                    <td x-text="balance.amount"></td>
-                                    <td>
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(balance.id)">
-                                            <i class="ki-duotone ki-pencil fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
+                                        </th>
+                                        <th class="min-w-125px">Akun</th>
+                                        <th class="min-w-125px">Saldo</th>
+                                        <th class="min-w-125px">Actions</th>
+                                    </thead>
+                                    <template x-if="isLoading">
+                                        <tbody class="fw-bold">
+                                        <tr>
+                                            <td colspan="9">
+                                                <div style="text-align: center;">
+                                                    <div class="spinner-border" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </template>
+                                    <template x-if="!isLoading && initialBalances.data?.length === 0">
+                                        <tbody class="fw-bold">
+                                        <tr>
+                                            <td colspan="9">
+                                                <center>Data Tidak Ditemukan</center>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </template>
+                                    <template x-for="(balance, index) in initialBalances?.data" :key="index">
+                                        <tbody class="fw-bold">
+                                        <tr>
+                                            <td>
+                                                <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                                     @click="selectCheckBox($event)">
+                                                    <input class="form-check-input" type="checkbox" :value="balance.id"
+                                                           :id="'checkbox-' + balance.id"/>
+                                                </div>
+                                            </td>
+                                            <td x-text="balance.account"></td>
+                                            <td x-text="`Rp.${balance?.initial_balance}`"></td>
+                                            <td>
+                                                <template x-if="balance.initial_balance.length !== 0">
+                                                    <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                            data-bs-target="#modal-edit" @click="edit(balance.id)">
+                                                        <i class="ki-duotone ki-pencil fs-2">
+                                                            <span class="path1"></span>
+                                                            <span class="path2"></span>
+                                                        </i>
+                                                    </button>
+                                                </template>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </template>
+                                </table>
+                            </div>
+                            <ul class="pagination float-end mb-4 mt-4">
+                                <template x-for="pagination in initialBalances.links">
+                                    <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                        <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                                x-html="pagination.label">
                                         </button>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </template>
-                        </table>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
                     </div>
-                    <ul class="pagination float-end mb-4 mt-4">
-                        <template x-for="pagination in initialBalances.links">
-                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
-                                        x-html="pagination.label">
-                                </button>
-                            </li>
-                        </template>
-                    </ul>
                 </div>
             </div>
         </div>
@@ -149,6 +173,7 @@
                 async init() {
                     await this.getAccountData();
                     await this.getInitialBalances();
+                    await this.getBranchDataForFilter();
                     await this.getBranchData();
                 },
                 async getInitialBalances() {
@@ -217,6 +242,20 @@
                         }
                     });
                 },
+                async getBranchDataForFilter() {
+                    $(".filter-branch-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Cabang',
+                        ajax: {
+                            url: '/account-master/initial-balances/branch/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
                 async getBranchData() {
                     $(".branches-select2").select2({
                         allowClear: true,
@@ -256,6 +295,25 @@
                         type: 'select2:select',
                         params: {results: response}
                     });
+                },
+                async filter() {
+                    const year = document.getElementById('year')?.value ?? '';
+                    const branch_id = $(".filter-branch-select2").val();
+
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/account-master/initial-balances/filter', {
+                            params: {
+                                year: year,
+                                branch_id: branch_id,
+                            }
+                        });
+                        this.initialBalances = resp.data;
+                    } catch (e) {
+                        console.log(e);
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async save() {
                     this.buttonLoading = true;
