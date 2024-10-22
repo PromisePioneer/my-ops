@@ -1,10 +1,8 @@
-﻿@extends('layouts.template')
+@extends('layouts.template')
 @section('page-title', 'Data Cabang')
 @section('content')
-    <div x-data="branchesData()">
+    <div x-data="boqData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.master.branch.modal.create')
-            @include('pages.master.branch.modal.edit')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -18,15 +16,13 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            <button type="button" class="btn btn-light-primary btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
+                            <a href="{{ url('/inventory/boq/create') }}" class="btn btn-light-primary btn-sm">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
                                     <span class="path3"></span>
                                 </i> Tambah
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -58,9 +54,13 @@
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
-                                <th class="min-w-125px">Kode</th>
-                                <th class="min-w-125px">Nama</th>
-                                <th class="min-w-125px">Alamat</th>
+                                <th class="min-w-125px">No. BoQ</th>
+                                <th class="min-w-125px">Judul</th>
+                                <th class="min-w-125px">Tanggal</th>
+                                <th class="min-w-125px">Status</th>
+                                <th class="min-w-125px">Dibuat Oleh</th>
+                                <th class="min-w-125px">Disetujui Oleh</th>
+                                <th class="min-w-125px">Diketahui Oleh</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -76,7 +76,7 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-if="!isLoading && branches.data?.length === 0">
+                            <template x-if="!isLoading && boqs.data?.length === 0">
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td colspan="9">
@@ -85,30 +85,45 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-for="branch in branches?.data" :key="branch.id">
+                            <template x-for="boq in boqs?.data" :key="boq.id">
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="branch.id"
-                                                   :id="'checkbox-' + branch.id"/>
+                                            <input class="form-check-input" type="checkbox" :value="boq.id"
+                                                   :id="'checkbox-' + boq.id"/>
                                         </div>
                                     </td>
-                                    <td x-text="branch.code"></td>
                                     <td>
-                                        <a :href="`/master/branch/structure-orgranization/${branch.id}`"
-                                           x-text="branch.name"></a>
+                                        <a :href="`/inventory/boq/detail/${boq.id}`" x-text="boq.boq_number"></a>
                                     </td>
-                                    <td x-text="`${branch.address.substring(0, 30)}...`"></td>
+                                    <td x-text="boq.title"></td>
+                                    <td x-text="boq.date"></td>
                                     <td>
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(branch.id)">
+                                        <template x-if="boq.status === 'Pending'">
+                                            <span class="badge bg-info text-white">Pending</span>
+                                        </template>
+                                        <template x-if="boq.status === 'Diterima'">
+                                            <span class="badge bg-success text-white">Diterima</span>
+                                        </template>
+                                        <template x-if="boq.status === 'Ditolak'">
+                                            <span class="badge bg-danger text-white">Ditolak</span>
+                                        </template>
+                                        <template x-if="boq.status === 'Revisi'">
+                                            <span class="badge bg-warning text-white">Revisi</span>
+                                        </template>
+                                    </td>
+                                    <td x-text="boq.submitter"></td>
+                                    <td x-text="boq.approved_by ?? '-'"></td>
+                                    <td x-text="boq.known_by ?? '-'"></td>
+                                    <td>
+                                        <a :href="`/inventory/boq/${boq.id}`" class="btn btn-light-primary btn-sm">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
                                             </i>
-                                        </button>
+                                        </a>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -116,7 +131,7 @@
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4 mt-4">
-                        <template x-for="pagination in branches.links">
+                        <template x-for="pagination in boqs.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                 <button class="page-link" @click="paginationEndPoint(pagination.url)"
                                         x-html="pagination.label">
@@ -132,32 +147,27 @@
 @endsection
 @push('script')
     <script defer>
-        function branchesData() {
+        function boqData() {
             return {
-                branches: [],
-                isLoading: true,
+                boqs: [],
+                isLoading: false,
                 buttonLoading: false,
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                formCreate: document.getElementById('form-create'),
-                formEdit: document.getElementById('form-edit'),
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
-                    const branches = await axios.get('/master/branch/data');
-                    this.branches = branches.data
-                    this.isLoading = false;
+                    await this.getBoqData();
                 },
                 async searchData() {
                     try {
-                        this.branches = await axios.get('/master/branch/search', {
+                        const response = await axios.get('/inventory/boq/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
+                        this.boqs = response.data;
                     } catch (error) {
                         console.log(error);
                     }
@@ -229,7 +239,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/master/branch/destroy`, new FormData(this.formDelete));
+                            await axios.post(`/inventory/boq/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -238,6 +248,18 @@
                         }
                     });
                 },
+                async getBoqData() {
+                    this.isLoading = true
+                    try {
+                        const resp = await axios.get('/inventory/boq/data');
+                        this.boqs = resp.data
+
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
+                }
             }
         }
     </script>

@@ -1,10 +1,10 @@
-﻿@extends('layouts.template')
-@section('page-title', 'Data Cabang')
+@extends('layouts.template')
+@section('page-title', 'Data Kategori Barang')
 @section('content')
-    <div x-data="branchesData()">
+    <div x-data="inventoryData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.master.branch.modal.create')
-            @include('pages.master.branch.modal.edit')
+            @include('pages.master.inventory-categories.modal.create')
+            @include('pages.master.inventory-categories.modal.edit')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -58,15 +58,13 @@
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
-                                <th class="min-w-125px">Kode</th>
                                 <th class="min-w-125px">Nama</th>
-                                <th class="min-w-125px">Alamat</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
                                 <tbody class="fw-bold">
                                 <tr>
-                                    <td colspan="9">
+                                    <td colspan="3">
                                         <div style="text-align: center;">
                                             <div class="spinner-border" role="status">
                                                 <span class="visually-hidden">Loading...</span>
@@ -76,34 +74,29 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-if="!isLoading && branches.data?.length === 0">
+                            <template x-if="!isLoading && inventoryCategories.data?.length === 0">
                                 <tbody class="fw-bold">
                                 <tr>
-                                    <td colspan="9">
+                                    <td colspan="3">
                                         <center>Data Tidak Ditemukan</center>
                                     </td>
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-for="branch in branches?.data" :key="branch.id">
+                            <template x-for="category in inventoryCategories?.data" :key="category.id">
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="branch.id"
-                                                   :id="'checkbox-' + branch.id"/>
+                                            <input class="form-check-input" type="checkbox" :value="category.id"
+                                                   :id="'checkbox-' + category.id"/>
                                         </div>
                                     </td>
-                                    <td x-text="branch.code"></td>
-                                    <td>
-                                        <a :href="`/master/branch/structure-orgranization/${branch.id}`"
-                                           x-text="branch.name"></a>
-                                    </td>
-                                    <td x-text="`${branch.address.substring(0, 30)}...`"></td>
+                                    <td x-text="category.name"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(branch.id)">
+                                                data-bs-target="#modal-edit" @click="edit(category.id)">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
@@ -116,7 +109,7 @@
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4 mt-4">
-                        <template x-for="pagination in branches.links">
+                        <template x-for="pagination in inventoryCategories.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                 <button class="page-link" @click="paginationEndPoint(pagination.url)"
                                         x-html="pagination.label">
@@ -132,9 +125,9 @@
 @endsection
 @push('script')
     <script defer>
-        function branchesData() {
+        function inventoryData() {
             return {
-                branches: [],
+                inventoryCategories: [],
                 isLoading: true,
                 buttonLoading: false,
                 selectedCheckBox: [],
@@ -148,13 +141,11 @@
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
-                    const branches = await axios.get('/master/branch/data');
-                    this.branches = branches.data
-                    this.isLoading = false;
+                    await this.getInventoryCategories();
                 },
                 async searchData() {
                     try {
-                        this.branches = await axios.get('/master/branch/search', {
+                        this.inventoryCategories = await axios.get('/master/inventory-categories/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -165,7 +156,7 @@
                 async paginationEndPoint(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
-                        this.branches = resp.data
+                        this.inventoryCategories = resp.data
                     }
                 },
                 toggleAllCheckBox() {
@@ -195,7 +186,7 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/master/branch', new FormData(this.formCreate))
+                        await axios.post('/master/inventory-categories', new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
@@ -208,13 +199,13 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/master/branch/show/${id}`);
+                    const resp = await axios.get(`/master/inventory-categories/${id}`);
                     this.editVal = resp.data;
                 },
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/master/branch/update/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/master/inventory-categories/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.modalEdit.hide();
                         this.formEdit.reset();
@@ -229,7 +220,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/master/branch/destroy`, new FormData(this.formDelete));
+                            await axios.post(`/master/inventory-categories/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -238,6 +229,11 @@
                         }
                     });
                 },
+                async getInventoryCategories() {
+                    const inventoryCategories = await axios.get('/master/inventory-categories/data');
+                    this.inventoryCategories = inventoryCategories.data
+                    this.isLoading = false;
+                }
             }
         }
     </script>

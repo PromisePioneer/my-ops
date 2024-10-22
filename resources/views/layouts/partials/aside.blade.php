@@ -159,10 +159,56 @@
                                 href="{{ url('master/joint-closures-code') }}">
                             Kode Joint Closure
                         </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'suppliers'"
+                                href="{{ url('master/suppliers') }}">
+                            Supplier
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'inventory-categories'"
+                                href="{{ url('master/inventory-categories') }}">
+                            Kategori Barang
+                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
 
                 <x-menu-sections>Operasional</x-menu-sections>
+
+
+                <x-dropdown-menu :active="request()->is('inventory/*')">
+                    @slot('parentIcon')
+                        <i class="ki-duotone ki-dollar fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                        </i>
+                    @endslot
+                    @slot('menuTitle')
+                        Inventory Controller
+                    @endslot
+                    @slot('menuItem')
+                        <x-dropdown-menu-item
+                                :active="request()->is('inventory/boq*')"
+                                href="{{ url('inventory/boq') }}">
+                            Bill Of Quantity
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->is('inventory')"
+                                href="{{ url('inventory') }}">
+                            Persediaan Barang
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->is('operational/fo-cables*')"
+                                href="{{ url('operational/fo-cables') }}">
+                            Barang Masuk
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->is('operational/poles*')"
+                                href="{{ url('operational/poles') }}">
+                            Barang Keluar
+                        </x-dropdown-menu-item>
+                    @endslot
+                </x-dropdown-menu>
 
                 <x-dropdown-menu :active="request()->is('operational/*')">
                     @slot('parentIcon')
@@ -173,7 +219,7 @@
                         </i>
                     @endslot
                     @slot('menuTitle')
-                        Data Operasional
+                        Data Aset Lapangan
                     @endslot
                     @slot('menuItem')
                         <x-dropdown-menu-item
@@ -358,33 +404,33 @@
                     @endslot
                 </x-dropdown-menu>
 
-                <x-menu-sections>Inventaris</x-menu-sections>
+                {{--                <x-menu-sections>Inventaris</x-menu-sections>--}}
 
-                <x-dropdown-menu :active="request()->segment(1) === 'inventory'">
-                    @slot('parentIcon')
-                        <i class="ki-duotone ki-basket-ok fs-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                            <span class="path3"></span>
-                            <span class="path4"></span>
-                        </i>
-                    @endslot
-                    @slot('menuTitle')
-                        Inventaris
-                    @endslot
-                    @slot('menuItem')
-                        <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'goods'"
-                                href="{{ url('inventory/goods') }}">
-                            Barang
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'unit-types'"
-                                href="{{ url('inventory/unit-types') }}">
-                            Satuan
-                        </x-dropdown-menu-item>
-                    @endslot
-                </x-dropdown-menu>
+                {{--                <x-dropdown-menu :active="request()->segment(1) === 'inventory'">--}}
+                {{--                    @slot('parentIcon')--}}
+                {{--                        <i class="ki-duotone ki-basket-ok fs-2">--}}
+                {{--                            <span class="path1"></span>--}}
+                {{--                            <span class="path2"></span>--}}
+                {{--                            <span class="path3"></span>--}}
+                {{--                            <span class="path4"></span>--}}
+                {{--                        </i>--}}
+                {{--                    @endslot--}}
+                {{--                    @slot('menuTitle')--}}
+                {{--                        Inventaris--}}
+                {{--                    @endslot--}}
+                {{--                    @slot('menuItem')--}}
+                {{--                        <x-dropdown-menu-item--}}
+                {{--                                :active="request()->segment(2) === 'goods'"--}}
+                {{--                                href="{{ url('inventory/goods') }}">--}}
+                {{--                            Barang--}}
+                {{--                        </x-dropdown-menu-item>--}}
+                {{--                        <x-dropdown-menu-item--}}
+                {{--                                :active="request()->segment(2) === 'unit-types'"--}}
+                {{--                                href="{{ url('inventory/unit-types') }}">--}}
+                {{--                            Satuan--}}
+                {{--                        </x-dropdown-menu-item>--}}
+                {{--                    @endslot--}}
+                {{--                </x-dropdown-menu>--}}
 
                 <x-menu-sections>Penyesuaian Jurnal</x-menu-sections>
 
