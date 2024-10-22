@@ -26,12 +26,6 @@
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
                                placeholder="Nama akun"/>
                     </div>
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Saldo Awal</label>
-                        <input type="text" id="beginning_balances" name="beginning_balances"
-                               class="form-control form-control-solid"
-                               placeholder="Saldo Awal"/>
-                    </div>
                 </div>
 
                 <div class="modal-footer">

@@ -17,6 +17,7 @@ class AccountTransactionService
             'date' => date('y-m-d'),
             'account_id' => $accountId,
             'description' => $description,
+            'transaction_type' => 'TR',
             'entries_type' => 'debit',
             'amount' => $amount,
         ]);
@@ -33,7 +34,8 @@ class AccountTransactionService
             'date' => date('y-m-d'),
             'account_id' => $accountId,
             'description' => $description,
-            'entries_type' => 'credit',
+            'transaction_type' => 'TR',
+            'entries_type' => 'debit',
             'amount' => $amount,
         ]);
     }

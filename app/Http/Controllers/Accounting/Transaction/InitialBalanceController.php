@@ -33,9 +33,9 @@ class InitialBalanceController extends Controller
     }
 
 
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
-        $data = $this->initialBalanceService->data();
+        $data = $this->initialBalanceService->data($request);
         return response()->json($data);
     }
 
@@ -55,6 +55,12 @@ class InitialBalanceController extends Controller
     {
     }
 
+
+    public function filter(Request $request): JsonResponse
+    {
+        return response()->json($this->initialBalanceService->filter($request));
+    }
+
     public function store(InitialBalanceRequest $request): JsonResponse
     {
         AccountTransaction::create([
@@ -62,6 +68,7 @@ class InitialBalanceController extends Controller
             'date' => $request->date,
             'account_id' => $request->account_id,
             'transaction_type' => 'SA',
+            'entries_type' => 'Debit',
             'amount' => $request->amount,
         ]);
 

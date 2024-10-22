@@ -220,9 +220,9 @@ class InvoiceService
         DB::transaction(function () use ($piutangPelanggan, $description, $invoice) {
             $this->accountTransactionService->createDebitTransaction(
                 $invoice->branch_id,
+                $piutangPelanggan->id,
                 $description,
                 $invoice->grand_total,
-                $piutangPelanggan->id
             );
             $this->accountTransactionService->createCreditTransaction(
                 $invoice->branch_id,

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AttendancesSummary extends Model
 {
@@ -15,5 +16,18 @@ class AttendancesSummary extends Model
         'date',
         'clock_in',
         'clock_out',
+        'work_time_id',
     ];
+
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'employee_id', 'absent_id');
+    }
+
+    public function workTime()
+    {
+        return $this->belongsTo(WorkTime::class, 'work_time_id');
+    }
+
 }

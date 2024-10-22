@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 
-
-
 class ODP extends Model
 {
     use HasFactory;
@@ -29,6 +27,6 @@ class ODP extends Model
 
     public function branch(): BelongsTo
     {
-        return $this->belongsTo(Branch::class, 'area_id');
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

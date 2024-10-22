@@ -139,6 +139,12 @@ class User extends Authenticatable
     }
 
 
+    public function attendancesSummary(): HasMany
+    {
+        return $this->hasMany(AttendancesSummary::class, 'employee_id', 'absent_id');
+    }
+
+
     public function contract(): HasOne
     {
         return $this->hasOne(ContractManagement::class, 'user_id');
@@ -180,7 +186,6 @@ class User extends Authenticatable
     public function searchData(Request $request): Collection
     {
         $search = $request->input('search');
-
         return self::with('roles')
             ->where('name', 'like', '%'.$search.'%')
             ->orWhere('email', 'like', '%'.$search.'%');

@@ -16,7 +16,10 @@ class PermissionSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $branchManagerRole = Role::where('name', 'Branch Manager')->first();
+
+        $director = Role::where('name', 'Director')->first();
+        $FAManager = Role::where('name', 'FA & Tax Manager')->first();
+        $operationalManager = Role::where('name', 'Operational Manager')->first();
 
         $branches = [
             'Lihat Cabang',

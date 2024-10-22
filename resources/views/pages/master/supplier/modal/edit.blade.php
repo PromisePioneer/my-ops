@@ -1,8 +1,8 @@
-﻿<div class="modal fade" tabindex="-1" id="modal-edit">
+<div class="modal fade" tabindex="-1" id="modal-supplier-edit">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form Sub Akun</h5>
+                <h5 class="modal-title">Form Supplier</h5>
                 <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
@@ -14,25 +14,23 @@
                 </div>
             </div>
 
-            <form id="form-edit" @submit.prevent="update(editVal.id)">
+            <form id="form-supplier-edit" @submit.prevent="update(editVal.id)">
                 <div class="modal-body">
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Kode</label>
-                        <input type="text" id="code" name="code" class="form-control form-control-solid"
-                               placeholder="Kode kategori akun" :value="editVal.code"/>
-                    </div>
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Akun</label>
-                        <select name="account_id" id="selectedAccount"
-                                class="form-select form-select-solid account-select2"
-                                data-dropdown-parent="#modal-edit">
-                            <option></option>
-                        </select>
-                    </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama</label>
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama akun" :value="editVal.name"/>
+                               placeholder="Nama" :value="editVal.name"/>
+                    </div>
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">No.Telepon</label>
+                        <input type="number" id="phone" name="phone" class="form-control form-control-solid"
+                               placeholder="No Telepon" :value="editVal.phone"/>
+                    </div>
+
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Alamat</label>
+                        <textarea class="form-control form-control-solid" name="address" id="address"
+                                  data-kt-autosize="true" placeholder="Alamat" x-text="editVal.address"></textarea>
                     </div>
                 </div>
 

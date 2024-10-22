@@ -19,6 +19,7 @@ class FOCable extends Model
         'cable_placement',
         'cable_address',
         'total_core',
+        'used_core',
         'starting_point_lat',
         'starting_point_long',
         'ending_point_lat',
@@ -38,7 +39,6 @@ class FOCable extends Model
     {
         $search = $request->input('search');
         $query = self::orderby('segment_id')
-            ->where('branch_id', $request->user()->branch_id)
             ->select('id', 'segment_id');
 
         if ($search !== '') {

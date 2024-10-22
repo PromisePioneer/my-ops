@@ -46,13 +46,13 @@
                         <div class="row mb-10">
                             <div class="col-lg-6">
                                 <label for="name" class="required form-label">Jumlah Core</label>
-                                <input type="text" class="form-control form-control-solid" name="total_core"
+                                <input type="number" class="form-control form-control-solid" name="total_core"
                                        placeholder="Jumlah Core">
                             </div>
                             <div class="col-lg-6">
-                                <label for="name" class="required form-label">Jalur Kabel</label>
-                                <input type="text" class="form-control form-control-solid" name="cable_address"
-                                       placeholder="Jumlah Core">
+                                <label for="name" class="required form-label">Jumlah Core Terpakai</label>
+                                <input type="number" class="form-control form-control-solid" name="used_core"
+                                       placeholder="Jumlah Core Terpakai">
                             </div>
                         </div>
                         <div class="row">
@@ -69,8 +69,14 @@
                             <div class="col-lg-6 mb-10">
                                 <label for="name" class="required form-label">Tanggal Cutoff</label>
                                 <input type="date" class="form-control form-control-solid date" name="cut_off_date"
-                                       id="cut_off_date">
+                                       id="cut_off_date" placeholder="Tanggal Cut Off">
                             </div>
+                        </div>
+
+                        <div class="col-lg-6 mb-10">
+                            <label for="name" class="required form-label">Jalur Kabel</label>
+                            <input type="text" class="form-control form-control-solid" name="cable_address"
+                                   placeholder="Jumlah Core">
                         </div>
 
                         <div class="row mb-10 align-items-center">

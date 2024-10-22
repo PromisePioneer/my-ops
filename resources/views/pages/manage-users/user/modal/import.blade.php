@@ -20,7 +20,7 @@
                         <label for="name" class="required form-label">Download Template</label>
                         <br>
                         <div class="d-grid gap-2">
-                            <a href="{{ asset('assets/media/documents/excel/data-cabang.xlsx') }}"
+                            <a href="{{ asset('assets/template-excel/data-karyawan.xlsx') }}"
                                class="btn btn-primary btn-sm">Download</a>
                             <span class="text-danger">Wajib menggunakan template ini.</span>
                         </div>

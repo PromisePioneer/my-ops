@@ -53,10 +53,12 @@
                                 <input type="text" class="form-control form-control-solid" name="total_core"
                                        placeholder="Jumlah Core" value="{{ $FOCable->total_core }}">
                             </div>
+
+
                             <div class="col-lg-6">
-                                <label for="name" class="required form-label">Jalur Kabel</label>
-                                <input type="text" class="form-control form-control-solid" name="cable_address"
-                                       placeholder="Jumlah Core" value="{{ $FOCable->cable_address }}">
+                                <label for="name" class="required form-label">Jumlah Core Terpakai</label>
+                                <input type="text" class="form-control form-control-solid" name="used_core"
+                                       placeholder="Jumlah Core Terpakai" value="{{ $FOCable->used_core }}">
                             </div>
                         </div>
                         <div class="row">
@@ -81,8 +83,16 @@
                             <div class="col-lg-6 mb-10">
                                 <label for="name" class="required form-label">Tanggal Cutoff</label>
                                 <input type="date" class="form-control form-control-solid date" name="cut_off_date"
-                                       id="cut_off_date" value="{{ $FOCable->cut_off_date }}">
+                                       id="cut_off_date" value="{{ $FOCable->cut_off_date }}"
+                                       placeholder="Tanggal CutOff">
                             </div>
+                        </div>
+
+
+                        <div class="col-lg-6 mb-10">
+                            <label for="name" class="required form-label">Jalur Kabel</label>
+                            <input type="text" class="form-control form-control-solid" name="cable_address"
+                                   placeholder="Jalur Kabel" value="{{ $FOCable->cable_address }}">
                         </div>
 
 
@@ -169,7 +179,7 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/operational/fo-cables', new FormData(this.form))
+                        await axios.post(`/operational/fo-cables/update/${this.id}`, new FormData(this.form))
                         await showAlert('success', 'Data berhasil disimpan')
                         window.location.href = "/operational/fo-cables";
                         this.form.reset();

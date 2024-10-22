@@ -45,16 +45,15 @@
                             </span>
                                 Import
                             </button>
-                            <button type="button" class="btn btn-light-primary btn-sm mr-4" @click="add()"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
+                            <a href="{{ url('/operational/joint-closures/create')  }}"
+                               class="btn btn-light-primary btn-sm mr-4">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
                                     <span class="path3"></span>
                                 </i>
                                 Tambah
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -315,46 +314,7 @@
                         }
                     }
                 },
-                checkCoords() {
-                    const lat = document.getElementById('lat').value;
-                    const long = document.getElementById('long').value;
 
-                    if ((this.map && lat && long) || (this.map && this.editVal.lat && this.editVal.long)) {
-                        L.marker(L.latLng(this.editVal.lat ?? Number(lat), this.editVal.long ?? Number(long)), {
-                            iconSize: [20, 20]
-                        }).addTo(this.map).bindPopup(`<b>Lokasi ODP</b>`).openPopup();
-                    } else {
-                        console.error('Map or coordinates are undefined');
-                    }
-                },
-                async getCodeData() {
-                    $(".code-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Kode Area",
-                        ajax: {
-                            url: '/operational/joint-closures/code/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async getFoCablesData() {
-                    $(".foCable-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Kabel",
-                        ajax: {
-                            url: '/operational/joint-closures/fo-cables/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
                 async save() {
                     this.buttonLoading = true;
                     try {

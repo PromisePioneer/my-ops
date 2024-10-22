@@ -18,7 +18,7 @@ class FOCableMapController extends Controller
 
     public function data(): JsonResponse
     {
-        $odpMap = FOCable::whereYear('cut_off_date', Carbon::now())->get();
+        $odpMap = FOCable::whereYear('created_at', Carbon::now())->get();
         return response()->json($odpMap);
     }
 

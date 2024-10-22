@@ -23,7 +23,7 @@ class ODPService
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $data = ODP::with('area', 'area.branch')->orderBy('cut_off_date');
+        $data = ODP::with('branch')->orderBy('cut_off_date');
 
         if ($search) {
             $data->whereHas('branch', function ($query) use ($search) {

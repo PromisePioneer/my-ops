@@ -2,32 +2,6 @@
 @section('content')
 
     <div x-data="attendancesSummary()">
-        @include('pages.adms.attendances-summary.modal.detail')
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <div class="row">
-                    <form id="form-filter-date" @submit.prevent="filterDate()">
-                        <div class="row col-md-6 align-items-center">
-                            <div class="col-md-4">
-                                <input type="date" name="start_date" id="start_date"
-                                       class="form-control form-control-solid date"
-                                       placeholder="Tanggal Awal">
-                            </div>
-                            <div class="col-md-4">
-                                <input type="date" name="end_date" id="end_date"
-                                       class="form-control form-control-solid date"
-                                       placeholder="Tanggal Akhir">
-                            </div>
-                            <div class="col-md-4">
-                                <button class="btn btn-light-primary btn-sm">Filter</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -50,13 +24,10 @@
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="min-w-125px">Nama Karyawan</th>
-                                <th class="min-w-125px">Hadir</th>
                                 <th class="min-w-125px">Terlambat</th>
-                                <th class="min-w-125px">Cuti</th>
-                                <th class="min-w-125px">Alpha</th>
-                                <th class="min-w-125px">Sakit</th>
-                                <th class="min-w-125px">Izin</th>
-                                <th class="min-w-125px">Jam Kerja</th>
+                                <th class="min-w-125px">Total Hadir</th>
+                                <th class="min-w-125px">Tidak CheckIn</th>
+                                <th class="min-w-125px">Tidak Checkout</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class=" fw-bold">
@@ -84,19 +55,15 @@
                                         <a :href="`/manage-users/users/detail/${attendance.id}`"
                                            x-text="`(${attendance.user_nip}) ${attendance.user_name}`"></a>
                                     </td>
-                                    <td x-text="attendance.total_present"></td>
-                                    p[kasdkasd
-                                    <td x-text="`${attendance.total_late_in_minutes} Menit`"></td>
-                                    <td x-text="`${attendance.total_leaves} Hari`"></td>
-                                    <td x-text="`${attendance.total_absent} Hari`"></td>
-                                    <td x-text="`${attendance.total_sick} Hari`"></td>
-                                    <td x-text="`${attendance.total_permission} Hari`"></td>
-                                    <td x-text="attendance.work_time?.name ?? 'Default'"></td>
+                                    <td x-text="`${attendance.total_minutes_late} Menit`"></td>
+                                    <td x-text="`${attendance.total_present} Hari`"></td>
+                                    <td x-text="`${attendance.total_not_check_in}`"></td>
+                                    <td x-text="`${attendance.total_not_check_out}`"></td>
                                     <td>
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-detail" @click="show(attendance.id)">
+                                        <a :href="`/adms/attendances-summary/detail/${attendance.id}`"
+                                           class="btn btn-light-primary btn-sm">
                                             <i class="fa-solid fa-circle-info"></i>
-                                        </button>
+                                        </a>
                                     </td>
                                 </tr>
                             </template>
@@ -104,7 +71,7 @@
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4">
-                        <template x-for="pagination in attendanceSummary.links">
+                        <template x-for="pagination in attendanceSummary?.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                 <button class="page-link"
                                         @click="paginationEndPointForAttendanceSummary(pagination.url)"
@@ -131,7 +98,6 @@
                 search: '',
                 months: [],
                 attendanceSummaryDetail: [],
-                filterDateForm: document.getElementById('form-filter-date'),
                 async init() {
                     await this.getAttendanceSummary();
                     await this.getMonths();
@@ -164,17 +130,6 @@
                         {"value": 12, "name": "Desember"}
                     ]
                 },
-                async show(id) {
-                    const startDate = document.getElementById('start_date').value;
-                    const endDate = document.getElementById('end_date').value;
-                    const resp = await axios.get(`/adms/attendances-summary/detail/${id}`, {
-                        params: {
-                            start_date: startDate,
-                            end_date: endDate,
-                        },
-                    });
-                    this.attendanceSummaryDetail = resp.data
-                },
                 async getAttendanceSummary() {
                     this.isLoading = true;
                     try {
@@ -199,18 +154,13 @@
                     } finally {
                         this.isLoading = false;
                     }
-                }
-                ,
+                },
                 async searchData() {
                     this.isLoading = true;
-                    const startDate = document.getElementById('start_date').value;
-                    const endDate = document.getElementById('end_date').value;
                     try {
                         const response = await axios.get('/adms/attendances-summary/search', {
                             params: {
                                 search: this.search,
-                                start_date: startDate,
-                                end_date: endDate,
                             },
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -220,14 +170,12 @@
                     } finally {
                         this.isLoading = false;
                     }
-                }
-                ,
+                },
                 formatDate(val) {
                     const [month, year] = val.split('-');
                     const date = new Date(year, month - 1, 1);
                     return `${this.getMonthName(date.getMonth())} ${date.getFullYear()}`;
-                }
-                ,
+                },
                 async filter() {
 
                 },

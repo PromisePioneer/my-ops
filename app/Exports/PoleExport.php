@@ -22,10 +22,11 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
      */
     public function collection(): Collection
     {
-        return Pole::whereBetween('cut_off_date', [$this->startDate, $this->endDate])
+        return Pole::with('branch')->whereBetween('cut_off_date', [$this->startDate, $this->endDate])
             ->get()
             ->map(function ($item) {
                 return [
+                    'branch' => $item->branch?->name,
                     'diameter' => $item->diameter,
                     'panjang' => $item->length,
                     'wilayah' => $item->region,
@@ -39,12 +40,13 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
     public function headings(): array
     {
         return [
-            'Diameter',
-            'Panjang',
-            'Wilayah',
-            'Kode Tiang',
-            'Koordinat',
-            'Tanggal Cut Off',
+            'CABANG',
+            'DIAMETER',
+            'PANJANG',
+            'WILAYAH',
+            'KODE TIANG',
+            'KOORDINAT',
+            'TANGGAL CUT OFF',
         ];
     }
 

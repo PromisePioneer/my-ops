@@ -46,10 +46,12 @@ class FOCableService
         $data = $foCable->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
+                'branch' => $item->branch?->name,
                 'segment' => $item->segment_id,
                 'classification' => $item->classification,
                 'cable_placement' => $item->cable_placement,
                 'total_core' => $item->total_core,
+                'used_core' => $item->used_core,
                 'cable_address' => $item->cable_address,
                 'coordinates_start_at' => $item->starting_point_lat.','.$item->starting_point_long,
                 'coordinates_end_at' => $item->ending_point_lat.','.$item->ending_point_long,

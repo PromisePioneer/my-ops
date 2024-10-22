@@ -5,7 +5,9 @@ namespace App\Observers;
 use App\Models\Attendances;
 use App\Models\AttendancesSummary;
 use App\Models\User;
+use App\Models\WorkTime;
 use Carbon\Carbon;
+use Log;
 
 class AttendanceSummaryObserver
 {
@@ -14,9 +16,16 @@ class AttendanceSummaryObserver
      */
     public function created(Attendances $attendances): void
     {
+        $user = User::where('absent_id', $attendances->employee_id)->first() ?? null;
+
+        $userWorktime = WorkTime::whereHas('userWorktime', function ($item) use ($attendances, $user) {
+            $item->where('user_id', $user->id);
+        })->first() ?? WorkTime::where('name', 'Default')->first();
+
         $attendancesSummary = AttendancesSummary::updateOrCreate([
             'date' => Carbon::parse($attendances->timestamp)->format('Y-m-d'),
             'employee_id' => $attendances->employee_id,
+            'work_time_id' => $userWorktime->id,
         ], []);
 
         if ($attendances->status1 === 0) {
@@ -26,7 +35,6 @@ class AttendanceSummaryObserver
         }
 
         $attendancesSummary->save();
-
 
 
         // if ($attendances->status1 === 0) {
@@ -49,7 +57,6 @@ class AttendanceSummaryObserver
         //     ->first();
 
 
-
         //     if($attendances->where('status1', 1)->where('employee_id', $user->absent_id)->where('timestamp', $update->date)->exists()){
         //         AttendancesSummary::create([
         //             'user_id' => $user->id,
@@ -62,10 +69,7 @@ class AttendanceSummaryObserver
         //     }
 
 
-
-
-        }
-
+    }
 
 
     /**

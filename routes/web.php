@@ -79,6 +79,7 @@ use App\Http\Controllers\Operational\ODP\ODPController;
 use App\Http\Controllers\Operational\ODP\ODPMapController;
 use App\Http\Controllers\Operational\Pole\PoleController;
 use App\Http\Controllers\Operational\Pole\PoleMapController;
+use App\Http\Controllers\UserProfile\AttendanceRecordController;
 use App\Http\Controllers\UserProfile\UserLeaveAndPermissionController;
 use App\Http\Controllers\UserProfile\UserProfileController;
 use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;

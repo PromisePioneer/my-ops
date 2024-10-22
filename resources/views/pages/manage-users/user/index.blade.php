@@ -1,7 +1,6 @@
 ﻿@extends('layouts.template')
 @section('page-title', 'Data User')
 @section('content')
-
     <div x-data="userData()">
         @include('pages.manage-users.user.modal.import')
         <div class="d-flex flex-column flex-xl-row">

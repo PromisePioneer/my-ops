@@ -3,20 +3,21 @@
 namespace App\Service\Attendances;
 
 use App\Models\Attendances;
+use App\Models\AttendancesSummary;
+use App\Models\User;
+use App\Models\UserWorkTime;
+use App\Models\WorkTime;
 use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class AttendanceSummaryDetailService
 {
-
-    private AttendancesSummaryService $attendaceSummaryService;
+    private FinancialClosePeriodService $financialClosePeriodService;
 
     public function __construct()
     {
-        $this->attendanceSummaryService = new AttendancesSummaryService();
         $this->financialClosePeriodService = new FinancialClosePeriodService();
     }
 
@@ -26,60 +27,100 @@ class AttendanceSummaryDetailService
         return Carbon::parse($attendance->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
     }
 
-    public function data(Request $request, $userId): LengthAwarePaginator
+
+    public function data(Request $request, int $empId)
     {
-        $startDate = $request->start_date
-            ? Carbon::parse($request->start_date)
-            : $this->financialClosePeriodService->startDate();
-        $endDate = $request->end_date
-            ? Carbon::parse($request->end_date)
-            : $this->financialClosePeriodService->endDate();
+        $startDate = $this->financialClosePeriodService->startDate();
+        $endDate = $this->financialClosePeriodService->endDate();
 
-        $attendanceQuery = Attendances::where('employee_id', $userId)
-            ->whereBetween('timestamp', [$startDate, $endDate])
-            ->orderBy('timestamp');
+        $attendancesData = AttendancesSummary::with('user')
+            ->where('employee_id', $empId)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->orderBy('date', 'asc')
+            ->get()
+            ->keyBy('date');
 
-        $total = $attendanceQuery->count();
+        $period = CarbonPeriod::create($startDate, $endDate);
 
-        $perPage = 20;
-        $page = $request->input('page', 1);
-        $offset = ($page - 1) * $perPage;
+        $dates = [];
 
-        $attendances = $attendanceQuery->offset($offset)->limit($perPage)->get();
+        foreach ($period as $date) {
+            $formattedDate = $date->format('Y-m-d');
+            $dates[$formattedDate] = collect([
+                'attendancesDate' => $formattedDate,
+                'attendanceData' => $attendancesData->get($formattedDate),
+            ]);
+        }
 
-        $formattedData = $this->formatAttendanceData($attendances);
-
-        return new LengthAwarePaginator(
-            $formattedData,
-            $total,
-            $perPage,
-            $page,
-            ['path' => LengthAwarePaginator::resolveCurrentPath()]
-        );
+        return self::formattedData(collect($dates), $empId);
     }
 
-    private function formatAttendanceData($attendances)
+    public function formattedData($attendanceSummary, $empId)
     {
-        $groupedAttendances = $attendances->groupBy(function ($attendance) {
-            return Carbon::parse($attendance->timestamp)->toDateString();
-        });
+        return $attendanceSummary->map(function ($item) use ($empId) {
+            $user = User::where('absent_id', $empId)->first();
 
-        return $groupedAttendances->map(function ($dayAttendances, $date) {
-            $checkIn = $dayAttendances->firstWhere('status1', 0);
-            $checkOut = $dayAttendances->firstWhere('status1', 1);
-
-            $period = CarbonPeriod::create(
-                $this->financialClosePeriodService->startDate(),
-                $this->financialClosePeriodService->endDate()
-            );
-
+            $userWorktime = WorkTime::where('id', $item['attendanceData']?->work_time_id)->first() ?? WorkTime::where(
+                'name',
+                'Default'
+            )->first();
 
             return [
-                'date' => Carbon::parse($checkIn?->timestamp)->format('d/m/y')  ?? Carbon::parse($checkOut?->timestamp)->format('d/m/y'),
-                'check_in_timestamp' => $checkIn ? Carbon::parse($checkIn?->timestamp)->format('H:i') : null,
-                'check_out_timestamp' => $checkOut ? Carbon::parse($checkOut?->timestamp)->format('H:i') : null,
+                'date_period' => $item['attendancesDate'],
+                'clock_in' => $item['attendanceData']?->clock_in,
+                'clock_out' => $item['attendanceData']?->clock_out,
+                'late' => $this->calculateLate($item, $userWorktime) ?? null,
+                'work_time' => $userWorktime->name,
             ];
-        })->values();
+        });
+    }
+
+
+    public function calculateLate($item, $userWorktime): null|string
+    {
+        $expectedCheckIn = Carbon::parse($item['attendancesDate'])
+                ->format('Y-m-d').' '.$userWorktime->clock_in;
+        $actualCheckIn = Carbon::parse($item['attendancesDate'])->format(
+                'Y-m-d'
+            ).' '.$item['attendanceData']?->clock_in;
+
+        $parseExpectedCheckIn = Carbon::parse($expectedCheckIn);
+        $parseActualCheckIn = Carbon::parse($actualCheckIn);
+
+        if ($parseActualCheckIn->greaterThan($parseExpectedCheckIn)) {
+            return Carbon::parse($expectedCheckIn)->diffInMinutes(Carbon::parse($actualCheckIn)).' Menit';
+        }
+
+        return null;
+    }
+
+
+    public function filterByDate(Request $request, User $user)
+    {
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+
+
+        $attendancesData = AttendancesSummary::with('user')
+            ->where('employee_id', $user->absent_id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->orderBy('date', 'asc')
+            ->get()
+            ->keyBy('date');
+
+        $period = CarbonPeriod::create($startDate, $endDate);
+
+        $dates = [];
+
+        foreach ($period as $date) {
+            $formattedDate = $date->format('Y-m-d');
+            $dates[$formattedDate] = collect([
+                'attendancesDate' => $formattedDate,
+                'attendanceData' => $attendancesData->get($formattedDate),
+            ]);
+        }
+
+        return self::formattedData(collect($dates), $user->absent_id);
     }
 
 

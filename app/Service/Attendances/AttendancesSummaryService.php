@@ -2,12 +2,15 @@
 
 namespace App\Service\Attendances;
 
+use App\Models\AttendancesSummary;
 use App\Models\LeaveAndPermission;
 use App\Models\NationalHoliday;
 use App\Models\User;
+use App\Models\UserWorkTime;
 use App\Models\WorkTime;
 use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 
@@ -27,201 +30,110 @@ class AttendancesSummaryService
         $endDate = $this->financialClosePeriodService->endDate();
 
         $data = User::with([
-            'attendance' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('timestamp', [$startDate, $endDate]);
-            },
-            'userHasWorkTime.workTime',
-            'roles' => function ($query) {
-                $query->whereNotIn('name', ['Super Admin']);
+            'attendancesSummary' => function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('date', [$startDate, $endDate]);
             },
         ])->paginate(10)->onEachSide(1);
 
         return self::formattedData($data, $startDate, $endDate);
     }
 
-    public function formattedData(LengthAwarePaginator $attendanceSummary, $startDate, $endDate): LengthAwarePaginator
+
+    public function formattedData(LengthAwarePaginator $user, $startDate, $endDate): LengthAwarePaginator
     {
-        $data = $attendanceSummary->getCollection()->map(function ($attendance) use ($startDate, $endDate) {
-            $attendanceGroupBy = self::attendancesGroupedBy($attendance);
-            $totalPresent = $attendance->attendance->where('status1', 0)->count();
-            $totalMinutesLate = self::calculateLate($attendanceGroupBy, $attendance);
-            $totalLeaves = self::calculateLeaves($attendance->id, $startDate, $endDate);
-            $totalSick = self::calculateSick($attendance->id, $startDate, $endDate);
-            $totalAbsent = self::calculateAlpha(
-                $startDate,
-                $endDate,
-                $attendance->attendance->where('status1', 0)->count()
-            );
-            $totalPermission = self::calculatePermission($attendance->id, $startDate, $endDate);
+        $data = $user->getCollection()->map(function ($user) use ($startDate, $endDate) {
+            $nationalHoliday = NationalHoliday::whereBetween('date', [$startDate, $endDate])->count();
+            $totalMinutesLate = 0;
+            $userWorktime = $this->getUserWorktime($user);
+            $periodOfWork = $startDate->diffInDays($endDate) - $startDate->diffInWeeks($endDate) - $nationalHoliday;
+            $totalNotCheckIn = 0;
+            $totalNotCheckOut = 0;
+            $totalPresent = 0;
 
+            foreach ($user->attendancesSummary as $attendance) {
+                if (empty($attendance->clock_in) && $attendance->clock_out) {
+                    $totalNotCheckIn++;
+                }
 
-            return [
-                'id' => $attendance->id,
-                'user_nip' => $attendance->nip,
-                'user_name' => $attendance->name ?? null,
-                'work_time' => $attendance?->userHasWorkTime?->workTime,
-                'total_present' => $totalPresent ?? 0,
-                'total_late_in_minutes' => (int) $totalMinutesLate ?? 0,
-                'total_leaves' => $totalLeaves ?? 0,
-                'total_sick' => $totalSick ?? 0,
-                'total_absent' => $totalAbsent ?? 0,
-                'total_permission' => $totalPermission ?? 0,
+                if (empty($attendance->clock_out) && $attendance->clock_in) {
+                    $totalNotCheckOut++;
+                }
 
-            ];
-        });
+                if ($attendance->clock_in || $attendance->clock_out) {
+                    $totalPresent++;
+                }
 
-        $attendanceSummary->setCollection($data);
-        return $attendanceSummary;
-    }
-
-    public function attendancesGroupedBy($attendance)
-    {
-        return $attendance->attendance->groupBy(function ($query) {
-            return $query->timestamp;
-        });
-    }
-
-    private static function calculateLate($attendanceGroupBy, $attendance): int
-    {
-        $calculateLateGroupBy = $attendanceGroupBy->groupBy(function ($item) {
-            return $item->first()->employee_id.'-'.Carbon::parse($item->first()->timestamp)->format('Y-m-d');
-        });
-
-
-        $totalMinutesLate = 0;
-
-
-        foreach ($calculateLateGroupBy as $day => $dailyItems) {
-
-            $checkIn = $dailyItems->where('status1', 0)->first();
-
-
-            if (empty($checkIn)) {
-                continue;
+                $totalMinutesLate += $this->calculateLate($userWorktime, $attendance);
             }
 
 
-            $userWorktime = WorkTime::where('name', 'Default')->first();
-                $expectedCheckInTime = $userWorktime->clock_in;
-                $expectedCheckIn = Carbon::parse($checkIn->first()->timestamp)->format(
-                        'Y-m-d'
-                    ).' '.$expectedCheckInTime;
-                $actualCheckIn = Carbon::parse($checkIn->first()->timestamp);
-
-                if ($actualCheckIn->greaterThan($expectedCheckIn)) {
-                    $minutesLate =  Carbon::parse($expectedCheckIn)->diffInMinutes($actualCheckIn);
-                    $totalMinutesLate += $minutesLate;
-                }
-
+            return [
+                'id' => $user->id,
+                'user_nip' => $user->nip,
+                'user_name' => $user->name,
+                'total_minutes_late' => (int)$totalMinutesLate,
+                'total_not_check_in' => $totalNotCheckIn,
+                'total_not_check_out' => $totalNotCheckOut,
+                'total_present' => $totalPresent.'/'.(int)$periodOfWork,
+            ];
+        });
 
 
+        $user->setCollection($data);
+        return $user;
+    }
+
+    public function calculateLate($userWorktime, $attendance): float|int
+    {
+        $totalMinutesLate = 0;
+        $expectedCheckInTime = $userWorktime->clock_in;
+        $expectedCheckIn = Carbon::parse($attendance->date)->format(
+                'Y-m-d'
+            ).' '.$expectedCheckInTime;
+        $actualCheckIn = Carbon::parse($attendance->date)->format('Y-m-d').' '.$attendance->clock_in;
+
+
+        $parseExpectedCheckIn = Carbon::parse($expectedCheckIn);
+        $parseActualCheckIn = Carbon::parse($actualCheckIn);
+
+        if ($parseActualCheckIn->greaterThan($parseExpectedCheckIn)) {
+            return Carbon::parse($expectedCheckIn)->diffInMinutes($actualCheckIn);
         }
+
+
         return $totalMinutesLate;
     }
 
-    private static function calculateLeaves(int $userId, $startDate, $endDate): int
-    {
-        $startPeriod = self::leavesQuery($userId, $startDate, $endDate)
-            ->where('leaves_status', 'Cuti')
-            ->first();
-        $endPeriod = self::leavesQuery($userId, $startDate, $endDate)
-            ->where('leaves_status', 'Cuti')
-            ->latest()
-            ->first();
 
-        return Carbon::parse($startPeriod?->start_date)->diffInDays($endPeriod?->end_date);
+    public function getUserWorktime($user)
+    {
+        $attendancesSummary = AttendancesSummary::where('employee_id', $user->absent_id)->first();
+
+        return WorkTime::where('id', $attendancesSummary?->work_time_id)->first() ??
+            WorkTime::where('name', 'Default')->first();
     }
 
-    private static function leavesQuery(int $userId, $startDate, $endDate)
-    {
-        return LeaveAndPermission::where('user_id', $userId)
-            ->whereBetween('start_date', [$startDate, $endDate])
-            ->where('confirmation_status', 'Diterima');
-    }
-
-    private static function calculateSick(int $userId, $startDate, $endDate): int
-    {
-        $startPeriod = self::leavesQuery($userId, $startDate, $endDate)
-            ->where('leaves_status', 'Sakit')
-            ->first();
-        $endPeriod = self::leavesQuery($userId, $startDate, $endDate)
-            ->where('leaves_status', 'Sakit')
-            ->latest()
-            ->first();
-
-
-        return Carbon::parse($startPeriod?->start_date)->diffInDays($endPeriod?->end_date);
-    }
-
-    public function calculateAlpha($startDate, $endDate, $totalPresent): int
-    {
-        $nationalHoliday = NationalHoliday::whereBetween('date', [$startDate, $endDate])->count();
-        $getWeekEndHoliday = (int)$startDate->diffInWeek($endDate) - 1 ?? 0;
-
-        return $startDate->diffInDays($endDate) - $nationalHoliday - $getWeekEndHoliday - $totalPresent;
-    }
-
-    private static function calculatePermission(int $userId, $startDate, $endDate): int
-    {
-        $startPeriod = self::leavesQuery($userId, $startDate, $endDate)
-            ->where('leaves_status', 'Izin')
-            ->first();
-        $endPeriod = self::leavesQuery($userId, $startDate, $endDate)
-            ->where('leaves_status', 'Izin')
-            ->latest()
-            ->first();
-
-
-        return Carbon::parse($startPeriod?->start_date)->diffInDays($endPeriod?->end_date);
-    }
 
     public function search(Request $request): LengthAwarePaginator
     {
+        $startDate = $this->financialClosePeriodService->startDate();
+        $endDate = $this->financialClosePeriodService->endDate();
         $search = $request->input('search');
-        $startDate = isset($request->start_date)
-            ? Carbon::parse($request->start_date)
-            : $this->financialClosePeriodService->startDate();
 
-        $endDate = isset($request->end_date)
-            ? Carbon::parse($request->end_date)
-            : $this->financialClosePeriodService->endDate();
-
-        $query = User::with([
-            'attendance' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('timestamp', [$startDate, $endDate]);
-            },
-            'userHasWorkTime',
-            'roles' => function ($query) {
-                $query->whereNotIn('name', ['Super Admin']);
+        $data = User::with([
+            'attendancesSummary' => function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('date', [$startDate, $endDate]);
             },
         ]);
 
+
         if (!empty($search)) {
-            $query->where(function ($query) use ($search) {
-                $query->where('name', 'like', "%".$search."%")
-                    ->orWhere('nip', 'like', "%".$search."%");
-            });
+            $data->where('name', 'like', '%'.$search.'%')
+                ->orWhere('nip', 'like', '%'.$search.'%');
         }
 
-        $data = $query->paginate(10)->onEachSide(1);
-        return self::formattedData($data, $startDate, $endDate);
-    }
+        $data = $data->paginate(10)->onEachSide(1);
 
-    public function filterByDate(Request $request): LengthAwarePaginator
-    {
-        $startDate = Carbon::parse($request->start_date);
-        $endDate = Carbon::parse($request->end_date);
-
-
-        $data = User::with([
-            'attendance' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('timestamp', [$startDate, $endDate]);
-            },
-            'userHasWorkTime',
-            'roles' => function ($query) {
-                $query->whereNotIn('name', ['Super Admin']);
-            },
-        ])->paginate(10);
 
         return self::formattedData($data, $startDate, $endDate);
     }

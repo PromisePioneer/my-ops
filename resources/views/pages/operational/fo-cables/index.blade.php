@@ -81,11 +81,13 @@
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
+                                <th class="text-center">Cabang</th>
                                 <th class="text-center">Segmen</th>
                                 <th class="text-center">Klasifikasi</th>
                                 <th class="text-center">Letak Kabel</th>
                                 <th class="text-center">Jalur Kabel</th>
                                 <th class="text-center">Jumlah Core</th>
+                                <th class="text-center">Jumlah Core Terpakai</th>
                                 <th class="text-center">Titik Awal</th>
                                 <th class="text-center">Titik Akhir</th>
                                 <th class="text-center">Panjang Kabel</th>
@@ -108,7 +110,7 @@
                             <template x-if="!isLoading && cables.data?.length === 0">
                                 <tbody class="fw-bold">
                                 <tr>
-                                    <td colspan="11">
+                                    <td colspan="12">
                                         <center>Data Tidak Ditemukan</center>
                                     </td>
                                 </tr>
@@ -124,11 +126,13 @@
                                                    :id="'checkbox-' + cable.id"/>
                                         </div>
                                     </td>
+                                    <td class="text-center" x-text="cable.branch ?? 'Pusat'"></td>
                                     <td class="text-center" x-text="cable.segment"></td>
                                     <td class="text-center" x-text="cable.classification"></td>
                                     <td class="text-center" x-text="cable.cable_placement"></td>
                                     <td class="text-center" x-text="cable.cable_address"></td>
                                     <td class="text-center" x-text="cable.total_core"></td>
+                                    <td class="text-center" x-text="cable.used_core"></td>
                                     <td class="text-center" x-text="cable.coordinates_start_at"></td>
                                     <td class="text-center" x-text="cable.coordinates_end_at"></td>
                                     <td class="text-center" x-text="cable.length"></td>

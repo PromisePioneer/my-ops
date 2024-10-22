@@ -18,8 +18,7 @@ class ODPMapController extends Controller
 
     public function data(): JsonResponse
     {
-        $odpMap = ODP::whereYear('cut_off_date', Carbon::now())
-            ->get();
+        $odpMap = ODP::whereYear('created_at', Carbon::now())->get();
         return response()->json($odpMap);
     }
 

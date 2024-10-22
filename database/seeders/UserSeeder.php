@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
         $branch = Branch::where('id', 1)->first();
 
         User::factory()->create([
-            'absent_id' => $faker->unique()->randomNumber(3),
+            'absent_id' => 999,
             'nip' => 112,
             'join_date' => $faker->date(),
             'name' => 'Super Admin',

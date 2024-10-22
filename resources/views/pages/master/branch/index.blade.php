@@ -3,8 +3,8 @@
 @section('content')
     <div x-data="branchesData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.master.joint-closures-code.modal.create')
-            @include('pages.master.joint-closures-code.modal.edit')
+            @include('pages.master.branch.modal.create')
+            @include('pages.master.branch.modal.edit')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">

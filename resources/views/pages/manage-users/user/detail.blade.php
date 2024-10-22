@@ -71,6 +71,10 @@
                     <a class="nav-link text-active-primary pb-4" data-kt-countup-tabs="true" data-bs-toggle="tab"
                        href="#education_and_experiences">Pengalaman & Pendidikan</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link text-active-primary pb-4" data-kt-countup-tabs="true" data-bs-toggle="tab"
+                       href="#attendance_records">Riwayat Absensi</a>
+                </li>
             </ul>
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="employee_data" role="tabpanel">
@@ -79,62 +83,8 @@
                 <div class="tab-pane fade" id="education_and_experiences" role="tabpanel">
                     @include('pages.manage-users.user.partials.education-and-experiences.education-and-experience-tab-content')
                 </div>
-                <div class="card card-flush mb-6 mb-xl-9">
-                    <div class="card-header mt-6">
-                        <div class="card-title flex-column">
-                            <h2 class="mb-1">Absensi</h2>
-                            <div class="fs-6 fw-bold text-muted">Pantau absensi karyawan</div>
-                        </div>
-                    </div>
-
-                    <div class="card-body d-flex flex-column">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
-                            <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="min-w-125px">Tanggal</th>
-                                <th class="min-w-125px">Status</th>
-                            </thead>
-                            <tbody class="text-gray-600 fw-bold">
-                            <template x-if="isLoading">
-                                <tr>
-                                    <td colspan="9">
-                                        <div style="text-align: center;">
-                                            <div class="spinner-border" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </template>
-                            <template x-if="!isLoading && attendance.data?.length === 0">
-                                <tr>
-                                    <td colspan="9">
-                                        <center>Data Tidak Ditemukan</center>
-                                    </td>
-                                </tr>
-                            </template>
-                            <template x-for="absent in attendance?.data" :key="index">
-                                <tr>
-                                    <td x-text="absent.timestamp"></td>
-                                    <template x-if="absent.status1 === 0">
-                                        <td>
-                                            <span class="badge bg-success">
-                                                Check in
-                                            </span>
-                                        </td>
-                                    </template>
-                                    <template x-if="absent.status1 === 1">
-                                        <td>
-                                            <span class="badge bg-danger">
-                                                Check out
-                                            </span>
-                                        </td>
-                                    </template>
-                                </tr>
-                            </template>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="tab-pane fade" id="attendance_records" role="tabpanel">
+                    @include('pages.manage-users.user.partials.attendance-records.attendance-records-tab-content')
                 </div>
             </div>
         </div>
@@ -144,6 +94,7 @@
 @push('script')
     <script>
         function userDetailInformation() {
+            $('.date').flatpickr();
             return {
                 isLoading: false,
                 buttonLoading: false,
@@ -184,10 +135,10 @@
                 familyInformationForm: document.getElementById('form-family-information-update'),
                 healthInformationModal: new bootstrap.Modal(document.getElementById('health-information-update-modal')),
                 healthInformationForm: document.getElementById('form-health-information-update'),
+                attendanceRecords: [],
                 async init() {
                     await this.getIdentityInformation();
                     await this.getJobInformation();
-                    await this.getAbsentData();
                     await this.getEducation();
                     await this.getEducationCertificate();
                     await this.getJobExperiences();
@@ -195,6 +146,7 @@
                     await this.selectedChildData();
                     await this.getHealthInformation();
                     await this.selectedDiseaseData();
+                    await this.getAttendanceRecords();
                 },
                 async add() {
                     await this.getDepartmentData();
@@ -424,10 +376,6 @@
                     const resp = await axios.get(`/manage-users/job-experiences/${this.userId}`);
                     this.jobExperiences = resp.data;
                 },
-                async getAbsentData() {
-                    const resp = await axios.get(`/manage-users/users/absent/data/${this.userId}`);
-                    this.attendance = resp.data;
-                },
                 async getFamilyInformation() {
                     const resp = await axios.get(`/manage-users/family-informations/${this.userId}`);
                     this.familyInformation = resp.data;
@@ -435,6 +383,36 @@
                 async getHealthInformation() {
                     const resp = await axios.get(`/manage-users/health-informations/${this.userId}`);
                     this.healthInformation = resp.data;
+                },
+                async getAttendanceRecords() {
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get(`/utility/user-profile/attendance-records/data/${this.userId}`);
+                        this.attendanceRecords = resp.data;
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+                async filterAttendanceRecords() {
+                    const startDate = document.getElementById('start_date_att_record')?.value ?? '';
+                    console.log(startDate)
+                    const endDate = document.getElementById('end_date_att_record')?.value ?? '';
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get(`/utility/user-profile/attendance-records/filter/${this.userId}`, {
+                            params: {
+                                start_date: startDate,
+                                end_date: endDate,
+                            }
+                        });
+                        this.attendanceRecords = resp.data;
+                    } catch (e) {
+                        console.log(e);
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 selectedDepartment() {
                     const selectedDepartment = $('#selectedDepartment');
