@@ -135,7 +135,7 @@
                     this.map.flyTo(new L.LatLng(this.lat, this.long), 16);
                     this.marker = L.marker(L.latLng(this.lat, this.long), {
                         iconSize: [20, 20]
-                    }).addTo(this.map).bindPopup(`<b>Lokasi ODP</b>`).openPopup();
+                    }).addTo(this.map).bindPopup(`<b>Lokasi Tiang</b>`).openPopup();
 
                 },
                 async getBranchData() {
