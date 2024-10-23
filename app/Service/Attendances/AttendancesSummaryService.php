@@ -3,14 +3,11 @@
 namespace App\Service\Attendances;
 
 use App\Models\AttendancesSummary;
-use App\Models\LeaveAndPermission;
 use App\Models\NationalHoliday;
 use App\Models\User;
-use App\Models\UserWorkTime;
 use App\Models\WorkTime;
 use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 
@@ -18,13 +15,14 @@ class AttendancesSummaryService
 {
 
     private FinancialClosePeriodService $financialClosePeriodService;
+    private static int $perPage = 10;
 
     public function __construct()
     {
         $this->financialClosePeriodService = new FinancialClosePeriodService();
     }
 
-    public function data(): LengthAwarePaginator
+    public function data(Request $request): LengthAwarePaginator
     {
         $startDate = $this->financialClosePeriodService->startDate();
         $endDate = $this->financialClosePeriodService->endDate();
@@ -33,9 +31,14 @@ class AttendancesSummaryService
             'attendancesSummary' => function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('date', [$startDate, $endDate]);
             },
-        ])->paginate(10)->onEachSide(1);
+        ]);
 
-        return self::formattedData($data, $startDate, $endDate);
+        if ($request->user()->can('Lihat Data Riwayat Absensi Cabang Sendiri')) {
+            $data->where('branch_id', $request->user()->branch_id);
+        }
+
+        $attendanceSummary = $data->paginate(self::$perPage)->onEachSide(1);
+        return self::formattedData($attendanceSummary, $startDate, $endDate);
     }
 
 
@@ -125,6 +128,10 @@ class AttendancesSummaryService
                 $query->whereBetween('date', [$startDate, $endDate]);
             },
         ]);
+
+        if ($request->user()->can('Lihat Data Riwayat Absensi Cabang Sendiri')) {
+            $data->where('branch_id', $request->user()->branch_id);
+        }
 
 
         if (!empty($search)) {

@@ -22,6 +22,7 @@ use App\Policies\BoqPolicy;
 use App\Policies\BranchPolicy;
 use App\Policies\ContactPolicy;
 use App\Policies\DepartmentPolicy;
+use App\Policies\InitialBalancePolicy;
 use App\Policies\LeaveAndPermissionPolicy;
 use App\Policies\NationalHolidayPolicy;
 use App\Policies\PermissionPolicy;

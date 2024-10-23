@@ -204,14 +204,13 @@ class PermissionSeeder extends Seeder
         }
 
         $attendancesRecord = [
+            'Lihat Semua Data Riwayat Absensi',
+            'Lihat Data Riwayat Absensi Cabang Sendiri',
             'Lihat Riwayat Absensi',
         ];
 
         foreach ($attendancesRecord as $permission) {
             Permission::create(['name' => $permission]);
-            $director->givePermissionTo($permission);
-            $FAManager->givePermissionTo($permission);
-            $operationalManager->givePermissionTo($permission);
         }
     }
 }

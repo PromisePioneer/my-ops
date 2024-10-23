@@ -2,10 +2,8 @@
 
 namespace App\Service\Attendances;
 
-use App\Models\Attendances;
 use App\Models\AttendancesSummary;
 use App\Models\User;
-use App\Models\UserWorkTime;
 use App\Models\WorkTime;
 use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
@@ -122,6 +120,5 @@ class AttendanceSummaryDetailService
 
         return self::formattedData(collect($dates), $user->absent_id);
     }
-
 
 }
