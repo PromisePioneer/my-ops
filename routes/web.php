@@ -134,6 +134,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/placement/selected/{user}', [UserController::class, 'getSelectedPlacement']);
             Route::get('/create', [UserController::class, 'create']);
             Route::post('/', [UserController::class, 'store']);
+            Route::post('/destroy', [UserController::class, 'destroy']);
             Route::get('/edit/{user}', [UserController::class, 'edit']);
             Route::get('/get-selected-branch/{user}', [UserController::class, 'getSelectedBranch']);
             Route::get('/show/{user}', [UserController::class, 'show']);
@@ -142,10 +143,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/department/data', [UserController::class, 'getDepartmentData']);
             Route::get('/absent/data/{user}', [UserController::class, 'getAbsentData']);
             Route::post('/update/{user}', [UserController::class, 'update']);
-            Route::delete('/{user}', [UserController::class, 'destroy']);
             Route::post('/change-status/{user}', [UserController::class, 'changeStatusActive']);
             Route::get('/filter', [UserController::class, 'filter']);
             Route::get('companies/data', [UserController::class, 'getCompaniesData']);
+            Route::get('companies/selected/{user}', [UserController::class, 'getSelectedCompany']);
         });
 
         Route::prefix('identity-information')->group(function () {

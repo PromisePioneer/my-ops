@@ -94,12 +94,34 @@
                         </div>
                     </div>
                     <div class="card-body pt-0">
+                        <div class="col-12 ">
+                            <form id="form-delete" @submit.prevent="destroy()">
+                                <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                                <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                                        x-show="selectedCheckBox.length > 0"
+                                        x-transition x-cloak>
+                                    <i class="ki-duotone ki-trash-square fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                        <span class="path4"></span>
+                                    </i>
+                                    Hapus
+                                </button>
+                            </form>
+                        </div>
                         <div id="kt_roles_view_table_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                             <div class="table-responsive">
                                 <table class="table align-middle table-row-dashed fs-6 gy-5 mb-0 dataTable no-footer"
                                        id="kt_roles_view_table">
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="w-10px pe-2">
+                                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                                <input class="form-check-input" type="checkbox"
+                                                       @click="toggleAllCheckBox()">
+                                            </div>
+                                        </th>
                                         <th class="min-w-50px sorting" tabindex="0" aria-controls="kt_roles_view_table"
                                             rowspan="1" colspan="1" aria-label="ID: activate to sort column ascending">
                                             Cabang
@@ -147,6 +169,13 @@
                                     </template>
                                     <template x-for="user in users.data" :key="user.id">
                                         <tr>
+                                            <td>
+                                                <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                                     @click="selectCheckBox($event)">
+                                                    <input class="form-check-input" type="checkbox" :value="user.id"
+                                                           :id="'checkbox-' + user.id"/>
+                                                </div>
+                                            </td>
                                             <td x-text="user.branch?.name ?? 'Pusat'"></td>
                                             <td x-text="user.nik"></td>
                                             <td class="d-flex align-items-center">
@@ -176,9 +205,9 @@
                                                    class="btn btn-light btn-active-primary btn-sm">
                                                     <i class="bi bi-pencil-square"></i>
                                                 </a>
-                                                <button class="btn btn-light btn-active-danger btn-sm"
-                                                        @click="destroy(user.id)">
-                                                    <i class="bi bi-trash"></i>
+                                                <button :class="`${user.active ? 'btn btn-light btn-active-danger btn-sm' : 'btn btn-light btn-active-success btn-sm'}`"
+                                                        @click="changeActiveStatus(user.id)">
+                                                    <i :class="`${user.active ? 'bi bi-x-circle-fill' : 'bi bi-check-circle'}`"></i>
                                                 </button>
                                             </td>
                                         </tr>
@@ -218,11 +247,14 @@
                 role: [],
                 months: [],
                 isLoading: false,
-                startIndex: null,
+                selectedCheckBox: [],
+                selectAll: false,
+                singleChecked: false,
                 search: '',
                 formFilter: document.getElementById('form-filter'),
                 modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
                 formImport: document.getElementById('form-import'),
+                formDelete: document.getElementById('form-delete'),
                 async init() {
                     await this.getCompany();
                     await this.getUserData();
@@ -259,6 +291,30 @@
                             cache: true,
                         },
                     });
+                },
+                toggleAllCheckBox() {
+                    this.selectAll = !this.selectAll;
+                    this.singleChecked = false;
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    this.selectedCheckBox = [];
+                    checkboxes.forEach((checkbox) => {
+                        checkbox.checked = this.selectAll;
+                        if (this.selectAll) {
+                            this.selectedCheckBox.push(checkbox.value);
+                        }
+                    });
+                    this.selectedCheckBox.shift();
+                },
+                selectCheckBox(event) {
+                    const checkboxId = event.target.value;
+                    if (event.target.checked) {
+                        this.selectedCheckBox.push(checkboxId);
+                    } else {
+                        const index = this.selectedCheckBox.indexOf(checkboxId);
+                        if (index !== -1) {
+                            this.selectedCheckBox.splice(index, 1);
+                        }
+                    }
                 },
                 async getUserData() {
                     this.isLoading = true;
@@ -309,10 +365,10 @@
                     this.startIndex = resp.data.from
                     this.users = resp.data
                 },
-                async destroy(id) {
+                async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.delete(`/manage-users/users/${id}`);
+                            await axios.post(`/manage-users/users/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -369,7 +425,7 @@
                 },
                 async changeActiveStatus(id) {
                     this.buttonLoading = true;
-                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                    showConfirmModal("Anda yakin?", "Ganti Status Aktif?", "Ya, Ganti!", async () => {
                         try {
                             await axios.post(`/manage-users/users/change-status/${id}`);
                             await showAlert('success', 'Data sukses dihapus');

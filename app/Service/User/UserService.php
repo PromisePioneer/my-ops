@@ -60,6 +60,7 @@ class UserService
                 'company_type' => $user->company_type,
                 'join_date' => $user->join_date,
                 'profile_pic' => $user->profile_pic,
+                'active' => $user->active,
             ];
         });
 

@@ -129,14 +129,16 @@ class UserController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function destroy(User $user): JsonResponse
+    public function destroy(Request $request, User $user): JsonResponse
     {
         $this->authorize('delete', User::class);
-        $user->delete();
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $user->whereIn('id', $explodeID)->delete();
+
         return response()->json([
-            'message' => 'data sukses dihapus!',
-            'data' => $user,
-        ]);
+            'message' => 'data berhasil dihapus',
+        ], 200);
     }
 
     /**
@@ -152,6 +154,11 @@ class UserController extends Controller
     public function getCompaniesData(Request $request): JsonResponse
     {
         return response()->json($this->company->getData($request));
+    }
+
+    public function getSelectedCompany(User $user): JsonResponse
+    {
+        return response()->json($this->company->getSelectedData($user->company_id));
     }
 
     public function detail(User $user): View
