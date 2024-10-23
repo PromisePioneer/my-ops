@@ -55,7 +55,7 @@ class UserService
                 'id' => $user->id,
                 'nik' => $user->nip,
                 'name' => $user->name,
-                'roles' => $user->roles[0]?->name,
+                'roles' => $user->roles[0]?->name ?? '',
                 'branch' => $user->branch?->name,
                 'company_type' => $user->company_type,
                 'join_date' => $user->join_date,
