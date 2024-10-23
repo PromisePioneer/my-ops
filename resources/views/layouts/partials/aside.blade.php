@@ -582,7 +582,7 @@
                                 href="{{ url('adms/work-time') }}">
                             Pengaturan Jam Kerja
                         </x-dropdown-menu-item>
-                        @can('Lihat Riawayat Absensi')
+                        @can('Lihat Riwayat Absensi')
                             <x-dropdown-menu-item
                                     :active="request()->segment(2) === 'attendances-summary'"
                                     href="{{ url('adms/attendances-summary') }}">

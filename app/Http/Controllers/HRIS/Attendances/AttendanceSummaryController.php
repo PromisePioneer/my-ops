@@ -16,7 +16,6 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Jmrashed\Zkteco\Lib\Helper\Attendance;
 
 class AttendanceSummaryController extends Controller
 {
@@ -40,6 +39,12 @@ class AttendanceSummaryController extends Controller
         return view('pages.adms.attendances-summary.index');
     }
 
+
+    public function data(Request $request): JsonResponse
+    {
+        return response()->json($this->attendanceSummaryService->data($request));
+    }
+
     public function search(Request $request): JsonResponse
     {
         return response()->json($this->attendanceSummaryService->search($request));
@@ -52,19 +57,19 @@ class AttendanceSummaryController extends Controller
 
     public function detail(Request $request, User $user): View
     {
+        if ($request->user()->hasRole('Branch Manager') && $request->user()->branch_id !== $user->branch_id) {
+            abort(403);
+        }
         return view('pages.adms.attendances-summary.detail', compact('user'));
     }
 
 
     public function detailData(Request $request, User $user): JsonResponse
     {
+
         return response()->json($this->attendanceSummaryDetailService->data($request, $user->absent_id));
     }
 
-    public function data(): JsonResponse
-    {
-        return response()->json($this->attendanceSummaryService->data());
-    }
 
     public function correction($datePeriod, User $user): JsonResponse
     {
