@@ -69,6 +69,7 @@ use App\Http\Controllers\Master\Finance\AssetController;
 use App\Http\Controllers\Master\Finance\TaxSettingController;
 use App\Http\Controllers\Master\General\BranchesController;
 use App\Http\Controllers\Master\General\BroadbandPacketController;
+use App\Http\Controllers\Master\General\CompanyController;
 use App\Http\Controllers\Master\General\ContactController;
 use App\Http\Controllers\Master\General\DepartmentController;
 use App\Http\Controllers\Master\General\NationalHolidayController;
@@ -144,6 +145,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::delete('/{user}', [UserController::class, 'destroy']);
             Route::post('/change-status/{user}', [UserController::class, 'changeStatusActive']);
             Route::get('/filter', [UserController::class, 'filter']);
+            Route::get('companies/data', [UserController::class, 'getCompaniesData']);
         });
 
         Route::prefix('identity-information')->group(function () {
@@ -356,6 +358,17 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/{broadbandPacket}', [BroadbandPacketController::class, 'edit']);
             Route::post('/destroy', [BroadbandPacketController::class, 'destroy']);
             Route::post('/{broadbandPacket}', [BroadbandPacketController::class, 'update']);
+        });
+
+
+        Route::prefix('companies')->group(function () {
+            Route::get('/', [CompanyController::class, 'index']);
+            Route::get('/data', [CompanyController::class, 'data']);
+            Route::get('/search', [CompanyController::class, 'search']);
+            Route::post('/', [CompanyController::class, 'store']);
+            Route::get('/{company}', [CompanyController::class, 'edit']);
+            Route::post('/destroy', [CompanyController::class, 'destroy']);
+            Route::post('/{company}', [CompanyController::class, 'update']);
         });
     });
 

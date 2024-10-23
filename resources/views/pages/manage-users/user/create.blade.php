@@ -58,6 +58,17 @@
                                        placeholder="Tanggal Masuk"/>
                             </div>
                         </div>
+
+                        <div class="row mb-4">
+                            <div class="col-lg-6">
+                                <label class="col-form-label required fw-bold fs-6">Perusahaan</label>
+                                <select name="company_id" id="company_id"
+                                        class="form-select form-select-solid companies-select2">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="form-group row mb-6">
                             <label class="col-lg-1 col-form-label required fw-bold fs-6">Role</label>
                             <div class="col-lg-12 fv-row">
@@ -111,6 +122,7 @@
                 async init() {
                     await this.getBranchData();
                     await this.getRoleData();
+                    await this.getCompany();
                 },
                 async save() {
                     this.buttonLoading = true
@@ -140,6 +152,20 @@
                             processResults: data => ({results: data}),
                             cache: true
                         }
+                    });
+                },
+                async getCompany() {
+                    $(".companies-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Perusahaan",
+                        ajax: {
+                            url: '/manage-users/users/companies/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true,
+                        },
                     });
                 },
             }

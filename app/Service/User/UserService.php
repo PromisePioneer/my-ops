@@ -8,21 +8,65 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
 
 use function App\Helper\randomDigits;
 
 class UserService
 {
-
     private Branch $branch;
     private User $user;
+    private static int $perPage = 10;
 
     public function __construct()
     {
         $this->branch = new Branch();
         $this->user = new User();
     }
+
+
+    public function data(): LengthAwarePaginator
+    {
+        $data = User::with('branch', 'roles', 'company')->paginate(self::$perPage);
+        return self::formattedData($data);
+    }
+
+
+    public function search(Request $request): LengthAwarePaginator
+    {
+        $search = $request->input('search');
+        $query = User::with('branch', 'roles', 'company');
+        if (!empty($search)) {
+            $query->where('name', 'like', '%'.$search.'%')
+                ->orWhere('email', 'like', '%'.$search.'%')
+                ->orWhere('nip', 'like', '%'.$search.'%');
+        }
+
+        $data = $query->paginate(self::$perPage);
+        return self::formattedData($data);
+    }
+
+
+    public function formattedData(LengthAwarePaginator $user): LengthAwarePaginator
+    {
+        $data = $user->getCollection()->map(function ($user) {
+            return [
+                'id' => $user->id,
+                'nik' => $user->nip,
+                'name' => $user->name,
+                'roles' => $user->roles[0]?->name,
+                'branch' => $user->branch?->name,
+                'company_type' => $user->company_type,
+                'join_date' => $user->join_date,
+                'profile_pic' => $user->profile_pic,
+            ];
+        });
+
+        $user->setCollection($data);
+        return $user;
+    }
+
 
     public function store(UserRequest $request): void
     {
@@ -79,12 +123,18 @@ class UserService
         }
     }
 
-    public function filter(Request $request)
+    public function filter(Request $request): LengthAwarePaginator
     {
-        $users = $this->user->getData()->where('active', $request->active ?? true);
+        $users = User::with('branch', 'roles', 'company')
+            ->where('active', $request->active ?? true);
 
         if ($request->branch_id) {
             $users->where('branch_id', $request->branch_id);
+        }
+
+
+        if ($request->company_id) {
+            $users->where('company_id', $request->company_id);
         }
 
         if ($request->year) {
@@ -99,9 +149,7 @@ class UserService
             $users->whereDate('join_date', Carbon::parse('01-'.$request->month.'-'.$request->year));
         }
 
-
-        return $users;
+        $data = $users->paginate(self::$perPage);
+        return self::formattedData($data);
     }
-
-
 }

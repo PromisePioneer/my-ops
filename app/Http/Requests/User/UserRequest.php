@@ -9,17 +9,12 @@ use Illuminate\Validation\Rule;
 
 class UserRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     */
     public function rules(Request $request): array
     {
         return [
@@ -43,11 +38,16 @@ class UserRequest extends FormRequest
                 'email',
                 Rule::unique('users', 'email')->ignore($request->route('user')),
             ],
+            'company_id' => [
+                'required',
+                Rule::exists('companies', 'id'),
+            ],
             'roles.*' => [
                 'required',
                 'integer',
                 Rule::exists('roles', 'id'),
             ],
+
         ];
     }
 
@@ -70,6 +70,7 @@ class UserRequest extends FormRequest
             'branch_id.exists' => 'Branch tidak valid',
             'absent_id.max' => 'Absent tidak boleh lebih dari 3 karakter',
             'placement.required_if' => 'Penempatan tidak boleh kosong',
+            'company_id.required' => 'Perusahaan tidak boleh kosong',
         ];
     }
 }

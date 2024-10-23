@@ -20,6 +20,12 @@
                                     </select>
                                 </div>
                                 <div class="d-flex align-items-center py-2">
+                                    <select name="company_id" id="company_id"
+                                            class="form-select form-select-solid companies-select2">
+                                        <option></option>
+                                    </select>
+                                </div>
+                                <div class="d-flex align-items-center py-2">
                                     <input type="number" name="year" id="year" class="form-control form-control-solid"
                                            placeholder="Filter Berdasarkan Tahun">
                                 </div>
@@ -112,7 +118,7 @@
                                             rowspan="1" colspan="1"
                                             aria-label="Joined Date: activate to sort column ascending"
                                             style="width: 180.359px;">
-                                            Joined Date
+                                            Tanggal Masuk
                                         </th>
                                         <th class="text-end min-w-100px sorting_disabled" rowspan="1" colspan="1"
                                             aria-label="Actions" style="width: 135.25px;">
@@ -142,7 +148,7 @@
                                     <template x-for="user in users.data" :key="user.id">
                                         <tr>
                                             <td x-text="user.branch?.name ?? 'Pusat'"></td>
-                                            <td x-text="user.nip"></td>
+                                            <td x-text="user.nik"></td>
                                             <td class="d-flex align-items-center">
                                                 <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
                                                     <a href="#">
@@ -159,7 +165,7 @@
                                                         <span x-text="user.name"></span>
                                                     </a>
                                                     <span class="badge badge-light-info fw-bolder fs-8"
-                                                          x-text="user.roles[0].name ?? ''">
+                                                          x-text="user.roles ?? ''">
                                                         </span>
                                                 </div>
                                             </td>
@@ -218,7 +224,7 @@
                 modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
                 formImport: document.getElementById('form-import'),
                 async init() {
-                    this.isLoading = false;
+                    await this.getCompany();
                     await this.getUserData();
                     await this.filterByBranch();
                     await this.getMonth();
@@ -240,6 +246,20 @@
                         {name: "Desember", number: '12'},
                     )
                 },
+                async getCompany() {
+                    $(".companies-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Perusahaan",
+                        ajax: {
+                            url: '/manage-users/users/companies/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true,
+                        },
+                    });
+                },
                 async getUserData() {
                     this.isLoading = true;
                     try {
@@ -256,6 +276,7 @@
                     const year = document.getElementById('year')?.value ?? '';
                     const month = document.getElementById('month')?.value ?? '';
                     const branch_id = $(".branch-select2")?.val();
+                    const company_id = $(".companies-select2")?.val();
                     const active = document.getElementById('active')?.value;
                     this.isLoading = true;
                     try {
@@ -264,6 +285,7 @@
                                 month: month,
                                 year: year,
                                 branch_id: branch_id,
+                                company_id: company_id,
                                 active: active
                             }
                         });
@@ -275,10 +297,12 @@
                     }
                 },
                 async searchData() {
-                    this.users = await axios.get('/manage-users/users/search', {
+                    const resp = await axios.get('/manage-users/users/search', {
                         params: {search: this.search},
                         headers: {'Content-Type': 'application/json'}
                     });
+
+                    this.users = resp.data
                 },
                 async paginationEndPoint(url) {
                     const resp = await axios.get(`${url}`);

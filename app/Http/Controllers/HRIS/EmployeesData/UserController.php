@@ -7,6 +7,7 @@ use App\Http\Requests\User\UserRequest;
 use App\Imports\UserImport;
 use App\Models\Attendances;
 use App\Models\Branch;
+use App\Models\Company;
 use App\Models\Department;
 use App\Models\Role;
 use App\Models\User;
@@ -25,6 +26,7 @@ class UserController extends Controller
     private Department $department;
     private Attendances $attendances;
     private UserService $userService;
+    private Company $company;
 
     public function __construct()
     {
@@ -33,6 +35,7 @@ class UserController extends Controller
         $this->department = new Department();
         $this->attendances = new Attendances();
         $this->userService = new UserService();
+        $this->company = new Company();
     }
 
     /**
@@ -50,8 +53,7 @@ class UserController extends Controller
     public function data(): JsonResponse
     {
         $this->authorize('view', User::class);
-        $query = $this->user->getData()->paginate($this->perPage)->onEachSide(1);
-        return response()->json($query);
+        return response()->json($this->userService->data());
     }
 
     /**
@@ -60,7 +62,7 @@ class UserController extends Controller
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', User::class);
-        return response()->json($this->user->searchData($request));
+        return response()->json($this->userService->search($request));
     }
 
     /**
@@ -89,8 +91,7 @@ class UserController extends Controller
     public function filter(Request $request): JsonResponse
     {
         $this->authorize('view', User::class);
-
-        return response()->json($this->userService->filter($request)->paginate(10)->onEachSide(1));
+        return response()->json($this->userService->filter($request));
     }
 
     /**
@@ -146,6 +147,11 @@ class UserController extends Controller
         $this->authorize('update', User::class);
         $branch = $this->branch->getSelectedData($user->branch_id);
         return response()->json($branch);
+    }
+
+    public function getCompaniesData(Request $request): JsonResponse
+    {
+        return response()->json($this->company->getData($request));
     }
 
     public function detail(User $user): View

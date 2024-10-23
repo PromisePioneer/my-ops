@@ -5,7 +5,6 @@
         <script src="{{ asset('assets/plugins/custom/tinymce/tinymce.bundle.js') }}"></script>
     @endpush
     <div class="d-flex flex-column flex-lg-row" x-data="generateSP()">
-        @include('pages.master.contact.modal.create')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
                 <form id="form" @submit.prevent="save()">

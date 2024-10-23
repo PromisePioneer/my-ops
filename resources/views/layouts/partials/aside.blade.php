@@ -144,6 +144,11 @@
                                 href="{{ url('general-master-data/broadband-packet') }}">
                             Paket Broadband
                         </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'companies'"
+                                href="{{ url('general-master-data/companies') }}">
+                            Data Perusahaan
+                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
                 <x-dropdown-menu :active="request()->segment(1) === 'finances-master-data'">

@@ -86,6 +86,7 @@ class User extends Authenticatable
     protected $fillable = [
         'branch_id',
         'absent_id',
+        'company_id',
         'join_date',
         'name',
         'email',
@@ -110,6 +111,11 @@ class User extends Authenticatable
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
     public function jobInformation(): HasOne
@@ -160,7 +166,7 @@ class User extends Authenticatable
     //eloquent
     public function getData(): Builder
     {
-        return self::with('branch', 'roles');
+        return self::with('branch', 'roles', 'company');
     }
 
     public function getUserBasedOnBranch(Request $request): array
