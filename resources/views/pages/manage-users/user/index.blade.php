@@ -362,10 +362,18 @@
                 },
                 async paginationEndPoint(url) {
                     const company_id = $(".companies-select2")?.val();
+                    const year = document.getElementById('year')?.value ?? '';
+                    const month = document.getElementById('month')?.value ?? '';
+                    const branch_id = $(".branch-select2")?.val();
+                    const active = document.getElementById('active')?.value;
 
                     const resp = await axios.get(`${url}`, {
                         params: {
-                            company_id: company_id
+                            company_id: company_id,
+                            year: year,
+                            month: month,
+                            branch_id: branch_id,
+                            active: active
                         }
                     });
                     this.startIndex = resp.data.from
