@@ -577,11 +577,13 @@
                                 href="{{ url('adms/fp-devices') }}">
                             Mesin Absen
                         </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'work-time'"
-                                href="{{ url('adms/work-time') }}">
-                            Pengaturan Jam Kerja
-                        </x-dropdown-menu-item>
+                        @can('Lihat Jam Kerja')
+                            <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'work-time'"
+                                    href="{{ url('adms/work-time') }}">
+                                Pengaturan Jam Kerja
+                            </x-dropdown-menu-item>
+                        @endcan
                         @can('Lihat Riwayat Absensi')
                             <x-dropdown-menu-item
                                     :active="request()->segment(2) === 'attendances-summary'"

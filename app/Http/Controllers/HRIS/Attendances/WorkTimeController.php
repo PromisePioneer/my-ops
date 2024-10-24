@@ -8,6 +8,7 @@ use App\Http\Requests\ADMS\WorkTimeRequest;
 use App\Models\User;
 use App\Models\UserWorkTime;
 use App\Models\WorkTime;
+use App\Service\WorkTimeService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,6 +23,7 @@ class WorkTimeController extends Controller
     private User $user;
 
     private UserWorkTime $userWorkTime;
+    private WorkTimeService $workTimeService;
 
     public function __construct()
     {
@@ -29,6 +31,7 @@ class WorkTimeController extends Controller
         $this->user = new User();
         $this->userWorkTime = new UserWorkTime();
         $this->perPage = 10;
+        $this->workTimeService = new WorkTimeService();
     }
 
     /**
@@ -43,10 +46,10 @@ class WorkTimeController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function data(Request $request): JsonResponse
+    public function data(): JsonResponse
     {
         $this->authorize('view', WorkTime::class);
-        return response()->json($this->workTime->getDataWithPagination($request->user()->branch_id, $this->perPage));
+        return response()->json($this->workTimeService->data());
     }
 
     /**
@@ -55,7 +58,7 @@ class WorkTimeController extends Controller
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', WorkTime::class);
-        return response()->json($this->workTime->searchDataWithPagination($request, $this->perPage));
+        return response()->json($this->workTimeService->search($request));
     }
 
     /**
@@ -131,15 +134,14 @@ class WorkTimeController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function destroy(
-        WorkTime $workTime
-    ): JsonResponse {
-        $this->authorize('destroy', $workTime);
-        $workTime->delete();
+    public function destroy(Request $request, WorkTime $workTime): JsonResponse
+    {
+        $this->authorize('destroy', WorkTime::class);
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $workTime->whereIn('id', $explodeID)->delete();
 
-        return response()->json([
-            'message' => 'Data berhasil dihapus',
-        ]);
+        return response()->json(['message' => 'data berhasil dihapus']);
     }
 
     /**
@@ -167,23 +169,20 @@ class WorkTimeController extends Controller
     {
         $this->authorize('viewDetail', WorkTime::class);
         return response()->json(
-            $this->userWorkTime->searchDetailUserOnSelectedWorkTIme(
-                $request,
-                $workTime->id,
-                $this->perPage
-            )
+            $this->userWorkTime->searchDetailUserOnSelectedWorkTIme($request, $workTime->id, $this->perPage)
         );
     }
 
     /**
      * @throws AuthorizationException
      */
-    public function destroyDetailWorktimeUser(UserWorkTime $userWorkTime): JsonResponse
+    public function destroyDetailWorktimeUser(Request $request, UserWorkTime $userWorkTime): JsonResponse
     {
         $this->authorize('destroy', UserWorkTime::class);
-        $userWorkTime->delete();
-        return response()->json([
-            'message' => 'Data berhasil dihapus',
-        ]);
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $userWorkTime->whereIn('id', $explodeID)->delete();
+
+        return response()->json(['message' => 'data berhasil dihapus']);
     }
 }

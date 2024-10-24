@@ -900,21 +900,15 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/user/data', [WorkTimeController::class, 'getUserData']);
             Route::get('/search', [WorkTimeController::class, 'search']);
             Route::post('/', [WorkTimeController::class, 'store']);
+            Route::post('/destroy', [WorkTimeController::class, 'destroy']);
             Route::get('/{workTime}', [WorkTimeController::class, 'edit']);
             Route::post('/{workTime}', [WorkTimeController::class, 'update']);
-            Route::delete('/{workTime}', [WorkTimeController::class, 'destroy']);
+            Route::post('/detail/data/destroy', [WorkTimeController::class, 'destroyDetailWorktimeUser']);
             Route::post('assign-work-time/{workTime}', [WorkTimeController::class, 'assignWorkTime']);
             Route::get('/user/selected/{workTime}', [WorkTimeController::class, 'getSelectedUserWorkTime']);
             Route::get('/detail/{workTime}', [WorkTimeController::class, 'detail']);
             Route::get('/detail/data/{workTime}', [WorkTimeController::class, 'detailData']);
-            Route::get(
-                '/detail/data/search/{workTime}',
-                [WorkTimeController::class, 'searchDetailData']
-            );
-            Route::delete(
-                '/detail/data/destroy/{userWorkTime}',
-                [WorkTimeController::class, 'destroyDetailWorktimeUser']
-            );
+            Route::get('/detail/data/search/{workTime}', [WorkTimeController::class, 'searchDetailData']);
         });
 
         Route::prefix('/attendances-summary')->group(function () {

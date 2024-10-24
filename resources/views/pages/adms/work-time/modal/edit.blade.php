@@ -19,7 +19,11 @@
                                        placeholder="Nama" :value="editVal.name"/>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-lg-6">
                             <div class="mb-10">
                                 <label for="time" class="required form-label">Jam masuk</label>
                                 <input type="time" id="clock_in" name="clock_in"
@@ -27,9 +31,6 @@
                                        placeholder="Jam Masuk" :value="editVal.clock_in"/>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="row">
                         <div class="col-lg-6">
                             <div class="mb-10">
                                 <label for="time" class="required form-label">Jam keluar</label>
@@ -38,12 +39,23 @@
                                        placeholder="Jam Keluar" :value="editVal.clock_out"/>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="row">
                         <div class="col-lg-6">
                             <div class="mb-10">
-                                <label for="time" class="required form-label">Mulai Check in</label>
+                                <label for="time" class="required form-label">Mulai Checkin</label>
                                 <input type="time" id="time_to_checkin" name="time_to_checkin"
                                        class="form-control form-control-solid time"
-                                       placeholder="Mulai Check in" :value="editVal.time_to_checkin"/>
+                                       placeholder="Mulai Checkin" :value="editVal.time_to_checkin"/>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="mb-10">
+                                <label for="time" class="required form-label">Akhir Checkin</label>
+                                <input type="time" id="end_time_to_checkin" name="end_time_to_checkin"
+                                       class="form-control form-control-solid time"
+                                       placeholder="Akhir Checkin" :value="editVal.end_time_to_checkin"/>
                             </div>
                         </div>
                     </div>

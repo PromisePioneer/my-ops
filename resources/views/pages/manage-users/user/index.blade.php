@@ -361,7 +361,13 @@
                     this.users = resp.data
                 },
                 async paginationEndPoint(url) {
-                    const resp = await axios.get(`${url}`);
+                    const company_id = $(".companies-select2")?.val();
+
+                    const resp = await axios.get(`${url}`, {
+                        params: {
+                            company_id: company_id
+                        }
+                    });
                     this.startIndex = resp.data.from
                     this.users = resp.data
                 },

@@ -16,13 +16,11 @@ use function App\Helper\randomDigits;
 class UserService
 {
     private Branch $branch;
-    private User $user;
     private static int $perPage = 10;
 
     public function __construct()
     {
         $this->branch = new Branch();
-        $this->user = new User();
     }
 
 
@@ -57,7 +55,7 @@ class UserService
                 'name' => $user->name,
                 'roles' => $user->roles[0]?->name ?? '',
                 'branch' => $user->branch?->name,
-                'company_type' => $user->company_type,
+                'company' => $user->company,
                 'join_date' => $user->join_date,
                 'profile_pic' => $user->profile_pic,
                 'active' => $user->active,

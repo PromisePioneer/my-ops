@@ -6,13 +6,6 @@ use App\Models\User;
 
 class WorkTimePolicy
 {
-    /**
-     * Create a new policy instance.
-     */
-    public function __construct()
-    {
-        //
-    }
 
     public function view(User $user): bool
     {

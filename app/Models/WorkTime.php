@@ -29,18 +29,4 @@ class WorkTime extends Model
     {
         return $this->hasMany(UserWorkTime::class, 'work_time_id', 'id');
     }
-
-    public function getDataWithPagination(?int $branchId, int $perPage)
-    {
-        return self::where('branch_id', $branchId)->paginate($perPage);
-    }
-
-    public function searchDataWithPagination(Request $request, int $perPage)
-    {
-        $search = $request->input('search');
-
-        return self::where('branch_id', $request->user()->branch_id)
-            ->orWhere('name', 'like', '%'.$search.'%')
-            ->paginate($perPage);
-    }
 }

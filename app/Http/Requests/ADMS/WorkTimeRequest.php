@@ -24,12 +24,12 @@ class WorkTimeRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
-            'clock_in' => ['required', 'date_format:H:i'],
-            'clock_out' => ['required', 'date_format:H:i', 'after:clock_in'],
-            'time_to_checkin' => ['required', 'date_format:H:i'],
-            'end_time_to_checkin' => ['required', 'date_format:H:i', 'after:time_to_checkin'],
-            'time_to_checkout' => ['required', 'date_format:H:i', 'after:time_to_checkin'],
-            'end_time_to_checkout' => ['required', 'date_format:H:i', 'after:time_to_checkout'],
+            'clock_in' => ['required'],
+            'clock_out' => ['required'],
+            'time_to_checkin' => ['required'],
+            'end_time_to_checkin' => ['required'],
+            'time_to_checkout' => ['required'],
+            'end_time_to_checkout' => ['required'],
         ];
     }
 

@@ -157,12 +157,6 @@ class User extends Authenticatable
     }
 
 
-    public function getUserDataBasedOnUserBranch(): LengthAwarePaginator
-    {
-        return self::with('branch')->where('branch_id', $this->branch_id)->paginate(10);
-    }
-
-
     //eloquent
     public function getData(): Builder
     {
@@ -197,10 +191,6 @@ class User extends Authenticatable
             ->orWhere('email', 'like', '%'.$search.'%');
     }
 
-    public function filterBasedOnUserBranch(int $branchId, int $perPage): LengthAwarePaginator
-    {
-        return self::with('roles')->where('branch_id', $branchId)->paginate($perPage);
-    }
 
     public function getUser(Request $request): array
     {

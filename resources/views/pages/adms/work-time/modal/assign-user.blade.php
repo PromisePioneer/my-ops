@@ -9,7 +9,7 @@
                 </div>
             </div>
 
-            <form id="form-assign-user" @submit.prevent="assignShift(shiftId)">
+            <form id="form-assign-user" @submit.prevent="assignShift()">
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
