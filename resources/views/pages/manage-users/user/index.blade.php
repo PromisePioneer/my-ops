@@ -122,26 +122,11 @@
                                                        @click="toggleAllCheckBox()">
                                             </div>
                                         </th>
-                                        <th class="min-w-50px sorting" tabindex="0" aria-controls="kt_roles_view_table"
-                                            rowspan="1" colspan="1" aria-label="ID: activate to sort column ascending">
-                                            Cabang
-                                        </th>
-                                        <th class="min-w-50px sorting" tabindex="0" aria-controls="kt_roles_view_table"
-                                            rowspan="1" colspan="1" aria-label="ID: activate to sort column ascending"
-                                            style="width: 78.7969px;">
-                                            NIK
-                                        </th>
-                                        <th class="min-w-150px sorting" tabindex="0" aria-controls="kt_roles_view_table"
-                                            rowspan="1" colspan="1" aria-label="User: activate to sort column ascending"
-                                            style="width: 309.844px;">
-                                            Karyawan
-                                        </th>
-                                        <th class="min-w-125px sorting" tabindex="0" aria-controls="kt_roles_view_table"
-                                            rowspan="1" colspan="1"
-                                            aria-label="Joined Date: activate to sort column ascending"
-                                            style="width: 180.359px;">
-                                            Tanggal Masuk
-                                        </th>
+                                        <th>Cabang</th>
+                                        <th>Perusahaan</th>
+                                        <th>NIK</th>
+                                        <th>Karyawan</th>
+                                        <th>Tanggal Masuk</th>
                                         <th class="text-end min-w-100px sorting_disabled" rowspan="1" colspan="1"
                                             aria-label="Actions" style="width: 135.25px;">
                                             Actions
@@ -177,6 +162,7 @@
                                                 </div>
                                             </td>
                                             <td x-text="user.branch ?? 'Pusat'"></td>
+                                            <td x-text="user.company"></td>
                                             <td x-text="user.nik"></td>
                                             <td class="d-flex align-items-center">
                                                 <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">

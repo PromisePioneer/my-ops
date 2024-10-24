@@ -55,7 +55,7 @@ class UserService
                 'name' => $user->name,
                 'roles' => $user->roles[0]?->name ?? '',
                 'branch' => $user->branch?->name,
-                'company' => $user->company,
+                'company' => $user->company?->name ?? '',
                 'join_date' => $user->join_date,
                 'profile_pic' => $user->profile_pic,
                 'active' => $user->active,
