@@ -176,7 +176,7 @@
                                                            :id="'checkbox-' + user.id"/>
                                                 </div>
                                             </td>
-                                            <td x-text="user.branch?.name ?? 'Pusat'"></td>
+                                            <td x-text="user.branch ?? 'Pusat'"></td>
                                             <td x-text="user.nik"></td>
                                             <td class="d-flex align-items-center">
                                                 <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
