@@ -111,14 +111,9 @@ class InvoiceController extends Controller
         return response()->json($contact);
     }
 
-    public function getSelectedSubAccount(Request $request, Invoice $invoice): array
+    public function getSelectedSubAccount(Request $request, Invoice $invoice): JsonResponse
     {
-        $subAccount = $this->subAccount->getSelectedSubAccount($request, $invoice->account_id);
-
-        return [
-            'id' => $subAccount->id,
-            'name' => $subAccount->name,
-        ];
+        return response()->json($this->account->getSelectedAccount($invoice->account_id));
     }
 
     public function getSelectedInvoiceProductServices(Invoice $invoice): JsonResponse

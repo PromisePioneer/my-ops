@@ -63,7 +63,6 @@ use App\Http\Controllers\Inventory\ODP\ODPController;
 use App\Http\Controllers\Inventory\ODP\ODPMapController;
 use App\Http\Controllers\Inventory\Pole\PoleController;
 use App\Http\Controllers\Inventory\Pole\PoleMapController;
-use App\Http\Controllers\Master\AccountTransactionsController;
 use App\Http\Controllers\Master\Finance\AccountController;
 use App\Http\Controllers\Master\Finance\AssetController;
 use App\Http\Controllers\Master\Finance\TaxSettingController;
@@ -393,10 +392,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/account/data', [InitialBalanceController::class, 'getAccountData']);
             Route::get('/branch/data', [InitialBalanceController::class, 'getBranchData']);
             Route::post('/', [InitialBalanceController::class, 'store']);
-            Route::get('/{accountTransaction}', [InitialBalanceController::class, 'edit']);
-            Route::get('/branch/selected/{accountTransaction}', [InitialBalanceController::class, 'selectedBranch']);
+            Route::get('/{account}', [InitialBalanceController::class, 'edit']);
+            Route::get('/branch/selected/{branch}', [InitialBalanceController::class, 'selectedBranch']);
             Route::get(
-                '/account/selected/{accountTransaction}',
+                '/account/selected/{account}',
                 [InitialBalanceController::class, 'selectedAccountData']
             );
 

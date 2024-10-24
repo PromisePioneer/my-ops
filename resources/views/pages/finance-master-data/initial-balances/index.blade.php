@@ -1,6 +1,19 @@
 @extends('layouts.template')
 @section('page-title', 'Data Saldo Awal')
 @section('content')
+    @push('styles')
+        <style>
+            .accounts-select2 optgroup {
+                background: #000;
+                color: #fff;
+                font-style: normal;
+                font-weight: normal;
+                padding: 0;
+            }
+        </style>
+    @endpush
+
+
     <div x-data="InitialBalancesData()">
         @include('pages.finance-master-data.initial-balances.modal.create')
         @include('pages.finance-master-data.initial-balances.modal.edit')
@@ -69,20 +82,34 @@
                     </div>
                     <div class="card-body pt-0">
                         <div id="kt_roles_view_table_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
+                            <form id="form-delete" @submit.prevent="destroy()">
+                                <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                                <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                                        x-show="selectedCheckBox.length > 0"
+                                        x-transition x-cloak>
+                                    <i class="ki-duotone ki-trash-square fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                        <span class="path4"></span>
+                                    </i>
+                                    Hapus
+                                </button>
+                            </form>
                             <div class="table-responsive">
                                 <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped"
                                        id="kt_table_users">
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                        {{--                                        <th class="w-10px pe-2">--}}
-                                        {{--                                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">--}}
-                                        {{--                                                <input class="form-check-input" type="checkbox"--}}
-                                        {{--                                                       @click="toggleAllCheckBox()">--}}
-                                        {{--                                            </div>--}}
-                                        {{--                                        </th>--}}
+                                        <th class="w-10px pe-2">
+                                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                            </div>
+                                        </th>
                                         <th class="min-w-125px">Akun</th>
                                         <th class="min-w-125px">Saldo</th>
-                                    {{--                                        <th class="min-w-125px">Actions</th>--}}
+                                        <template x-if="year !== null && branchId !== null">
+                                            <th class="min-w-125px">Actions</th>
+                                        </template>
                                     </thead>
                                     <template x-if="isLoading">
                                         <tbody class="fw-bold">
@@ -106,31 +133,77 @@
                                         </tr>
                                         </tbody>
                                     </template>
-                                    <template x-for="(balance, index) in initialBalances?.data" :key="index">
-                                        <tbody class="fw-bold">
+                                    <template x-for="(account, index) in initialBalances?.data"
+                                              :key="index">
+                                        <tbody style="cursor:pointer" class="fw-bold">
                                         <tr>
-                                            {{--                                            <td>--}}
-                                            {{--                                                <div class="form-check form-check-sm form-check-custom form-check-solid"--}}
-                                            {{--                                                     @click="selectCheckBox($event)">--}}
-                                            {{--                                                    <input class="form-check-input" type="checkbox" :value="balance.id"--}}
-                                            {{--                                                           :id="'checkbox-' + balance.id"/>--}}
-                                            {{--                                                </div>--}}
-                                            {{--                                            </td>--}}
-                                            <td x-text="balance.account"></td>
-                                            <td x-text="`Rp.${balance?.initial_balance}`"></td>
                                             <td>
-                                                {{--                                                <template x-if="balance.initial_balance.length !== 0">--}}
-                                                {{--                                                    <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"--}}
-                                                {{--                                                            data-bs-target="#modal-edit" @click="edit(balance.id)">--}}
-                                                {{--                                                        <i class="ki-duotone ki-pencil fs-2">--}}
-                                                {{--                                                            <span class="path1"></span>--}}
-                                                {{--                                                            <span class="path2"></span>--}}
-                                                {{--                                                        </i>--}}
-                                                {{--                                                    </button>--}}
-                                                {{--                                                </template>--}}
+                                                <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                                     @click="selectCheckBox($event)">
+                                                    <template x-if="account?.sub_accounts?.length === 0">
+                                                        <template x-if="year !== null && branchId !== null">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                   :value="account.id"
+                                                                   :id="'checkbox-' + account.id"
+                                                                   :disabled="account.initial_balance === null"/>
+                                                        </template>
+                                                    </template>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <a href="#" x-text="account.account"></a>
+                                            </td>
+                                            <td x-text="account.initial_balance"></td>
+                                            <td>
+                                                <template x-if="account?.sub_accounts?.length === 0">
+                                                    <template x-if="year !== null && branchId !== null">
+                                                        <button class="btn btn-light-primary btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modal-edit"
+                                                                @click="edit(account.account_id)"
+                                                                :disabled="account.initial_balance === null">
+                                                            <i class="ki-duotone ki-pencil fs-2">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                            </i>
+                                                        </button>
+                                                    </template>
+                                                </template>
                                             </td>
                                         </tr>
-                                        </tbody>
+                                        <template x-for="(subAccount, index) in account.sub_accounts"
+                                                  :key="subAccount.id">
+                                            <tr :id="subAccount.id" @click="expand($event)"
+                                                x-transition:enter.duration.500ms
+                                                x-transition:leave.duration.400ms>
+                                                <td>
+                                                    <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                                         @click="selectCheckBox($event)">
+                                                        <input class="form-check-input" type="checkbox"
+                                                               :value="subAccount.id"
+                                                               :id="'checkbox-' + subAccount.id"
+                                                               :disabled="year === null && branchId === null"/>
+                                                    </div>
+                                                </td>
+                                                <td placement="center"
+                                                    x-text="`${subAccount.sub_account_code} ${subAccount.sub_account_name}`"></td>
+                                                <td x-text="subAccount.initial_balance ?? 0"></td>
+                                                <td>
+                                                    <template x-if="year !== null && branchId !== null">
+                                                        <button class="btn btn-light-primary btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modal-edit"
+                                                                @click="edit(subAccount.id)"
+                                                                :disabled="subAccount.initial_balance === null">
+                                                            <i class="ki-duotone ki-pencil fs-2">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                            </i>
+                                                        </button>
+                                                    </template>
+                                                </td>
+                                            </tr>
+                                        </template>
                                     </template>
                                 </table>
                             </div>
@@ -153,7 +226,10 @@
 @endsection
 @push('script')
     <script defer>
-        $('.date').flatpickr();
+        $('.date').flatpickr({
+            minDate: "{{ \Carbon\Carbon::parse('01-12-' . \Carbon\Carbon::now()->year) }}",
+            maxDate: "{{ \Carbon\Carbon::parse( \Carbon\Carbon::now()->endOfYear()->format('d').'-12-' . \Carbon\Carbon::now()->year) }}",
+        });
 
         function InitialBalancesData() {
             return {
@@ -163,6 +239,8 @@
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
+                branchId: null,
+                year: null,
                 search: '',
                 editVal: '',
                 formCreate: document.getElementById('form-create'),
@@ -180,7 +258,7 @@
                     this.isLoading = true;
                     try {
                         const resp = await axios.get('/finances-master-data/initial-balances/data');
-                        this.initialBalances = resp.data
+                        this.initialBalances = resp.data;
                         this.isLoading = false;
                     } catch (e) {
                         console.log(e)
@@ -275,12 +353,14 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/finances-master-data/initial-balances/branch/selected/${this.editVal.id}`,
+                        url: `/finances-master-data/initial-balances/branch/selected/${this.editVal.branch_id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedBranch.append(option).trigger('change').trigger({
                         type: 'select2:select',
-                        params: {results: response}
+                        params: {
+                            results: response,
+                        }
                     });
                 },
                 async selectedAccount() {
@@ -288,23 +368,25 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/finances-master-data/initial-balances/account/selected/${this.editVal.id}`,
+                        url: `/finances-master-data/initial-balances/account/selected/${this.editVal.account_id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedAccount.append(option).trigger('change').trigger({
                         type: 'select2:select',
-                        params: {results: response}
+                        params: {
+                            results: response,
+                        }
                     });
                 },
                 async filter() {
-                    const year = document.getElementById('year')?.value ?? '';
-                    const branch_id = $(".filter-branch-select2").val();
+                    this.year = document.getElementById('year')?.value ?? '';
+                    this.branchId = $(".filter-branch-select2").val();
                     this.isLoading = true;
                     try {
                         const resp = await axios.get('/finances-master-data/initial-balances/filter', {
                             params: {
-                                year: year,
-                                branch_id: branch_id,
+                                year: this.year,
+                                branch_id: this.branchId,
                             }
                         });
                         this.initialBalances = resp.data;
@@ -330,7 +412,14 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/finances-master-data/initial-balances/${id}`);
+                    const year = document.getElementById('year')?.value ?? '';
+                    const branch_id = $(".filter-branch-select2").val();
+                    const resp = await axios.get(`/finances-master-data/initial-balances/${id}`, {
+                        params: {
+                            year: year,
+                            branch_id: branch_id
+                        }
+                    });
                     this.editVal = resp.data;
                     await this.selectedBranch();
                     await this.selectedAccount();
@@ -353,7 +442,12 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/finances-master-data/initial-balances/destroy`, new FormData(this.formDelete));
+                            await axios.post(`/finances-master-data/initial-balances/destroy`, new FormData(this.formDelete), {
+                                params: {
+                                    year: this.year,
+                                    branch_id: this.branchId,
+                                }
+                            });
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {

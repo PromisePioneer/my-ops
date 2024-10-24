@@ -8,14 +8,13 @@ use App\Models\Account;
 use App\Models\AccountTransaction;
 use App\Models\Branch;
 use App\Service\InitialBalanceService;
+use DB;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class InitialBalanceController extends Controller
 {
-
-
     private Account $account;
     private InitialBalanceService $initialBalanceService;
     private Branch $branch;
@@ -33,17 +32,56 @@ class InitialBalanceController extends Controller
     }
 
 
-    public function data(Request $request): JsonResponse
+    public function data(): JsonResponse
     {
-        $data = $this->initialBalanceService->data($request);
+        $data = $this->initialBalanceService->data();
         return response()->json($data);
     }
 
 
     public function getAccountData(Request $request): JsonResponse
     {
-        return response()->json($this->account->getParentAccount($request));
+        $search = $request->input('search');
+        $query = Account::with('children')->whereNull('parent_id')
+            ->orderby('code')
+            ->select('id', 'name', 'code');
+
+        if ($search !== '') {
+            $query->where('name', 'like', '%'.$search.'%')
+                ->orWhere('code', 'like', '%'.$search.'%')
+                ->orWhereHas('children', function ($query) use ($search) {
+                    $query->where('name', 'like', '%'.$search.'%')
+                        ->orWhere('code', 'like', '%'.$search.'%');
+                });
+        }
+
+        $account = $query->get();
+
+        $data = $account->map(function ($c) {
+            $hasChildren = $c->children->isNotEmpty();
+
+            if ($hasChildren) {
+                return [
+                    'text' => $c->code.' '.$c->name,
+                    'children' => $c->children->map(function ($child) {
+                        return [
+                            'id' => $child->id,
+                            'text' => $child->code.' '.$child->name,
+                        ];
+                    })->toArray(),
+                    'disabled' => true,
+                ];
+            }
+
+            return [
+                'id' => $c->id,
+                'text' => $c->code.' '.$c->name,
+            ];
+        })->toArray();
+
+        return response()->json($data);
     }
+
 
     public function getBranchData(Request $request): JsonResponse
     {
@@ -76,19 +114,31 @@ class InitialBalanceController extends Controller
     }
 
 
-    public function edit(AccountTransaction $accountTransaction): JsonResponse
+    public function edit(Request $request, Account $account): JsonResponse
     {
-        return response()->json($accountTransaction);
+        $year = $request->year;
+        $branchId = $request->branch_id;
+
+        $data = $account->join(
+            'account_transactions',
+            'account_transactions.account_id',
+            '=',
+            'accounts.id'
+        )->where('account_transactions.branch_id', $branchId)
+            ->whereYear('account_transactions.date', $year)->first();
+
+
+        return response()->json($data);
     }
 
-    public function selectedBranch(AccountTransaction $accountTransaction): JsonResponse
+    public function selectedBranch(Branch $branch): JsonResponse
     {
-        return response()->json($this->branch->getSelectedData($accountTransaction->branch_id));
+        return response()->json($this->branch->getSelectedData($branch->id));
     }
 
-    public function selectedAccountData(AccountTransaction $accountTransaction): JsonResponse
+    public function selectedAccountData(Account $account): JsonResponse
     {
-        return response()->json($this->account->getSelectedAccount($accountTransaction->account_id));
+        return response()->json($this->account->getSelectedAccount($account->id));
     }
 
 
@@ -106,14 +156,38 @@ class InitialBalanceController extends Controller
     }
 
 
-    public function destroy(AccountTransaction $accountTransaction, Request $request): JsonResponse
+    public function destroy(Account $account, Request $request): JsonResponse
     {
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
-        $accountTransaction->whereIn('id', $explodeID)->delete();
+
+        $year = $request->year;
+        $branchId = $request->branch_id;
+
+        $transactions = $account->join(
+            'account_transactions',
+            'account_transactions.account_id',
+            '=',
+            'accounts.id'
+        )->where('account_transactions.branch_id', $branchId)
+            ->whereYear('account_transactions.date', $year)
+            ->whereIn('accounts.id', $explodeID)
+            ->select('account_transactions.id as account_transaction_id')
+            ->get();
+
+
+        if ($transactions->isEmpty()) {
+            return response()->json([
+                'message' => 'No transactions found for the specified accounts',
+            ], 404);
+        }
+
+        $transactionIds = $transactions->pluck('account_transaction_id')->toArray();
+        DB::table('account_transactions')->whereIn('id', $transactionIds)->delete();
+
 
         return response()->json([
-            'message' => 'data berhasil dihapus',
+            'message' => 'Transactions successfully deleted',
         ], 200);
     }
 

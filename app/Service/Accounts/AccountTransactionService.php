@@ -9,12 +9,12 @@ class AccountTransactionService
     public function createDebitTransaction(
         ?int $branchId,
         string $description,
+        ?int $accountId,
         float|int $amount,
-        ?int $accountId = null,
     ): void {
         AccountTransaction::create([
-            'branch_id' => $branchId,
             'date' => date('y-m-d'),
+            'branch_id' => $branchId ?? null,
             'account_id' => $accountId,
             'description' => $description,
             'transaction_type' => 'TR',
@@ -26,8 +26,8 @@ class AccountTransactionService
     public function createCreditTransaction(
         ?int $branchId,
         string $description,
-        int $amount,
-        ?int $accountId = null,
+        ?int $accountId,
+        float|int $amount,
     ): void {
         AccountTransaction::create([
             'branch_id' => $branchId,

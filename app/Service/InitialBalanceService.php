@@ -3,59 +3,109 @@
 namespace App\Service;
 
 use App\Models\Account;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class InitialBalanceService
 {
     private static int $perPage = 10;
 
-    public function data(Request $request): LengthAwarePaginator
+    public function data()
     {
-        $data = Account::whereNull('parent_id')
-            ->leftJoin('account_transactions', 'account_transactions.account_id', '=', 'accounts.id')
-            ->select('accounts.id', 'accounts.name', 'accounts.code')
-            ->selectRaw('SUM(account_transactions.amount) as total_amount')
-            ->groupBy('accounts.id', 'accounts.name', 'accounts.code')
+        $data = Account::with('accountTransaction', 'children')
+            ->whereNull('parent_id')
             ->paginate(self::$perPage);
-
         return $this->formattedData($data);
     }
 
-    public function filter(Request $request): LengthAwarePaginator
+
+    public function formattedData($account, ?Request $request = null)
     {
-        $year = $request->input('year');
-        $branchId = $request->input('branch_id');
+        $data = $account->getCollection()->map(function ($account) use ($request) {
+            if ($account->children->count() > 0) {
+                $initialBalance = $account->children->sum(function ($transaction) use ($request) {
+                    return $this->getFilteredTransactionSum($transaction, 'SA', $request);
+                });
+            } else {
+                $initialBalance = $this->getFilteredTransactionSum($account, 'SA', $request);
+            }
 
-        $data = Account::whereNull('parent_id')
-            ->leftJoin('account_transactions', 'account_transactions.account_id', '=', 'accounts.id')
-            ->select('accounts.id', 'accounts.name', 'accounts.code')
-            ->selectRaw('SUM(account_transactions.amount) as total_amount')
-            ->groupBy('accounts.id', 'accounts.name', 'accounts.code');
-
-        if ($year) {
-            $data->whereYear('account_transactions.date', $year);
-        }
-        if ($branchId) {
-            $data->where('account_transactions.branch_id', $branchId);
-        }
-
-        $paginatedData = $data->paginate(self::$perPage);
-        return $this->formattedData($paginatedData);
-    }
-
-    public function formattedData(LengthAwarePaginator $account): LengthAwarePaginator
-    {
-        $data = $account->getCollection()->map(function ($account) {
             return [
                 'id' => $account->id,
-                'account' => $account->code.' - '.$account->name,
-                'initial_balance' => number_format($account->total_amount, 2) ?? 0,
+                'account' => $account->code.' '.$account->name,
+                'initial_balance' => $initialBalance ? number_format($initialBalance, 2) : null,
+                'sub_accounts' => $account->children->map(function ($subAccount) use ($request) {
+                    return [
+                        'id' => $subAccount->id,
+                        'sub_account_code' => $subAccount->code,
+                        'sub_account_name' => $subAccount->name,
+                        'initial_balance' => $this->getFilteredTransactionSum(
+                            $subAccount,
+                            'SA',
+                            $request
+                        ) ? number_format(
+                            $this->getFilteredTransactionSum($subAccount, 'SA', $request),
+                            2
+                        ) : null,
+                    ];
+                }),
+
             ];
         });
+
 
         $account->setCollection($data);
         return $account;
     }
+
+
+    public function getFilteredTransactionSum($account, $type, ?Request $request): float
+    {
+        $transactions = $account->accountTransaction()
+            ->when(!$request, function ($query) use ($request) {
+                return $query->whereYear('date', Carbon::now()->year);
+            })->where('transaction_type', $type);
+
+        if ($request?->branch_id) {
+            $transactions->where('branch_id', $request->branch_id);
+        }
+
+        if ($request?->year) {
+            $transactions->whereYear('date', $request->year);
+        }
+
+        if ($request?->month) {
+            $transactions->whereMonth('date', $request->month);
+        }
+
+        return $transactions->sum('amount');
+    }
+
+
+    public function filter(Request $request)
+    {
+        $branch = $request->input('branch_id');
+        $year = $request->input('year');
+
+        $query = Account::with('children', 'accountTransaction')
+            ->whereNull('parent_id');
+
+        if ($branch) {
+            $query->orWhereHas('accountTransaction', function (Builder $query) use ($branch) {
+                $query->where('branch_id', $branch ?? null);
+            });
+        }
+
+        if ($year) {
+            $query->orWhereHas('accountTransaction', function (Builder $query) use ($year) {
+                $query->whereYear('date', $year);
+            });
+        }
+
+        $data = $query->paginate(self::$perPage);
+        return $this->formattedData($data, $request);
+    }
+
 
 }
