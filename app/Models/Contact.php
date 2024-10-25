@@ -57,7 +57,7 @@ class Contact extends Model
 
     protected $fillable = [
         'branch_id',
-        'full_name',
+        'pic_name',
         'company_name',
         'email',
         'phone_number',

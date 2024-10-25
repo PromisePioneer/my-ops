@@ -118,7 +118,7 @@
                                                    :id="'checkbox-' + contact.id"/>
                                         </div>
                                     </td>
-                                    <td x-text="contact.full_name"></td>
+                                    <td x-text="contact.pic_name"></td>
                                     <td x-text="contact.company_name"></td>
                                     <td x-text="contact.email"></td>
                                     <td x-text="contact.phone_number"></td>
