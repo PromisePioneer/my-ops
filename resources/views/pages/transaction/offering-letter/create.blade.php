@@ -201,7 +201,7 @@
                 async saveContact() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/master/contact`, new FormData(this.contactForm))
+                        await axios.post(`/general-master-data/contact`, new FormData(this.contactForm))
                         await showAlert('success', 'Contact berhasil disimpan');
                         this.contactForm.reset();
                         this.contactModal.hide();
