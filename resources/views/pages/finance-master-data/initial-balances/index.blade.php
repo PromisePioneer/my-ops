@@ -227,9 +227,16 @@
 @endsection
 @push('script')
     <script defer>
+
+        const disabledMonths = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
         $('.date').flatpickr({
-            minDate: "{{ Carbon::parse('01-12-' . Carbon::now()->year) }}",
-            maxDate: "{{ Carbon::parse( Carbon::now()->endOfYear()->format('d').'-12-' . Carbon::now()->year) }}",
+            monthSelectorType: 'static',
+            disable: [
+                function (date) {
+                    return disabledMonths.includes(date.getMonth());
+                }
+            ]
         });
 
         function InitialBalancesData() {
