@@ -89,7 +89,7 @@ class InitialBalanceService
     ): float {
         $transactions = $account->accountTransaction()
             ->when(!$request?->year, function ($query) use ($request) {
-                return $query->whereYear('date', Carbon::now()->year);
+                return $query->whereYear('date', Carbon::now()->subYear());
             })->where('transaction_type', $type);
 
         if ($request?->branch_id) {
