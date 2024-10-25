@@ -46,7 +46,7 @@ class AccountService
                         'sub_account_name' => $subAccount->name,
                         'balance' => 'Rp.'.number_format(
                                 $subAccount->accountTransaction()
-                                    ->whereYear('date', Carbon::now()->year)->sum('amount'),
+                                    ->whereYear('date', Carbon::now()->subYear())->sum('amount'),
                                 2
                             ),
                     ];
