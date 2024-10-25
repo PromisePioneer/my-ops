@@ -52,6 +52,11 @@ class InitialBalanceRequest extends FormRequest
         return static function ($attribute, $value, $fail) use ($request) {
             $getYear = Carbon::parse($request->date)->year;
 
+
+            if ($request->route('accountTransaction')) {
+                return null;
+            }
+
             if (
                 AccountTransaction::whereYear('date', $getYear)
                     ->where('transaction_type', 'SA')->exists()

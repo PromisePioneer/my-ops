@@ -78,21 +78,18 @@ class TrialBalanceService
             });
         }
 
-        // Apply year filter
         if ($year) {
             $query->orWhereHas('accountTransaction', function (Builder $query) use ($year) {
                 $query->whereYear('date', $year);
             });
         }
 
-        // Apply month filter
         if ($month) {
             $query->orWhereHas('accountTransaction', function (Builder $query) use ($month) {
                 $query->whereMonth('date', $month);
             });
         }
 
-        // Apply both year and month filter
         if ($year && $month) {
             $query->orWhereHas('accountTransaction', function (Builder $query) use ($year, $month) {
                 $query->whereYear('date', $year)

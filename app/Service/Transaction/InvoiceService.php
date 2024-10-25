@@ -219,16 +219,16 @@ class InvoiceService
 
         DB::transaction(function () use ($piutangPelanggan, $description, $invoice) {
             $this->accountTransactionService->createDebitTransaction(
-                $invoice->branch_id,
-                $piutangPelanggan->id,
+                $invoice?->branch_id ?? null,
                 $description,
+                $piutangPelanggan->id,
                 $invoice->grand_total,
             );
             $this->accountTransactionService->createCreditTransaction(
-                $invoice->branch_id,
+                $invoice->branch_id ?? null,
                 $description,
+                $invoice->account_id,
                 $invoice->grand_total,
-                $invoice->account_id
             );
         });
     }
@@ -252,14 +252,14 @@ class InvoiceService
             $this->accountTransactionService->createDebitTransaction(
                 $invoice->branch_id,
                 $description,
+                $piutangPelanggan->id,
                 $totalPlusTax,
-                $piutangPelanggan->id
             );
             $this->accountTransactionService->createCreditTransaction(
                 $invoice->branch_id,
                 $description,
+                $ppn->id,
                 $totalPlusTax,
-                $ppn->id
             );
         });
     }

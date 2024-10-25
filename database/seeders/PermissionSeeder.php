@@ -212,5 +212,16 @@ class PermissionSeeder extends Seeder
         foreach ($attendancesRecord as $permission) {
             Permission::create(['name' => $permission]);
         }
+
+
+        $initialBalance = [
+            'Lihat Saldo Awal',
+            'Lihat Semua Data Saldo Awal',
+            'Lihat Data Saldo Awal Cabang Sendiri',
+        ];
+
+        foreach ($initialBalance as $permission) {
+            Permission::create(['name' => $permission]);
+        }
     }
 }

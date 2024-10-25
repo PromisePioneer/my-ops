@@ -6,6 +6,7 @@ use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -39,6 +40,12 @@ class Branch extends Model
         'address',
     ];
 
+
+    public function accountTransaction(): HasMany
+    {
+        return $this->hasMany(AccountTransaction::class, 'branch_id');
+    }
+
     //eloquent
     public function getData(Request $request): array
     {
@@ -58,6 +65,7 @@ class Branch extends Model
             ];
         })->toArray();
     }
+
 
     public function getSelectedData(?int $branchId = null): ?array
     {

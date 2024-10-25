@@ -125,6 +125,27 @@ class Account extends Model
         })->toArray();
     }
 
+
+    public function getAccounts(Request $request): array
+    {
+        $search = $request->input('search');
+        $query = self::orderby('code')
+            ->select('id', 'name', 'code');
+
+        if ($search !== '') {
+            $query->where('name', 'like', '%'.$search.'%');
+        }
+        $account = $query->get();
+
+        return $account->map(function ($c) {
+            return [
+                'id' => $c->id,
+                'text' => $c->code.' '.$c->name,
+            ];
+        })->toArray();
+    }
+
+
     public function getSelectedAccount(int $accountId): array
     {
         $account = self::where('id', $accountId)->first();

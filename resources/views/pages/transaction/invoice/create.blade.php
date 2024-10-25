@@ -8,7 +8,7 @@
     </style>
 
     <div class="d-flex flex-column flex-lg-row" x-data="generateInvoice">
-        @include('pages.master.contact.modal.create')
+        @include('pages.general-master-data.contact.modal.create')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
                 <form id="form" @submit.prevent="generateInvoice()">
@@ -213,7 +213,7 @@
                 async saveContact() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/master/contact`, new FormData(this.contactForm))
+                        await axios.post(`/general-master-data/contact`, new FormData(this.contactForm))
                         this.contactForm.reset();
                         this.contactModal.hide();
                     } catch (error) {
