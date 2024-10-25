@@ -389,6 +389,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/filter', [InitialBalanceController::class, 'filter']);
             Route::get('/', [InitialBalanceController::class, 'index']);
             Route::get('/data', [InitialBalanceController::class, 'data']);
+            Route::get('/search', [InitialBalanceController::class, 'search']);
             Route::get('/account/data', [InitialBalanceController::class, 'getAccountData']);
             Route::get('/branch/data', [InitialBalanceController::class, 'getBranchData']);
             Route::post('/', [InitialBalanceController::class, 'store']);

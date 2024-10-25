@@ -89,8 +89,9 @@ class InitialBalanceController extends Controller
     }
 
 
-    public function search()
+    public function search(Request $request)
     {
+        return response()->json($this->initialBalanceService->search($request));
     }
 
 

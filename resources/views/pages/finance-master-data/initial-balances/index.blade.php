@@ -1,3 +1,4 @@
+@php use Carbon\Carbon; @endphp
 @extends('layouts.template')
 @section('page-title', 'Data Saldo Awal')
 @section('content')
@@ -227,8 +228,8 @@
 @push('script')
     <script defer>
         $('.date').flatpickr({
-            minDate: "{{ \Carbon\Carbon::parse('01-12-' . \Carbon\Carbon::now()->year) }}",
-            maxDate: "{{ \Carbon\Carbon::parse( \Carbon\Carbon::now()->endOfYear()->format('d').'-12-' . \Carbon\Carbon::now()->year) }}",
+            minDate: "{{ Carbon::parse('01-12-' . Carbon::now()->year) }}",
+            maxDate: "{{ Carbon::parse( Carbon::now()->endOfYear()->format('d').'-12-' . Carbon::now()->year) }}",
         });
 
         function InitialBalancesData() {
@@ -268,10 +269,16 @@
                 },
                 async searchData() {
                     try {
-                        this.initialBalances = await axios.get('/finances-master-data/branch/search', {
-                            params: {search: this.search},
+                        const resp = await axios.get('/finances-master-data/initial-balances/search', {
+                            params: {
+                                search: this.search,
+                                year: this.year,
+                                branch_id: this.branchId,
+                            },
                             headers: {'Content-Type': 'application/json'}
                         });
+
+                        this.initialBalances = resp.data
                     } catch (error) {
                         console.log(error);
                     }

@@ -108,6 +108,7 @@
                                     <td>
                                         <a href="#" x-text="`${account.account_code} - ${account.account_name}`"></a>
                                     </td>
+                                    <td x-text="account.balance"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(account.account_id)">
@@ -140,6 +141,7 @@
                                         </td>
                                         <td placement="center"
                                             x-text="`${subAccount.sub_account_code} ${subAccount.sub_account_name}`"></td>
+                                        <td x-text="subAccount.balance"></td>
                                         <td>
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modal-edit-children"

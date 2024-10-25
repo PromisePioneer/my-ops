@@ -20,8 +20,28 @@ class InitialBalanceService
     }
 
 
-    public function formattedData($account, ?Request $request = null)
+    public function search(Request $request)
     {
+        $search = $request->input('search');
+
+
+        $query = Account::with('accountTransaction', 'children')->whereNull('parent_id');
+
+        if (!empty($search)) {
+            $query->where('name', 'like', '%'.$search.'%')->orWhere('code', 'like', '%'.$search.'%');
+        }
+
+        $data = $query->paginate(self::$perPage);
+
+        return $this->formattedData($data);
+    }
+
+
+    public
+    function formattedData(
+        $account,
+        ?Request $request = null
+    ) {
         $data = $account->getCollection()->map(function ($account) use ($request) {
             if ($account->children->count() > 0) {
                 $initialBalance = $account->children->sum(function ($transaction) use ($request) {
@@ -60,8 +80,12 @@ class InitialBalanceService
     }
 
 
-    public function getFilteredTransactionSum($account, $type, ?Request $request): float
-    {
+    public
+    function getFilteredTransactionSum(
+        $account,
+        $type,
+        ?Request $request
+    ): float {
         $transactions = $account->accountTransaction()
             ->when(!$request, function ($query) use ($request) {
                 return $query->whereYear('date', Carbon::now()->year);
@@ -83,8 +107,10 @@ class InitialBalanceService
     }
 
 
-    public function filter(Request $request)
-    {
+    public
+    function filter(
+        Request $request
+    ) {
         $branch = $request->input('branch_id');
         $year = $request->input('year');
 
@@ -106,6 +132,4 @@ class InitialBalanceService
         $data = $query->paginate(self::$perPage);
         return $this->formattedData($data, $request);
     }
-
-
 }
