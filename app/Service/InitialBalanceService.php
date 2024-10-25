@@ -37,8 +37,7 @@ class InitialBalanceService
     }
 
 
-    public
-    function formattedData(
+    public function formattedData(
         $account,
         ?Request $request = null
     ) {

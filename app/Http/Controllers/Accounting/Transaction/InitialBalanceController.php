@@ -60,22 +60,23 @@ class InitialBalanceController extends Controller
         $data = $account->map(function ($c) {
             $hasChildren = $c->children->isNotEmpty();
 
-            if ($hasChildren) {
+            if (!$hasChildren) {
                 return [
+                    'id' => $c->id,
                     'text' => $c->code.' '.$c->name,
-                    'children' => $c->children->map(function ($child) {
-                        return [
-                            'id' => $child->id,
-                            'text' => $child->code.' '.$child->name,
-                        ];
-                    })->toArray(),
-                    'disabled' => true,
                 ];
             }
 
+
             return [
-                'id' => $c->id,
                 'text' => $c->code.' '.$c->name,
+                'children' => $c->children->filter(function ($child) {
+                    return [
+                        'id' => $child->id,
+                        'text' => $child->code.' '.$child->name,
+                    ];
+                })->toArray(),
+                'disabled' => true,
             ];
         })->toArray();
 

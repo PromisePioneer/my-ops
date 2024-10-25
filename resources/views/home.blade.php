@@ -13,7 +13,8 @@
                 </a>
             </div>
             <div class="col-xl-6">
-                <a href="{{ url('/master/branch') }}" class="card bg-dark hoverable card-xl-stretch mb-5 mb-xl-8">
+                <a href="{{ url('/general-master-data/branch') }}"
+                   class="card bg-dark hoverable card-xl-stretch mb-5 mb-xl-8">
                     <div class="card-body">
                         <h1 class="text-gray-100 fw-bolder" x-text="countTotal.totalBranch"></h1>
                         <div class="text-white fw-bolder fs-2 mb-2 mt-5">Cabang</div>

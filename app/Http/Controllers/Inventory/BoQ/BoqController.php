@@ -13,6 +13,7 @@ use App\Service\BoqService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Throwable;
 
 class BoqController extends Controller
 {
@@ -37,7 +38,6 @@ class BoqController extends Controller
     {
         return response()->json($this->boqService->data());
     }
-
 
     public function search(Request $request): JsonResponse
     {
@@ -65,6 +65,9 @@ class BoqController extends Controller
     }
 
 
+    /**
+     * @throws Throwable
+     */
     public function store(BoqRequest $request): JsonResponse
     {
         $this->boqService->store($request);

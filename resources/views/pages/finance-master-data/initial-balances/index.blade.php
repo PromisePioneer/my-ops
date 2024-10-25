@@ -174,9 +174,7 @@
                                         </tr>
                                         <template x-for="(subAccount, index) in account.sub_accounts"
                                                   :key="subAccount.id">
-                                            <tr :id="subAccount.id" @click="expand($event)"
-                                                x-transition:enter.duration.500ms
-                                                x-transition:leave.duration.400ms>
+                                            <tr>
                                                 <td>
                                                     <div class="form-check form-check-sm form-check-custom form-check-solid"
                                                          @click="selectCheckBox($event)">
@@ -188,7 +186,7 @@
                                                 </td>
                                                 <td placement="center"
                                                     x-text="`${subAccount.sub_account_code} ${subAccount.sub_account_name}`"></td>
-                                                <td x-text="subAccount.initial_balance ?? 0"></td>
+                                                <td x-text="subAccount.initial_balance"></td>
                                                 <td>
                                                     <template x-if="year !== null && branchId !== null">
                                                         <button class="btn btn-light-primary btn-sm"
