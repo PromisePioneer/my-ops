@@ -25,7 +25,9 @@ class InitialBalanceService
         $search = $request->input('search');
 
 
-        $query = Account::with('accountTransaction', 'children')->whereNull('parent_id');
+        $query = Account::with('accountTransaction', 'children')->whereHas('accountTransaction', function ($query) {
+            $query->whereYear('date', Carbon::now()->subYear());
+        })->whereNull('parent_id');
 
         if (!empty($search)) {
             $query->where('name', 'like', '%'.$search.'%')->orWhere('code', 'like', '%'.$search.'%');
