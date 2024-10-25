@@ -16,7 +16,7 @@ class ContactRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
-            'full_name' => ['required'],
+            'pic_name' => ['required'],
             'company_name' => ['required'],
             'email' => [
                 'required',
@@ -30,33 +30,26 @@ class ContactRequest extends FormRequest
                 Rule::in('ktp', 'sim', 'passport'),
             ],
             'identity_number' => [
-                'required',
+                'nullable',
                 Rule::unique('contacts', 'identity_number')
                     ->ignore($request->route('contact') === null),
             ],
-            'fax' => ['required'],
-            'npwp' => ['required'],
-            'complete_address' => ['required'],
-            'other_info' => ['required'],
+            'fax' => ['nullable'],
+            'npwp' => ['nullable'],
+            'complete_address' => ['nullable'],
+            'other_info' => ['nullable'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'full_name.required' => 'Kolom nama lengkap wajib diisi.',
+            'pic_name.required' => 'Kolom nama lengkap wajib diisi.',
             'company_name.required' => 'Kolom nama perusahaan wajib diisi.',
-            'email.required' => 'Kolom alamat email wajib diisi.',
             'email.email' => 'Masukkan alamat email yang valid.',
             'email.unique' => 'Email sudah terdaftar',
             'phone_number.required' => 'Kolom nomor telepon wajib diisi.',
-            'identity_type.required' => 'Silakan pilih jenis identitas (KTP, SIM, Paspor).',
             'identity_type.in' => 'Jenis identitas yang dipilih tidak valid.',
-            'identity_number.required' => 'Kolom nomor identitas wajib diisi.',
-            'fax.required' => 'Kolom fax wajib diisi.',
-            'npwp.required' => 'Kolom NPWP wajib diisi.',
-            'complete_address.required' => 'Kolom alamat lengkap wajib diisi.',
-            'other_info.required' => 'Kolom informasi lainnya wajib diisi.',
         ];
     }
 }

@@ -14,15 +14,15 @@ class CreateContacts extends Migration
         Schema::create('contacts', static function (Blueprint $table) {
             $table->id();
             $table->foreignId('branch_id')->nullable()->constrained('branches');
-            $table->string('full_name');
+            $table->string('pic_name');
             $table->string('company_name')->nullable();
-            $table->string('email');
+            $table->string('email')->nullable()->unique();
             $table->string('phone_number');
-            $table->enum('identity_type', ['ktp', 'sim', 'passport']);
-            $table->string('identity_number');
+            $table->enum('identity_type', ['ktp', 'sim', 'passport'])->nullable();
+            $table->string('identity_number')->nullable();
             $table->string('fax')->nullable();
-            $table->string('npwp');
-            $table->text('complete_address');
+            $table->string('npwp')->nullable();
+            $table->text('complete_address')->nullable();
             $table->text('other_info')->nullable();
             $table->timestamps();
         });

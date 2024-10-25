@@ -18,10 +18,10 @@
                 <form id="contactFormEdit" @submit.prevent="update(editVal.id)">
                     <div class="d-flex flex-column mb-8 fv-row">
                         <label class="d-flex align-items-center fs-6 fw-bold mb-2">
-                            <span class="required">Nama Lengkap</span>
+                            <span class="required">Nama PIC</span>
                         </label>
                         <input type="text" class="form-control form-control-solid" placeholder="Nama Lengkap"
-                               name="full_name" :value="editVal.full_name"/>
+                               name="pic_name" :value="editVal.pic_name"/>
                     </div>
                     <div class="row g-9 mb-8">
                         <div class="col-md-6 fv-row">
@@ -31,7 +31,7 @@
                         </div>
 
                         <div class="col-md-6 fv-row">
-                            <label class="required fs-6 fw-bold mb-2">Email</label>
+                            <label class="fs-6 fw-bold mb-2">Email</label>
                             <input type="text" class="form-control form-control-solid" placeholder="Email"
                                    name="email" :value="editVal.email"/>
                         </div>
@@ -44,20 +44,18 @@
                     <div class="row mb-4">
                         <div class="col-md-2">
                             <label class="d-flex align-items-center fs-6 fw-bold mb-2">
-                                <span class="required">Identitas</span>
+                                <span>Identitas</span>
                             </label>
                             <select name="identity_type" class="form-select form-select-solid"
                                     data-placeholder="Select an option">
-                                <option value="ktp" :selected="`${editVal.identity_type === 'ktp'}`">KTP</option>
-                                <option value="sim" :selected="`${editVal.identity_type === 'sim'}`">SIM</option>
-                                <option value="passport" :selected="`${editVal.identity_type === 'passport'}`">
-                                    PASSPORT
-                                </option>
+                                <option value="ktp" :selected="editVal.identity_type === 'ktp'">KTP</option>
+                                <option value="sim" :selected="editVal.sim === 'sim'">SIM</option>
+                                <option value="passport" :selected="editVal.passport === 'passport'">PASSPORT</option>
                             </select>
                         </div>
                         <div class="col-md-10">
                             <label class="d-flex align-items-center fs-6 fw-bold mb-2">
-                                <span class="required">No. Identitas</span>
+                                <span>No. Identitas</span>
                             </label>
                             <input type="text" class="form-control form-control-solid" placeholder="No. Identitas"
                                    name="identity_number" :value="editVal.identity_number"/>
@@ -66,35 +64,34 @@
                     <div class="row mb-4">
                         <div class="col-md-6">
                             <label class="d-flex align-items-center fs-6 fw-bold mb-2">
-                                <span class="required">FAX</span>
+                                <span>FAX</span>
                             </label>
-                            <input type="text" class="form-control form-control-solid" placeholder="FAX" name="fax"
-                                   :value="editVal.fax"/>
+                            <input type="text" class="form-control form-control-solid" placeholder="FAX" name="fax" :value="editVal.fax"/>
                         </div>
                         <div class="col-md-6">
                             <label class="d-flex align-items-center fs-6 fw-bold mb-2">
-                                <span class="required">NPWP</span>
+                                <span>NPWP</span>
                             </label>
-                            <input type="text" class="form-control form-control-solid" placeholder="No. Identitas"
-                                   name="npwp" :value="editVal.fax"/>
+                            <input type="text" class="form-control form-control-solid" placeholder="NPWP"
+                                   name="npwp" :value="editVal.npwp"/>
                         </div>
                     </div>
                     <div class="row mb-4">
                         <div class="col-md-12">
                             <label class="d-flex align-items-center fs-6 fw-bold mb-2">
-                                <span class="required">Alamat Lengkap</span>
+                                <span>Alamat</span>
                             </label>
                             <textarea name="complete_address" class="form-control form-control-solid" id=""
-                                      data-kt-autosize="true" :value="editVal.complete_address"></textarea>
+                                      data-kt-autosize="true" x-text="editVal.complete_address"></textarea>
                         </div>
                     </div>
                     <div class="row mb-10">
                         <div class="col-md-12">
                             <label class="d-flex align-items-center fs-6 fw-bold mb-2">
-                                <span class="required">Other Info</span>
+                                <span>Info Lainnya</span>
                             </label>
                             <textarea name="other_info" class="form-control form-control-solid" id=""
-                                      data-kt-autosize="true" :value="editVal.other_info"></textarea>
+                                      data-kt-autosize="true" x-text="editVal.other_info"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
