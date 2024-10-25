@@ -26,11 +26,11 @@ class AccountService
             if ($account->children->count() > 0) {
                 $initialBalance = $account->children->sum(function ($transaction) {
                     return $transaction->accountTransaction()
-                        ->whereYear('date', Carbon::now()->year)->sum('amount');
+                        ->whereYear('date', Carbon::now()->subYear())->sum('amount');
                 });
             } else {
                 $initialBalance = $account->accountTransaction()
-                    ->whereYear('date', Carbon::now()->year)->sum('amount');
+                    ->whereYear('date', Carbon::now()->subYear())->sum('amount');
             }
 
 
