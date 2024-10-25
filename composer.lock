@@ -4,7 +4,7 @@
     "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
     "This file is @generated automatically"
   ],
-  "content-hash": "dce7160ebaef29152055a6aaa250fcd9",
+  "content-hash": "96815034c89ecc73953539aa19e19811",
   "packages": [
     {
       "name": "bacon/bacon-qr-code",
@@ -1482,6 +1482,77 @@
         "source": "https://github.com/jmrashed/zkteco/tree/1.0.4"
       },
       "time": "2024-05-23T03:59:39+00:00"
+    },
+    {
+      "name": "laracraft-tech/laravel-useful-additions",
+      "version": "v4.0.1",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/laracraft-tech/laravel-useful-additions.git",
+        "reference": "cf1e6bf877492b7c555643f3396bc80ad0d12a6e"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/laracraft-tech/laravel-useful-additions/zipball/cf1e6bf877492b7c555643f3396bc80ad0d12a6e",
+        "reference": "cf1e6bf877492b7c555643f3396bc80ad0d12a6e",
+        "shasum": ""
+      },
+      "require": {
+        "illuminate/contracts": "^9.0 || ^10.0 || ^11.0",
+        "illuminate/database": "^9.0 || ^10.0 || ^11.0",
+        "illuminate/support": "^9.0 || ^10.0 || ^11.0",
+        "illuminate/testing": "^9.0 || ^10.0 || ^11.0",
+        "php": "^8.0",
+        "spatie/laravel-package-tools": "^1.12 || ^1.14"
+      },
+      "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.13",
+        "nunomaduro/larastan": "^1.0 || ^2.5",
+        "orchestra/testbench": "^7.0 || ^8.0 || ^9.0",
+        "pestphp/pest": "^1.22 || ^2.0",
+        "pestphp/pest-plugin-laravel": "^1.22 || ^2.0",
+        "spatie/laravel-ray": "^1.32"
+      },
+      "type": "library",
+      "extra": {
+        "laravel": {
+          "providers": [
+            "LaracraftTech\\LaravelUsefulAdditions\\LaravelUsefulAdditionsServiceProvider"
+          ],
+          "aliases": {
+            "LaravelUsefulAdditions": "LaracraftTech\\LaravelUsefulAdditions\\Facades\\LaravelUsefulAdditions"
+          }
+        }
+      },
+      "autoload": {
+        "psr-4": {
+          "LaracraftTech\\LaravelUsefulAdditions\\": "src",
+          "LaracraftTech\\LaravelUsefulAdditions\\Database\\Factories\\": "database/factories"
+        }
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "MIT"
+      ],
+      "authors": [
+        {
+          "name": "Zacharias Creutznacher",
+          "email": "zacharias@laracraft.tech",
+          "role": "Developer"
+        }
+      ],
+      "description": "A collection of useful Laravel additions!",
+      "homepage": "https://github.com/laracraft-tech/laravel-useful-additions",
+      "keywords": [
+        "laracraft-tech",
+        "laravel",
+        "laravel-useful-additions"
+      ],
+      "support": {
+        "issues": "https://github.com/laracraft-tech/laravel-useful-additions/issues",
+        "source": "https://github.com/laracraft-tech/laravel-useful-additions/tree/v4.0.1"
+      },
+      "time": "2024-07-08T09:23:48+00:00"
     },
     {
       "name": "laravel/framework",
@@ -4331,6 +4402,66 @@
         "source": "https://github.com/SimpleSoftwareIO/simple-qrcode/tree/4.2.0"
       },
       "time": "2021-02-08T20:43:55+00:00"
+    },
+    {
+      "name": "spatie/laravel-package-tools",
+      "version": "1.16.5",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/spatie/laravel-package-tools.git",
+        "reference": "c7413972cf22ffdff97b68499c22baa04eddb6a2"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/spatie/laravel-package-tools/zipball/c7413972cf22ffdff97b68499c22baa04eddb6a2",
+        "reference": "c7413972cf22ffdff97b68499c22baa04eddb6a2",
+        "shasum": ""
+      },
+      "require": {
+        "illuminate/contracts": "^9.28|^10.0|^11.0",
+        "php": "^8.0"
+      },
+      "require-dev": {
+        "mockery/mockery": "^1.5",
+        "orchestra/testbench": "^7.7|^8.0",
+        "pestphp/pest": "^1.22",
+        "phpunit/phpunit": "^9.5.24",
+        "spatie/pest-plugin-test-time": "^1.1"
+      },
+      "type": "library",
+      "autoload": {
+        "psr-4": {
+          "Spatie\\LaravelPackageTools\\": "src"
+        }
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "MIT"
+      ],
+      "authors": [
+        {
+          "name": "Freek Van der Herten",
+          "email": "freek@spatie.be",
+          "role": "Developer"
+        }
+      ],
+      "description": "Tools for creating Laravel packages",
+      "homepage": "https://github.com/spatie/laravel-package-tools",
+      "keywords": [
+        "laravel-package-tools",
+        "spatie"
+      ],
+      "support": {
+        "issues": "https://github.com/spatie/laravel-package-tools/issues",
+        "source": "https://github.com/spatie/laravel-package-tools/tree/1.16.5"
+      },
+      "funding": [
+        {
+          "url": "https://github.com/spatie",
+          "type": "github"
+        }
+      ],
+      "time": "2024-08-27T18:56:10+00:00"
     },
     {
       "name": "spatie/laravel-permission",

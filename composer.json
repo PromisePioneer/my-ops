@@ -12,6 +12,7 @@
     "barryvdh/laravel-dompdf": "^2.2",
     "guzzlehttp/guzzle": "^7.9",
     "jmrashed/zkteco": "^1.0",
+    "laracraft-tech/laravel-useful-additions": "^4.0",
     "laravel/framework": "^11.0",
     "laravel/sanctum": "^4.0",
     "laravel/tinker": "^2.9",
