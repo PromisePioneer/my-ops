@@ -58,6 +58,7 @@
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
+                                <th class="min-w-125px">Kode</th>
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>

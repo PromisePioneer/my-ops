@@ -39,10 +39,8 @@ class InitialBalanceService
     }
 
 
-    public function formattedData(
-        $account,
-        ?Request $request = null
-    ) {
+    public function formattedData($account, ?Request $request = null)
+    {
         $data = $account->getCollection()->map(function ($account) use ($request) {
             if ($account->children->count() > 0) {
                 $initialBalance = $account->children->sum(function ($transaction) use ($request) {
@@ -81,16 +79,11 @@ class InitialBalanceService
     }
 
 
-    public
-    function getFilteredTransactionSum(
-        $account,
-        $type,
-        ?Request $request
-    ): float {
+    public function getFilteredTransactionSum($account, $type, ?Request $request): float
+    {
         $transactions = $account->accountTransaction()
-            ->when(!$request?->year, function ($query) use ($request) {
-                return $query->whereYear('date', Carbon::now()->subYear());
-            })->where('transaction_type', $type);
+            ->whereYear('date', Carbon::now()->subYear())
+            ->where('transaction_type', $type);
 
         if ($request?->branch_id) {
             $transactions->where('branch_id', $request->branch_id);
@@ -108,10 +101,8 @@ class InitialBalanceService
     }
 
 
-    public
-    function filter(
-        Request $request
-    ) {
+    public function filter(Request $request)
+    {
         $branch = $request->input('branch_id');
         $year = $request->input('year');
 
