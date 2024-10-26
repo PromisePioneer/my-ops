@@ -27,46 +27,46 @@
                     <img class="w-100" src="{{ asset('assets/media/logos/kop-header.png') }}" alt="">
                 </div>
                 <div class="card-body p-12">
-                    <div class="row mb-10">
+                    <div class="row ">
                         <div class="col-lg-6">
                             <div class="text-black fs-6 fw-bold mb-3">
-                                No. Surat : {{ $offeringLetter->offering_number }}
+                                No. Surat : {{ $data->offering_number }}
                             </div>
                             <div class="text-black fs-6 fw-bold mb-3">
-                                Lampiran : {{ $offeringLetter->attachment }},
+                                Perihal : {{ $data->ragarding }},
                             </div>
                             @php
-                                $date = DateTime::createFromFormat('Y-m-d', $offeringLetter->date);
+                                $date = DateTime::createFromFormat('Y-m-d', $data->date);
                                     $formattedDate = $date->format('d M Y');
                                     $formattedMonth = $date->format('M Y');
                             @endphp
-                            <div class="text-black fs-6 fw-bold mb-3">Tanggal
+                            <div class="text-black fs-6 fw-bold mb-4">Tanggal
                                 &nbsp;&nbsp;&nbsp;: {{ $formattedDate }}</div>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-lg-12">
-                            <div class="text-black fs-6 fw-normal mb-3">
-                                Kepada Yth, {{ $offeringLetter->contact->full_name }},
+                            <div class="text-black fs-6 fw-normal">
+                                Kepada Yth, <br>{{ $data->contact->company_name }},
                                 <div class="mt-10">
-                                    {!! $offeringLetter->foreword !!}
+                                    Dengan hormat,
+                                    Kami dari PT. Mayatama Solusindo bermaksud menawarkan harga internet dedicated
+                                    untuk SMA Negeri 4 Dumai, berikut di bawah ini harga terbaik yang kami tawarkan :
                                 </div>
                             </div>
                         </div>
-                        <div class="pb-4">
+                        <div class="">
                             <div class="d-flex justify-content-between flex-column flex-md-row">
-                                <div class="flex-grow-1 pt-8 mb-13">
+                                <div class="flex-grow-1 pt-8">
                                     <div class="table-responsive mb-4 row justify-content-center">
                                         <table class="table table-sm gs-7 gy-7 gx-7 border border-dark">
                                             <thead>
                                             <tr class=" border border-dark bg-primary">
-                                                <th>No</th>
-                                                <th>Layanan</th>
-                                                <th>Kapasitas</th>
-                                                <th>@</th>
-                                                <th>Qty</th>
-                                                <th>Jumlah</th>
+                                                <th class="fw-bold">No</th>
+                                                <th class="fw-bold">Layanan</th>
+                                                <th class="fw-bold">Kapasitas</th>
+                                                <th class="fw-bold">Harga / Bulan</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -77,9 +77,7 @@
                                                     <td>{{ $service->serviceCategory->capacity }}
                                                         Mbps
                                                     </td>
-                                                    <td>Rp.{{ number_format($service->unit_price) }}</td>
-                                                    <td>Rp. {{ number_format($service->total_price) }}</td>
-                                                    <td>{{ $service->qty }}</td>
+                                                    <td>Rp.{{ number_format($service->price) }}</td>
                                                 </tr>
                                             @empty
                                                 <tr>
@@ -89,15 +87,28 @@
                                             </tbody>
                                             <tfoot>
                                             <tr class="fw-bolder fs-6 text-gray-800 border border-dark">
-                                                <td colspan="5" class="text-end  py-1">TOTAL</td>
+                                                <td colspan="3" class="text-end  py-1">PPN</td>
                                                 <td class="py-1">
-                                                    Rp. {{ number_format($offeringLetterServices->sum('total_price')) }}</td>
+                                                    Rp. {{ number_format($totalPPN)  }}
+                                                </td>
                                             </tr>
+                                            <tr class="fw-bolder fs-6 text-gray-800 border border-dark">
+                                                <td colspan="3" class="text-end  py-1">Sub Total</td>
+                                                <td class="py-1">
+                                                    Rp. {{ number_format($subTotal) }}
+                                                </td>
+                                            </tr>
+
                                             </tfoot>
                                         </table>
                                     </div>
                                     <div class="mb-10">
-                                        <p class="h">{!! $offeringLetter->notes !!} </p>
+                                        Adapun syarat, ketentuan dan layanan yang kami berikan antara lain :
+                                        <ul>
+                                            @foreach($offeringLetterServiceDescription as $desc)
+                                                <li>{{ $desc->text }}</li>
+                                            @endforeach
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -115,13 +126,10 @@
                                         <th></th>
                                     </tr>
                                     <tr>
-                                        <th class="text-center"><u>{{ $offeringLetter->marketing_agent_name }}</u></th>
+                                        <th class="text-center"><u>{{ $data->user->name }}</u></th>
                                     </tr>
                                     <tr>
-                                        <th class="text-center">Marketing</th>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-center">{{ $offeringLetter->marketing_agent_contact }}</th>
+                                        <th class="text-center">{{ $data->user->roles[0]?->name ?? '' }}</th>
                                     </tr>
                                     </thead>
                                 </table>
@@ -134,17 +142,17 @@
                 </div>
             </div>
         </div>
-        @if($offeringLetter->status === 0)
-            <div class="flex-lg-auto min-w-lg-300px">
-                <div class="card" data-kt-sticky="true" data-kt-sticky-name="invoice"
-                     data-kt-sticky-offset="{default: false, lg: '200px'}"
-                     data-kt-sticky-width="{lg: '250px', lg: '300px'}" data-kt-sticky-left="auto"
-                     data-kt-sticky-top="150px" data-kt-sticky-animation="false" data-kt-sticky-zindex="95">
-                    <div class="card-body p-10">
+        <div class="flex-lg-auto min-w-lg-300px">
+            <div class="card" data-kt-sticky="true" data-kt-sticky-name="invoice"
+                 data-kt-sticky-offset="{default: false, lg: '200px'}"
+                 data-kt-sticky-width="{lg: '250px', lg: '300px'}" data-kt-sticky-left="auto"
+                 data-kt-sticky-top="150px" data-kt-sticky-animation="false" data-kt-sticky-zindex="95">
+                <div class="card-body p-10">
+                    @if($data->status === 0)
                         <div class="mb-0">
                             <div class="row mb-5">
                                 <div class="col">
-                                    <a href="{{ url('income-transactions/offering-letters/edit/' . $offeringLetter->id) }}"
+                                    <a href="{{ url('income-transactions/offering-letters/edit/' . $data->id) }}"
                                        class="btn btn-light btn-active-light-info w-100">Ubah</a>
                                 </div>
                                 <div class="col">
@@ -153,12 +161,7 @@
                                     </button>
                                 </div>
                             </div>
-                            @if(isset($letterHead->header) && $letterHead->header)
-                                <a href="{{ url('income-transactions/offering-letters/export-pdf/'. $offeringLetter->id) }}"
-                                   class="btn btn-light-info w-100 mb-4" target="_blank">
-                                    Print PDF
-                                </a>
-                            @endif
+
 
                             <button type="button" @click="confirmOfferingLetter()" class="btn btn-primary w-100 mb-5"
                                     data-bs-toggle="modal" data-bs-target="#jurnal_entry">
@@ -170,12 +173,17 @@
                                 Jika kop tidak ada, isi kop terlebih dahulu di Menu kop surat
                                 </span>
                             @endif
-
                         </div>
-                    </div>
+                    @endif
+                    @if($data->status === 1)
+                        <a href="{{ url('income-transactions/offering-letters/export-pdf/'. $data->id) }}"
+                           class="btn btn-light-info w-100 mb-4" target="_blank">
+                            Print PDF
+                        </a>
+                    @endif
                 </div>
             </div>
-        @endif
+        </div>
     </div>
     @include('components.toast')
 @endsection
@@ -183,7 +191,7 @@
     <script>
         function offeringLetterDetail() {
             return {
-                id: "{{ $offeringLetter->id }}",
+                id: "{{ $data->id }}",
                 buttonLoading: false,
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {

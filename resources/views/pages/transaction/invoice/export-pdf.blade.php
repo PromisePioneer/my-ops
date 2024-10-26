@@ -134,7 +134,7 @@
     </div>
     <div class="container">
         <div class="heading-separator table-heading-container">
-            <table class="table-heading">
+            <table class="table-heading" >
                 <tbody>
                 <tr>
                     <td style="width: 100%">

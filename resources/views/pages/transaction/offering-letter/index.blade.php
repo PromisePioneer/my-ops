@@ -62,7 +62,6 @@
                                 <th class="min-w-125px">Nomor Penawaran</th>
                                 <th class="min-w-100px">Calon Klien</th>
                                 <th class="min-w-100px">Status</th>
-                                <th class="min-w-125px">Lampiran</th>
                                 <th class="min-w-125px">Tgl Dibuat</th>
                                 <th class="min-w-125px">Dibuat Oleh</th>
                             </thead>
@@ -109,10 +108,6 @@
                                             <span class="badge bg-danger">Buat PO</span>
                                         </td>
                                     </template>
-                                    <td>
-                                        <a :href="`/income-transactions/offering-letters/view-file/${offeringLetter.id}`"
-                                           class="btn btn-sm btn-info"><i class="bi bi-file-earmark-break-fill"></i></a>
-                                    </td>
                                     <td x-text="formatDate(offeringLetter.created_at)"></td>
                                     <td x-text="offeringLetter.created_by"></td>
                                 </tr>

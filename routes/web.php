@@ -782,6 +782,14 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/detail/{offeringLetter}', [OfferingLettersController::class, 'show']);
             Route::get('/edit/{offeringLetter}', [OfferingLettersController::class, 'edit']);
             Route::get(
+                '/get-selected-products/{offeringLetter}',
+                [OfferingLettersController::class, 'getOfferingLettersProduct']
+            );
+            Route::get(
+                '/get-selected-offering-letters-service-description/{offeringLetter}',
+                [OfferingLettersController::class, 'getOfferingLetterDescription']
+            );
+            Route::get(
                 '/get-selected-contact/{offeringLetter}',
                 [OfferingLettersController::class, 'getSelectedContact']
             );

@@ -12,48 +12,43 @@
             box-sizing: border-box;
         }
 
+
         * {
             margin: 0;
         }
 
+
+        @page {
+            margin: 0 0;
+        }
+
         body {
+            margin: 3cm 2cm 2cm;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             font-family: Poppins, Helvetica, sans-serif;
             font-size: 62.5%;
         }
 
-        .kop-header {
-            margin: 0 auto;
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3cm;
         }
 
-        .kop-image-header {
-            width: 100%;
-        }
-
-        .kop-image-footer {
-            width: 100%;
-            margin-bottom: 100px;
-        }
-
-        .container {
-            margin: 20px 20px 60px 20px;
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 5cm;
         }
 
         .wrapper {
             position: relative;
-            min-height: 100%;
-            margin-bottom: -100px; /* Adjust based on footer height */
-        }
-
-        .heading-text {
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .foreword {
-            font-size: 13px;
         }
 
         table {
@@ -61,44 +56,15 @@
             border-collapse: collapse;
         }
 
-        table, tr, th, td {
-            border: 1px solid;
-            padding: 10px;
+        .table-heading .table-data-heading {
+            /*border: none !important;*/
+            width: 50%;
+            text-align: left;
         }
 
-        .bg-primary {
-            background-color: rgb(0, 158, 247);
+        .heading-text {
+            font-size: 14px;
         }
-
-        .text-end {
-            text-align: right;
-        }
-
-        .foreword {
-            line-height: 25px;
-        }
-
-        .notes {
-            font-size: 13px;
-        }
-
-        .signature {
-            font-size: 13px;
-            padding-right: 40px;
-            font-weight: bold;
-            float: right;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .kop-footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-        }
-
 
     </style>
 
@@ -106,80 +72,143 @@
 </head>
 
 <body>
+
+<header>
+    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-header.png'))) }}"
+         width="100%" height="100%"/>
+</header>
+
 <div class="wrapper">
-    <div class="kop-header">
-        @if(isset($letter_head->header) && $letter_head->header)
-            <img class='img-fluid w-100' src="{{ Storage::url($letter_head->header) }}" alt=""/>
-        @else
-            <img
-                 src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-headers.png'))) }}"
-                 alt=""/>
-        @endif
-
-    </div>
-
     <div class="container">
-        <div class="heading-text">
-            <p>No Surat: {{ $offeringLetter->offering_number }}</p>
-            <p>Lampiran: {{ $offeringLetter->attachment }}</p>
-            <p>Tanggal: {{ $offeringLetter->date }}</p>
+        <table class="table-heading">
+            <tbody>
+            <tr>
+                <td class="table-data-heading" style="font-size: 13px; width: 20%;">
+                    No.
+                </td>
+                <td class="table-data-heading" style="font-size: 13px; text-align: left;">
+                    :
+                </td>
+                <td class="table-data-heading" style="font-size: 13px;width: 100%">
+                    {{ $data->offering_number }}
+                </td>
+            </tr>
+            <tr>
+                <td class="table-data-heading" style="font-size: 13px; width: 20%;">
+                    <p class="heading-text">Perihal</p>
+                </td>
+                <td class="table-data-heading" style="font-size: 13px; width: 1px; text-align: left;">
+                    :
+                </td>
+                <td class="table-data-heading" style="font-size: 13px; width: 100%">
+                    {{ $data->regarding }}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="heading-text" style="margin-top: 10px">
+            <p>Kepada Yth, <br> {{ $data->contact->company_name }} <br> <b>Ditempat</b></p>
+            <br>
+            <p>Dengan hormat, Kami dari PT. Mayatama Solusindo bermaksud menawarkan harga internet dedicated untuk SMA
+                Negeri 4 Dumai, berikut di bawah ini harga terbaik yang kami tawarkan :</p>
+            <br>
         </div>
 
-        <div class="foreword">
-            <p>Kepada Yth, {{ $offeringLetter->contact->full_name }}</p>
-            <p>{!! $offeringLetter->foreword !!}</p>
-        </div>
 
-
-        <table>
+        <table class="table-heading" style=" border: 1px solid;">
             <thead>
-            <tr class="bg-primary">
-                <th>No</th>
-                <th>Layanan</th>
-                <th>Kapasitas</th>
-                <th>Qty</th>
-                <th>Jumlah</th>
-                <th>@</th>
+            <tr style=" border: 1px solid;  background-color: rgb(0, 158, 247);">
+                <th style="border: 1px solid; font-size: 14px; padding: 10px">No</th>
+                <th style="border: 1px solid; font-size: 14px; padding: 10px">Layanan</th>
+                <th style="border: 1px solid; font-size: 14px; padding: 10px">Kapasitas</th>
+                <th style="border: 1px solid; font-size: 14px; padding: 10px">Harga/Bulan</th>
             </tr>
             </thead>
             <tbody>
             @foreach($offeringLetterServices as $service)
                 <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $service->serviceCategory->name }}</td>
-                    <td>{{ $service->serviceCategory->capacity }} Mbps</td>
-                    <td>{{ $service->qty }}</td>
-                    <td>Rp.{{ number_format($service->unit_price) }}</td>
-                    <td>Rp. {{ number_format($service->total_price) }}</td>
+                    <td style=" border: 1px solid; font-size: 14px; text-align: center; padding: 10px">{{ $loop->iteration }}</td>
+                    <td style=" border: 1px solid; font-size: 14px; text-align: center; padding: 10px">{{ $service->serviceCategory->name }}</td>
+                    <td style=" border: 1px solid; font-size: 14px; text-align: center; padding: 10px">{{ $service->serviceCategory->capacity }}
+                        Mbps
+                    </td>
+                    <td style=" border: 1px solid; font-size: 14px; text-align: center; padding: 10px">
+                        Rp.{{ number_format($service->price) }}</td>
+
                 </tr>
             @endforeach
             </tbody>
             <tfoot>
             <tr>
-                <td colspan="5" class="text-end">TOTAL</td>
-                <td class="py-1">
-                    Rp. {{ number_format($offeringLetterServices->sum('total_price')) }}</td>
+                <td colspan="3"
+                    style="border: 1px solid; font-size: 14px; text-align: right; font-weight: 500; padding-right: 10px">
+                    PPN
+                </td>
+                <td style="text-align: center; font-size: 14px;">
+                    Rp. {{ number_format($totalPPN) }}
+                </td>
             </tr>
+            <tr style="border: 1px solid">
+                <td colspan="3"
+                    style="border: 1px solid; font-size: 14px; text-align: right; font-weight: 500; padding-right: 10px">
+                    TOTAL
+                </td>
+                <td style="text-align: center; font-size: 14px;">
+                    Rp. {{ number_format($subTotal) }}</td>
+            </tr>
+
             </tfoot>
         </table>
 
-        <div class="notes">
-            <p>
-                {!! $offeringLetter->notes !!}
+        <div class="notes" style="margin-top: 12px">
+            <p style="font-size: 13px;">
+                Adapun syarat, ketentuan dan layanan yang kami berikan antara lain :
             </p>
+            <ul>
+                @foreach($offeringLetterServiceDescription as $desc)
+                    <li style="font-size: 13px">{{ $desc->text }}</li>
+                @endforeach
+            </ul>
         </div>
     </div>
+    <br>
+    <br>
+    <br>
+    <div style="float: right">
+        <table>
+            <tr>
+                <th style="text-align: center;">
+                    <p style="font-size: 12px; margin: 0;">PT MAYATAMA SOLUSINDO</p>
+                </th>
+                <th style="text-align: center; padding: 8px;"></th>
+            </tr>
+            <tr>
+                <th style="text-align: center; padding-bottom: 50px;">
+                    <p style="font-size: 12px; margin: 0;">
 
-    <div class="signature">
-        <p class="text-center">PT. MAYATAMA SOLUSINDO <br><br><br><br><br>Marketing
-            <br>{{ $offeringLetter->marketing_agent_name }}<br>{{ $offeringLetter->marketing_agent_contact}}
-        </p>
+                    </p>
+                </th>
+            </tr>
+            <tr>
+                <th style="text-align: center; padding: 8px 8px 0 8px;">
+                    <p style="font-size: 12px; margin: 0; text-decoration: underline">
+                        {{ $data?->user->name }}
+                    </p>
+                </th>
+            </tr>
+            <tr style="padding: 0">
+                <th style="text-align: center; padding: 8px;">
+                    <p style="font-size: 12px; margin: 0;">{{ $data?->user->roles[0]?->name }}</p>
+                </th>
+            </tr>
+        </table>
     </div>
 
-    <div class="kop-footer">
-        <img class="kop-image-footer"
-             src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"/>
-    </div>
+    <footer>
+        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"
+             width="100%" height="100%"/>
+    </footer>
 </div>
 </body>
 </html>
