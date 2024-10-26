@@ -29,6 +29,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('user_has_project_bonus');
     }
 };

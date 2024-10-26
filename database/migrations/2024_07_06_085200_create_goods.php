@@ -39,6 +39,7 @@ class CreateGoods extends Migration
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('goods');
     }
 }

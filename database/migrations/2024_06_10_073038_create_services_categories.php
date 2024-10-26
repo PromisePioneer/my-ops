@@ -24,6 +24,7 @@ class CreateServicesCategories extends Migration
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('services_categories');
     }
 }

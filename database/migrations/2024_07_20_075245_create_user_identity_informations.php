@@ -34,6 +34,7 @@ class CreateUserIdentityInformations extends Migration
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('user_identity_informations');
     }
 }

@@ -37,6 +37,7 @@ class CreateBastProducts extends Migration
      */
     public function down()
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('bast_product');
     }
 }

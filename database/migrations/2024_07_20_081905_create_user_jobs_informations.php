@@ -34,6 +34,7 @@ class CreateUserJobsInformations extends Migration
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('user_jobs_informations');
     }
 }

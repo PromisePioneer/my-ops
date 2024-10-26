@@ -48,6 +48,7 @@ class CreateUsedGoodsHistory extends Migration
      */
     public function down()
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('used_goods_history');
     }
 }

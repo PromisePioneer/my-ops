@@ -33,6 +33,7 @@ class CreateAccountTransactions extends Migration
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('account_transactions');
     }
 }

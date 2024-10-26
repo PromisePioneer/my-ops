@@ -28,6 +28,7 @@ class CreateCompanyProfile extends Migration
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('company_profile');
     }
 }

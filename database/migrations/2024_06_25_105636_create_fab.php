@@ -50,6 +50,7 @@ class CreateFab extends Migration
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('fab');
     }
 }

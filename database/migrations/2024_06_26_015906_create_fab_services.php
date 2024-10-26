@@ -37,6 +37,7 @@ class CreateFabServices extends Migration
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('fab_has_service_categories');
     }
 }

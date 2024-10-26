@@ -20,8 +20,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('attendances_summary', function (Blueprint $table) {
-            //
-        });
+        Schema::disableForeignKeyConstraints();
+        Schema::dropIfExists('attendances_summary');
     }
 };

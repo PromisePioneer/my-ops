@@ -30,6 +30,7 @@ class CreateJournalAdjustment extends Migration
      */
     public function down()
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('journal_adjustment');
     }
 }
