@@ -8,6 +8,7 @@ use App\Models\Account;
 use App\Models\AccountTransaction;
 use App\Models\Branch;
 use App\Service\InitialBalanceService;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -90,7 +91,7 @@ class InitialBalanceController extends Controller
     }
 
 
-    public function search(Request $request)
+    public function search(Request $request): JsonResponse
     {
         return response()->json($this->initialBalanceService->search($request));
     }
@@ -118,7 +119,6 @@ class InitialBalanceController extends Controller
 
     public function edit(Request $request, Account $account): JsonResponse
     {
-        $year = $request->year;
         $branchId = $request->branch_id;
 
         $data = $account->join(
@@ -127,7 +127,8 @@ class InitialBalanceController extends Controller
             '=',
             'accounts.id'
         )->where('account_transactions.branch_id', $branchId)
-            ->whereYear('account_transactions.date', $year)->first();
+            ->whereYear('date', Carbon::now()->subYear())
+            ->first();
 
 
         return response()->json($data);
@@ -163,7 +164,6 @@ class InitialBalanceController extends Controller
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
 
-        $year = $request->year;
         $branchId = $request->branch_id;
 
         $transactions = $account->join(
@@ -172,8 +172,8 @@ class InitialBalanceController extends Controller
             '=',
             'accounts.id'
         )->where('account_transactions.branch_id', $branchId)
-            ->whereYear('account_transactions.date', $year)
             ->whereIn('accounts.id', $explodeID)
+            ->whereYear('date', Carbon::now()->subYear())
             ->select('account_transactions.id as account_transaction_id')
             ->get();
 

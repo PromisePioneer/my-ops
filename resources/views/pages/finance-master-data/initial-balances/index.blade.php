@@ -34,10 +34,6 @@
                                             name="branch_id">
                                     </select>
                                 </div>
-                                <div class="d-flex align-items-center py-2">
-                                    <input type="number" name="year" id="year" class="form-control form-control-solid"
-                                           placeholder="Filter Berdasarkan Tahun">
-                                </div>
                             </div>
                         </div>
                         <div class="card-footer pt-4 text-end">
@@ -108,7 +104,7 @@
                                         </th>
                                         <th class="min-w-125px">Akun</th>
                                         <th class="min-w-125px">Saldo</th>
-                                        <template x-if="year !== null && branchId !== null">
+                                        <template x-if="branchId !== null">
                                             <th class="min-w-125px">Actions</th>
                                         </template>
                                     </thead>
@@ -142,7 +138,7 @@
                                                 <div class="form-check form-check-sm form-check-custom form-check-solid"
                                                      @click="selectCheckBox($event)">
                                                     <template x-if="account?.sub_accounts?.length === 0">
-                                                        <template x-if="year !== null && branchId !== null">
+                                                        <template x-if="branchId !== null">
                                                             <input class="form-check-input" type="checkbox"
                                                                    :value="account.id"
                                                                    :id="'checkbox-' + account.id"
@@ -157,7 +153,7 @@
                                             <td x-text="account.initial_balance"></td>
                                             <td>
                                                 <template x-if="account?.sub_accounts?.length === 0">
-                                                    <template x-if="year !== null && branchId !== null">
+                                                    <template x-if="branchId !== null">
                                                         <button class="btn btn-light-primary btn-sm"
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#modal-edit"
@@ -181,14 +177,14 @@
                                                         <input class="form-check-input" type="checkbox"
                                                                :value="subAccount.id"
                                                                :id="'checkbox-' + subAccount.id"
-                                                               :disabled="year === null && branchId === null"/>
+                                                               :disabled="branchId === null"/>
                                                     </div>
                                                 </td>
                                                 <td placement="center"
                                                     x-text="`${subAccount.sub_account_code} ${subAccount.sub_account_name}`"></td>
                                                 <td x-text="subAccount.initial_balance"></td>
                                                 <td>
-                                                    <template x-if="year !== null && branchId !== null">
+                                                    <template x-if="branchId !== null">
                                                         <button class="btn btn-light-primary btn-sm"
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#modal-edit"
@@ -246,7 +242,6 @@
                 selectAll: false,
                 singleChecked: false,
                 branchId: null,
-                year: null,
                 search: '',
                 editVal: '',
                 formCreate: document.getElementById('form-create'),
@@ -277,7 +272,6 @@
                         const resp = await axios.get('/finances-master-data/initial-balances/search', {
                             params: {
                                 search: this.search,
-                                year: this.year,
                                 branch_id: this.branchId,
                             },
                             headers: {'Content-Type': 'application/json'}
@@ -391,13 +385,11 @@
                     });
                 },
                 async filter() {
-                    this.year = document.getElementById('year')?.value ?? '';
                     this.branchId = $(".filter-branch-select2").val();
                     this.isLoading = true;
                     try {
                         const resp = await axios.get('/finances-master-data/initial-balances/filter', {
                             params: {
-                                year: this.year,
                                 branch_id: this.branchId,
                             }
                         });
@@ -424,11 +416,9 @@
                     }
                 },
                 async edit(id) {
-                    const year = document.getElementById('year')?.value ?? '';
                     const branch_id = $(".filter-branch-select2").val();
                     const resp = await axios.get(`/finances-master-data/initial-balances/${id}`, {
                         params: {
-                            year: year,
                             branch_id: branch_id
                         }
                     });
@@ -456,7 +446,6 @@
                         try {
                             await axios.post(`/finances-master-data/initial-balances/destroy`, new FormData(this.formDelete), {
                                 params: {
-                                    year: this.year,
                                     branch_id: this.branchId,
                                 }
                             });
