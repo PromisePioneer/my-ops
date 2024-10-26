@@ -33,6 +33,7 @@ class CreateOfferingLetters extends Migration
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('offering_letters');
     }
 }
