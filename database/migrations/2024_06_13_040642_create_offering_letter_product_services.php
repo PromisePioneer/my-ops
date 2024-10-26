@@ -11,26 +11,18 @@ class CreateOfferingLetterProductServices extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('offering_letter_product_services', static function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('offering_letter_id');
-            $table->unsignedBigInteger('service_category_id');
-            $table->integer('qty');
-            $table->double('unit_price');
-            $table->double('total_price');
+            $table->foreignId('offering_letter_id')->constrained('offering_letters')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('service_category_id')->constrained('services_categories')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->double('price');
             $table->timestamps();
-
-            $table->foreign('offering_letter_id')
-                ->references('id')
-                ->on('offering_letters')
-                ->onDelete('cascade');
-
-            $table->foreign('service_category_id')
-                ->references('id')
-                ->on('services_categories')
-                ->onDelete('cascade');
         });
     }
 
@@ -39,7 +31,7 @@ class CreateOfferingLetterProductServices extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('offering_letter_product_services');
     }

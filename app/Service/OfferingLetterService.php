@@ -2,13 +2,18 @@
 
 namespace App\Service;
 
+use App\Models\Contact;
 use App\Models\OfferingLetter;
 use App\Models\OfferingLetterProduct;
+use App\Models\OfferingLetterServiceDescription;
 use App\Service\HelperService\HandleFileUploadService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
+use function App\Helper\convertToRoman;
 
 class OfferingLetterService
 {
@@ -18,6 +23,43 @@ class OfferingLetterService
     public function __construct()
     {
         $this->handleFileUploadService = new HandleFileUploadService();
+    }
+
+
+    public function generateOfferingNumber(Request $request): string
+    {
+        $invoice = OfferingLetter::where('branch_id', $request->user()->branch_id)->where(
+            'contact_id',
+            $request->contact_id
+        )->latest()->first();
+        $findCompanyName = Contact::where('id', $request->contact_id)->first()->company_name;
+        $invoiceDate = convertToRoman(Carbon::parse($request->due_date)->format('m'));
+        $invoiceYear = convertToRoman(Carbon::parse($request->due_date)->format('Y'));
+
+        $abbr = explode(' ', $findCompanyName);
+
+
+        array_shift($abbr);
+
+
+        $acronym = '';
+
+        foreach ($abbr as $value) {
+            $acronym .= mb_substr($value, 0, 1);
+        }
+
+        if ($invoice) {
+            $convertInvNumberToArray = explode('/', $invoice->invoice_number);
+            $startingNumber = $convertInvNumberToArray[0];
+            $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
+
+            return $startValue.'/'.'SPH/'.'MYT-'.$acronym.'/'.$invoiceDate.'/'.$invoiceYear;
+        }
+
+        $startingNumber = '000';
+        $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
+
+        return $startValue.'/'.'SPH/'.'MYT-'.$acronym.'/'.$invoiceDate.'/'.$invoiceYear;
     }
 
     public function data(Request $request): LengthAwarePaginator
@@ -70,12 +112,21 @@ class OfferingLetterService
     {
         DB::transaction(function () use ($request) {
             $data = $request->validated();
-            $data['file'] = $this->handleFileUploadService->upload($request, 'documents/offering-letters', 'file');
+            $data['offering_number'] = self::generateOfferingNumber($request);
             $data['created_by'] = $request->user()->id;
             $data['branch_id'] = $request->user()->branch_id;
             $offeringLetter = OfferingLetter::create($data);
             $this->offeringProductServiceStore($request, $offeringLetter);
+            $this->offeringLetterServiceDescriptionStore($request, $offeringLetter);
         });
+    }
+
+    public function offeringLetterServiceDescriptionStore($request, $offeringLetter): void
+    {
+        foreach ($request['serviceDescription'] as $key => $value) {
+            $value['offering_letter_id'] = $offeringLetter->id;
+            OfferingLetterServiceDescription::create($value);
+        }
     }
 
     public function offeringProductServiceStore($request, $offeringLetter): void
@@ -106,7 +157,9 @@ class OfferingLetterService
             $data['branch_id'] = $request->user()->branch_id;
             $offeringLetter->update($data);
             OfferingLetterProduct::whereIn('offering_letter_id', [$offeringLetter->id])->delete();
+            OfferingLetterServiceDescription::whereIn('offering_letter_id', [$offeringLetter->id])->delete();
             $this->offeringProductServiceStore($request, $offeringLetter);
+            $this->offeringLetterServiceDescriptionStore($request, $offeringLetter);
         });
     }
 }
