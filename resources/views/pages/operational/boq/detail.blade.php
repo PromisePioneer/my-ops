@@ -150,11 +150,13 @@
         <div class="card shadow-sm mt-3">
             <div class="card-body">
                 @if($boq->operational_manager_approval === 'Pending')
-                    <div class="d-flex justify-content-end align-items-center">
-                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#modal-ops-manager-approval">Aksi
-                        </button>
-                    </div>
+                    @can('Menyetujui BoQ')
+                        <div class="d-flex justify-content-end align-items-center">
+                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#modal-ops-manager-approval">Aksi
+                            </button>
+                        </div>
+                    @endcan
                 @endif
                 @if($boq->approved_by_operational_manager === 1  && $boq->known_by_director === 0 && Auth::user()->roles[0]?->name === 'Director')
                     <button class="float-end btn btn-light-primary btn-sm" @click="knownByDirector()">

@@ -79,21 +79,21 @@ class RoleSeeder extends Seeder
         $superAdmin->assignRole($superAdminRole);
 
 
-        $director = User::where('name', ['Director'])->first();
-        $director->assignRole($directorRole);
-
-        $generalManager = User::where('name', ['General Manager'])->first();
-        $generalManager->assignRole($generalManagerRole);
-
-        $financeManager = User::where('name', ['FA & Tax Manager'])->first();
-        $financeManager->assignRole($financeManagerRole);
-
-
-        $operationalManager = User::where('name', ['Operational Manager'])->first();
-        $operationalManager->assignRole($operationalManagerRole);
-
-
-        $branchManager = User::where('name', ['Branch Manager'])->first();
-        $branchManager->assignRole($branchManagerRole);
+//        $director = User::where('name', ['Director'])->first();
+//        $director->assignRole($directorRole);
+//
+//        $generalManager = User::where('name', ['General Manager'])->first();
+//        $generalManager->assignRole($generalManagerRole);
+//
+//        $financeManager = User::where('name', ['FA & Tax Manager'])->first();
+//        $financeManager->assignRole($financeManagerRole);
+//
+//
+//        $operationalManager = User::where('name', ['Operational Manager'])->first();
+//        $operationalManager->assignRole($operationalManagerRole);
+//
+//
+//        $branchManager = User::where('name', ['Branch Manager'])->first();
+//        $branchManager->assignRole($branchManagerRole);
     }
 }

@@ -39,7 +39,13 @@ class PermissionSeeder extends Seeder
         }
 
         $operationalManager->givePermissionTo(
-            ['Lihat Menu BoQ', 'Mengajukan BoQ', 'Lihat Semua Data BoQ', 'Mengubah BoQ Pribadi', 'Menyetujui BoQ']
+            [
+                'Lihat Menu BoQ',
+                'Mengajukan BoQ',
+                'Lihat Semua Data BoQ',
+                'Mengubah BoQ Pribadi',
+                'Menyetujui BoQ',
+            ]
         );
 
         $director->givePermissionTo([
