@@ -235,7 +235,7 @@
 
 
                     <div class="float-end">
-                        <a href="{{ url('/income-transactions/invoice') }}" class="btn btn-sm btn-light">Cancel</a>
+                        <a href="{{ url('/inventory/boq') }}" class="btn btn-sm btn-light">Cancel</a>
                         <button type="submit" class="btn btn-sm btn-light-primary" :disabled="buttonLoading"
                                 x-text="buttonLoading ? 'Loading...' : 'Generate BoQ'"></button>
                     </div>

@@ -4,6 +4,7 @@
 @section('content')
 
     <div x-data="boqDetail()">
+        @include('pages.operational.boq.modal.ops-manager-approval')
         <div class="card">
             <div class="card-header card-header-stretch">
                 <h3 class="card-title fw-bold">{{ $boq->boq_number }}</h3>
@@ -81,11 +82,11 @@
 
                             <div class="text-center">
                                 <h6 class="mb-10">Menyetujui</h6>
-                                @if($boq->approved_by_operational_manager === 1)
+                                @if($boq->operational_manager_approval === 'Diterima')
                                     {!! QrCode::size(100)->generate(url('inventory/boq/detail/' . $boq->id)) !!}
                                 @endif
                                 <p class="mt-10">{{ $operationalManager?->name }}</p>
-                                <h6>{{ $operationalManager->roles[0]?->name ?? '' }}</h6>
+                                <h6>Manager Operasional</h6>
                             </div>
 
                             <div class="text-center">
@@ -96,14 +97,14 @@
                                             {!! QrCode::size(100)->generate(url('inventory/boq/detail/' . $boq->id)) !!}
                                         @endif
                                         <p class="mt-10">{{ $director?->name }}</p>
-                                        <h6>{{ $director?->roles[0]?->name  }}</h6>
+                                        <h6>Direktur</h6>
                                     </div>
                                     <div class="me-10 mb-10">
                                         @if($boq->known_by_gm === 1)
                                             {!! QrCode::size(100)->generate(url('inventory/boq/detail/' . $boq->id)) !!}
                                         @endif
                                         <p class="mt-10">{{ $generalManager?->name }}</p>
-                                        <h6>{{ $generalManager?->roles[0]?->name  }}</h6>
+                                        <h6>General Manager</h6>
                                     </div>
                                 </div>
                             </div>
@@ -148,10 +149,12 @@
 
         <div class="card shadow-sm mt-3">
             <div class="card-body">
-                @if($boq->approved_by_operational_manager === 0 && Auth::user()->roles[0]?->name === 'Operational Manager')
-                    <button class="float-end btn btn-light-primary btn-sm" @click="approvedByOperationalManager()">
-                        Setujui
-                    </button>
+                @if($boq->operational_manager_approval === 'Pending')
+                    <div class="d-flex justify-content-end align-items-center">
+                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#modal-ops-manager-approval">Aksi
+                        </button>
+                    </div>
                 @endif
                 @if($boq->approved_by_operational_manager === 1  && $boq->known_by_director === 0 && Auth::user()->roles[0]?->name === 'Director')
                     <button class="float-end btn btn-light-primary btn-sm" @click="knownByDirector()">
@@ -184,19 +187,23 @@
             return {
                 buttonLoading: false,
                 id: {{ $boq->id }},
+                editVal: '',
+                formApproval: document.getElementById('form-ops-manager-approval'),
                 async init() {
 
                 },
                 async approvedByOperationalManager() {
                     showConfirmModal("Anda yakin?", "BoQ yang sudah di Setujui tidak bisa diubah ataupun dihapus.", "Ya, Konfirmasi!", async () => {
                         try {
-                            await axios.post(`/inventory/boq/approved-by-operational-manager/${this.id}`);
+                            await axios.post(`/inventory/boq/approved-by-operational-manager/${this.id}`, new FormData(this.formApproval));
                             await showAlert('success', 'Data sukses Dikonfirmasi').then(() => {
-                                // location.reload()
+                                location.reload();
                             });
                         } catch (error) {
-                            console.error(error);
-                            await showAlert('error', 'Terjadi kesalahan');
+                            const respError = error.response.data.errors;
+                            Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                        } finally {
+
                         }
                     });
                 },
@@ -205,7 +212,7 @@
                         try {
                             await axios.post(`/inventory/boq/known-by-director/${this.id}`);
                             await showAlert('success', 'Data sukses Dikonfirmasi').then(() => {
-                                // location.reload()
+                                location.reload()
                             });
                         } catch (error) {
                             console.error(error);
@@ -218,7 +225,7 @@
                         try {
                             await axios.post(`/inventory/boq/known-by-gm/${this.id}`);
                             await showAlert('success', 'Data sukses Dikonfirmasi').then(() => {
-                                // location.reload()
+                                location.reload()
                             });
                         } catch (error) {
                             console.error(error);

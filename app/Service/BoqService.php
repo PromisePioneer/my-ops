@@ -48,9 +48,20 @@ class BoqService
     }
 
 
-    public function data(): LengthAwarePaginator
+    private static function boqDataQuery(Request $request)
     {
-        $boq = Boq::with('branch', 'submitterName')->paginate(self::$perPage);
+        return Boq::with('branch', 'submitterName')
+            ->when($request->user()->can('Lihat Data BoQ Sesuai Cabang Masing2'), function ($query) use ($request) {
+                $query->where('branch_id', $request->user()->branch_id);
+            })->when($request->user()->can('Lihat Pengajuan BoQ Pribadi'), function ($query) use ($request) {
+                $query->where('submitter_id', $request->user()->id);
+            });
+    }
+
+
+    public function data(Request $request): LengthAwarePaginator
+    {
+        $boq = self::boqDataQuery($request)->paginate(self::$perPage);
         return self::formattedData($boq);
     }
 
@@ -58,18 +69,11 @@ class BoqService
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $query = Boq::with('branch', 'submitterName');
-
+        $query = self::boqDataQuery($request);
 
         if (!empty($search)) {
-            $query->whereHas('branch', function ($query) use ($search) {
-                $query->where('name', 'like', '%'.$search.'%');
-            })->orWhereHas('submitterName', function ($query) use ($search) {
-                $query->where('name', 'like', '%'.$search.'%');
-            })->orWhere('title', 'like', '%'.$search.'%')
-                ->orWhere('title', 'like', '%'.$search.'%');
+            $query->orWhere('title', 'like', '%'.$search.'%');
         }
-
 
         $data = $query->paginate(self::$perPage);
         return self::formattedData($data);
@@ -84,8 +88,9 @@ class BoqService
                 'branch' => $item->branch?->name,
                 'title' => $item->title,
                 'date' => formatDate($item->date),
-                'status' => $item->approved_by_project_controller,
+                'status' => $item->operational_manager_approval,
                 'submitter' => $item->submitterName?->name,
+                'submitter_id' => $item->submitter_id,
                 'approved_by' => $item->approvedBy?->name,
                 'known_by' => $item->knownBy?->name,
             ];
@@ -109,7 +114,7 @@ class BoqService
                 'documents/boq/attachment',
                 'attachment'
             );
-            $data['submitter'] = $request->user()->id;
+            $data['submitter_id'] = $request->user()->id;
             $boq = Boq::create($data);
             $this->boqRequestStoreOrUpdate($request, $boq);
             $this->projectTimelineStoreOrUpdate($request, $boq);

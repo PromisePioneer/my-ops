@@ -215,7 +215,12 @@ class User extends Authenticatable
         if ($request->user()->hasRole('Branch Manager')) {
             $query->whereNot('id', $request->user()->id)
                 ->where('branch_id', $request->user()->branch_id)
-                ->role(['KCA', 'WKCA', 'Teknisi', 'Accounting', 'Stocker']);
+                ->role([
+                    'Head Engineer',
+                    'Senior Engineer',
+                    'Finance & Accounting Staff',
+                    'Stocker Staff',
+                ]);
         }
 
         $users = $query->get();

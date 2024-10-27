@@ -225,11 +225,13 @@
                         Inventory Controller
                     @endslot
                     @slot('menuItem')
-                        <x-dropdown-menu-item
-                                :active="request()->is('inventory/boq*')"
-                                href="{{ url('inventory/boq') }}">
-                            Bill Of Quantity
-                        </x-dropdown-menu-item>
+                        @can('Lihat Menu BoQ')
+                            <x-dropdown-menu-item
+                                    :active="request()->is('inventory/boq*')"
+                                    href="{{ url('inventory/boq') }}">
+                                Bill Of Quantity
+                            </x-dropdown-menu-item>
+                        @endcan
                         <x-dropdown-menu-item
                                 :active="request()->is('inventory')"
                                 href="{{ url('inventory') }}">

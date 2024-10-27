@@ -726,6 +726,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/{boq}', [BoqController::class, 'edit']);
             Route::post('/{boq}', [BoqController::class, 'update']);
             Route::post('/destroy', [BoqController::class, 'destroy']);
+            Route::post('/approved-by-operational-manager/{boq}', [BoqController::class, 'approvedByOperationalManager']
+            );
+            Route::post('/known-by-director/{boq}', [BoqController::class, 'knownByDirector']);
+            Route::post('/known-by-gm/{boq}', [BoqController::class, 'knownByGeneralManager']);
         });
     });
 

@@ -58,9 +58,6 @@
                                 <th class="min-w-125px">Judul</th>
                                 <th class="min-w-125px">Tanggal</th>
                                 <th class="min-w-125px">Status</th>
-                                <th class="min-w-125px">Dibuat Oleh</th>
-                                <th class="min-w-125px">Disetujui Oleh</th>
-                                <th class="min-w-125px">Diketahui Oleh</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -102,7 +99,7 @@
                                     <td x-text="boq.date"></td>
                                     <td>
                                         <template x-if="boq.status === 'Pending'">
-                                            <span class="badge bg-info text-white">Pending</span>
+                                            <span class="badge bg-warning text-white">Pending</span>
                                         </template>
                                         <template x-if="boq.status === 'Diterima'">
                                             <span class="badge bg-success text-white">Diterima</span>
@@ -111,19 +108,18 @@
                                             <span class="badge bg-danger text-white">Ditolak</span>
                                         </template>
                                         <template x-if="boq.status === 'Revisi'">
-                                            <span class="badge bg-warning text-white">Revisi</span>
+                                            <span class="badge bg-black text-white">Revisi</span>
                                         </template>
                                     </td>
-                                    <td x-text="boq.submitter"></td>
-                                    <td x-text="boq.approved_by ?? '-'"></td>
-                                    <td x-text="boq.known_by ?? '-'"></td>
                                     <td>
-                                        <a :href="`/inventory/boq/${boq.id}`" class="btn btn-light-primary btn-sm">
-                                            <i class="ki-duotone ki-pencil fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </a>
+                                        <template x-if="Number(authUser) === Number(boq.submitter_id)">
+                                            <a :href="`/inventory/boq/${boq.id}`" class="btn btn-light-primary btn-sm">
+                                                <i class="ki-duotone ki-pencil fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                            </a>
+                                        </template>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -149,6 +145,7 @@
     <script defer>
         function boqData() {
             return {
+                authUser: "{{ request()->user()->id }}",
                 boqs: [],
                 isLoading: false,
                 buttonLoading: false,
@@ -216,10 +213,6 @@
                     } finally {
                         this.buttonLoading = false;
                     }
-                },
-                async edit(id) {
-                    const resp = await axios.get(`/master/branch/show/${id}`);
-                    this.editVal = resp.data;
                 },
                 async update(id) {
                     this.buttonLoading = true;

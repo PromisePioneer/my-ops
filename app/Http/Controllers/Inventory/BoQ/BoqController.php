@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Inventory\BoQ;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ApprovedByOperationalManagerRequest;
 use App\Http\Requests\BoqRequest;
 use App\Models\Boq;
 use App\Models\BoqCommodity;
@@ -10,6 +11,7 @@ use App\Models\BoqTimelineProject;
 use App\Models\UnitType;
 use App\Models\User;
 use App\Service\BoqService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -34,9 +36,9 @@ class BoqController extends Controller
         return view('pages.operational.boq.index');
     }
 
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
-        return response()->json($this->boqService->data());
+        return response()->json($this->boqService->data($request));
     }
 
     public function search(Request $request): JsonResponse
@@ -134,14 +136,15 @@ class BoqController extends Controller
         );
     }
 
-
-    public function approvedByVendorSupervisor()
+    /**
+     * @throws AuthorizationException
+     */
+    public function approvedByOperationalManager(ApprovedByOperationalManagerRequest $request, Boq $boq): JsonResponse
     {
-    }
-
-    public function approveByOperationalManager(Boq $boq): JsonResponse
-    {
-        $boq->approved_by_operational_manager = 1;
+        $this->authorize('approveBoQ', $boq);
+        $boq->operational_manager_approval = $request->operational_manager_approval;
+        $boq->reason = $request->reason;
+        $boq->operational_manager_id = $request->user()->id;
         $boq->save();
         return response()->json(['message' => 'Data berhasil disimpan.']);
     }
@@ -158,7 +161,6 @@ class BoqController extends Controller
     public function knownByGeneralManager(Boq $boq): JsonResponse
     {
         $boq->known_by_gm = 1;
-        $boq->status = 'Diterima';
         $boq->save();
         return response()->json(['message' => 'Data berhasil disimpan.']);
     }
@@ -166,7 +168,6 @@ class BoqController extends Controller
 
     public function destroy(Request $request, Boq $boq): JsonResponse
     {
-//        $this->authorize('delete', $boq);
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
         $boq->whereIn('id', $explodeID)->delete();

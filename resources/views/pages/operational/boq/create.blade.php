@@ -7,7 +7,6 @@
         }
     </style>
     <div class="d-flex flex-column flex-lg-row" x-data="generateBoQ()">
-        @include('pages.master.contact.modal.create')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
                 <form id="form" @submit.prevent="generateBoQ()">
@@ -231,7 +230,7 @@
 
 
                     <div class="float-end">
-                        <a href="{{ url('/income-transactions/invoice') }}" class="btn btn-sm btn-light">Cancel</a>
+                        <a href="{{ url('/inventory/boq') }}" class="btn btn-sm btn-light">Cancel</a>
                         <button type="submit" class="btn btn-sm btn-light-primary" :disabled="buttonLoading"
                                 x-text="buttonLoading ? 'Loading...' : 'Generate BoQ'"></button>
                     </div>
@@ -249,8 +248,6 @@
             return {
                 buttonLoading: false,
                 form: document.getElementById('form'),
-                contactForm: document.getElementById('contactFormCreate'),
-                contactModal: new bootstrap.Modal(document.getElementById('contact-create')),
                 boqCommodities: [{
                     name: '',
                     merk: '',

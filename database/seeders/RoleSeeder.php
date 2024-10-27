@@ -15,11 +15,11 @@ class RoleSeeder extends Seeder
     {
         // Managerial
         Role::create(['name' => 'Main Commissioner']);
-        Role::create(['name' => 'Director']);
-        Role::create(['name' => 'General Manager']);
-        Role::create(['name' => 'FA & Tax Manager']);
-        Role::create(['name' => 'Operational Manager']);
-        Role::create(['name' => 'Branch Manager']);
+        $directorRole = Role::create(['name' => 'Director']);
+        $generalManagerRole = Role::create(['name' => 'General Manager']);
+        $financeManagerRole = Role::create(['name' => 'FA & Tax Manager']);
+        $operationalManagerRole = Role::create(['name' => 'Operational Manager']);
+        $branchManagerRole = Role::create(['name' => 'Branch Manager']);
 
         //Finance
         Role::create(['name' => 'Tax Admin Supervisor']);
@@ -71,13 +71,29 @@ class RoleSeeder extends Seeder
 
 
         //Programmer
-        Role::create(['name' => 'Tech Leader']);
-        Role::create(['name' => 'QA Engineer']);
-        Role::create(['name' => 'Senior Software Engineer']);
-        Role::create(['name' => 'Junior Software Engineer']);
+        Role::create(['name' => 'Programmer']);
+
 
         $superAdminRole = Role::create(['name' => 'Super Admin']);
         $superAdmin = User::where('name', 'Super Admin')->first();
         $superAdmin->assignRole($superAdminRole);
+
+
+        $director = User::where('name', ['Director'])->first();
+        $director->assignRole($directorRole);
+
+        $generalManager = User::where('name', ['General Manager'])->first();
+        $generalManager->assignRole($generalManagerRole);
+
+        $financeManager = User::where('name', ['FA & Tax Manager'])->first();
+        $financeManager->assignRole($financeManagerRole);
+
+
+        $operationalManager = User::where('name', ['Operational Manager'])->first();
+        $operationalManager->assignRole($operationalManagerRole);
+
+
+        $branchManager = User::where('name', ['Branch Manager'])->first();
+        $branchManager->assignRole($branchManagerRole);
     }
 }

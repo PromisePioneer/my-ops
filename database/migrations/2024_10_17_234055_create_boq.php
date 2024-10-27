@@ -16,13 +16,17 @@ return new class extends Migration {
             $table->string('boq_number')->unique();
             $table->string('title');
             $table->date('date');
-            $table->enum('approved_by_project_controller', ['Pending', 'Diterima', 'Ditolak', 'Revisi'])->default(
-                'Pending'
-            );
-            $table->foreignId('submitter')->constrained('users');
-            $table->boolean('approved_by_operational_manager')->default(false);
+            $table->foreignId('submitter_id')->constrained('users');
+            $table->enum(
+                'operational_manager_approval',
+                ['Diterima', 'Revisi', 'Ditolak', 'Pending']
+            )->default('Pending');
+            $table->string('reason')->nullable();
+            $table->foreignId('operational_manager_id')->nullable()->constrained('users');
             $table->boolean('known_by_director')->default(false);
+            $table->foreignId('director_id')->nullable()->constrained('users');
             $table->boolean('known_by_gm')->default(false);
+            $table->foreignId('gm_id')->nullable()->constrained('users');
             $table->string('attachment');
             $table->timestamps();
         });

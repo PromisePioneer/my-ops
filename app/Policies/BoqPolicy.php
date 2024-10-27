@@ -13,7 +13,33 @@ class BoqPolicy
      */
     public function view(User $user, Boq $boq): bool
     {
-        return $user->can('Lihat BoQ');
+        return $user->can('Lihat Menu BoQ');
+    }
+
+
+    public function viewAllBoQ(User $user): bool
+    {
+        return $user->can('Lihat Semua Data BoQ');
+    }
+
+
+    public function viewBoQonSameBranch(User $user, Boq $boq): bool
+    {
+        if ($user->can('Lihat Data BoQ Sesuai Cabang Masing2')) {
+            return $user->branch_id === $boq->branch_id;
+        }
+
+        return false;
+    }
+
+
+    public function viewOwnBoQ(User $user, Boq $boq): bool
+    {
+        if ($user->can('Lihat Pengajuan BoQ Pribadi')) {
+            return $user->id === $boq->submitter_id;
+        }
+
+        return false;
     }
 
     /**
@@ -29,17 +55,22 @@ class BoqPolicy
      */
     public function update(User $user, Boq $boq): bool
     {
-        if ($boq->submitter === $user->id) {
-            return true;
+        if ($user->can('Mengubah BoQ Pribadi')) {
+            return $boq->submitter_id === $user->id;
         }
 
-        return $user->can('Mengubah BoQ');
+        return true;
+    }
+
+    public function approveBoQ(User $user, Boq $boq): bool
+    {
+        return $user->can('Menyetujui BoQ', $boq);
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Boq $boq): bool
+    public function deleteBoQ(User $user, Boq $boq): bool
     {
         return $user->can('Menghapus BoQ');
     }

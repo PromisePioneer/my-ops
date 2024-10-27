@@ -26,7 +26,7 @@ class BoqRequest extends FormRequest
     {
         return [
             'title' => ['required'],
-            'date' => ['required', 'date'],
+            'date' => ['required', 'date', 'after:now'],
             'data.*.name' => ['required'],
             'data.*.qty' => ['required'],
             'data.*.unit_type_id' => ['required', Rule::exists('unit_types', 'id')],
@@ -36,7 +36,7 @@ class BoqRequest extends FormRequest
             'projectTimeline.*.name' => ['required'],
             'projectTimeline.*.qty' => ['nullable'],
             'projectTimeline.*.unit_type_id' => ['nullable'],
-            'projectTimeline.*.start_date' => ['required', 'date', 'after:now'],
+            'projectTimeline.*.start_date' => ['required', 'date', 'after:date'],
             'projectTimeline.*.end_date' => ['required', 'date', 'after:start_date'],
             'projectTimeline.*.technician' => ['required'],
             'attachment' => [Rule::requiredIf($request->route('boq') === null), 'max:2048', 'mimes:pdf'],

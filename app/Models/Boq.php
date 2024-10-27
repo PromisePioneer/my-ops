@@ -16,8 +16,8 @@ class Boq extends Model
         'branch_id',
         'title',
         'date',
-        'status',
-        'submitter',
+        'operational_manager_approval',
+        'submitter_id',
         'approved_by',
         'known_by',
         'attachment',
@@ -31,7 +31,7 @@ class Boq extends Model
 
     public function submitterName(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'submitter');
+        return $this->belongsTo(User::class, 'submitter_id');
     }
 
 

@@ -17,5 +17,18 @@ class UnitTypesSeeder extends Seeder
         DB::table('unit_types')->insert([
             'name' => 'Kg',
         ]);
+
+
+        DB::table('unit_types')->insert([
+            'name' => 'Meter',
+        ]);
+
+        DB::table('unit_types')->insert([
+            'name' => 'PCS',
+        ]);
+
+        DB::table('unit_types')->insert([
+            'name' => 'ROLL',
+        ]);
     }
 }
