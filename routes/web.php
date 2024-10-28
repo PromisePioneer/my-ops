@@ -284,7 +284,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/show/{branch}', [BranchesController::class, 'show']);
             Route::post('/update/{branch}', [BranchesController::class, 'update']);
             Route::post('/destroy/', [BranchesController::class, 'destroy']);
-            Route::post('/import', [BranchesController::class, 'import']);
         });
 
         //contact

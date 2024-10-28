@@ -10,24 +10,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
-/**
- * @property int $id
- * @property string $code
- * @property string $name
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- *
- * @method static Builder|Branch newModelQuery()
- * @method static Builder|Branch newQuery()
- * @method static Builder|Branch query()
- * @method static Builder|Branch whereCode($value)
- * @method static Builder|Branch whereCreatedAt($value)
- * @method static Builder|Branch whereId($value)
- * @method static Builder|Branch whereName($value)
- * @method static Builder|Branch whereUpdatedAt($value)
- *
- * @mixin Eloquent
- */
 class Branch extends Model
 {
     use HasFactory;
@@ -46,19 +28,14 @@ class Branch extends Model
         return $this->hasMany(AccountTransaction::class, 'branch_id');
     }
 
-    //eloquent
     public function getData(Request $request): array
     {
         $search = $request->input('search');
-        $query = self::orderby('name')->select('id', 'name', 'code');
-
-        if ($search !== '') {
+        $query = self::when(!empty($search), function ($query) use ($search) {
             $query->where('name', 'like', '%'.$search.'%');
-        }
+        })->orderby('name')->select('id', 'name', 'code')->get();
 
-        $branches = $query->get();
-
-        return $branches->map(function ($c) {
+        return $query->map(function ($c) {
             return [
                 'id' => $c->id,
                 'text' => $c->name,
