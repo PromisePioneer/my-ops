@@ -60,7 +60,6 @@
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Kategori Layanan</th>
-                                <th class="min-w-125px">Kapasitas</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -96,7 +95,6 @@
                                         </div>
                                     </td>
                                     <td x-text="category.name"></td>
-                                    <td x-text="`${category.capacity} / Mbps`"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(category.id)">
@@ -150,7 +148,7 @@
                     this.isLoading = false;
                 },
                 async searchData() {
-                    this.categories = await axios.get('/general-master-data/service-categories/search', {
+                    const resp = await axios.get('/general-master-data/service-categories/search', {
                         params: {
                             search: this.search
                         },
@@ -158,6 +156,8 @@
                             'Content-Type': 'application/json',
                         }
                     });
+
+                    this.categories = resp.data;
                 },
                 async paginationEndPoint(url) {
                     if (url) {
@@ -195,6 +195,9 @@
                     try {
                         await axios.post('/general-master-data/service-categories/', new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan');
+                        await this.init();
+                        await this.formCreate.reset();
+                        await this.modalCreate.hide();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))

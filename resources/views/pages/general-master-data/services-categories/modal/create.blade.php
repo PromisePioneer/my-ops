@@ -19,12 +19,7 @@
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama Layanan</label>
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama Kode"/>
-                    </div>
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Kapasitas</label>
-                        <input type="number" id="capacity" name="capacity" class="form-control form-control-solid"
-                               placeholder="Nama Kapatitas"/>
+                               placeholder="Nama Layanan"/>
                     </div>
                 </div>
 

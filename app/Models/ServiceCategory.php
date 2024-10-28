@@ -23,13 +23,12 @@ class ServiceCategory extends Model
 
         if ($search !== '') {
             $query->where('name', 'like', '%'.$search.'%');
-            $query->where('capacity', 'like', '%'.$search.'%');
         }
 
-        $serviceCategories = $query->get(['id', 'name', 'capacity']);
+        $serviceCategories = $query->get(['id', 'name']);
 
         return $serviceCategories->map(function ($c) {
-            $nameAndCapacity = $c->name.' ('.$c->capacity.'/Mbps)';
+            $nameAndCapacity = $c->name;
 
             return [
                 'id' => $c->id,

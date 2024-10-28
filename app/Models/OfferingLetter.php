@@ -22,7 +22,7 @@ class OfferingLetter extends Model
         'date',
         'regarding',
         'status',
-        'created_by',
+        'pic',
     ];
 
     public function contact(): BelongsTo
@@ -42,6 +42,6 @@ class OfferingLetter extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'pic');
     }
 }

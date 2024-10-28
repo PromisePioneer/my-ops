@@ -14,7 +14,6 @@ class CreateServicesCategories extends Migration
         Schema::create('services_categories', static function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('capacity');
             $table->timestamps();
         });
     }

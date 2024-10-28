@@ -15,12 +15,15 @@ class CreateOfferingLetterProductServices extends Migration
     {
         Schema::create('offering_letter_product_services', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('offering_letter_id')->constrained('offering_letters')
+            $table->foreignId('offering_letter_id')
+                ->constrained('offering_letters')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignId('service_category_id')->constrained('services_categories')
+            $table->foreignId('service_category_id')
+                ->constrained('services_categories')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->integer('capacity');
             $table->double('price');
             $table->timestamps();
         });

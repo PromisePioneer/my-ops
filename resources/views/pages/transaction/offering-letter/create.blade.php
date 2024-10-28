@@ -13,17 +13,24 @@
             <div class="card p-10">
                 <form id="form" @submit.prevent="save()">
                     <div class="card-body p-12">
-                        <div class="row">
+                        <div class="row gx-10 mb-5">
                             <div class="col-lg-6">
-                                <div class="d-flex align-items-center flex-equal fw-row me-4 order-2"
-                                     data-bs-toggle="tooltip" data-bs-trigger="hover" title="Specify invoice date">
-                                    <div class="fs-6 fw-bolder text-gray-700 text-nowrap">
-                                        <span class="required">Tanggal:</span>
-                                    </div>
-                                    <div class="position-relative d-flex align-items-center ms-4">
-                                        <input type="date" class="form-control form-control-solid fw-bolder pe-5"
-                                               placeholder="Tanggal" name="date" id="date"/>
-                                    </div>
+                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                    Tanggal
+                                </label>
+                                <div class="mb-5">
+                                    <input type="date" name="date" class="form-control form-control-solid date"
+                                           placeholder="Masukkan tanggal">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                    Penanggung Jawab
+                                </label>
+                                <div class="mb-5">
+                                    <select name="pic" class="form-select form-select-solid users-select2">
+                                        <option></option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -37,13 +44,13 @@
                                     <div class="mb-5">
                                         <select name="contact_id" class="form-select form-select-solid contact-select2"
                                                 data-placeholder="Select an option">
-                                            <option selected>Pilih Calon Klien</option>
+                                            <option></option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
-                                        Lampiran
+                                        Perihal
                                     </label>
                                     <div class="mb-5">
                                         <input type="text" name="regarding" class="form-control form-control-solid"
@@ -57,6 +64,7 @@
                                 <thead>
                                 <tr class="border-bottom fs-7 fw-bolder text-gray-700 text-uppercase">
                                     <th class="min-w-300px w-475px required">Jenis Layanan</th>
+                                    <th class="min-w-100px w-100px required">Kapasitas</th>
                                     <th class="min-w-100px w-100px required">Harga</th>
                                     <th class="min-w-75px w-75px text-end">Action</th>
                                 </tr>
@@ -68,13 +76,18 @@
                                             <select :class="`form-select form-select-solid service-categories-select2`"
                                                     :name="`data[${index}][service_category_id]`"
                                                     x-model="field.service_category_id">
-                                                <option value="0">Pilih Layanan</option>
+                                                <option></option>
                                             </select>
                                         </td>
                                         <td style='text-align:center; vertical-align:middle' class="w-50">
                                             <input class="form-control form-control-solid" type="number" min="1"
+                                                   x-model="field.capacity" :name="`data[${index}][capacity]`"
+                                                   placeholder="Kapasitas" value="0" @change="calculateTotal(index)"/>
+                                        </td>
+                                        <td style='text-align:center; vertical-align:middle' class="w-50">
+                                            <input class="form-control form-control-solid" type="number" min="1"
                                                    x-model="field.price" :name="`data[${index}][price]`"
-                                                   placeholder="0" value="0" @change="calculateTotal(index)"/>
+                                                   placeholder="Harga" value="0" @change="calculateTotal(index)"/>
                                         </td>
                                         <td class="text-end" style='text-align:center; vertical-align:middle'>
                                             <button type="button" class="btn btn-sm btn-icon btn-active-color-primary"
@@ -128,7 +141,8 @@
                                         <td style='text-align:center; vertical-align:middle' class="w-50">
                                             <input class="form-control form-control-solid" type="text"
                                                    x-model="field.text" :name="`serviceDescription[${index}][text]`"
-                                                   placeholder="0" @change="calculateTotal(index)"/>
+                                                   placeholder="Syarat Ketentuan Layanan"
+                                                   @change="calculateTotal(index)"/>
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-icon btn-active-color-primary"
@@ -181,13 +195,14 @@
 @endsection
 @push('script')
     <script>
-        $("#date").flatpickr();
+        $(".date").flatpickr();
 
         function generateOfferingLetter() {
             return {
                 buttonLoading: false,
                 offeringLetterProductService: [{
                     service_category_id: '',
+                    capacity: '',
                     price: '',
                     total_price: '',
                 }],
@@ -200,6 +215,7 @@
                 async init() {
                     await this.getContactData();
                     await this.getServicesCategories();
+                    await this.getUserData();
                 },
                 async saveContact() {
                     this.buttonLoading = true;
@@ -235,6 +251,7 @@
                     })
                     this.offeringLetterProductService.push({
                         service_category_id: '',
+                        capacity: '',
                         price: '',
                         total_price: '',
                     });
@@ -246,9 +263,12 @@
                 },
                 calculateTotal(index) {
                     this.offeringLetterProductService[index].total_price = this.offeringLetterProductService[index].price;
+                    console.log(this.offeringLetterProductService[index].total_price);
                 },
                 calculateTotalAll() {
-                    return this.offeringLetterProductService.reduce((total, field) => total + field.price, 0);
+                    return this.offeringLetterProductService.reduce((total, field) => {
+                        return Number(total) + Number(field.price)
+                    }, 0);
                 },
                 formatNumber(curr) {
                     let IDR = new Intl.NumberFormat('en-ID', {
@@ -270,6 +290,8 @@
                 },
                 async getServicesCategories() {
                     $(".service-categories-select2").select2({
+                        placeholder: "Pilih kategori layanan",
+                        allowClear: true,
                         ajax: {
                             url: '/income-transactions/offering-letters/service-categories/data',
                             dataType: "json",
@@ -282,6 +304,8 @@
                 },
                 async getContactData() {
                     $(".contact-select2").select2({
+                        placeholder: "Pilih Kontak",
+                        allowClear: true,
                         escapeMarkup: markup => (markup),
                         language: {
                             noResults: () => {
@@ -290,6 +314,20 @@
                         },
                         ajax: {
                             url: '/income-transactions/offering-letters/contact/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async getUserData() {
+                    $(".users-select2").select2({
+                        placeholder: "Pilih Penanggung jawab.",
+                        allowClear: true,
+                        ajax: {
+                            url: '/income-transactions/offering-letters/users/data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),

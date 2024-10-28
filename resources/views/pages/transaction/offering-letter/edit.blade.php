@@ -20,18 +20,25 @@
             <div class="card p-5">
                 <form id="form" @submit.prevent="save()">
                     <div class="card-body p-12">
-                        <div class="row">
+                        <div class="row gx-10 mb-5">
                             <div class="col-lg-6">
-                                <div class="d-flex align-items-center flex-equal fw-row me-4 order-2"
-                                     data-bs-toggle="tooltip" data-bs-trigger="hover" title="Specify invoice date">
-                                    <div class="fs-6 fw-bolder text-gray-700 text-nowrap">
-                                        <span class="required">Tanggal:</span>
-                                    </div>
-                                    <div class="position-relative d-flex align-items-center ms-4">
-                                        <input type="date" class="form-control form-control-solid fw-bolder pe-5"
-                                               placeholder="Tanggal" name="date" id="date"
-                                               value="{{ $offeringLetter->date }}"/>
-                                    </div>
+                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                    Tanggal
+                                </label>
+                                <div class="mb-5">
+                                    <input type="date" name="date" class="form-control form-control-solid date"
+                                           placeholder="Masukkan tanggal" value="{{ $offeringLetter->date }}">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                    Penanggung Jawab
+                                </label>
+                                <div class="mb-5">
+                                    <select name="pic" id="selectedUser"
+                                            class="form-select form-select-solid users-select2">
+                                        <option></option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -67,6 +74,7 @@
                                 <thead>
                                 <tr class="border-bottom fs-7 fw-bolder text-gray-700 text-uppercase">
                                     <th class="min-w-300px w-475px required">Jenis Layanan</th>
+                                    <th class="min-w-300px w-475px required">Capacity</th>
                                     <th class="min-w-100px w-100px required">Harga</th>
                                     <th class="min-w-75px w-75px text-end">Action</th>
                                 </tr>
@@ -84,8 +92,13 @@
                                         </td>
                                         <td style='text-align:center; vertical-align:middle' class="w-50">
                                             <input class="form-control form-control-solid" type="number" min="1"
+                                                   x-model="field.capacity" :name="`data[${index}][capacity]`"
+                                                   placeholder="Kapasitas" value="0" @change="calculateTotal(index)"/>
+                                        </td>
+                                        <td style='text-align:center; vertical-align:middle' class="w-50">
+                                            <input class="form-control form-control-solid" type="number" min="1"
                                                    x-model="field.price" :name="`data[${index}][price]`"
-                                                   placeholder="0" value="0" @change="calculateTotal(index)"/>
+                                                   placeholder="Harga" value="0" @change="calculateTotal(index)"/>
                                         </td>
                                         <td class="text-end" style='text-align:center; vertical-align:middle'>
                                             <button type="button" class="btn btn-sm btn-icon btn-active-color-primary"
@@ -192,7 +205,7 @@
 @endsection
 @push('script')
     <script>
-        $("#date").flatpickr();
+        $(".date").flatpickr();
 
         function generateOfferingLetter() {
             return {
@@ -210,6 +223,8 @@
                     await this.getSelectedOfferingLetterProductService();
                     await this.getSelectedOfferingLettersServiceDescription();
                     await this.getSelectedContact();
+                    await this.getSelectedUser();
+                    await this.getUserData();
                 },
                 async getSelectedOfferingLetterProductService() {
                     const selectedServicesCategories = await axios.get(`/income-transactions/offering-letters/get-selected-products/${this.id}`);
@@ -236,6 +251,29 @@
                     } catch (e) {
                         console.log(e)
                     }
+                },
+                async getUserData() {
+                    $(".users-select2").select2({
+                        placeholder: "Pilih Penanggung jawab.",
+                        allowClear: true,
+                        ajax: {
+                            url: '/income-transactions/offering-letters/users/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async getSelectedUser() {
+                    const selectedUser = $('#selectedUser');
+                    const response = await axios.get(`/income-transactions/offering-letters/users/selected/${this.id}`);
+                    const option = new Option(response.data.name, response.data.id, true, true);
+                    selectedUser.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response.data}
+                    });
                 },
                 async getSelectedContact() {
                     const selectedContact = $('#selectedContact');

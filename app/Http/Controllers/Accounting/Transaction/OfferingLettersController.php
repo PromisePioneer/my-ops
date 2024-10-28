@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Accounting\Transaction;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaction\OfferingLetter\OfferingLetterRequest;
+use App\Models\Boq;
 use App\Models\Branch;
 use App\Models\Contact;
 use App\Models\LetterHead;
@@ -12,6 +13,7 @@ use App\Models\OfferingLetterProduct;
 use App\Models\OfferingLetterServiceDescription;
 use App\Models\ServiceCategory;
 use App\Models\TaxSetting;
+use App\Models\User;
 use App\Service\OfferingLetterService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
@@ -25,22 +27,21 @@ class OfferingLettersController extends Controller
 
     protected OfferingLetterService $OfferingLetterService;
 
-    private OfferingLetter $offeringLetter;
     private Contact $contact;
     private serviceCategory $serviceCategory;
     private OfferingLetterProduct $offeringLetterProduct;
     private Branch $branch;
     private OfferingLetterService $offeringLetterService;
+    private User $user;
 
     public function __construct()
     {
         $this->offeringLetterService = new OfferingLetterService();
-        $this->offeringLetter = new OfferingLetter();
         $this->contact = new Contact();
         $this->serviceCategory = new ServiceCategory();
         $this->offeringLetterProduct = new OfferingLetterProduct();
-
         $this->branch = new Branch();
+        $this->user = new  User();
     }
 
     public function index(): View
@@ -80,6 +81,12 @@ class OfferingLettersController extends Controller
         return response()->json($this->contact->getData($request));
     }
 
+
+    public function getUserData(Request $request): JsonResponse
+    {
+        return response()->json($this->user->getUser($request));
+    }
+
     public function getServicesCategoriesData(Request $request): JsonResponse
     {
         return response()->json($this->serviceCategory->getData($request));
@@ -97,6 +104,11 @@ class OfferingLettersController extends Controller
         return response()->json($data);
     }
 
+    public function selectedUser(OfferingLetter $offeringLetter): JsonResponse
+    {
+        return response()->json($this->user->getSelectedData($offeringLetter->pic));
+    }
+
     public function store(OfferingLetterRequest $request): JsonResponse
     {
         $this->offeringLetterService->store($request);
@@ -108,26 +120,23 @@ class OfferingLettersController extends Controller
 
     public function show(OfferingLetter $offeringLetter): View
     {
-        $data = $offeringLetter->with('user', 'user.roles')->first();
         $offeringLetterServices = OfferingLetterProduct::where('offering_letter_id', $offeringLetter->id)->get();
         $offeringLetterServiceDescription = OfferingLetterServiceDescription::where(
             'offering_letter_id',
             $offeringLetter->id
         )->get();
-        $letterHead = LetterHead::where('id', 1)->first();
         $getPPN = TaxSetting::where('name', 'PPN')->first();
 
-        $totalPPN = $offeringLetterServices->sum('price') / $getPPN->rate;
-        $subTotal = $offeringLetterServices->sum('price') + $totalPPN;
+        $totalPPN = $getPPN->rate / 100 * $offeringLetterServices->sum('price');
+        $total = $offeringLetterServices->sum('price') + $totalPPN;
 
         return view(
             'pages.transaction.offering-letter.detail',
             compact(
-                'data',
-                'letterHead',
+                'offeringLetter',
                 'offeringLetterServices',
                 'totalPPN',
-                'subTotal',
+                'total',
                 'offeringLetterServiceDescription'
             )
         );
@@ -195,15 +204,21 @@ class OfferingLettersController extends Controller
             'offering_letter_id',
             $offeringLetter->id
         )->get();
-        $letterHead = LetterHead::where('id', 1)->first();
         $getPPN = TaxSetting::where('name', 'PPN')->first();
 
-        $totalPPN = $offeringLetterServices->sum('price') / $getPPN->rate;
-        $subTotal = $offeringLetterServices->sum('price') + $totalPPN;
+        $totalPPN = $getPPN->rate / 100 * $offeringLetterServices->sum('price');
+        $total = $offeringLetterServices->sum('price') + $totalPPN;
 
         $pdf = Pdf::loadView(
             'pages.transaction.offering-letter.export-pdf',
-            compact('data', 'offeringLetterServices', 'offeringLetterServiceDescription', 'subTotal', 'getPPN', 'totalPPN')
+            compact(
+                'data',
+                'offeringLetterServices',
+                'offeringLetterServiceDescription',
+                'total',
+                'getPPN',
+                'totalPPN'
+            )
         )
             ->setPaper('A4', 'portrait');
 

@@ -13,6 +13,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+use Throwable;
+
 use function App\Helper\convertToRoman;
 
 class OfferingLetterService
@@ -66,7 +68,15 @@ class OfferingLetterService
     {
         $offeringLetters = OfferingLetter::with('contact', 'user', 'branch')
             ->where('branch_id', $request->user()->branch_id)
-            ->select('id', 'offering_number', 'status', 'created_at', 'created_by', 'contact_id', 'branch_id')
+            ->select(
+                'id',
+                'offering_number',
+                'status',
+                'created_at',
+                'pic',
+                'contact_id',
+                'branch_id'
+            )
             ->paginate(self::$perPage);
         return self::formatOfferingLettersData($offeringLetters);
     }
@@ -108,12 +118,14 @@ class OfferingLetterService
         return self::formatOfferingLettersData($offeringLetter);
     }
 
+    /**
+     * @throws Throwable
+     */
     public function store($request): void
     {
         DB::transaction(function () use ($request) {
             $data = $request->validated();
             $data['offering_number'] = self::generateOfferingNumber($request);
-            $data['created_by'] = $request->user()->id;
             $data['branch_id'] = $request->user()->branch_id;
             $offeringLetter = OfferingLetter::create($data);
             $this->offeringProductServiceStore($request, $offeringLetter);
@@ -153,7 +165,6 @@ class OfferingLetterService
                 'file',
                 $offeringLetter->file
             );
-            $data['created_by'] = $request->user()->id;
             $data['branch_id'] = $request->user()->branch_id;
             $offeringLetter->update($data);
             OfferingLetterProduct::whereIn('offering_letter_id', [$offeringLetter->id])->delete();
