@@ -9,9 +9,7 @@ use Spatie\Permission\PermissionRegistrar;
 
 class PermissionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+
     public function run(): void
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
