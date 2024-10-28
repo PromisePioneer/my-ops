@@ -188,10 +188,14 @@ class IclockService
     private function processCheckOut(array $attendanceData, $shift, string $date, string $time): void
     {
         if ($this->isValidTime($time, $shift->time_to_checkout, $shift->end_time_to_checkout)) {
-            $existingCheckOut = $this->getAttendanceRecord($attendanceData['employee_id'], $date, 'desc');
+            $existingCheckOut = Attendances::where('employee_id', $attendanceData['employee_id'])
+            ->whereDate('timestamp', $date)
+            ->where('status1', 1)
+            ->exists();
 
             if (!$existingCheckOut) {
                 Attendances::create($attendanceData);
+                Log::info('hai');
             }
         }
     }
