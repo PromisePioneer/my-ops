@@ -18,15 +18,17 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            <button type="button" class="btn btn-light-primary btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
-                                <i class="ki-duotone ki-message-add fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                </i> Tambah
-                            </button>
+                            <template x-if="Number(createPermission) === 1">
+                                <button type="button" class="btn btn-light-primary btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-create">
+                                    <i class="ki-duotone ki-message-add fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i> Tambah
+                                </button>
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -53,15 +55,20 @@
                         <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="w-10px pe-2">
-                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                        <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
-                                    </div>
-                                </th>
+                                <template x-if="Number(deletePermission) === 1">
+                                    <th class="w-10px pe-2">
+                                        <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                            <input class="form-check-input" type="checkbox"
+                                                   @click="toggleAllCheckBox()">
+                                        </div>
+                                    </th>
+                                </template>
                                 <th class="min-w-125px">Kode</th>
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Alamat</th>
-                                <th class="min-w-125px">Actions</th>
+                                <template x-if="Number(editPermission) === 1">
+                                    <th class="min-w-125px">Actions</th>
+                                </template>
                             </thead>
                             <template x-if="isLoading">
                                 <tbody class="fw-bold">
@@ -88,13 +95,15 @@
                             <template x-for="branch in branches?.data" :key="branch.id">
                                 <tbody class="fw-bold">
                                 <tr>
-                                    <td>
-                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                             @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="branch.id"
-                                                   :id="'checkbox-' + branch.id"/>
-                                        </div>
-                                    </td>
+                                    <template x-if="Number(deletePermission) === 1">
+                                        <td>
+                                            <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                                 @click="selectCheckBox($event)">
+                                                <input class="form-check-input" type="checkbox" :value="branch.id"
+                                                       :id="'checkbox-' + branch.id"/>
+                                            </div>
+                                        </td>
+                                    </template>
                                     <td x-text="branch.code"></td>
                                     <td>
                                         <a :href="`/master/branch/structure-orgranization/${branch.id}`"
@@ -102,13 +111,15 @@
                                     </td>
                                     <td x-text="`${branch.address.substring(0, 30)}...`"></td>
                                     <td>
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(branch.id)">
-                                            <i class="ki-duotone ki-pencil fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </button>
+                                        <template x-if="Number(editPermission) === 1">
+                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-edit" @click="edit(branch.id)">
+                                                <i class="ki-duotone ki-pencil fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                            </button>
+                                        </template>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -134,8 +145,11 @@
     <script defer>
         function branchesData() {
             return {
+                createPermission: "{{ request()->user()->can('Tambah Cabang') }}",
+                editPermission: "{{ request()->user()->can('Edit Cabang') }}",
+                deletePermission: "{{ request()->user()->can('Hapus Cabang') }}",
                 branches: [],
-                isLoading: true,
+                isLoading: false,
                 buttonLoading: false,
                 selectedCheckBox: [],
                 selectAll: false,
@@ -148,16 +162,27 @@
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
-                    const branches = await axios.get('/general-master-data/branch/data');
-                    this.branches = branches.data
+                    await this.getBranchData();
+                },
+                async getBranchData() {
                     this.isLoading = false;
+                    try {
+                        const branches = await axios.get('/general-master-data/branch/data');
+                        this.branches = branches.data
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async searchData() {
                     try {
-                        this.branches = await axios.get('/general-master-data/branch/search', {
+                        const resp = await axios.get('/general-master-data/branch/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
+
+                        this.branches = resp.data;
                     } catch (error) {
                         console.log(error);
                     }

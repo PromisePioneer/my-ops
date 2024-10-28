@@ -109,11 +109,13 @@
                         Master Umum
                     @endslot
                     @slot('menuItem')
-                        <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'branch'"
-                                href="{{ url('general-master-data/branch') }}">
-                            Cabang
-                        </x-dropdown-menu-item>
+                        @can('Lihat Cabang')
+                            <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'branch'"
+                                    href="{{ url('general-master-data/branch') }}">
+                                Cabang
+                            </x-dropdown-menu-item>
+                        @endcan
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'contact'"
                                 href="{{ url('general-master-data/contact') }}">

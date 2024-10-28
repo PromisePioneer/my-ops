@@ -14,6 +14,9 @@ use Illuminate\View\View;
 
 class BranchesController extends Controller
 {
+
+    private static int $perPage = 10;
+
     /**
      * @throws AuthorizationException
      */
@@ -40,11 +43,13 @@ class BranchesController extends Controller
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', Branch::class);
-        $branchSearch = Branch::where('name', 'like', '%'.$request->search.'%')
-            ->Orwhere('code', 'like', '%'.$request->search.'%')
-            ->select('id', 'code', 'name')
-            ->limit(25)
-            ->get();
+
+        $search = $request->input('search');
+        $branchSearch = Branch::when(!empty($search), function ($query) use ($search) {
+            return $query->where('code', 'like', '%'.$search.'%')
+                ->orWhere('name', 'like', '%'.$search.'%')
+                ->orWhere('address', 'like', '%'.$search.'%');
+        })->paginate(self::$perPage);
 
         return response()->json($branchSearch);
     }
