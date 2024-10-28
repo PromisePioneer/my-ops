@@ -63,7 +63,7 @@
                                 <th class="min-w-100px">Calon Klien</th>
                                 <th class="min-w-100px">Status</th>
                                 <th class="min-w-125px">Tgl Dibuat</th>
-                                <th class="min-w-125px">Dibuat Oleh</th>
+                                <th class="min-w-125px">PIC</th>
                             </thead>
                             <tbody class=" fw-bold">
                             <template x-if="isLoading">

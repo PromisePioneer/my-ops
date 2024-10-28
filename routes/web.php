@@ -780,6 +780,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/contact/data', [OfferingLettersController::class, 'getContactData']);
             Route::get('/service-categories/data', [OfferingLettersController::class, 'getServicesCategoriesData']);
             Route::post('/', [OfferingLettersController::class, 'store']);
+            Route::get('/users/data', [OfferingLettersController::class, 'getUserData']);
+            Route::get('/users/selected/{offeringLetter}', [OfferingLettersController::class, 'selectedUser']);
             Route::post('/update/{offeringLetter}', [OfferingLettersController::class, 'update']);
             Route::get('/view-file/{offeringLetter}', [OfferingLettersController::class, 'viewFile']);
             Route::get('/detail/{offeringLetter}', [OfferingLettersController::class, 'show']);

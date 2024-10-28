@@ -32,7 +32,7 @@ class ServicesCategoryController extends Controller
     public function data(): JsonResponse
     {
         $this->authorize('view', ServiceCategory::class);
-        $services = ServiceCategory::orderBy('capacity', 'ASC')
+        $services = ServiceCategory::orderBy('name')
             ->paginate(self::$perPage)
             ->onEachSide(1);
 
@@ -45,11 +45,11 @@ class ServicesCategoryController extends Controller
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', ServiceCategory::class);
-        $servicesCategory = ServiceCategory::where('name', 'like', '%'.$request->search.'%')
-            ->orWhere('capacity', 'like', '%'.$request->search.'%')
-            ->orderBy('capacity', 'ASC')
-            ->limit(25)
-            ->get();
+        $search = $request->input('search');
+
+        $servicesCategory = ServiceCategory::when(!empty($search), function ($query) use ($search) {
+            $query->where('name', 'like', '%'.$search.'%');
+        })->paginate(self::$perPage);
 
         return response()->json($servicesCategory);
     }

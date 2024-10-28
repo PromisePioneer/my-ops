@@ -21,7 +21,7 @@ class CreateOfferingLetters extends Migration
             $table->date('date');
             $table->string('regarding');
             $table->boolean('status')->default(0);
-            $table->foreignId('created_by')->constrained('users');
+            $table->foreignId('pic')->constrained('users');
             $table->timestamps();
         });
     }

@@ -19,6 +19,7 @@ class OfferingLetterProduct extends Model
     protected $fillable = [
         'offering_letter_id',
         'service_category_id',
+        'capacity',
         'price',
     ];
 

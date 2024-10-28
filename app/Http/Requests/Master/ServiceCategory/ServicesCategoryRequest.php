@@ -21,7 +21,6 @@ class ServicesCategoryRequest extends FormRequest
     {
         return [
             'name' => ['required'],
-            'capacity' => ['required'],
         ];
     }
 
@@ -29,7 +28,6 @@ class ServicesCategoryRequest extends FormRequest
     {
         return [
             'name.required' => 'Nama tidak boleh kosong',
-            'capacity.required' => 'Kapasitas tidak boleh kosong',
         ];
     }
 }

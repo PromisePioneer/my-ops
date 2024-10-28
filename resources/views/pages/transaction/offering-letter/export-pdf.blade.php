@@ -80,6 +80,16 @@
 
 <div class="wrapper">
     <div class="container">
+        <div style="float: right">
+            <table>
+                <thead>
+                <tr>
+                    <td style="font-size: 13px">{{ \App\Helper\formatDate($data->date) }}</td>
+                </tr>
+                </thead>
+            </table>
+        </div>
+
         <table class="table-heading">
             <tbody>
             <tr>
@@ -110,8 +120,8 @@
         <div class="heading-text" style="margin-top: 10px">
             <p>Kepada Yth, <br> {{ $data->contact->company_name }} <br> <b>Ditempat</b></p>
             <br>
-            <p>Dengan hormat, Kami dari PT. Mayatama Solusindo bermaksud menawarkan harga internet dedicated untuk SMA
-                Negeri 4 Dumai, berikut di bawah ini harga terbaik yang kami tawarkan :</p>
+            <p>Dengan hormat, Kami dari PT. Mayatama Solusindo bermaksud menawarkan harga layanan dedicated
+                untuk {{ $data->contact->company_name }}, berikut adalah harga terbaik yang kami tawarkan :</p>
             <br>
         </div>
 
@@ -155,7 +165,7 @@
                     TOTAL
                 </td>
                 <td style="text-align: center; font-size: 14px;">
-                    Rp. {{ number_format($subTotal) }}</td>
+                    Rp. {{ number_format($total) }}</td>
             </tr>
 
             </tfoot>
@@ -199,7 +209,7 @@
             </tr>
             <tr style="padding: 0">
                 <th style="text-align: center; padding: 8px;">
-                    <p style="font-size: 12px; margin: 0;">{{ $data?->user->roles[0]?->name }}</p>
+                    <p style="font-size: 12px; margin: 0;">{{ $data?->user->roles[0]?->name ?? '' }}</p>
                 </th>
             </tr>
         </table>

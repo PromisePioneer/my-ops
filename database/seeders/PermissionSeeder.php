@@ -17,7 +17,6 @@ class PermissionSeeder extends Seeder
         $this->branch();
     }
 
-
     public function branch(): void
     {
         $director = Role::where('name', 'Director')->first();
