@@ -137,9 +137,9 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                formCreate: document.getElementById('form-create'),
+                formCreate: document.getElementById('form-skl-create'),
                 formEdit: document.getElementById('form-edit'),
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
+                modalCreate: new bootstrap.Modal(document.getElementById('modal-skl-create')),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
