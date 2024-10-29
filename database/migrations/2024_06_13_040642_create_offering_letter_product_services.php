@@ -23,7 +23,7 @@ class CreateOfferingLetterProductServices extends Migration
                 ->constrained('services_categories')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->integer('capacity');
+            $table->integer('capacity')->nullable();
             $table->double('price');
             $table->timestamps();
         });

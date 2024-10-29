@@ -11,7 +11,7 @@ use Illuminate\View\View;
 
 class UnitTypesController extends Controller
 {
-    public int $perPage = 10;
+    private static int $perPage = 10;
 
     private UnitType $unitType;
 
@@ -22,23 +22,26 @@ class UnitTypesController extends Controller
 
     public function index(): View
     {
-        return view('pages.inventory.unit-types.index');
+        return view('pages.general-master-data.unit-types.index');
     }
 
     public function data(): JsonResponse
     {
-        return response()->json($this->unitType->getDataWithPagination($this->perPage));
+        return response()->json($this->unitType->getDataWithPagination(self::$perPage));
     }
 
     public function search(Request $request): JsonResponse
     {
-        return response()->json($this->unitType->searchData($request));
+        $search = $request->input('search');
+        $unitType = UnitType::when(!empty($search), function ($query) use ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        })->paginate(self::$perPage);
+        return response()->json($unitType);
     }
 
     public function store(UnitTypeRequest $request): JsonResponse
     {
         $unitType = UnitType::create($request->validated());
-
         return response()->json($unitType);
     }
 
@@ -52,8 +55,14 @@ class UnitTypesController extends Controller
         return response()->json($unitType->update($request->validated()));
     }
 
-    public function destroy(UnitType $unitType): JsonResponse
+    public function destroy(Request $request, UnitType $unitType): JsonResponse
     {
-        return response()->json($unitType->delete());
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $unitType->whereIn('id', $explodeID)->delete();
+
+        return response()->json([
+            'message' => 'data berhasil dihapus',
+        ], 200);
     }
 }

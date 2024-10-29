@@ -79,8 +79,9 @@
              data-kt-scroll-height="auto"
              data-kt-scroll-dependencies="{default: '#kt_aside_toolbar, #kt_aside_footer', lg: '#kt_header, #kt_aside_toolbar, #kt_aside_footer'}"
              data-kt-scroll-wrappers="#kt_aside_menu" data-kt-scroll-offset="5px">
-            <div class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
-                 id="#kt_aside_menu" data-kt-menu="true">
+            <div
+                    class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
+                    id="#kt_aside_menu" data-kt-menu="true">
 
                 <x-menu-sections>Dashboard</x-menu-sections>
                 <x-single-menu-item :active="request()->segment(1) === 'home'"
@@ -120,6 +121,16 @@
                                 :active="request()->segment(2) === 'contact'"
                                 href="{{ url('general-master-data/contact') }}">
                             Contact
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'skl'"
+                                href="{{ url('general-master-data/skl') }}">
+                            Syarat Ketentuan Layanan
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'unit-types'"
+                                href="{{ url('general-master-data/unit-types/') }}">
+                            Satuan
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'product'"

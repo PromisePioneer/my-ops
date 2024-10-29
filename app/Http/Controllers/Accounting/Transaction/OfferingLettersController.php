@@ -11,8 +11,10 @@ use App\Models\LetterHead;
 use App\Models\OfferingLetter;
 use App\Models\OfferingLetterProduct;
 use App\Models\OfferingLetterServiceDescription;
+use App\Models\OfferingLetterSKL;
 use App\Models\ServiceCategory;
 use App\Models\TaxSetting;
+use App\Models\UnitType;
 use App\Models\User;
 use App\Service\OfferingLetterService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -29,19 +31,21 @@ class OfferingLettersController extends Controller
 
     private Contact $contact;
     private serviceCategory $serviceCategory;
-    private OfferingLetterProduct $offeringLetterProduct;
     private Branch $branch;
     private OfferingLetterService $offeringLetterService;
     private User $user;
+    private UnitType $unitType;
+    private OfferingLetterSKL $offeringLetterSKL;
 
     public function __construct()
     {
         $this->offeringLetterService = new OfferingLetterService();
         $this->contact = new Contact();
         $this->serviceCategory = new ServiceCategory();
-        $this->offeringLetterProduct = new OfferingLetterProduct();
         $this->branch = new Branch();
         $this->user = new  User();
+        $this->unitType = new UnitType();
+        $this->offeringLetterSKL = new OfferingLetterSKL();
     }
 
     public function index(): View
@@ -65,6 +69,7 @@ class OfferingLettersController extends Controller
 
         return response()->json($filter);
     }
+
 
     public function search(Request $request): JsonResponse
     {
@@ -100,13 +105,28 @@ class OfferingLettersController extends Controller
 
     public function getOfferingLetterDescription(OfferingLetter $offeringLetter): JsonResponse
     {
-        $data = OfferingLetterServiceDescription::where('offering_letter_id', $offeringLetter->id)->get();
+        $data = OfferingLetterServiceDescription::with('skl')->where('offering_letter_id', $offeringLetter->id)->get();
         return response()->json($data);
     }
 
     public function selectedUser(OfferingLetter $offeringLetter): JsonResponse
     {
         return response()->json($this->user->getSelectedData($offeringLetter->pic));
+    }
+
+    public function getUnitType(Request $request): JsonResponse
+    {
+        return response()->json($this->unitType->getData($request));
+    }
+
+    public function getSKL(Request $request): JsonResponse
+    {
+        return response()->json($this->offeringLetterSKL->getData($request));
+    }
+
+    public function getSelectedSKL(OfferingLetterServiceDescription $offeringLetterServiceDescription): JsonResponse
+    {
+        return response()->json($this->offeringLetterSKL->getSelectedData($offeringLetterServiceDescription->skl_id));
     }
 
     public function store(OfferingLetterRequest $request): JsonResponse
@@ -120,11 +140,11 @@ class OfferingLettersController extends Controller
 
     public function show(OfferingLetter $offeringLetter): View
     {
-        $offeringLetterServices = OfferingLetterProduct::where('offering_letter_id', $offeringLetter->id)->get();
-        $offeringLetterServiceDescription = OfferingLetterServiceDescription::where(
-            'offering_letter_id',
-            $offeringLetter->id
-        )->get();
+        $offeringLetterServices = OfferingLetterProduct::with('unitType')->where('offering_letter_id', $offeringLetter->id)->get();
+        $offeringLetterServiceDescription = OfferingLetterServiceDescription::with('skl')
+            ->where('offering_letter_id', $offeringLetter->id)
+            ->get();
+
         $getPPN = TaxSetting::where('name', 'PPN')->first();
 
         $totalPPN = $getPPN->rate / 100 * $offeringLetterServices->sum('price');
@@ -156,6 +176,13 @@ class OfferingLettersController extends Controller
     {
         $selected = $this->contact->getSelectedData($offeringLetter->contact_id);
         return response()->json($selected);
+    }
+
+
+    public function getSelectedUnitType(OfferingLetterProduct $offeringLetterProduct): JsonResponse
+    {
+        dd($offeringLetterProduct);
+        return response()->json($this->unitType->getSelectedData($offeringLetterProduct->unit_type_id));
     }
 
 
@@ -199,11 +226,10 @@ class OfferingLettersController extends Controller
     public function exportToPDF(OfferingLetter $offeringLetter): Response
     {
         $data = $offeringLetter->with('user', 'user.roles')->first();
-        $offeringLetterServices = OfferingLetterProduct::where('offering_letter_id', $offeringLetter->id)->get();
-        $offeringLetterServiceDescription = OfferingLetterServiceDescription::where(
-            'offering_letter_id',
-            $offeringLetter->id
-        )->get();
+        $offeringLetterServices = OfferingLetterProduct::with('unitType')->where('offering_letter_id', $offeringLetter->id)->get();
+        $offeringLetterServiceDescription = OfferingLetterServiceDescription::with('skl')
+            ->where('offering_letter_id', $offeringLetter->id)
+            ->get();
         $getPPN = TaxSetting::where('name', 'PPN')->first();
 
         $totalPPN = $getPPN->rate / 100 * $offeringLetterServices->sum('price');
@@ -219,8 +245,7 @@ class OfferingLettersController extends Controller
                 'getPPN',
                 'totalPPN'
             )
-        )
-            ->setPaper('A4', 'portrait');
+        )->setPaper('A4', 'portrait');
 
         return $pdf->stream();
     }

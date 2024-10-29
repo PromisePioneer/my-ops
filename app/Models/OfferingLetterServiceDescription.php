@@ -10,8 +10,14 @@ class OfferingLetterServiceDescription extends Model
     protected $table = 'offering_letter_service_descriptions';
     protected $fillable = [
         'offering_letter_id',
-        'text',
+        'skl_id',
     ];
+
+
+    public function skl(): BelongsTo
+    {
+        return $this->belongsTo(OfferingLetterSKL::class, 'skl_id');
+    }
 
 
     public function offeringLetter(): BelongsTo
