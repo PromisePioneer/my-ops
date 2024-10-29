@@ -22,7 +22,7 @@ class AttendanceSummaryDetailService
     public static function concatenateExpectedCheckInTime($attendance, $userWorkTime): string
     {
         $expectedCheckInTime = $userWorkTime->clock_in;
-        return Carbon::parse($attendance->timestamp)->format('Y-m-d').' '.$expectedCheckInTime;
+        return Carbon::parse($attendance->timestamp)->format('Y-m-d') . ' ' . $expectedCheckInTime;
     }
 
 
@@ -39,6 +39,7 @@ class AttendanceSummaryDetailService
             ->keyBy('date');
 
         $period = CarbonPeriod::create($startDate, $endDate);
+
 
         $dates = [];
 
@@ -77,16 +78,16 @@ class AttendanceSummaryDetailService
     public function calculateLate($item, $userWorktime): null|string
     {
         $expectedCheckIn = Carbon::parse($item['attendancesDate'])
-                ->format('Y-m-d').' '.$userWorktime->clock_in;
+                ->format('Y-m-d') . ' ' . $userWorktime->clock_in;
         $actualCheckIn = Carbon::parse($item['attendancesDate'])->format(
                 'Y-m-d'
-            ).' '.$item['attendanceData']?->clock_in;
+            ) . ' ' . $item['attendanceData']?->clock_in;
 
         $parseExpectedCheckIn = Carbon::parse($expectedCheckIn);
         $parseActualCheckIn = Carbon::parse($actualCheckIn);
 
         if ($parseActualCheckIn->greaterThan($parseExpectedCheckIn)) {
-            return Carbon::parse($expectedCheckIn)->diffInMinutes(Carbon::parse($actualCheckIn)).' Menit';
+            return Carbon::parse($expectedCheckIn)->diffInMinutes(Carbon::parse($actualCheckIn)) . ' Menit';
         }
 
         return null;
