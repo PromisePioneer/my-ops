@@ -181,7 +181,6 @@ class OfferingLettersController extends Controller
 
     public function getSelectedUnitType(OfferingLetterProduct $offeringLetterProduct): JsonResponse
     {
-        dd($offeringLetterProduct);
         return response()->json($this->unitType->getSelectedData($offeringLetterProduct->unit_type_id));
     }
 
