@@ -9,6 +9,8 @@
     </style>
     <div class="d-flex flex-column flex-lg-row" x-data="generateOfferingLetter">
         @include('pages.general-master-data.contact.modal.create')
+        @include('pages.general-master-data.unit-types.modal.create')
+        @include('pages.general-master-data.skl.modal.create')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
                 <form id="form" @submit.prevent="save()">
@@ -25,7 +27,7 @@
                             </div>
                             <div class="col-lg-6">
                                 <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
-                                    Penanggung Jawab
+                                    PIC
                                 </label>
                                 <div class="mb-5">
                                     <select name="pic" class="form-select form-select-solid users-select2">
@@ -42,8 +44,7 @@
                                         Calon Klien
                                     </label>
                                     <div class="mb-5">
-                                        <select name="contact_id" class="form-select form-select-solid contact-select2"
-                                                data-placeholder="Select an option">
+                                        <select name="contact_id" class="form-select form-select-solid contact-select2">
                                             <option></option>
                                         </select>
                                     </div>
@@ -54,7 +55,7 @@
                                     </label>
                                     <div class="mb-5">
                                         <input type="text" name="regarding" class="form-control form-control-solid"
-                                               placeholder="masukkan lampiran surat penawaran">
+                                               placeholder="masukkan perihal surat penawaran">
                                     </div>
                                 </div>
                             </div>
@@ -65,6 +66,7 @@
                                 <tr class="border-bottom fs-7 fw-bolder text-gray-700 text-uppercase">
                                     <th class="min-w-300px w-475px required">Jenis Layanan</th>
                                     <th class="min-w-100px w-100px required">Kapasitas</th>
+                                    <th class="min-w-100px w-100px required">Satuan</th>
                                     <th class="min-w-100px w-100px required">Harga</th>
                                     <th class="min-w-75px w-75px text-end">Action</th>
                                 </tr>
@@ -84,6 +86,14 @@
                                                    x-model="field.capacity" :name="`data[${index}][capacity]`"
                                                    placeholder="Kapasitas" value="0" @change="calculateTotal(index)"/>
                                         </td>
+                                        <td style='text-align:center; vertical-align:middle' class="w-20">
+                                            <select :class="`form-select form-select-solid unit-types-select2`"
+                                                    :name="`data[${index}][unit_type_id]`"
+                                                    x-model="field.unit_type_id">
+                                                <option></option>
+                                            </select>
+                                        </td>
+
                                         <td style='text-align:center; vertical-align:middle' class="w-50">
                                             <input class="form-control form-control-solid" type="number" min="1"
                                                    x-model="field.price" :name="`data[${index}][price]`"
@@ -139,10 +149,12 @@
                                 <template x-for="(field,index) in offeringLettersServiceDescription " :key="index">
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td style='text-align:center; vertical-align:middle' class="w-50">
-                                            <input class="form-control form-control-solid" type="text"
-                                                   x-model="field.text" :name="`serviceDescription[${index}][text]`"
-                                                   placeholder="Syarat Ketentuan Layanan"
-                                                   @change="calculateTotal(index)"/>
+                                            <div class="mb-5">
+                                                <select :name="`serviceDescription[${index}][skl_id]`"
+                                                        class="form-select form-select-solid skl-select2">
+                                                    <option></option>
+                                                </select>
+                                            </div>
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-icon btn-active-color-primary"
@@ -202,20 +214,27 @@
                 buttonLoading: false,
                 offeringLetterProductService: [{
                     service_category_id: '',
+                    unit_type_id: '',
                     capacity: '',
                     price: '',
                     total_price: '',
                 }],
                 offeringLettersServiceDescription: [{
-                    text: '',
+                    skl_id: '',
                 }],
                 form: document.getElementById('form'),
                 contactForm: document.getElementById('contactFormCreate'),
                 contactModal: new bootstrap.Modal(document.getElementById('contact-create')),
+                unitTypeForm: document.getElementById('unit-types-store'),
+                unitTypeModal: new bootstrap.Modal(document.getElementById('modal-unit-type-create')),
+                sklModal: new bootstrap.Modal(document.getElementById('modal-skl-create')),
+                sklForm: document.getElementById('form-skl-create'),
                 async init() {
                     await this.getContactData();
                     await this.getServicesCategories();
                     await this.getUserData();
+                    await this.getUnitTypeData();
+                    await this.getSKL();
                 },
                 async saveContact() {
                     this.buttonLoading = true;
@@ -248,17 +267,24 @@
                 async addOfferingLetterProductService() {
                     this.$nextTick(() => {
                         this.getServicesCategories();
+                        this.getUnitTypeData();
+
                     })
                     this.offeringLetterProductService.push({
                         service_category_id: '',
                         capacity: '',
+                        unit_type_id: '',
                         price: '',
                         total_price: '',
                     });
                 },
                 async addOfferingLettersServiceDescription() {
+                    this.$nextTick(() => {
+                        this.getSKL();
+                    })
+
                     this.offeringLettersServiceDescription.push({
-                        text: ''
+                        skl_id: ''
                     });
                 },
                 calculateTotal(index) {
@@ -302,6 +328,26 @@
                         }
                     });
                 },
+                async getSKL() {
+                    $(".skl-select2").select2({
+                        placeholder: "Pilih Syarat Ketentuan Layanan",
+                        allowClear: true,
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-skl-create"">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
+                        ajax: {
+                            url: '/income-transactions/offering-letters/skl/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
                 async getContactData() {
                     $(".contact-select2").select2({
                         placeholder: "Pilih Kontak",
@@ -322,9 +368,59 @@
                         }
                     });
                 },
+                async getUnitTypeData() {
+                    $(".unit-types-select2").select2({
+                        placeholder: "Pilih Satuan.",
+                        allowClear: true,
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-unit-type-create"">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
+                        ajax: {
+                            url: '/income-transactions/offering-letters/unit-types/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async saveUnitTypes() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/general-master-data/unit-types/', new FormData(this.unitTypeForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.unitTypeForm.reset();
+                        this.unitTypeModal.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async saveSKL() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/general-master-data/skl', new FormData(this.sklForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.sklForm.reset();
+                        this.sklModal.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
                 async getUserData() {
                     $(".users-select2").select2({
-                        placeholder: "Pilih Penanggung jawab.",
+                        placeholder: "Pilih PIC.",
                         allowClear: true,
                         ajax: {
                             url: '/income-transactions/offering-letters/users/data',

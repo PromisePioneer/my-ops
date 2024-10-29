@@ -72,6 +72,7 @@ use App\Http\Controllers\Master\General\CompanyController;
 use App\Http\Controllers\Master\General\ContactController;
 use App\Http\Controllers\Master\General\DepartmentController;
 use App\Http\Controllers\Master\General\NationalHolidayController;
+use App\Http\Controllers\Master\General\OfferingLetterSKLController;
 use App\Http\Controllers\Master\General\ProductController;
 use App\Http\Controllers\Master\General\RoleController;
 use App\Http\Controllers\Master\General\ServicesCategoryController;
@@ -284,6 +285,28 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/show/{branch}', [BranchesController::class, 'show']);
             Route::post('/update/{branch}', [BranchesController::class, 'update']);
             Route::post('/destroy/', [BranchesController::class, 'destroy']);
+        });
+
+
+        Route::prefix('unit-types')->group(function () {
+            Route::get('/', [UnitTypesController::class, 'index']);
+            Route::get('/data', [UnitTypesController::class, 'data']);
+            Route::get('/search', [UnitTypesController::class, 'search']);
+            Route::post('/', [UnitTypesController::class, 'store']);
+            Route::get('/{unitType}', [UnitTypesController::class, 'edit']);
+            Route::post('/destroy', [UnitTypesController::class, 'destroy']);
+            Route::post('/{unitType}', [UnitTypesController::class, 'update']);
+        });
+
+
+        Route::prefix('skl')->group(function () {
+            Route::get('/', [OfferingLetterSKLController::class, 'index']);
+            Route::get('/data', [OfferingLetterSKLController::class, 'data']);
+            Route::get('/search', [OfferingLetterSKLController::class, 'search']);
+            Route::post('/', [OfferingLetterSKLController::class, 'store']);
+            Route::get('/{offeringLetterSKL}', [OfferingLetterSKLController::class, 'edit']);
+            Route::post('/destroy', [OfferingLetterSKLController::class, 'destroy']);
+            Route::post('/{offeringLetterSKL}', [OfferingLetterSKLController::class, 'update']);
         });
 
         //contact
@@ -697,16 +720,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('account/asset/data', [UsedItemsController::class, 'getAssetAccount']);
         });
 
-        Route::prefix('unit-types')->group(function () {
-            Route::get('/', [UnitTypesController::class, 'index']);
-            Route::get('/data', [UnitTypesController::class, 'data']);
-            Route::get('/search', [UnitTypesController::class, 'search']);
-            Route::post('/', [UnitTypesController::class, 'store']);
-            Route::get('/{unitType}', [UnitTypesController::class, 'edit']);
-            Route::post('/{unitType}', [UnitTypesController::class, 'update']);
-            Route::delete('/{unitType}', [UnitTypesController::class, 'destroy']);
-        });
-
 
         Route::prefix('/boq')->group(function () {
             Route::get('/', [BoqController::class, 'index']);
@@ -779,6 +792,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/create', [OfferingLettersController::class, 'create']);
             Route::get('/contact/data', [OfferingLettersController::class, 'getContactData']);
             Route::get('/service-categories/data', [OfferingLettersController::class, 'getServicesCategoriesData']);
+            Route::get('/unit-types/data', [OfferingLettersController::class, 'getUnitType']);
+            Route::get('/unit-types/selected/{offeringLetterProduct}', [OfferingLettersController::class, 'getSelectedUnitType']);
+            Route::get('/skl/data', [OfferingLettersController::class, 'getSKL']);
+            Route::get('/skl/selected/{offeringLetterServiceDescription}', [OfferingLettersController::class, 'getSelectedSKL']);
             Route::post('/', [OfferingLettersController::class, 'store']);
             Route::get('/users/data', [OfferingLettersController::class, 'getUserData']);
             Route::get('/users/selected/{offeringLetter}', [OfferingLettersController::class, 'selectedUser']);

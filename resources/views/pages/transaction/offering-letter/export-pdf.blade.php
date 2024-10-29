@@ -74,8 +74,9 @@
 <body>
 
 <header>
-    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-header.png'))) }}"
-         width="100%" height="100%"/>
+    <img
+        src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-header.png'))) }}"
+        width="100%" height="100%"/>
 </header>
 
 <div class="wrapper">
@@ -139,12 +140,15 @@
             @foreach($offeringLetterServices as $service)
                 <tr>
                     <td style=" border: 1px solid; font-size: 14px; text-align: center; padding: 10px">{{ $loop->iteration }}</td>
-                    <td style=" border: 1px solid; font-size: 14px; text-align: center; padding: 10px">{{ $service->serviceCategory->name }}</td>
-                    <td style=" border: 1px solid; font-size: 14px; text-align: center; padding: 10px">{{ $service->serviceCategory->capacity }}
-                        Mbps
-                    </td>
+                    <td style=" border: 1px solid; font-size: 14px; text-align: left; padding: 10px">{{ $service->serviceCategory->name }}</td>
                     <td style=" border: 1px solid; font-size: 14px; text-align: center; padding: 10px">
-                        Rp.{{ number_format($service->price) }}</td>
+                        {{ $service->capacity }} {{ $service->unitType->name }}
+                    </td>
+                    <td style="border: 1px solid; font-size: 14px; text-align: right; padding-top: 9px">
+                        <div style="float: left; align-items: center">Rp</div>
+                        <div
+                                style="float: right; align-items: center">{{ number_format($service->price, false, '.', '.') }}</div>
+                    </td>
 
                 </tr>
             @endforeach
@@ -155,8 +159,9 @@
                     style="border: 1px solid; font-size: 14px; text-align: right; font-weight: 500; padding-right: 10px">
                     PPN
                 </td>
-                <td style="text-align: center; font-size: 14px;">
-                    Rp. {{ number_format($totalPPN) }}
+                <td style="text-align: right; font-size: 14px;">
+                    <div style="float: left; align-items: center">Rp</div>
+                    <div style="float: right; align-items: center">{{ number_format($totalPPN, false,'.', '.') }}</div>
                 </td>
             </tr>
             <tr style="border: 1px solid">
@@ -164,8 +169,10 @@
                     style="border: 1px solid; font-size: 14px; text-align: right; font-weight: 500; padding-right: 10px">
                     TOTAL
                 </td>
-                <td style="text-align: center; font-size: 14px;">
-                    Rp. {{ number_format($total) }}</td>
+                <td style="text-align: right; font-size: 14px;">
+                    <div style="float: left; align-items: center">Rp</div>
+                    <div style="float: right; align-items: center">{{ number_format($total, false,'.', '.') }}</div>
+                </td>
             </tr>
 
             </tfoot>
@@ -176,8 +183,14 @@
                 Adapun syarat, ketentuan dan layanan yang kami berikan antara lain :
             </p>
             <ul>
+                <li style="font-size: 13px">SLA 99,5%</li>
+                <li style="font-size: 13px">Support Pelayanan 7 x 24 jam, online maupun onsite.</li>
+                <li style="font-size: 13px">Masa berlaku penawaran 1 bulan</li>
+                <li style="font-size: 13px">
+                    Minimum kontrak 1 tahun dan otomatis diperpanjang apabila tidak ada permintaan berhenti berlangganan
+                </li>
                 @foreach($offeringLetterServiceDescription as $desc)
-                    <li style="font-size: 13px">{{ $desc->text }}</li>
+                    <li style="font-size: 13px">{{ $desc->skl->name }}</li>
                 @endforeach
             </ul>
         </div>
@@ -216,8 +229,9 @@
     </div>
 
     <footer>
-        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"
-             width="100%" height="100%"/>
+        <img
+                src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"
+            width="100%" height="100%"/>
     </footer>
 </div>
 </body>

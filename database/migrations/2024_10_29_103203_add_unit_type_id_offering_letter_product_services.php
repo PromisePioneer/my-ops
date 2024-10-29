@@ -10,10 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('offering_letter_service_descriptions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('offering_letter_id')->constrained('offering_letters');
-            $table->timestamps();
+        Schema::table('offering_letter_product_services', function (Blueprint $table) {
+            $table->foreignId('unit_type_id')->after('service_category_id')
+                ->constrained('unit_types')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
         });
     }
 
@@ -22,7 +23,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('offering_letter_service_descriptions');
+        //
     }
 };

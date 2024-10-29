@@ -36,13 +36,6 @@ class UnitType extends Model
         return self::orderBy('name')->paginate($perPage);
     }
 
-    public function searchData(Request $request)
-    {
-        $search = $request->input('search');
-
-        return self::where('name', 'like', '%'.$search.'%')->get();
-    }
-
     public function getData(Request $request): array
     {
 
@@ -51,8 +44,8 @@ class UnitType extends Model
         $query = self::orderby('name', 'asc')->select('id', 'name');
 
         if ($search !== '') {
-            $query->where('name', 'like', '%'.$search.'%')
-                ->where('name', 'like', '%'.$search.'%');
+            $query->where('name', 'like', '%' . $search . '%')
+                ->where('name', 'like', '%' . $search . '%');
         }
 
         return $query->get()->map(function ($item) {

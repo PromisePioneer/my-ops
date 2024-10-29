@@ -32,8 +32,9 @@ class OfferingLetterRequest extends FormRequest
                 Rule::exists('services_categories', 'id'),
             ],
             'data.*.capacity' => ['required'],
+            'data.*.unit_type_id' => ['required'],
             'data.*.price' => ['required'],
-            'serviceDescription.*.text' => ['required'],
+            'serviceDescription.*.skl_id' => ['required'],
             'pic' => ['required'],
         ];
     }
@@ -51,7 +52,7 @@ class OfferingLetterRequest extends FormRequest
             'data.*.service_category_id.exists' => 'Kategori layanan tidak ditemukan.',
             'data.*.capacity' => 'Kapasitas tidak boleh kosong',
             'data.*.price.required' => 'Harga layanan tidak boleh kosong.',
-            'serviceDescription.*.text.required' => 'Syarat Ketentuan Layanan tidak boleh kosong.',
+            'serviceDescription.*.skl_id.required' => 'Syarat Ketentuan Layanan tidak boleh kosong.',
             'pic.required' => 'Penanggung jawab  tidak boleh kosong.',
             'capacity.required' => 'Kapasitas tidak boleh kosong.',
         ];

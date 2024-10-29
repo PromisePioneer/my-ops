@@ -55,13 +55,13 @@ class OfferingLetterService
             $startingNumber = $convertInvNumberToArray[0];
             $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
-            return $startValue.'/'.'SPH/'.'MYT-'.$acronym.'/'.$invoiceDate.'/'.$invoiceYear;
+            return $startValue . '/' . 'SPH/' . 'MYT-' . $acronym . '/' . $invoiceDate . '/' . $invoiceYear;
         }
 
         $startingNumber = '000';
         $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
-        return $startValue.'/'.'SPH/'.'MYT-'.$acronym.'/'.$invoiceDate.'/'.$invoiceYear;
+        return $startValue . '/' . 'SPH/' . 'MYT-' . $acronym . '/' . $invoiceDate . '/' . $invoiceYear;
     }
 
     public function data(Request $request): LengthAwarePaginator
@@ -101,17 +101,17 @@ class OfferingLetterService
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $offeringLetter = OfferingLetter::where('offering_number', 'like', '%'.$search.'%')
+        $offeringLetter = OfferingLetter::where('offering_number', 'like', '%' . $search . '%')
             ->orWhereHas('contact', function ($query) use ($request, $search) {
-                $query->where('full_name', 'like', '%'.$search.'%');
-                $query->orWhere('company_name', 'like', '%'.$search.'%');
+                $query->where('full_name', 'like', '%' . $search . '%');
+                $query->orWhere('company_name', 'like', '%' . $search . '%');
             })
-            ->orWhere('date', 'like', '%'.$search.'%')
-            ->orWhere('attachment', 'like', '%'.$search.'%')
-            ->orWhere('foreword', 'like', '%'.$search.'%')
-            ->orWhere('notes', 'like', '%'.$search.'%')
-            ->orWhere('marketing_agent_name', 'like', '%'.$search.'%')
-            ->orWhere('marketing_agent_contact', 'like', '%'.$search.'%')
+            ->orWhere('date', 'like', '%' . $search . '%')
+            ->orWhere('attachment', 'like', '%' . $search . '%')
+            ->orWhere('foreword', 'like', '%' . $search . '%')
+            ->orWhere('notes', 'like', '%' . $search . '%')
+            ->orWhere('marketing_agent_name', 'like', '%' . $search . '%')
+            ->orWhere('marketing_agent_contact', 'like', '%' . $search . '%')
             ->where('branch_id', Auth::user()->branch_id)
             ->paginate(self::$perPage);
 
@@ -159,12 +159,6 @@ class OfferingLetterService
     {
         DB::transaction(function () use ($request, $offeringLetter) {
             $data = $request->validated();
-            $data['file'] = $this->handleFileUploadService->upload(
-                $request,
-                'documents/offering-letters',
-                'file',
-                $offeringLetter->file
-            );
             $data['branch_id'] = $request->user()->branch_id;
             $offeringLetter->update($data);
             OfferingLetterProduct::whereIn('offering_letter_id', [$offeringLetter->id])->delete();

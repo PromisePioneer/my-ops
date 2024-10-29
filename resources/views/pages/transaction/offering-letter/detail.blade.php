@@ -62,19 +62,25 @@
                                         <table class="table table-sm gs-7 gy-7 gx-7 border border-dark">
                                             <thead>
                                             <tr class=" border border-dark bg-primary">
-                                                <th class="fw-bold">No</th>
-                                                <th class="fw-bold">Layanan</th>
-                                                <th class="fw-bold">Kapasitas</th>
-                                                <th class="fw-bold">Harga / Bulan</th>
+                                                <th class="fw-bold w-1px">No</th>
+                                                <th class="fw-bold text-center">Layanan</th>
+                                                <th class="fw-bold text-center">Kapasitas</th>
+                                                <th class="fw-bold text-center">Harga / Bulan</th>
                                             </tr>
                                             </thead>
                                             <tbody>
+
                                             @forelse($offeringLetterServices as $service)
                                                 <tr class="fw-bolder fs-6 text-gray-800 border border-dark">
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $service->serviceCategory->name }}</td>
-                                                    <td>{{ $service->capacity . ' Mbps' }}</td>
-                                                    <td>Rp.{{ number_format($service->price) }}</td>
+                                                    <td class="py-3">{{ $loop->iteration }}</td>
+                                                    <td class="text-start py-3">{{ $service->serviceCategory->name }}</td>
+                                                    <td class="text-center py-3">{{ $service->capacity }} {{ $service->unitType->name }}</td>
+                                                    <td class="py-3">
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                            <div>Rp</div>
+                                                            <div>{{ number_format($service->price, false, '.', '.') }}</div>
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             @empty
                                                 <tr>
@@ -83,16 +89,22 @@
                                             @endforelse
                                             </tbody>
                                             <tfoot>
-                                            <tr class="fw-bolder fs-6 text-gray-800 border border-dark">
-                                                <td colspan="3" class="text-end  py-1">PPN</td>
-                                                <td class="py-1">
-                                                    Rp. {{ number_format($totalPPN)  }}
+                                            <tr class="fs-6 text-gray-800 border border-dark">
+                                                <td colspan="3" class="text-end py-1">PPN</td>
+                                                <td class="fw-bolder py-1">
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <div>Rp</div>
+                                                        <div>{{ number_format($totalPPN, false, ".", ".")  }}</div>
+                                                    </div>
                                                 </td>
                                             </tr>
                                             <tr class="fw-bolder fs-6 text-gray-800 border border-dark">
-                                                <td colspan="3" class="text-end  py-1">Total</td>
-                                                <td class="py-1">
-                                                    Rp. {{ number_format($total) }}
+                                                <td colspan="3" class="text-end py-1">Total</td>
+                                                <td class="py-1 text-end">
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <div>Rp</div>
+                                                        <div>{{ number_format($total, false, ".", '.') }}</div>
+                                                    </div>
                                                 </td>
                                             </tr>
 
@@ -102,8 +114,17 @@
                                     <div class="mb-10">
                                         Adapun syarat, ketentuan dan layanan yang kami berikan antara lain :
                                         <ul>
+                                            <li style="font-size: 13px">SLA 99,5%</li>
+                                            <li style="font-size: 13px">Support Pelayanan 7 x 24 jam, online maupun
+                                                onsite.
+                                            </li>
+                                            <li style="font-size: 13px">Masa berlaku penawaran 1 bulan</li>
+                                            <li style="font-size: 13px">
+                                                Minimum kontrak 1 tahun dan otomatis diperpanjang apabila tidak ada
+                                                permintaan berhenti berlangganan
+                                            </li>
                                             @foreach($offeringLetterServiceDescription as $desc)
-                                                <li>{{ $desc->text }}</li>
+                                                <li>{{ $desc->skl->name }}</li>
                                             @endforeach
                                         </ul>
                                     </div>
@@ -158,8 +179,6 @@
                                     </button>
                                 </div>
                             </div>
-
-
                             <button type="button" @click="confirmOfferingLetter()" class="btn btn-primary w-100 mb-5"
                                     data-bs-toggle="modal" data-bs-target="#jurnal_entry">
                                 Konfirmasi

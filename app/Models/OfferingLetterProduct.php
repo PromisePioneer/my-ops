@@ -20,8 +20,14 @@ class OfferingLetterProduct extends Model
         'offering_letter_id',
         'service_category_id',
         'capacity',
+        'unit_type_id',
         'price',
     ];
+
+    public function unitType(): BelongsTo
+    {
+        return $this->belongsTo(UnitType::class, 'unit_type_id');
+    }
 
     public function offeringLetter(): BelongsTo
     {
