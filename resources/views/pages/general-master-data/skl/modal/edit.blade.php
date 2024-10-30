@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form Surat Ketentuan Layanan</h5>
+                <h5 class="modal-title">Form Syarat Ketentuan Layanan</h5>
                 <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
@@ -17,7 +17,7 @@
             <form id="form-edit" @submit.prevent="update(editVal.id)">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Nama</label>
+                        <label for="name" class="required form-label">Syarat Ketentuan Layanan</label>
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
                                placeholder="Nama" :value="editVal.name"/>
                     </div>
