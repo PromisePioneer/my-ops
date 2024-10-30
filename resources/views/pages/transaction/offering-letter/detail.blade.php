@@ -61,7 +61,7 @@
                                     <div class="table-responsive mb-4 row justify-content-center">
                                         <table class="table table-sm gs-7 gy-7 gx-7 border border-dark">
                                             <thead>
-                                            <tr class=" border border-dark bg-primary">
+                                            <tr class=" border border-dark">
                                                 <th class="fw-bold w-1px">No</th>
                                                 <th class="fw-bold text-center">Layanan</th>
                                                 <th class="fw-bold text-center">Kapasitas</th>
