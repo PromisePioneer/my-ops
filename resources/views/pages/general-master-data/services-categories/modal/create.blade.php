@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="modal-create">
+<div class="modal fade" tabindex="-1" id="modal-service-categories-create">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -14,7 +14,7 @@
                 </div>
             </div>
 
-            <form id="form-create" @submit.prevent="save()">
+            <form id="form-services-categories-create" @submit.prevent="saveServiceCategories()">
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama Layanan</label>

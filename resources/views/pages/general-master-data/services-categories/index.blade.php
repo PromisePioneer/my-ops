@@ -1,5 +1,5 @@
 @extends('layouts.template')
-@section('page-title', 'Data Produk')
+@section('page-title', 'Data Kategori Layanan')
 @section('content')
 
     <div x-data="servicesCategoriesData()">
@@ -136,8 +136,8 @@
                 selectedCheckBox: [],
                 singleChecked: false,
                 editVal: '',
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                formCreate: document.getElementById('form-create'),
+                modalCreate: new bootstrap.Modal(document.getElementById('modal-service-categories-create')),
+                formCreate: document.getElementById('form-services-categories-create'),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formEdit: document.getElementById('form-edit'),
                 deleteForm: document.getElementById('deleteForm'),
@@ -190,7 +190,7 @@
                         }
                     }
                 },
-                async save() {
+                async saveServiceCategories() {
                     this.buttonLoading = true;
                     try {
                         await axios.post('/general-master-data/service-categories/', new FormData(this.formCreate))

@@ -11,6 +11,7 @@
         @include('pages.general-master-data.contact.modal.create')
         @include('pages.general-master-data.unit-types.modal.create')
         @include('pages.general-master-data.skl.modal.create')
+        @include('pages.general-master-data.services-categories.modal.create')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
                 <form id="form" @submit.prevent="save()">
@@ -211,6 +212,8 @@
 
         function generateOfferingLetter() {
             return {
+                modalServiceCategories: new bootstrap.Modal(document.getElementById('modal-service-categories-create')),
+                formServiceCategories: document.getElementById('form-services-categories-create'),
                 buttonLoading: false,
                 offeringLetterProductService: [{
                     service_category_id: '',
@@ -235,6 +238,21 @@
                     await this.getUserData();
                     await this.getUnitTypeData();
                     await this.getSKL();
+                },
+                async saveServiceCategories() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/general-master-data/service-categories/', new FormData(this.formServiceCategories))
+                        await showAlert('success', 'Data berhasil disimpan');
+                        await this.init();
+                        await this.formServiceCategories.reset();
+                        await this.modalServiceCategories.hide();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false
+                    }
                 },
                 async saveContact() {
                     this.buttonLoading = true;
@@ -318,6 +336,12 @@
                     $(".service-categories-select2").select2({
                         placeholder: "Pilih kategori layanan",
                         allowClear: true,
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-service-categories-create">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
                         ajax: {
                             url: '/income-transactions/offering-letters/service-categories/data',
                             dataType: "json",
