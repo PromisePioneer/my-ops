@@ -24,10 +24,18 @@
                                name="pic_name" :value="editVal.pic_name"/>
                     </div>
                     <div class="row g-9 mb-8">
-                        <div class="col-md-6 fv-row">
-                            <label class="required fs-6 fw-bold mb-2">Nama Perusahaan</label>
-                            <input type="text" class="form-control form-control-solid" placeholder="Nama Perusahaan"
-                                   name="company_name" :value="editVal.company_name"/>
+                        <div class="row g-9 mb-8">
+                            <div class="col-md-6 fv-row">
+                                <label class="required fs-6 fw-bold mb-2">Nama Perusahaan</label>
+                                <input type="text" class="form-control form-control-solid" placeholder="Nama Perusahaan"
+                                       name="company_name" :value="editVal.company_name"/>
+                            </div>
+
+                            <div class="col-md-6 fv-row">
+                                <label class="fs-6 fw-bold mb-2 required">Kode Perusahaan</label>
+                                <input type="text" class="form-control form-control-solid" placeholder="Kode perusahaan"
+                                       name="company_code" :value="editVal.company_code"/>
+                            </div>
                         </div>
 
                         <div class="col-md-6 fv-row">
@@ -38,7 +46,7 @@
                     </div>
                     <div class="d-flex flex-column mb-8">
                         <label class="fs-6 fw-bold mb-2">No. Telepon</label>
-                        <input type="text" class="form-control form-control-solid" placeholder="No. Telepon"
+                        <input type="number" class="form-control form-control-solid" placeholder="No. Telepon"
                                name="phone_number" :value="editVal.phone_number"/>
                     </div>
                     <div class="row mb-4">
@@ -66,7 +74,8 @@
                             <label class="d-flex align-items-center fs-6 fw-bold mb-2">
                                 <span>FAX</span>
                             </label>
-                            <input type="text" class="form-control form-control-solid" placeholder="FAX" name="fax" :value="editVal.fax"/>
+                            <input type="text" class="form-control form-control-solid" placeholder="FAX" name="fax"
+                                   :value="editVal.fax"/>
                         </div>
                         <div class="col-md-6">
                             <label class="d-flex align-items-center fs-6 fw-bold mb-2">

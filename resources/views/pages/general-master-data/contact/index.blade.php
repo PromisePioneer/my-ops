@@ -80,9 +80,8 @@
                                         <input class="form-check-input" type="checkbox" value="1"/>
                                     </div>
                                 </th>
-                                <th class="min-w-125px">Nama</th>
+                                <th class="min-w-125px">PIC</th>
                                 <th class="min-w-125px">Nama Perusahaan</th>
-                                <th class="min-w-125px">Email</th>
                                 <th class="min-w-125px">No. Handphone</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
@@ -119,8 +118,7 @@
                                         </div>
                                     </td>
                                     <td x-text="contact.pic_name"></td>
-                                    <td x-text="contact.company_name"></td>
-                                    <td x-text="contact.email"></td>
+                                    <td x-text="`${contact.company_code} - ${contact.company_name}`"></td>
                                     <td x-text="contact.phone_number"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"

@@ -4,83 +4,49 @@ namespace App\Http\Controllers\Master\General;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Contact\ContactRequest;
-use App\Models\Branch;
 use App\Models\Contact;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ContactController extends Controller
 {
-    public int $perPage = 10;
+    private static int $perPage = 10;
 
-    private Contact $contact;
-
-    private Branch $branch;
-
-    public function __construct()
-    {
-        $this->contact = new Contact();
-        $this->branch = new Branch();
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
     public function index(): View
     {
-        $this->authorize('view', Contact::class);
         return view('pages.general-master-data.contact.index');
     }
 
-    /**
-     * @throws AuthorizationException
-     */
+
     public function data(Request $request): JsonResponse
     {
-        $this->authorize('view', Contact::class);
-        return response()->json(
-            $this->contact->getDataWithPaginationBasedOnUserBranch(
-                $request->user()->branch_id,
-                $this->perPage
-            )
-        );
+        $contact = Contact::paginate(self::$perPage);
+        return response()->json($contact);
     }
 
-    /**
-     * @throws AuthorizationException
-     */
     public function search(Request $request): JsonResponse
     {
-        $this->authorize('view', Contact::class);
-        return response()->json($this->contact->searchDataBasedOnUserBranch($request));
+        $search = $request->input('search');
+        $contact = Contact::when(!empty($search), function ($query) use ($search) {
+            $query->where('full_name', 'like', '%' . $search . '%')
+                ->orWhere('company_name', 'like', '%' . $search . '%')
+                ->orWhere('company_code', 'like', '%' . $search . '%')
+                ->orWhere('email', 'like', '%' . $search . '%')
+                ->orWhere('phone_number', 'like', '%' . $search . '%')
+                ->orWhere('identity_type', 'like', '%' . $search . '%')
+                ->orWhere('identity_number', 'like', '%' . $search . '%')
+                ->orWhere('fax', 'like', '%' . $search . '%')
+                ->orWhere('npwp', 'like', '%' . $search . '%')
+                ->orWhere('complete_address', 'like', '%' . $search . '%')
+                ->orWhere('other_info', 'like', '%' . $search . '%');
+        })->paginate(self::$perPage);
+
+        return response()->json($contact);
     }
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function branchData(Request $request): JsonResponse
-    {
-        $this->authorize('view', Contact::class);
-        return response()->json($this->branch->getData($request));
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function filterByBranch(Branch $branch): JsonResponse
-    {
-        $this->authorize('view', Contact::class);
-        return response()->json($this->contact->filterDataBasedOnUserBranch($branch->id, $this->perPage));
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
     public function store(ContactRequest $request): JsonResponse
     {
-        $this->authorize('create', Contact::class);
         Contact::create($request->validated());
 
         return response()->json([
@@ -88,21 +54,13 @@ class ContactController extends Controller
         ], 200);
     }
 
-    /**
-     * @throws AuthorizationException
-     */
     public function edit(Contact $contact): JsonResponse
     {
-        $this->authorize('update', $contact);
         return response()->json($contact);
     }
 
-    /**
-     * @throws AuthorizationException
-     */
     public function update(ContactRequest $request, Contact $contact): JsonResponse
     {
-        $this->authorize('update', $contact);
         $contact->update($request->validated());
 
         return response()->json([
@@ -110,18 +68,11 @@ class ContactController extends Controller
         ], 200);
     }
 
-    /**
-     * @throws AuthorizationException
-     */
     public function destroy(Request $request, Contact $contact): JsonResponse
     {
-        $this->authorize('delete', $contact);
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
         $contact->whereIn('id', $explodeID)->delete();
-
-        return response()->json([
-            'message' => 'data berhasil dihapus',
-        ], 200);
+        return response()->json(['message' => 'data berhasil dihapus']);
     }
 }
