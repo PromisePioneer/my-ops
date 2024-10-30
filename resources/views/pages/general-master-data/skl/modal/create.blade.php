@@ -17,9 +17,9 @@
             <form id="form-skl-create" @submit.prevent="saveSKL()">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Nama</label>
-                        <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama "/>
+                        <label for="name" class="required form-label">Syarat & Ketentuan Layananan</label>
+                        <textarea name="name" id="name" data-kt-autosize="true"
+                                  class="form-control form-control-solid"></textarea>
                     </div>
                 </div>
 

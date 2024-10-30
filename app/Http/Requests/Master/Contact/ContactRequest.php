@@ -17,7 +17,7 @@ class ContactRequest extends FormRequest
     {
         return [
             'pic_name' => ['required'],
-            'company_name' => ['required'],
+            'company_name' => ['required', Rule::unique('contacts', 'company_name')],
             'email' => [
                 'required',
                 'email',
@@ -34,8 +34,8 @@ class ContactRequest extends FormRequest
                 Rule::unique('contacts', 'identity_number')
                     ->ignore($request->route('contact') === null),
             ],
-            'fax' => ['nullable'],
-            'npwp' => ['nullable'],
+            'fax' => ['nullable', Rule::unique('contacts', 'fax')],
+            'npwp' => ['nullable', Rule::unique('contacts', 'npwp')],
             'complete_address' => ['nullable'],
             'other_info' => ['nullable'],
         ];
