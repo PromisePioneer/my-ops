@@ -299,7 +299,7 @@
                                 $.ajax({
                                     type: 'GET',
                                     dataType: "JSON",
-                                    url: `/income-transactions/offering-letters/skl/selected/${field.skl_id}`,
+                                    url: `/general-master-data/skl/${field.skl_id}`,
                                 }).then(function (response) {
                                     const option = new Option(response.name, response.id, true, true);
                                     selectedSKL.append(option).trigger('change');

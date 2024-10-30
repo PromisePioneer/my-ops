@@ -31,15 +31,23 @@
                         </div>
 
                         <div class="col-md-6 fv-row">
+                            <label class="fs-6 fw-bold mb-2 required">Kode Perusahaan</label>
+                            <input type="text" class="form-control form-control-solid" placeholder="Kode perusahaan"
+                                   name="company_code"/>
+                        </div>
+                    </div>
+
+                    <div class="row g-9 mb-8">
+                        <div class="col-md-6 fv-row">
+                            <label class="fs-6 fw-bold mb-2">No. Telepon</label>
+                            <input type="number" class="form-control form-control-solid" placeholder="No. Telepon"
+                                   name="phone_number"/>
+                        </div>
+                        <div class="col-md-6 fv-row">
                             <label class="fs-6 fw-bold mb-2">Email</label>
                             <input type="text" class="form-control form-control-solid" placeholder="Email"
                                    name="email"/>
                         </div>
-                    </div>
-                    <div class="d-flex flex-column mb-8">
-                        <label class="fs-6 fw-bold mb-2">No. Telepon</label>
-                        <input type="text" class="form-control form-control-solid" placeholder="No. Telepon"
-                               name="phone_number"/>
                     </div>
                     <div class="row mb-4">
                         <div class="col-md-2">

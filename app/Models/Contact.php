@@ -19,9 +19,9 @@ class Contact extends Model
     protected $table = 'contacts';
 
     protected $fillable = [
-        'branch_id',
         'pic_name',
         'company_name',
+        'company_code',
         'email',
         'phone_number',
         'identity_type',
@@ -32,55 +32,20 @@ class Contact extends Model
         'other_info',
     ];
 
-    public function branch(): BelongsTo
-    {
-        return $this->belongsTo(Branch::class, 'branch_id');
-    }
-
-    //eloquent
-    public function getDataWithPaginationBasedOnUserBranch(?int $branchId, int $perPage): LengthAwarePaginator
-    {
-        return self::where('branch_id', $branchId)->paginate($perPage);
-    }
-
-    public function searchDataBasedOnUserBranch(Request $request): Collection
-    {
-        $search = $request->input('search');
-
-        return self::where('full_name', 'like', '%'.$search.'%')
-            ->where('branch_id', $request->user()->branch_id)
-            ->orWhere('company_name', 'like', '%'.$search.'%')
-            ->orWhere('email', 'like', '%'.$search.'%')
-            ->orWhere('phone_number', 'like', '%'.$search.'%')
-            ->orWhere('identity_type', 'like', '%'.$search.'%')
-            ->orWhere('identity_number', 'like', '%'.$search.'%')
-            ->orWhere('fax', 'like', '%'.$search.'%')
-            ->orWhere('npwp', 'like', '%'.$search.'%')
-            ->orWhere('complete_address', 'like', '%'.$search.'%')
-            ->orWhere('other_info', 'like', '%'.$search.'%')
-            ->limit(25)
-            ->get();
-    }
-
-    public function filterDataBasedOnUserBranch(int $branchId, int $perPage): LengthAwarePaginator
-    {
-        return self::where('branch_id', $branchId)->paginate($perPage);
-    }
-
     public function getData(Request $request): array
     {
         $search = $request->input('search');
         $query = self::orderby('pic_name', 'asc');
         if ($search !== '') {
-            $query->where('pic_name', 'like', '%'.$request->search.'%')
-                ->where('pic_name', 'like', '%'.$request->search.'%');
+            $query->where('pic_name', 'like', '%' . $request->search . '%')
+                ->where('pic_name', 'like', '%' . $request->search . '%');
         }
         $contact = $query->get(['id', 'pic_name', 'company_name']);
 
         return $contact->map(function ($item) {
             return [
                 'id' => $item->id,
-                'text' => $item->pic_name.' - '.$item->company_name,
+                'text' => $item->pic_name . ' - ' . $item->company_name,
             ];
         })->toArray();
     }
@@ -91,7 +56,7 @@ class Contact extends Model
 
         return [
             'id' => $contact->id,
-            'name' => $contact->pic_name.' - '.$contact->company_name,
+            'name' => $contact->pic_name . ' - ' . $contact->company_name,
         ];
     }
 }

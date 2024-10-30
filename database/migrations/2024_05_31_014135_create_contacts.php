@@ -13,11 +13,11 @@ class CreateContacts extends Migration
     {
         Schema::create('contacts', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('branch_id')->nullable()->constrained('branches');
             $table->string('pic_name');
-            $table->string('company_name')->nullable();
+            $table->string('company_name')->unique();
+            $table->string('company_code')->unique();
             $table->string('email')->nullable()->unique();
-            $table->string('phone_number');
+            $table->string('phone_number')->unique();
             $table->enum('identity_type', ['ktp', 'sim', 'passport'])->nullable();
             $table->string('identity_number')->nullable();
             $table->string('fax')->nullable();

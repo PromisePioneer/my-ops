@@ -34,34 +34,23 @@ class OfferingLetterService
             'contact_id',
             $request->contact_id
         )->latest()->first();
-        $findCompanyName = Contact::where('id', $request->contact_id)->first()->company_name;
+        $companyCode = Contact::where('id', $request->contact_id)->first()->company_code;
         $invoiceDate = convertToRoman(Carbon::parse($request->due_date)->format('m'));
-        $invoiceYear = convertToRoman(Carbon::parse($request->due_date)->format('Y'));
+        $invoiceYear = Carbon::parse($request->due_date)->format('Y');
 
-        $abbr = explode(' ', $findCompanyName);
-
-
-        array_shift($abbr);
-
-
-        $acronym = '';
-
-        foreach ($abbr as $value) {
-            $acronym .= mb_substr($value, 0, 1);
-        }
 
         if ($invoice) {
             $convertInvNumberToArray = explode('/', $invoice->invoice_number);
             $startingNumber = $convertInvNumberToArray[0];
             $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
-            return $startValue . '/' . 'SPH/' . 'MYT-' . $acronym . '/' . $invoiceDate . '/' . $invoiceYear;
+            return $startValue . '/' . 'SPH/' . 'MYT-' . $companyCode . '/' . $invoiceDate . '/' . $invoiceYear;
         }
 
         $startingNumber = '000';
         $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
-        return $startValue . '/' . 'SPH/' . 'MYT-' . $acronym . '/' . $invoiceDate . '/' . $invoiceYear;
+        return $startValue . '/' . 'SPH/' . 'MYT-' . $companyCode . '/' . $invoiceDate . '/' . $invoiceYear;
     }
 
     public function data(Request $request): LengthAwarePaginator
@@ -159,6 +148,7 @@ class OfferingLetterService
     {
         DB::transaction(function () use ($request, $offeringLetter) {
             $data = $request->validated();
+            $data['offering_number'] = self::generateOfferingNumber($request);
             $data['branch_id'] = $request->user()->branch_id;
             $offeringLetter->update($data);
             OfferingLetterProduct::whereIn('offering_letter_id', [$offeringLetter->id])->delete();
