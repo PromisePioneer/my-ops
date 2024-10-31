@@ -19,7 +19,7 @@
             }
         </style>
     @endpush
-    <div class="d-flex flex-column flex-lg-row" x-data="invoiceDetail">
+    <div class="d-flex flex-column flex-lg-row" x-data="offeringLetterDetail">
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card">
                 <img class="w-sm-100 h-200px" src="{{ asset('assets/media/logos/kop-header.png') }}" alt="">
