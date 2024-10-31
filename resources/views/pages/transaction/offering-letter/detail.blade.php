@@ -62,21 +62,20 @@
                             <div class="mt-n1">
                                 <div class="m-0">
                                     <div class="row g-5">
-                                       <div class="h-200px">
-                                           <p class="fs-6 d-flex align-items-center lh-sm">
-                                               Dengan hormat,
-                                               <br>
-                                               Kami dari PT. Mayatama
-                                               Solusindo bermaksud menawarkan harga layanan dedicated
-                                               untuk {{ $offeringLetterCompanyName }}, berikut adalah harga
-                                               terbaik
-                                               yang kami
-                                               tawarkan :
-                                           </p>
-                                       </div>
+                                        <div class="h-200px">
+                                            <p class="fs-6 d-flex align-items-center lh-sm">
+                                                Dengan hormat,
+                                                <br>
+                                                Kami dari PT. Mayatama
+                                                Solusindo bermaksud menawarkan harga layanan dedicated
+                                                untuk {{ $offeringLetterCompanyName }}, berikut adalah harga
+                                                terbaik
+                                                yang kami
+                                                tawarkan :
+                                            </p>
+                                        </div>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <!--begin::Table-->
                                         <div class="table-responsive mb-4">
                                             <table class="table">
                                                 <thead>
@@ -118,10 +117,10 @@
                                             </table>
                                         </div>
 
-                                        <p class="fw-bold d-flex align-items-center mb-1">
+                                        <p class="fs-6 d-flex align-items-center mb-1">
                                             Adapun syarat dan ketentuan layanan yang kami berikan antara lain :
                                         </p>
-                                        <ul class="fw-bold mb-10">
+                                        <ul class="fs-6 mb-10">
                                             <li>SLA 99,5%</li>
                                             <li>Support Pelayanan 7 x 24 jam, online maupun onsite.</li>
                                             <li>Masa berlaku penawaran 1 bulan</li>
