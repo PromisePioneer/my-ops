@@ -108,7 +108,7 @@
                                                 <div class="d-flex flex-stack mb-3">
                                                     <div class="fw-semibold pe-10 text-gray-600 fs-7">PPN</div>
                                                     <div
-                                                            class="text-end fw-bold fs-6 text-gray-800">
+                                                        class="text-end fw-bold fs-6 text-gray-800">
                                                         Rp {{ number_format($totalPPN, false,'.', '.') }}
                                                     </div>
                                                 </div>
@@ -116,7 +116,7 @@
                                                 <div class="d-flex flex-stack">
                                                     <div class="fw-semibold pe-10 text-gray-600 fs-7">Total</div>
                                                     <div
-                                                            class="text-end fw-bold fs-6 text-gray-800">
+                                                        class="text-end fw-bold fs-6 text-gray-800">
                                                         Rp {{ number_format($total, false,'.', '.') }}</div>
                                                 </div>
                                             </div>
@@ -168,7 +168,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <button type="button" @click="confirm()" class="btn btn-primary w-100 mb-4">
+                            <button type="button" @click="confirmOfferingLetter()" class="btn btn-primary w-100 mb-4">
                                 Konfirmasi
                             </button>
                         @else
@@ -182,7 +182,6 @@
             </div>
         </div>
     </div>
-
 
     @include('components.toast')
 @endsection
