@@ -158,13 +158,8 @@
                     console.log(this.correctionVal);
                 },
                 formatDate(val) {
-                    const [year, month, day] = val.split('-');
-                    const date = new Date(year, month, day);
-                    let formatYear = new Intl.DateTimeFormat('en', {year: 'numeric'}).format(date);
-                    let formatMonth = new Intl.DateTimeFormat('en', {month: 'short'}).format(date);
-                    let formatDay = new Intl.DateTimeFormat('en', {day: '2-digit'}).format(date);
-
-                    return `${formatDay}/${formatMonth}/${formatYear}`
+                    const [year, month, date] = val.split("-");
+                    return `${date}/${month}/${year}`
                 },
                 async saveCorrection(datePeriod) {
                     this.buttonLoading = true;

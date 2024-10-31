@@ -26,26 +26,26 @@
                 <div class="card-body">
                     <div class="d-flex flex-column flex-md-row">
                         <div class="me-10">
-                            <h6 class="mb-2 fw-bolder text-hover-primary text-wrap" style="width: 20rem">
-                                Yth, {{ $offeringLetter->contact->pic_name }}
-                                ,<br> {{ $offeringLetter->contact->company_name }}
-                            </h6>
+                            <p class="mb-2 fw-bolder text-hover-primary text-wrap" style="width: 20rem">
+                                Yth, Bapak/Ibu {{ $offeringLetter->contact->pic_name }},<br>
+                                <span>{{ $offeringLetterCompanyName }}</span>
+                            </p>
 
-                            <div class="mb-6">
+                            <div class="mb-20">
                                 <div class="fw-bold text-gray-800 fs-6">
                                     {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
                                 </div>
                             </div>
 
-                            <div class="separator mb-3"></div>
+                            <div class="separator mb-1" style="border-bottom-color: #7dbbf5"></div>
 
-                            <div class="mb-4">
+                            <div class="mb-3">
                                 <div class="fw-bold fs-6 text-gray-800 d-flex align-items-center">
                                     {{ \App\Helper\formatDate($offeringLetter->date) }}
                                 </div>
                             </div>
 
-                            <div class="separator mb-3"></div>
+                            <div class="separator mb-3" style="border-bottom-color: #7dbbf5"></div>
 
                             <div class="mb-6">
                                 <div class="fw-semibold text-gray-600 fs-7">Nomor:</div>
@@ -62,12 +62,12 @@
                             <div class="mt-n1">
                                 <div class="m-0">
                                     <div class="row g-5 mb-11">
-                                        <p class="fw-bold text-gray-700 d-flex align-items-center">
+                                        <p class="fw-bold d-flex align-items-center">
                                             Dengan hormat,
                                             <br>
                                             Kami dari PT. Mayatama
                                             Solusindo bermaksud menawarkan harga layanan dedicated
-                                            untuk {{ $offeringLetter->contact->company_name }}, berikut adalah harga
+                                            untuk {{ $offeringLetterCompanyName }}, berikut adalah harga
                                             terbaik
                                             yang kami
                                             tawarkan :
@@ -75,57 +75,51 @@
                                     </div>
                                     <div class="flex-grow-1">
                                         <!--begin::Table-->
-                                        <div class="table-responsive border-bottom mb-9">
-                                            <table class="table mb-3">
+                                        <div class="table-responsive mb-4">
+                                            <table class="table">
                                                 <thead>
-                                                <tr class="border-bottom fs-6 fw-bold text-muted">
+                                                <tr class="border-bottom border-black fs-6 fw-bold">
                                                     <th class="text-center">No</th>
                                                     <th class="text-center">Layanan</th>
                                                     <th class="text-center">Kapasitas / Jumlah</th>
                                                     <th class="text-center">Harga / Bulan</th>
                                                 </tr>
                                                 </thead>
-                                                <tbody>
+                                                <tbody class="border-bottom border-black">
                                                 @foreach($offeringLetterServices as $service)
-                                                    <tr class="fw-bold text-gray-700 fs-5 text-end">
+                                                    <tr class="fs-5 text-end border-bottom border-black">
                                                         <td class="text-center">{{ $loop->iteration }}</td>
                                                         <td class="text-center">
                                                             {{ $service->serviceCategory->name }}
                                                         </td>
                                                         <td class="text-center"> {{ $service->capacity }} {{ $service->unitType->name }}</td>
                                                         <td class="text-center">
-                                                            <div>
-                                                                Rp {{ number_format($service->price, false, '.', '.') }}</div>
+                                                            {{ number_format($service->price, false, '.', '.') }}
                                                         </td>
                                                     </tr>
                                                 @endforeach
                                                 </tbody>
+                                                <tfoot>
+                                                <tr class="border-bottom border-black p-1">
+                                                    <td colspan="3" class="text-end fw-bold fs-6 text-gray-800">
+                                                        PPN
+                                                    </td>
+                                                    <td class="text-center fw-bold fs-6 text-gray-800">  {{ number_format($totalPPN, false,'.', '.') }}</td>
+                                                </tr>
+                                                <tr class="p-1">
+                                                    <td colspan="3" class="text-end fw-bold fs-6 text-gray-800">
+                                                        Total
+                                                    </td>
+                                                    <td class="text-center fw-bold fs-6 text-gray-800">  {{ number_format($total, false,'.', '.') }}</td>
+                                                </tr>
+                                                </tfoot>
                                             </table>
                                         </div>
-                                        <div class="d-flex justify-content-end mb-10">
-                                            <div class="mw-300px">
-                                                <!--begin::Item-->
-                                                <div class="d-flex flex-stack mb-3">
-                                                    <div class="fw-semibold pe-10 text-gray-600 fs-7">PPN</div>
-                                                    <div
-                                                        class="text-end fw-bold fs-6 text-gray-800">
-                                                        Rp {{ number_format($totalPPN, false,'.', '.') }}
-                                                    </div>
-                                                </div>
 
-                                                <div class="d-flex flex-stack">
-                                                    <div class="fw-semibold pe-10 text-gray-600 fs-7">Total</div>
-                                                    <div
-                                                        class="text-end fw-bold fs-6 text-gray-800">
-                                                        Rp {{ number_format($total, false,'.', '.') }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <p class="fw-bold text-gray-700 d-flex align-items-center mb-1">
-                                            Adapun syarat, ketentuan dan layanan yang kami berikan antara lain :
+                                        <p class="fw-bold d-flex align-items-center mb-1">
+                                            Adapun syarat dan ketentuan layanan yang kami berikan antara lain :
                                         </p>
-                                        <ul class="fw-bold text-gray-700">
+                                        <ul class="fw-bold mb-10">
                                             <li>SLA 99,5%</li>
                                             <li>Support Pelayanan 7 x 24 jam, online maupun onsite.</li>
                                             <li>Masa berlaku penawaran 1 bulan</li>
@@ -138,6 +132,20 @@
                                                 <li style="font-size: 13px">{{ $desc->skl->name }}</li>
                                             @endforeach
                                         </ul>
+
+
+                                        <div class="ms-4 mb-4 flex-column">
+                                            <div class="fw-bold mb-20">
+                                                Penanggung Jawab
+                                            </div>
+                                            <div class="fw-bold">
+                                                {{ $offeringLetter->user->roles[0]?->name ?? '' }}
+                                            </div>
+                                            <div class="fw-bold">
+                                                {{ $offeringLetter->user->name }}
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>

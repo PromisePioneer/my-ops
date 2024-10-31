@@ -84,8 +84,12 @@ use App\Http\Controllers\UserProfile\UserProfileController;
 use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
 use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
+use App\Models\OfferingLetterProduct;
+use App\Models\OfferingLetterServiceDescription;
+use App\Models\TaxSetting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Spatie\Browsershot\Browsershot;
 
 /*
 |--------------------------------------------------------------------------

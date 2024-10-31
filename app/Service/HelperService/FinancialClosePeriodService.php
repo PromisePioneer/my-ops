@@ -10,11 +10,13 @@ class FinancialClosePeriodService
     public function startDate(): Carbon
     {
         $year = Carbon::now()->year;
-        $month = Carbon::now()->subMonth()->month;
-        $date = CutOffPayrollSetting::first()->attendance_period_start;
+        $month = Carbon::now()->subMonthNoOverflow()->month;
 
+
+        $date = CutOffPayrollSetting::first()->attendance_period_start;
         $dateNow = (int)Carbon::now()->format('d');
-        if ($dateNow > $date) {
+
+        if ($dateNow >= $date) {
             $month = Carbon::now()->month;
             return Carbon::parse($year . '-' . $month . '-' . $date);
         }
@@ -30,10 +32,12 @@ class FinancialClosePeriodService
         $date = CutOffPayrollSetting::first()->attendance_period_end;
         $startDate = (int)$this->startDate()->format('m');
 
-
         $monthNow = (int)Carbon::now()->format('m');
-        if ($monthNow >= $startDate) {
-            $month = Carbon::now()->addMonth()->month;
+
+
+        if ($monthNow === $startDate) {
+            $month = Carbon::now()->addMonthNoOverflow()->month;
+
             return Carbon::parse($year . '-' . $month . '-' . $date);
         }
 

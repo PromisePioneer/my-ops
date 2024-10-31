@@ -22,6 +22,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
+use Spatie\Browsershot\Browsershot;
 
 class OfferingLettersController extends Controller
 {
@@ -147,6 +148,9 @@ class OfferingLettersController extends Controller
 
         $getPPN = TaxSetting::where('name', 'PPN')->first();
 
+
+        $offeringLetterCompanyName = $this->convertCompanyNameToTextCapitalize($offeringLetter);
+
         $totalPPN = $getPPN->rate / 100 * $offeringLetterServices->sum('price');
         $total = $offeringLetterServices->sum('price') + $totalPPN;
 
@@ -157,9 +161,30 @@ class OfferingLettersController extends Controller
                 'offeringLetterServices',
                 'totalPPN',
                 'total',
-                'offeringLetterServiceDescription'
+                'offeringLetterServiceDescription',
+                'offeringLetterCompanyName'
             )
         );
+    }
+
+
+    public function convertCompanyNameToTextCapitalize(OfferingLetter $offeringLetter): string
+    {
+        $convertCompanyNameToArray = explode(" ", $offeringLetter->contact->company_name);
+
+        $newString = '';
+        $newPTKey = '';
+
+        if (($key = array_search('PT', $convertCompanyNameToArray)) !== false) {
+            $newPTKey = $convertCompanyNameToArray[$key];
+            unset($convertCompanyNameToArray[$key]);
+        }
+
+        foreach ($convertCompanyNameToArray as $abbr) {
+            $newString .= strtolower($abbr) . ' ';
+        }
+
+        return $newPTKey . ' ' . ucwords($newString);
     }
 
     public function viewFile(OfferingLetter $offeringLetter): View
@@ -222,29 +247,34 @@ class OfferingLettersController extends Controller
         ]);
     }
 
-    public function exportToPDF(OfferingLetter $offeringLetter): Response
+    public function exportToPDF(OfferingLetter $offeringLetter)
     {
-        $data = $offeringLetter->with('user', 'user.roles')->first();
         $offeringLetterServices = OfferingLetterProduct::with('unitType')->where('offering_letter_id', $offeringLetter->id)->get();
         $offeringLetterServiceDescription = OfferingLetterServiceDescription::with('skl')
             ->where('offering_letter_id', $offeringLetter->id)
             ->get();
+
         $getPPN = TaxSetting::where('name', 'PPN')->first();
+
+
+        $offeringLetterCompanyName = $this->convertCompanyNameToTextCapitalize($offeringLetter);
 
         $totalPPN = $getPPN->rate / 100 * $offeringLetterServices->sum('price');
         $total = $offeringLetterServices->sum('price') + $totalPPN;
 
+
         $pdf = Pdf::loadView(
-            'pages.transaction.offering-letter.export-pdf',
-            compact(
-                'data',
-                'offeringLetterServices',
-                'offeringLetterServiceDescription',
-                'total',
-                'getPPN',
-                'totalPPN'
-            )
-        )->setPaper('A4', 'portrait');
+            'pages.transaction.offering-letter.export-pdf', compact(
+            'offeringLetter',
+            'offeringLetterServices',
+            'offeringLetterServiceDescription',
+            'total',
+            'getPPN',
+            'totalPPN',
+            'offeringLetterCompanyName'
+        ))->setPaper('A4', 'portrait');
+
+
 
         return $pdf->stream();
     }
