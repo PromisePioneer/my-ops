@@ -278,17 +278,17 @@
                 @endforeach
                 </tbody>
                 <tfoot>
-                <tr class="border-bottom border-black p-1">
+                <tr class="border-bottom border-black py-10">
                     <td colspan="3" class="text-end fw-bold fs-6">
                         PPN
                     </td>
-                    <td class="text-center fs-6"> {{ number_format($totalPPN, false,'.', '.') }}</td>
+                    <td class="text-center fs-6 py-10"> {{ number_format($totalPPN, false,'.', '.') }}</td>
                 </tr>
-                <tr class="p-1">
-                    <td colspan="3" class="text-end fw-bold fs-6">
+                <tr class="py-10">
+                    <td colspan="3" class="text-end fw-bold fs-6 py-10">
                         Total
                     </td>
-                    <td class="text-center fs-6">{{ number_format($total, false,'.', '.') }}</td>
+                    <td class="text-center fs-6 py-10">{{ number_format($total, false,'.', '.') }}</td>
                 </tr>
                 </tfoot>
             </table>
