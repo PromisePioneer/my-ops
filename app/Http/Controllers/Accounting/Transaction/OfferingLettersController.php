@@ -184,7 +184,7 @@ class OfferingLettersController extends Controller
             $newString .= strtolower($abbr) . ' ';
         }
 
-        return $newPTKey . ' ' . ucwords($newString);
+        return $newPTKey . ' ' . ucwords(trim($newString));
     }
 
     public function viewFile(OfferingLetter $offeringLetter): View
@@ -273,7 +273,6 @@ class OfferingLettersController extends Controller
             'totalPPN',
             'offeringLetterCompanyName'
         ))->setPaper('A4', 'portrait');
-
 
 
         return $pdf->stream();

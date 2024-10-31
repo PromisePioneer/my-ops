@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Surat Penawaran #{{ $offeringLetter->offering_number }}</title>
 
     <style>
         *, *::before, *::after {
@@ -65,7 +65,7 @@
 
         .attachment {
             float: left;
-            width: 25%;
+            width: 27%;
             padding-right: 30px;
         }
 
@@ -119,7 +119,7 @@
 
         .text-justify {
             text-align: justify;
-            line-height: 1.5;
+            line-height: 1.7;
         }
 
         .clearfix {
@@ -165,17 +165,26 @@
             padding-bottom: 0.5rem !important;
         }
 
-        .py-20 {
-            position: relative;
-            padding-bottom: 4rem !important;
-            z-index: 99999;
-        }
-
         .test {
             margin: 0;
-            width: 10px;
-            padding-right: 5px;
-            border-right: 5px;
+            width: 100%;
+            height: 88px;
+            box-sizing: border-box;
+        }
+
+        .mb-10 {
+            margin-bottom: 2.5rem
+        }
+
+
+        .sincerely {
+            padding-left: 30px;
+        }
+
+        .content-height {
+            margin: 0;
+            width: 100%;
+            height: 89px;
             box-sizing: border-box;
         }
     </style>
@@ -200,8 +209,8 @@
                 <span>{{ $offeringLetterCompanyName }}</span>
             </div>
 
-            <div class="mb-11">
-                <div class="fs-6">
+            <div class="test">
+                <div class="fs-6 mb-3">
                     {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
                 </div>
             </div>
@@ -226,16 +235,16 @@
             </div>
         </div>
         <div class="content">
-            <div class="test">
-                <p class="text-justify fs-6" style="background-color: red">
+            <div class="content-height">
+                <p class="text-justify fs-6">
                     Dengan hormat,
                     <br>
                     Kami dari PT. Mayatama
                     Solusindo bermaksud menawarkan harga layanan dedicated
-                    untuk {{ $offeringLetterCompanyName }} , berikut adalah harga
+                    untuk {{ $offeringLetterCompanyName }}, berikut adalah harga
                     terbaik
                     yang kami
-                    tawarkan :
+                    tawarkan:
                 </p>
             </div>
 
@@ -248,21 +257,21 @@
             <table class="table">
                 <thead>
                 <tr class="border-bottom border-black fw-bold">
-                    <th class="text-center">No</th>
-                    <th class="text-center">Layanan</th>
-                    <th class="text-center">Kapasitas / Jumlah</th>
-                    <th class="text-center">Harga / Bulan</th>
+                    <th class="text-center fs-6">No</th>
+                    <th class="text-center fs-6">Layanan</th>
+                    <th class="text-center fs-6">Kapasitas / Jumlah</th>
+                    <th class="text-center fs-6">Harga / Bulan</th>
                 </tr>
                 </thead>
                 <tbody class="border-bottom border-black">
                 @foreach($offeringLetterServices as $service)
                     <tr class="fs-5 text-end border-bottom border-black py-10">
-                        <td class="text-center py-10">{{ $loop->iteration }}</td>
-                        <td class="text-center py-10">
+                        <td class="text-center py-10 fs-6">{{ $loop->iteration }}</td>
+                        <td class="text-center py-10 fs-6">
                             {{ $service->serviceCategory->name }}
                         </td>
-                        <td class="text-center">{{ $service->capacity }} {{ $service->unitType->name }}</td>
-                        <td class="text-center">
+                        <td class="text-center fs-6">{{ $service->capacity }} {{ $service->unitType->name }}</td>
+                        <td class="text-center fs-6">
                             {{ number_format($service->price, false, '.', '.') }}
                         </td>
                     </tr>
@@ -270,27 +279,27 @@
                 </tbody>
                 <tfoot>
                 <tr class="border-bottom border-black p-1">
-                    <td colspan="3" class="text-end fw-bold">
+                    <td colspan="3" class="text-end fw-bold fs-6">
                         PPN
                     </td>
-                    <td class="text-center fw-bold"> {{ number_format($totalPPN, false,'.', '.') }}</td>
+                    <td class="text-center fs-6"> {{ number_format($totalPPN, false,'.', '.') }}</td>
                 </tr>
                 <tr class="p-1">
-                    <td colspan="3" class="text-end fw-bold">
+                    <td colspan="3" class="text-end fw-bold fs-6">
                         Total
                     </td>
-                    <td class="text-center fw-bold">{{ number_format($total, false,'.', '.') }}</td>
+                    <td class="text-center fs-6">{{ number_format($total, false,'.', '.') }}</td>
                 </tr>
                 </tfoot>
             </table>
 
 
-            <p class="fw-bold mb-1">
+            <p class="mb-1 fs-6">
                 Adapun syarat dan ketentuan layanan yang kami berikan antara lain :
             </p>
 
 
-            <ul class="fw-bold mb-10">
+            <ul class="mb-10 fs-6">
                 <li>SLA 99,5%</li>
                 <li>Support Pelayanan 7 x 24 jam, online maupun onsite.</li>
                 <li>Masa berlaku penawaran 1 bulan</li>
@@ -303,6 +312,13 @@
                     <li>{{ $desc->skl->name }}</li>
                 @endforeach
             </ul>
+
+            <p class="sincerely fs-6 fw-bold">Hormat Kami</p>
+            <br>
+            <br>
+            <br>
+            <p class="sincerely fw-bold fs-6">{{ $offeringLetter->user->roles[0]?->name ?? '' }}</p>
+            <p class="sincerely fw-bold fs-6">{{ $offeringLetter->user->name }}</p>
 
         </div>
 

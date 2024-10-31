@@ -26,21 +26,21 @@
                 <div class="card-body">
                     <div class="d-flex flex-column flex-md-row">
                         <div class="me-10">
-                            <p class="mb-2 fw-bolder text-hover-primary text-wrap" style="width: 20rem">
+                            <p class="mb-2 fw-bolder text-hover-primary text-wrap fs-6" style="width: 20rem">
                                 Yth, Bapak/Ibu {{ $offeringLetter->contact->pic_name }},<br>
                                 <span>{{ $offeringLetterCompanyName }}</span>
                             </p>
 
-                            <div class="mb-20">
-                                <div class="fw-bold text-gray-800 fs-6">
+                            <div style="height: 152px">
+                                <div class="text-gray-800 fs-6">
                                     {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
                                 </div>
                             </div>
 
-                            <div class="separator mb-1" style="border-bottom-color: #7dbbf5"></div>
+                            <div class="separator mb-3" style="border-bottom-color: #7dbbf5"></div>
 
                             <div class="mb-3">
-                                <div class="fw-bold fs-6 text-gray-800 d-flex align-items-center">
+                                <div class="fs-6 d-flex align-items-center">
                                     {{ \App\Helper\formatDate($offeringLetter->date) }}
                                 </div>
                             </div>
@@ -48,30 +48,32 @@
                             <div class="separator mb-3" style="border-bottom-color: #7dbbf5"></div>
 
                             <div class="mb-6">
-                                <div class="fw-semibold text-gray-600 fs-7">Nomor:</div>
-                                <div class="fw-bold fs-6 text-gray-800">
+                                <div class="fw-bold fs-7">Nomor:</div>
+                                <div class="fs-6 text-gray-800">
                                     {{ $offeringLetter->offering_number }}
                                 </div>
                             </div>
                             <div class="mb-6">
-                                <div class="fw-semibold text-gray-600 fs-7">Perihal:</div>
-                                <div class="fw-bold text-gray-800 fs-6">{{ $offeringLetter->regarding }}</div>
+                                <div class="fw-bold fs-7">Perihal:</div>
+                                <div class="fs-6">{{ $offeringLetter->regarding }}</div>
                             </div>
                         </div>
                         <div class="flex-lg-row-fluid me-md-18 mb-10 mb-xl-0">
                             <div class="mt-n1">
                                 <div class="m-0">
-                                    <div class="row g-5 mb-11">
-                                        <p class="fw-bold d-flex align-items-center">
-                                            Dengan hormat,
-                                            <br>
-                                            Kami dari PT. Mayatama
-                                            Solusindo bermaksud menawarkan harga layanan dedicated
-                                            untuk {{ $offeringLetterCompanyName }}, berikut adalah harga
-                                            terbaik
-                                            yang kami
-                                            tawarkan :
-                                        </p>
+                                    <div class="row g-5">
+                                       <div class="h-200px">
+                                           <p class="fs-6 d-flex align-items-center lh-sm">
+                                               Dengan hormat,
+                                               <br>
+                                               Kami dari PT. Mayatama
+                                               Solusindo bermaksud menawarkan harga layanan dedicated
+                                               untuk {{ $offeringLetterCompanyName }}, berikut adalah harga
+                                               terbaik
+                                               yang kami
+                                               tawarkan :
+                                           </p>
+                                       </div>
                                     </div>
                                     <div class="flex-grow-1">
                                         <!--begin::Table-->
