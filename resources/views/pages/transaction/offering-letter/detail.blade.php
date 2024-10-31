@@ -20,130 +20,166 @@
         </style>
     @endpush
     <div class="d-flex flex-column flex-lg-row" x-data="invoiceDetail">
-        <div class="card">
-            <img class="w-sm-100 h-200px" src="{{ asset('assets/media/logos/kop-header.png') }}" alt="">
-            <div class="card-body">
-                <div class="d-flex flex-column flex-xl-row">
-                    <div class="me-10">
-                        <h6 class="mb-2 fw-bolder text-hover-primary text-wrap" style="width: 20rem">
-                            Yth, {{ $offeringLetter->contact->pic_name }}
-                            ,<br> {{ $offeringLetter->contact->company_name }}
-                        </h6>
+        <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
+            <div class="card">
+                <img class="w-sm-100 h-200px" src="{{ asset('assets/media/logos/kop-header.png') }}" alt="">
+                <div class="card-body">
+                    <div class="d-flex flex-column flex-md-row">
+                        <div class="me-10">
+                            <h6 class="mb-2 fw-bolder text-hover-primary text-wrap" style="width: 20rem">
+                                Yth, {{ $offeringLetter->contact->pic_name }}
+                                ,<br> {{ $offeringLetter->contact->company_name }}
+                            </h6>
 
-                        <div class="mb-6">
-                            <div class="fw-bold text-gray-800 fs-6">
-                                {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
-                            </div>
-                        </div>
-
-                        <div class="separator mb-3"></div>
-
-                        <div class="mb-4">
-                            <div class="fw-bold fs-6 text-gray-800 d-flex align-items-center">
-                                {{ \App\Helper\formatDate($offeringLetter->date) }}
-                            </div>
-                        </div>
-
-                        <div class="separator mb-3"></div>
-
-                        <div class="mb-6">
-                            <div class="fw-semibold text-gray-600 fs-7">Nomor:</div>
-                            <div class="fw-bold fs-6 text-gray-800">
-                                {{ $offeringLetter->offering_number }}
-                            </div>
-                        </div>
-                        <div class="mb-6">
-                            <div class="fw-semibold text-gray-600 fs-7">Perihal:</div>
-                            <div class="fw-bold text-gray-800 fs-6">{{ $offeringLetter->regarding }}</div>
-                        </div>
-                    </div>
-                    <div class="flex-lg-row-fluid me-xl-18 mb-10 mb-xl-0">
-                        <div class="mt-n1">
-                            <div class="m-0">
-                                <div class="row g-5 mb-11">
-                                    <p class="fw-bold text-gray-700 d-flex align-items-center">
-                                        Dengan hormat,
-                                        <br>
-                                        Kami dari PT. Mayatama
-                                        Solusindo bermaksud menawarkan harga layanan dedicated
-                                        untuk {{ $offeringLetter->contact->company_name }}, berikut adalah harga terbaik
-                                        yang kami
-                                        tawarkan :
-                                    </p>
+                            <div class="mb-6">
+                                <div class="fw-bold text-gray-800 fs-6">
+                                    {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
                                 </div>
-                                <div class="flex-grow-1">
-                                    <!--begin::Table-->
-                                    <div class="table-responsive border-bottom mb-9">
-                                        <table class="table mb-3">
-                                            <thead>
-                                            <tr class="border-bottom fs-6 fw-bold text-muted">
-                                                <th class="text-center">No</th>
-                                                <th class="text-center">Layanan</th>
-                                                <th class="text-center">Kapasitas / Jumlah</th>
-                                                <th class="text-center">Harga / Bulan</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            @foreach($offeringLetterServices as $service)
-                                                <tr class="fw-bold text-gray-700 fs-5 text-end">
-                                                    <td class="text-center">{{ $loop->iteration }}</td>
-                                                    <td class="text-center">
-                                                        {{ $service->serviceCategory->name }}
-                                                    </td>
-                                                    <td class="text-center"> {{ $service->capacity }} {{ $service->unitType->name }}</td>
-                                                    <td class="text-center">
-                                                        <div>
-                                                            Rp {{ number_format($service->price, false, '.', '.') }}</div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                            </tbody>
-                                        </table>
+                            </div>
+
+                            <div class="separator mb-3"></div>
+
+                            <div class="mb-4">
+                                <div class="fw-bold fs-6 text-gray-800 d-flex align-items-center">
+                                    {{ \App\Helper\formatDate($offeringLetter->date) }}
+                                </div>
+                            </div>
+
+                            <div class="separator mb-3"></div>
+
+                            <div class="mb-6">
+                                <div class="fw-semibold text-gray-600 fs-7">Nomor:</div>
+                                <div class="fw-bold fs-6 text-gray-800">
+                                    {{ $offeringLetter->offering_number }}
+                                </div>
+                            </div>
+                            <div class="mb-6">
+                                <div class="fw-semibold text-gray-600 fs-7">Perihal:</div>
+                                <div class="fw-bold text-gray-800 fs-6">{{ $offeringLetter->regarding }}</div>
+                            </div>
+                        </div>
+                        <div class="flex-lg-row-fluid me-md-18 mb-10 mb-xl-0">
+                            <div class="mt-n1">
+                                <div class="m-0">
+                                    <div class="row g-5 mb-11">
+                                        <p class="fw-bold text-gray-700 d-flex align-items-center">
+                                            Dengan hormat,
+                                            <br>
+                                            Kami dari PT. Mayatama
+                                            Solusindo bermaksud menawarkan harga layanan dedicated
+                                            untuk {{ $offeringLetter->contact->company_name }}, berikut adalah harga
+                                            terbaik
+                                            yang kami
+                                            tawarkan :
+                                        </p>
                                     </div>
-                                    <div class="d-flex justify-content-end mb-10">
-                                        <div class="mw-300px">
-                                            <!--begin::Item-->
-                                            <div class="d-flex flex-stack mb-3">
-                                                <div class="fw-semibold pe-10 text-gray-600 fs-7">PPN</div>
-                                                <div
-                                                    class="text-end fw-bold fs-6 text-gray-800">
-                                                    Rp {{ number_format($totalPPN, false,'.', '.') }}
+                                    <div class="flex-grow-1">
+                                        <!--begin::Table-->
+                                        <div class="table-responsive border-bottom mb-9">
+                                            <table class="table mb-3">
+                                                <thead>
+                                                <tr class="border-bottom fs-6 fw-bold text-muted">
+                                                    <th class="text-center">No</th>
+                                                    <th class="text-center">Layanan</th>
+                                                    <th class="text-center">Kapasitas / Jumlah</th>
+                                                    <th class="text-center">Harga / Bulan</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                @foreach($offeringLetterServices as $service)
+                                                    <tr class="fw-bold text-gray-700 fs-5 text-end">
+                                                        <td class="text-center">{{ $loop->iteration }}</td>
+                                                        <td class="text-center">
+                                                            {{ $service->serviceCategory->name }}
+                                                        </td>
+                                                        <td class="text-center"> {{ $service->capacity }} {{ $service->unitType->name }}</td>
+                                                        <td class="text-center">
+                                                            <div>
+                                                                Rp {{ number_format($service->price, false, '.', '.') }}</div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="d-flex justify-content-end mb-10">
+                                            <div class="mw-300px">
+                                                <!--begin::Item-->
+                                                <div class="d-flex flex-stack mb-3">
+                                                    <div class="fw-semibold pe-10 text-gray-600 fs-7">PPN</div>
+                                                    <div
+                                                            class="text-end fw-bold fs-6 text-gray-800">
+                                                        Rp {{ number_format($totalPPN, false,'.', '.') }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="d-flex flex-stack">
+                                                    <div class="fw-semibold pe-10 text-gray-600 fs-7">Total</div>
+                                                    <div
+                                                            class="text-end fw-bold fs-6 text-gray-800">
+                                                        Rp {{ number_format($total, false,'.', '.') }}</div>
                                                 </div>
                                             </div>
-
-                                            <div class="d-flex flex-stack">
-                                                <div class="fw-semibold pe-10 text-gray-600 fs-7">Total</div>
-                                                <div
-                                                    class="text-end fw-bold fs-6 text-gray-800">
-                                                    Rp {{ number_format($total, false,'.', '.') }}</div>
-                                            </div>
                                         </div>
-                                    </div>
 
-                                    <p class="fw-bold text-gray-700 d-flex align-items-center mb-1">
-                                        Adapun syarat, ketentuan dan layanan yang kami berikan antara lain :
-                                    </p>
-                                    <ul class="fw-bold text-gray-700">
-                                        <li>SLA 99,5%</li>
-                                        <li>Support Pelayanan 7 x 24 jam, online maupun onsite.</li>
-                                        <li>Masa berlaku penawaran 1 bulan</li>
-                                        <li>
-                                            Minimum kontrak 1 tahun dan otomatis diperpanjang apabila tidak ada
-                                            permintaan
-                                            berhenti berlangganan
-                                        </li>
-                                        @foreach($offeringLetterServiceDescription as $desc)
-                                            <li style="font-size: 13px">{{ $desc->skl->name }}</li>
-                                        @endforeach
-                                    </ul>
+                                        <p class="fw-bold text-gray-700 d-flex align-items-center mb-1">
+                                            Adapun syarat, ketentuan dan layanan yang kami berikan antara lain :
+                                        </p>
+                                        <ul class="fw-bold text-gray-700">
+                                            <li>SLA 99,5%</li>
+                                            <li>Support Pelayanan 7 x 24 jam, online maupun onsite.</li>
+                                            <li>Masa berlaku penawaran 1 bulan</li>
+                                            <li>
+                                                Minimum kontrak 1 tahun dan otomatis diperpanjang apabila tidak ada
+                                                permintaan
+                                                berhenti berlangganan
+                                            </li>
+                                            @foreach($offeringLetterServiceDescription as $desc)
+                                                <li style="font-size: 13px">{{ $desc->skl->name }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
+                    </div>
+                </div>
+                <img class="w-100" src="{{ asset('assets/media/logos/kop-footer.png') }}" alt="">
+            </div>
+        </div>
+
+        <div class="flex-lg-auto min-w-lg-300px">
+            <div class="card" data-kt-sticky="true" data-kt-sticky-name="invoice"
+                 data-kt-sticky-offset="{default: false, lg: '200px'}" data-kt-sticky-width="{lg: '250px', lg: '300px'}"
+                 data-kt-sticky-left="auto" data-kt-sticky-top="150px" data-kt-sticky-animation="false"
+                 data-kt-sticky-zindex="95">
+                <div class="card-body p-10">
+                    <div class="mb-0">
+                        @if($offeringLetter->status === 0)
+                            <div class="row mb-5">
+                                <div class="col">
+                                    <a href="{{ url('income-transactions/offering-letters/edit/' . $offeringLetter->id) }}"
+                                       class="btn btn-light btn-active-light-info w-100">Ubah</a>
+                                </div>
+                                <div class="col">
+                                    <button type="button" @click="destroy({{ $offeringLetter->id }})"
+                                            class="btn btn-light btn-active-light-danger w-100">Hapus
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="button" @click="confirm()" class="btn btn-primary w-100 mb-4">
+                                Konfirmasi
+                            </button>
+                        @else
+                            <a href="{{ url('income-transactions/offering-letters/export-pdf/'. $offeringLetter->id) }}"
+                               class="btn btn-light-info w-100 mb-4" target="_blank">
+                                Print PDF
+                            </a>
+                        @endif
+                    </div>
                 </div>
             </div>
-            <img class="w-100" src="{{ asset('assets/media/logos/kop-footer.png') }}" alt="">
         </div>
     </div>
 
