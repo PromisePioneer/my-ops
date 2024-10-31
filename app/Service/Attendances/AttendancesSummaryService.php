@@ -58,8 +58,10 @@ class AttendancesSummaryService
                     $totalNotCheckIn++;
                 }
 
-                if (empty($attendance->clock_out) && $attendance->clock_in) {
-                    $totalNotCheckOut++;
+                if ($attendance->date != Carbon::now()->format('Y-m-d')) {
+                    if (empty($attendance->clock_out) && $attendance->clock_in) {
+                        $totalNotCheckOut++;
+                    }
                 }
 
                 if ($attendance->clock_in || $attendance->clock_out) {
@@ -77,7 +79,7 @@ class AttendancesSummaryService
                 'total_minutes_late' => (int)$totalMinutesLate,
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
-                'total_present' => $totalPresent.'/'.(int)$periodOfWork,
+                'total_present' => $totalPresent . '/' . (int)$periodOfWork,
             ];
         });
 
@@ -92,8 +94,8 @@ class AttendancesSummaryService
         $expectedCheckInTime = $userWorktime->clock_in;
         $expectedCheckIn = Carbon::parse($attendance->date)->format(
                 'Y-m-d'
-            ).' '.$expectedCheckInTime;
-        $actualCheckIn = Carbon::parse($attendance->date)->format('Y-m-d').' '.$attendance->clock_in;
+            ) . ' ' . $expectedCheckInTime;
+        $actualCheckIn = Carbon::parse($attendance->date)->format('Y-m-d') . ' ' . $attendance->clock_in;
 
 
         $parseExpectedCheckIn = Carbon::parse($expectedCheckIn);
@@ -111,9 +113,7 @@ class AttendancesSummaryService
     public function getUserWorktime($user)
     {
         $attendancesSummary = AttendancesSummary::where('employee_id', $user->absent_id)->first();
-
-        return WorkTime::where('id', $attendancesSummary?->work_time_id)->first() ??
-            WorkTime::where('name', 'Default')->first();
+        return WorkTime::where('id', $attendancesSummary?->work_time_id)->first() ?? WorkTime::where('name', 'Default')->first();
     }
 
 
@@ -135,8 +135,8 @@ class AttendancesSummaryService
 
 
         if (!empty($search)) {
-            $data->where('name', 'like', '%'.$search.'%')
-                ->orWhere('nip', 'like', '%'.$search.'%');
+            $data->where('name', 'like', '%' . $search . '%')
+                ->orWhere('nip', 'like', '%' . $search . '%');
         }
 
         $data = $data->paginate(10)->onEachSide(1);
