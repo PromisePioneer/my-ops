@@ -95,7 +95,7 @@
                                         <td style='text-align:center; vertical-align:middle' class="w-50">
                                             <input class="form-control form-control-solid" type="number" min="1"
                                                    x-model="field.capacity" :name="`data[${index}][capacity]`"
-                                                   placeholder="Kapasitas" value="0" @change="calculateTotal(index)"/>
+                                                   placeholder="Kapasitas" value="0"/>
                                         </td>
                                         <td style='text-align:center; vertical-align:middle' class="w-20">
                                             <select :class="`form-select form-select-solid unit-types-select2`"
@@ -108,7 +108,7 @@
                                         <td style='text-align:center; vertical-align:middle' class="w-50">
                                             <input class="form-control form-control-solid" type="number" min="1"
                                                    x-model="field.price" :name="`data[${index}][price]`"
-                                                   placeholder="Harga" value="0" @change="calculateTotal(index)"/>
+                                                   placeholder="Harga" value="0"/>
                                         </td>
                                         <td class="text-end" style='text-align:center; vertical-align:middle'>
                                             <button type="button" class="btn btn-sm btn-icon btn-active-color-primary"
@@ -235,7 +235,9 @@
                 sklForm: document.getElementById('form-skl-create'),
                 async init() {
                     await this.getContactData();
-                    await this.getServicesCategories();
+                    this.$nextTick(() => {
+                        this.getServicesCategories();
+                    })
                     await this.getSelectedOfferingLetterProductService();
                     await this.getSelectedOfferingLettersServiceDescription();
                     await this.getSelectedContact();
@@ -243,77 +245,95 @@
                     await this.getUserData();
                     await this.getUnitTypeData();
                     await this.getSKL();
-                    await this.getSelectedServicesDescription();
                 },
                 async getSelectedOfferingLetterProductService() {
                     const resp = await axios.get(`/income-transactions/offering-letters/get-selected-products/${this.id}`);
-                    this.offeringLetterProductService = resp.data;
-
-                    console.log(this.offeringLetterProductService);
-                    try {
+                    resp.data.map((resp, index) => {
+                        this.offeringLetterProductService.push({
+                            service_category_id: resp.service_category_id,
+                            capacity: resp.capacity,
+                            unit_type_id: resp.unit_type_id,
+                            price: resp.price,
+                        });
                         this.$nextTick(() => {
-                            this.offeringLetterProductService.forEach((field, index) => {
-                                const selectedServices = $(`#selectedServices-${index}`);
-                                $.ajax({
-                                    type: 'GET',
-                                    dataType: "JSON",
-                                    url: `/general-master-data/service-categories/show/${field.service_category_id}`,
-                                }).then(function (response) {
-                                    const option = new Option(response.name, response.id, true, true);
-                                    selectedServices.append(option).trigger('change');
-                                    selectedServices.trigger({
-                                        type: 'select2:select',
-                                        params: {results: response}
-                                    });
-                                    field.service_category_id = response.id;
-                                });
-
-                                const selectedUnitType = $(`#selectedUnitType-${index}`);
-                                $.ajax({
-                                    type: 'GET',
-                                    dataType: "JSON",
-                                    url: `/general-master-data/unit-types/${field.unit_type_id}`,
-                                }).then(function (response) {
-                                    const option = new Option(response.name, response.id, true, true);
-                                    selectedUnitType.append(option).trigger('change');
-                                    selectedUnitType.trigger({
-                                        type: 'select2:select',
-                                        params: {results: response}
-                                    });
-                                    field.unit_type_id = response.id;
-                                });
-
-                            });
-                        })
-                    } catch (e) {
-                        console.log(e)
-                    }
+                            this.selectedServiceCategories(resp, index);
+                            this.selectedUnitTypes(resp, index);
+                        });
+                    });
                 },
                 async getSelectedServicesDescription() {
                     const resp = await axios.get(`/income-transactions/offering-letters/get-selected-offering-letters-service-description/${this.id}`);
-                    this.offeringLettersServiceDescription = resp.data;
-                    try {
+                    resp.data.map((resp, index) => {
+                        this.offeringLettersServiceDescription.push({
+                            skl_id: resp.skl_id
+                        });
                         this.$nextTick(() => {
-                            this.offeringLettersServiceDescription.forEach((field, index) => {
-                                const selectedSKL = $(`#selectedSKL-${index}`);
-                                $.ajax({
-                                    type: 'GET',
-                                    dataType: "JSON",
-                                    url: `/general-master-data/skl/${field.skl_id}`,
-                                }).then(function (response) {
-                                    const option = new Option(response.name, response.id, true, true);
-                                    selectedSKL.append(option).trigger('change');
-                                    selectedSKL.trigger({
-                                        type: 'select2:select',
-                                        params: {results: response}
-                                    });
-                                    field.skl_id = response.id;
-                                });
-                            });
-                        })
-                    } catch (e) {
-                        console.log(e)
+                            this.selectedSKL(resp, index);
+                        });
+                    });
+                },
+                async selectedUnitTypes(resp, index) {
+                    const selectedUnitType = $(`#selectedUnitType-${index}`);
+                    $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/general-master-data/unit-types/${resp.unit_type_id}`,
+                    }).then(function (response) {
+                        const option = new Option(response.name, response.id, true, true);
+                        selectedUnitType.append(option).trigger('change');
+                        selectedUnitType.trigger({
+                            type: 'select2:select',
+                            params: {results: response}
+                        });
+                        resp.unit_type_id = response.id;
+                    });
+                },
+                async selectedServiceCategories(resp, index) {
+                    const selectedServices = $(`#selectedServices-${index}`);
+                    $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/general-master-data/service-categories/show/${resp.service_category_id}`,
+                    }).then(function (response) {
+                        const option = new Option(response.name, response.id, true, true);
+                        selectedServices.append(option).trigger('change');
+                        selectedServices.trigger({
+                            type: 'select2:select',
+                            params: {results: response}
+                        });
+                        resp.service_category_id = response.id;
+                    });
+                },
+                async saveSKL() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/general-master-data/skl', new FormData(this.sklForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.sklForm.reset();
+                        this.sklModal.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
                     }
+                },
+                async selectedSKL(resp, index) {
+                    const selectedSKL = $(`#selectedSKL-${index}`);
+                    $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/general-master-data/skl/${resp.skl_id}`,
+                    }).then(function (response) {
+                        const option = new Option(response.name, response.id, true, true);
+                        selectedSKL.append(option).trigger('change');
+                        selectedSKL.trigger({
+                            type: 'select2:select',
+                            params: {results: response}
+                        });
+                        resp.skl_id = response.id;
+                    });
                 },
                 async getSKL() {
                     $(".skl-select2").select2({
@@ -389,13 +409,14 @@
                 },
                 async getSelectedOfferingLettersServiceDescription() {
                     const resp = await axios.get(`/income-transactions/offering-letters/get-selected-offering-letters-service-description/${this.id}`);
-                    this.offeringLettersServiceDescription = resp.data;
-                    try {
+                    resp.data.map((resp, index) => {
+                        this.offeringLettersServiceDescription.push({
+                            skl_id: resp.skl_id
+                        });
                         this.$nextTick(() => {
-                        })
-                    } catch (e) {
-                        console.log(e)
-                    }
+                            this.selectedSKL(resp, index);
+                        });
+                    });
                 },
                 async saveContact() {
                     this.buttonLoading = true;
@@ -428,11 +449,11 @@
                 async addOfferingLetterProductService() {
                     this.$nextTick(() => {
                         this.getServicesCategories();
+                        this.getUnitTypeData();
                     })
                     this.offeringLetterProductService.push({
                         service_category_id: '',
                         price: '',
-                        total_price: '',
                     });
                 },
                 async addOfferingLettersServiceDescription() {
@@ -440,31 +461,39 @@
                         this.getSKL();
                     })
                     this.offeringLettersServiceDescription.push({
-                        text: ''
+                        skl_id: ''
                     });
                 },
-                calculateTotal(index) {
-                    this.offeringLetterProductService[index].total_price = this.offeringLetterProductService[index].price;
-                },
                 calculateTotalAll() {
-                    return this.offeringLetterProductService.reduce((total, field) => total + field.price, 0);
+                    return this.offeringLetterProductService.reduce((total, field) => Number(total) + Number(field.price), 0);
                 },
                 formatNumber(curr) {
                     let IDR = new Intl.NumberFormat('en-ID', {
                         style: 'currency',
                         currency: "IDR"
                     });
-
                     return IDR.format(curr);
                 },
                 removeOfferingLetterProductService(index) {
                     if (this.offeringLetterProductService.length > 1) {
                         this.offeringLetterProductService.splice(index, 1);
+                        this.offeringLetterProductService.forEach((resp, index) => {
+                            this.$nextTick(() => {
+                                this.selectedServiceCategories(resp, index);
+                                this.selectedUnitTypes(resp, index);
+                            })
+                        })
                     }
                 },
                 removeOfferingLettersServiceDescription(index) {
                     if (this.offeringLettersServiceDescription.length > 1) {
                         this.offeringLettersServiceDescription.splice(index, 1);
+
+                        this.offeringLettersServiceDescription.forEach((resp, index) => {
+                            this.$nextTick(() => {
+                                this.selectedSKL(resp, index);
+                            })
+                        })
                     }
                 },
                 async getServicesCategories() {

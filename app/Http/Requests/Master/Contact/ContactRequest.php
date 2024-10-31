@@ -17,13 +17,19 @@ class ContactRequest extends FormRequest
     {
         return [
             'pic_name' => ['required'],
-            'company_name' => ['required', Rule::unique('contacts', 'company_name')],
-            'company_code' => ['required', Rule::unique('contacts', 'company_code'), 'min:3', 'max:3'],
+            'company_name' => ['required', Rule::unique('contacts', 'company_name')->ignore($request->route('contact'))],
+            'company_code' => [
+                'required',
+                Rule::unique('contacts', 'company_code')
+                    ->ignore($request->route('contact')),
+                'min:3',
+                'max:3'
+            ],
             'email' => [
                 'nullable',
                 'email',
                 Rule::unique('contacts', 'email')
-                    ->ignore($request->route('contact') === null),
+                    ->ignore($request->route('contact')),
             ],
             'phone_number' => ['required'],
             'identity_type' => [
