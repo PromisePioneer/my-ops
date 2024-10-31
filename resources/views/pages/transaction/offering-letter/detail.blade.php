@@ -25,44 +25,37 @@
             <div class="card-body">
                 <div class="d-flex flex-column flex-xl-row">
                     <div class="me-10">
-                            <h6 class="mb-2 fw-bolder text-hover-primary text-wrap" style="width: 20rem">
-                                Yth, {{ $offeringLetter->contact->pic_name }}
-                                ,<br> {{ $offeringLetter->contact->company_name }}
-                            </h6>
+                        <h6 class="mb-2 fw-bolder text-hover-primary text-wrap" style="width: 20rem">
+                            Yth, {{ $offeringLetter->contact->pic_name }}
+                            ,<br> {{ $offeringLetter->contact->company_name }}
+                        </h6>
 
-                            <div class="mb-6">
-                                <div class="fw-bold text-gray-800 fs-6">
-                                    {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
-                                </div>
+                        <div class="mb-6">
+                            <div class="fw-bold text-gray-800 fs-6">
+                                {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
                             </div>
+                        </div>
 
-                            <div class="separator mb-3"></div>
+                        <div class="separator mb-3"></div>
 
-                            <div class="mb-4">
-                                <div class="fw-bold fs-6 text-gray-800 d-flex align-items-center">
-                                    {{ \App\Helper\formatDate($offeringLetter->date) }}
-                                </div>
+                        <div class="mb-4">
+                            <div class="fw-bold fs-6 text-gray-800 d-flex align-items-center">
+                                {{ \App\Helper\formatDate($offeringLetter->date) }}
                             </div>
+                        </div>
 
-                            <div class="separator mb-3"></div>
+                        <div class="separator mb-3"></div>
 
-                            <div class="mb-6">
-                                <div class="fw-semibold text-gray-600 fs-7">Nomor:</div>
-                                <div class="fw-bold fs-6 text-gray-800">
-                                    {{ $offeringLetter->offering_number }}
-                                </div>
+                        <div class="mb-6">
+                            <div class="fw-semibold text-gray-600 fs-7">Nomor:</div>
+                            <div class="fw-bold fs-6 text-gray-800">
+                                {{ $offeringLetter->offering_number }}
                             </div>
-                            <div class="mb-6">
-                                <div class="fw-semibold text-gray-600 fs-7">Perihal:</div>
-                                <div class="fw-bold text-gray-800 fs-6">{{ $offeringLetter->regarding }}</div>
-                            </div>
-                            <div class="m-0">
-                                <div class="fw-semibold text-gray-600 fs-7">Time Spent:</div>
-                                <div class="fw-bold fs-6 text-gray-800 d-flex align-items-center">230 Hours
-                                    <span class="fs-7 text-success d-flex align-items-center">
-														<span class="bullet bullet-dot bg-success mx-2"></span>35$/h Rate</span>
-                                </div>
-                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <div class="fw-semibold text-gray-600 fs-7">Perihal:</div>
+                            <div class="fw-bold text-gray-800 fs-6">{{ $offeringLetter->regarding }}</div>
+                        </div>
                     </div>
                     <div class="flex-lg-row-fluid me-xl-18 mb-10 mb-xl-0">
                         <div class="mt-n1">
