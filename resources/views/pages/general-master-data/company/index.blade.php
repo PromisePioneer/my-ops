@@ -98,7 +98,7 @@
                                     <td x-text="company.name"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(branch.id)">
+                                                data-bs-target="#modal-edit" @click="edit(company.id)">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
