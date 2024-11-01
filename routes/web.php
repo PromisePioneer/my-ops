@@ -393,6 +393,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/search', [CompanyController::class, 'search']);
             Route::post('/', [CompanyController::class, 'store']);
             Route::get('/{company}', [CompanyController::class, 'edit']);
+            Route::post('/update/{company}', [CompanyController::class, 'update']);
             Route::post('/destroy', [CompanyController::class, 'destroy']);
             Route::post('/{company}', [CompanyController::class, 'update']);
         });
