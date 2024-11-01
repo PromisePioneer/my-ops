@@ -184,7 +184,7 @@ class OfferingLettersController extends Controller
             $newString .= strtolower($abbr) . ' ';
         }
 
-        return $newPTKey . ' ' . ucwords(trim($newString));
+        return strtoupper($newPTKey) . ' ' . ucwords(trim($newString));
     }
 
     public function viewFile(OfferingLetter $offeringLetter): View

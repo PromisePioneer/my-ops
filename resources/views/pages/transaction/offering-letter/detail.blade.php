@@ -63,7 +63,7 @@
                                 <div class="m-0">
                                     <div class="row g-5">
                                         <div class="h-200px">
-                                            <p class="fs-6 d-flex align-items-center lh-sm">
+                                            <p class="fs-6 d-flex align-items-center" style="line-height: 2.0">
                                                 Dengan hormat,
                                                 <br>
                                                 Kami dari PT. Mayatama
