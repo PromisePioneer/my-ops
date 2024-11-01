@@ -172,6 +172,8 @@ class OfferingLettersController extends Controller
     {
 
         $companyName = strtolower($offeringLetter->contact->company_name);
+
+
         $convertCompanyNameToArray = explode(" ", $companyName);
 
         $newString = '';
