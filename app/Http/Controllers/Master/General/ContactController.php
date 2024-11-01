@@ -15,18 +15,21 @@ class ContactController extends Controller
 
     public function index(): View
     {
+        $this->authorize('Lihat Kontak');
         return view('pages.general-master-data.contact.index');
     }
 
 
     public function data(Request $request): JsonResponse
     {
+        $this->authorize('Lihat Kontak');
         $contact = Contact::paginate(self::$perPage);
         return response()->json($contact);
     }
 
     public function search(Request $request): JsonResponse
     {
+        $this->authorize('Lihat Kontak');
         $search = $request->input('search');
         $contact = Contact::when(!empty($search), function ($query) use ($search) {
             $query->where('full_name', 'like', '%' . $search . '%')
@@ -47,6 +50,7 @@ class ContactController extends Controller
 
     public function store(ContactRequest $request): JsonResponse
     {
+        $this->authorize('Tambah Kontak');
         Contact::create($request->validated());
 
         return response()->json([
@@ -56,13 +60,14 @@ class ContactController extends Controller
 
     public function edit(Contact $contact): JsonResponse
     {
+        $this->authorize('Edit Kontak');
         return response()->json($contact);
     }
 
     public function update(ContactRequest $request, Contact $contact): JsonResponse
     {
+        $this->authorize('Edit Kontak');
         $contact->update($request->validated());
-
         return response()->json([
             'message' => 'data berhasil disimpan',
         ], 200);
@@ -70,6 +75,7 @@ class ContactController extends Controller
 
     public function destroy(Request $request, Contact $contact): JsonResponse
     {
+        $this->authorize('Hapus Kontak');
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
         $contact->whereIn('id', $explodeID)->delete();

@@ -42,15 +42,17 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                        <button type="button" class="btn btn-light-primary btn-sm"
-                                data-bs-toggle="modal"
-                                data-bs-target="#contact-create">
-                            <i class="ki-duotone ki-message-add fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                            </i> Tambah
-                        </button>
+                        <template x-if="Number(createPermission) === 1">
+                            <button type="button" class="btn btn-light-primary btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#contact-create">
+                                <i class="ki-duotone ki-message-add fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i> Tambah
+                            </button>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -71,7 +73,7 @@
                         </button>
                     </form>
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
+                        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
@@ -83,7 +85,9 @@
                                 <th class="min-w-125px">PIC</th>
                                 <th class="min-w-125px">Nama Perusahaan</th>
                                 <th class="min-w-125px">No. Handphone</th>
-                                <th class="min-w-125px">Actions</th>
+                                <template x-if="Number(editPermission) === 1">
+                                    <th class="min-w-125px">Actions</th>
+                                </template>
                             </thead>
                             <template x-if="isLoading">
                                 <tbody class=" fw-bold">
@@ -153,6 +157,8 @@
     <script defer>
         function contactData() {
             return {
+                createPermission: "{{  request()->user()->can('Lihat Kontak')  }}",
+                editPermission: "{{  request()->user()->can('Edit Kontak')  }}",
                 contacts: [],
                 isLoading: true,
                 buttonLoading: false,

@@ -43,6 +43,46 @@ class PermissionSeeder extends Seeder
     }
 
 
+    public function contact(): void
+    {
+        $director = Role::where('name', 'Director')->first();
+        $FAManager = Role::where('name', 'FA & Tax Manager')->first();
+        $operationalManager = Role::where('name', 'Operational Manager')->first();
+
+        $contacts = [
+            'Lihat Kontak',
+            'Tambah Kontak',
+            'Edit Kontak',
+            'Hapus Kontak',
+        ];
+        foreach ($contacts as $contact) {
+            Permission::create(['name' => $contact]);
+        }
+
+        $director->givePermissionTo([
+            'Lihat Kontak',
+            'Tambah Kontak',
+            'Edit Kontak',
+            'Hapus Kontak',
+        ]);
+
+        $FAManager->givePermissionTo([
+            'Lihat Kontak',
+            'Tambah Kontak',
+            'Edit Kontak',
+            'Hapus Kontak',
+        ]);
+
+        $operationalManager->givePermissionTo([
+            'Lihat Kontak',
+            'Tambah Kontak',
+            'Edit Kontak',
+            'Hapus Kontak',
+        ]);
+
+    }
+
+
     public function BoQ(): void
     {
         $director = Role::where('name', 'Director')->first();

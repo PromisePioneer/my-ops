@@ -26,7 +26,7 @@ class ContactPolicy
 
     public function update(User $user): bool
     {
-        return $user->can('Update Kontak');
+        return $user->can('Edit Kontak');
     }
 
     public function delete(User $user): bool
