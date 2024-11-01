@@ -3,10 +3,12 @@
 namespace App\Imports;
 
 use App\Models\Branch;
+use App\Models\Company;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
@@ -31,8 +33,9 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, WithChunkRe
     public function rules(): array
     {
         return [
-            'branch_id' => ['nullable', 'exists:branches,id'],
-            'absent_id' => ['required'],
+            'branch_id' => ['nullable', Rule::exists('branches', 'id')],
+            'absent_id' => ['required', Rule::unique('users', 'absent_id')],
+            'company_id' => ['required'],
             '*.absent_id' => function ($attribute, $value, $onFailure) {
                 $user = User::where('absent_id', $value)->first();
                 if ($user) {
@@ -57,6 +60,7 @@ class UserImport implements ToModel, WithHeadingRow, WithValidation, WithChunkRe
         return new User([
             'branch_id' => Branch::where('code', $row['cabang'])->first()?->id,
             'absent_id' => (int)$row['absen_id'],
+            'company_id' => Company::where('code', $row['perusahaan'])->first()?->id,
             'nip' => (int)$row['nik'],
             'name' => $row['nama'],
             'placement' => $row['penempatan'],

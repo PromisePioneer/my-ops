@@ -23,59 +23,6 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
-/**
- * @property int $id
- * @property string $absent_id
- * @property string $placement
- * @property int|null $branch_id
- * @property string $nip
- * @property string $name
- * @property string $join_date
- * @property string $email
- * @property Carbon|null $email_verified_at
- * @property string $password
- * @property string|null $last_login
- * @property string|null $profile_pic
- * @property string|null $remember_token
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Branch|null $branch
- * @property-read JobInformation|null $jobInformation
- * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
- * @property-read int|null $notifications_count
- * @property-read Collection<int, Permission> $permissions
- * @property-read int|null $permissions_count
- * @property-read Collection<int, Role> $roles
- * @property-read int|null $roles_count
- * @property-read Collection<int, PersonalAccessToken> $tokens
- * @property-read int|null $tokens_count
- *
- * @method static UserFactory factory($count = null, $state = [])
- * @method static Builder|User newModelQuery()
- * @method static Builder|User newQuery()
- * @method static Builder|User permission($permissions, $without = false)
- * @method static Builder|User query()
- * @method static Builder|User role($roles, $guard = null, $without = false)
- * @method static Builder|User whereAbsentId($value)
- * @method static Builder|User whereBranchId($value)
- * @method static Builder|User whereCreatedAt($value)
- * @method static Builder|User whereEmail($value)
- * @method static Builder|User whereEmailVerifiedAt($value)
- * @method static Builder|User whereId($value)
- * @method static Builder|User whereJoinDate($value)
- * @method static Builder|User whereLastLogin($value)
- * @method static Builder|User whereName($value)
- * @method static Builder|User whereNip($value)
- * @method static Builder|User wherePassword($value)
- * @method static Builder|User wherePlacement($value)
- * @method static Builder|User whereProfilePic($value)
- * @method static Builder|User whereRememberToken($value)
- * @method static Builder|User whereUpdatedAt($value)
- * @method static Builder|User withoutPermission($permissions)
- * @method static Builder|User withoutRole($roles, $guard = null)
- *
- * @mixin Eloquent
- */
 class User extends Authenticatable
 {
     use HasApiTokens;
@@ -169,8 +116,8 @@ class User extends Authenticatable
         $query = self::with('branch')->where('branch_id', $request->user()->branch_id);
 
         if ($search !== '') {
-            $query->where('name', 'like', '%'.$search.'%');
-            $query->orWhere('email', 'like', '%'.$search.'%');
+            $query->where('name', 'like', '%' . $search . '%');
+            $query->orWhere('email', 'like', '%' . $search . '%');
         }
 
         $user = $query->get();
@@ -187,8 +134,8 @@ class User extends Authenticatable
     {
         $search = $request->input('search');
         return self::with('roles')
-            ->where('name', 'like', '%'.$search.'%')
-            ->orWhere('email', 'like', '%'.$search.'%');
+            ->where('name', 'like', '%' . $search . '%')
+            ->orWhere('email', 'like', '%' . $search . '%');
     }
 
 
@@ -202,8 +149,8 @@ class User extends Authenticatable
 
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%'.$search.'%')
-                    ->orWhere('nip', 'like', '%'.$search.'%');
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('nip', 'like', '%' . $search . '%');
             });
         }
 
@@ -228,7 +175,7 @@ class User extends Authenticatable
         return $users->map(function ($item) {
             return [
                 'id' => $item->id,
-                'text' => $item->nip.' '.$item->name,
+                'text' => $item->nip . ' ' . $item->name,
             ];
         })->toArray();
     }
