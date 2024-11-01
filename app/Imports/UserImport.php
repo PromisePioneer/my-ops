@@ -20,7 +20,6 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class UserImport implements ToModel, WithHeadingRow, WithValidation, WithChunkReading, WithCalculatedFormulas
 {
-
     use Importable;
 
     private Collection $branch;

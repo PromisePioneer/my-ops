@@ -14,12 +14,17 @@
                 </div>
             </div>
 
-            <form id="form-edit" @submit.prevent="save()">
+            <form id="form-edit" @submit.prevent="update(editVal.id)">
                 <div class="modal-body">
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Kode</label>
+                        <input type="text" id="code" name="code" class="form-control form-control-solid"
+                               placeholder="Kode Perusahaan" :value="editVal.code"/>
+                    </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama</label>
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama Perusahaan"/>
+                               placeholder="Nama Perusahaan" :value="editVal.name"/>
                     </div>
                 </div>
 

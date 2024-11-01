@@ -1,7 +1,7 @@
 @extends('layouts.template')
 @section('page-title', 'Master Umum - Data Perusahaan')
 @section('content')
-    <div x-data="branchesData()">
+    <div x-data="companyData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             @include('pages.general-master-data.company.modal.create')
             @include('pages.general-master-data.company.modal.edit')
@@ -127,7 +127,7 @@
 @endsection
 @push('script')
     <script defer>
-        function branchesData() {
+        function companyData() {
             return {
                 companies: [],
                 isLoading: true,
@@ -207,7 +207,7 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/general-master-data/companies/show/${id}`);
+                    const resp = await axios.get(`/general-master-data/companies/${id}`);
                     this.editVal = resp.data;
                 },
                 async update(id) {
