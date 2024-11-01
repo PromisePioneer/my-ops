@@ -177,7 +177,7 @@ class OfferingLettersController extends Controller
         $newString = '';
         $newPTKey = '';
 
-        if (($key = array_search('PT', $convertCompanyNameToArray)) !== false) {
+        if (($key = array_search('pt', $convertCompanyNameToArray)) !== false) {
             $newPTKey = $convertCompanyNameToArray[$key];
             unset($convertCompanyNameToArray[$key]);
         }
