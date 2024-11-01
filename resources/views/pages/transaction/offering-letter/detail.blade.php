@@ -20,18 +20,18 @@
         </style>
     @endpush
     <div class="d-flex flex-column flex-lg-row" x-data="offeringLetterDetail">
-        <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
+        <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-8 me-xl-10">
             <div class="card">
                 <img class="w-sm-100 h-200px" src="{{ asset('assets/media/logos/kop-header.png') }}" alt="">
                 <div class="card-body">
                     <div class="d-flex flex-column flex-md-row">
                         <div class="me-10">
-                            <p class="mb-2 fw-bolder text-hover-primary text-wrap fs-6" style="width: 20rem">
+                            <p class="mb-4 fw-bolder text-hover-primary text-wrap fs-6" style="width: 20rem">
                                 Yth, Bapak/Ibu {{ $offeringLetter->contact->pic_name }},<br>
                                 <span>{{ $offeringLetterCompanyName }}</span>
                             </p>
 
-                            <div style="height: 152px">
+                            <div style="height: 75px">
                                 <div class="text-gray-800 fs-6">
                                     {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
                                 </div>
@@ -58,11 +58,11 @@
                                 <div class="fs-6">{{ $offeringLetter->regarding }}</div>
                             </div>
                         </div>
-                        <div class="flex-lg-row-fluid me-md-18 mb-10 mb-xl-0">
+                        <div class="flex-lg-row-fluid me-md-19 mb-10 mb-xl-0">
                             <div class="mt-n1">
                                 <div class="m-0">
                                     <div class="row g-5">
-                                        <div class="h-200px">
+                                        <div style="height: 130px">
                                             <p class="fs-6 d-flex align-items-center" style="line-height: 2.0">
                                                 Dengan hormat,
                                                 <br>
@@ -79,7 +79,7 @@
                                         <div class="table-responsive mb-4">
                                             <table class="table">
                                                 <thead>
-                                                <tr class="border-bottom border-black fs-6 fw-bold">
+                                                <tr class="border-bottom border-top border-black fs-6 fw-bold" style="background-color: #7dbbf5">
                                                     <th class="text-center">No</th>
                                                     <th class="text-center">Layanan</th>
                                                     <th class="text-center">Kapasitas / Jumlah</th>

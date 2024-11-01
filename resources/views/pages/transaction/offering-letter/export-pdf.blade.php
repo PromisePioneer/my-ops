@@ -23,11 +23,12 @@
         }
 
         body {
-            margin: 4cm 1cm 2cm;
+            margin: 4cm 1.2cm 2cm;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             font-family: Poppins, Helvetica, sans-serif;
             font-size: 62.5%;
+            box-sizing: border-box;
         }
 
 
@@ -36,7 +37,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 5cm;
+            height: 4.5cm;
         }
 
         footer {
@@ -48,7 +49,7 @@
         }
 
         .wrapper {
-            margin-top: 70px;
+            margin-top: 55px;
             position: relative;
         }
 
@@ -64,14 +65,14 @@
 
 
         .attachment {
+            margin-top: 5px;
             float: left;
             width: 27%;
             padding-right: 30px;
         }
 
         .foreword {
-            position: relative;
-            z-index: 9999;
+            line-height: 1.5;
         }
 
         .text-hover-primary {
@@ -105,8 +106,16 @@
             margin-bottom: 0.25rem;
         }
 
+        .mb-2 {
+            margin-bottom: 0.7rem;
+        }
+
         .mb-3 {
             margin-bottom: 1rem
+        }
+
+        .mb-4 {
+            margin-bottom: 2rem
         }
 
         .fs-6 {
@@ -128,6 +137,7 @@
         }
 
         .content {
+            margin-top: 5px;
             float: right;
             width: 70%;
         }
@@ -141,6 +151,10 @@
 
         .border-bottom {
             border-bottom: 1px solid #F1F1F4;
+        }
+
+        .border-top {
+            border-top: 1px solid #F1F1F4;
         }
 
         .mb-11 {
@@ -168,7 +182,7 @@
         .test {
             margin: 0;
             width: 100%;
-            height: 88px;
+            height: 30px;
             box-sizing: border-box;
         }
 
@@ -184,8 +198,8 @@
         .content-height {
             margin: 0;
             width: 100%;
-            height: 89px;
-            box-sizing: border-box;
+            height: 90px;
+            line-height: 1.5;
         }
     </style>
 
@@ -203,19 +217,18 @@
 <div class="wrapper">
     <div class="container">
         <div class="attachment">
-            <div class="foreword text-hover-primary fw-bolder fs-6">
+            <div class="foreword text-hover-primary fs-6 fw-bolder mb-1">
                 Yth, Bapak/Ibu {{ $offeringLetter->contact->pic_name }},
-                <br>
                 <span>{{ $offeringLetterCompanyName }}</span>
             </div>
 
             <div class="test">
-                <div class="fs-6 mb-3">
+                <div class="fs-6 mb-4">
                     {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
                 </div>
             </div>
             <div class="separator mb-1" style="border-bottom-color: #7dbbf5"></div>
-            <div class="mb-1">
+            <div class="mb-2">
                 <div class="fs-6 d-flex align-items-center">
                     {{ \App\Helper\formatDate($offeringLetter->date) }}
                 </div>
@@ -237,30 +250,28 @@
         <div class="content">
             <div class="content-height">
                 <p class="text-justify fs-6">
-                    Dengan hormat,
-                    <br>
-                    Kami dari PT. Mayatama
+                <div class="text-justify fs-6">Dengan hormat,</div>
+                <span class="text-justify fs-6">
+                        Kami dari PT. Mayatama
                     Solusindo bermaksud menawarkan harga layanan dedicated
                     untuk {{ $offeringLetterCompanyName }}, berikut adalah harga
                     terbaik
                     yang kami
                     tawarkan:
+                   </span>
                 </p>
             </div>
 
 
             <br>
-            <br>
-            <br>
-            <br>
 
             <table class="table">
                 <thead>
-                <tr class="border-bottom border-black fw-bold">
-                    <th class="text-center fs-6">No</th>
-                    <th class="text-center fs-6">Layanan</th>
-                    <th class="text-center fs-6">Kapasitas / Jumlah</th>
-                    <th class="text-center fs-6">Harga / Bulan</th>
+                <tr class="border-top border-bottom border-black fw-bold py-10" style="background-color: #7dbbf5">
+                    <th class="text-center fs-6 py-10">No</th>
+                    <th class="text-center fs-6 py-10">Layanan</th>
+                    <th class="text-center fs-6 py-10">Kapasitas / Jumlah</th>
+                    <th class="text-center fs-6 py-10">Harga / Bulan</th>
                 </tr>
                 </thead>
                 <tbody class="border-bottom border-black">
