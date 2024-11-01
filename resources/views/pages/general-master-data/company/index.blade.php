@@ -94,6 +94,7 @@
                                                    :id="'checkbox-' + company.id"/>
                                         </div>
                                     </td>
+                                    <td x-text="company.code"></td>
                                     <td x-text="company.name"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
