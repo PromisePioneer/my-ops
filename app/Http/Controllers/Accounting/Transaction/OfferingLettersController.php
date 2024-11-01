@@ -171,7 +171,7 @@ class OfferingLettersController extends Controller
     public function convertCompanyNameToTextCapitalize(OfferingLetter $offeringLetter): string
     {
 
-        $companyName = ($offeringLetter->contact->company_name);
+        $companyName = strtolower($offeringLetter->contact->company_name);
         $convertCompanyNameToArray = explode(" ", $companyName);
 
         $newString = '';
