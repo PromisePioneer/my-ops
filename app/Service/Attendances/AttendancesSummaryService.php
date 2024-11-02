@@ -31,7 +31,7 @@ class AttendancesSummaryService
             'attendancesSummary' => function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('date', [$startDate, $endDate]);
             }, 'roles'
-        ]);
+        ])->where('active', true);
 
         $attendanceSummary = $data->paginate(self::$perPage)->onEachSide(1);
         return self::formattedData($attendanceSummary, $startDate, $endDate);
