@@ -9,14 +9,14 @@
             <div class="card">
                 <div class="card-body p-0">
                     <img class="w-sm-100 h-200px" src="{{ asset('assets/media/logos/kop-header.png') }}" alt="">
-                    <div class="d-flex flex-column flex-md-row">
+                    <div class="d-flex flex-md-row">
                         <div class="ms-10 me-10">
                             <p class="mb-4 fw-bolder text-hover-primary text-wrap fs-6" style="width: 20rem">
                                 Yth, Bapak/Ibu {{ $offeringLetter->contact->pic_name }},<br>
                                 <span>{{ $offeringLetterCompanyName }}</span>
                             </p>
 
-                            <div style="height: 42px">
+                            <div style="height: 55px">
                                 <div class="text-gray-800 fs-6">
                                     {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
                                 </div>
@@ -43,10 +43,10 @@
                                 <div class="fs-6">{{ $offeringLetter->regarding }}</div>
                             </div>
                         </div>
-                        <div class="flex-lg-row-fluid me-md-19 mb-10 mb-xl-0 p-0">
+                        <div class="me-md-19 mb-10 mb-xl-0 p-0">
                             <div class="mt-n1">
                                 <div class="m-0">
-                                    <div class="row g-5 h-100">
+                                    <div class="row g-5 h-100 mb-4">
                                         <div>
                                             <p class="fs-6 d-flex align-items-center" style="line-height: 2.0">
                                                 Dengan hormat,
