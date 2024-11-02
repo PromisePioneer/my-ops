@@ -43,7 +43,6 @@ class AttendancesSummaryService
         $data = $user->getCollection()->map(function ($user) use ($startDate, $endDate) {
             $nationalHoliday = NationalHoliday::whereBetween('date', [$startDate, $endDate])->count();
             $totalMinutesLate = 0;
-            $userWorktime = $this->getUserWorktime($user);
             $periodOfWork = $startDate->diffInDays($endDate) - $startDate->diffInWeeks($endDate) - $nationalHoliday;
             $totalNotCheckIn = 0;
             $totalNotCheckOut = 0;
@@ -63,6 +62,8 @@ class AttendancesSummaryService
                 if ($attendance->clock_in || $attendance->clock_out) {
                     $totalPresent++;
                 }
+
+                $userWorktime = WorkTime::where('id', $attendance->work_time_id)->first();
 
                 $totalMinutesLate += $this->calculateLate($userWorktime, $attendance);
             }

@@ -2,36 +2,21 @@
 @section('content')
     @push('style')
         <style>
-            .bg-purple {
-                background-color: #83B4FF !important;
-            }
-
-            @page {
-                size: A4;
-                margin: 0;
-            }
-
-            @media print {
-                html, body {
-                    width: 210mm;
-                    height: 297mm;
-                }
-            }
         </style>
     @endpush
-    <div class="d-flex flex-column flex-lg-row" x-data="offeringLetterDetail">
-        <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-8 me-xl-10">
+    <div class="d-flex flex-row flex-lg-row" x-data="offeringLetterDetail">
+        <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-8 me-xl-10 ">
             <div class="card">
-                <img class="w-sm-100 h-200px" src="{{ asset('assets/media/logos/kop-header.png') }}" alt="">
-                <div class="card-body">
+                <div class="card-body p-0">
+                    <img class="w-sm-100 h-200px" src="{{ asset('assets/media/logos/kop-header.png') }}" alt="">
                     <div class="d-flex flex-column flex-md-row">
-                        <div class="me-10">
+                        <div class="ms-10 me-10">
                             <p class="mb-4 fw-bolder text-hover-primary text-wrap fs-6" style="width: 20rem">
                                 Yth, Bapak/Ibu {{ $offeringLetter->contact->pic_name }},<br>
                                 <span>{{ $offeringLetterCompanyName }}</span>
                             </p>
 
-                            <div style="height: 75px">
+                            <div style="height: 42px">
                                 <div class="text-gray-800 fs-6">
                                     {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
                                 </div>
@@ -58,11 +43,11 @@
                                 <div class="fs-6">{{ $offeringLetter->regarding }}</div>
                             </div>
                         </div>
-                        <div class="flex-lg-row-fluid me-md-19 mb-10 mb-xl-0">
+                        <div class="flex-lg-row-fluid me-md-19 mb-10 mb-xl-0 p-0">
                             <div class="mt-n1">
                                 <div class="m-0">
-                                    <div class="row g-5">
-                                        <div style="height: 130px">
+                                    <div class="row g-5 h-100">
+                                        <div>
                                             <p class="fs-6 d-flex align-items-center" style="line-height: 2.0">
                                                 Dengan hormat,
                                                 <br>
@@ -79,7 +64,8 @@
                                         <div class="table-responsive mb-4">
                                             <table class="table">
                                                 <thead>
-                                                <tr class="border-bottom border-top border-black fs-6 fw-bold" style="background-color: #7dbbf5">
+                                                <tr class="border-bottom border-top border-black fs-6 fw-bold"
+                                                    style="background-color: #7dbbf5">
                                                     <th class="text-center">No</th>
                                                     <th class="text-center">Layanan</th>
                                                     <th class="text-center">Kapasitas / Jumlah</th>
@@ -158,7 +144,7 @@
             </div>
         </div>
 
-        <div class="flex-lg-auto min-w-lg-300px">
+        <div class="flex-lg-auto min-w-sm-300px">
             <div class="card" data-kt-sticky="true" data-kt-sticky-name="invoice"
                  data-kt-sticky-offset="{default: false, lg: '200px'}" data-kt-sticky-width="{lg: '250px', lg: '300px'}"
                  data-kt-sticky-left="auto" data-kt-sticky-top="150px" data-kt-sticky-animation="false"
