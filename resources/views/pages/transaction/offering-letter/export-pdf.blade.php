@@ -226,7 +226,6 @@
             <div class="test">
                 <div class="fs-6 mb-10">
                     {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
-                    Ramayana Dumai, Jl. Jend. Sudirman, Bintan, Dumai, Kota Dumai, Riau 28811
                 </div>
             </div>
             <div class="separator mb-1" style="border-bottom-color: #7dbbf5"></div>
