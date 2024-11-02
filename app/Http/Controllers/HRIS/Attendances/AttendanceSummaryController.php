@@ -11,6 +11,7 @@ use App\Models\UserWorkTime;
 use App\Models\WorkTime;
 use App\Service\Attendances\AttendancesSummaryService;
 use App\Service\Attendances\AttendanceSummaryDetailService;
+use App\Service\WorkTimeService;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -22,12 +23,14 @@ class AttendanceSummaryController extends Controller
     public readonly int $perPage;
     private AttendancesSummaryService $attendanceSummaryService;
     private AttendanceSummaryDetailService $attendanceSummaryDetailService;
+    private WorkTime $workTime;
 
     public function __construct()
     {
         $this->perPage = 10;
         $this->attendanceSummaryService = new AttendancesSummaryService();
         $this->attendanceSummaryDetailService = new AttendanceSummaryDetailService();
+        $this->workTime = new WorkTime();
     }
 
     /**
@@ -91,12 +94,14 @@ class AttendanceSummaryController extends Controller
 
         if ($attendaceVal) {
             $attendaceVal->update([
+                'work_time_id' => $request->input('work_time_id'),
                 'date' => $request->input('date'),
                 'clock_in' => $request->input('clock_in'),
                 'clock_out' => $request->input('clock_out'),
             ]);
         } else {
             AttendancesSummary::create([
+                'work_time_id' => $request->input('work_time_id'),
                 'date' => $request->input('date'),
                 'clock_in' => $request->input('clock_in'),
                 'employee_id' => $user->absent_id,
@@ -105,6 +110,17 @@ class AttendanceSummaryController extends Controller
         }
 
         return response()->json(['message' => 'Data berhasil disimpan.']);
+    }
+
+
+    public function getWorkTime(Request $request): JsonResponse
+    {
+        return response()->json($this->workTime->getData($request));
+    }
+
+    public function selectedData(WorkTime $workTime)
+    {
+        return response()->json($this->workTime->getSelectedData($workTime->id));
     }
 
 

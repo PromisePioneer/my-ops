@@ -39,7 +39,7 @@ class AttendancesSummaryService
 
 
     public function formattedData(LengthAwarePaginator $user, $startDate, $endDate): LengthAwarePaginator
-    {
+    {   
         $data = $user->getCollection()->map(function ($user) use ($startDate, $endDate) {
             $nationalHoliday = NationalHoliday::whereBetween('date', [$startDate, $endDate])->count();
             $totalMinutesLate = 0;

@@ -25,6 +25,35 @@ class WorkTime extends Model
     ];
 
 
+    public function getData(Request $request): array
+    {
+        $search = $request->input('search');
+        $query = self::orderby('name', 'asc');
+
+        if ($search !== '') {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        $workTime = $query->get(['name', 'id']);
+
+        return $workTime->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->name,
+            ];
+        })->toArray();
+    }
+
+    public function getSelectedData(int $workTimeId): array
+    {
+        $workTime = self::where('id', $workTimeId)->first();
+
+        return [
+            'id' => $workTime->id,
+            'name' => $workTime->name,
+        ];
+    }
+
     public function userWorktime(): HasMany
     {
         return $this->hasMany(UserWorkTime::class, 'work_time_id', 'id');

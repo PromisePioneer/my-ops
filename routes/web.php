@@ -951,6 +951,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [AttendanceSummaryController::class, 'data']);
             Route::get('/search', [AttendanceSummaryController::class, 'search']);
             Route::post('/filter-date', [AttendanceSummaryController::class, 'filterByDate']);
+            Route::get('/detail/correction/work-time/data', [AttendanceSummaryController::class, 'getWorkTime']);
+            Route::get('/detail/correction/work-time/selected/{workTime}', [AttendanceSummaryController::class, 'selectedData']);
             Route::get('/detail/{user}', [AttendanceSummaryController::class, 'detail']);
             Route::get('/detail/data/{user}', [AttendanceSummaryController::class, 'detailData']);
             Route::get('/detail/filter/{user}', [AttendanceSummaryController::class, 'filterByDate']);
