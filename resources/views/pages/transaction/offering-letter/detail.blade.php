@@ -263,7 +263,7 @@
             </div>
         </div>
 
-        <div class="flex-lg-auto min-w-sm-300px">
+        <div class="flex-lg-auto min-w-sm-250px">
             <div class="card" data-kt-sticky="true" data-kt-sticky-name="invoice"
                  data-kt-sticky-offset="{default: false, lg: '200px'}" data-kt-sticky-width="{lg: '250px', lg: '300px'}"
                  data-kt-sticky-left="auto" data-kt-sticky-top="150px" data-kt-sticky-animation="false"
