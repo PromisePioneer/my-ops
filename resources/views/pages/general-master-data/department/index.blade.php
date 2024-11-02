@@ -34,7 +34,7 @@
             <div class="card-body py-3">
                 <div class="py-5">
                     <div class="col-12 ">
-                        <form id="deleteForm" @submit.prevent="destroy()">
+                        <form id="form-delete" @submit.prevent="destroy()">
                             <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
                             <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                     x-show="selectedCheckBox.length > 0"
@@ -50,7 +50,7 @@
                         </form>
                     </div>
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped ">
+                        <table class="table align-middle table-row-dashed fs-6 gy-5">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th>
@@ -143,6 +143,7 @@
                 formCreate: document.getElementById('form-create'),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formEdit: document.getElementById('form-edit'),
+                deleteForm: document.getElementById('form-delete'),
                 async init() {
                     await this.getDepartmentData();
                 },

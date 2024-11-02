@@ -10,24 +10,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
-/**
- * @property int $id
- * @property string $code
- * @property string $name
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- *
- * @method static Builder|Department newModelQuery()
- * @method static Builder|Department newQuery()
- * @method static Builder|Department query()
- * @method static Builder|Department whereCode($value)
- * @method static Builder|Department whereCreatedAt($value)
- * @method static Builder|Department whereId($value)
- * @method static Builder|Department whereName($value)
- * @method static Builder|Department whereUpdatedAt($value)
- *
- * @mixin Eloquent
- */
 class Department extends Model
 {
     use HasFactory;
