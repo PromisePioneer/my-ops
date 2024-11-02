@@ -59,14 +59,17 @@ class AttendanceSummaryDetailService
         return $attendanceSummary->map(function ($item) use ($empId) {
             $user = User::where('absent_id', $empId)->first();
 
-            $userWorktime = WorkTime::where('id', $item['attendanceData']?->work_time_id)?->first() ?? null;
+            $userWorktime = WorkTime::where('id', $item['attendanceData']?->work_time_id)->first() ?? WorkTime::where(
+                'name',
+                'Default'
+            )->first();
 
             return [
                 'date_period' => $item['attendancesDate'],
                 'clock_in' => $item['attendanceData']?->clock_in,
                 'clock_out' => $item['attendanceData']?->clock_out,
                 'late' => $this->calculateLate($item, $userWorktime) ?? null,
-                'work_time' => $userWorktime?->name ?? '',
+                'work_time' => $userWorktime->name ?? '',
             ];
         });
     }
