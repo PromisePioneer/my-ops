@@ -160,8 +160,16 @@
                     await this.selectedWorkTime();
                 },
                 formatDate(val) {
-                    const [year, month, date] = val.split("-");
-                    return `${date}/${month}/${year}`
+                    const date = new Date(val);
+
+                    const options = {
+                        weekday: "short",
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "numeric",
+                    };
+
+                    return date.toLocaleDateString("id", options)
                 },
                 async selectedWorkTime() {
                     const selectedWorkTime = $('#selectedWorkTime');

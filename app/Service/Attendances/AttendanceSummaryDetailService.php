@@ -57,12 +57,9 @@ class AttendanceSummaryDetailService
     public function formattedData($attendanceSummary, $empId)
     {
         return $attendanceSummary->map(function ($item) use ($empId) {
-            $user = User::where('absent_id', $empId)->first();
 
-            $userWorktime = WorkTime::where('id', $item['attendanceData']?->work_time_id)->first() ?? WorkTime::where(
-                'name',
-                'Default'
-            )->first();
+            $userWorktime = WorkTime::where('id', $item['attendanceData']?->work_time_id)->first()
+                ?? WorkTime::where('name', 'Default')->first();
 
             return [
                 'date_period' => $item['attendancesDate'],

@@ -18,7 +18,6 @@
 
                             <p class="mb-4 fw-bolder text-hover-primary text-wrap fs-6">
                                 {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
-
                             </p>
                         </div>
                         <div class="col-md-8 ms-10">
