@@ -129,6 +129,8 @@
                 modalCorrection: new bootstrap.Modal(document.getElementById('modal-attendance-correction')),
                 async init() {
                     await this.getAttendanceSummaryRecords();
+                    await this.getWorkTimeData();
+
                 },
                 async getAttendanceSummaryRecords() {
                     const resp = await axios.get(`/adms/attendances-summary/detail/data/${this.id}`);
@@ -155,11 +157,38 @@
                 async correction(datePeriod) {
                     const resp = await axios.get(`/adms/attendances-summary/detail/correction/${datePeriod}/${this.id}`);
                     this.correctionVal = resp.data;
-                    console.log(this.correctionVal);
+                    await this.selectedWorkTime();
                 },
                 formatDate(val) {
                     const [year, month, date] = val.split("-");
                     return `${date}/${month}/${year}`
+                },
+                async selectedWorkTime() {
+                    const selectedWorkTime = $('#selectedWorkTime');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/adms/attendances-summary/detail/correction/work-time/selected/${this.correctionVal.work_time_id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedWorkTime.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
+                async getWorkTimeData() {
+                    $(".work-time-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Jam Kerja",
+                        ajax: {
+                            url: '/adms/attendances-summary/detail/correction/work-time/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
+                    });
                 },
                 async saveCorrection(datePeriod) {
                     this.buttonLoading = true;

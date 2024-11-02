@@ -14,8 +14,17 @@
                 </div>
             </div>
 
-            <form id="form-attendance-correction" @submit.prevent="saveCorrection(correctionVal?.date ?? correctionVal)">
+            <form id="form-attendance-correction"
+                  @submit.prevent="saveCorrection(correctionVal?.date ?? correctionVal)">
                 <div class="modal-body">
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Jam Kerja</label>
+                        <select name="work_time_id" id="selectedWorkTime"
+                                class="form-select form-select-solid work-time-select2"
+                                data-dropdown-parent="#modal-attendance-correction">
+                            <option></option>
+                        </select>
+                    </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Tanggal</label>
                         <input type="date" id="date" name="date" class="form-control form-control-solid date"
