@@ -33,10 +33,6 @@ class AttendancesSummaryService
             },
         ]);
 
-        if ($request->user()->can('Lihat Data Riwayat Absensi Cabang Sendiri')) {
-            $data->where('branch_id', $request->user()->branch_id);
-        }
-
         $attendanceSummary = $data->paginate(self::$perPage)->onEachSide(1);
         return self::formattedData($attendanceSummary, $startDate, $endDate);
     }

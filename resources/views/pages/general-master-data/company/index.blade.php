@@ -129,6 +129,8 @@
     <script defer>
         function companyData() {
             return {
+                createPermission: "{{ request()->user()->can('Tambah Data Perusahaan') }}",
+                editPermission: "{{ request()->user()->can('Edit Data Perusahaan') }}",
                 companies: [],
                 isLoading: true,
                 buttonLoading: false,
