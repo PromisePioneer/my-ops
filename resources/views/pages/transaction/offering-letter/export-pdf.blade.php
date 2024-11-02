@@ -182,7 +182,7 @@
         .test {
             margin: 0;
             width: 100%;
-            height: 30px;
+            height: 1.7rem;
             box-sizing: border-box;
         }
 
@@ -200,6 +200,7 @@
             width: 100%;
             height: 90px;
             line-height: 1.5;
+            margin-bottom: 7px;
         }
     </style>
 
@@ -223,8 +224,9 @@
             </div>
 
             <div class="test">
-                <div class="fs-6 mb-4">
+                <div class="fs-6 mb-10">
                     {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
+                    Ramayana Dumai, Jl. Jend. Sudirman, Bintan, Dumai, Kota Dumai, Riau 28811
                 </div>
             </div>
             <div class="separator mb-1" style="border-bottom-color: #7dbbf5"></div>
@@ -249,8 +251,7 @@
         </div>
         <div class="content">
             <div class="content-height">
-                <p class="text-justify fs-6">
-                <div class="text-justify fs-6">Dengan hormat,</div>
+                <div class="text-justify fs-6 mb-1\4">Dengan hormat,</div>
                 <span class="text-justify fs-6">
                         Kami dari PT. Mayatama
                     Solusindo bermaksud menawarkan harga layanan dedicated
@@ -259,7 +260,6 @@
                     yang kami
                     tawarkan:
                    </span>
-                </p>
             </div>
 
 
