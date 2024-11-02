@@ -187,7 +187,7 @@
                 async paginationEndPoint(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
-                        this.branches = resp.data
+                        this.departments = resp.data
                     }
                 },
                 async save() {
