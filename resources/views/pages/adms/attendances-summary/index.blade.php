@@ -24,6 +24,7 @@
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="min-w-125px">Nama Karyawan</th>
+                                <th class="min-w-125px">Jabatan</th>
                                 <th class="min-w-125px">Terlambat</th>
                                 <th class="min-w-125px">Total Hadir</th>
                                 <th class="min-w-125px">Tidak CheckIn</th>
@@ -55,6 +56,8 @@
                                         <a :href="`/manage-users/users/detail/${attendance.id}`"
                                            x-text="`(${attendance.user_nip}) ${attendance.user_name}`"></a>
                                     </td>
+                                    <td x-text="`${attendance.role}`"></td>
+
                                     <td x-text="`${attendance.total_minutes_late} Menit`"></td>
                                     <td x-text="`${attendance.total_present} Hari`"></td>
                                     <td x-text="`${attendance.total_not_check_in}`"></td>
