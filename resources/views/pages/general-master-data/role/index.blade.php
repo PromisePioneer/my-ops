@@ -65,10 +65,10 @@
                             </div>
                         </div>
                         <div class="card-footer flex-wrap pt-0">
-                            <a :href="`/master/roles/detail/${role.id}`"
-                               class="btn btn-light btn-active-primary my-1 me-2">
-                                <i class="bi bi-box-arrow-right fs-3"></i>
-                            </a>
+{{--                            <a :href="`/master/roles/detail/${role.id}`"--}}
+                            {{--                               class="btn btn-light btn-active-primary my-1 me-2">--}}
+                            {{--                                <i class="bi bi-box-arrow-right fs-3"></i>--}}
+                            {{--                            </a>--}}
                             <button type="button" class="btn btn-light btn-active-primary my-1 me-2"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-edit" @click="edit(role.id)">
