@@ -7,6 +7,7 @@ use App\Models\Account;
 use App\Models\AccountTransaction;
 use App\Models\AttendancesSummary;
 use App\Models\Branch;
+use App\Models\Company;
 use App\Models\Contact;
 use App\Models\Department;
 use App\Models\LeaveAndPermission;
@@ -20,6 +21,7 @@ use App\Policies\AccountPolicy;
 use App\Policies\AttendanceRecordPolicy;
 use App\Policies\BoqPolicy;
 use App\Policies\BranchPolicy;
+use App\Policies\CompanyPolicy;
 use App\Policies\ContactPolicy;
 use App\Policies\DepartmentPolicy;
 use App\Policies\InitialBalancePolicy;
@@ -62,6 +64,7 @@ class AuthServiceProvider extends ServiceProvider
         AttendancesSummary::class => AttendanceRecordPolicy::class,
         BoqPolicy::class => BoqPolicy::class,
         AccountTransaction::class => InitialBalancePolicy::class,
+        Company::class => CompanyPolicy::class,
     ];
 
     /**

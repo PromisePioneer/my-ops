@@ -97,6 +97,7 @@
                                     <td x-text="company.code"></td>
                                     <td x-text="company.name"></td>
                                     <td>
+                                        <template x-if="Number(editPermission) === 1"></template>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(company.id)">
                                             <i class="ki-duotone ki-pencil fs-2">
@@ -129,6 +130,8 @@
     <script defer>
         function companyData() {
             return {
+                createPermission: "{{ request()->user()->can('Tambah Data Perusahaan') }}",
+                editPermission: "{{ request()->user()->can('Edit Data Perusahaan') }}",
                 companies: [],
                 isLoading: true,
                 buttonLoading: false,

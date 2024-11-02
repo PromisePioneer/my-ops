@@ -25,15 +25,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-6">
-                                <div class="d-flex justify-content-end fw-row text-nowrap order-1 order-xxl-2 me-4 "
-                                     data-bs-toggle="tooltip" data-bs-trigger="hover" title="Enter invoice number">
-                                    <span class="fs-2x fw-bolder text-gray-800">NO #</span>
-                                    <input type="text" name="bast_number"
-                                           class="form-control form-control-flush fw-bolder text-muted fs-3 w-125px"
-                                           value="" placeholder="Masukkan No disini."/>
-                                </div>
-                            </div>
                         </div>
                         <div class="separator separator-dashed my-10"></div>
                         <div class="mb-0">
@@ -44,7 +35,7 @@
                                     </label>
                                     <div class="mb-5">
                                         <input type="text" class="form-control form-control-solid"
-                                               name="first_party_identity_name">
+                                               name="first_party_identity_name" placeholder="Pihak Pertama">
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
@@ -218,7 +209,7 @@
                 async saveContact() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/master/contact`, new FormData(this.contactForm))
+                        await axios.post(`/general-master-data/contact`, new FormData(this.contactForm))
                         await showAlert('success', 'Data sukses disimpan');
                         this.contactForm.reset();
                         this.contactModal.hide();
