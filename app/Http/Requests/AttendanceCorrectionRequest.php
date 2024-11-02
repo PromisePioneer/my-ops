@@ -26,8 +26,8 @@ class AttendanceCorrectionRequest extends FormRequest
         $date = Carbon::parse($request->date);
         return [
             'date' => ['required', 'date'],
-            'clock_in' => 'required',
-            'clock_out' => ['required', $this->validateClockOut($request)],
+            'clock_in' => 'nullable',
+            'clock_out' => ['nullable', $this->validateClockOut($request)],
         ];
     }
 
