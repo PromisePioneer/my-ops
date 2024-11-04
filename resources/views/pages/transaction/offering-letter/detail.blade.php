@@ -16,7 +16,7 @@
                                 <span>{{ $offeringLetterCompanyName }}</span>
                             </p>
 
-                            <p class="mb-4 fw-bolder text-hover-primary text-wrap fs-6">
+                            <p class="mb-4 text-hover-primary text-wrap fs-6">
                                 {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
                             </p>
                         </div>
