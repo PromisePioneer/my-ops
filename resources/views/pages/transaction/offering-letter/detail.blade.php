@@ -35,7 +35,8 @@
 
                         <div class="row">
                             <div class="col-md-3 ms-4">
-                                <div class="separator mb-4" style="border-bottom-color: #7dbbf5"></div>
+                                <div class="separator mb-4"
+                                     style="border: 1px solid #7dbbf5;"></div>
 
                                 <div class="mb-3">
                                     <div class="fs-6 d-flex align-items-center">
@@ -43,7 +44,7 @@
                                     </div>
                                 </div>
 
-                                <div class="separator mb-6" style="border-bottom-color: #7dbbf5"></div>
+                                <div class="separator mb-6" style="border: 1px solid #7dbbf5;"></div>
 
                                 <div class="mb-6">
                                     <div class="fw-bold fs-7">Nomor:</div>

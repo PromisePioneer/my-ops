@@ -211,6 +211,10 @@
             line-height: 1.5;
             margin-bottom: 7px;
         }
+
+        .mb-13 {
+            margin-bottom: 2.6rem !important
+        }
     </style>
 
 
@@ -233,17 +237,17 @@
             </div>
 
             <div class="test">
-                <div class="fs-6 mb-10">
+                <div class="fs-6 mb-13">
                     {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
                 </div>
             </div>
-            <div class="separator mb-1" style="border-bottom-color: #7dbbf5"></div>
+            <div class="separator mb-1" style="border: 1px solid #7dbbf5;"></div>
             <div class="mb-2">
                 <div class="fs-6 d-flex align-items-center">
                     {{ \App\Helper\formatDate($offeringLetter->date) }}
                 </div>
             </div>
-            <div class="separator mb-3" style="border-bottom-color: #7dbbf5"></div>
+            <div class="separator mb-3" style="border: 1px solid #7dbbf5;"></div>
 
             <div class="mb-6">
                 <div class="fw-bold fs-6">Nomor:</div>
@@ -259,7 +263,7 @@
         </div>
         <div class="content">
             <div class="content-height">
-                <div class="text-justify fs-6 mb-1\4">Dengan hormat,</div>
+                <div class="text-justify fs-6 mb-4">Dengan hormat,</div>
                 <span class="text-justify fs-6">
                         Kami dari PT. Mayatama
                     Solusindo bermaksud menawarkan harga layanan dedicated
