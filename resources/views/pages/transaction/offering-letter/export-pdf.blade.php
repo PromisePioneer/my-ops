@@ -190,6 +190,15 @@
             margin-bottom: 2.5rem
         }
 
+        .mb-15 {
+            margin-bottom: 4rem;
+        }
+
+
+        /*.mb-20 {*/
+
+        /*}*/
+
 
         .sincerely {
             padding-left: 30px;
@@ -219,7 +228,7 @@
     <div class="container">
         <div class="attachment">
             <div class="foreword text-hover-primary fs-6 fw-bolder mb-1">
-                Yth, Bapak/Ibu {{ $offeringLetter->contact->pic_name }},
+                Yth, Bapak/Ibu {{ $offeringLetter->contact->pic_name }}, <br>
                 <span>{{ $offeringLetterCompanyName }}</span>
             </div>
 
@@ -294,7 +303,7 @@
                     </td>
                     <td class="text-center fs-6 py-10"> {{ number_format($totalPPN, false,'.', '.') }}</td>
                 </tr>
-                <tr class="py-10">
+                <tr class="py-10 border-bottom border-black">
                     <td colspan="3" class="text-end fw-bold fs-6 py-10">
                         Total
                     </td>
@@ -309,7 +318,7 @@
             </p>
 
 
-            <ul class="mb-10 fs-6">
+            <ul class="mb-15 fs-6">
                 <li>SLA 99,5%</li>
                 <li>Support Pelayanan 7 x 24 jam, online maupun onsite.</li>
                 <li>Masa berlaku penawaran 1 bulan</li>
@@ -323,7 +332,7 @@
                 @endforeach
             </ul>
 
-            <p class="sincerely fs-6 fw-bold">Hormat Kami</p>
+            <p class="sincerely fs-6 fw-bold mb-10">PT. Mayatama Solusindo </p>
             <br>
             <br>
             <br>
