@@ -35,10 +35,10 @@
 
                         <div class="row">
                             <div class="col-md-3 ms-4">
-                                <div class="separator mb-4"
+                                <div class="separator mb-3"
                                      style="border: 1px solid #7dbbf5;"></div>
 
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <div class="fs-6 d-flex align-items-center">
                                         {{ \App\Helper\formatDate($offeringLetter->date) }}
                                     </div>
