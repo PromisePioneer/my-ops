@@ -30,27 +30,27 @@ class OfferingLetterService
 
     public function generateOfferingNumber(Request $request): string
     {
-        $invoice = OfferingLetter::where('branch_id', $request->user()->branch_id)->where(
+        $offeringLetter = OfferingLetter::where('branch_id', $request->user()->branch_id)->where(
             'contact_id',
             $request->contact_id
         )->latest()->first();
         $companyCode = Contact::where('id', $request->contact_id)->first()->company_code;
-        $invoiceDate = convertToRoman(Carbon::parse($request->due_date)->format('m'));
-        $invoiceYear = Carbon::parse($request->due_date)->format('Y');
+        $month = convertToRoman(Carbon::parse($request->due_date)->format('m'));
+        $year = Carbon::parse($request->due_date)->format('Y');
 
 
-        if ($invoice) {
-            $convertInvNumberToArray = explode('/', $invoice->invoice_number);
+        if ($offeringLetter) {
+            $convertInvNumberToArray = explode('/', $offeringLetter->offering_number);
             $startingNumber = $convertInvNumberToArray[0];
             $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
-            return $startValue . '/' . 'SPH/' . 'MYT-' . $companyCode . '/' . $invoiceDate . '/' . $invoiceYear;
+            return $startValue . '/' . 'SPH/' . 'MYT-' . $companyCode . '/' . $month . '/' . $year;
         }
 
         $startingNumber = '000';
         $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
-        return $startValue . '/' . 'SPH/' . 'MYT-' . $companyCode . '/' . $invoiceDate . '/' . $invoiceYear;
+        return $startValue . '/' . 'SPH/' . 'MYT-' . $companyCode . '/' . $month . '/' . $year;
     }
 
     public function data(Request $request): LengthAwarePaginator

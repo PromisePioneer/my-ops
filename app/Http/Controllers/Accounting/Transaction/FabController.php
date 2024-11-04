@@ -8,6 +8,7 @@ use App\Models\Branch;
 use App\Models\Contact;
 use App\Models\Fab;
 use App\Models\FabHasServiceCategories;
+use App\Models\SKL;
 use App\Models\ServiceCategory;
 use App\Service\Transaction\FabService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -21,7 +22,6 @@ class FabController extends Controller
 {
     public int $perPage = 10;
     private ServiceCategory $serviceCategory;
-    private FabHasServiceCategories $fabHasServiceCategories;
     private Contact $contact;
     private Branch $branch;
     private FabService $fabService;
@@ -33,6 +33,7 @@ class FabController extends Controller
         $this->branch = new Branch();
         $this->fabHasServiceCategories = new FabHasServiceCategories();
         $this->fabService = new FabService();
+        $this->skl = new SKL();
     }
 
     public function index(): View
@@ -40,9 +41,9 @@ class FabController extends Controller
         return view('pages.transaction.fab.index');
     }
 
-    public function data(Request $request): JsonResponse
+    public function data(): JsonResponse
     {
-        return response()->json($this->fabService->data($request));
+        return response()->json($this->fabService->data());
     }
 
     public function search(Request $request): JsonResponse
@@ -75,8 +76,13 @@ class FabController extends Controller
     public function getServicesCategoriesData(Request $request): JsonResponse
     {
         $services = $this->serviceCategory->getData($request);
-
         return response()->json($services);
+    }
+
+
+    public function getSKL(Request $request): JsonResponse
+    {
+        return response()->json($this->skl->getData($request));
     }
 
     /**
@@ -85,7 +91,6 @@ class FabController extends Controller
     public function store(FabRequest $request): JsonResponse
     {
         $this->fabService->store($request);
-
         return response()->json([
             'message' => 'Data berhasil disimpan',
         ]);

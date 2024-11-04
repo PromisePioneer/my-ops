@@ -849,6 +849,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/jurnal-entry/{fab}', [FabController::class, 'jurnalEntry']);
             Route::delete('/{fab}', [FabController::class, 'destroy']);
             Route::get('/export-pdf/{fab}', [FabController::class, 'exportPDF']);
+            Route::get('/get-skl', [FabController::class, 'getSkl']);
         });
         Route::prefix('bast')->group(function () {
             Route::get('/', [BastController::class, 'index']);

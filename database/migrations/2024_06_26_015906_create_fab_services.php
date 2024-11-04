@@ -13,7 +13,7 @@ class CreateFabServices extends Migration
      */
     public function up(): void
     {
-        Schema::create('fab_has_service_categories', static function (Blueprint $table) {
+        Schema::create('fab_services', static function (Blueprint $table) {
             $table->id();
             $table->foreignId('fab_id')
                 ->constrained('fab')
@@ -23,9 +23,9 @@ class CreateFabServices extends Migration
                 ->constrained('services_categories')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->integer('qty');
-            $table->double('unit_price');
-            $table->double('total_price');
+            $table->integer('capacity')->nullable();
+            $table->double('unit_price')->nullable();
+            $table->double('total_price')->nullable();
             $table->timestamps();
         });
     }
@@ -38,6 +38,6 @@ class CreateFabServices extends Migration
     public function down(): void
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('fab_has_service_categories');
+        Schema::dropIfExists('fab_services');
     }
 }
