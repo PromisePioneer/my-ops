@@ -263,7 +263,7 @@
         </div>
         <div class="content">
             <div class="content-height">
-                <div class="text-justify fs-6 mb-4">Dengan hormat,</div>
+                <div class="text-justify fs-6">Dengan hormat,</div>
                 <span class="text-justify fs-6">
                         Kami dari PT. Mayatama
                     Solusindo bermaksud menawarkan harga layanan dedicated
