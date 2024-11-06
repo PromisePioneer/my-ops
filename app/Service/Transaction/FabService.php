@@ -64,12 +64,10 @@ class FabService
     {
         $data = $fabData->getCollection()->map(function ($item) {
             return [
+                'date' => formatDate($item->date),
                 'id' => $item->id,
                 'code' => $item->fab_number,
-                'company_name' => $item->contact->company_name,
-                'subscription_status' => $item->subscription_status,
-                'file' => $item->file,
-                'date' => formatDate($item->date),
+                'contact' => $item->contact->company_name . '-' . $item->contact->pic_name,
                 'created_by' => $item->user->name,
             ];
         });
@@ -154,20 +152,4 @@ class FabService
         $fab->save();
     }
 
-    public function jurnalEntry(Fab $fab): JsonResponse
-    {
-        $jurnalEntry = AccountTransaction::with('account')
-            ->where('description', 'like', '%' . $fab->fab_number . '%')
-            ->get()
-            ->map(function ($query) {
-                return [
-                    'id' => $query->id,
-                    'type' => $query->type,
-                    'account_name' => $query->account->code . ' ' . $query->account->name,
-                    'amount' => 'Rp.' . number_format($query->amount, 2),
-                ];
-            });
-
-        return response()->json($jurnalEntry);
-    }
 }

@@ -22,7 +22,8 @@ class FabRequest extends FormRequest
     {
         return [
             'date' => ['required', 'date'],
-            'contact_id' => ['required', Rule::exists('contacts', 'id')],
+            'contact_id' => ['required', Rule::exists('contacts', 'id'),
+                Rule::unique('fab', 'contact_id')],
             'fabServices.*.service_category_id' => ['required', Rule::exists('services_categories', 'id')],
             'fabServices.*.price' => ['required'],
             'fabServices.*.unit_type_id' => ['required'],
