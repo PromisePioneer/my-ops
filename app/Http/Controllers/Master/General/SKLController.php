@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Master\General;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\OfferingLetterSKLRequest;
+use App\Http\Requests\SKLRequest;
 use App\Models\OfferingLetter;
 use App\Models\SKL;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class OfferingLetterSKLController extends Controller
+class SKLController extends Controller
 {
     private static int $perPage = 10;
 
@@ -35,7 +35,7 @@ class OfferingLetterSKLController extends Controller
     }
 
 
-    public function store(OfferingLetterSKLRequest $request): JsonResponse
+    public function store(SKLRequest $request): JsonResponse
     {
         SKL::create($request->validated());
         return response()->json(['message' => 'Data berhasil disimpan.']);
@@ -46,7 +46,7 @@ class OfferingLetterSKLController extends Controller
         return response()->json($offeringLetterSKL);
     }
 
-    public function update(OfferingLetterSKLRequest $request, SKL $offeringLetterSKL): JsonResponse
+    public function update(SKLRequest $request, SKL $offeringLetterSKL): JsonResponse
     {
         $offeringLetterSKL->update($request->validated());
         return response()->json(['message' => 'Data berhasil disimpan.']);

@@ -40,6 +40,19 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div :class="contactHasOfferingLetter === null ? 'col-lg-6 d-none' : 'col-lg-6'"
+                                     x-transition>
+                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                        Surat Penawaran
+                                    </label>
+                                    <div class="mb-5">
+                                        <select name="offering_letter_id" id="offering_letter_id"
+                                                class="form-select form-select-solid">
+                                            <option :value="contactHasOfferingLetter?.id"
+                                                    x-text="contactHasOfferingLetter?.offering_number"></option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="separator my-10"></div>
@@ -47,42 +60,43 @@
                             <table class="table g-5 gs-0 mb-0 fw-bolder text-gray-700" data-kt-element="items">
                                 <thead>
                                 <tr class="border-bottom fs-7 fw-bolder text-gray-700 text-uppercase">
-                                    <th class="min-w-300px w-475px required">Deskripsi</th>
+                                    <th class="min-w-300px w-475px required">Jenis Layanan</th>
+                                    <th class="min-w-100px w-100px required">Kapasitas</th>
+                                    <th class="min-w-100px w-100px required">Satuan</th>
                                     <th class="min-w-100px w-100px required">Harga</th>
-                                    <th class="min-w-150px w-150px required">Jumlah</th>
-                                    <th class="min-w-100px w-150px text-end required">Total</th>
                                     <th class="min-w-75px w-75px text-end">Action</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <template x-for="(field,index) in fabServices " :key="index">
+                                <template x-for="(field,index) in fabServices" :key="index">
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td class="pe-7" style='text-align:center; vertical-align:middle'>
-                                            <select :class="`form-select form-select-solid serviceSelect2`"
-                                                    :name="`data[${index}][service_category_id]`"
+                                            <select :class="`form-select form-select-solid service-categories-select2`"
+                                                    :name="`fabServices[${index}][service_category_id]`"
+                                                    :id="`selectedServices-${index}`"
                                                     x-model="field.service_category_id">
-                                                <option value="0">Pilih Layanan</option>
+                                                <option></option>
                                             </select>
                                         </td>
-                                        <td class="ps-0" style='text-align:center; vertical-align:middle'>
+                                        <td style='text-align:center; vertical-align:middle' class="w-50">
                                             <input class="form-control form-control-solid" type="number" min="1"
-                                                   x-model="field.qty" :name="`data[${index}][qty]`" placeholder="1"
-                                                   value="1" @change="calculateTotal(index)"/>
+                                                   x-model="field.capacity" :name="`fabServices[${index}][capacity]`"
+                                                   placeholder="Kapasitas" value="0" @change="calculateTotal(index)"/>
                                         </td>
-                                        <td style='text-align:center; vertical-align:middle'>
+                                        <td style='text-align:center; vertical-align:middle' class="w-20">
+                                            <select :class="`form-select form-select-solid unit-type-select2`"
+                                                    :name="`fabServices[${index}][unit_type_id]`"
+                                                    x-model="field.unit_type_id">
+                                                <option></option>
+                                            </select>
+                                        </td>
+
+                                        <td style='text-align:center; vertical-align:middle' class="w-50">
                                             <input class="form-control form-control-solid" type="number" min="1"
-                                                   x-model="field.unit_price" :name="`data[${index}][unit_price]`"
-                                                   placeholder="0" value="0" @change="calculateTotal(index)"/>
+                                                   x-model="field.price" :name="`fabServices[${index}][price]`"
+                                                   placeholder="Harga" value="0" @change="calculateTotal(index)"/>
                                         </td>
-                                        <td class="pt-8 text-end text-nowrap"
-                                            style='text-align:center; vertical-align:middle'>
-                                            <span x-model="field.total_price"
-                                                  x-text="formatNumber(field.unit_price * field.qty)">
-                                            </span>
-                                            <input type="hidden" :name="`data[${index}][total_price]`"
-                                                   x-model="Number(field.unit_price * field.qty)">
-                                        </td>
-                                        <td class="pt-5 text-end" style='text-align:center; vertical-align:middle'>
+                                        <td class="text-end" style='text-align:center; vertical-align:middle'>
                                             <button type="button" class="btn btn-sm btn-icon btn-active-color-primary"
                                                     @click="removeFABService(index)">
                                                     <span class="svg-icon svg-icon-3">
@@ -96,21 +110,28 @@
                                 <tfoot>
                                 <tr class="border-top border-top-dashed align-top fs-6 fw-bolder text-gray-700">
                                     <th class="text-primary">
-                                        <button type="button" class="btn btn-link py-1" @click="addFABService()">
-                                            Tambah
+                                        <button type="button" class="btn btn-link py-1"
+                                                @click="addFABService()">Tambah
                                         </button>
                                     </th>
                                 </tr>
+                                </tfoot>
+                            </table>
+
+
+                            <table class="float-end">
+                                <thead>
                                 <tr class="align-top fw-bolder text-gray-700">
                                     <th></th>
                                     <th colspan="2" class="fs-4 ps-0">Grand Total</th>
+                                    <th class="w-70"></th>
                                     <th colspan="2" class="text-end fs-4 text-nowrap">
                                         <span x-text="formatNumber(calculateTotalAll())">0.00</span>
                                         <input type="hidden" name="grand_total" x-model="calculateTotalAll()"/>
                                     </th>
 
                                 </tr>
-                                </tfoot>
+                                </thead>
                             </table>
                         </div>
                         <div class="table-responsive mb-20">
@@ -126,7 +147,7 @@
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td style='text-align:center; vertical-align:middle' class="w-50">
                                             <div class="mb-5">
-                                                <select :name="`serviceDescription[${index}][skl_id]`"
+                                                <select :name="`skl[${index}][skl_id]`"
                                                         class="form-select form-select-solid skl-select2">
                                                     <option></option>
                                                 </select>
@@ -192,11 +213,13 @@
                 contactModal: new bootstrap.Modal(document.getElementById('contact-create')),
                 sklModal: new bootstrap.Modal(document.getElementById('modal-skl-create')),
                 sklForm: document.getElementById('form-skl-create'),
+                contactHasOfferingLetter: null,
+                open: false,
                 buttonLoading: false,
                 fabServices: [{
                     service_category_id: '',
-                    qty: '',
-                    unit_price: '',
+                    capacity: '',
+                    price: '',
                     total_price: '',
                 }],
                 skl: [{
@@ -206,6 +229,7 @@
                     await this.getContactData();
                     await this.getServicesCategories();
                     await this.getSKL();
+                    await this.getUnitType();
                 },
                 async generateFAB() {
                     this.buttonLoading = true;
@@ -248,9 +272,10 @@
                             }
                         },
                         ajax: {
-                            url: '/income-transactions/offering-letters/skl/data',
+                            url: '/income-transactions/fab/get-skl/data',
                             dataType: "json",
                             type: "GET",
+
                             data: params => ({search: params.term}),
                             processResults: data => ({results: data}),
                             cache: true
@@ -273,19 +298,20 @@
                 },
                 async addFABService() {
                     this.$nextTick(() => {
+                        this.getUnitType();
                         this.getServicesCategories();
                     })
+
                     this.fabServices.push({
                         service_category_id: '',
-                        qty: '',
-                        unit_price: '',
+                        capacity: '',
+                        price: '',
                         total_price: '',
                     });
+
                 },
                 async addSKL() {
-                    this.$nextTick(() => {
-                        this.getSKL();
-                    })
+                    await this.getSKL();
                     this.skl.push({
                         skl_id: '',
                     });
@@ -295,10 +321,11 @@
                         this.skl.splice(index, 1);
                     }
                 },
-                removeFABService(index) {
-                    if (this.fabServices.length > 1) {
-                        this.fabServices.splice(index, 1);
-                    }
+                async removeFABService(index) {
+                    this.$nextTick(() => {
+                        this.fabServices = this.fabServices.toSpliced(index, 1);
+
+                    });
                 },
                 formatNumber(curr) {
                     let IDR = new Intl.NumberFormat('en-ID', {
@@ -309,14 +336,15 @@
                     return IDR.format(curr);
                 },
                 calculateTotal(index) {
-                    const quantity = this.fabServices[index].qty;
-                    const unitPrice = this.fabServices[index].unit_price;
-                    this.fabServices[index].total_price = (quantity * unitPrice).toFixed(2);
+                    this.fabServices[index].total_price = this.fabServices[index].price;
                 },
                 calculateTotalAll() {
-                    return this.fabServices.reduce((total, field) => total + (field.qty * field.unit_price), 0);
+                    return this.fabServices.reduce((total, field) => {
+                        return Number(total) + Number(field.price)
+                    }, 0);
                 },
                 async getContactData() {
+                    const self = this;
                     $(".contacts-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Contact",
@@ -336,10 +364,32 @@
                             processResults: (data) => ({results: data}),
                             cache: true
                         },
+                    }).on('change', async function () {
+                        const val = $(".contacts-select2").val();
+                        const resp = await axios.get(`/income-transactions/fab/offering-letter/${val}`);
+                        if (Object.keys(resp.data).length >= 1) {
+                            self.contactHasOfferingLetter = resp.data;
+                        }
+                    });
+                },
+                async getUnitType() {
+                    $(".unit-type-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Satuan",
+                        ajax: {
+                            url: '/income-transactions/fab/get-unit-type/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
                     });
                 },
                 async getServicesCategories() {
-                    $(".serviceSelect2").select2({
+                    $(".service-categories-select2").select2({
+                        placeholder: "Pilih Kategori",
+                        allowClear: true,
                         ajax: {
                             url: '/income-transactions/fab/services-categories/data',
                             dataType: "json",

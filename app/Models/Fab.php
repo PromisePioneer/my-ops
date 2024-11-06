@@ -15,10 +15,11 @@ class Fab extends Model
     protected $table = 'fab';
 
     protected $fillable = [
+        'offering_letter_id',
         'fab_number',
         'date',
-        'service_category_id',
-        'status',
+        'contact_id',
+        'created_by',
         'contact_id',
         'created_by'
     ];
@@ -26,11 +27,6 @@ class Fab extends Model
     public function contact(): BelongsTo
     {
         return $this->belongsTo(Contact::class, 'contact_id');
-    }
-
-    public function branch(): BelongsTo
-    {
-        return $this->belongsTo(Branch::class, 'branch_id');
     }
 
     public function user(): BelongsTo

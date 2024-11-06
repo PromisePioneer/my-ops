@@ -22,9 +22,10 @@ class FabRequest extends FormRequest
     {
         return [
             'date' => ['required', 'date'],
-            'service_category_id' => ['required', Rule::exists('services_categories', 'id')],
-            'subscription_period' => ['required', Rule::in(['1 Tahun', '2 Tahun', 'Sesuai Kontrak'])],
             'contact_id' => ['required', Rule::exists('contacts', 'id')],
+            'fabServices.*.service_category_id' => ['required', Rule::exists('services_categories', 'id')],
+            'fabServices.*.price' => ['required'],
+            'fabServices.*.unit_type_id' => ['required'],
         ];
     }
 

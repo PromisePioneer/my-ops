@@ -142,7 +142,7 @@
                  data-kt-sticky-zindex="95">
                 <div class="card-body p-10">
                     <div class="mb-0">
-                        @if($fab->status_confirmation === 0)
+                        @if($fab->status === 0)
                             <div class="row mb-5">
                                 <div class="col">
                                     <a href="{{ url('income-transactions/fab/edit/' . $fab->id) }}"
@@ -161,12 +161,12 @@
                                 Print PDF
                             </a>
                         @endif
-                        @if($fab->status_confirmation === 0)
+                        @if($fab->status === 0)
                             <button type="button" class="btn btn-primary w-100 mb-4" @click="confirm()"
                                     x-text="buttonLoading ? 'Loading' : 'Konfirmasi FAB'">Konfirmasi
                             </button>
                         @endif
-                        @if($fab->status_confirmation === 1)
+                        @if($fab->status === 1)
                             <button @click="openJurnalEntry()" class="btn btn-primary w-100" data-bs-toggle="modal"
                                     data-bs-target="#jurnal_entry">
                                 Jurnal Entry

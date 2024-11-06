@@ -111,7 +111,8 @@
                                         berhenti berlangganan
                                     </li>
                                     @foreach($offeringLetterServiceDescription as $desc)
-                                        <li style="font-size: 13px">{{ $desc->skl->name }}</li>
+                                        <li style="font-size: 13px"
+                                            class="{{ empty($desc->skl?->name) ? 'd-none' : '' }}">{{ $desc?->skl?->name }}</li>
                                     @endforeach
                                 </ul>
 

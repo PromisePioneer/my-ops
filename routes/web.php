@@ -72,7 +72,7 @@ use App\Http\Controllers\Master\General\CompanyController;
 use App\Http\Controllers\Master\General\ContactController;
 use App\Http\Controllers\Master\General\DepartmentController;
 use App\Http\Controllers\Master\General\NationalHolidayController;
-use App\Http\Controllers\Master\General\OfferingLetterSKLController;
+use App\Http\Controllers\Master\General\SKLController;
 use App\Http\Controllers\Master\General\ProductController;
 use App\Http\Controllers\Master\General\RoleController;
 use App\Http\Controllers\Master\General\ServicesCategoryController;
@@ -304,13 +304,13 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
         Route::prefix('skl')->group(function () {
-            Route::get('/', [OfferingLetterSKLController::class, 'index']);
-            Route::get('/data', [OfferingLetterSKLController::class, 'data']);
-            Route::get('/search', [OfferingLetterSKLController::class, 'search']);
-            Route::post('/', [OfferingLetterSKLController::class, 'store']);
-            Route::get('/{offeringLetterSKL}', [OfferingLetterSKLController::class, 'edit']);
-            Route::post('/destroy', [OfferingLetterSKLController::class, 'destroy']);
-            Route::post('/{offeringLetterSKL}', [OfferingLetterSKLController::class, 'update']);
+            Route::get('/', [SKLController::class, 'index']);
+            Route::get('/data', [SKLController::class, 'data']);
+            Route::get('/search', [SKLController::class, 'search']);
+            Route::post('/', [SKLController::class, 'store']);
+            Route::get('/{offeringLetterSKL}', [SKLController::class, 'edit']);
+            Route::post('/destroy', [SKLController::class, 'destroy']);
+            Route::post('/{offeringLetterSKL}', [SKLController::class, 'update']);
         });
 
         //contact
@@ -834,6 +834,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/search', [FabController::class, 'search']);
             Route::get('/branch/data', [FabController::class, 'branchData']);
             Route::get('/filter/branch/data/{branch}', [FabController::class, 'filterByBranch']);
+            Route::get('/offering-letter/{contact}', [FabController::class, 'getOfferingLetterIfExists']);
             Route::get('/create', [FabController::class, 'create']);
             Route::get('/product/data', [FabController::class, 'getProductData']);
             Route::get('/contact/data', [FabController::class, 'contactData']);
@@ -844,12 +845,14 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/edit/{fab}', [FabController::class, 'edit']);
             Route::get('/get-selected-contact/{fab}', [FabController::class, 'selectedContact']);
             Route::get('/get-selected-services/{fab}', [FabController::class, 'selectedServices']);
+            Route::get('/get-selected-skl/{fab}', [FabController::class, 'selectedSKL']);
             Route::post('/update/{fab}', [FabController::class, 'update']);
             Route::post('/confirm/{fab}', [FabController::class, 'confirm']);
             Route::get('/jurnal-entry/{fab}', [FabController::class, 'jurnalEntry']);
             Route::delete('/{fab}', [FabController::class, 'destroy']);
             Route::get('/export-pdf/{fab}', [FabController::class, 'exportPDF']);
-            Route::get('/get-skl', [FabController::class, 'getSkl']);
+            Route::get('/get-skl/data', [FabController::class, 'getSkl']);
+            Route::get('/get-unit-type/data', [FabController::class, 'getUnitType']);
         });
         Route::prefix('bast')->group(function () {
             Route::get('/', [BastController::class, 'index']);

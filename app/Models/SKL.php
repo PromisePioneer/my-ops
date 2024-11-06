@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class SKL extends Model
 {
-    protected $table = 'offering_letter_skl';
+    protected $table = 'skl';
     protected $fillable = [
         'name'
     ];

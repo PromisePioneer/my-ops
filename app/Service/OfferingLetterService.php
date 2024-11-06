@@ -20,13 +20,6 @@ use function App\Helper\convertToRoman;
 class OfferingLetterService
 {
     private static int $perPage = 10;
-    private HandleFileUploadService $handleFileUploadService;
-
-    public function __construct()
-    {
-        $this->handleFileUploadService = new HandleFileUploadService();
-    }
-
 
     public function generateOfferingNumber(Request $request): string
     {
@@ -34,10 +27,10 @@ class OfferingLetterService
             'contact_id',
             $request->contact_id
         )->latest()->first();
+
         $companyCode = Contact::where('id', $request->contact_id)->first()->company_code;
         $month = convertToRoman(Carbon::parse($request->due_date)->format('m'));
         $year = Carbon::parse($request->due_date)->format('Y');
-
 
         if ($offeringLetter) {
             $convertInvNumberToArray = explode('/', $offeringLetter->offering_number);
@@ -57,15 +50,6 @@ class OfferingLetterService
     {
         $offeringLetters = OfferingLetter::with('contact', 'user', 'branch')
             ->where('branch_id', $request->user()->branch_id)
-            ->select(
-                'id',
-                'offering_number',
-                'status',
-                'created_at',
-                'pic',
-                'contact_id',
-                'branch_id'
-            )
             ->paginate(self::$perPage);
         return self::formatOfferingLettersData($offeringLetters);
     }
@@ -101,7 +85,6 @@ class OfferingLetterService
             ->orWhere('notes', 'like', '%' . $search . '%')
             ->orWhere('marketing_agent_name', 'like', '%' . $search . '%')
             ->orWhere('marketing_agent_contact', 'like', '%' . $search . '%')
-            ->where('branch_id', Auth::user()->branch_id)
             ->paginate(self::$perPage);
 
         return self::formatOfferingLettersData($offeringLetter);
@@ -118,11 +101,11 @@ class OfferingLetterService
             $data['branch_id'] = $request->user()->branch_id;
             $offeringLetter = OfferingLetter::create($data);
             $this->offeringProductServiceStore($request, $offeringLetter);
-            $this->offeringLetterServiceDescriptionStore($request, $offeringLetter);
+            $this->offeringLetterSKLStoreOrUpdate($request, $offeringLetter);
         });
     }
 
-    public function offeringLetterServiceDescriptionStore($request, $offeringLetter): void
+    public function offeringLetterSKLStoreOrUpdate($request, $offeringLetter): void
     {
         foreach ($request['serviceDescription'] as $key => $value) {
             $value['offering_letter_id'] = $offeringLetter->id;
@@ -144,6 +127,9 @@ class OfferingLetterService
         return self::formatOfferingLettersData($query);
     }
 
+    /**
+     * @throws Throwable
+     */
     public function update($request, $offeringLetter): void
     {
         DB::transaction(function () use ($request, $offeringLetter) {
@@ -154,7 +140,7 @@ class OfferingLetterService
             OfferingLetterProduct::whereIn('offering_letter_id', [$offeringLetter->id])->delete();
             OfferingLetterServiceDescription::whereIn('offering_letter_id', [$offeringLetter->id])->delete();
             $this->offeringProductServiceStore($request, $offeringLetter);
-            $this->offeringLetterServiceDescriptionStore($request, $offeringLetter);
+            $this->offeringLetterSKLStoreOrUpdate($request, $offeringLetter);
         });
     }
 }

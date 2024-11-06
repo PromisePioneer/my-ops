@@ -6,7 +6,8 @@ use App\Models\Account;
 use App\Models\AccountTransaction;
 use App\Models\Contact;
 use App\Models\Fab;
-use App\Models\FabHasServiceCategories;
+use App\Models\FabServiceCategory;
+use App\Models\FabHasSKL;
 use App\Models\OfferingLetter;
 use App\Models\SubAccount;
 use App\Service\Accounts\AccountTransactionService;
@@ -41,10 +42,9 @@ class FabService
     }
 
 
-    public function generateFABNumber(Request $request): string
+    private static function generateFABNumber(Request $request): string
     {
-        $fab = Fab::where('branch_id', $request->user()->branch_id)
-            ->where('contact_id', $request->contact_id)
+        $fab = Fab::where('contact_id', $request->contact_id)
             ->latest()
             ->first();
 
@@ -70,7 +70,7 @@ class FabService
 
     public function data(): LengthAwarePaginator
     {
-        $data = Fab::with('branch', 'contact', 'user')
+        $data = Fab::with('contact', 'user')
             ->paginate(self::$perPage);
         return self::formattedData($data);
     }
@@ -122,61 +122,51 @@ class FabService
         DB::transaction(function () use ($request) {
             $data = $request->validated();
             $data['created_by'] = $request->user()->id;
+            $data['fab_number'] = self::generateFABNumber($request);
+            $data['offering_letter_id'] = $request->offering_letter_id;
             $fab = Fab::create($data);
             $this->fabHasServiceCategoriesStoreOrUpdate($request, $fab);
+            $this->fabHasSKLStoreOrUpdate($request, $fab);
+        });
+    }
+
+
+    public function update($request, $fab): void
+    {
+        DB::transaction(function () use ($request, $fab) {
+            $data = $request->validated();
+            $data['created_by'] = $request->user()->id;
+            $data['fab_number'] = self::generateFABNumber($request);
+            $data['offering_letter_id'] = $request->offering_letter_id;
+            $fab->update($data);
+            FabServiceCategory::whereIn('fab_id', [$fab->id])->delete();
+            FabHasSKL::whereIn('fab_id', [$fab->id])->delete();
+            $this->fabHasServiceCategoriesStoreOrUpdate($request, $fab);
+            $this->fabHasSKLStoreOrUpdate($request, $fab);
         });
     }
 
     private function fabHasServiceCategoriesStoreOrUpdate($request, $fab): void
     {
-        foreach ($request['data'] as $key => $value) {
+        foreach ($request['fabServices'] as $key => $value) {
             $value['fab_id'] = $fab->id;
-            FabHasServiceCategories::create($value);
+            FabServiceCategory::create($value);
         }
     }
 
-    /**
-     * @throws Throwable
-     */
-    public function update($request, $fab): void
+    private function fabHasSKLStoreOrUpdate($request, $fab): void
     {
-        DB::transaction(function () use ($request, $fab) {
-            $data = $request->validated();
-            $data['branch_id'] = $request->user()->branch_id;
-            $data['file'] = $this->handleFileUploadService->upload($request, 'documents/fab', 'file', $fab->file);
-            $data['created_by'] = $request->user()->id;
-            $fab->update($data);
-            FabHasServiceCategories::whereIn('fab_id', [$fab->id])->delete();
-            $this->fabHasServiceCategoriesStoreOrUpdate($request, $fab);
-        });
+        foreach ($request['skl'] as $key => $value) {
+            $value['fab_id'] = $fab->id;
+            FabHasSKL::create($value);
+        }
     }
 
-    /**
-     * @throws Throwable
-     */
-    public function confirm($fab, $fabService): void
-    {
-        $contact = $this->contact->getSelectedData($fab->contact_id);
-        $description = sprintf(self::FAB_SENT_DESCRIPTION, $contact['company_name'], $fab->fab_number);
-        $debitAccount = $this->account->getPenjualanAtauPendapatanJasaLainnyaAccount();
-        $creditAccount = $this->account->findPiutangPelangganSubAccount();
 
-        DB::transaction(function () use ($description, $fab, $fabService, $debitAccount, $creditAccount) {
-            $this->accountTransactionService->createDebitTransaction(
-                $fab->branch_id,
-                $description,
-                $fabService->sum('total_price'),
-                $debitAccount->id
-            );
-            $this->accountTransactionService->createCreditTransaction(
-                $fab->branch_id,
-                $description,
-                $fabService->sum('total_price'),
-                $creditAccount->id
-            );
-            $fab->status_confirmation = true;
-            $fab->save();
-        });
+    public function confirm($fab): void
+    {
+        $fab->status_confirmation = true;
+        $fab->save();
     }
 
     public function jurnalEntry(Fab $fab): JsonResponse

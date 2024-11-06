@@ -13,11 +13,12 @@ class CreateFab extends Migration
     {
         Schema::create('fab', static function (Blueprint $table) {
             $table->id();
+            $table->foreignId('offering_letter_id')->nullable()->constrained('offering_letters');
+            $table->foreignId('contact_id')->constrained('contacts');
             $table->string('fab_number');
             $table->string('date');
-            $table->enum('subscription_period', ['1 Tahun', '2 Tahun', 'Sesuai Kontrak']);
-            $table->foreignId('contact_id')->constrained('contacts');
             $table->foreignId('created_by');
+            $table->boolean('status')->default(false);
             $table->timestamps();
         });
     }
