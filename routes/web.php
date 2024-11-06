@@ -297,9 +297,9 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [UnitTypesController::class, 'data']);
             Route::get('/search', [UnitTypesController::class, 'search']);
             Route::post('/', [UnitTypesController::class, 'store']);
-            Route::get('/{unitType}', [UnitTypesController::class, 'edit']);
+            Route::get('/show/{unitType}', [UnitTypesController::class, 'edit']);
             Route::post('/destroy', [UnitTypesController::class, 'destroy']);
-            Route::post('/{unitType}', [UnitTypesController::class, 'update']);
+            Route::post('/update/{unitType}', [UnitTypesController::class, 'update']);
         });
 
 

@@ -215,6 +215,9 @@
                 skl: [],
                 contactHasOfferingLetter: null,
                 async init() {
+                    this.$nextTick(() => {
+                        this.getServicesCategories();
+                    })
                     await this.selectedFABSkl();
                     await this.getContactData();
                     await this.selectedContact();
@@ -232,10 +235,12 @@
                             capacity: resp.capacity
                         });
 
-                        await this.getUnitTypeData();
-                        await this.getServicesCategories();
-                        await this.selectedServiceCategories(resp, index);
-                        await this.selectedUnitTypes(resp, index);
+                        this.$nextTick(() => {
+                            this.getUnitTypeData();
+                            this.getServicesCategories();
+                            this.selectedServiceCategories(resp, index);
+                            this.selectedUnitTypes(resp, index);
+                        })
                     });
                 },
                 async selectedFABSkl() {
@@ -319,7 +324,7 @@
                     $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/general-master-data/unit-types/${resp.unit_type_id}`,
+                        url: `/general-master-data/unit-types/show/${resp.unit_type_id}`,
                     }).then(function (response) {
                         const option = new Option(response.name, response.id, true, true);
                         selectedUnitType.append(option).trigger('change');
@@ -329,8 +334,8 @@
                         });
                     }).catch(() => {
                         const option = new Option("", "", true, true);
-                        selectedServices.append(option).trigger('change');
-                        selectedServices.trigger({
+                        selectedUnitType.append(option).trigger('change');
+                        selectedUnitType.trigger({
                             type: 'select2:select',
                             params: {results: response}
                         });

@@ -166,12 +166,6 @@
                                     x-text="buttonLoading ? 'Loading' : 'Konfirmasi FAB'">Konfirmasi
                             </button>
                         @endif
-                        @if($fab->status === 1)
-                            <button @click="openJurnalEntry()" class="btn btn-primary w-100" data-bs-toggle="modal"
-                                    data-bs-target="#jurnal_entry">
-                                Jurnal Entry
-                            </button>
-                        @endif
                     </div>
                 </div>
             </div>

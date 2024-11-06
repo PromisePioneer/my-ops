@@ -71,10 +71,11 @@
                                 <template x-for="(field,index) in fabServices" :key="index">
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td class="pe-7" style='text-align:center; vertical-align:middle'>
-                                            <select :class="`form-select form-select-solid service-categories-select2`"
-                                                    :name="`fabServices[${index}][service_category_id]`"
-                                                    :id="`selectedServices-${index}`"
-                                                    x-model="field.service_category_id">
+                                            <select
+                                                :class="`form-select form-select-solid service-categories-select2-${index}`"
+                                                :name="`fabServices[${index}][service_category_id]`"
+                                                :id="`selectedServices-${index}`"
+                                                x-model="field.service_category_id">
                                                 <option></option>
                                             </select>
                                         </td>
@@ -84,7 +85,8 @@
                                                    placeholder="Kapasitas" value="0" @change="calculateTotal(index)"/>
                                         </td>
                                         <td style='text-align:center; vertical-align:middle' class="w-20">
-                                            <select :class="`form-select form-select-solid unit-type-select2`"
+                                            <select :class="`form-select form-select-solid unit-type-select2-${index}`"
+                                                    :id="`#selectedUnitType-${index}`"
                                                     :name="`fabServices[${index}][unit_type_id]`"
                                                     x-model="field.unit_type_id">
                                                 <option></option>
@@ -155,7 +157,7 @@
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-icon btn-active-color-primary"
-                                                    @click="removeOfferingLettersServiceDescription(index)">
+                                                    @click="removeSKL(index)">
                                                     <span class="svg-icon svg-icon-3">
                                                         <i class="bi bi-trash"></i>
                                                     </span>
@@ -220,6 +222,7 @@
                     service_category_id: '',
                     capacity: '',
                     price: '',
+                    unit_type_id: '',
                     total_price: '',
                 }],
                 skl: [{
@@ -227,9 +230,12 @@
                 }],
                 async init() {
                     await this.getContactData();
-                    await this.getServicesCategories();
                     await this.getSKL();
-                    await this.getUnitType();
+
+                    this.fabServices.forEach((resp, index) => {
+                        this.getUnitType(resp, index);
+                        this.getServicesCategories(resp, index);
+                    })
                 },
                 async generateFAB() {
                     this.buttonLoading = true;
@@ -298,20 +304,26 @@
                 },
                 async addFABService() {
                     this.$nextTick(() => {
-                        this.getUnitType();
-                        this.getServicesCategories();
+                        this.fabServices.forEach((resp, index) => {
+                            this.getUnitType(resp, index);
+                            this.getServicesCategories(resp, index);
+                        })
                     })
 
                     this.fabServices.push({
                         service_category_id: '',
                         capacity: '',
                         price: '',
+                        unit_type_id: '',
                         total_price: '',
                     });
 
+                    console.log(this.fabServices);
                 },
                 async addSKL() {
-                    await this.getSKL();
+                    this.$nextTick(() => {
+                        this.getSKL();
+                    })
                     this.skl.push({
                         skl_id: '',
                     });
@@ -322,10 +334,43 @@
                     }
                 },
                 async removeFABService(index) {
-                    this.$nextTick(() => {
-                        this.fabServices = this.fabServices.toSpliced(index, 1);
+                    this.fabServices.splice(index, 1);
+                    this.fabServices.forEach((resp, idx) => {
+                        if (resp.service_category_id !== '') this.selectedServiceCategories(resp, idx);
+                        if (resp.unit_type_id !== '') this.selectedUnitTypes(resp, idx);
+                    })
+                },
+                async selectedServiceCategories(resp, index) {
+                    const selectedServices = $(`#selectedServices-${index}`);
+                    $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/general-master-data/service-categories/show/${resp.service_category_id}`,
+                    }).then(function (response) {
+                        const option = new Option(response.name, response.id, true, true);
+                        selectedServices.append(option).trigger('change');
+                        selectedServices.trigger({
+                            type: 'select2:select',
+                            params: {results: response}
+                        });
 
-                    });
+                    })
+                },
+                async selectedUnitTypes(resp, index) {
+                    const selectedUnitType = $(`#selectedUnitType-${index}`);
+                    $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/general-master-data/unit-types/show/${resp.unit_type_id}`,
+                    }).then(function (response) {
+                        const option = new Option(response.name, response.id, true, true);
+                        selectedUnitType.append(option).trigger('change');
+                        selectedUnitType.trigger({
+                            type: 'select2:select',
+                            params: {results: response}
+                        });
+                        console.log(selectedUnitType);
+                    })
                 },
                 formatNumber(curr) {
                     let IDR = new Intl.NumberFormat('en-ID', {
@@ -372,8 +417,9 @@
                         }
                     });
                 },
-                async getUnitType() {
-                    $(".unit-type-select2").select2({
+                async getUnitType(response, index) {
+                    console.log(response);
+                    $(`.unit-type-select2-${index}`).select2({
                         allowClear: true,
                         placeholder: "Pilih Satuan",
                         ajax: {
@@ -384,10 +430,14 @@
                             processResults: (data) => ({results: data}),
                             cache: true
                         }
+                    }).on('select2:select', function (resp) {
+                        const data = resp.params.data;
+                        response.unit_type_id = data.id
+                        console.log(response.unit_type_id)
                     });
                 },
-                async getServicesCategories() {
-                    $(".service-categories-select2").select2({
+                async getServicesCategories(response, index) {
+                    $(`.service-categories-select2-${index}`).select2({
                         placeholder: "Pilih Kategori",
                         allowClear: true,
                         ajax: {
@@ -398,6 +448,9 @@
                             processResults: (data) => ({results: data}),
                             cache: true
                         }
+                    }).on('select2:select', function (resp) {
+                        const data = resp.params.data;
+                        response.service_category_id = data.id
                     });
                 },
             }

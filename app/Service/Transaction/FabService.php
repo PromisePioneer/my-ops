@@ -24,22 +24,7 @@ use function App\Helper\formatDate;
 
 class FabService
 {
-
-    private const string FAB_SENT_DESCRIPTION = 'FAB telah terbit ke %s No. Fab %s';
     private static int $perPage = 10;
-    private HandleFileUploadService $handleFileUploadService;
-    private Contact $contact;
-    private AccountTransactionService $accountTransactionService;
-    private Account $account;
-
-
-    public function __construct()
-    {
-        $this->handleFileUploadService = new HandleFileUploadService();
-        $this->accountTransactionService = new AccountTransactionService();
-        $this->contact = new Contact();
-        $this->account = new Account();
-    }
 
 
     private static function generateFABNumber(Request $request): string
@@ -165,7 +150,7 @@ class FabService
 
     public function confirm($fab): void
     {
-        $fab->status_confirmation = true;
+        $fab->status = true;
         $fab->save();
     }
 

@@ -167,8 +167,7 @@ class FabController extends Controller
      */
     public function confirm(Fab $fab): JsonResponse
     {
-        $fabHasServiceCategories = FabService::where('fab_id', $fab->id)->get();
-        $this->fabService->confirm($fab, $fabHasServiceCategories);
+        $this->fabService->confirm($fab);
 
         return response()->json([
             'message' => 'data berhasil disimpan',
