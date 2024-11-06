@@ -19,6 +19,7 @@ class Fab extends Model
         'fab_number',
         'date',
         'contact_id',
+        'pic',
         'created_by',
         'contact_id',
         'created_by'

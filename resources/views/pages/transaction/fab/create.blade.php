@@ -14,15 +14,24 @@
             <div class="card p-10">
                 <form id="form" @submit.prevent="generateFAB()">
                     <div class="card-body p-12">
-                        <div class="row">
+                        <div class="row gx-10 mb-5">
                             <div class="col-lg-6">
-                                <div class="d-flex align-items-center flex-equal fw-row me-4 order-2"
-                                     data-bs-toggle="tooltip" data-bs-trigger="hover">
-                                    <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal:</div>
-                                    <div class="position-relative d-flex align-items-center ms-4">
-                                        <input type="date" class="form-control form-control-solid fw-bolder pe-5"
-                                               placeholder="Pilih Tanggal" name="date" id="date"/>
-                                    </div>
+                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                    PIC
+                                </label>
+                                <div class="position-relative d-flex align-items-center ms-4">
+                                    <input type="date" class="form-control form-control-solid fw-bolder pe-5"
+                                           placeholder="Pilih Tanggal" name="date" id="date"/>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                    PIC
+                                </label>
+                                <div class="position-relative d-flex align-items-center ms-4">
+                                    <select name="pic" id="pic" class="form-select form-select-solid users-select2 ">
+                                        <option></option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -231,6 +240,8 @@
                 async init() {
                     await this.getContactData();
                     await this.getSKL();
+                    await this.getUserData();
+
 
                     this.fabServices.forEach((resp, index) => {
                         this.getUnitType(resp, index);
@@ -282,6 +293,20 @@
                             dataType: "json",
                             type: "GET",
 
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async getUserData() {
+                    $(".users-select2").select2({
+                        placeholder: "Pilih PIC.",
+                        allowClear: true,
+                        ajax: {
+                            url: '/income-transactions/fab/users/data',
+                            dataType: "json",
+                            type: "GET",
                             data: params => ({search: params.term}),
                             processResults: data => ({results: data}),
                             cache: true

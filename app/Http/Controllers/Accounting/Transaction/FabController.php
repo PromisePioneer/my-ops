@@ -13,6 +13,7 @@ use App\Models\OfferingLetter;
 use App\Models\SKL;
 use App\Models\ServiceCategory;
 use App\Models\UnitType;
+use App\Models\User;
 use App\Service\Transaction\FabService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
@@ -37,10 +38,10 @@ class FabController extends Controller
         $this->serviceCategory = new ServiceCategory();
         $this->contact = new Contact();
         $this->branch = new Branch();
-        $this->fabHasServiceCategories = new FabService();
         $this->fabService = new FabService();
         $this->skl = new SKL();
         $this->unitType = new UnitType();
+        $this->user = new User();
     }
 
     public function index(): View
@@ -101,6 +102,16 @@ class FabController extends Controller
     public function getUnitType(Request $request): JsonResponse
     {
         return response()->json($this->unitType->getData($request));
+    }
+
+    public function getUserData(Request $request): JsonResponse
+    {
+        return response()->json($this->user->getUser($request));
+    }
+
+    public function getSelectedUser(Fab $fab): JsonResponse
+    {
+        return response()->json($this->user->getSelectedData($fab->pic));
     }
 
     /**
@@ -172,13 +183,6 @@ class FabController extends Controller
         return response()->json([
             'message' => 'data berhasil disimpan',
         ]);
-    }
-
-    public function jurnalEntry(Fab $fab): JsonResponse
-    {
-        $response = $this->fabService->jurnalEntry($fab);
-
-        return response()->json($response);
     }
 
     public function destroy(Fab $fab): JsonResponse

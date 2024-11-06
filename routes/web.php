@@ -849,6 +849,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/update/{fab}', [FabController::class, 'update']);
             Route::post('/confirm/{fab}', [FabController::class, 'confirm']);
             Route::get('/jurnal-entry/{fab}', [FabController::class, 'jurnalEntry']);
+            Route::get('/users/data', [FabController::class, 'getUserData']);
+            Route::get('/users/selected/{fab}', [FabController::class, 'getSelectedUser']);
             Route::delete('/{fab}', [FabController::class, 'destroy']);
             Route::get('/export-pdf/{fab}', [FabController::class, 'exportPDF']);
             Route::get('/get-skl/data', [FabController::class, 'getSkl']);
