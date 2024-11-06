@@ -516,6 +516,8 @@
                         const resp = await axios.get(`/income-transactions/fab/offering-letter/${val.id}`);
                         if (Object.keys(resp.data).length >= 1) {
                             self.contactHasOfferingLetter = resp.data;
+                        } else {
+                            self.contactHasOfferingLetter = null;
                         }
                     });
                 },

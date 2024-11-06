@@ -17,7 +17,7 @@
                         <div class="row gx-10 mb-5">
                             <div class="col-lg-6">
                                 <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
-                                    PIC
+                                    Tanggal
                                 </label>
                                 <div class="position-relative d-flex align-items-center ms-4">
                                     <input type="date" class="form-control form-control-solid fw-bolder pe-5"
@@ -343,7 +343,6 @@
                         total_price: '',
                     });
 
-                    console.log(this.fabServices);
                 },
                 async addSKL() {
                     this.$nextTick(() => {
@@ -394,7 +393,6 @@
                             type: 'select2:select',
                             params: {results: response}
                         });
-                        console.log(selectedUnitType);
                     })
                 },
                 formatNumber(curr) {
@@ -439,6 +437,8 @@
                         const resp = await axios.get(`/income-transactions/fab/offering-letter/${val}`);
                         if (Object.keys(resp.data).length >= 1) {
                             self.contactHasOfferingLetter = resp.data;
+                        } else {
+                            self.contactHasOfferingLetter = null;
                         }
                     });
                 },
