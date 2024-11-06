@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Transaction\Fab;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class FabRequest extends FormRequest
@@ -18,12 +19,13 @@ class FabRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      */
-    public function rules(): array
+    public function rules(Request $request): array
     {
         return [
             'date' => ['required', 'date'],
             'contact_id' => ['required', Rule::exists('contacts', 'id'),
-                Rule::unique('fab', 'contact_id')],
+                Rule::unique('fab', 'contact_id')->ignore($request->route('fab'))],
+            'pic' => ['required', Rule::exists('users', 'id')],
             'fabServices.*.service_category_id' => ['required', Rule::exists('services_categories', 'id')],
             'fabServices.*.price' => ['required'],
             'fabServices.*.unit_type_id' => ['required'],
@@ -35,6 +37,10 @@ class FabRequest extends FormRequest
         return [
             'date.required' => 'Tanggal harus diisi.',
             'date.date' => 'Tanggal tidak valid.',
+            'contact_id.required' => 'Kontak tidak boleh koosong.',
+            'contact_id.exists' => 'Kontak tidak ditemukan.',
+            'pic.required' => 'PIC harus diisi.',
+            'pic.exists' => 'PIC tidak ditemukan.',
             'service_category_id.required' => 'Kategori Layanan harus diisi.',
             'service_category_id.exists' => 'Kategori Layanan tidak valid.',
             'subscription_period.required' => 'Jangka waktu berlangganan tidak boleh kosong',

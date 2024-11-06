@@ -17,7 +17,8 @@ class CreateFab extends Migration
             $table->foreignId('contact_id')->constrained('contacts');
             $table->string('fab_number');
             $table->string('date');
-            $table->foreignId('created_by');
+            $table->foreignId('created_by')->constrained('users');
+            $table->foreignId('pic')->constrained('users');
             $table->boolean('status')->default(false);
             $table->timestamps();
         });
