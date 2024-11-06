@@ -195,6 +195,11 @@
         }
 
 
+        .d-none{
+            display: none;
+        }
+
+
         /*.mb-20 {*/
 
         /*}*/
@@ -332,7 +337,7 @@
                     berhenti berlangganan
                 </li>
                 @foreach($offeringLetterServiceDescription as $desc)
-                    <li>{{ $desc->skl->name }}</li>
+                    <li class="{{ empty($desc->skl?->name) ? 'd-none' : '' }}">{{ $desc->skl?->name }}</li>
                 @endforeach
             </ul>
 

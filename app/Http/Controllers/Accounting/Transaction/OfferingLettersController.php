@@ -4,14 +4,12 @@ namespace App\Http\Controllers\Accounting\Transaction;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaction\OfferingLetter\OfferingLetterRequest;
-use App\Models\Boq;
 use App\Models\Branch;
 use App\Models\Contact;
-use App\Models\LetterHead;
 use App\Models\OfferingLetter;
 use App\Models\OfferingLetterProduct;
 use App\Models\OfferingLetterServiceDescription;
-use App\Models\OfferingLetterSKL;
+use App\Models\SKL;
 use App\Models\ServiceCategory;
 use App\Models\TaxSetting;
 use App\Models\UnitType;
@@ -20,9 +18,7 @@ use App\Service\OfferingLetterService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\View\View;
-use Spatie\Browsershot\Browsershot;
 
 class OfferingLettersController extends Controller
 {
@@ -36,7 +32,7 @@ class OfferingLettersController extends Controller
     private OfferingLetterService $offeringLetterService;
     private User $user;
     private UnitType $unitType;
-    private OfferingLetterSKL $offeringLetterSKL;
+    private SKL $offeringLetterSKL;
 
     public function __construct()
     {
@@ -46,7 +42,7 @@ class OfferingLettersController extends Controller
         $this->branch = new Branch();
         $this->user = new  User();
         $this->unitType = new UnitType();
-        $this->offeringLetterSKL = new OfferingLetterSKL();
+        $this->offeringLetterSKL = new SKL();
     }
 
     public function index(): View

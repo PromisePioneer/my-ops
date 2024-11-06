@@ -16,7 +16,7 @@ class OfferingLetterServiceDescription extends Model
 
     public function skl(): BelongsTo
     {
-        return $this->belongsTo(OfferingLetterSKL::class, 'skl_id');
+        return $this->belongsTo(SKL::class, 'skl_id');
     }
 
 

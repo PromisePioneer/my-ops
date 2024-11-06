@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Master\General;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\OfferingLetterSKLRequest;
+use App\Http\Requests\SKLRequest;
 use App\Models\OfferingLetter;
-use App\Models\OfferingLetterSKL;
+use App\Models\SKL;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class OfferingLetterSKLController extends Controller
+class SKLController extends Controller
 {
     private static int $perPage = 10;
 
@@ -21,38 +21,38 @@ class OfferingLetterSKLController extends Controller
 
     public function data(): JsonResponse
     {
-        $data = OfferingLetterSKL::orderByDesc('id')->paginate(self::$perPage);
+        $data = SKL::orderByDesc('id')->paginate(self::$perPage);
         return response()->json($data);
     }
 
     public function search(Request $request): JsonResponse
     {
         $search = $request->input('search');
-        $data = OfferingLetterSKL::when(!empty($search), function ($query) use ($search) {
+        $data = SKL::when(!empty($search), function ($query) use ($search) {
             $query->where('name', 'like', '%' . $search . '%');
         })->paginate(self::$perPage);
         return response()->json($data);
     }
 
 
-    public function store(OfferingLetterSKLRequest $request): JsonResponse
+    public function store(SKLRequest $request): JsonResponse
     {
-        OfferingLetterSKL::create($request->validated());
+        SKL::create($request->validated());
         return response()->json(['message' => 'Data berhasil disimpan.']);
     }
 
-    public function edit(OfferingLetterSKL $offeringLetterSKL): JsonResponse
+    public function edit(SKL $offeringLetterSKL): JsonResponse
     {
         return response()->json($offeringLetterSKL);
     }
 
-    public function update(OfferingLetterSKLRequest $request, OfferingLetterSKL $offeringLetterSKL): JsonResponse
+    public function update(SKLRequest $request, SKL $offeringLetterSKL): JsonResponse
     {
         $offeringLetterSKL->update($request->validated());
         return response()->json(['message' => 'Data berhasil disimpan.']);
     }
 
-    public function destroy(Request $request, OfferingLetterSKL $offeringLetterSKL): JsonResponse
+    public function destroy(Request $request, SKL $offeringLetterSKL): JsonResponse
     {
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);

@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('offering_letter_skl', function (Blueprint $table) {
+        Schema::create('skl', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->timestamps();

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -31,6 +32,12 @@ class Contact extends Model
         'complete_address',
         'other_info',
     ];
+
+
+    public function offeringLetter(): HasOne
+    {
+        return $this->HasOne(OfferingLetter::class);
+    }
 
     public function getData(Request $request): array
     {

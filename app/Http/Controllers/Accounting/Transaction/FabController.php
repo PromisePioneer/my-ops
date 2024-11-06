@@ -7,8 +7,12 @@ use App\Http\Requests\Transaction\Fab\FabRequest;
 use App\Models\Branch;
 use App\Models\Contact;
 use App\Models\Fab;
-use App\Models\FabHasServiceCategories;
+use App\Models\FabHasSKL;
+use App\Models\FabServiceCategory;
+use App\Models\OfferingLetter;
+use App\Models\SKL;
 use App\Models\ServiceCategory;
+use App\Models\UnitType;
 use App\Service\Transaction\FabService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
@@ -21,18 +25,22 @@ class FabController extends Controller
 {
     public int $perPage = 10;
     private ServiceCategory $serviceCategory;
-    private FabHasServiceCategories $fabHasServiceCategories;
     private Contact $contact;
     private Branch $branch;
     private FabService $fabService;
+    private FabServiceCategory $fabServiceCategory;
+    private SKL $skl;
+    private UnitType $unitType;
 
     public function __construct()
     {
         $this->serviceCategory = new ServiceCategory();
         $this->contact = new Contact();
         $this->branch = new Branch();
-        $this->fabHasServiceCategories = new FabHasServiceCategories();
+        $this->fabHasServiceCategories = new FabService();
         $this->fabService = new FabService();
+        $this->skl = new SKL();
+        $this->unitType = new UnitType();
     }
 
     public function index(): View
@@ -40,9 +48,9 @@ class FabController extends Controller
         return view('pages.transaction.fab.index');
     }
 
-    public function data(Request $request): JsonResponse
+    public function data(): JsonResponse
     {
-        return response()->json($this->fabService->data($request));
+        return response()->json($this->fabService->data());
     }
 
     public function search(Request $request): JsonResponse
@@ -72,11 +80,27 @@ class FabController extends Controller
         return response()->json($contact);
     }
 
+    public function getOfferingLetterIfExists(Contact $contact): JsonResponse
+    {
+        $test = OfferingLetter::where('contact_id', $contact->id)->first();
+        return response()->json($test);
+    }
+
     public function getServicesCategoriesData(Request $request): JsonResponse
     {
         $services = $this->serviceCategory->getData($request);
-
         return response()->json($services);
+    }
+
+
+    public function getSKL(Request $request): JsonResponse
+    {
+        return response()->json($this->skl->getData($request));
+    }
+
+    public function getUnitType(Request $request): JsonResponse
+    {
+        return response()->json($this->unitType->getData($request));
     }
 
     /**
@@ -85,7 +109,6 @@ class FabController extends Controller
     public function store(FabRequest $request): JsonResponse
     {
         $this->fabService->store($request);
-
         return response()->json([
             'message' => 'Data berhasil disimpan',
         ]);
@@ -93,7 +116,7 @@ class FabController extends Controller
 
     public function detail(Fab $fab): View
     {
-        $fabHasServiceCategories = FabHasServiceCategories::where('fab_id', $fab->id)->get();
+        $fabHasServiceCategories = FabServiceCategory::where('fab_id', $fab->id)->get();
 
         return view('pages.transaction.fab.detail', compact('fabHasServiceCategories', 'fab'));
     }
@@ -117,9 +140,14 @@ class FabController extends Controller
 
     public function selectedServices(Fab $fab): JsonResponse
     {
-        $fabService = FabHasServiceCategories::where('fab_id', $fab->id)->get();
-
+        $fabService = FabServiceCategory::where('fab_id', $fab->id)->get();
         return response()->json($fabService);
+    }
+
+    public function selectedSKL(Fab $fab): JsonResponse
+    {
+        $fabSKL = FabHasSKL::where('fab_id', $fab->id)->get();
+        return response()->json($fabSKL);
     }
 
     /**
@@ -139,8 +167,7 @@ class FabController extends Controller
      */
     public function confirm(Fab $fab): JsonResponse
     {
-        $fabHasServiceCategories = FabHasServiceCategories::where('fab_id', $fab->id)->get();
-        $this->fabService->confirm($fab, $fabHasServiceCategories);
+        $this->fabService->confirm($fab);
 
         return response()->json([
             'message' => 'data berhasil disimpan',
@@ -165,7 +192,7 @@ class FabController extends Controller
 
     public function exportPDF(Fab $fab): Response
     {
-        $fabService = FabHasServiceCategories::where('fab_id', $fab->id)->get();
+        $fabService = FabService::where('fab_id', $fab->id)->get();
 
         $pdf = Pdf::loadView('pages.transaction.fab.export-pdf', compact('fab', 'fabService'))->setPaper(
             'A4',

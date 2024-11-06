@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
-class OfferingLetterSKL extends Model
+class SKL extends Model
 {
-    protected $table = 'offering_letter_skl';
+    protected $table = 'skl';
     protected $fillable = [
         'name'
     ];

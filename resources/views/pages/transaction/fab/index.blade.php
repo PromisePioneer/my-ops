@@ -14,30 +14,6 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-                    <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-light-info me-3 btn-sm " data-kt-menu-trigger="click"
-                                data-kt-menu-placement="bottom-end">
-                            <span class="svg-icon svg-icon-2">
-                                <i class="bi bi-funnel-fill"></i>
-                            </span>
-                            Filter
-                        </button>
-                        <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" style="">
-                            <div class="px-7 py-5">
-                                <div class="fs-5 text-dark fw-bolder">Filter</div>
-                            </div>
-                            <div class="separator border-gray-200"></div>
-                            <div class="px-7 py-5">
-                                <div class="mb-10">
-                                    <label class="form-label fs-6 fw-bold">Cabang:</label>
-                                    <select name="" id=""
-                                            class="form-select form-select-solid filter-branch-select2">
-                                        <option value="0">Pilih Cabang</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div class="d-flex justify-content-end" data-kt-product-table-toolbar="base">
                         <a href="{{ url('/income-transactions/fab/create') }}"
                            class="btn btn-light-primary btn-sm">
@@ -66,11 +42,9 @@
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th>No</th>
-                                <th class="min-w-125px">Kode</th>
+                                <th class="min-w-125px">Nomor</th>
+                                <th class="min-w-125px">Tanggal</th>
                                 <th class="min-w-125px">Pelanggan</th>
-                                <th class="min-w-100px">Status Berlangganan</th>
-                                <th class="min-w-125px">Lampiran</th>
-                                <th class="min-w-125px">Tgl Dibuat</th>
                                 <th class="min-w-125px">Dibuat Oleh</th>
                             </thead>
                             <tbody class="fw-bold">
@@ -100,13 +74,8 @@
                                         <a :href="`/income-transactions/fab/detail/${fab.id}`"
                                            x-text="fab.code"></a>
                                     </td>
-                                    <td x-text="fab.company_name"></td>
-                                    <td class="text-capitalize" x-text="fab.subscription_status"></td>
-                                    <td>
-                                        <a :href="`/income-transactions/fab/view-file/${fab.id}`"
-                                           class="btn btn-sm btn-info"><i class="bi bi-file-earmark-break-fill"></i></a>
-                                    </td>
                                     <td x-text="fab.date"></td>
+                                    <td x-text="`${fab.contact}`"></td>
                                     <td x-text="fab.created_by"></td>
                                 </tr>
                             </template>
@@ -140,7 +109,6 @@
                 search: '',
                 async init() {
                     await this.getFABData();
-                    await this.filterByBranch();
                     this.isLoading = false;
                 },
                 async searchData() {
@@ -162,26 +130,6 @@
                         const resp = await axios.get(`${url}`);
                         this.subcriptions = resp.data
                     }
-                },
-                async filterByBranch() {
-                    const self = this;
-                    $(".filter-branch-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Cabang",
-                        ajax: {
-                            url: '/income-transactions/fab/branch/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true
-                        }
-                    });
-                    $(".filter-branch-select2").on('change', async function (e) {
-                        const selectedBranch = $(this).select2('data')[0];
-                        const response = await axios.get(`/income-transactions/fab/filter/branch/data/${selectedBranch.id}`);
-                        self.subcriptions = response.data;
-                    });
                 },
                 async getFABData() {
                     const fab = await axios.get('/income-transactions/fab/data');

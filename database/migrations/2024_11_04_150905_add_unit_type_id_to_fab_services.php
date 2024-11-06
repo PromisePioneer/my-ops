@@ -10,11 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('offering_letter_service_descriptions', function (Blueprint $table) {
-            $table->foreignId('skl_id')->nullable()->after('offering_letter_id')
-                ->constrained('skl')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+        Schema::table('fab_services', function (Blueprint $table) {
+            $table->foreignId('unit_type_id')->after('capacity')->constrained('unit_types');
         });
     }
 
@@ -23,7 +20,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('offering_letter_service_descriptions', function (Blueprint $table) {
+        Schema::table('fab_services', function (Blueprint $table) {
             //
         });
     }
