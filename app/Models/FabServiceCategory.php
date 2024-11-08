@@ -26,4 +26,9 @@ class FabServiceCategory extends Model
     {
         return $this->belongsTo(ServiceCategory::class, 'service_category_id');
     }
+
+    public function unitType(): BelongsTo
+    {
+        return $this->belongsTo(UnitType::class, 'unit_type_id');
+    }
 }

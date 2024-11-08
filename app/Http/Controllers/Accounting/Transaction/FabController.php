@@ -10,8 +10,9 @@ use App\Models\Fab;
 use App\Models\FabHasSKL;
 use App\Models\FabServiceCategory;
 use App\Models\OfferingLetter;
-use App\Models\SKL;
 use App\Models\ServiceCategory;
+use App\Models\SKL;
+use App\Models\TaxSetting;
 use App\Models\UnitType;
 use App\Models\User;
 use App\Service\Transaction\FabService;
@@ -127,9 +128,28 @@ class FabController extends Controller
 
     public function detail(Fab $fab): View
     {
-        $fabHasServiceCategories = FabServiceCategory::where('fab_id', $fab->id)->get();
+        $fabHasServiceCategories = FabServiceCategory::with('service', 'unitType')
+            ->where('fab_id', $fab->id)
+            ->get();
+        $serviceCategories = ServiceCategory::orderBy('name')->get();
 
-        return view('pages.transaction.fab.detail', compact('fabHasServiceCategories', 'fab'));
+        $fabHasServiceCategoriesCollection = FabServiceCategory::where('fab_id', $fab->id)
+            ->pluck('service_category_id')
+            ->toArray();
+
+        $fabHasSKL = FabHasSKL::with('skl')->where('fab_id', $fab->id)->get();
+
+        $test = [];
+        foreach ($fabHasServiceCategoriesCollection as $s) {
+            $test[] = $s;
+        }
+
+        $getPPN = TaxSetting::where('name', 'PPN')->first();
+
+        $totalPPN = $getPPN->rate / 100 * $fabHasServiceCategories->sum('price');
+        $total = $fabHasServiceCategories->sum('price') + $totalPPN;
+
+        return view('pages.transaction.fab.detail', compact('fabHasServiceCategories', 'fab', 'serviceCategories', 'test', 'total', 'totalPPN', 'fabHasSKL'));
     }
 
     public function viewFile(Fab $fab): View

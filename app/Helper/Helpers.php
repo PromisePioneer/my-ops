@@ -52,7 +52,7 @@ function formatDate($date): string
 {
     return Carbon::parse($date)->locale('id')
         ->settings(['formatFunction' => 'translatedFormat'])
-        ->format('l, j F Y');
+        ->format('j F Y');
 }
 
 
