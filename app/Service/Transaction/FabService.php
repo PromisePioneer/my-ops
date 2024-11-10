@@ -145,6 +145,8 @@ class FabService
 
     private function fabHasSKLStoreOrUpdate($request, $fab): void
     {
+
+        if (empty($request['skl'])) return;
         foreach ($request['skl'] as $key => $value) {
             $value['fab_id'] = $fab->id;
             FabHasSKL::create($value);
