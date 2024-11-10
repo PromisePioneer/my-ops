@@ -5,13 +5,15 @@ namespace App\Http\Controllers\Accounting\Transaction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaction\Fab\FabRequest;
 use App\Models\Branch;
+use App\Models\CompanyProfile;
 use App\Models\Contact;
 use App\Models\Fab;
 use App\Models\FabHasSKL;
 use App\Models\FabServiceCategory;
 use App\Models\OfferingLetter;
-use App\Models\SKL;
 use App\Models\ServiceCategory;
+use App\Models\SKL;
+use App\Models\TaxSetting;
 use App\Models\UnitType;
 use App\Models\User;
 use App\Service\Transaction\FabService;
@@ -125,11 +127,59 @@ class FabController extends Controller
         ]);
     }
 
+
+    public function convertCompanyNameToTextCapitalize(Fab $fab): string
+    {
+
+        $companyName = strtolower($fab->contact->company_name);
+
+
+        $convertCompanyNameToArray = explode(" ", $companyName);
+
+        $newString = '';
+        $newPTKey = '';
+
+        if (($key = array_search('pt.' || 'pt', $convertCompanyNameToArray)) !== false) {
+            $newPTKey = $convertCompanyNameToArray[$key];
+            unset($convertCompanyNameToArray[$key]);
+        }
+
+        foreach ($convertCompanyNameToArray as $abbr) {
+            $newString .= strtolower($abbr) . ' ';
+        }
+
+        return strtoupper($newPTKey) . ' ' . ucwords(trim($newString));
+    }
+
     public function detail(Fab $fab): View
     {
-        $fabHasServiceCategories = FabServiceCategory::where('fab_id', $fab->id)->get();
+        $fabHasServiceCategories = FabServiceCategory::with('service', 'unitType')
+            ->where('fab_id', $fab->id)
+            ->get();
+        $serviceCategories = ServiceCategory::orderBy('name')->get();
 
-        return view('pages.transaction.fab.detail', compact('fabHasServiceCategories', 'fab'));
+        $fabHasServiceCategoriesCollection = FabServiceCategory::where('fab_id', $fab->id)
+            ->pluck('service_category_id')
+            ->toArray();
+
+        $fabHasSKL = FabHasSKL::with('skl')->where('fab_id', $fab->id)->get();
+
+        $test = [];
+        foreach ($fabHasServiceCategoriesCollection as $s) {
+            $test[] = $s;
+        }
+
+        $getPPN = TaxSetting::where('name', 'PPN')->first();
+
+        $totalPPN = $getPPN->rate / 100 * $fabHasServiceCategories->sum('price');
+        $total = $fabHasServiceCategories->sum('price') + $totalPPN;
+
+        $fabCompanyName = $this->convertCompanyNameToTextCapitalize($fab);
+
+
+        $companyProfile = CompanyProfile::where('id', 1)->first();
+
+        return view('pages.transaction.fab.detail', compact('fabCompanyName', 'companyProfile', 'fabHasServiceCategories', 'fab', 'serviceCategories', 'test', 'total', 'totalPPN', 'fabHasSKL'));
     }
 
     public function viewFile(Fab $fab): View

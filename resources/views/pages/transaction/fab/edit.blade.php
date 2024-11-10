@@ -309,6 +309,21 @@
                         }
                     });
                 },
+                async saveContact() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/general-master-data/contact`, new FormData(this.contactForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.contactForm.reset();
+                        this.contactModal.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
                 async selectedServiceCategories(resp, index) {
                     const selectedServices = $(`#selectedServices-${index}`);
                     $.ajax({
