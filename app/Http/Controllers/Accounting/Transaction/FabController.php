@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Accounting\Transaction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaction\Fab\FabRequest;
 use App\Models\Branch;
+use App\Models\CompanyProfile;
 use App\Models\Contact;
 use App\Models\Fab;
 use App\Models\FabHasSKL;
@@ -126,6 +127,30 @@ class FabController extends Controller
         ]);
     }
 
+
+    public function convertCompanyNameToTextCapitalize(Fab $fab): string
+    {
+
+        $companyName = strtolower($fab->contact->company_name);
+
+
+        $convertCompanyNameToArray = explode(" ", $companyName);
+
+        $newString = '';
+        $newPTKey = '';
+
+        if (($key = array_search('pt.' || 'pt', $convertCompanyNameToArray)) !== false) {
+            $newPTKey = $convertCompanyNameToArray[$key];
+            unset($convertCompanyNameToArray[$key]);
+        }
+
+        foreach ($convertCompanyNameToArray as $abbr) {
+            $newString .= strtolower($abbr) . ' ';
+        }
+
+        return strtoupper($newPTKey) . ' ' . ucwords(trim($newString));
+    }
+
     public function detail(Fab $fab): View
     {
         $fabHasServiceCategories = FabServiceCategory::with('service', 'unitType')
@@ -149,7 +174,12 @@ class FabController extends Controller
         $totalPPN = $getPPN->rate / 100 * $fabHasServiceCategories->sum('price');
         $total = $fabHasServiceCategories->sum('price') + $totalPPN;
 
-        return view('pages.transaction.fab.detail', compact('fabHasServiceCategories', 'fab', 'serviceCategories', 'test', 'total', 'totalPPN', 'fabHasSKL'));
+        $fabCompanyName = $this->convertCompanyNameToTextCapitalize($fab);
+
+
+        $companyProfile = CompanyProfile::where('id', 1)->first();
+
+        return view('pages.transaction.fab.detail', compact('fabCompanyName', 'companyProfile', 'fabHasServiceCategories', 'fab', 'serviceCategories', 'test', 'total', 'totalPPN', 'fabHasSKL'));
     }
 
     public function viewFile(Fab $fab): View
