@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Models\Contact;
+use App\Models\Fab;
 use App\Models\OfferingLetter;
 use App\Models\OfferingLetterProduct;
 use App\Models\OfferingLetterServiceDescription;
@@ -20,6 +21,12 @@ use function App\Helper\convertToRoman;
 class OfferingLetterService
 {
     private static int $perPage = 10;
+
+
+    public function __construct()
+    {
+        $this->companyNameService = new CompanyNameService();
+    }
 
     public function generateOfferingNumber(Request $request): string
     {
@@ -142,5 +149,11 @@ class OfferingLetterService
             $this->offeringProductServiceStore($request, $offeringLetter);
             $this->offeringLetterSKLStoreOrUpdate($request, $offeringLetter);
         });
+    }
+
+
+    public function convertCompanyNameToCapitalLetter(OfferingLetter $offeringLetter): string
+    {
+        return $this->companyNameService->convertCompanyNameToCapitalLetter($offeringLetter->contact->company_name);
     }
 }

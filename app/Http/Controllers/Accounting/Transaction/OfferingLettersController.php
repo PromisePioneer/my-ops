@@ -257,7 +257,7 @@ class OfferingLettersController extends Controller
         $getPPN = TaxSetting::where('name', 'PPN')->first();
 
 
-        $offeringLetterCompanyName = $this->convertCompanyNameToTextCapitalize($offeringLetter);
+        $offeringLetterCompanyName = $this->offeringLetterService->convertCompanyNameToCapitalLetter($offeringLetter);
 
         $totalPPN = $getPPN->rate / 100 * $offeringLetterServices->sum('price');
         $total = $offeringLetterServices->sum('price') + $totalPPN;

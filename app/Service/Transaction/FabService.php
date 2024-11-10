@@ -11,6 +11,7 @@ use App\Models\FabHasSKL;
 use App\Models\OfferingLetter;
 use App\Models\SubAccount;
 use App\Service\Accounts\AccountTransactionService;
+use App\Service\CompanyNameService;
 use App\Service\HelperService\HandleFileUploadService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -26,6 +27,11 @@ class FabService
 {
     private static int $perPage = 10;
 
+
+    public function __construct()
+    {
+        $this->companyNameService = new CompanyNameService();
+    }
 
     private static function generateFABNumber(Request $request): string
     {
@@ -150,6 +156,12 @@ class FabService
     {
         $fab->status = true;
         $fab->save();
+    }
+
+
+    public function convertCompanyNameToCapitalLetter(Fab $fab): string
+    {
+        return $this->companyNameService->convertCompanyNameToCapitalLetter($fab->contact->company_name);
     }
 
 }
