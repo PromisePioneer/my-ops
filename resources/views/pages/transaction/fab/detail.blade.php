@@ -1,6 +1,13 @@
 @php use function App\Helper\formatDate; @endphp
 @extends('layouts.template')
 @section('content')
+    @push('styles')
+        <style>
+            .w-240px {
+                width: 240px;
+            }
+        </style>
+    @endpush
 
     <div x-data="FABDetail">
         @include('pages.transaction.fab.modal.jurnal-entry')
@@ -109,7 +116,7 @@
                             </div>
                             <div class="me-4">
                                 <div
-                                    class="{{ $fab->contact->phone_number ? 'border border-3 border-black w-250px p-1 mb-1' : 'border border-3 border-black  w-250px p-4 mb-1' }}">
+                                    class="{{ $fab->contact->phone_number ? 'border border-3 border-black w-240px p-1 mb-1' : 'border border-3 border-black  w-240px p-4 mb-1' }}">
                                     {{ $fab->contact->phone_number }}
                                 </div>
                             </div>
@@ -118,7 +125,7 @@
                             </div>
                             <div class="me-3">
                                 <div
-                                    class="{{ $fab->contact->fax ? 'border border-3 border-black w-250px mb-1 p-1' : 'border border-3 border-black  w-250px p-4 mb-1' }}">
+                                    class="{{ $fab->contact->fax ? 'border border-3 border-black w-240px mb-1 p-1' : 'border border-3 border-black  w-240px p-4 mb-1' }}">
                                     {{ $fab->contact->fax }}
                                 </div>
                             </div>
