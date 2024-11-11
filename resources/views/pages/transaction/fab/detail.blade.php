@@ -100,7 +100,7 @@
                     </div>
                     <div class="col-lg-6">
                         <div
-                            class="{{ $fab->contact->complete_address ? 'border border-3 border-black w-100 mb-1' : 'border border-3 border-black  w-100 p-4 mb-1' }}">
+                            class="{{ $fab->contact->complete_address ? 'border border-3 border-black p-1 w-100 mb-1' : 'border border-3 border-black  w-100 p-4 mb-1' }}">
                             {{ $fab->contact->complete_address ?? '' }}
                         </div>
                         <div class="d-flex align-items-center">
@@ -108,7 +108,8 @@
                                 Phone
                             </div>
                             <div class="me-4">
-                                <div class="border border-3 border-black p-1 w-200px">
+                                <div
+                                    class="{{ $fab->contact->phone_number ? 'border border-3 border-black w-100 p-1 mb-1' : 'border border-3 border-black  w-100 p-4 mb-1' }}">
                                     {{ $fab->contact->phone_number }}
                                 </div>
                             </div>
@@ -117,7 +118,7 @@
                             </div>
                             <div class="me-3">
                                 <div
-                                    class="{{ $fab->contact->complete_address ? 'border border-3 border-black w-200px p-1 mb-1' : 'border border-3 border-black mt-1  w-200px p-4 mb-1' }}">
+                                    class="{{ $fab->contact->fax ? 'border border-3 border-black w-100 mb-1 p-1' : 'border border-3 border-black  w-100 p-4 mb-1' }}">
                                     {{ $fab->contact->fax }}
                                 </div>
                             </div>
@@ -130,7 +131,7 @@
                     </div>
                     <div class="col-lg-6">
                         <div
-                            class="{{ $fab->contact->complete_address ? 'border border-3 border-black w-100 mb-1' : 'border border-3 border-black  w-100 p-4 mb-1' }}">
+                            class="{{ $fab->contact->npwp ? 'border border-3 p-1 border-black w-100 mb-1' : 'border border-3 border-black  w-100 p-4 mb-1' }}">
                             {{ $fab->contact->npwp }}
                         </div>
                     </div>
@@ -141,7 +142,7 @@
                     </div>
                     <div class="col-lg-6">
                         <div
-                            class="{{ $fab->contact->identity_number ? 'border border-3 border-black w-100 mb-1' : 'border border-3 border-black  w-100 p-4 mb-1' }}">
+                            class="{{ $fab->contact->identity_number ? 'border border-3 p-1 border-black w-100 mb-1' : 'border border-3 border-black  w-100 p-4 mb-1' }}">
                             {{ $fab->contact->identity_number }}
                         </div>
                     </div>
