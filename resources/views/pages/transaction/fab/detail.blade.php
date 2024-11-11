@@ -125,7 +125,7 @@
                             </div>
                             <div class="me-3">
                                 <div
-                                    class="{{ $fab->contact->fax ? 'border border-3 border-black w-240px mb-1 p-1' : 'border border-3 border-black  w-240px p-4 mb-1' }}">
+                                    class="{{ $fab->contact->fax ? 'border border-3 border-black w-240px mb-1 p-1' : 'border border-3 border-black  w-250px p-4 mb-1' }}">
                                     {{ $fab->contact->fax }}
                                 </div>
                             </div>
