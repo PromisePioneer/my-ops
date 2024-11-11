@@ -101,18 +101,25 @@
                                 <p class="fs-6 d-flex align-items-center mb-3 mt-10">
                                     Adapun syarat dan ketentuan layanan yang kami berikan antara lain :
                                 </p>
-                                <ul class="fs-6 mb-20">
-                                    <li>SLA 99,5%</li>
-                                    <li>Support Pelayanan 7 x 24 jam, online maupun onsite.</li>
-                                    <li>Masa berlaku penawaran 1 bulan</li>
+                                <ul class="fa-ul px-3 mb-10fs-6 mb-20 ">
+                                    <li><i class="fa-li fa fa-check" style="color: #00b0f0"></i> SLA 99,5%</li>
+                                    <li><i class="fa-li fa fa-check" style="color: #00b0f0"></i> Support Pelayanan 7 x
+                                        24 jam, online maupun onsite.
+                                    </li>
+                                    <li><i class="fa-li fa fa-check" style="color: #00b0f0"></i>Masa berlaku penawaran 1
+                                        bulan
+                                    </li>
                                     <li>
+                                        <i class="fa-li fa fa-check" style="color: #00b0f0"></i>
                                         Minimum kontrak 1 tahun dan otomatis diperpanjang apabila tidak ada
                                         permintaan
                                         berhenti berlangganan
                                     </li>
                                     @foreach($offeringLetterServiceDescription as $desc)
                                         <li style="font-size: 13px"
-                                            class="{{ empty($desc->skl?->name) ? 'd-none' : '' }}">{{ $desc?->skl?->name }}</li>
+                                            class="{{ empty($desc->skl?->name) ? 'd-none' : '' }}"><i
+                                                class="fa-li fa fa-check"
+                                                style="color: #00b0f0"></i> {{ $desc?->skl?->name }}</li>
                                     @endforeach
                                 </ul>
 

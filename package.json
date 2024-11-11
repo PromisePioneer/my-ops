@@ -15,6 +15,8 @@
     },
     "dependencies": {
         "alpinejs": "^3.14.1",
+        "npm": "^6.14.18",
+        "puppeteer": "^23.7.1",
         "sweetalert2": "^11.12.4",
         "tokml": "^0.4.0"
     }

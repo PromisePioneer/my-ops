@@ -6,7 +6,7 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Surat Penawaran #{{ $offeringLetter->offering_number }}</title>
-
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <style>
         *, *::before, *::after {
             box-sizing: border-box;
@@ -195,7 +195,7 @@
         }
 
 
-        .d-none{
+        .d-none {
             display: none;
         }
 
@@ -220,6 +220,7 @@
         .mb-13 {
             margin-bottom: 2.6rem !important
         }
+
     </style>
 
 
@@ -327,19 +328,28 @@
             </p>
 
 
-            <ul class="mb-15 fs-6">
-                <li>SLA 99,5%</li>
-                <li>Support Pelayanan 7 x 24 jam, online maupun onsite.</li>
-                <li>Masa berlaku penawaran 1 bulan</li>
+            <ul class="fa-ul mb-10 mb-15 fs-6 mb-20 ">
+                <li><i class="fa-li fa fa-check" style="color: #00b0f0"></i> SLA 99,5%</li>
+                <li><i class="fa-li fa fa-check" style="color: #00b0f0"></i> Support Pelayanan 7 x
+                    24 jam, online maupun onsite.
+                </li>
+                <li><i class="fa-li fa fa-check" style="color: #00b0f0"></i>Masa berlaku penawaran 1
+                    bulan
+                </li>
                 <li>
+                    <i class="fa-li fa fa-check" style="color: #00b0f0"></i>
                     Minimum kontrak 1 tahun dan otomatis diperpanjang apabila tidak ada
                     permintaan
                     berhenti berlangganan
                 </li>
                 @foreach($offeringLetterServiceDescription as $desc)
-                    <li class="{{ empty($desc->skl?->name) ? 'd-none' : '' }}">{{ $desc->skl?->name }}</li>
+                    <li style="font-size: 13px"
+                        class="{{ empty($desc->skl?->name) ? 'd-none' : '' }}"><i
+                            class="fa-li fa fa-check"
+                            style="color: #00b0f0"></i> {{ $desc?->skl?->name }}</li>
                 @endforeach
             </ul>
+
 
             <p class="sincerely fs-6 fw-bold mb-10">PT. Mayatama Solusindo </p>
             <br>

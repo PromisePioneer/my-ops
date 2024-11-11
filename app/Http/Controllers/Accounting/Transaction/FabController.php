@@ -17,11 +17,11 @@ use App\Models\TaxSetting;
 use App\Models\UnitType;
 use App\Models\User;
 use App\Service\Transaction\FabService;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\View\View;
+use Spatie\LaravelPdf\Enums\Format;
+use function Spatie\LaravelPdf\Support\pdf;
 use Throwable;
 
 class FabController extends Controller
@@ -244,15 +244,43 @@ class FabController extends Controller
         ]);
     }
 
-    public function exportPDF(Fab $fab): Response
+    public function exportPDF(Fab $fab)
     {
-        $fabService = FabService::where('fab_id', $fab->id)->get();
+        $fabHasServiceCategories = FabServiceCategory::with('service', 'unitType')
+            ->where('fab_id', $fab->id)
+            ->get();
+        $serviceCategories = ServiceCategory::orderBy('name')->get();
 
-        $pdf = Pdf::loadView('pages.transaction.fab.export-pdf', compact('fab', 'fabService'))->setPaper(
-            'A4',
-            'portrait'
-        );
+        $fabHasServiceCategoriesCollection = FabServiceCategory::where('fab_id', $fab->id)
+            ->pluck('service_category_id')
+            ->toArray();
 
-        return $pdf->stream();
+        $fabHasSKL = FabHasSKL::with('skl')->where('fab_id', $fab->id)->get();
+
+        $test = [];
+        foreach ($fabHasServiceCategoriesCollection as $s) {
+            $test[] = $s;
+        }
+
+        $getPPN = TaxSetting::where('name', 'PPN')->first();
+
+        $totalPPN = $getPPN->rate / 100 * $fabHasServiceCategories->sum('price');
+        $total = $fabHasServiceCategories->sum('price') + $totalPPN;
+
+        $fabCompanyName = $this->convertCompanyNameToTextCapitalize($fab);
+
+
+        $companyProfile = CompanyProfile::where('id', 1)->first();
+
+        $header = '<img src="' . public_path('assets/media/logos/kop-header.png') . '" width="100%" height="100%"/>';
+
+
+        return pdf()
+            ->format(Format::A4)
+            ->headerHtml('<div>My header</div>')
+            ->footerHtml('<div>My footer</div>')
+            ->view('pages.transaction.fab.export-pdf', compact('fabCompanyName', 'companyProfile', 'fabHasServiceCategories', 'fab', 'serviceCategories', 'test', 'total', 'totalPPN', 'fabHasSKL'));
+
+
     }
 }
