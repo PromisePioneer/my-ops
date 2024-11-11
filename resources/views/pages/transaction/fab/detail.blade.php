@@ -6,6 +6,10 @@
             .w-240px {
                 width: 240px;
             }
+
+            #check {
+                accent-color: green !important;
+            }
         </style>
     @endpush
 
@@ -69,8 +73,7 @@
                             <div class="row">
                                 @foreach($serviceCategories as $service)
                                     <div class="col-md-5 mt-2">
-                                        <input style="
-                                        accent-color: green !important;"
+                                        <input id="check"
                                                type="checkbox"
                                                class="form-check-input"
                                                value="{{ $service->id }}"
@@ -212,7 +215,7 @@
                         berlangganan
                     </li>
 
-                    @if(!empty($fabHasSKL))
+                    @if($fabHasSKL !== null)
                         @foreach($fabHasSKL as $skl)
                             <li>
                                 <i class="fa-li fa fa-check" style="color: #00b0f0"></i>
