@@ -29,7 +29,7 @@
 
 
     body {
-        margin: 4cm 0.5cm 2cm;
+        margin: 4cm 0.6cm 2cm;
         line-height: 1.5;
         -webkit-font-smoothing: antialiased;
         font-family: Poppins, Helvetica, sans-serif;
@@ -418,7 +418,7 @@
             </div>
         </div>
         <div class="text-center text-white fw-bolder text-uppercase mt-5 mb-5"
-             style="background-color: #00b0f0">
+             style="background-color: #00b0f0; width: 100%">
             FORMULIR BERLANGGANAN
         </div>
         <div class="row ms-n2 mb-4">
@@ -580,7 +580,6 @@
                 @endforeach
             @endif
         </ul>
-
         <div class="row ms-n2 fw-bolder">
             <p style="color: #172d69" class="m-0">
                 <i class="bi bi-square-fill fs-9 text-danger"></i> Tata Cara Pembayaran
