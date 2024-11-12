@@ -288,7 +288,7 @@ class OfferingLettersController extends Controller
 
         return new Response($pdf, 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="example.pdf"',
+            'Content-Disposition' => 'attachment; filename="example.pdf',
         ]);
 
 
