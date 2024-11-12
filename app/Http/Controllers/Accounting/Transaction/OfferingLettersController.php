@@ -277,7 +277,7 @@ class OfferingLettersController extends Controller
             'offeringLetterCompanyName'));
 
         $pdf = Browsershot::html($view)
-            ->setChromePath('/usr/bin/google-chrome')
+            ->setChromePath('/snap/bin/chromium')
             ->setIncludePath(config('services.browsershot.include_path'))->pdf();
 
 
