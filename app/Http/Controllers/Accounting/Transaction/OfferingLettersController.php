@@ -278,13 +278,12 @@ class OfferingLettersController extends Controller
 
         $pdf = Browsershot::html($view)
             ->setChromePath('/snap/bin/chromium')
-            ->noSandbox()
             ->setIncludePath(config('services.browsershot.include_path'))->pdf();
 
 
         return new Response($pdf, 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="' . $offeringLetterCompanyName . '.pfd"',
+            'Content-Disposition' => 'attachment; filename="example.pdf',
         ]);
 
 
