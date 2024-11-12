@@ -19,7 +19,9 @@ use App\Models\User;
 use App\Service\Transaction\FabService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
+use Spatie\Browsershot\Browsershot;
 use Spatie\LaravelPdf\Enums\Format;
 use function Spatie\LaravelPdf\Support\pdf;
 use Throwable;
@@ -273,10 +275,24 @@ class FabController extends Controller
         $companyProfile = CompanyProfile::where('id', 1)->first();
 
 
-        return pdf()
-            ->format(Format::A4)
-            ->view('pages.transaction.fab.export-pdf',
+        $view = view('pages.transaction.fab.export-pdf',
                 compact('fabCompanyName', 'companyProfile', 'fabHasServiceCategories', 'fab', 'serviceCategories', 'test', 'total', 'totalPPN', 'fabHasSKL'));
+
+
+        $pdf = Browsershot::html($view)
+            ->setChromePath('/usr/bin/chromium')
+            ->noSandbox()
+            ->waitUntilNetworkIdle()
+            ->ignoreHttpsErrors()
+            ->setEnvironmentOptions([
+                'CHROME_CONFIG_HOME' => storage_path('app/chromium/.config')
+            ])->pdf();
+
+
+        return new Response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="example.pdf"',
+        ]);
 
 
     }
