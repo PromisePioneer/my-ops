@@ -278,8 +278,9 @@ class OfferingLettersController extends Controller
 
         $pdf = Browsershot::html($view)
             ->setChromePath('/usr/bin/chromium')
-            ->setOption('userDataDir', '/var/www/my-ops/puppeteer_cache')
-            ->setIncludePath(config('services.browsershot.include_path'))
+            ->noSandbox()
+            ->waitUntilNetworkIdle()
+            ->ignoreHttpsErrors()
             ->setEnvironmentOptions([
                 'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
             ])->pdf();
