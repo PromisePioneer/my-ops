@@ -281,9 +281,8 @@ class OfferingLettersController extends Controller
             ->noSandbox()
             ->waitUntilNetworkIdle()
             ->ignoreHttpsErrors()
-            ->setOption('args', ['--crashpad-handler=/var/www/my-ops/storage/app/chromium/crashpad'])
             ->setEnvironmentOptions([
-                'CHROME_CONFIG_HOME' => storage_path('app/chromium/.config')
+                'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
             ])->pdf();
 
 
