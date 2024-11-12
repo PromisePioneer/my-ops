@@ -275,7 +275,8 @@ class FabController extends Controller
 
         return pdf()
             ->format(Format::A4)
-            ->view('pages.transaction.fab.export-pdf', compact('fabCompanyName', 'companyProfile', 'fabHasServiceCategories', 'fab', 'serviceCategories', 'test', 'total', 'totalPPN', 'fabHasSKL'));
+            ->view('pages.transaction.fab.export-pdf',
+                compact('fabCompanyName', 'companyProfile', 'fabHasServiceCategories', 'fab', 'serviceCategories', 'test', 'total', 'totalPPN', 'fabHasSKL'));
 
 
     }
