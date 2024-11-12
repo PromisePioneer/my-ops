@@ -17,8 +17,11 @@ use App\Models\User;
 use App\Service\OfferingLetterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
+use Spatie\Browsershot\Browsershot;
 use Spatie\LaravelPdf\Enums\Format;
+use Spatie\LaravelPdf\Facades\Pdf;
 use function Spatie\LaravelPdf\Support\pdf;
 
 class OfferingLettersController extends Controller
@@ -264,16 +267,23 @@ class OfferingLettersController extends Controller
         $total = $offeringLetterServices->sum('price') + $totalPPN;
 
 
-        return pdf()
-            ->format(Format::A4)
-            ->view('pages.transaction.offering-letter.export-pdf', compact(
-                'offeringLetter',
-                'offeringLetterServices',
-                'offeringLetterServiceDescription',
-                'total',
-                'getPPN',
-                'totalPPN',
-                'offeringLetterCompanyName'));
+        $view = view('pages.transaction.offering-letter.export-pdf', compact(
+            'offeringLetter',
+            'offeringLetterServices',
+            'offeringLetterServiceDescription',
+            'total',
+            'getPPN',
+            'totalPPN',
+            'offeringLetterCompanyName'));
+
+        $pdf = Browsershot::html($view)->setIncludePath(config('services.browsershot.include_path'))->pdf();
+
+
+        return new Response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $offeringLetterCompanyName . '.pfd"',
+        ]);
+
     }
 
 
