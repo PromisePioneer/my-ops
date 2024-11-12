@@ -15,10 +15,11 @@ use App\Models\TaxSetting;
 use App\Models\UnitType;
 use App\Models\User;
 use App\Service\OfferingLetterService;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Spatie\LaravelPdf\Enums\Format;
+use function Spatie\LaravelPdf\Support\pdf;
 
 class OfferingLettersController extends Controller
 {
@@ -263,19 +264,16 @@ class OfferingLettersController extends Controller
         $total = $offeringLetterServices->sum('price') + $totalPPN;
 
 
-        $pdf = Pdf::loadView(
-            'pages.transaction.offering-letter.export-pdf', compact(
-            'offeringLetter',
-            'offeringLetterServices',
-            'offeringLetterServiceDescription',
-            'total',
-            'getPPN',
-            'totalPPN',
-            'offeringLetterCompanyName'
-        ))->setPaper('A4', 'portrait');
-
-
-        return $pdf->stream();
+        return pdf()
+            ->format(Format::A4)
+            ->view('pages.transaction.offering-letter.export-pdf', compact(
+                'offeringLetter',
+                'offeringLetterServices',
+                'offeringLetterServiceDescription',
+                'total',
+                'getPPN',
+                'totalPPN',
+                'offeringLetterCompanyName'));
     }
 
 

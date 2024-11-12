@@ -272,13 +272,9 @@ class FabController extends Controller
 
         $companyProfile = CompanyProfile::where('id', 1)->first();
 
-        $header = '<img src="' . public_path('assets/media/logos/kop-header.png') . '" width="100%" height="100%"/>';
-
 
         return pdf()
             ->format(Format::A4)
-            ->headerHtml('<div>My header</div>')
-            ->footerHtml('<div>My footer</div>')
             ->view('pages.transaction.fab.export-pdf', compact('fabCompanyName', 'companyProfile', 'fabHasServiceCategories', 'fab', 'serviceCategories', 'test', 'total', 'totalPPN', 'fabHasSKL'));
 
 
