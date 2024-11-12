@@ -276,16 +276,7 @@ class OfferingLettersController extends Controller
             'totalPPN',
             'offeringLetterCompanyName'));
 
-        $pdf = Browsershot::html($view)->setIncludePath(config('services.browsershot.include_path'))
-            ->setBinPath('/usr/bin/chromium-browser')
-            ->addChromiumArguments([
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage',
-                '--disable-gpu',
-                '--headless',
-                '--user-data-dir=/var/www/.cache/chromium'
-            ])->pdf();
+        $pdf = Browsershot::html($view)->setIncludePath(config('services.browsershot.include_path'))->setBinPath('/usr/bin/chromium-browser')->pdf();
 
 
         return new Response($pdf, 200, [
