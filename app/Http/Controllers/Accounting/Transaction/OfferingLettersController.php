@@ -282,7 +282,7 @@ class OfferingLettersController extends Controller
             ->waitUntilNetworkIdle()
             ->ignoreHttpsErrors()
             ->setEnvironmentOptions([
-                'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
+                'CHROME_CONFIG_HOME' => storage_path('app/chromium/.config')
             ])->pdf();
 
 
