@@ -276,7 +276,7 @@ class FabController extends Controller
 
 
         $view = view('pages.transaction.fab.export-pdf',
-                compact('fabCompanyName', 'companyProfile', 'fabHasServiceCategories', 'fab', 'serviceCategories', 'test', 'total', 'totalPPN', 'fabHasSKL'));
+            compact('fabCompanyName', 'companyProfile', 'fabHasServiceCategories', 'fab', 'serviceCategories', 'test', 'total', 'totalPPN', 'fabHasSKL'));
 
 
         $pdf = Browsershot::html($view)
@@ -285,7 +285,7 @@ class FabController extends Controller
             ->waitUntilNetworkIdle()
             ->ignoreHttpsErrors()
             ->setEnvironmentOptions([
-                'CHROME_CONFIG_HOME' => storage_path('app/chromium/.config')
+                'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
             ])->pdf();
 
 
