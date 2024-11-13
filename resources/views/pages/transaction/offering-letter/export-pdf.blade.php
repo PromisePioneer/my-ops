@@ -87,7 +87,7 @@
         }
 
         .fs-6 {
-            font-size: 1.075rem !important
+            font-size: 1rem !important
         }
 
 
@@ -253,7 +253,6 @@
         .mb-15 {
             margin-bottom: 2.75rem !important
         }
-
     </style>
 </head>
 

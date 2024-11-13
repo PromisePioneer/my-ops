@@ -9,8 +9,8 @@ use App\Models\Contact;
 use App\Models\OfferingLetter;
 use App\Models\OfferingLetterProduct;
 use App\Models\OfferingLetterServiceDescription;
-use App\Models\SKL;
 use App\Models\ServiceCategory;
+use App\Models\SKL;
 use App\Models\TaxSetting;
 use App\Models\UnitType;
 use App\Models\User;
@@ -20,9 +20,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Spatie\Browsershot\Browsershot;
-use Spatie\LaravelPdf\Enums\Format;
-use Spatie\LaravelPdf\Facades\Pdf;
-use function Spatie\LaravelPdf\Support\pdf;
 
 class OfferingLettersController extends Controller
 {
@@ -276,11 +273,13 @@ class OfferingLettersController extends Controller
             'totalPPN',
             'offeringLetterCompanyName'));
 
+
         $pdf = Browsershot::html($view)
             ->setChromePath('/usr/bin/chromium')
             ->noSandbox()
             ->waitUntilNetworkIdle()
             ->ignoreHttpsErrors()
+            ->format('A4')
             ->setEnvironmentOptions([
                 'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
             ])->pdf();

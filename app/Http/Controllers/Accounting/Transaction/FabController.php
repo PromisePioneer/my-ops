@@ -22,8 +22,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Spatie\Browsershot\Browsershot;
-use Spatie\LaravelPdf\Enums\Format;
-use function Spatie\LaravelPdf\Support\pdf;
 use Throwable;
 
 class FabController extends Controller
@@ -284,6 +282,7 @@ class FabController extends Controller
             ->noSandbox()
             ->waitUntilNetworkIdle()
             ->ignoreHttpsErrors()
+            ->format('A4')
             ->setEnvironmentOptions([
                 'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
             ])->pdf();
