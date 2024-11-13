@@ -13,6 +13,7 @@
 </head>
 
 <style>
+
     *, *::before, *::after {
         box-sizing: border-box;
     }
@@ -20,6 +21,10 @@
 
     * {
         margin: 0;
+    }
+
+    html {
+        -webkit-print-color-adjust: exact;
     }
 
 
@@ -56,7 +61,7 @@
 
 
     .wrapper {
-        margin-top: 180px;
+        margin-top: 170px;
         position: relative;
     }
 
@@ -91,6 +96,15 @@
         border: 1px solid black !important
     }
 
+    .border-bottom {
+        border-bottom: 1px solid black;
+    }
+
+
+    .border-top {
+        border-top: 1px solid black;
+    }
+
     .border-3 {
         border-width: 3px !important
     }
@@ -117,6 +131,10 @@
 
     .mt-10 {
         margin-top: 2.5rem !important
+    }
+
+    .mt-1 {
+        margin-top: 0.5rem;
     }
 
     .mb-10 {
@@ -177,7 +195,7 @@
 
     .form-check-input[type=checkbox] {
         border-radius: .4em;
-        border: 2px solid #000000;
+        border: 1px solid #000000;
     }
 
     .fw-bold {
@@ -251,12 +269,9 @@
         padding-left: 2.5rem !important
     }
 
-
     .table {
         width: 100%;
-        margin-bottom: 1rem;
-        vertical-align: top;
-        border: 1px solid black;
+        margin-bottom: 0.5rem;
     }
 
     .text-center {
@@ -293,9 +308,13 @@
     }
 
 
-    .custom-bordered, .custom-bordered th, .custom-bordered td {
-        border: 1px solid black;
+    .custom-bordered, .custom-bordered th .custom-bordered tr, .custom-bordered td {
+        border-left: none;
+        border-right: none;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
         border-collapse: collapse;
+
     }
 
     .mt-5 {
@@ -321,8 +340,8 @@
     }
 
     .px-9 {
-        padding-right: 2.25rem !important;
-        padding-left: 2.25rem !important
+        padding-right: 3.25rem !important;
+        padding-left: 3.25rem !important
     }
 
     .w-400px {
@@ -364,6 +383,159 @@
     .mb-10 {
         margin-bottom: 2.5rem !important
     }
+
+    .w-1px {
+        width: 1px !important
+    }
+
+    .margin-after-page-break {
+        margin-top: 170px;
+    }
+
+    .form-check-input:disabled {
+        pointer-events: none;
+        filter: none;
+        opacity: .5
+    }
+
+    .form-check-input[type=checkbox]:indeterminate {
+        background-color: #0d6efd;
+        border-color: #000000;
+        --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3e%3c/svg%3e")
+    }
+
+    .form-check-input:checked[type=checkbox] {
+        --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e")
+    }
+
+    .form-check-input:checked {
+        background-color: #7dbbf5;
+        border-color: #7dbbf5
+    }
+
+    .form-check-input:focus {
+        border-color: #86b7fe;
+        outline: 0;
+        box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25)
+    }
+
+    .form-check-reverse .form-check-input {
+        float: right;
+        margin-right: -1.5em;
+        margin-left: 0
+    }
+
+    .form-check-input {
+        --bs-form-check-bg: var(--bs-body-bg);
+        flex-shrink: 0;
+        width: 1em;
+        height: 1em;
+        margin-top: .25em;
+        vertical-align: top;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-color: var(--bs-form-check-bg);
+        background-image: var(--bs-form-check-bg-image);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        border: var(--bs-border-width) solid var(--bs-border-color);
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+        print-color-adjust: exact
+    }
+
+    .form-check-input[type=checkbox] {
+        border-radius: .25em
+    }
+
+    .form-check-input:active {
+        filter: brightness(90%)
+    }
+
+    .form-check .form-check-input {
+        float: left;
+        margin-left: -1.5em
+    }
+
+    .mt-0 {
+        margin-top: 0 !important
+    }
+
+    .mt-5 {
+        margin-top: 1.25rem !important
+    }
+
+    .w20px {
+        width: 20px;
+    }
+
+    .text-black {
+        color: rgba(0, 0, 0, 1) !important
+    }
+
+    .text-danger {
+        color: var() !important
+    }
+
+
+    .mt-4 {
+        margin-top: 1rem !important
+    }
+
+    .mt-3 {
+        margin-top: .75rem !important
+    }
+
+    .mb-3 {
+        margin-bottom: .75rem !important;
+    }
+
+
+    .py-10 {
+        padding-top: .3rem !important;
+        padding-bottom: .3rem !important
+    }
+
+    .mb-2 {
+        margin-bottom: .5rem !important
+    }
+
+    .ms-2 {
+        margin-left: .5rem !important
+    }
+
+    .ms-3 {
+        margin-left: .75rem !important
+    }
+
+    .ms-4 {
+        margin-left: 1rem !important
+    }
+
+    .m-0 {
+        margin: 0 !important
+    }
+
+    .border-1 {
+        border-width: 1px !important
+    }
+
+    .p-custom {
+        padding: 0.1rem;
+    }
+
+    .px-7 {
+        padding-right: 1.75rem !important;
+        padding-left: 1.75rem !important
+    }
+
+    .px-8 {
+        padding-right: 2rem !important;
+        padding-left: 2rem !important
+    }
+
 </style>
 <body>
 <header>
@@ -380,222 +552,234 @@
 
 
 <main class="wrapper">
-    <div style="page-break-after: always">
-        <div class="d-flex align-items-start justify-content-between">
-            <div>
-                <p class="text-justify">
-                    <b>PT. MAYATAMA SOLUSINDO</b>
-                    <br>
-                    JL. Sultan Hasanuddin No. 8A Kel. Rimba Sekampung Kec. Dumai Kota 28822 - Dumai, Riau
-                    Indonesia <br>
-                    Mobile: +62-853-6579-9998 <br>
-                    www.mayatama.id
-                </p>
-            </div>
-            <div class="d-flex flex-column mt-n3">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Nomor</th>
-                        <th>:</th>
-                        <th>
-                            <div class="border border-3 p-1">
-                                {{ $fab->fab_number }}
-                            </div>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th>Tanggal</th>
-                        <th>:</th>
-                        <th>
-                            <div class="border border-3 border-black p-1">
-                                {{ \App\Helper\formatDate($fab->date) }}
-                            </div>
-                        </th>
-                    </tr>
-                    </thead>
-                </table>
-            </div>
+    <div class="d-flex align-items-start justify-content-between">
+        <div style="line-height: 1">
+            <b>PT. MAYATAMA SOLUSINDO</b>
+            <p class="text-justify m-0 p-0">
+                JL. Sultan Hasanuddin No. 8A
+                Kel. Rimba Sekampung
+                Kec. Dumai Kota 28822
+                -
+                Dumai, Riau Indonesia </p>
+            +62-853-6579-9998
+            https://www.mayatama.id
         </div>
-        <div class="text-center text-white fw-bolder text-uppercase mt-5 mb-5"
-             style="background-color: #00b0f0; width: 100%">
-            FORMULIR BERLANGGANAN
-        </div>
-        <div class="row ms-n2 mb-4">
-            <div class="col-lg-4">
-                <p class="fw-bolder" style="color: #172d69">
-                    <i class="bi bi-square-fill fs-9 text-danger"></i> Layanan :
-                </p>
-            </div>
-            <div class="col-lg-6">
-                <div class="row ms-2">
-                    @foreach($serviceCategories as $service)
-                        <div class="col-md-5 mt-2">
-                            <input style="
-                                   accent-color: #00b0f0 !important;"
-                                   type="checkbox"
-                                   class="form-check-input"
-                                   value="{{ $service->id }}"
-                                   {{ in_array($service->id, $test) ? 'checked' : '' }}  onclick="return false;"/>
-                            <label class="fw-bold">
-                                <span>{{ $service->name }}</span>
-                            </label>
-                        </div>
-                    @endforeach
-
-                </div>
-            </div>
-        </div>
-        <div class="row ms-n2">
-            <p class="fw-bolder" style="color: #172d69">
-                <i class="bi bi-square-fill fs-9 text-danger"></i> Data Perusahaan :
-            </p>
-        </div>
-        <div class="row ms-1 mb-1">
-            <div class="col-lg-4">
-                Nama Perusahaan :
-            </div>
-            <div class="col-lg-6">
-                <div class="border border-3 border-black p-1 w-250px">
-                    {{ $fabCompanyName }}
-                </div>
-            </div>
-        </div>
-        <div class="row ms-1 mb-1">
-            <div class="col-lg-4 align-items-center">
-                Alamat :
-            </div>
-            <div class="col-lg-6">
-                <div
-                    class="{{ $fab->contact->complete_address ? 'border border-3 border-black w-100 mb-1' : 'border border-3 border-black w-100 p-2 mb-1' }}">
-                    {{ $fab->contact->complete_address ?? '' }}
-                </div>
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        Phone
-                    </div>
-                    <div class="me-3">
-                        <div
-                            class="{{ $fab->contact->phone_number ? 'border border-3 border-black w-150px p-1 mb-1' : 'border border-3 border-black mt-1 w-150px p-2 mb-1' }}">
-                            {{ $fab->contact->phone_number }}
-                        </div>
-                    </div>
-                    <div class="me-3">
-                        Fax
-                    </div>
-                    <div class="me-2">
-                        <div
-                            class="{{ $fab->contact->fax ? 'border border-3 border-black w-150px p-1 mb-1' : 'border border-3 border-black mt-1 w-150px p-2 mb-1' }}">
-                            {{ $fab->contact->fax }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row ms-1 mb-1">
-            <div class="col-lg-4">
-                <p>NPWP Perusahaan :</p>
-            </div>
-            <div class="col-lg-6">
-                <div
-                    class="{{ $fab->contact->npwp ? 'border border-3 border-black w-100 mb-1' : 'border border-3 border-black  w-100 p-2 mb-1' }}">
-                    {{ $fab->contact->npwp }}
-                </div>
-            </div>
-        </div>
-        <div class="row ms-1 mb-1">
-            <div class="col-lg-4">
-                <p>No.KTP/SIM/PASSPORT :</p>
-            </div>
-            <div class="col-lg-6">
-                <div
-                    class="{{ $fab->contact->identity_number ? 'border border-3 border-black w-100 mb-1 p-1' : 'border border-3 border-black  w-100 p-2 mb-1' }}">
-                    {{ $fab->contact->identity_number }}
-                </div>
-            </div>
-        </div>
-        <div class="row ms-n2 mt-10 mb-4">
-            <p class="fw-bolder" style="color: #172d69">
-                <i class="bi bi-square-fill fs-9 text-danger"></i>
-                Keterangan :
-            </p>
-        </div>
-        <div class="row justify-content-center px-9">
-            <table class="table text-center custom-bordered">
+        <div class="d-flex flex-column mt-n3">
+            <table>
                 <thead>
-                <tr class="border border-black ms-5" style="background-color: #00b0f0">
-                    <th class="text-white w-20px py-1">No</th>
-                    <th class="text-white w-30px">Deskripsi</th>
-                    <th class="text-white w-30px">Kapasitas</th>
-                    <th class="text-white w-30px">Harga</th>
+                <tr>
+                    <td>Nomor</td>
+                    <td>:</td>
+                    <td>
+                        <div class="border border-1 p-custom">
+                            {{ $fab->fab_number }}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Tanggal</td>
+                    <td>:</td>
+                    <td>
+                        <div class="border border-1 border-black p-custom">
+                            {{ \App\Helper\formatDate($fab->date) }}
+                        </div>
+                    </td>
                 </tr>
                 </thead>
-                <tbody>
-                @foreach($fabHasServiceCategories as $serviceCategories)
-                    <tr class="border border-black">
-                        <td class="p-3">{{ $loop->iteration }}</td>
-                        <td class="text-start p-3">{{ $serviceCategories->service->name }}</td>
-                        <td class="p-3">{{ $serviceCategories->capacity .' '.  $serviceCategories->unitType->name }}</td>
-                        <td class="p-3">{{ number_format($serviceCategories->price) }}</td>
-                    </tr>
-                @endforeach
-                </tbody>
-                <tfoot>
-                <tr class="border border-black ms-5 py-1">
-                    <td colspan="3" class="text-end fw-bolder p-1">PPN</td>
-                    <td class="py-3">{{ number_format($totalPPN, 2) }}</td>
-                </tr>
-                <tr class="border border-black ms-5">
-                    <td colspan="3" class="text-end fw-bolder  p-1">Total</td>
-                    <td>{{ number_format($total, 2) }}</td>
-                </tr>
-                </tfoot>
             </table>
         </div>
-        <ul class="fa-ul px-4 mb-10">
-            <li>
-                <i class="fa-li fa fa-check" style="color: #00b0f0"></i>
-                SLA 99,5%
-            </li>
-            <li>
-                <i class="fa-li fa fa-check" style="color: #00b0f0"></i>
-                Support Pelayanan 7 x 24 jam, online maupun onsite.
-            </li>
-            <li>
-                <i class="fa-li fa fa-check" style="color: #00b0f0"></i>
-                Masa berlaku penawaran 1 bulan
-            </li>
-            <li>
-                <i class="fa-li fa fa-check" style="color: #00b0f0"></i>
-                Minimum kontrak 1 tahun dan otomatis diperpanjang apabila tidak ada permintaan berhenti
-                berlangganan
-            </li>
-
-            @if(!empty($fabHasSKL))
-                @foreach($fabHasSKL as $skl)
-                    <li>
-                        <i class="fa-li fa fa-check" style="color: #00b0f0"></i>
-                        {{ $skl->skl?->name }}
-                    </li>
-                @endforeach
-            @endif
-        </ul>
-        <div class="row ms-n2 fw-bolder">
-            <p style="color: #172d69" class="m-0">
-                <i class="bi bi-square-fill fs-9 text-danger"></i> Tata Cara Pembayaran
+    </div>
+    <div class="text-center text-white text-black fw-bolder text-uppercase mt-1 mb-2"
+         style="background-color: #7dbbf5">
+        FORMULIR BERLANGGANAN
+    </div>
+    <div class="row ms-1 mb-1">
+        <div class="col-lg-4">
+            <p class="fw-bolder" style="color: #172d69">
+                <i class="bi bi-square-fill fs-9 text-danger"></i> Jenis Layanan :
             </p>
         </div>
+        <div class="col-lg-6">
+            <div class="row ms-2">
+                @foreach($serviceCategories as $service)
+                    <div class="col-md-5 align-items-center">
+                        <input style="
+                                  accent-color: #00b0f0 !important;"
+                               type="checkbox"
+                               class="form-check-input"
+                               value="{{ $service->id }}"
+                               {{ in_array($service->id, $test) ? 'checked' : '' }}  onclick="return false;"
+                        />
+                        <label class="fw-bold">
+                            <span>{{ $service->name }}</span>
+                        </label>
+                    </div>
+                @endforeach
+
+            </div>
+        </div>
+    </div>
+    <div class="row ms-1">
+        <p class="fw-bolder" style="color: #172d69">
+            <i class="bi bi-square-fill fs-9 text-danger"></i> Data Perusahaan :
+        </p>
+    </div>
+    <div class="row ms-4 mb-1 align-items-center">
+        <div class="col-lg-4">
+            Nama Perusahaan :
+        </div>
+        <div class="col-lg-6">
+            <div class="border border-1 border-black p-1 w-250px">
+                {{ $fabCompanyName }}
+            </div>
+        </div>
+    </div>
+    <div class="row ms-4  align-self-start">
+        <div class="col-lg-4">
+            Alamat :
+        </div>
+        <div class="col-lg-6">
+            <div
+                class="{{ $fab->contact->complete_address ? 'border border-1 mb-1 border-black w-100' : 'border border-1 border-black w-100 p-2 mb-1' }}">
+                {{ $fab->contact->complete_address ?? '' }}
+            </div>
+            <div class="d-flex align-items-center">
+                <div class="me-3">
+                    Telepon
+                </div>
+                <div class="me-3">
+                    <div
+                        class="{{ $fab->contact->phone_number ? 'border border-1 border-black w-150px p-1 mb-1' : 'border border-1 border-black w-150px p-2 mb-1' }}">
+                        {{ $fab->contact->phone_number }}
+                    </div>
+                </div>
+                <div class="me-3">
+                    Fax
+                </div>
+                <div class="me-2">
+                    <div
+                        class="{{ $fab->contact->fax ? 'border border-1 border-black w-150px p-1 mb-1' : 'border border-1 border-black w-150px p-2 mb-1' }}">
+                        {{ $fab->contact->fax }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row ms-4 mb-1 align-items-center">
+        <div class="col-lg-4">
+            <p>NPWP Perusahaan :</p>
+        </div>
+        <div class="col-lg-6">
+            <div
+                class="{{ $fab->contact->npwp ? 'border border-1 border-black p-1 w-100' : 'border border-1 border-black w-100 p-2' }}">
+                {{ $fab->contact->npwp }}
+            </div>
+        </div>
+    </div>
+    <div class="row ms-4 mb-1 align-items-center">
+        <div class="col-lg-4">
+            <p>PIC :</p>
+        </div>
+        <div class="col-lg-6">
+            <div
+                class="{{ $fab->contact->pic_name ? 'border border-1 border-black w-100 p-1' : 'border border-1 border-black w-100 p-2' }}">
+                {{ $fab->contact->pic_name }}
+            </div>
+        </div>
+    </div>
+    <div class="row ms-4 mb-1 align-items-center">
+        <div class="col-lg-4">
+            <p>No.KTP/SIM/PASSPORT :</p>
+        </div>
+        <div class="col-lg-6">
+            <div
+                class="{{ $fab->contact->identity_number ? 'border border-1 border-black w-100 mb-1 p-1' : 'border border-1 border-black w-100 p-2 mb-1' }}">
+                {{ $fab->contact->identity_number }}
+            </div>
+        </div>
+    </div>
+    <div class="row ms-1 mb-2 align-items-center">
+        <p class="fw-bolder" style="color: #172d69">
+            <i class="bi bi-square-fill fs-9 text-danger"></i>
+            Keterangan :
+        </p>
+    </div>
+    <div class="row justify-content-center px-9">
+        <table class="table text-center custom-bordered">
+            <thead>
+            <tr style="background-color: #7dbbf5">
+                <th class="text-black w-1px py-1">No</th>
+                <th class="text-black w-30px">Deskripsi</th>
+                <th class="text-black w-20px">Kapasitas</th>
+                <th class="text-black w-20px">Harga</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($fabHasServiceCategories as $serviceCategories)
+                <tr class="">
+                    <td class="text-center p-1">{{ $loop->iteration }}</td>
+                    <td class="text-center p-1">{{ $serviceCategories->service->name }}</td>
+                    <td class="text-center p-1">{{ $serviceCategories->capacity .' '.  $serviceCategories->unitType->name }}</td>
+                    <td class="text-center p-1">{{ number_format($serviceCategories->price) }}</td>
+                </tr>
+            @endforeach
+            </tbody>
+            <tfoot>
+            <tr class="ms-5 py-1">
+                <td colspan="3" class="text-end p-1">PPN</td>
+                <td class="py-3">{{ number_format($totalPPN, 2) }}</td>
+            </tr>
+            <tr class="ms-5">
+                <td colspan="3" class="text-end fw-bolder  p-1">Total</td>
+                <td>{{ number_format($total, 2) }}</td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+    <ul class="fa-ul px-8">
+        <li>
+            <i class="fa-li fa fa-check" style="color: #00b0f0"></i>
+            SLA 99,5%
+        </li>
+        <li>
+            <i class="fa-li fa fa-check" style="color: #00b0f0"></i>
+            Support Pelayanan 7 x 24 jam, online maupun onsite.
+        </li>
+        <li>
+            <i class="fa-li fa fa-check" style="color: #00b0f0"></i>
+            Masa berlaku penawaran 1 bulan
+        </li>
+        <li>
+            <i class="fa-li fa fa-check" style="color: #00b0f0"></i>
+            Minimum kontrak 1 tahun dan otomatis diperpanjang apabila tidak ada permintaan berhenti
+            berlangganan
+        </li>
+
+        @if(!empty($fabHasSKL))
+            @foreach($fabHasSKL as $skl)
+                <li>
+                    <i class="fa-li fa fa-check" style="color: #00b0f0"></i>
+                    {{ $skl->skl?->name }}
+                </li>
+            @endforeach
+        @endif
+    </ul>
+
+    <div class="ms-1 fw-bolder mt-3">
+        <p style="color: #172d69" class="m-0 mt-2">
+            <i class="bi bi-square-fill fs-9 text-danger"></i> Tata Cara Pembayaran
+        </p>
     </div>
 
-    <div style="page-break-after: never; ">
-        <div style="margin-top: 170px" class="row ms-1 ms-4">
-            <p class="fw-bold mb-3">Pembayaran dapat dilakukan paling lambat pada tanggal 30 setiap bulannya,
+    <div>
+        <div class="row ms-1 ms-4">
+            <p class="fw-bold">Pembayaran dapat dilakukan paling lambat pada tanggal 30 setiap bulannya,
                 dengan cara
                 transfer
                 ke rekening di :</p>
-            <table class="ms-3 mb-3 w-400px">
+            <table class="ms-3 w-400px">
                 <tr>
-                    <td class="px-1 text-start">Bank</td>
+                    <td class="text-start">Bank</td>
                     <td>:</td>
                     <td>{{ $companyProfile->bank }}</td>
                 </tr>
@@ -611,14 +795,14 @@
                 </tr>
             </table>
         </div>
-        <p class="row ms-1 ms-4 mt-0 mb-10">Atau Sesuai yang tercantum dalam Kontrak</p>
-        <div class="d-flex justify-content-around">
+        <p class="row ms-1 ms-4 mt-0 mb-2">Atau Sesuai yang tercantum dalam Kontrak</p>
+        <div class="d-flex justify-content-around align-items-center">
             <div class="text-center">
-                <p class="fw-bolder" style="margin-bottom: 100px">{{ $fabCompanyName }}</p>
+                <p class="fw-bolder" style="margin-bottom: 60px">{{ $fabCompanyName }}</p>
                 <p class="fw-bolder">{{ $fab->contact->pic_name }}</p>
             </div>
             <div class="text-center">
-                <p class="fw-bolder" style="margin-bottom: 100px">PT Mayatama Solusindo</p>
+                <p class="fw-bolder" style="margin-bottom: 60px">PT Mayatama Solusindo</p>
                 <p class="fw-bolder">{{ $fab->user->name }}</p>
                 <p class="fw-bolder">{{ $fab->user->roles[0]?->name ?? '' }}</p>
             </div>

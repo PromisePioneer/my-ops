@@ -32,7 +32,6 @@
                                 tawarkan :
                             </p>
                         </div>
-
                         <div class="row">
                             <div class="col-md-3 ms-4">
                                 <div class="separator mb-3"

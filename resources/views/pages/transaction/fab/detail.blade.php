@@ -27,8 +27,8 @@
                             <br>
                             JL. Sultan Hasanuddin No. 8A Kel. Rimba Sekampung Kec. Dumai Kota 28822 - Dumai, Riau
                             Indonesia <br>
-                            Mobile: +62-853-6579-9998 <br>
-                            www.mayatama.id
+                            +62-853-6579-9998 <br>
+                            https://www.mayatama.id
                         </p>
                     </div>
                     <div class="d-flex flex-column mt-n3">
@@ -57,8 +57,8 @@
                     </div>
                 </div>
 
-                <div class="text-center text-white fw-bolder text-uppercase mt-10 mb-10"
-                     style="background-color: #00b0f0">
+                <div class="text-center fw-bolder text-uppercase mt-1 mb-10 text-black"
+                     style="background-color: #7dbbf5">
                     FORMULIR BERLANGGANAN
                 </div>
                 <div class="row ms-n2 mb-4">
@@ -89,12 +89,12 @@
                     </div>
                 </div>
 
-                <div class="row ms-n2">
+                <div class="row ms-n2 align-items-center">
                     <p class="fw-bolder" style="color: #172d69">
                         <i class="bi bi-square-fill fs-9 text-danger"></i> Data Perusahaan :
                     </p>
                 </div>
-                <div class="row ms-1 mb-1">
+                <div class="row ms-1 mb-1 align-items-center">
                     <div class="col-lg-4">
                         Nama Perusahaan :
                     </div>
@@ -104,7 +104,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row ms-1 mb-4">
+                <div class="row ms-1 mb-1">
                     <div class="col-lg-4 align-items-center">
                         Alamat :
                     </div>
@@ -119,7 +119,7 @@
                             </div>
                             <div class="me-4">
                                 <div
-                                    class="{{ $fab->contact->phone_number ? 'border border-3 border-black w-240px p-1 mb-1' : 'border border-3 border-black  w-240px p-4 mb-1' }}">
+                                    class="{{ $fab->contact->phone_number ? 'border border-3 border-black w-240px p-1' : 'border border-3 border-black  w-240px p-4' }}">
                                     {{ $fab->contact->phone_number }}
                                 </div>
                             </div>
@@ -135,7 +135,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row ms-1 mb-1">
+                <div class="row ms-1 mb-1 align-items-center">
                     <div class="col-lg-4">
                         <p>NPWP Perusahaan :</p>
                     </div>
@@ -146,7 +146,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row ms-1 mb-1">
+                <div class="row ms-1 mb-1 align-items-center">
                     <div class="col-lg-4">
                         <p>No.KTP/SIM/PASSPORT :</p>
                     </div>
@@ -157,25 +157,26 @@
                         </div>
                     </div>
                 </div>
-                <div class="row ms-n2 mt-10">
+                <div class="row ms-n2 mt-10 align-items-center">
                     <p class="fw-bolder" style="color: #172d69">
                         <i class="bi bi-square-fill fs-9 text-danger"></i>
                         Keterangan :
                     </p>
                 </div>
                 <div class="row justify-content-center table-responsive px-10">
-                    <table class="table table-bordered text-center">
+                    <table class="table text-center">
                         <thead>
-                        <tr class="border border-black ms-5" style="background-color: #00b0f0">
-                            <th class="text-white w-20px py-1">No</th>
-                            <th class="text-white w-30px">Deskripsi</th>
-                            <th class="text-white w-30px">Kapasitas</th>
-                            <th class="text-white w-30px">Harga</th>
+                        <tr class="border-bottom border-top border-black fs-6 fw-bold text-black ms-5"
+                            style="background-color: #7dbbf5">
+                            <th class="px-1 w-1px">No</th>
+                            <th>Deskripsi</th>
+                            <th>Kapasitas</th>
+                            <th>Harga</th>
                         </tr>
                         </thead>
                         <tbody>
                         @foreach($fabHasServiceCategories as $serviceCategories)
-                            <tr class="border border-black">
+                            <tr class="border-bottom border-top border-black fs-6">
                                 <td>{{ $loop->iteration }}</td>
                                 <td class="text-start">{{ $serviceCategories->service->name }}</td>
                                 <td>{{ $serviceCategories->capacity .' '.  $serviceCategories->unitType->name }}</td>
@@ -183,12 +184,12 @@
                             </tr>
                         @endforeach
                         </tbody>
-                        <tfoot>
-                        <tr class="border border-black ms-5 py-1">
-                            <td colspan="3" class="text-end p-3 fw-bolder">PPN</td>
+                        <tfoot class="border-bottom border-top border-black fs-6">
+                        <tr class="border-bottom border-top border-black fs-6">
+                            <td colspan="3" class="text-end p-3">PPN</td>
                             <td class="py-3">{{ number_format($totalPPN, 2) }}</td>
                         </tr>
-                        <tr class="border border-black ms-5">
+                        <tr class="border-bottom border-top border-black fs-6 fw-bold ms-5">
                             <td colspan="3" class="text-end fw-bolder">Total</td>
                             <td>{{ number_format($total, 2) }}</td>
                         </tr>
@@ -231,12 +232,12 @@
                         <i class="bi bi-square-fill fs-9 text-danger"></i> Tata Cara Pembayaran
                     </p>
                 </div>
-                <div class="row ms-1  ms-4 mb-20 mt-0">
-                    <p class="fw-bold">Pembayaran dapat dilakukan paling lambat pada tanggal 30 setiap bulannya,
+                <div class="row ms-1  ms-4 mb-10 mt-0">
+                    <p class="fw-bold mb-1">Pembayaran dapat dilakukan paling lambat pada tanggal 30 setiap bulannya,
                         dengan cara
                         transfer
                         ke rekening di :</p>
-                    <table class="ms-3 mb-4 w-400px">
+                    <table class="ms-3 mt-0 mb-1 w-400px">
                         <tr>
                             <td class="px-1">Bank</td>
                             <td>:</td>
