@@ -268,7 +268,7 @@
 <div class="wrapper">
     <div class="row">
         <div class="col-md-3 ms-4">
-            <p class="mb-4 fw-bolder text-hover-primary text-wrap fs-6" style="width: 20rem">
+            <p class="mb-4 fw-bolder text-hover-primary text-wrap fs-6">
                 Yth, Bapak/Ibu {{ $offeringLetter->contact->pic_name }},<br>
                 <span>{{ $offeringLetterCompanyName }}</span>
             </p>
