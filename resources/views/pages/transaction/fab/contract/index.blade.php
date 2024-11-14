@@ -625,7 +625,7 @@
             <tr>
                 <td class="text-start">Nama</td>
                 <td>:</td>
-                <td>{{ $fab->contact->name }}</td>
+                <td>{{ $fab->contact->pic_name }}</td>
             </tr>
             <tr>
                 <td class="text-start">Alamat</td>
