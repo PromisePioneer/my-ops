@@ -625,17 +625,12 @@
             <tr>
                 <td class="text-start">Nama</td>
                 <td>:</td>
-                <td>{{ $fab->fabPic->name }}</td>
-            </tr>
-            <tr>
-                <td class="text-start">Jabatan</td>
-                <td>:</td>
-                <td>{{ $fab->fabPic?->roles[0]?->name ?? '' }}</td>
+                <td>{{ $fab->contact->name }}</td>
             </tr>
             <tr>
                 <td class="text-start">Alamat</td>
                 <td>:</td>
-                <td>Jl. Sultan Hasanuddin No. 8A Dumai – Riau.</td>
+                <td>{{ $fab->contact?->company_address ?? '-' }}</td>
             </tr>
         </table>
     </div>
