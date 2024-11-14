@@ -250,7 +250,8 @@ class OfferingLettersController extends Controller
 
     public function exportToPDF(OfferingLetter $offeringLetter)
     {
-        $offeringLetterServices = OfferingLetterProduct::with('unitType')->where('offering_letter_id', $offeringLetter->id)->get();
+        $offeringLetterProducts = OfferingLetterProduct::with('unitType')->where('offering_letter_id', $offeringLetter->id)->get();
+
         $offeringLetterServiceDescription = OfferingLetterServiceDescription::with('skl')
             ->where('offering_letter_id', $offeringLetter->id)
             ->get();
@@ -260,13 +261,13 @@ class OfferingLettersController extends Controller
 
         $offeringLetterCompanyName = $this->offeringLetterService->convertCompanyNameToCapitalLetter($offeringLetter);
 
-        $totalPPN = $getPPN->rate / 100 * $offeringLetterServices->sum('price');
-        $total = $offeringLetterServices->sum('price') + $totalPPN;
+        $totalPPN = $this->offeringLetterService->getPPNRate($offeringLetterProducts);
+        $total = $offeringLetterProducts->sum('price') + $totalPPN;
 
 
         $view = view('pages.transaction.offering-letter.export-pdf', compact(
             'offeringLetter',
-            'offeringLetterServices',
+            'offeringLetterProducts',
             'offeringLetterServiceDescription',
             'total',
             'getPPN',

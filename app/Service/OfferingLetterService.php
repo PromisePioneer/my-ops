@@ -3,19 +3,16 @@
 namespace App\Service;
 
 use App\Models\Contact;
-use App\Models\Fab;
 use App\Models\OfferingLetter;
 use App\Models\OfferingLetterProduct;
 use App\Models\OfferingLetterServiceDescription;
-use App\Service\HelperService\HandleFileUploadService;
+use App\Models\TaxSetting;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-
 use Throwable;
-
 use function App\Helper\convertToRoman;
 
 class OfferingLetterService
@@ -155,5 +152,13 @@ class OfferingLetterService
     public function convertCompanyNameToCapitalLetter(OfferingLetter $offeringLetter): string
     {
         return $this->companyNameService->convertCompanyNameToCapitalLetter($offeringLetter->contact->company_name);
+    }
+
+
+    public function getPPNRate(Collection $offeringLetterProduct)
+    {
+        $getPPN = TaxSetting::where('name', 'PPN')->first();
+        return $getPPN->rate / 100 * $offeringLetterProduct->sum('price');
+
     }
 }

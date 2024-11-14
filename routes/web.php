@@ -55,14 +55,14 @@ use App\Http\Controllers\Inventory\BoQ\BoqController;
 use App\Http\Controllers\Inventory\FieldAssets\JointClosureController;
 use App\Http\Controllers\Inventory\FOCable\FOCableController;
 use App\Http\Controllers\Inventory\FOCable\FOCableMapController;
-use App\Http\Controllers\Inventory\Stock\GoodsController;
-use App\Http\Controllers\Inventory\Stock\InventoryCategoryController;
-use App\Http\Controllers\Inventory\Stock\UnitTypesController;
-use App\Http\Controllers\Inventory\Stock\UsedItemsController;
 use App\Http\Controllers\Inventory\ODP\ODPController;
 use App\Http\Controllers\Inventory\ODP\ODPMapController;
 use App\Http\Controllers\Inventory\Pole\PoleController;
 use App\Http\Controllers\Inventory\Pole\PoleMapController;
+use App\Http\Controllers\Inventory\Stock\GoodsController;
+use App\Http\Controllers\Inventory\Stock\InventoryCategoryController;
+use App\Http\Controllers\Inventory\Stock\UnitTypesController;
+use App\Http\Controllers\Inventory\Stock\UsedItemsController;
 use App\Http\Controllers\Master\Finance\AccountController;
 use App\Http\Controllers\Master\Finance\AssetController;
 use App\Http\Controllers\Master\Finance\TaxSettingController;
@@ -72,10 +72,10 @@ use App\Http\Controllers\Master\General\CompanyController;
 use App\Http\Controllers\Master\General\ContactController;
 use App\Http\Controllers\Master\General\DepartmentController;
 use App\Http\Controllers\Master\General\NationalHolidayController;
-use App\Http\Controllers\Master\General\SKLController;
 use App\Http\Controllers\Master\General\ProductController;
 use App\Http\Controllers\Master\General\RoleController;
 use App\Http\Controllers\Master\General\ServicesCategoryController;
+use App\Http\Controllers\Master\General\SKLController;
 use App\Http\Controllers\Master\Operational\JointClosureCodeController;
 use App\Http\Controllers\Master\Operational\SupplierController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
@@ -84,12 +84,8 @@ use App\Http\Controllers\UserProfile\UserProfileController;
 use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
 use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
-use App\Models\OfferingLetterProduct;
-use App\Models\OfferingLetterServiceDescription;
-use App\Models\TaxSetting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Spatie\Browsershot\Browsershot;
 
 /*
 |--------------------------------------------------------------------------
@@ -855,6 +851,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/export-pdf/{fab}', [FabController::class, 'exportPDF']);
             Route::get('/get-skl/data', [FabController::class, 'getSkl']);
             Route::get('/get-unit-type/data', [FabController::class, 'getUnitType']);
+            Route::get('/contract-pdf/{fab}', [FabController::class, 'contractPDF']);
         });
         Route::prefix('bast')->group(function () {
             Route::get('/', [BastController::class, 'index']);

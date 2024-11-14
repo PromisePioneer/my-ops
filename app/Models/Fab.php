@@ -2,13 +2,8 @@
 
 namespace App\Models;
 
-use Eloquent;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 class Fab extends Model
 {
@@ -17,6 +12,7 @@ class Fab extends Model
     protected $fillable = [
         'offering_letter_id',
         'fab_number',
+        'contract_number',
         'date',
         'contact_id',
         'pic',
@@ -33,6 +29,11 @@ class Fab extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function fabPic(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'pic');
     }
 
 

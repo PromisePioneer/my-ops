@@ -2,30 +2,23 @@
 
 namespace App\Service\Transaction;
 
-use App\Models\Account;
-use App\Models\AccountTransaction;
 use App\Models\Contact;
 use App\Models\Fab;
-use App\Models\FabServiceCategory;
 use App\Models\FabHasSKL;
-use App\Models\OfferingLetter;
-use App\Models\SubAccount;
-use App\Service\Accounts\AccountTransactionService;
+use App\Models\FabServiceCategory;
 use App\Service\CompanyNameService;
-use App\Service\HelperService\HandleFileUploadService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
-
 use function App\Helper\convertToRoman;
 use function App\Helper\formatDate;
 
 class FabService
 {
     private static int $perPage = 10;
+    private CompanyNameService $companyNameService;
 
 
     public function __construct()
@@ -56,6 +49,32 @@ class FabService
         $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
         return $startValue . '/' . 'SPH/' . 'MYT-' . $companyCode . '/' . $month . '/' . $year;
+    }
+
+
+    private static function generateContractNumber(Request $request): string
+    {
+        $fab = Fab::where('contact_id', $request->contact_id)
+            ->latest()
+            ->first();
+
+        $companyCode = Contact::where('id', $request->contact_id)->first()->company_code;
+        $month = convertToRoman(Carbon::parse($request->due_date)->format('m'));
+        $year = Carbon::parse($request->due_date)->format('Y');
+
+
+        if ($fab) {
+            $convertInvNumberToArray = explode('/', $fab->fab_number);
+            $startingNumber = $convertInvNumberToArray[0];
+            $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
+
+            return $startValue . '/' . 'PKS/' . 'MYT-' . $companyCode . '/' . $month . '/' . $year;
+        }
+
+        $startingNumber = '000';
+        $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
+
+        return $startValue . '/' . 'PKS/' . 'MYT-' . $companyCode . '/' . $month . '/' . $year;
     }
 
 
@@ -113,6 +132,7 @@ class FabService
             $data['created_by'] = $request->user()->id;
             $data['fab_number'] = self::generateFABNumber($request);
             $data['offering_letter_id'] = $request->offering_letter_id;
+            $data['contract_number'] = self::generateContractNumber($request);
             $fab = Fab::create($data);
             $this->fabHasServiceCategoriesStoreOrUpdate($request, $fab);
             $this->fabHasSKLStoreOrUpdate($request, $fab);

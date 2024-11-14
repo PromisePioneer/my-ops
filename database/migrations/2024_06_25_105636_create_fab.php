@@ -16,6 +16,7 @@ class CreateFab extends Migration
             $table->foreignId('offering_letter_id')->nullable()->constrained('offering_letters');
             $table->foreignId('contact_id')->constrained('contacts');
             $table->string('fab_number');
+            $table->string('contract_number');
             $table->string('date');
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('pic')->constrained('users');

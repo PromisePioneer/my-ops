@@ -274,9 +274,7 @@
 
             <div class="separator"></div>
 
-
-            <div class="d-flex justify-content-between">
-
+            <div class="d-flex justify-content-between align-items-center px-1">
                 @if($fab->status === 0)
                     <div class="p-5 row ">
                         <div class="col">
@@ -290,21 +288,28 @@
                         </div>
                     </div>
                 @endif
-
-                <div class="p-5">
+                <div>
                     @if($fab->status === 0)
-                        <button type="button" class="btn btn-primary w-100 mb-4" @click="confirm()"
+                        <button type="button" class="btn btn-primary w-100" @click="confirm()"
                                 x-text="buttonLoading ? 'Loading' : 'Konfirmasi FAB'">
                             Konfirmasi
                         </button>
-                    @else
-                        <a href="{{ url('income-transactions/fab/export-pdf/'. $fab->id) }}"
-                           class="btn btn-light-info w-100 mb-4" target="_blank">
-                            Print PDF
-                        </a>
                     @endif
                 </div>
             </div>
+
+            @if($fab->status === 1)
+                <div class="d-flex align-items-center justify-content-between p-3">
+                    <a href="{{ url('income-transactions/fab/export-pdf/'. $fab->id) }}"
+                       class="btn btn-light-info me-3" target="_blank">
+                        Print FAB
+                    </a>
+                    <a href="{{ url('income-transactions/fab/contract-pdf/'. $fab->id) }}"
+                       class="btn btn-light-primary" target="_blank">
+                        Print Kontrak
+                    </a>
+                </div>
+            @endif
         </div>
     </div>
 

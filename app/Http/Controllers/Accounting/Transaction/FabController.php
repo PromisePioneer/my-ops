@@ -244,7 +244,7 @@ class FabController extends Controller
         ]);
     }
 
-    public function exportPDF(Fab $fab)
+    public function exportPDF(Fab $fab): Response
     {
         $fabHasServiceCategories = FabServiceCategory::with('service', 'unitType')
             ->where('fab_id', $fab->id)
@@ -292,7 +292,25 @@ class FabController extends Controller
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="example.pdf"',
         ]);
+    }
 
 
+    public function contractPDF(Fab $fab): Response
+    {
+        $view = view('pages.transaction.fab.contract.index', compact('fab'));
+        $pdf = Browsershot::html($view)
+            ->setChromePath('/usr/bin/chromium')
+            ->noSandbox()
+            ->waitUntilNetworkIdle()
+            ->ignoreHttpsErrors()
+            ->format('A4')
+            ->setEnvironmentOptions([
+                'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
+            ])->pdf();
+
+        return new Response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="example.pdf"',
+        ]);
     }
 }
