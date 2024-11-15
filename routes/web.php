@@ -860,8 +860,15 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/search', [BAAController::class, 'search']);
             Route::get('/create', [BAAController::class, 'create']);
             Route::get('/fab/data', [BAAController::class, 'getFabData']);
+            Route::get('/fab/selected/{baa}', [BAAController::class, 'selectedFabData']);
             Route::post('/destroy', [BAAController::class, 'destroy']);
             Route::post('/', [BAAController::class, 'store']);
+            Route::get('/detail/{baa}', [BAAController::class, 'detail']);
+            Route::post('/update/{baa}', [BAAController::class, 'update']);
+            Route::post('/confirm/{baa}', [BAAController::class, 'confirm']);
+            Route::get('/edit/{baa}', [BAAController::class, 'edit']);
+            Route::get('/export-pdf/{baa}', [BAAController::class, 'exportPDF']);
+            Route::delete('destroy/{baa}', [BAAController::class, 'destroy']);
         });
 
 

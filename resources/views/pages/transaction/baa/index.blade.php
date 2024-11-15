@@ -62,7 +62,7 @@
                                 <tr>
                                     <td x-text="startIndex + index++"></td>
                                     <td>
-                                        <a :href="`/income-transactions/baa/detail/${baa.id}`"
+                                        <a :href="`/income-transactions/baa/detail/${activation.id}`"
                                            x-text="activation.baa_number"></a>
                                     </td>
                                     <td x-text="activation.date"></td>

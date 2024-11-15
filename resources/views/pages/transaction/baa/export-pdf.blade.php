@@ -1,0 +1,326 @@
+@php use function App\Helper\formatDate; @endphp
+    <!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+</head>
+
+<style>
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+
+    * {
+        margin: 0;
+    }
+
+    html {
+        -webkit-print-color-adjust: exact;
+    }
+
+
+    @page {
+        margin: 0 0;
+    }
+
+
+    body {
+        margin: 4cm 0.3cm 2cm;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        font-family: Poppins, Helvetica, sans-serif;
+        font-size: 62.5%;
+        box-sizing: border-box;
+    }
+
+
+    header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4.5cm;
+    }
+
+    footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 5cm;
+    }
+
+
+    .wrapper {
+        margin-top: 130px;
+        position: relative;
+    }
+
+    .text-center {
+        text-align: center !important
+    }
+
+    .mb-19 {
+        margin-bottom: 4.75rem !important
+    }
+
+    .mb-20 {
+        margin-bottom: 5rem !important
+    }
+
+    .text-uppercase {
+        text-transform: uppercase !important
+    }
+
+    .text-decoration-underline {
+        text-decoration: underline !important
+    }
+
+    .fs-5 {
+        font-size: 1.15rem !important
+    }
+
+    .text-justify {
+        text-align: justify;
+    }
+
+    .ms-10 {
+        margin-left: 2.5rem !important
+    }
+
+    .mb-4 {
+        margin-bottom: 1rem !important
+    }
+
+
+    .mb-3 {
+        margin-bottom: .75rem !important
+    }
+
+
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        vertical-align: top;
+        border-color: black;
+    }
+
+    .w-3px {
+        width: 3px !important
+    }
+
+    .text-start {
+        text-align: left !important
+    }
+
+    .border-top {
+        border-top: 1px solid black;
+    }
+
+    .border-bottom {
+        border-bottom: 1px solid black;
+    }
+
+    .custom-bordered table .custom-bordered th .custom-bordered tr {
+        border-top: 1px solid black;
+        border-top: 1px solid black;
+        border-collapse: collapse;
+    }
+
+    .lh-lg {
+        line-height: 1.75 !important
+    }
+
+    .d-flex {
+        display: flex;
+    }
+
+    .align-items-center {
+        align-items: center !important
+    }
+
+    .justify-content-around {
+        justify-content: space-around !important
+    }
+
+    .custom-bordered, .custom-bordered th .custom-bordered tr, .custom-bordered td {
+        border-left: none;
+        border-right: none;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        border-collapse: collapse;
+    }
+
+
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        vertical-align: top;
+    }
+
+    .py-4 {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important
+    }
+
+    .mb-5 {
+        margin-bottom: 1.25rem !important
+    }
+
+    .mb-7 {
+        margin-bottom: 1.75rem !important
+    }
+
+</style>
+<body>
+<header>
+    <img
+        src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-header.png'))) }}"
+        width="100%" height="100%"/>
+</header>
+
+<footer>
+    <img
+        src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"
+        width="100%" height="100%"/>
+</footer>
+
+
+<main class="wrapper">
+    <div class="text-center mb-4">
+        <h2 class="text-uppercase text-decoration-underline fs-5">BERITA ACARA AKTIVASI</h2>
+        <p class="fs-5">Nomor : {{ $baa->baa_number }}</p>
+    </div>
+
+
+    <p class="text-justify ms-10 mb-3">
+        Pada hari ini {{ formatDate($baa->date) }} yang bertanda tangan dibawah ini:
+    </p>
+
+    <div style="padding-left: 5rem; padding-right: 15rem" class="mb-3">
+        <table class="table">
+            <tr>
+                <td class="text-start w-3px">Nama</td>
+                <td class="text-center">:</td>
+                <td>{{ $baa->fab->fabPic->name }}</td>
+            </tr>
+            <tr>
+                <td class="text-start">Jabatan</td>
+                <td class="text-center">:</td>
+                <td>{{ $baa->fab->fabPic->roles[0]?->name ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td class="text-start">Perusahaan</td>
+                <td class="text-center">:</td>
+                <td>PT MAYATAMA SOLUSINDO</td>
+            </tr>
+        </table>
+    </div>
+
+    <p class="text-justify ms-10 mb-3">
+        Selanjutnya disebut "<b>MYFIBER</b>"
+    </p>
+
+
+    <div style="padding-left: 5rem; padding-right: 15rem" class="mb-3">
+        <table class="table">
+            <tr>
+                <td class="w-3px text-start">Nama</td>
+                <td class="text-center">:</td>
+                <td>{{ $baa->fab->contact->pic_name }}</td>
+            </tr>
+            <tr>
+                <td class="text-start">Perusahaan</td>
+                <td class="text-center">:</td>
+                <td>PT MAYATAMA SOLUSINDO</td>
+            </tr>
+        </table>
+    </div>
+
+    <p class="text-justify ms-10 mb-4">
+        Selanjutnya disebut "<b>Pelanggan</b>"
+    </p>
+
+
+    <p class="text-justify ms-10 mb-4">
+        Pelanggan dan MYFIBER secara bersama-sama selanjutnya disebut juga “<b>Para Pihak</b>” dengan ini
+        menyatakan bahwa sebagai berikut :
+    </p>
+
+
+    <div style="padding-left: 15rem; padding-right: 15rem">
+        <table class="table text-center custom-bordered">
+            <thead>
+            <tr>
+                <th class="w-50 text-center py-4">Deskripsi</th>
+                <th class="text-center py-4">Data</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="table text-center custom-bordered py-4">
+                <th class="py-4">Nomor PO</th>
+                <td class="py-4">{{ $baa->po_number }}</td>
+            </tr>
+            <tr class="table text-center custom-bordered">
+                <th class="py-4">Nama Pelanggan</th>
+                <td class="py-4">{{ $baa->fab->contact->company_name }}</td>
+            </tr>
+            <tr class="table text-center custom-bordered py-4">
+                <th class="py-4">Alamat</th>
+                <td class="py-4">{{ $baa->fab->contact->complete_address ?? '-' }}</td>
+            </tr>
+            <tr class="table text-center custom-bordered">
+                <th class="py-4">Lokasi Pekerjaan</th>
+                <td class="py-4">{{ $baa->work_location }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <p class="text-justify lh-lg ms-10 mb-4">
+        Pada tanggal tersebut di bawah Layanan Dedicated telah selesai dipasang dan di uji dengan hasil
+        baik, dan oleh karenanya terhitung sejak tanggal tersebut :
+    </p>
+
+    <ol class="text-justify lh-lg ms-10 mb-4">
+        <li>Layanan tersebut sudah dapat digunakan/dioperasikan, dan</li>
+        <li>Seluruh syarat dan ketentuan tersebut diatas berlaku dan mengikat Para Pihak</li>
+    </ol>
+
+    <p class="text-justify lh-lg ms-10 mb-7" style="padding-right:40px">
+        Demikian Berita Acara ini dibuat dan ditandatangani oleh Para Pihak dalam rangkap 2 (dua) asli yang
+        sama bunyinya, mempunyai kekuatan hukum yang sama dan mengikat Para Pihak pada tanggal
+        ditandatangani BAA.
+    </p>
+
+
+    <div class="d-flex align-items-center justify-content-around">
+        <div class="text-center">
+            <p class="m-1">MYFIBER</p>
+            <p class="mb-20">PT MAYATAMA SOLUSINDO</p>
+            <p class="text-decoration-underline">{{ $baa->fab->fabPic?->name }}</p>
+            <p>{{ $baa->fab->picName->roles[0]?->name ?? '' }}</p>
+        </div>
+
+        <div class="text-center">
+            <p class="m-1">PELANGGAN</p>
+            <p class="mb-20">{{ $baa->fab->contact->company_name }}</p>
+            <p class="text-decoration-underline">{{ $baa->fab->contact->pic_name }}</p>
+        </div>
+    </div>
+
+</main>
+
+</body>
+</html>

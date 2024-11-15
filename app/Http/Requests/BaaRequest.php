@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class BaaRequest extends FormRequest
@@ -21,12 +22,20 @@ class BaaRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array|string>
      */
-    public function rules(): array
+    public function rules(Request $request): array
     {
         return [
             'date' => ['required', 'date'],
-            'fab_id' => ['required', Rule::exists('fab', 'id')],
-            'po_number' => ['required', Rule::unique('baa', 'po_number')],
+            'fab_id' => [
+                'required',
+                Rule::exists('fab', 'id'),
+                Rule::unique('baa', 'fab_id')->ignore($request->route('baa'))
+            ],
+            'po_number' => [
+                'required',
+                Rule::unique('baa', 'po_number')
+                    ->ignore($request->route('baa'))
+            ],
             'work_location' => ['required'],
         ];
     }

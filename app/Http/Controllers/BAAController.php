@@ -8,7 +8,9 @@ use App\Models\Fab;
 use App\Service\BAAService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
+use Spatie\Browsershot\Browsershot;
 
 class BAAController extends Controller
 {
@@ -45,6 +47,11 @@ class BAAController extends Controller
         return response()->json($this->fab->getData($request));
     }
 
+    public function selectedFabData(BAA $baa): JsonResponse
+    {
+        return response()->json($this->fab->getSelectedData($baa->fab_id));
+    }
+
 
     public function create(): View
     {
@@ -58,21 +65,55 @@ class BAAController extends Controller
         return response()->json(['message' => 'data berhasil disimpan']);
     }
 
+
+    public function detail(BAA $baa): View
+    {
+        return view('pages.transaction.baa.detail', compact('baa'));
+    }
+
+    public function edit(BAA $baa): View
+    {
+        return view('pages.transaction.baa.edit', compact('baa'));
+    }
+
     public function update(BaaRequest $request, Baa $baa): JsonResponse
     {
         $this->baaService->update($request, $baa);
         return response()->json(['message' => 'data berhasil disimpan']);
     }
 
-
-    public function destroy(Request $request, BAA $baa): JsonResponse
+    public function confirm(BAA $baa): JsonResponse
     {
-        $implodeID = implode(',', $request->get('id'));
-        $explodeID = explode(',', $implodeID);
-        $baa->whereIn('id', $explodeID)->delete();
+        $baa->update([
+            'status' => 1
+        ]);
 
-        return response()->json([
-            'message' => 'data berhasil dihapus',
-        ], 200);
+        return response()->json(['message' => 'data berhasil dikonfirmasi']);
+    }
+
+
+    public function destroy(BAA $baa): JsonResponse
+    {
+        $baa->delete();
+        return response()->json(['message' => 'data berhasil dihapus']);
+    }
+
+    public function exportPDF(BAA $baa)
+    {
+        $view = view('pages.transaction.baa.export-pdf', compact('baa'))->render();
+        $pdf = Browsershot::html($view)
+            ->setChromePath('/usr/bin/chromium')
+            ->noSandbox()
+            ->waitUntilNetworkIdle()
+            ->ignoreHttpsErrors()
+            ->format('A4')
+            ->setEnvironmentOptions([
+                'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
+            ])->pdf();
+
+        return new Response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $baa->baa_number . '".pdf"',
+        ]);
     }
 }

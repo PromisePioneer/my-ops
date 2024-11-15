@@ -70,7 +70,8 @@
                                     File PO.
                                 </label>
                                 <div class="mb-5">
-                                    <input name="file_po" class="form-control form-control-solid" type="file"/>
+                                    <input name="file_po" class="form-control form-control-solid" type="file"
+                                           accept="application/pdf"/>
                                 </div>
                             </div>
                         </div>

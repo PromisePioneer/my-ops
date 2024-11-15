@@ -40,7 +40,7 @@
                                     </label>
                                     <div class="mb-5">
                                         <input type="text" class="form-control form-control-solid" name="po_number"
-                                               id="po_number" placeholder="No, PO">
+                                               id="po_number" placeholder="No. PO">
                                     </div>
                                 </div>
                             </div>

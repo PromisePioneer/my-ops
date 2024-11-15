@@ -15,14 +15,7 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-light-info me-3 btn-sm " data-kt-menu-trigger="click"
-                                data-kt-menu-placement="bottom-end">
-                            <span class="svg-icon svg-icon-2">
-                                <i class="bi bi-funnel-fill"></i>
-                            </span>
-                            Filter
-                        </button>
-                        <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" style="">
+                    <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" style="">
                             <div class="px-7 py-5">
                                 <div class="fs-5 text-dark fw-bolder">Filter</div>
                             </div>
