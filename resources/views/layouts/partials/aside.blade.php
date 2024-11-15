@@ -388,6 +388,11 @@
                             FAB
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'baa'"
+                            href="{{ url('/income-transactions/baa') }}">
+                            BAA
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
                             :active="request()->segment(2) === 'bast'"
                             href="{{ url('/income-transactions/bast') }}">
                             BAST

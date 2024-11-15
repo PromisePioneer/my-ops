@@ -60,6 +60,18 @@
                                     </div>
                                 </div>
                             </div>
+
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                        File PO.
+                                    </label>
+                                    <div class="mb-5">
+                                        <input name="file_po" class="form-control form-control-solid" type="file"/>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="separator my-10"></div>
                         <div class="table-responsive mb-20">

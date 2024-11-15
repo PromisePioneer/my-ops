@@ -29,6 +29,7 @@ class FabRequest extends FormRequest
             'fabServices.*.service_category_id' => ['required', Rule::exists('services_categories', 'id')],
             'fabServices.*.price' => ['required'],
             'fabServices.*.unit_type_id' => ['required'],
+            'file_po' => ['required', 'mimes:pdf']
         ];
     }
 
@@ -44,6 +45,8 @@ class FabRequest extends FormRequest
             'service_category_id.required' => 'Kategori Layanan harus diisi.',
             'service_category_id.exists' => 'Kategori Layanan tidak valid.',
             'subscription_period.required' => 'Jangka waktu berlangganan tidak boleh kosong',
+            'file_po.required' => 'File PO tidak boleh koosng.',
+            'file_po.mimes' => 'File PO harus bertipe PDF',
         ];
     }
 }

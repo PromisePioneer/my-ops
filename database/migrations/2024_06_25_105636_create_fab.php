@@ -20,6 +20,7 @@ class CreateFab extends Migration
             $table->string('date');
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('pic')->constrained('users');
+            $table->string('file_po');
             $table->boolean('status')->default(false);
             $table->timestamps();
         });

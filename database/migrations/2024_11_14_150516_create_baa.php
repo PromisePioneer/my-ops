@@ -12,9 +12,12 @@ return new class extends Migration {
     {
         Schema::create('baa', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('fab_id')->constrained('fab');
             $table->string('baa_number');
             $table->string('date');
             $table->string('po_number');
+            $table->string('work_location');
+            $table->boolean('status')->default(false);
             $table->timestamps();
         });
     }
@@ -24,6 +27,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('baa');
     }
 };

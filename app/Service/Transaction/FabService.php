@@ -7,6 +7,7 @@ use App\Models\Fab;
 use App\Models\FabHasSKL;
 use App\Models\FabServiceCategory;
 use App\Service\CompanyNameService;
+use App\Service\HelperService\HandleFileUploadService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
@@ -19,11 +20,12 @@ class FabService
 {
     private static int $perPage = 10;
     private CompanyNameService $companyNameService;
-
+    private HandleFileUploadService $handleFileUploadService;
 
     public function __construct()
     {
         $this->companyNameService = new CompanyNameService();
+        $this->handleFileUploadService = new HandleFileUploadService();
     }
 
     private static function generateFABNumber(Request $request): string
@@ -33,8 +35,8 @@ class FabService
             ->first();
 
         $companyCode = Contact::where('id', $request->contact_id)->first()->company_code;
-        $month = convertToRoman(Carbon::parse($request->due_date)->format('m'));
-        $year = Carbon::parse($request->due_date)->format('Y');
+        $month = convertToRoman(Carbon::parse($request->date)->format('m'));
+        $year = Carbon::parse($request->date)->format('Y');
 
 
         if ($fab) {
@@ -133,6 +135,7 @@ class FabService
             $data['fab_number'] = self::generateFABNumber($request);
             $data['offering_letter_id'] = $request->offering_letter_id;
             $data['contract_number'] = self::generateContractNumber($request);
+            $data['file_po'] = $this->handleFileUploadService->upload($request, 'documents/po', 'file_po');
             $fab = Fab::create($data);
             $this->fabHasServiceCategoriesStoreOrUpdate($request, $fab);
             $this->fabHasSKLStoreOrUpdate($request, $fab);
@@ -147,6 +150,7 @@ class FabService
             $data['created_by'] = $request->user()->id;
             $data['fab_number'] = self::generateFABNumber($request);
             $data['offering_letter_id'] = $request->offering_letter_id;
+            $data['file_po'] = $this->handleFileUploadService->upload($request, 'documents/po', 'file_po', $fab->file_po);
             $fab->update($data);
             FabServiceCategory::whereIn('fab_id', [$fab->id])->delete();
             FabHasSKL::whereIn('fab_id', [$fab->id])->delete();

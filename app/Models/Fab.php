@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\Request;
 
 class Fab extends Model
 {
@@ -18,7 +19,8 @@ class Fab extends Model
         'pic',
         'created_by',
         'contact_id',
-        'created_by'
+        'created_by',
+        'file_po'
     ];
 
     public function contact(): BelongsTo
@@ -34,6 +36,34 @@ class Fab extends Model
     public function fabPic(): BelongsTo
     {
         return $this->belongsTo(User::class, 'pic');
+    }
+
+
+    public function getData(Request $request): array
+    {
+        $search = $request->input('search');
+        $query = self::with('contact')->orderby('fab_number', 'asc')->when($search, function ($query) use ($search) {
+            $query->where('fab_number', 'like', '%' . $search . '%')
+                ->where('fab_number', 'like', '%' . $search . '%');
+        });
+        $contact = $query->get();
+
+        return $contact->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->fab_number . ' - ' . $item->contact->company_name,
+            ];
+        })->toArray();
+    }
+
+    public function getSelectedData(int $fabId): array
+    {
+        $fabId = self::where('id', $fabId)->first();
+
+        return [
+            'id' => $fabId->id,
+            'name' => $fabId->fab_number,
+        ];
     }
 
 

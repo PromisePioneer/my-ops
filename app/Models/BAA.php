@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class BAA extends Model
+{
+    protected $table = 'baa';
+    protected $fillable = [
+        'fab_id',
+        'baa_number',
+        'date',
+        'po_number',
+        'work_location',
+        'status'
+    ];
+
+
+    public function fab(): BelongsTo
+    {
+        return $this->belongsTo(Fab::class, 'fab_id');
+    }
+
+}

@@ -15,8 +15,8 @@ use App\Http\Controllers\Accounting\Transaction\FabController;
 use App\Http\Controllers\Accounting\Transaction\InitialBalanceController;
 use App\Http\Controllers\Accounting\Transaction\InvoiceController;
 use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
+use App\Http\Controllers\BAAController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\HRIS\Attendances\AttendancesController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\FpDevicesController;
 use App\Http\Controllers\HRIS\Attendances\IclockController;
@@ -853,6 +853,18 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/get-unit-type/data', [FabController::class, 'getUnitType']);
             Route::get('/contract-pdf/{fab}', [FabController::class, 'contractPDF']);
         });
+
+        Route::prefix('baa')->group(function () {
+            Route::get('/', [BAAController::class, 'index']);
+            Route::get('/data', [BAAController::class, 'data']);
+            Route::get('/search', [BAAController::class, 'search']);
+            Route::get('/create', [BAAController::class, 'create']);
+            Route::get('/fab/data', [BAAController::class, 'getFabData']);
+            Route::post('/destroy', [BAAController::class, 'destroy']);
+            Route::post('/', [BAAController::class, 'store']);
+        });
+
+
         Route::prefix('bast')->group(function () {
             Route::get('/', [BastController::class, 'index']);
             Route::get('/data', [BastController::class, 'data']);
