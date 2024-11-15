@@ -16,7 +16,7 @@ class CreateBast extends Migration
         Schema::create('bast', static function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('branch_id')->nullable();
-            $table->unsignedBigInteger('fab_id')->nullable();
+            $table->unsignedBigInteger('bast_id')->nullable();
             $table->string('bast_number');
             $table->unsignedBigInteger('contact_id');
             $table->date('date');

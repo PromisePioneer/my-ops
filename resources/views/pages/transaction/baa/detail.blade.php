@@ -7,7 +7,7 @@
                 <img class="w-100 img-fluid" src="{{ asset('assets/media/logos/kop-header.png') }}" alt="">
             </div>
             <div class="card-body px-20">
-                <div class="text-center mb-19">
+                <div class="text-center mb-20">
                     <h2 class="text-uppercase text-decoration-underline">BERITA ACARA AKTIVASI</h2>
                     <p class="fs-5">Nomor : {{ $baa->baa_number }}</p>
                 </div>
@@ -163,10 +163,6 @@
                     <a href="{{ url('income-transactions/baa/export-pdf/'. $baa->id) }}"
                        class="btn btn-light-info btn-sm me-3" target="_blank">
                         Print BAA
-                    </a>
-                    <a href="{{ url('income-transactions/baa/contract-pdf/'. $baa->id) }}"
-                       class="btn btn-light-primary btn-sm" target="_blank">
-                        Print Kontrak
                     </a>
                 </div>
             @endif

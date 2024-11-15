@@ -161,6 +161,7 @@ class FabService
 
     private function fabHasServiceCategoriesStoreOrUpdate($request, $fab): void
     {
+        if ($request['fabHasSkl'])
         foreach ($request['fabServices'] as $key => $value) {
             $value['fab_id'] = $fab->id;
             FabServiceCategory::create($value);

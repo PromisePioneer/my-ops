@@ -216,7 +216,7 @@
                         berlangganan
                     </li>
 
-                    @if($fabHasSKL !== null)
+                    @if(!empty($fabHasSKL))
                         @foreach($fabHasSKL as $skl)
                             <li>
                                 <i class="fa-li fa fa-check" style="color: #00b0f0"></i>
@@ -288,9 +288,9 @@
                         </div>
                     </div>
                 @endif
-                <div>
+                <div class="px-3">
                     @if($fab->status === 0)
-                        <button type="button" class="btn btn-primary w-100" @click="confirm()"
+                        <button type="button" class="btn btn-primary" @click="confirm()"
                                 x-text="buttonLoading ? 'Loading' : 'Konfirmasi FAB'">
                             Konfirmasi
                         </button>
@@ -303,6 +303,10 @@
                     <a href="{{ url('income-transactions/fab/export-pdf/'. $fab->id) }}"
                        class="btn btn-light-info me-3" target="_blank">
                         Print FAB
+                    </a>
+                    <a href="{{ url('income-transactions/fab/export-pdf/'. $fab->id) }}"
+                       class="btn btn-light-danger me-3" target="_blank">
+                        Print Kontrak
                     </a>
                     <a href="{{ url('income-transactions/fab/contract-pdf/'. $fab->id) }}"
                        class="btn btn-light-primary" target="_blank">
