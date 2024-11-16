@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\BaaRequest;
+use App\Http\Requests\SPKRequest;
 use App\Models\BAA;
 use App\Models\Fab;
 use App\Models\FabServiceCategory;
+use App\Models\SPK;
+use App\Models\User;
 use App\Service\BAAService;
-use App\Service\Transaction\FabService;
+use App\Service\SPKService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -16,15 +19,17 @@ use Spatie\Browsershot\Browsershot;
 
 class BAAController extends Controller
 {
-
-
     private BAAService $baaService;
     private Fab $fab;
+    private SPKService $spkService;
+    private User $user;
 
     public function __construct()
     {
         $this->baaService = new BAAService();
         $this->fab = new Fab();
+        $this->spkService = new SpkService();
+        $this->user = new User();
     }
 
     public function index(): View
@@ -128,5 +133,25 @@ class BAAController extends Controller
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $baa->baa_number . '".pdf"',
         ]);
+    }
+
+
+    public function getUserData(Request $request): JsonResponse
+    {
+        return response()->json($this->user->getUser($request));
+    }
+
+    public function saveSpk(SPKRequest $request, BAA $baa): JsonResponse
+    {
+        SPK::updateOrCreate([
+            'baa_id' => $baa->id,
+        ], [
+            'name' => $request->name,
+            'date' => $request->date,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date
+        ]);
+
+        return response()->json(['message' => 'data berhasil disimpan']);
     }
 }

@@ -10,6 +10,7 @@
     <div class="d-flex flex-column flex-lg-row" x-data="generateFAB">
         @include('pages.general-master-data.contact.modal.create')
         @include('pages.general-master-data.skl.modal.create')
+        @include('pages.general-master-data.unit-types.modal.create')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
                 <form id="form" @submit.prevent="generateFAB()">
@@ -231,6 +232,8 @@
         function generateFAB() {
             return {
                 form: document.getElementById('form'),
+                unitTypeForm: document.getElementById('unit-types-store'),
+                unitTypeModal: new bootstrap.Modal(document.getElementById('modal-unit-type-create')),
                 contactForm: document.getElementById('contactFormCreate'),
                 contactModal: new bootstrap.Modal(document.getElementById('contact-create')),
                 sklModal: new bootstrap.Modal(document.getElementById('modal-skl-create')),
@@ -457,6 +460,12 @@
                     $(`.unit-type-select2-${index}`).select2({
                         allowClear: true,
                         placeholder: "Pilih Satuan",
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-unit-type-create"">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
                         ajax: {
                             url: '/income-transactions/fab/get-unit-type/data',
                             dataType: "json",
@@ -470,6 +479,22 @@
                         response.unit_type_id = data.id
                         console.log(response.unit_type_id)
                     });
+                },
+
+                async saveUnitTypes() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/general-master-data/unit-types/', new FormData(this.unitTypeForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.unitTypeForm.reset();
+                        this.unitTypeModal.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
                 },
                 async getServicesCategories(response, index) {
                     $(`.service-categories-select2-${index}`).select2({

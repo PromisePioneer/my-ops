@@ -2,6 +2,7 @@
 @section('page-title', 'Detail Berita Acara Aktivasi')
 @section('content')
     <div x-data="BaaDetail()" class="align-items-center">
+        @include('pages.transaction.baa.spk.create')
         <div class="card border-top-0 mb-20 w-1000px">
             <div class="card-header p-0 border-0">
                 <img class="w-100 img-fluid" src="{{ asset('assets/media/logos/kop-header.png') }}" alt="">
@@ -168,6 +169,13 @@
                        class="btn btn-light-info btn-sm me-3" target="_blank">
                         Print BAA
                     </a>
+
+                    <button data-bs-toggle="modal"
+                            data-bs-target="#spk-create"
+                            class="btn btn-light-info btn-sm me-3"
+                    >
+                        Buat SPK
+                    </button>
                 </div>
             @endif
         </div>
@@ -177,11 +185,12 @@
 
 @push('script')
     <script>
+        $('.date').flatpickr();
         function BaaDetail() {
             return {
                 buttonLoading: false,
                 async init() {
-
+                    await this.getUserData();
                 },
                 async confirm(id) {
                     showConfirmModal("Anda yakin?", "FAB yang sudah di konfirmasi tidak akan dapat dihapus ataupun diubah.", "Konfirmasi", async () => {
@@ -209,6 +218,23 @@
                         }
                     });
                 },
+                async getUserData() {
+                    $(".users-select2").select2({
+                        placeholder: "Pilih Karyawan",
+                        allowClear: true,
+                        ajax: {
+                            url: '/income-transactions/baa/users/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async saveSPK() {
+
+                }
             }
         }
     </script>

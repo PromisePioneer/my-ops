@@ -868,7 +868,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/confirm/{baa}', [BAAController::class, 'confirm']);
             Route::get('/edit/{baa}', [BAAController::class, 'edit']);
             Route::get('/export-pdf/{baa}', [BAAController::class, 'exportPDF']);
+            Route::get('/spk/{baa}', [BAAController::class, 'spk']);
             Route::delete('destroy/{baa}', [BAAController::class, 'destroy']);
+            Route::post('save-spk/{baa}', [BAAController::class, 'saveSpk']);
+            Route::get('users/data', [BAAController::class, 'getUserData']);
         });
 
 
