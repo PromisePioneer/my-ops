@@ -20,6 +20,7 @@ return new class extends Migration {
             $table->date('end_date');
             $table->foreignId('from')->constrained('users');
             $table->foreignId('to')->constrained('users');
+            $table->boolean('status')->default(false);
             $table->timestamps();
         });
     }

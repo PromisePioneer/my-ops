@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class BAA extends Model
 {
@@ -21,6 +22,12 @@ class BAA extends Model
     public function fab(): BelongsTo
     {
         return $this->belongsTo(Fab::class, 'fab_id');
+    }
+
+
+    public function spk(): HasOne
+    {
+        return $this->hasOne(SPK::class, 'baa_id');
     }
 
 }

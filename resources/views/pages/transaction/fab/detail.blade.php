@@ -302,15 +302,11 @@
             @if($fab->status === 1)
                 <div class="d-flex align-items-center justify-content-between p-3">
                     <a href="{{ url('income-transactions/fab/export-pdf/'. $fab->id) }}"
-                       class="btn btn-light-info me-3" target="_blank">
+                       class="btn btn-light-info me-3 btn-sm" target="_blank">
                         Print FAB
                     </a>
-                    <a href="{{ url('income-transactions/fab/export-pdf/'. $fab->id) }}"
-                       class="btn btn-light-danger me-3" target="_blank">
-                        Print Kontrak
-                    </a>
                     <a href="{{ url('income-transactions/fab/contract-pdf/'. $fab->id) }}"
-                       class="btn btn-light-primary" target="_blank">
+                       class="btn btn-light-primary btn-sm" target="_blank">
                         Print Kontrak
                     </a>
                 </div>

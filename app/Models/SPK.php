@@ -15,10 +15,22 @@ class SPK extends Model
         'date',
         'start_date',
         'end_date',
+        'from',
+        'to'
     ];
 
     public function baa(): BelongsTo
     {
         return $this->belongsTo(BAA::class, 'baa_id');
+    }
+
+    public function spkFrom(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'from');
+    }
+
+    public function spkTo(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'to');
     }
 }

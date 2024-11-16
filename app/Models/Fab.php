@@ -42,10 +42,13 @@ class Fab extends Model
     public function getData(Request $request): array
     {
         $search = $request->input('search');
-        $query = self::with('contact')->orderby('fab_number', 'asc')->when($search, function ($query) use ($search) {
-            $query->where('fab_number', 'like', '%' . $search . '%')
-                ->where('fab_number', 'like', '%' . $search . '%');
-        });
+        $query = self::with('contact')
+            ->where('status', 1)
+            ->orderby('fab_number', 'asc')
+            ->when($search, function ($query) use ($search) {
+                $query->where('fab_number', 'like', '%' . $search . '%')
+                    ->where('fab_number', 'like', '%' . $search . '%');
+            });
         $contact = $query->get();
 
         return $contact->map(function ($item) {

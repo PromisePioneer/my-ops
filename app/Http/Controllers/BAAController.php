@@ -146,12 +146,53 @@ class BAAController extends Controller
         SPK::updateOrCreate([
             'baa_id' => $baa->id,
         ], [
+            'spk_number' => $this->spkService->generateSpkNumber($baa->fab_id),
             'name' => $request->name,
             'date' => $request->date,
             'start_date' => $request->start_date,
+            'from' => $baa->fab->pic,
+            'to' => $request->to,
             'end_date' => $request->end_date
         ]);
 
         return response()->json(['message' => 'data berhasil disimpan']);
+    }
+
+
+    public function getSpk(BAA $baa): JsonResponse
+    {
+        return response()->json(SPK::where('baa_id', $baa->id)->first());
+    }
+
+    public function getSelectedFrom(User $user): JsonResponse
+    {
+        return response()->json($this->user->getSelectedData($user->id));
+    }
+
+
+    public function getSelectedTo(User $user): JsonResponse
+    {
+        return response()->json($this->user->getSelectedData($user->id));
+    }
+
+    public function exportSpkToPDF(BAA $baa): Response
+    {
+
+        $spk = SPK::where('baa_id', $baa->id)->first();
+        $view = view('pages.transaction.baa.spk.export-pdf', compact('baa', 'spk'))->render();
+        $pdf = Browsershot::html($view)
+            ->setChromePath('/usr/bin/chromium')
+            ->noSandbox()
+            ->waitUntilNetworkIdle()
+            ->ignoreHttpsErrors()
+            ->format('A4')
+            ->setEnvironmentOptions([
+                'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
+            ])->pdf();
+
+        return new Response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $spk->spk_number . '".pdf"',
+        ]);
     }
 }

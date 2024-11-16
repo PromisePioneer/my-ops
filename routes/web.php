@@ -871,7 +871,11 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/spk/{baa}', [BAAController::class, 'spk']);
             Route::delete('destroy/{baa}', [BAAController::class, 'destroy']);
             Route::post('save-spk/{baa}', [BAAController::class, 'saveSpk']);
+            Route::get('get-spk/{baa}', [BAAController::class, 'getSpk']);
+            Route::get('get-selected-from/{user}', [BAAController::class, 'getSelectedFrom']);
+            Route::get('get-selected-to/{user}', [BAAController::class, 'getSelectedTo']);
             Route::get('users/data', [BAAController::class, 'getUserData']);
+            Route::get('spk/export-pdf/{baa}', [BAAController::class, 'exportSpkToPDF']);
         });
 
 

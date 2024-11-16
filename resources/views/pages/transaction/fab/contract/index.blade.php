@@ -583,7 +583,7 @@
         <h2>&</h2>
         <h2>{{ $fab->contact->company_name }}</h2>
     </div>
-    <div class="separator border border-1 border-black text-center mx-6"></div>
+    <div class="separator border border-1 border-black text-center mx-6 mb-2"></div>
     <div class="text-center">
         <h2>No : {{ $fab->contract_number }}</h2>
     </div>

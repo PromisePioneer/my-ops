@@ -140,7 +140,7 @@
 
             <div class="separator"></div>
 
-            <div class="d-flex justify-content-between align-items-center px-1 ">
+            <div class="d-flex justify-content-between align-items-center px-1">
                 @if($baa->status === 0)
                     <div class="p-5 row">
                         <div class="col">
@@ -170,12 +170,23 @@
                         Print BAA
                     </a>
 
-                    <button data-bs-toggle="modal"
-                            data-bs-target="#spk-create"
-                            class="btn btn-light-info btn-sm me-3"
-                    >
-                        Buat SPK
-                    </button>
+                    <div class="d-flex">
+                        <button data-bs-toggle="modal"
+                                data-bs-target="#spk-create"
+                                class="btn btn-light-info btn-sm me-3" @click="getSpk()"
+                        >
+                            Buat SPK / Ubah SPK
+                        </button>
+
+                        @if(!empty($baa->spk))
+
+                            <a href="{{ url('income-transactions/baa/spk/export-pdf', $baa->id) }}"
+                               class="btn btn-light-danger btn-sm me-3" @click="getSpk()" target="__blank"
+                            >
+                                Print SPK
+                            </a>
+                        @endif
+                    </div>
                 </div>
             @endif
         </div>
@@ -186,9 +197,13 @@
 @push('script')
     <script>
         $('.date').flatpickr();
+
         function BaaDetail() {
             return {
+                formSpk: document.getElementById('form-spk-create'),
+                id: "{{ $baa->id }}",
                 buttonLoading: false,
+                spkVal: null,
                 async init() {
                     await this.getUserData();
                 },
@@ -218,6 +233,40 @@
                         }
                     });
                 },
+                async getSpk() {
+                    const resp = await axios.get(`/income-transactions/baa/get-spk/${this.id}`);
+                    this.spkVal = resp.data;
+
+                    await this.selectedFrom();
+                    await this.selectedTo();
+                },
+
+                async selectedFrom() {
+                    const selectedFrom = $('#selectedFrom');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/income-transactions/baa/get-selected-from/${this.spkVal.from}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedFrom.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
+                async selectedTo() {
+                    const selectedTo = $('#selectedTo');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/income-transactions/baa/get-selected-to/${this.spkVal.to}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedTo.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
                 async getUserData() {
                     $(".users-select2").select2({
                         placeholder: "Pilih Karyawan",
@@ -233,7 +282,17 @@
                     });
                 },
                 async saveSPK() {
-
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/income-transactions/baa/save-spk/${this.id}`, new FormData(this.formSpk))
+                        await showAlert('success', 'Data sukses disimpan')
+                            .then(() => window.location.reload());
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
                 }
             }
         }
