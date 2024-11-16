@@ -628,6 +628,11 @@
                 <td>{{ $fab->contact->pic_name }}</td>
             </tr>
             <tr>
+                <td class="text-start">Jabatan</td>
+                <td>:</td>
+                <td>{{ $fab->contact->pic_position }}</td>
+            </tr>
+            <tr>
                 <td class="text-start">Alamat</td>
                 <td>:</td>
                 <td>{{ $fab->contact?->company_address ?? '-' }}</td>
@@ -636,7 +641,8 @@
     </div>
 
 
-    <p>Bertindak untuk dan atas nama {{ $fab->contact->company_name }} yang selanjutnya disebut <b>PELANGGAN</b>.</p>
+    <p>Bertindak untuk dan atas nama <b>{{ $fab->contact->company_name }}</b> yang selanjutnya disebut <b>PELANGGAN</b>.
+    </p>
     <br>
     <p>
         <b> PT. MAYATAMA SOLUSINDO</b>,
@@ -678,7 +684,7 @@
         </li>
         <li>
             Terminal milik <b>PELANGGAN</b> dan perangkat antarmuka yang dihubungkan dengan perangkat/saluran
-            <b>MYFIBER</b>harus mendapat persetujuan terlebih dahulu dari <b>MYFIBER</b>.
+            <b>MYFIBER</b> harus mendapat persetujuan terlebih dahulu dari <b>MYFIBER</b>.
         </li>
         <li>
             Penyambungan layanan <b>MYFIBER</b> akan dilaksanakan sesuai permintaan <b>PELANGGAN</b> sebagaimana
@@ -706,8 +712,10 @@
         <h3>JANGKA WAKTU BERLANGGANAN</h3>
     </div>
 
+
+    {{--  AKAN DIREVISI NANTI  --}}
     <p class="text-justify mb-2">
-        Kontrak ini berlaku terhitung sejak tanggal 02 Januari 2024 sampai 01 Januari 2025 untuk sewa cloud server (CPU
+        Kontrak ini berlaku terhitung sejak tanggal {{ formatDate($fab->date) }} sampai - untuk sewa cloud server (CPU
         4 Ghz, RAM 16GB, SSD1500GB, IP, NIC, OS, Linux,Firewall).Besarnya tarif pertahun adalah Rp. 6.000.000,- (belum
         termasuk PPN 11%).
     </p>

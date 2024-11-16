@@ -92,7 +92,12 @@
 
 
         .fs-9 {
-            font-size: 1rem !important
+            font-size: .75rem !important
+        }
+
+
+        .fs-10 {
+            font-size: .5rem !important
         }
 
         .col-md-8 {
@@ -253,6 +258,20 @@
         .mb-15 {
             margin-bottom: 2.75rem !important
         }
+
+        .py-3 {
+            padding-top: .75rem !important;
+            padding-bottom: .75rem !important
+        }
+
+        .py-2 {
+            padding-top: .5rem !important;
+            padding-bottom: .5rem !important
+        }
+
+        .d-none {
+            display: none;
+        }
     </style>
 </head>
 
@@ -267,17 +286,17 @@
 <div class="wrapper">
     <div class="row">
         <div class="col-md-3 ms-4">
-            <p class="mb-4 fw-bolder text-hover-primary text-wrap fs-6">
+            <p class="mb-4 fw-bolder text-hover-primary text-wrap fs-9">
                 Yth, Bapak/Ibu {{ $offeringLetter->contact->pic_name }},<br>
                 <span>{{ $offeringLetterCompanyName }}</span>
             </p>
 
-            <p class="mb-4 text-hover-primary text-wrap fs-6">
-                    {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
+            <p class="mb-4 text-hover-primary text-wrap fs-9">
+                {{ $offeringLetter->contact?->complete_address ?? 'Ditempat' }}
             </p>
         </div>
-        <div class="col-md-8 ms-10">
-            <p class="fs-6 d-flex align-items-center" style="line-height: 2.0">
+        <div class="col-md-8 ms-10 fs-9">
+            <p class=" d-flex align-items-center" style="line-height: 2.0">
                 Dengan hormat,
                 <br>
                 Kami dari PT. Mayatama
@@ -289,36 +308,36 @@
             </p>
         </div>
 
-        <div class="row">
+        <div class="row fs-9 ">
             <div class="col-md-3 ms-4">
                 <div class="separator mb-1"
                      style="border: 1px solid #7dbbf5;"></div>
 
                 <div class="mb-1">
-                    <div class="fs-6 d-flex align-items-center mb-1">
+                    <div class="d-flex align-items-center mb-1 fs-9">
                         {{ \App\Helper\formatDate($offeringLetter->date) }}
                     </div>
                 </div>
 
                 <div class="separator mb-6" style="border: 1px solid #7dbbf5;"></div>
 
-                <div class="mb-6">
-                    <div class="fw-bold fs-7">Nomor:</div>
+                <div class="mb-6 fs-9">
+                    <div class="fw-bold fs-9">Nomor:</div>
                     <div class="fs-9">
                         {{ $offeringLetter->offering_number }}
                     </div>
                 </div>
-                <div class="mb-6">
-                    <div class="fw-bold fs-7">Perihal:</div>
-                    <div class="fs-6">{{ $offeringLetter->regarding }}</div>
+                <div class="mb-6 fs-9">
+                    <div class="fw-bold">Perihal:</div>
+                    <div>{{ $offeringLetter->regarding }}</div>
                 </div>
             </div>
-            <div class="col-md-8 ms-10">
+            <div class="col-md-8 ms-10 fs-9">
                 <table class="table">
                     <thead>
-                    <tr class="fs-6 fw-bold custom-bordered"
+                    <tr class="fw-bold custom-bordered"
                         style="background-color: #7dbbf5; border-top: 1px solid black; border-bottom: 1px solid black">
-                        <th class="text-center py-1"
+                        <th class="text-center py-2"
                             style="background-color: #7dbbf5; border-top: 1px solid black; border-bottom: 1px solid black">
                             No
                         </th>
@@ -328,39 +347,39 @@
                     </tr>
                     </thead>
                     <tbody class="border-bottom border-black">
-                    @foreach($offeringLetterServices as $service)
-                        <tr class="fs-5 text-end border-bottom border-black">
-                            <td class="text-center">{{ $loop->iteration }}</td>
-                            <td class="text-center">
-                                {{ $service->serviceCategory->name }}
+                    @foreach($offeringLetterProducts as $product)
+                        <tr class="text-end border-bottom border-black">
+                            <td class="text-center py-2">{{ $loop->iteration }}</td>
+                            <td class="text-center py-2">
+                                {{ $product->serviceCategory->name }}
                             </td>
-                            <td class="text-center"> {{ $service->capacity }} {{ $service->unitType->name }}</td>
-                            <td class="text-center">
-                                {{ number_format($service->price, false, '.', '.') }}
+                            <td class="text-center py-2"> {{ $product->capacity }} {{ $product->unitType->name }}</td>
+                            <td class="text-center py-2">
+                                {{ number_format($product->price, false, '.', '.') }}
                             </td>
                         </tr>
                     @endforeach
                     </tbody>
                     <tfoot class="border-bottom border-black">
                     <tr class="border-bottom border-black p-2">
-                        <td colspan="3" class="text-end fw-bold fs-6 text-gray-800">
+                        <td colspan="3" class="text-end text-gray-800 py-2">
                             PPN
                         </td>
-                        <td class="text-center fw-bold fs-6 text-gray-800">  {{ number_format($totalPPN, false,'.', '.') }}</td>
+                        <td class="text-center fw-bold text-gray-800 py-2">  {{ number_format($totalPPN, false,'.', '.') }}</td>
                     </tr>
                     <tr class="p-1 border-bottom border-black">
-                        <td colspan="3" class="text-end fw-bold fs-6 text-gray-800">
+                        <td colspan="3" class="text-end fw-bold text-gray-800 py-2">
                             Total
                         </td>
-                        <td class="text-center fw-bold fs-6 text-gray-800">  {{ number_format($total, false,'.', '.') }}</td>
+                        <td class="text-center fw-bold text-gray-800 py-2">{{ number_format($total, false,'.', '.') }}</td>
                     </tr>
                     </tfoot>
                 </table>
 
-                <p class="fs-6 d-flex align-items-center mb-3 mt-10">
+                <p class="fs-6 d-flex align-items-center mb-3 mt-10 fs-9">
                     Adapun syarat dan ketentuan layanan yang kami berikan antara lain :
                 </p>
-                <ul class="fa-ul px-3 mb-10 fs-6 mb-15">
+                <ul class="fa-ul px-3 mb-10 fs-6 mb-15 fs-9">
                     <li><i class="fa-li fa fa-check" style="color: #00b0f0"></i> SLA 99,5%</li>
                     <li><i class="fa-li fa fa-check" style="color: #00b0f0"></i> Support Pelayanan 7 x
                         24 jam, online maupun onsite.
@@ -383,13 +402,13 @@
                 </ul>
 
                 <div class="ms-4 mb-4 flex-column">
-                    <div class="fw-bold fs-6 mb-20">
+                    <div class="fw-bold fs-9 mb-20">
                         PT. Mayatama Solusindo
                     </div>
-                    <div class="fs-6 fw-bold">
+                    <div class="fs-9 fw-bold">
                         {{ $offeringLetter->user->roles[0]?->name ?? '' }}
                     </div>
-                    <div class="fs-6 fw-bold">
+                    <div class="fs-9 fw-bold">
                         {{ $offeringLetter->user->name }}
                     </div>
                 </div>
@@ -398,8 +417,8 @@
         <div class="row">
             <div class="col-md-8"></div>
         </div>
-        </div>
     </div>
+</div>
 
 
 <footer>

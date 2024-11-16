@@ -8,16 +8,16 @@
             </div>
             <div class="card-body px-20">
                 <div class="text-center mb-20">
-                    <h2 class="text-uppercase text-decoration-underline">BERITA ACARA AKTIVASI</h2>
-                    <p class="fs-5">Nomor : {{ $baa->baa_number }}</p>
+                    <h2 class="text-uppercase text-decoration-underline fs-1">BERITA ACARA AKTIVASI</h2>
+                    <p class="fs-2">Nomor : {{ $baa->baa_number }}</p>
                 </div>
 
 
-                <p class="text-justify ms-10 mb-4">
+                <p class="text-justify ms-10 mb-4 fs-5">
                     Pada hari ini Kamis, 01 Oktober 2024 yang bertanda tangan dibawah ini:
                 </p>
 
-                <div style="padding-left: 5rem; padding-right: 15rem">
+                <div style="padding-left: 5rem; padding-right: 15rem" class="fs-5">
                     <table class="table">
                         <tr>
                             <td class="text-start w-3px">Nama</td>
@@ -37,12 +37,12 @@
                     </table>
                 </div>
 
-                <p class="text-justify ms-10">
+                <p class="text-justify ms-10 fs-5">
                     Selanjutnya disebut "<b>MYFIBER</b>"
                 </p>
 
 
-                <div style="padding-left: 5rem; padding-right: 15rem">
+                <div style="padding-left: 5rem; padding-right: 15rem" class="fs-5">
                     <table class="table mb-4">
                         <tr>
                             <td class="w-3px text-start">Nama</td>
@@ -57,18 +57,18 @@
                     </table>
                 </div>
 
-                <p class="text-justify ms-10">
+                <p class="text-justify ms-10 fs-5">
                     Selanjutnya disebut "<b>Pelanggan</b>"
                 </p>
 
 
-                <p class="text-justify ms-10">
+                <p class="text-justify ms-10 fs-5">
                     Pelanggan dan MYFIBER secara bersama-sama selanjutnya disebut juga “<b>Para Pihak</b>” dengan ini
                     menyatakan bahwa sebagai berikut :
                 </p>
 
 
-                <div style="padding-left: 15rem; padding-right: 15rem">
+                <div style="padding-left: 15rem; padding-right: 15rem" class="fs-5">
                     <table class="table table-bordered border-black border-3">
                         <thead>
                         <tr>
@@ -86,6 +86,10 @@
                             <td>{{ $baa->fab->contact->company_name }}</td>
                         </tr>
                         <tr>
+                            <th>Layanan</th>
+                            <td>{{ $serviceCategory }}</td>
+                        </tr>
+                        <tr>
                             <th>Alamat</th>
                             <td>{{ $baa->fab->contact->complete_address ?? '-' }}</td>
                         </tr>
@@ -98,35 +102,35 @@
                 </div>
 
 
-                <p class="text-justify lh-lg ms-10 mb-4">
+                <p class="text-justify lh-lg ms-10 mb-4 fs-5">
                     Pada tanggal tersebut di bawah Layanan Dedicated telah selesai dipasang dan di uji dengan hasil
                     baik, dan oleh karenanya terhitung sejak tanggal tersebut :
                 </p>
 
-                <ol class="text-justify lh-lg ms-10 mb-4">
+                <ol class="text-justify lh-lg ms-10 mb-4 fs-5">
                     <li>Layanan tersebut sudah dapat digunakan/dioperasikan, dan</li>
                     <li>Seluruh syarat dan ketentuan tersebut diatas berlaku dan mengikat Para Pihak</li>
                 </ol>
 
-                <p class="text-justify lh-lg ms-10 mb-20">
+                <p class="text-justify lh-lg ms-10 mb-20 fs-5">
                     Demikian Berita Acara ini dibuat dan ditandatangani oleh Para Pihak dalam rangkap 2 (dua) asli yang
                     sama bunyinya, mempunyai kekuatan hukum yang sama dan mengikat Para Pihak pada tanggal
                     ditandatangani BAA.
                 </p>
 
 
-                <div class="d-flex align-items-center justify-content-around">
+                <div class="d-flex align-items-center justify-content-around fs-5">
                     <div class="text-center">
                         <p class="m-1">MYFIBER</p>
-                        <p class="mb-20">PT MAYATAMA SOLUSINDO</p>
-                        <p class="text-decoration-underline">{{ $baa->fab->fabPic?->name }}</p>
-                        <p>{{ $baa->fab->picName->roles[0]?->name ?? '' }}</p>
+                        <p class="mb-20"><b>PT MAYATAMA SOLUSINDO</b></p>
+                        <p class="text-decoration-underline"><b>{{ $baa->fab->fabPic?->name }}</b></p>
+                        <p><b>{{ $baa->fab->picName->roles[0]?->name ?? '' }}</b></p>
                     </div>
 
-                    <div class="text-center">
+                    <div class="text-center fs-5">
                         <p class="m-1">PELANGGAN</p>
-                        <p class="mb-20">{{ $baa->fab->contact->company_name }}</p>
-                        <p class="text-decoration-underline">{{ $baa->fab->contact->pic_name }}</p>
+                        <p class="mb-20"><b>{{ $baa->fab->contact->company_name }}</b></p>
+                        <p class="text-decoration-underline"><b>{{ $baa->fab->contact->pic_name }}</b></p>
 
                     </div>
                 </div>
@@ -135,7 +139,7 @@
 
             <div class="separator"></div>
 
-            <div class="d-flex justify-content-between align-items-center px-1">
+            <div class="d-flex justify-content-between align-items-center px-1 ">
                 @if($baa->status === 0)
                     <div class="p-5 row">
                         <div class="col">

@@ -75,7 +75,7 @@
                                            x-text="fab.code"></a>
                                     </td>
                                     <td x-text="fab.date"></td>
-                                    <td x-text="`${fab.contact}`"></td>
+                                    <td x-text="fab.contact"></td>
                                     <td x-text="fab.created_by"></td>
                                 </tr>
                             </template>

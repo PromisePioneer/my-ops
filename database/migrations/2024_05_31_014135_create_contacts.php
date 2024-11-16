@@ -14,6 +14,7 @@ class CreateContacts extends Migration
         Schema::create('contacts', static function (Blueprint $table) {
             $table->id();
             $table->string('pic_name');
+            $table->string('pic_position');
             $table->string('company_name')->unique();
             $table->string('company_code')->unique();
             $table->string('email')->nullable()->unique();

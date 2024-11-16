@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\BaaRequest;
 use App\Models\BAA;
 use App\Models\Fab;
+use App\Models\FabServiceCategory;
 use App\Service\BAAService;
+use App\Service\Transaction\FabService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -68,7 +70,18 @@ class BAAController extends Controller
 
     public function detail(BAA $baa): View
     {
-        return view('pages.transaction.baa.detail', compact('baa'));
+        $getFabServiceCategory = FabServiceCategory::with('service')->where('fab_id', $baa->fab_id)->get();
+
+
+        $fab = [];
+        foreach ($getFabServiceCategory as $fabServiceCategory) {
+            $fab [] = $fabServiceCategory->service->name;
+        }
+
+
+        $serviceCategory = implode(',', $fab);
+
+        return view('pages.transaction.baa.detail', compact('baa', 'serviceCategory'));
     }
 
     public function edit(BAA $baa): View
@@ -98,7 +111,7 @@ class BAAController extends Controller
         return response()->json(['message' => 'data berhasil dihapus']);
     }
 
-    public function exportPDF(BAA $baa)
+    public function exportPDF(BAA $baa): Response
     {
         $view = view('pages.transaction.baa.export-pdf', compact('baa'))->render();
         $pdf = Browsershot::html($view)

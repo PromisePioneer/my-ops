@@ -16,12 +16,21 @@
 
             <div class="modal-body">
                 <form id="contactFormEdit" @submit.prevent="update(editVal.id)">
-                    <div class="d-flex flex-column mb-8 fv-row">
-                        <label class="d-flex align-items-center fs-6 fw-bold mb-2">
-                            <span class="required">Nama PIC</span>
-                        </label>
-                        <input type="text" class="form-control form-control-solid" placeholder="Nama Lengkap"
-                               name="pic_name" :value="editVal.pic_name"/>
+                    <div class="row g-9 fv-row mb-8">
+                        <div class="col-md-6">
+                            <label class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                <span class="required">Nama PIC</span>
+                            </label>
+                            <input type="text" class="form-control form-control-solid" placeholder="Nama Lengkap"
+                                   name="pic_name" :value="editVal.pic_name"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="d-flex align-items-center fs-6 fw-bold mb-2">
+                                <span class="required">Jabatan</span>
+                            </label>
+                            <input type="text" class="form-control form-control-solid" placeholder="Jabatan"
+                                   name="pic_position" :value="editVal.pic_position"/>
+                        </div>
                     </div>
                     <div class="row g-9 mb-8">
                         <div class="row g-9 mb-8">

@@ -262,6 +262,7 @@
                     <div class="text-center">
                         <h6 style="margin-bottom: 100px">{{ $fabCompanyName }}</h6>
                         <h6>{{ $fab->contact->pic_name }}</h6>
+                        <h6>{{ $fab->contact->pic_position }}</h6>
                     </div>
                     <div class="text-center">
                         <h6 style="margin-bottom: 100px">PT Mayatama Solusindo</h6>

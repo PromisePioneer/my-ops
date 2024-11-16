@@ -68,15 +68,15 @@
                                     </tr>
                                     </thead>
                                     <tbody class="border-bottom border-black">
-                                    @foreach($offeringLetterServices as $service)
+                                    @foreach($offeringLetterProducts as $product)
                                         <tr class="fs-5 text-end border-bottom border-black">
                                             <td class="text-center">{{ $loop->iteration }}</td>
                                             <td class="text-center">
-                                                {{ $service->serviceCategory->name }}
+                                                {{ $product->serviceCategory->name }}
                                             </td>
-                                            <td class="text-center"> {{ $service->capacity }} {{ $service->unitType->name }}</td>
+                                            <td class="text-center"> {{ $product->capacity }} {{ $product->unitType->name }}</td>
                                             <td class="text-center">
-                                                {{ number_format($service->price, false, '.', '.') }}
+                                                {{ number_format($product->price, false, '.', '.') }}
                                             </td>
                                         </tr>
                                     @endforeach
@@ -117,13 +117,13 @@
                                     @foreach($offeringLetterServiceDescription as $desc)
                                         <li style="font-size: 13px"
                                             class="{{ empty($desc->skl?->name) ? 'd-none' : '' }}"><i
-                                                class="fa-li fa fa-check"
-                                                style="color: #00b0f0"></i> {{ $desc?->skl?->name }}</li>
+                                                    class="fa-li fa fa-check"
+                                                    style="color: #00b0f0"></i> {{ $desc?->skl?->name }}</li>
                                     @endforeach
                                 </ul>
 
                                 <div class="ms-4 mb-4 flex-column">
-                                    <div class="fw-bold mb-20">
+                                    <div class="fw-bold" style="margin-bottom: 100px">
                                         PT. Mayatama Solusindo
                                     </div>
                                     <div class="fw-bold">

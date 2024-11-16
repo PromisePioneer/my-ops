@@ -17,6 +17,7 @@ class ContactRequest extends FormRequest
     {
         return [
             'pic_name' => ['required'],
+            'pic_position' => ['required'],
             'company_name' => ['required', Rule::unique('contacts', 'company_name')->ignore($request->route('contact'))],
             'company_code' => [
                 'required',
@@ -52,6 +53,7 @@ class ContactRequest extends FormRequest
     {
         return [
             'pic_name.required' => 'Kolom nama lengkap wajib diisi.',
+            'pic_position.required' => 'Kolom jabatan wajib diisi.',
             'company_name.required' => 'Kolom nama perusahaan wajib diisi.',
             'company_code.required' => 'Kolom kode Perusahaan wajib diisi.',
             'company_code.min' => 'Kolom kode perusahaan minimal 3 karakter.',

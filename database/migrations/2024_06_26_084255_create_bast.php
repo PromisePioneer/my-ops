@@ -40,12 +40,6 @@ class CreateBast extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
-            $table->foreign('fab_id')
-                ->references('id')
-                ->on('fab')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
-
             $table->foreign('created_by')
                 ->references('id')
                 ->on('users')

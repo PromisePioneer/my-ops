@@ -18,7 +18,7 @@ use function App\Helper\convertToRoman;
 class OfferingLetterService
 {
     private static int $perPage = 10;
-
+    private CompanyNameService $companyNameService;
 
     public function __construct()
     {

@@ -50,6 +50,7 @@ class OfferingLetterRequest extends FormRequest
             'regarding.required' => 'Lampiran tidak boleh kosong.',
             'data.*.service_category_id.required' => 'Kategori layanan tidak boleh kosong.',
             'data.*.service_category_id.exists' => 'Kategori layanan tidak ditemukan.',
+            'data.*.unit_type_id.required' => 'Satuan tidak boleh kosong.',
             'data.*.capacity' => 'Kapasitas tidak boleh kosong',
             'data.*.price.required' => 'Harga layanan tidak boleh kosong.',
             'pic.required' => 'Penanggung jawab  tidak boleh kosong.',

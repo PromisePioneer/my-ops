@@ -138,7 +138,7 @@ class OfferingLettersController extends Controller
 
     public function show(OfferingLetter $offeringLetter): View
     {
-        $offeringLetterServices = OfferingLetterProduct::with('unitType')->where('offering_letter_id', $offeringLetter->id)->get();
+        $offeringLetterProducts = OfferingLetterProduct::with('unitType')->where('offering_letter_id', $offeringLetter->id)->get();
         $offeringLetterServiceDescription = OfferingLetterServiceDescription::with('skl')
             ->where('offering_letter_id', $offeringLetter->id)
             ->get();
@@ -148,14 +148,14 @@ class OfferingLettersController extends Controller
 
         $offeringLetterCompanyName = $this->convertCompanyNameToTextCapitalize($offeringLetter);
 
-        $totalPPN = $getPPN->rate / 100 * $offeringLetterServices->sum('price');
-        $total = $offeringLetterServices->sum('price') + $totalPPN;
+        $totalPPN = $getPPN->rate / 100 * $offeringLetterProducts->sum('price');
+        $total = $offeringLetterProducts->sum('price') + $totalPPN;
 
         return view(
             'pages.transaction.offering-letter.detail',
             compact(
                 'offeringLetter',
-                'offeringLetterServices',
+                'offeringLetterProducts',
                 'totalPPN',
                 'total',
                 'offeringLetterServiceDescription',

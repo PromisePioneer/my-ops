@@ -10,7 +10,6 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-
 </head>
 
 <style>
@@ -35,7 +34,7 @@
 
 
     body {
-        margin: 4cm 0.3cm 2cm;
+        margin: 4cm 0.5cm 2cm;
         line-height: 1.5;
         -webkit-font-smoothing: antialiased;
         font-family: Poppins, Helvetica, sans-serif;
@@ -62,7 +61,7 @@
 
 
     .wrapper {
-        margin-top: 130px;
+        margin-top: 10px;
         position: relative;
     }
 
@@ -76,6 +75,10 @@
 
     .mb-20 {
         margin-bottom: 5rem !important
+    }
+
+    .mb-2 {
+        margin-bottom: .5rem !important
     }
 
     .text-uppercase {
@@ -112,7 +115,6 @@
         width: 100%;
         margin-bottom: 1rem;
         vertical-align: top;
-        border-color: black;
     }
 
     .w-3px {
@@ -131,10 +133,10 @@
         border-bottom: 1px solid black;
     }
 
-    .custom-bordered table .custom-bordered th .custom-bordered tr {
-        border-top: 1px solid black;
-        border-top: 1px solid black;
+    .custom-bordered table .custom-bordered th .custom-bordered tr .custom-bordered .td {
+        border: 1px solid black;
         border-collapse: collapse;
+
     }
 
     .lh-lg {
@@ -154,10 +156,7 @@
     }
 
     .custom-bordered, .custom-bordered th .custom-bordered tr, .custom-bordered td {
-        border-left: none;
-        border-right: none;
-        border-top: 1px solid black;
-        border-bottom: 1px solid black;
+        border: 1px solid black;
         border-collapse: collapse;
     }
 
@@ -179,6 +178,49 @@
 
     .mb-7 {
         margin-bottom: 1.75rem !important
+    }
+
+    .w-50 {
+        width: 50% !important
+    }
+
+    .table-bordered > :not(caption) > * {
+        border-width: 1px 0;
+        border-style: solid;
+        border-color: black;
+    }
+
+    .table-bordered > :not(caption) > * > * {
+        border-width: 0 1px;
+        border-style: solid;
+        border-color: black;
+    }
+
+
+    .fw-bolder {
+        font-weight: 700 !important
+    }
+
+    .fs-6 {
+        font-size: 1.075rem !important
+    }
+
+    .fs-8 {
+        font-size: .85rem !important
+    }
+
+    .ms-5 {
+        margin-left: 1.25rem !important
+    }
+
+
+    .px-2 {
+        padding-right: .5rem !important;
+        padding-left: .5rem !important
+    }
+
+    .fs-9 {
+        font-size: .75rem !important
     }
 
 </style>
@@ -203,11 +245,11 @@
     </div>
 
 
-    <p class="text-justify ms-10 mb-3">
+    <p class="text-justify ms-5 mb-2 fs-8">
         Pada hari ini {{ formatDate($baa->date) }} yang bertanda tangan dibawah ini:
     </p>
 
-    <div style="padding-left: 5rem; padding-right: 15rem" class="mb-3">
+    <div style="padding-left: 2rem; padding-right: 15rem" class="mb-2 fs-9">
         <table class="table">
             <tr>
                 <td class="text-start w-3px">Nama</td>
@@ -227,12 +269,12 @@
         </table>
     </div>
 
-    <p class="text-justify ms-10 mb-3">
+    <p class="text-justify ms-5 mb-2 fs-9">
         Selanjutnya disebut "<b>MYFIBER</b>"
     </p>
 
 
-    <div style="padding-left: 5rem; padding-right: 15rem" class="mb-3">
+    <div style="padding-left: 2rem; padding-right: 15rem" class="mb-2 fs-9">
         <table class="table">
             <tr>
                 <td class="w-3px text-start">Nama</td>
@@ -247,76 +289,76 @@
         </table>
     </div>
 
-    <p class="text-justify ms-10 mb-4">
+    <p class="text-justify ms-5 mb-2 fs-9">
         Selanjutnya disebut "<b>Pelanggan</b>"
     </p>
 
 
-    <p class="text-justify ms-10 mb-4">
+    <p class="text-justify ms-5 mb-2 fs-9">
         Pelanggan dan MYFIBER secara bersama-sama selanjutnya disebut juga “<b>Para Pihak</b>” dengan ini
         menyatakan bahwa sebagai berikut :
     </p>
 
 
-    <div style="padding-left: 15rem; padding-right: 15rem">
-        <table class="table text-center custom-bordered">
+    <div style="padding-left: 5rem; padding-right: 5rem">
+        <table class="table custom-bordered table-bordered fs-9 ">
             <thead>
             <tr>
-                <th class="w-50 text-center py-4">Deskripsi</th>
+                <th class="text-center w-50 py-4 ">Deskripsi</th>
                 <th class="text-center py-4">Data</th>
             </tr>
             </thead>
             <tbody>
-            <tr class="table text-center custom-bordered py-4">
-                <th class="py-4">Nomor PO</th>
-                <td class="py-4">{{ $baa->po_number }}</td>
+            <tr>
+                <td class="py-4 fw-bolder px-2">Nomor PO</td>
+                <td class="py-4 px-2">{{ $baa->po_number }}</td>
             </tr>
-            <tr class="table text-center custom-bordered">
-                <th class="py-4">Nama Pelanggan</th>
-                <td class="py-4">{{ $baa->fab->contact->company_name }}</td>
+            <tr>
+                <td class="py-4 fw-bolder px-2">Nama Pelanggan</td>
+                <td class="py-4 px-2">{{ $baa->fab->contact->company_name }}</td>
             </tr>
-            <tr class="table text-center custom-bordered py-4">
-                <th class="py-4">Alamat</th>
-                <td class="py-4">{{ $baa->fab->contact->complete_address ?? '-' }}</td>
+            <tr>
+                <td class="py-4 fw-bolder px-2">Alamat</td>
+                <td class="py-4 px-2">{{ $baa->fab->contact->complete_address ?? '-' }}</td>
             </tr>
-            <tr class="table text-center custom-bordered">
-                <th class="py-4">Lokasi Pekerjaan</th>
-                <td class="py-4">{{ $baa->work_location }}</td>
+            <tr>
+                <td class="py-4 fw-bolder px-2">Lokasi Pekerjaan</td>
+                <td class="py-4 px-2">{{ $baa->work_location }}</td>
             </tr>
             </tbody>
         </table>
     </div>
 
 
-    <p class="text-justify lh-lg ms-10 mb-4">
+    <p class="text-justify lh-lg ms-10 mb-2 fs-9">
         Pada tanggal tersebut di bawah Layanan Dedicated telah selesai dipasang dan di uji dengan hasil
         baik, dan oleh karenanya terhitung sejak tanggal tersebut :
     </p>
 
-    <ol class="text-justify lh-lg ms-10 mb-4">
-        <li>Layanan tersebut sudah dapat digunakan/dioperasikan, dan</li>
+    <ol class="text-justify lh-lg ms-10 mb-2 fs-9">
+        <li>Layanan tersebut sudah dapat digunakan/dioperasikan.</li>
         <li>Seluruh syarat dan ketentuan tersebut diatas berlaku dan mengikat Para Pihak</li>
     </ol>
 
-    <p class="text-justify lh-lg ms-10 mb-7" style="padding-right:40px">
+    <p class="text-justify lh-lg ms-10 mb-7 fs-9" style="padding-right:40px">
         Demikian Berita Acara ini dibuat dan ditandatangani oleh Para Pihak dalam rangkap 2 (dua) asli yang
         sama bunyinya, mempunyai kekuatan hukum yang sama dan mengikat Para Pihak pada tanggal
         ditandatangani BAA.
     </p>
 
 
-    <div class="d-flex align-items-center justify-content-around">
+    <div class="d-flex align-items-center justify-content-around fs-9">
         <div class="text-center">
             <p class="m-1">MYFIBER</p>
-            <p class="mb-20">PT MAYATAMA SOLUSINDO</p>
-            <p class="text-decoration-underline">{{ $baa->fab->fabPic?->name }}</p>
+            <p class="mb-20"><b>PT MAYATAMA SOLUSINDO</b></p>
+            <p class="text-decoration-underline"><b>{{ $baa->fab->fabPic?->name }}</b></p>
             <p>{{ $baa->fab->picName->roles[0]?->name ?? '' }}</p>
         </div>
 
         <div class="text-center">
             <p class="m-1">PELANGGAN</p>
-            <p class="mb-20">{{ $baa->fab->contact->company_name }}</p>
-            <p class="text-decoration-underline">{{ $baa->fab->contact->pic_name }}</p>
+            <p class="mb-20"><b>{{ $baa->fab->contact->company_name }}</b></p>
+            <p class="text-decoration-underline"><b>{{ $baa->fab->contact->pic_name }}</b></p>
         </div>
     </div>
 

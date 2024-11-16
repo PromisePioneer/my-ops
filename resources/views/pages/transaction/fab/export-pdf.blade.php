@@ -536,6 +536,10 @@
         padding-left: 2rem !important
     }
 
+    .mb-6 {
+        margin-bottom: 1.5rem !important
+    }
+
 </style>
 <body>
 <header>
@@ -795,11 +799,12 @@
                 </tr>
             </table>
         </div>
-        <p class="row ms-1 ms-4 mt-0 mb-2">Atau Sesuai yang tercantum dalam Kontrak</p>
+        <p class="row ms-1 ms-4 mt-0 mb-6">Atau Sesuai yang tercantum dalam Kontrak</p>
         <div class="d-flex justify-content-around align-items-center">
             <div class="text-center">
                 <p class="fw-bolder" style="margin-bottom: 60px">{{ $fabCompanyName }}</p>
                 <p class="fw-bolder">{{ $fab->contact->pic_name }}</p>
+                <p class="fw-bolder">{{ $fab->contact->pic_position }}</p>
             </div>
             <div class="text-center">
                 <p class="fw-bolder" style="margin-bottom: 60px">PT Mayatama Solusindo</p>

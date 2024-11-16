@@ -21,6 +21,7 @@ class Contact extends Model
 
     protected $fillable = [
         'pic_name',
+        'pic_position',
         'company_name',
         'company_code',
         'email',
