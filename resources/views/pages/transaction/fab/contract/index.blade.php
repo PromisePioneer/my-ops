@@ -715,8 +715,10 @@
 
     {{--  AKAN DIREVISI NANTI  --}}
     <p class="text-justify mb-2">
-        Kontrak ini berlaku terhitung sejak tanggal {{ formatDate($fab->date) }} sampai - untuk sewa cloud server (CPU
-        4 Ghz, RAM 16GB, SSD1500GB, IP, NIC, OS, Linux,Firewall).Besarnya tarif pertahun adalah Rp. 6.000.000,- (belum
+        Kontrak ini berlaku terhitung sejak tanggal {{ formatDate($fab->date) }}
+        sampai {{ formatDate(\Carbon\Carbon::parse($fab->date)->addYear()) }} untuk ({{ $serviceCategories }}). Adapun
+        besarnya tarif untuk layanan sebesar Rp. {{ number_format($fabServiceCategories->sum('price')) }},-
+        (belum
         termasuk PPN 11%).
     </p>
 
@@ -741,7 +743,7 @@
         <h3>HAK DAN KEWAJIBAN</h3>
     </div>
 
-    <ol class="m-0 mb-2" style="margin: 0; padding: 0; line-height: 2">
+    <ol class="mb-2" style="margin: 0; padding: 0; line-height: 2">
         <li>
             <b>PELANGGAN</b> wajib menyediakan dan melengkapi perangkat yang dibutuhkannya, sehingga pada saat aktivasi
             telah
@@ -817,7 +819,7 @@
     </div>
 
 
-    <ol class="m-0 mb-2" style="margin: 0; padding: 0; line-height: 2">
+    <ol class=" mb-2" style="margin: 0; padding: 0; line-height: 2">
         <li>
             <b>PELANGGAN</b> dapat meminta perpindahan perangkat <b>MYFIBER</b> serta perubahan kecepatan sepanjang
             teknis
@@ -842,7 +844,7 @@
     </div>
 
 
-    <ol class="m-0 mb-2" style="margin: 0; padding: 0; line-height: 2">
+    <ol class="mb-2" style="margin: 0; padding: 0; line-height: 2">
         <li>
             Force Majeure adalah kejadian–kejadian diluar kekuasaan para pihak yang mengakibatkan terhentinya atau
             tertundanya pelaksanaan kontrak, seperti : petir, gempa bumi, taufan, kebakaran, ledakan, banjir, sabotase,
@@ -860,7 +862,7 @@
         <h3>HUKUM YANG BERLAKU</h3>
     </div>
 
-    <ol class="m-0 mb-4" style="margin: 0; padding: 0; line-height: 2">
+    <ol class="mb-4" style="margin: 0; padding: 0; line-height: 2">
         <li>
             Kontrak ini tunduk kepada peraturan serta kebijaksanaan pemerintah lainnya mengenai Telekomunikasi yang
             berlaku di Indonesia.
@@ -877,7 +879,7 @@
     </div>
 
 
-    <ol class="m-0" style="margin: 0; padding: 0; line-height: 2">
+    <ol class="mb-2" style="margin: 0; padding: 0; line-height: 2">
         <li>
             <b>MYFIBER</b> akan menyampaikan pemberitahuan kepada <b>PELANGGAN</b> apabila terdapat perubahan atas
             Kontrak Berlangganan Jasa <b>MYFIBER</b> ini.

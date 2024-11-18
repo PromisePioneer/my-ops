@@ -12,6 +12,7 @@ use App\Models\Contact;
 use App\Models\Department;
 use App\Models\LeaveAndPermission;
 use App\Models\NationalHoliday;
+use App\Models\OfferingLetter;
 use App\Models\Product;
 use App\Models\ServiceCategory;
 use App\Models\SP;
@@ -24,9 +25,11 @@ use App\Policies\BranchPolicy;
 use App\Policies\CompanyPolicy;
 use App\Policies\ContactPolicy;
 use App\Policies\DepartmentPolicy;
+use App\Policies\FabPolicy;
 use App\Policies\InitialBalancePolicy;
 use App\Policies\LeaveAndPermissionPolicy;
 use App\Policies\NationalHolidayPolicy;
+use App\Policies\OfferingLetterPolicy;
 use App\Policies\PermissionPolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\RolePolicy;
@@ -65,6 +68,8 @@ class AuthServiceProvider extends ServiceProvider
         BoqPolicy::class => BoqPolicy::class,
         AccountTransaction::class => InitialBalancePolicy::class,
         Company::class => CompanyPolicy::class,
+        OfferingLetter::class => OfferingLetterPolicy::class,
+        FabPolicy::class => FabPolicy::class,
     ];
 
     /**

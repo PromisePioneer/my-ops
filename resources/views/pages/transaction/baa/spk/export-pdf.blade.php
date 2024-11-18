@@ -34,7 +34,7 @@
 
 
     body {
-        margin: 4cm 0.5cm 2cm;
+        margin: 4cm 1cm 2cm;
         line-height: 1.5;
         -webkit-font-smoothing: antialiased;
         font-family: Poppins, Helvetica, sans-serif;
@@ -240,21 +240,21 @@
 
 <main class="wrapper">
     <div class="text-center mb-4">
-        <h2 class="text-uppercase text-decoration-underline fs-5">BERITA ACARA AKTIVASI</h2>
+        <h2 class="text-uppercase text-decoration-underline fs-5">SURAT PERINTAH KERJA</h2>
         <p class="fs-5">Nomor : {{ $spk->spk_number }}</p>
     </div>
 
 
-    <p class="text-justify ms-5 mb-2 fs-8">
+    <p class="text-justify mb-2 fs-9">
         Kegiatan : {{ $spk->name }}
     </p>
 
-    <p class="text-justify ms-5 mb-2 fs-8">
+    <p class="text-justify mb-2 fs-9">
         Yang bertanda tangan di bawah ini:
     </p>
 
 
-    <div style="padding-left: 2rem; padding-right: 15rem" class="mb-2 fs-9">
+    <div style="padding-left: 1rem; padding-right: 15rem" class="mb-2 fs-9">
         <table class="table">
             <tr>
                 <td class="text-start w-3px">Nama</td>
@@ -269,19 +269,19 @@
         </table>
     </div>
 
-    <p class="text-justify ms-5 mb-2 fs-9">
-        Selanjutnya disebut sebagai "<b>Pengguna Anggaran</b>"
+    <p class="text-justify mb-2 fs-9">
+        Selanjutnya disebut sebagai "<b>PIHAK PERTAMA</b>"
     </p>
 
 
-    <p class="text-justify ms-5 mb-5 fs-9">
-        Berdasarkan surat Penunjukan Penyedia Barang Nomor {{ $spk->spk_number }} tanggal 12 Januari 2020, bersama ini
+    <p class="text-justify mb-5 fs-9">
+        Berdasarkan surat perintah kerja Nomor {{ $spk->spk_number }} tanggal {{ formatDate($spk->date) }}, bersama ini
         <br>
         memerintahkan:
     </p>
 
 
-    <div style="padding-left: 2rem; padding-right: 15rem" class="mb-2 fs-9">
+    <div style="padding-left: 1rem; padding-right: 15rem" class="mb-2 fs-9">
         <table class="table">
             <tr>
                 <td class="w-3px text-start">Nama</td>
@@ -297,13 +297,13 @@
     </div>
 
 
-    <p class="text-justify ms-5 mb-2 fs-9">
-        Menjalankan jabatannya tersebut selaku "<b>Penyedia Jasa</b>" yang bertindak untuk dan atas nama PT Satu Nusa
-        untuk selanjutnya disebut "<b>PENYEDIA JASA</b>".
+    <p class="text-justify mb-4 fs-9">
+        Menjalankan pekerjaan yang bertindak untuk dan atas nama <b>PT Mayatama Solusindo</b>
+        untuk selanjutnya disebut "<b>PIHAK KEDUA</b>".
     </p>
 
 
-    <div style="padding-left: 5rem; padding-right: 5rem">
+    <div style="padding-left: 5rem; padding-right: 5rem" class="mb-4">
         <table class="table custom-bordered table-bordered fs-9 ">
             <thead>
             <tr>
@@ -325,20 +325,22 @@
     </div>
 
 
-    <p class="text-justify lh-lg ms-10 mb-20 fs-9">
+    <p class="text-justify lh-lg  mb-20 fs-9">
         Demikian Surat Perintah Kerja ini dibuat dengan sebenar-benarnya untuk dapat dipergunakan sebagaimana mestinya.
     </p>
 
 
     <div class="d-flex align-items-center justify-content-around fs-9">
         <div class="text-center">
-            <p class="m-1 mb-20"><b>{{ $spk->spkFrom->roles[0]?->name ?? '-' }}</b></p>
+            <p class="m-1 mb-20">Yang Memberi Perintah</p>
             <p><b>{{ $spk->spkFrom->name ?? '' }}</b></p>
+            <p><b>{{ $spk->spkFrom->roles[0]?->name ?? '-' }}</b></p>
         </div>
 
         <div class="text-center">
-            <p class="m-1 mb-20"><b>{{ $spk->spkTo->roles[0]?->name ?? '-' }}</b></p>
+            <p class="m-1 mb-20">Yang Menerima Perintah</p>
             <p><b>{{ $spk->spkTo->name ?? '' }}</b></p>
+            <p><b>{{ $spk->spkTo->roles[0]?->name ?? '-' }}</b></p>
         </div>
     </div>
 

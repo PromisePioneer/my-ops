@@ -15,7 +15,7 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end">
-                    <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" style="">
+                        <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" style="">
                             <div class="px-7 py-5">
                                 <div class="fs-5 text-dark fw-bolder">Filter</div>
                             </div>
@@ -32,14 +32,16 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-end" data-kt-product-table-toolbar="base">
-                        <a href="{{ url('/income-transactions/offering-letters/create') }}"
-                           class="btn btn-light-primary btn-sm">
-                            <i class="ki-duotone ki-message-add fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                            </i> Tambah
-                        </a>
+                        <template x-if="Number(createPermission) === 1">
+                            <a href="{{ url('/income-transactions/offering-letters/create') }}"
+                               class="btn btn-light-primary btn-sm">
+                                <i class="ki-duotone ki-message-add fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i> Tambah
+                            </a>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -127,6 +129,7 @@
     <script>
         function offeringLettersData() {
             return {
+                createPermission: "{{ request()->user()->can('Tambah Data Penawaran') }}",
                 offeringLetters: [],
                 isLoading: false,
                 startIndex: null,

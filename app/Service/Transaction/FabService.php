@@ -161,21 +161,22 @@ class FabService
 
     private function fabHasServiceCategoriesStoreOrUpdate($request, $fab): void
     {
-        if ($request['fabServices']) {
-            foreach ($request['fabServices'] as $key => $value) {
-                $value['fab_id'] = $fab->id;
-                FabServiceCategory::create($value);
-            }
+
+        foreach ($request['fabServices'] as $key => $value) {
+            $value['fab_id'] = $fab->id;
+            FabServiceCategory::create($value);
         }
     }
 
     private function fabHasSKLStoreOrUpdate($request, $fab): void
     {
 
-        if ($request['skl']) {
+        if ($request['skl'] !== null) {
             foreach ($request['skl'] as $key => $value) {
-                $value['fab_id'] = $fab->id;
-                FabHasSKL::create($value);
+                if ($value['skl_id']) {
+                    $value['fab_id'] = $fab->id;
+                    FabHasSKL::create($value);
+                }
             }
         }
     }

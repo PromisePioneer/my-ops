@@ -16,6 +16,44 @@ class PermissionSeeder extends Seeder
         $this->branch();
     }
 
+    public function fab(): void
+    {
+        $permissions = [
+            'Lihat Menu Fab',
+            'Tambah Data Fab',
+            'Edit Data Fab',
+            'Lihat Detail Fab',
+            'Print Data Fab',
+            'Hapus Data Fab',
+            'Konfirmasi Data Fab',
+            'Print Kontrak'
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+
+    }
+
+
+    public function offeringLetter(): void
+    {
+        $permissions = [
+            'Lihat Menu Penawaran',
+            'Tambah Data Penawaran',
+            'Edit Data Penawaran',
+            'Lihat Detail Penawaran',
+            'Print Data Penawaran',
+            'Hapus Data Penawaran',
+            'Konfirmasi Data Penawaran'
+        ];
+
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+    }
+
     public function branch(): void
     {
         $director = Role::where('name', 'Director')->first();

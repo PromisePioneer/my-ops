@@ -377,11 +377,13 @@
                         Pendapatan
                     @endslot
                     @slot('menuItem')
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'offering-letters'"
-                            href="{{ url('/income-transactions/offering-letters') }}">
-                            Penawaran
-                        </x-dropdown-menu-item>
+                        @can('Lihat Menu Penawaran')
+                            <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'offering-letters'"
+                                href="{{ url('/income-transactions/offering-letters') }}">
+                                Penawaran
+                            </x-dropdown-menu-item>
+                        @endcan
                         <x-dropdown-menu-item
                             :active="request()->segment(2) === 'fab'"
                             href="{{ url('/income-transactions/fab') }}">

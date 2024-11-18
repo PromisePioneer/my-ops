@@ -15,6 +15,7 @@ use App\Models\TaxSetting;
 use App\Models\UnitType;
 use App\Models\User;
 use App\Service\OfferingLetterService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -29,7 +30,6 @@ class OfferingLettersController extends Controller
 
     private Contact $contact;
     private serviceCategory $serviceCategory;
-    private Branch $branch;
     private OfferingLetterService $offeringLetterService;
     private User $user;
     private UnitType $unitType;
@@ -40,104 +40,159 @@ class OfferingLettersController extends Controller
         $this->offeringLetterService = new OfferingLetterService();
         $this->contact = new Contact();
         $this->serviceCategory = new ServiceCategory();
-        $this->branch = new Branch();
         $this->user = new  User();
         $this->unitType = new UnitType();
         $this->offeringLetterSKL = new SKL();
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function index(): View
     {
+        $this->authorize('viewAny', OfferingLetter::class);
         return view('pages.transaction.offering-letter.index');
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function data(Request $request): JsonResponse
     {
+        $this->authorize('view', OfferingLetter::class);
         return response()->json($this->offeringLetterService->data($request));
     }
 
-    public function branchData(Request $request): JsonResponse
-    {
-        return response()->json($this->branch->getData($request));
-    }
 
-    public function filterByBranch(Branch $branch): JsonResponse
-    {
-        $filter = $this->offeringLetterService->filterByBranch($branch->id);
-
-        return response()->json($filter);
-    }
-
-
+    /**
+     * @throws AuthorizationException
+     */
     public function search(Request $request): JsonResponse
     {
+        $this->authorize('view', OfferingLetter::class);
         return response()->json($this->offeringLetterService->search($request));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function create(): View
     {
+        $this->authorize('create', OfferingLetter::class);
         return view('pages.transaction.offering-letter.create');
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getContactData(Request $request): JsonResponse
     {
+        $this->authorize('create', OfferingLetter::class);
+        $this->authorize('update', OfferingLetter::class);
         return response()->json($this->contact->getData($request));
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getUserData(Request $request): JsonResponse
     {
+        $this->authorize('create', OfferingLetter::class);
+        $this->authorize('update', OfferingLetter::class);
         return response()->json($this->user->getUser($request));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getServicesCategoriesData(Request $request): JsonResponse
     {
+        $this->authorize('create', OfferingLetter::class);
+        $this->authorize('update', OfferingLetter::class);
         return response()->json($this->serviceCategory->getData($request));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getOfferingLettersProduct(OfferingLetter $offeringLetter): JsonResponse
     {
+        $this->authorize('create', OfferingLetter::class);
+        $this->authorize('update', OfferingLetter::class);
         $offeringLetterProduct = OfferingLetterProduct::where('offering_letter_id', $offeringLetter->id)->get();
         return response()->json($offeringLetterProduct);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getOfferingLetterDescription(OfferingLetter $offeringLetter): JsonResponse
     {
+        $this->authorize('create', OfferingLetter::class);
+        $this->authorize('update', OfferingLetter::class);
         $data = OfferingLetterServiceDescription::with('skl')->where('offering_letter_id', $offeringLetter->id)->get();
         return response()->json($data);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function selectedUser(OfferingLetter $offeringLetter): JsonResponse
     {
+        $this->authorize('create', OfferingLetter::class);
+        $this->authorize('update', OfferingLetter::class);
         return response()->json($this->user->getSelectedData($offeringLetter->pic));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getUnitType(Request $request): JsonResponse
     {
+        $this->authorize('create', OfferingLetter::class);
+        $this->authorize('update', OfferingLetter::class);
         return response()->json($this->unitType->getData($request));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getSKL(Request $request): JsonResponse
     {
+        $this->authorize('create', OfferingLetter::class);
+        $this->authorize('update', OfferingLetter::class);
         return response()->json($this->offeringLetterSKL->getData($request));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getSelectedSKL(OfferingLetterServiceDescription $offeringLetterServiceDescription): JsonResponse
     {
+        $this->authorize('update', OfferingLetter::class);
         return response()->json($this->offeringLetterSKL->getSelectedData($offeringLetterServiceDescription->skl_id));
     }
 
+    /**
+     * @throws \Throwable
+     * @throws AuthorizationException
+     */
     public function store(OfferingLetterRequest $request): JsonResponse
     {
+        $this->authorize('create', OfferingLetter::class);
         $this->offeringLetterService->store($request);
-
         return response()->json([
             'message' => 'data berhasil disimpan',
         ]);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function show(OfferingLetter $offeringLetter): View
     {
+        $this->authorize('viewDetail', OfferingLetter::class);
         $offeringLetterProducts = OfferingLetterProduct::with('unitType')->where('offering_letter_id', $offeringLetter->id)->get();
         $offeringLetterServiceDescription = OfferingLetterServiceDescription::with('skl')
             ->where('offering_letter_id', $offeringLetter->id)
@@ -167,10 +222,7 @@ class OfferingLettersController extends Controller
 
     public function convertCompanyNameToTextCapitalize(OfferingLetter $offeringLetter): string
     {
-
         $companyName = strtolower($offeringLetter->contact->company_name);
-
-
         $convertCompanyNameToArray = explode(" ", $companyName);
 
         $newString = '';
@@ -188,25 +240,33 @@ class OfferingLettersController extends Controller
         return strtoupper($newPTKey) . ' ' . ucwords(trim($newString));
     }
 
-    public function viewFile(OfferingLetter $offeringLetter): View
-    {
-        return view('pages.transaction.offering-letter.view-file', compact('offeringLetter'));
-    }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function edit(OfferingLetter $offeringLetter): View
     {
+        $this->authorize('update', $offeringLetter);
         return view('pages.transaction.offering-letter.edit', compact('offeringLetter'));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getSelectedContact(OfferingLetter $offeringLetter): JsonResponse
     {
+        $this->authorize('update', $offeringLetter);
         $selected = $this->contact->getSelectedData($offeringLetter->contact_id);
         return response()->json($selected);
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getSelectedUnitType(OfferingLetterProduct $offeringLetterProduct): JsonResponse
     {
+        $this->authorize('update', OfferingLetter::class);
         return response()->json($this->unitType->getSelectedData($offeringLetterProduct->unit_type_id));
     }
 
@@ -230,8 +290,12 @@ class OfferingLettersController extends Controller
         ], 200);
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function update(OfferingLetterRequest $request, OfferingLetter $offeringLetter): JsonResponse
     {
+        $this->authorize('update', $offeringLetter);
         $this->offeringLetterService->update($request, $offeringLetter);
 
         return response()->json([
@@ -239,8 +303,12 @@ class OfferingLettersController extends Controller
         ]);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function destroy(OfferingLetter $offeringLetter): JsonResponse
     {
+        $this->authorize('delete', $offeringLetter);
         $offeringLetter->delete();
 
         return response()->json([
@@ -248,8 +316,12 @@ class OfferingLettersController extends Controller
         ]);
     }
 
-    public function exportToPDF(OfferingLetter $offeringLetter)
+    /**
+     * @throws AuthorizationException
+     */
+    public function exportToPDF(OfferingLetter $offeringLetter): Response
     {
+        $this->authorize('print', $offeringLetter);
         $offeringLetterProducts = OfferingLetterProduct::with('unitType')->where('offering_letter_id', $offeringLetter->id)->get();
 
         $offeringLetterServiceDescription = OfferingLetterServiceDescription::with('skl')
@@ -290,9 +362,5 @@ class OfferingLettersController extends Controller
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="example.pdf',
         ]);
-
-
     }
-
-
 }

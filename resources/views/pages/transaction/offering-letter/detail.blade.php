@@ -1,9 +1,6 @@
 @extends('layouts.template')
 @section('content')
-    @push('style')
-        <style>
-        </style>
-    @endpush
+
     <div class="d-flex flex-row flex-lg-row" x-data="offeringLetterDetail">
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-8 me-xl-10">
             <div class="card">
@@ -117,8 +114,8 @@
                                     @foreach($offeringLetterServiceDescription as $desc)
                                         <li style="font-size: 13px"
                                             class="{{ empty($desc->skl?->name) ? 'd-none' : '' }}"><i
-                                                    class="fa-li fa fa-check"
-                                                    style="color: #00b0f0"></i> {{ $desc?->skl?->name }}</li>
+                                                class="fa-li fa fa-check"
+                                                style="color: #00b0f0"></i> {{ $desc?->skl?->name }}</li>
                                     @endforeach
                                 </ul>
 
@@ -153,19 +150,26 @@
                     <div class="mb-0">
                         @if($offeringLetter->status === 0)
                             <div class="row mb-5">
-                                <div class="col">
-                                    <a href="{{ url('income-transactions/offering-letters/edit/' . $offeringLetter->id) }}"
-                                       class="btn btn-light btn-active-light-info w-100">Ubah</a>
-                                </div>
-                                <div class="col">
-                                    <button type="button" @click="destroy({{ $offeringLetter->id }})"
-                                            class="btn btn-light btn-active-light-danger w-100">Hapus
-                                    </button>
-                                </div>
+                                @can('Edit Data Penawaran')
+                                    <div class="col">
+                                        <a href="{{ url('income-transactions/offering-letters/edit/' . $offeringLetter->id) }}"
+                                           class="btn btn-light btn-active-light-info w-100">Ubah</a>
+                                    </div>
+                                @endcan
+                                @can('Hapus Data Penawaran')
+                                    <div class="col">
+                                        <button type="button" @click="destroy({{ $offeringLetter->id }})"
+                                                class="btn btn-light btn-active-light-danger w-100">Hapus
+                                        </button>
+                                    </div>
+                                @endcan
                             </div>
-                            <button type="button" @click="confirmOfferingLetter()" class="btn btn-primary w-100 mb-4">
-                                Konfirmasi
-                            </button>
+                            @can('Konfirmasi Data Penawaran')
+                                <button type="button" @click="confirmOfferingLetter()"
+                                        class="btn btn-primary w-100 mb-4">
+                                    Konfirmasi
+                                </button>
+                            @endcan
                         @else
                             <a href="{{ url('income-transactions/offering-letters/export-pdf/'. $offeringLetter->id) }}"
                                class="btn btn-light-info w-100 mb-4" target="_blank">

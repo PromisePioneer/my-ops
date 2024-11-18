@@ -112,8 +112,10 @@ class OfferingLetterService
     public function offeringLetterSKLStoreOrUpdate($request, $offeringLetter): void
     {
         foreach ($request['serviceDescription'] as $key => $value) {
-            $value['offering_letter_id'] = $offeringLetter->id;
-            OfferingLetterServiceDescription::create($value);
+            if ($value['skl_id']) {
+                $value['offering_letter_id'] = $offeringLetter->id;
+                OfferingLetterServiceDescription::create($value);
+            }
         }
     }
 
