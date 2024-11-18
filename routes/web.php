@@ -18,6 +18,7 @@ use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
 use App\Http\Controllers\BAAController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
+use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
 use App\Http\Controllers\HRIS\Attendances\FpDevicesController;
 use App\Http\Controllers\HRIS\Attendances\IclockController;
 use App\Http\Controllers\HRIS\Attendances\WorkTimeController;
@@ -990,6 +991,11 @@ Route::group(['middleware' => ['auth']], static function () {
                 '/detail/correction/save/{user}/{datePeriod?}',
                 [AttendanceSummaryController::class, 'saveCorrection']
             );
+        });
+
+        Route::prefix('/employee-schedules')->group(function () {
+            Route::get('/', [EmployeeScheduleController::class, 'index']);
+            Route::get('/data', [EmployeeScheduleController::class, 'data']);
         });
     });
 
