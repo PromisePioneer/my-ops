@@ -1,7 +1,41 @@
 @extends('layouts.template')
 @section('page-title', 'ADMS - Jadwal Karyawan')
 @section('content')
+    @push('styles')
+        <style>
+            .table-scroll {
+                position: relative;
+                margin: auto;
+                overflow: hidden;
+            }
 
+            .table-wrap {
+                width: 100%;
+                overflow: auto;
+            }
+
+
+            .clone {
+                position: absolute;
+                top: 0;
+                left: 0;
+                pointer-events: none;
+            }
+
+            .clone th, .clone td {
+                visibility: hidden
+            }
+
+
+            .clone .fixed-side {
+                visibility: visible;
+            }
+
+            .clone thead, .clone tfoot {
+                background: transparent;
+            }
+        </style>
+    @endpush
     <div x-data="employeeScheduleData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
@@ -34,43 +68,53 @@
                 <div class="col-12 ">
                 </div>
                 <div class="py-5">
-                    <div class="table-responsive">
-                        <template x-for="employeeSchedule in employeeSchedules?.data" :key="employeeSchedule.id">
-                            <table class="table align-middle fs-6 gy-lg-6 table-bordered" id="kt_table_users">
+                    <div id="table-scroll" class="table-scroll">
+                        <div class="table-wrap">
+                            <table class="table align-middle fs-6 gy-lg-6 table-s main-table"
+                                   id="kt_table_users">
                                 <thead>
                                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                    <th class="min-w-125px"></th>
-                                    <template x-for="date in employeeSchedule.date">
-                                        <th class="bg-danger border-0" x-text="formatDate(date.period_date)"></th>
+                                    <th class="min-w-125px bg-dark text-white fixed-side border-0">Nama</th>
+                                    <template x-if="employeeSchedules?.data.length > 0">
+                                        <template x-for="date in employeeSchedules?.data[0].date"
+                                                  :key="date.period_date">
+                                            <th class="bg-danger border-0 text-center"
+                                                x-text="formatDate(date.period_date)">
+                                            </th>
+                                        </template>
                                     </template>
                                 </tr>
                                 </thead>
-                                <tbody class="fw-bold">
-                                <tr>
-                                    <td x-text="employeeSchedule?.name"></td>
-                                    <template x-for="dates in employeeSchedule?.date">
-                                        <td>
-                                            <template x-if="dates.schedules_date.status === 'H'">
-                                                <button class="btn text-black btn-success btn-sm">
-                                                    Hadir
-                                                </button>
-                                            </template>
-                                            <template x-if="dates.schedules_date.status === 'L'">
-                                                <button class="btn text-black btn-warning btn-sm">
-                                                    Libur
-                                                </button>
-                                            </template>
-                                            <template x-if="dates?.schedules_date === null">
-                                                <button class="btn text-black btn-secondary btn-sm">
-                                                    Kosong
-                                                </button>
-                                            </template>
-                                        </td>
-                                    </template>
-                                </tr>
-                                </tbody>
+                                <template x-for="employeeSchedule in employeeSchedules?.data"
+                                          :key="employeeSchedule.id">
+                                    <tbody class="fw-bold">
+                                    <tr>
+                                        <td class="fixed-side bg-dark text-white border-0"
+                                            x-text="employeeSchedule?.name"></td>
+                                        <template x-for="dates in employeeSchedule?.date">
+                                            <td>
+                                                <template x-if="dates.schedules_date?.status === 'H'">
+                                                    <button class="btn text-black btn-success btn-sm">
+                                                        Hadir
+                                                    </button>
+                                                </template>
+                                                <template x-if="dates.schedules_date?.status === 'L'">
+                                                    <button class="btn text-black btn-warning btn-sm">
+                                                        Libur
+                                                    </button>
+                                                </template>
+                                                <template x-if="dates?.schedules_date === null">
+                                                    <button class="btn text-black btn-secondary btn-sm">
+                                                        Kosong
+                                                    </button>
+                                                </template>
+                                            </td>
+                                        </template>
+                                    </tr>
+                                    </tbody>
+                                </template>
                             </table>
-                        </template>
+                        </div>
                     </div>
                     <ul class="pagination float-end mb-4 mt-4">
                         <template x-for="pagination in employeeSchedules?.links">
@@ -90,6 +134,9 @@
 @endsection
 @push('script')
     <script>
+
+        $(".main-table").clone(true).appendTo('#table-scroll').addClass('clone');
+
         function employeeScheduleData() {
             return {
                 search: '',
@@ -104,6 +151,8 @@
 
                     const options = {
                         day: "numeric",
+                        year: "numeric",
+                        month: "numeric"
                     };
                     return date.toLocaleDateString("id", options)
                 },
