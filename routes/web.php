@@ -79,6 +79,7 @@ use App\Http\Controllers\Master\General\ServicesCategoryController;
 use App\Http\Controllers\Master\General\SKLController;
 use App\Http\Controllers\Master\Operational\JointClosureCodeController;
 use App\Http\Controllers\Master\Operational\SupplierController;
+use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
 use App\Http\Controllers\UserProfile\UserLeaveAndPermissionController;
 use App\Http\Controllers\UserProfile\UserProfileController;
@@ -825,6 +826,20 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::delete('/{offeringLetter}', [OfferingLettersController::class, 'destroy']);
             Route::get('/export-pdf/{offeringLetter}', [OfferingLettersController::class, 'exportToPDF']);
         });
+
+        Route::prefix('po')->group(function () {
+            Route::get('/', [PurchaseOrderController::class, 'index']);
+            Route::get('/data', [PurchaseOrderController::class, 'data']);
+            Route::get('/search', [PurchaseOrderController::class, 'search']);
+            Route::get('/create', [PurchaseOrderController::class, 'create']);
+            Route::get('/contacts/data', [PurchaseOrderController::class, 'getContactData']);
+            Route::get('/unit-types/data', [PurchaseOrderController::class, 'getUnitTypeData']);
+            Route::get('/users/data', [PurchaseOrderController::class, 'getUserData']);
+            Route::get('/offering-letter/{contact}', [PurchaseOrderController::class, 'getOfferingLetterIfExists']);
+            Route::post('/', [PurchaseOrderController::class, 'store']);
+            Route::get('/detail/{purchaseOrder}', [PurchaseOrderController::class, 'detail']);
+        });
+
         Route::prefix('fab')->group(function () {
             Route::get('/', [FabController::class, 'index']);
             Route::get('/data', [FabController::class, 'data']);

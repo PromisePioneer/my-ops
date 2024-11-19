@@ -105,10 +105,7 @@
                                         </td>
                                     </template>
                                     <td x-text="branch.code"></td>
-                                    <td>
-                                        <a :href="`/master/branch/structure-orgranization/${branch.id}`"
-                                           x-text="branch.name"></a>
-                                    </td>
+                                    <td x-text="branch.name"></td>
                                     <td x-text="`${branch.address.substring(0, 30)}...`"></td>
                                     <td>
                                         <template x-if="Number(editPermission) === 1">

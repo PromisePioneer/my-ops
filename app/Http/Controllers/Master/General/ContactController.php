@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Master\General;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Contact\ContactRequest;
 use App\Models\Contact;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -13,6 +14,9 @@ class ContactController extends Controller
 {
     private static int $perPage = 10;
 
+    /**
+     * @throws AuthorizationException
+     */
     public function index(): View
     {
         $this->authorize('Lihat Kontak');
@@ -20,6 +24,9 @@ class ContactController extends Controller
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function data(Request $request): JsonResponse
     {
         $this->authorize('Lihat Kontak');
@@ -27,6 +34,9 @@ class ContactController extends Controller
         return response()->json($contact);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function search(Request $request): JsonResponse
     {
         $this->authorize('Lihat Kontak');
@@ -48,6 +58,9 @@ class ContactController extends Controller
         return response()->json($contact);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function store(ContactRequest $request): JsonResponse
     {
         $this->authorize('Tambah Kontak');
@@ -58,12 +71,18 @@ class ContactController extends Controller
         ], 200);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function edit(Contact $contact): JsonResponse
     {
         $this->authorize('Edit Kontak');
         return response()->json($contact);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function update(ContactRequest $request, Contact $contact): JsonResponse
     {
         $this->authorize('Edit Kontak');
@@ -73,6 +92,9 @@ class ContactController extends Controller
         ], 200);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function destroy(Request $request, Contact $contact): JsonResponse
     {
         $this->authorize('Hapus Kontak');

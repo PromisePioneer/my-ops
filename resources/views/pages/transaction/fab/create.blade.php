@@ -30,7 +30,7 @@
                                     PIC
                                 </label>
                                 <div class="position-relative d-flex align-items-center ms-4">
-                                    <select name="pic" id="pic" class="form-select form-select-solid users-select2 ">
+                                    <select name="pic" id="pic" class="form-select form-select-solid users-select2">
                                         <option></option>
                                     </select>
                                 </div>
@@ -239,7 +239,6 @@
                 sklModal: new bootstrap.Modal(document.getElementById('modal-skl-create')),
                 sklForm: document.getElementById('form-skl-create'),
                 contactHasOfferingLetter: null,
-                open: false,
                 buttonLoading: false,
                 fabServices: [{
                     service_category_id: '',

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Accounting\Transaction;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaction\OfferingLetter\OfferingLetterRequest;
-use App\Models\Branch;
 use App\Models\Contact;
 use App\Models\OfferingLetter;
 use App\Models\OfferingLetterProduct;
@@ -25,9 +24,7 @@ use Spatie\Browsershot\Browsershot;
 class OfferingLettersController extends Controller
 {
     public int $perPage = 10;
-
     protected OfferingLetterService $OfferingLetterService;
-
     private Contact $contact;
     private serviceCategory $serviceCategory;
     private OfferingLetterService $offeringLetterService;
