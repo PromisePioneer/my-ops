@@ -10,18 +10,19 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('fab_has_skl', function (Blueprint $table) {
+        Schema::create('offering_letter_product_services', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('fab_id')
-                ->nullable()
-                ->constrained('fab')
+            $table->foreignId('offering_letter_id')
+                ->constrained('offering_letters')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignId('skl_id')
-                ->nullable()
-                ->constrained('skl')
+            $table->foreignId('service_category_id')
+                ->constrained('services_categories')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->foreignId('unit_type_id')->constrained('unit_types');
+            $table->integer('capacity')->nullable();
+            $table->double('price');
             $table->timestamps();
         });
     }
@@ -31,6 +32,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('fab_has_skl');
+        Schema::dropIfExists('offering_letter_product_services');
     }
 };

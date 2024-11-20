@@ -279,7 +279,7 @@
             <tr>
                 <td class="w-3px text-start">Nama</td>
                 <td class="text-center">:</td>
-                <td>{{ $baa->fab->contact->pic_name }}</td>
+                <td>{{ $baa->fab->po->contact->pic_name }}</td>
             </tr>
             <tr>
                 <td class="text-start">Perusahaan</td>
@@ -315,11 +315,11 @@
             </tr>
             <tr>
                 <td class="py-4 fw-bolder px-2">Nama Pelanggan</td>
-                <td class="py-4 px-2">{{ $baa->fab->contact->company_name }}</td>
+                <td class="py-4 px-2">{{ $baa->fab->po->contact->company_name }}</td>
             </tr>
             <tr>
                 <td class="py-4 fw-bolder px-2">Alamat</td>
-                <td class="py-4 px-2">{{ $baa->fab->contact->complete_address ?? '-' }}</td>
+                <td class="py-4 px-2">{{ $baa->fab->po->contact->complete_address ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="py-4 fw-bolder px-2">Lokasi Pekerjaan</td>
@@ -357,8 +357,8 @@
 
         <div class="text-center">
             <p class="m-1">PELANGGAN</p>
-            <p class="mb-20"><b>{{ $baa->fab->contact->company_name }}</b></p>
-            <p class="text-decoration-underline"><b>{{ $baa->fab->contact->pic_name }}</b></p>
+            <p class="mb-20"><b>{{ $baa->fab->po->contact->company_name }}</b></p>
+            <p class="text-decoration-underline"><b>{{ $baa->fab->po->contact->pic_name }}</b></p>
         </div>
     </div>
 

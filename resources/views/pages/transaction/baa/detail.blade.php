@@ -48,7 +48,7 @@
                         <tr>
                             <td class="w-3px text-start">Nama</td>
                             <td class="text-center">:</td>
-                            <td>{{ $baa->fab->contact->pic_name }}</td>
+                            <td>{{ $baa->fab->po->contact->pic_name }}</td>
                         </tr>
                         <tr>
                             <td class="text-start">Perusahaan</td>
@@ -84,7 +84,7 @@
                         </tr>
                         <tr>
                             <th>Nama Pelanggan</th>
-                            <td>{{ $baa->fab->contact->company_name }}</td>
+                            <td>{{ $baa->fab->po->contact->company_name }}</td>
                         </tr>
                         <tr>
                             <th>Layanan</th>
@@ -92,7 +92,7 @@
                         </tr>
                         <tr>
                             <th>Alamat</th>
-                            <td>{{ $baa->fab->contact->complete_address ?? '-' }}</td>
+                            <td>{{ $baa->fab->po->contact->complete_address ?? '-' }}</td>
                         </tr>
                         <tr>
                             <th>Lokasi Pekerjaan</th>
@@ -130,8 +130,8 @@
 
                     <div class="text-center fs-5">
                         <p class="m-1">PELANGGAN</p>
-                        <p class="mb-20"><b>{{ $baa->fab->contact->company_name }}</b></p>
-                        <p class="text-decoration-underline"><b>{{ $baa->fab->contact->pic_name }}</b></p>
+                        <p class="mb-20"><b>{{ $baa->fab->po->contact->company_name }}</b></p>
+                        <p class="text-decoration-underline"><b>{{ $baa->fab->po->contact->pic_name }}</b></p>
 
                     </div>
                 </div>

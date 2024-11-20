@@ -10,11 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('offering_letter_service_descriptions', function (Blueprint $table) {
-            $table->foreignId('skl_id')->nullable()->after('offering_letter_id')
-                ->constrained('skl')
+        Schema::create('offering_letter_skl', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('offering_letter_id')->constrained('offering_letters')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();;
+            $table->foreignId('skl_id')->nullable()->constrained('skl')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->timestamps();
         });
     }
 
@@ -23,8 +27,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('offering_letter_service_descriptions', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('offering_letter_skl');
     }
 };

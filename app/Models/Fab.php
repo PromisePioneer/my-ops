@@ -44,7 +44,7 @@ class Fab extends Model
     public function getData(Request $request): array
     {
         $search = $request->input('search');
-        $query = self::with('contact')
+        $query = self::with('po')
             ->where('status', 1)
             ->orderby('fab_number', 'asc')
             ->when($search, function ($query) use ($search) {
@@ -56,7 +56,7 @@ class Fab extends Model
         return $contact->map(function ($item) {
             return [
                 'id' => $item->id,
-                'text' => $item->fab_number . ' - ' . $item->contact->company_name,
+                'text' => $item->fab_number . ' - ' . $item->po->contact->company_name,
             ];
         })->toArray();
     }

@@ -31,11 +31,6 @@ class BaaRequest extends FormRequest
                 Rule::exists('fab', 'id'),
                 Rule::unique('baa', 'fab_id')->ignore($request->route('baa'))
             ],
-            'po_number' => [
-                'required',
-                Rule::unique('baa', 'po_number')
-                    ->ignore($request->route('baa'))
-            ],
             'work_location' => ['required'],
         ];
     }

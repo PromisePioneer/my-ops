@@ -10,12 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('bast', function (Blueprint $table) {
+        Schema::create('baa', function (Blueprint $table) {
             $table->id();
-            $table->string('bast_number');
-            $table->string('baa_id');
-            $table->date('date');
-            $table->string('name');
+            $table->foreignId('fab_id')->constrained('fab');
+            $table->string('baa_number');
+            $table->string('date');
+            $table->string('work_location');
+            $table->boolean('status')->default(false);
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('bast');
+        Schema::dropIfExists('baa');
     }
 };

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OfferingLetterServiceDescription extends Model
 {
-    protected $table = 'offering_letter_service_descriptions';
+    protected $table = 'offering_letter_skl';
     protected $fillable = [
         'offering_letter_id',
         'skl_id',

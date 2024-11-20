@@ -4,19 +4,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOfferingLetterProductServices extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up(): void
     {
-        Schema::create('offering_letter_product_services', static function (Blueprint $table) {
+        Schema::create('fab_services', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('offering_letter_id')
-                ->constrained('offering_letters')
+            $table->foreignId('fab_id')
+                ->constrained('fab')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->foreignId('service_category_id')
@@ -24,19 +21,17 @@ class CreateOfferingLetterProductServices extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->integer('capacity')->nullable();
-            $table->double('price');
+            $table->foreignId('unit_type_id')->constrained('unit_types')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->double('price')->nullable();
             $table->timestamps();
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down(): void
     {
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('offering_letter_product_services');
+        Schema::dropIfExists('fab_services');
     }
-}
+};

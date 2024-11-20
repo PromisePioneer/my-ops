@@ -13,7 +13,6 @@ class BAA extends Model
         'fab_id',
         'baa_number',
         'date',
-        'po_number',
         'work_location',
         'status'
     ];

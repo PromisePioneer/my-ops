@@ -22,12 +22,12 @@ class BAAService
     private static function generateBaaNumber(Request $request): string
     {
 
-        $fab = Fab::with('contact')->where('id', $request->fab_id)->first();
+        $fab = Fab::with('po')->where('id', $request->fab_id)->first();
 
 
         $baa = BAA::latest()->first();
 
-        $companyCode = Contact::where('id', $fab->contact->id)->first()->company_code;
+        $companyCode = Contact::where('id', $fab->po->contact->id)->first()->company_code;
         $month = convertToRoman(Carbon::parse($request->date)->format('m'));
         $year = Carbon::parse($request->date)->format('Y');
 

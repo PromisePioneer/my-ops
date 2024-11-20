@@ -10,13 +10,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('baa', function (Blueprint $table) {
+        Schema::create('fab', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('fab_id')->constrained('fab');
-            $table->string('baa_number');
+            $table->foreignId('po_id')->nullable()->constrained('purchase_orders');
+            $table->string('fab_number');
+            $table->string('contract_number');
             $table->string('date');
-            $table->string('po_number');
-            $table->string('work_location');
+            $table->foreignId('created_by')->constrained('users');
+            $table->foreignId('pic')->constrained('users');
             $table->boolean('status')->default(false);
             $table->timestamps();
         });
@@ -27,7 +28,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('baa');
+        Schema::dropIfExists('fab');
     }
 };

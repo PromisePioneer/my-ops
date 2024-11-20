@@ -13,10 +13,10 @@ class SPKService
     public function generateSpkNumber($fabId): string
     {
 
-        $fab = Fab::with('contact')->where('id', $fabId)->first();
+        $fab = Fab::with('po')->where('id', $fabId)->first();
         $baa = SPK::latest()->first();
 
-        $companyCode = Contact::where('id', $fab->contact->id)->first()->company_code;
+        $companyCode = Contact::where('id', $fab->po->contact->id)->first()->company_code;
         $month = convertToRoman(Carbon::parse(Carbon::now())->format('m'));
         $year = Carbon::parse(Carbon::now())->format('Y');
 

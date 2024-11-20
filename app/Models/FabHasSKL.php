@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FabHasSKL extends Model
 {
-    protected $table = 'fab_has_skl';
+    protected $table = 'fab_skl';
     protected $fillable = [
         'fab_id',
         'skl_id',

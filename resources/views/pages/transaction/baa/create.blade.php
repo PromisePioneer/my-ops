@@ -34,15 +34,6 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-lg-6">
-                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
-                                        No. PO
-                                    </label>
-                                    <div class="mb-5">
-                                        <input type="text" class="form-control form-control-solid" name="po_number"
-                                               id="po_number" placeholder="No. PO">
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
