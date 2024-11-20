@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('employee_schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('work_time_id')->constrained('work_time');
-            $table->foreignId('user_id')->constrained('users');
+            $table->integer('employee_id');
             $table->date('date');
             $table->enum('status', ['H', 'L'])->default('H');
             $table->timestamps();

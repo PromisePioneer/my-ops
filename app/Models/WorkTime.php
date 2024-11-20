@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\Request;
 
 class WorkTime extends Model
@@ -57,5 +58,11 @@ class WorkTime extends Model
     public function userWorktime(): HasMany
     {
         return $this->hasMany(UserWorkTime::class, 'work_time_id', 'id');
+    }
+
+
+    public function employeeSchedules(): HasOne
+    {
+        return $this->hasOne(EmployeeSchedule::class);
     }
 }
