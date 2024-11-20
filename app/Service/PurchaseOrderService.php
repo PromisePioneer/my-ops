@@ -110,7 +110,7 @@ class PurchaseOrderService
             $data = $request->validated();
             $data['po_number'] = self::generatePurchaseOrderNumber($request);
             $purchaseOrder->update($data);
-            PurchaseOrderItem::whereIn('po_id', $purchaseOrder->id)->delete();
+            PurchaseOrderItem::whereIn('po_id', [$purchaseOrder->id])->delete();
             $this->purchaseOrderItemStoreOrUpdate($request, $purchaseOrder);
         });
     }
@@ -122,5 +122,26 @@ class PurchaseOrderService
             $value['po_id'] = $po->id;
             PurchaseOrderItem::create($value);
         }
+    }
+
+
+    public function convertCompanyNameToTextCapitalize(PurchaseOrder $purchaseOrder): string
+    {
+        $companyName = strtolower($purchaseOrder->contact->company_name);
+        $convertCompanyNameToArray = explode(" ", $companyName);
+
+        $newString = '';
+        $newPTKey = '';
+
+        if (($key = array_search('pt.' || 'pt', $convertCompanyNameToArray)) !== false) {
+            $newPTKey = $convertCompanyNameToArray[$key];
+            unset($convertCompanyNameToArray[$key]);
+        }
+
+        foreach ($convertCompanyNameToArray as $abbr) {
+            $newString .= strtolower($abbr) . ' ';
+        }
+
+        return strtoupper($newPTKey) . ' ' . ucwords(trim($newString));
     }
 }

@@ -14,7 +14,8 @@ class PurchaseOrder extends Model
         'offering_letter_id',
         'date',
         'po_number',
-        'pic'
+        'pic',
+        'status'
     ];
 
 

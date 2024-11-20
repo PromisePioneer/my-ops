@@ -6,14 +6,18 @@ use AllowDynamicProperties;
 use App\Http\Requests\PORequest;
 use App\Models\Contact;
 use App\Models\OfferingLetter;
+use App\Models\OfferingLetterProduct;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
+use App\Models\TaxSetting;
 use App\Models\UnitType;
 use App\Models\User;
 use App\Service\PurchaseOrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
+use Spatie\Browsershot\Browsershot;
 use Throwable;
 
 #[AllowDynamicProperties] class PurchaseOrderController extends Controller
@@ -80,6 +84,22 @@ use Throwable;
     }
 
 
+    public function selectedPIC(PurchaseOrder $purchaseOrder): JsonResponse
+    {
+        return response()->json($this->user->getSelectedData($purchaseOrder->pic));
+    }
+
+    public function selectedContact(PurchaseOrder $purchaseOrder): JsonResponse
+    {
+        return response()->json($this->contact->getSelectedData($purchaseOrder->contact_id));
+    }
+
+    public function getPurchaseOrderItem(PurchaseOrder $purchaseOrder): JsonResponse
+    {
+        $poItem = PurchaseOrderItem::where('po_id', $purchaseOrder->id)->get();
+        return response()->json($poItem);
+    }
+
     public function edit(PurchaseOrder $purchaseOrder): View
     {
         return view('pages.transaction.purchase-orders.edit', compact('purchaseOrder'));
@@ -98,12 +118,66 @@ use Throwable;
 
     public function detail(PurchaseOrder $purchaseOrder): View
     {
-        PurchaseOrderItem::where('po_id', $purchaseOrder->id)->get();
-        return view('pages.transaction.purchase-orders.detail', compact('purchaseOrder'));
+        $purchaseOrderItem = PurchaseOrderItem::where('po_id', $purchaseOrder->id)->get();
+        $poCompany = $this->purchaseOrderService->convertCompanyNameToTextCapitalize($purchaseOrder);
+
+        $getPPN = TaxSetting::where('name', 'PPN')->first();
+        $totalPPN = $getPPN->rate / 100 * $purchaseOrderItem->sum('price');
+        $total = $purchaseOrderItem->sum('price') + $totalPPN;
+
+
+        return view('pages.transaction.purchase-orders.detail', compact('purchaseOrder', 'purchaseOrderItem', 'poCompany', 'total', 'totalPPN'));
     }
 
-    public function destroy()
-    {
 
+    public function confirm(PurchaseOrder $purchaseOrder): JsonResponse
+    {
+        $purchaseOrder->update([
+            'status' => 1
+        ]);
+        return response()->json();
+    }
+
+
+    public function destroy(PurchaseOrder $purchaseOrder): JsonResponse
+    {
+        return response()->json($purchaseOrder->delete());
+    }
+
+
+    public function exportToPDF(PurchaseOrder $purchaseOrder)
+    {
+        $purchaseOrderItem = OfferingLetterProduct::with('unitType')
+            ->where('offering_letter_id', $purchaseOrder->id)
+            ->get();
+
+        $getPPN = TaxSetting::where('name', 'PPN')->first();
+
+
+        $poCompany = $this->purchaseOrderService->convertCompanyNameToTextCapitalize($purchaseOrder);
+
+        $totalPPN = $getPPN->rate / 100 * $purchaseOrderItem->sum('price');
+        $total = $purchaseOrderItem->sum('price') + $totalPPN;
+
+
+        $view = view('pages.transaction.purchase-orders.export-pdf', compact(
+            'purchaseOrder', 'purchaseOrderItem', 'poCompany', 'total', 'totalPPN'));
+
+
+        $pdf = Browsershot::html($view)
+            ->setChromePath('/usr/bin/chromium')
+            ->noSandbox()
+            ->waitUntilNetworkIdle()
+            ->ignoreHttpsErrors()
+            ->format('A4')
+            ->setEnvironmentOptions([
+                'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
+            ])->pdf();
+
+
+        return new Response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="example.pdf',
+        ]);
     }
 }

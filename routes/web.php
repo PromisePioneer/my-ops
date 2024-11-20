@@ -838,6 +838,13 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/offering-letter/{contact}', [PurchaseOrderController::class, 'getOfferingLetterIfExists']);
             Route::post('/', [PurchaseOrderController::class, 'store']);
             Route::get('/detail/{purchaseOrder}', [PurchaseOrderController::class, 'detail']);
+            Route::post('/confirm/{purchaseOrder}', [PurchaseOrderController::class, 'confirm']);
+            Route::get('/export-pdf/{purchaseOrder}', [PurchaseOrderController::class, 'exportToPDF']);
+            Route::get('/edit/{purchaseOrder}', [PurchaseOrderController::class, 'edit']);
+            Route::get('/pic/selected/{purchaseOrder}', [PurchaseOrderController::class, 'selectedPIC']);
+            Route::get('/contact/selected/{purchaseOrder}', [PurchaseOrderController::class, 'selectedContact']);
+            Route::get('/purchase-order-item/selected/{purchaseOrder}', [PurchaseOrderController::class, 'getPurchaseOrderItem']);
+            Route::post('/update/{purchaseOrder}', [PurchaseOrderController::class, 'update']);
         });
 
         Route::prefix('fab')->group(function () {

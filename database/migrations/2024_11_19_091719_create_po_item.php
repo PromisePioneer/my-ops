@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('po_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('po_id')->constrained('purchase_orders');
+            $table->foreignId('po_id')->constrained('purchase_orders')->onDelete('cascade')->onUpdate('cascade');
             $table->string('item');
             $table->foreignId('unit_type_id')->constrained('unit_types');
             $table->integer('qty');

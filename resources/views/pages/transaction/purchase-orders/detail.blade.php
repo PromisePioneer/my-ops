@@ -1,43 +1,117 @@
-@php use function App\Helper\formatDate; @endphp
+@php @endphp
 @extends('layouts.template')
-@section('page-title', 'Pendapatan - PO Detail')
 @section('content')
 
-    <div class="d-flex flex-row flex-lg-row" x-data="PODetail()">
+    <div class="d-flex flex-row flex-lg-row" x-data="purchaseOrderDetail">
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-8 me-xl-10">
             <div class="card">
                 <div class="card-body p-0">
                     <img class="w-sm-100 h-200px" src="{{ asset('assets/media/logos/kop-header.png') }}" alt="">
+                    <div class="row">
+                        <div class="col-md-3 ms-4">
+                            <p class="mb-4 fw-bolder text-hover-primary text-wrap fs-6" style="width: 20rem">
+                                Yth, Bapak/Ibu {{ $purchaseOrder->contact->pic_name }},<br>
+                                <span>{{ $poCompany }}</span>
+                            </p>
 
-                    <div class="text-center mb-15">
-                        <h1><u>PURCHASE ORDER</u></h1>
-                        <h3>{{ $purchaseOrder->po_number }}</h3>
-                    </div>
-
-                    <div class="d-flex ms-10 justify-content-between">
-                        <div class="">
-                            <table class="fs-6">
-                                <tr>
-                                    <td>Subjek</td>
-                                    <td>:</td>
-                                    <td>{{ $purchaseOrder->subject }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Tanggal</td>
-                                    <td>:</td>
-                                    <td>{{ formatDate($purchaseOrder->date) }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Subjek</td>
-                                    <td>:</td>
-                                    <td>{{ $purchaseOrder->subject }}</td>
-                                </tr>
-                            </table>
+                            <p class="mb-4 text-hover-primary text-wrap fs-6">
+                                {{ $purchaseOrder->contact?->complete_address ?? 'Ditempat' }}
+                            </p>
                         </div>
-                        <div class="">
-                            Yth, {{ $purchaseOrder->contact->pic_name }}, <br>
-                            {{ $purchaseOrder->contact->company_name }}, <br>
-                            {{ $purchaseOrder->contact->complete_address ?? 'Ditempat' }}
+                        <div class="col-md-8 ms-10">
+                            Dengan Hormat, <br>
+                            Berdasarkan Penawaran yang telah disepakati dan diterima, berikut kami PT. Mayatama
+                            Solusindo Melampirkan PO sebagai berikut :
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 ms-4">
+                                <div class="separator mb-3"
+                                     style="border: 1px solid #7dbbf5;"></div>
+
+                                <div class="mb-2">
+                                    <div class="fs-6 d-flex align-items-center">
+                                        {{ \App\Helper\formatDate($purchaseOrder->date) }}
+                                    </div>
+                                </div>
+
+                                <div class="separator mb-6" style="border: 1px solid #7dbbf5;"></div>
+
+                                <div class="mb-6">
+                                    <div class="fw-bold fs-7">Nomor:</div>
+                                    <div class="fs-6 text-gray-800">
+                                        {{ $purchaseOrder->po_number }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8 ms-10">
+                                <table class="table">
+                                    <thead>
+                                    <tr class="border-bottom border-top border-black fs-6 fw-bold"
+                                        style="background-color: #7dbbf5">
+                                        <th class="text-center">No</th>
+                                        <th class="text-center">Item</th>
+                                        <th class="text-center">Qty / Jumlah</th>
+                                        <th class="text-center">Harga / Bulan</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="border-bottom border-black">
+                                    @foreach($purchaseOrderItem as $item)
+                                        <tr class="fs-5 text-end border-bottom border-black">
+                                            <td class="text-center">{{ $loop->iteration }}</td>
+                                            <td class="text-center">
+                                                {{ $item->item }}
+                                            </td>
+                                            <td class="text-center"> {{ $item->qty }} {{ $item->unitType->name }}</td>
+                                            <td class="text-center">
+                                                {{ number_format($item->price, false, '.', '.') }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                    <tfoot class="border-bottom border-black">
+                                    <tr class="border-bottom border-black p-1">
+                                        <td colspan="3" class="text-end fw-bold fs-6 text-gray-800">
+                                            PPN
+                                        </td>
+                                        <td class="text-center fw-bold fs-6 text-gray-800">  {{ number_format($totalPPN, false,'.', '.') }}</td>
+                                    </tr>
+                                    <tr class="p-1 border-bottom border-black">
+                                        <td colspan="3" class="text-end fw-bold fs-6 text-gray-800">
+                                            Total
+                                        </td>
+                                        <td class="text-center fw-bold fs-6 text-gray-800">  {{ number_format($total, false,'.', '.') }}</td>
+                                    </tr>
+                                    </tfoot>
+                                </table>
+                                <div class="d-flex align-items-center justify-content-between mt-20">
+                                    <div class="text-center">
+                                        <div class="fw-bold" style="margin-bottom: 100px">
+                                            PT. Mayatama Solusindo
+                                        </div>
+                                        <div class="fw-bold">
+                                            {{ $purchaseOrder->picName->roles[0]?->name ?? '-' }}
+                                        </div>
+                                        <div class="fw-bold">
+                                            {{ $purchaseOrder->picName->name }}
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center">
+                                        <div class="fw-bold" style="margin-bottom: 100px">
+                                            {{ $purchaseOrder->contact->company_name }}
+                                        </div>
+                                        <div class="fw-bold">
+                                            {{ $purchaseOrder->contact->pic_position ?? '' }}
+                                        </div>
+                                        <div class="fw-bold">
+                                            {{ $purchaseOrder->contact->pic_name }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8"></div>
                         </div>
                     </div>
                 </div>
@@ -56,7 +130,7 @@
                             <div class="row mb-5">
                                 @can('Edit Data Penawaran')
                                     <div class="col">
-                                        <a href="{{ url('income-transactions/offering-letters/edit/' . $purchaseOrder->id) }}"
+                                        <a href="{{ url('income-transactions/po/edit/' . $purchaseOrder->id) }}"
                                            class="btn btn-light btn-active-light-info w-100">Ubah</a>
                                     </div>
                                 @endcan
@@ -69,13 +143,13 @@
                                 @endcan
                             </div>
                             @can('Konfirmasi Data Penawaran')
-                                <button type="button" @click="confirmOfferingLetter()"
+                                <button type="button" @click="confirmPO()"
                                         class="btn btn-primary w-100 mb-4">
                                     Konfirmasi
                                 </button>
                             @endcan
                         @else
-                            <a href="{{ url('income-transactions/offering-letters/export-pdf/'. $offeringLetter->id) }}"
+                            <a href="{{ url('income-transactions/po/export-pdf/'. $purchaseOrder->id) }}"
                                class="btn btn-light-info w-100 mb-4" target="_blank">
                                 Print PDF
                             </a>
@@ -86,11 +160,48 @@
         </div>
     </div>
 
+    @include('components.toast')
 @endsection
 @push('script')
     <script>
-        function PODetail() {
-            return {}
+        function purchaseOrderDetail() {
+            return {
+                id: "{{ $purchaseOrder->id }}",
+                buttonLoading: false,
+                async destroy() {
+                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                        try {
+                            await axios.delete(`/income-transactions/offering-letters/${this.id}`);
+                            await showAlert('success', 'Data sukses dihapus').then(() => {
+                                window.location.href = "/income-transactions/offering-letters"
+                            });
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
+                },
+                async confirmPO() {
+                    showConfirmModal("Anda yakin?", "Penawaran yang sudah di konfirmasi tidak akan dapat dihapus ataupun diubah.", "Konfirmasi", async () => {
+                        try {
+                            await axios.post(`/income-transactions/po/confirm/${this.id}`);
+                            await showAlert('success', 'Data sukses dikonfirmasi').then(() => {
+                                location.reload();
+                            });
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
+                },
+                formatNumber(curr) {
+                    let IDR = new Intl.NumberFormat('en-ID', {
+                        style: 'currency',
+                        currency: "IDR"
+                    });
+                    return IDR.format(curr);
+                },
+            }
         }
     </script>
 @endpush
