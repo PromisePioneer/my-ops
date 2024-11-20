@@ -6,7 +6,6 @@ use AllowDynamicProperties;
 use App\Http\Requests\PORequest;
 use App\Models\Contact;
 use App\Models\OfferingLetter;
-use App\Models\OfferingLetterProduct;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\TaxSetting;
@@ -147,8 +146,8 @@ use Throwable;
 
     public function exportToPDF(PurchaseOrder $purchaseOrder)
     {
-        $purchaseOrderItem = OfferingLetterProduct::with('unitType')
-            ->where('offering_letter_id', $purchaseOrder->id)
+        $purchaseOrderItem = PurchaseOrderItem::with('unitType')
+            ->where('po_id', $purchaseOrder->id)
             ->get();
 
         $getPPN = TaxSetting::where('name', 'PPN')->first();

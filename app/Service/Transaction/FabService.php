@@ -6,6 +6,7 @@ use App\Models\Contact;
 use App\Models\Fab;
 use App\Models\FabHasSKL;
 use App\Models\FabServiceCategory;
+use App\Models\PurchaseOrder;
 use App\Service\CompanyNameService;
 use App\Service\HelperService\HandleFileUploadService;
 use Carbon\Carbon;
@@ -30,11 +31,11 @@ class FabService
 
     private static function generateFABNumber(Request $request): string
     {
-        $fab = Fab::where('contact_id', $request->contact_id)
-            ->latest()
-            ->first();
 
-        $companyCode = Contact::where('id', $request->contact_id)->first()->company_code;
+        $po = PurchaseOrder::with('contact')->where('id', $request->po_id)->first();
+        $fab = Fab::latest()->first();
+
+        $companyCode = Contact::where('id', $po->contact->id)->first()->company_code;
         $month = convertToRoman(Carbon::parse($request->date)->format('m'));
         $year = Carbon::parse($request->date)->format('Y');
 
@@ -56,11 +57,10 @@ class FabService
 
     private static function generateContractNumber(Request $request): string
     {
-        $fab = Fab::where('contact_id', $request->contact_id)
-            ->latest()
-            ->first();
+        $po = PurchaseOrder::with('contact')->where('id', $request->po_id)->first();
+        $fab = Fab::latest()->first();
 
-        $companyCode = Contact::where('id', $request->contact_id)->first()->company_code;
+        $companyCode = Contact::where('id', $po->contact->id)->first()->company_code;
         $month = convertToRoman(Carbon::parse($request->due_date)->format('m'));
         $year = Carbon::parse($request->due_date)->format('Y');
 
@@ -82,7 +82,7 @@ class FabService
 
     public function data(): LengthAwarePaginator
     {
-        $data = Fab::with('contact', 'user')
+        $data = Fab::with('contact', 'user', 'po')
             ->paginate(self::$perPage);
         return self::formattedData($data);
     }
@@ -94,7 +94,7 @@ class FabService
                 'date' => formatDate($item->date),
                 'id' => $item->id,
                 'code' => $item->fab_number,
-                'contact' => $item->contact->company_name . ' (' . $item->contact->pic_name . ')',
+                'contact' => $item->po->contact->company_name . ' (' . $item->po->contact->pic_name . ')',
                 'created_by' => $item->user->name,
             ];
         });
@@ -133,9 +133,8 @@ class FabService
             $data = $request->validated();
             $data['created_by'] = $request->user()->id;
             $data['fab_number'] = self::generateFABNumber($request);
-            $data['offering_letter_id'] = $request->offering_letter_id;
+            $data['po_id'] = $request->po_id;
             $data['contract_number'] = self::generateContractNumber($request);
-            $data['file_po'] = $this->handleFileUploadService->upload($request, 'documents/po', 'file_po');
             $fab = Fab::create($data);
             $this->fabHasServiceCategoriesStoreOrUpdate($request, $fab);
             $this->fabHasSKLStoreOrUpdate($request, $fab);
@@ -149,8 +148,7 @@ class FabService
             $data = $request->validated();
             $data['created_by'] = $request->user()->id;
             $data['fab_number'] = self::generateFABNumber($request);
-            $data['offering_letter_id'] = $request->offering_letter_id;
-            $data['file_po'] = $this->handleFileUploadService->upload($request, 'documents/po', 'file_po', $fab->file_po);
+            $data['po_id'] = $request->po_id;
             $fab->update($data);
             FabServiceCategory::whereIn('fab_id', [$fab->id])->delete();
             FabHasSKL::whereIn('fab_id', [$fab->id])->delete();
@@ -191,7 +189,7 @@ class FabService
 
     public function convertCompanyNameToCapitalLetter(Fab $fab): string
     {
-        return $this->companyNameService->convertCompanyNameToCapitalLetter($fab->contact->company_name);
+        return $this->companyNameService->convertCompanyNameToCapitalLetter($fab->po->contact->company_name);
     }
 
 }

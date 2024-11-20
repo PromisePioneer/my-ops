@@ -550,8 +550,8 @@
 
 <footer>
     <img
-        src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"
-        width="100%" height="100%"/>
+            src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"
+            width="100%" height="100%"/>
 </footer>
 
 
@@ -644,8 +644,8 @@
         </div>
         <div class="col-lg-6">
             <div
-                class="{{ $fab->contact->complete_address ? 'border border-1 mb-1 border-black w-100' : 'border border-1 border-black w-100 p-2 mb-1' }}">
-                {{ $fab->contact->complete_address ?? '' }}
+                    class="{{ $fab->po->contact->complete_address ? 'border border-1 mb-1 border-black w-100' : 'border border-1 border-black w-100 p-2 mb-1' }}">
+                {{ $fab->po->contact->complete_address ?? '' }}
             </div>
             <div class="d-flex align-items-center">
                 <div class="me-3">
@@ -653,8 +653,8 @@
                 </div>
                 <div class="me-3">
                     <div
-                        class="{{ $fab->contact->phone_number ? 'border border-1 border-black w-150px p-1 mb-1' : 'border border-1 border-black w-150px p-2 mb-1' }}">
-                        {{ $fab->contact->phone_number }}
+                            class="{{ $fab->po->contact->phone_number ? 'border border-1 border-black w-150px p-1 mb-1' : 'border border-1 border-black w-150px p-2 mb-1' }}">
+                        {{ $fab->po->contact->phone_number }}
                     </div>
                 </div>
                 <div class="me-3">
@@ -662,8 +662,8 @@
                 </div>
                 <div class="me-2">
                     <div
-                        class="{{ $fab->contact->fax ? 'border border-1 border-black w-150px p-1 mb-1' : 'border border-1 border-black w-150px p-2 mb-1' }}">
-                        {{ $fab->contact->fax }}
+                            class="{{ $fab->po->contact->fax ? 'border border-1 border-black w-150px p-1 mb-1' : 'border border-1 border-black w-150px p-2 mb-1' }}">
+                        {{ $fab->po->contact->fax }}
                     </div>
                 </div>
             </div>
@@ -675,8 +675,8 @@
         </div>
         <div class="col-lg-6">
             <div
-                class="{{ $fab->contact->npwp ? 'border border-1 border-black p-1 w-100' : 'border border-1 border-black w-100 p-2' }}">
-                {{ $fab->contact->npwp }}
+                    class="{{ $fab->po->contact->npwp ? 'border border-1 border-black p-1 w-100' : 'border border-1 border-black w-100 p-2' }}">
+                {{ $fab->po->contact->npwp }}
             </div>
         </div>
     </div>
@@ -686,8 +686,8 @@
         </div>
         <div class="col-lg-6">
             <div
-                class="{{ $fab->contact->pic_name ? 'border border-1 border-black w-100 p-1' : 'border border-1 border-black w-100 p-2' }}">
-                {{ $fab->contact->pic_name }}
+                    class="{{ $fab->po->contact->pic_name ? 'border border-1 border-black w-100 p-1' : 'border border-1 border-black w-100 p-2' }}">
+                {{ $fab->po->contact->pic_name }}
             </div>
         </div>
     </div>
@@ -697,8 +697,8 @@
         </div>
         <div class="col-lg-6">
             <div
-                class="{{ $fab->contact->identity_number ? 'border border-1 border-black w-100 mb-1 p-1' : 'border border-1 border-black w-100 p-2 mb-1' }}">
-                {{ $fab->contact->identity_number }}
+                    class="{{ $fab->po->contact->identity_number ? 'border border-1 border-black w-100 mb-1 p-1' : 'border border-1 border-black w-100 p-2 mb-1' }}">
+                {{ $fab->po->contact->identity_number }}
             </div>
         </div>
     </div>
@@ -803,8 +803,8 @@
         <div class="d-flex justify-content-around align-items-center">
             <div class="text-center">
                 <p class="fw-bolder" style="margin-bottom: 60px">{{ $fabCompanyName }}</p>
-                <p class="fw-bolder">{{ $fab->contact->pic_name }}</p>
-                <p class="fw-bolder">{{ $fab->contact->pic_position }}</p>
+                <p class="fw-bolder">{{ $fab->po->contact->pic_name }}</p>
+                <p class="fw-bolder">{{ $fab->po->contact->pic_position }}</p>
             </div>
             <div class="text-center">
                 <p class="fw-bolder" style="margin-bottom: 60px">PT Mayatama Solusindo</p>

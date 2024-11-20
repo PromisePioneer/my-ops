@@ -110,8 +110,8 @@
                     </div>
                     <div class="col-lg-6">
                         <div
-                            class="{{ $fab->contact->complete_address ? 'border border-3 border-black p-1 w-100 mb-1' : 'border border-3 border-black  w-100 p-4 mb-1' }}">
-                            {{ $fab->contact->complete_address ?? '' }}
+                            class="{{ $fab->po->contact->complete_address ? 'border border-3 border-black p-1 w-100 mb-1' : 'border border-3 border-black  w-100 p-4 mb-1' }}">
+                            {{ $fab->po->contact->complete_address ?? '' }}
                         </div>
                         <div class="d-flex align-items-center">
                             <div class="me-3">
@@ -119,8 +119,8 @@
                             </div>
                             <div class="me-4">
                                 <div
-                                    class="{{ $fab->contact->phone_number ? 'border border-3 border-black w-240px p-1' : 'border border-3 border-black  w-240px p-4' }}">
-                                    {{ $fab->contact->phone_number }}
+                                    class="{{ $fab->po->contact->phone_number ? 'border border-3 border-black w-240px p-1' : 'border border-3 border-black  w-240px p-4' }}">
+                                    {{ $fab->po->contact->phone_number }}
                                 </div>
                             </div>
                             <div class="me-3">
@@ -128,8 +128,8 @@
                             </div>
                             <div class="me-3">
                                 <div
-                                    class="{{ $fab->contact->fax ? 'border border-3 border-black w-240px mb-1 p-1' : 'border border-3 border-black  w-250px p-4 mb-1' }}">
-                                    {{ $fab->contact->fax }}
+                                    class="{{ $fab->po->contact->fax ? 'border border-3 border-black w-240px mb-1 p-1' : 'border border-3 border-black  w-250px p-4 mb-1' }}">
+                                    {{ $fab->po->contact->fax }}
                                 </div>
                             </div>
                         </div>
@@ -141,8 +141,8 @@
                     </div>
                     <div class="col-lg-6">
                         <div
-                            class="{{ $fab->contact->npwp ? 'border border-3 p-1 border-black w-100 mb-1' : 'border border-3 border-black  w-100 p-4 mb-1' }}">
-                            {{ $fab->contact->npwp }}
+                            class="{{ $fab->po->contact->npwp ? 'border border-3 p-1 border-black w-100 mb-1' : 'border border-3 border-black  w-100 p-4 mb-1' }}">
+                            {{ $fab->po->contact->npwp }}
                         </div>
                     </div>
                 </div>
@@ -152,8 +152,8 @@
                     </div>
                     <div class="col-lg-6">
                         <div
-                            class="{{ $fab->contact->identity_number ? 'border border-3 p-1 border-black w-100 mb-1' : 'border border-3 border-black  w-100 p-4 mb-1' }}">
-                            {{ $fab->contact->identity_number }}
+                            class="{{ $fab->po->contact->identity_number ? 'border border-3 p-1 border-black w-100 mb-1' : 'border border-3 border-black  w-100 p-4 mb-1' }}">
+                            {{ $fab->po->contact->identity_number }}
                         </div>
                     </div>
                 </div>
@@ -261,8 +261,8 @@
                 <div class="d-flex justify-content-around">
                     <div class="text-center">
                         <h6 style="margin-bottom: 100px">{{ $fabCompanyName }}</h6>
-                        <h6>{{ $fab->contact->pic_name }}</h6>
-                        <h6>{{ $fab->contact->pic_position }}</h6>
+                        <h6>{{ $fab->po->contact->pic_name }}</h6>
+                        <h6>{{ $fab->po->contact->pic_position }}</h6>
                     </div>
                     <div class="text-center">
                         <h6 style="margin-bottom: 100px">PT Mayatama Solusindo</h6>

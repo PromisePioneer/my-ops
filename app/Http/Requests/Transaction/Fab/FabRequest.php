@@ -23,13 +23,11 @@ class FabRequest extends FormRequest
     {
         return [
             'date' => ['required', 'date'],
-            'contact_id' => ['required', Rule::exists('contacts', 'id'),
-                Rule::unique('fab', 'contact_id')->ignore($request->route('fab'))],
             'pic' => ['required', Rule::exists('users', 'id')],
+            'po_id' => ['required', Rule::exists('purchase_orders', 'id'), Rule::unique('fab', 'po_id')->ignore($request->route('fab'))],
             'fabServices.*.service_category_id' => ['required', Rule::exists('services_categories', 'id')],
             'fabServices.*.price' => ['required'],
             'fabServices.*.unit_type_id' => ['required'],
-            'file_po' => ['required', 'mimes:pdf']
         ];
     }
 
@@ -38,8 +36,6 @@ class FabRequest extends FormRequest
         return [
             'date.required' => 'Tanggal harus diisi.',
             'date.date' => 'Tanggal tidak valid.',
-            'contact_id.required' => 'Kontak tidak boleh koosong.',
-            'contact_id.exists' => 'Kontak tidak ditemukan.',
             'pic.required' => 'PIC harus diisi.',
             'pic.exists' => 'PIC tidak ditemukan.',
             'fabServices.*.service_category_id.required' => 'Kategori Layanan tidak boleh kosong.',
@@ -47,8 +43,6 @@ class FabRequest extends FormRequest
             'fabServices.*.capacity.required' => 'Kapasitas tidak boleh kosong.',
             'fabServices.*.unit_type_id.required' => 'Satuan tidak boleh kosong.',
             'fabServices.*.price.required' => 'Harga layanan tidak boleh kosong.',
-            'file_po.required' => 'File PO tidak boleh koosng.',
-            'file_po.mimes' => 'File PO harus bertipe PDF',
         ];
     }
 }

@@ -34,42 +34,15 @@
                         <div class="separator separator-dashed my-10"></div>
                         <div class="mb-0">
                             <div class="row gx-10 mb-5">
-                                <div class="col-lg-6">
+                                <div class="col-md-6">
                                     <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
-                                        Pelanggan
+                                        PO
                                     </label>
                                     <div class="mb-5">
-                                        <select name="contact_id" id="selectedContact"
-                                                class="form-select form-select-solid contact-select2"
-                                                data-placeholder="Select an option">
-                                            <option>Pilih Pelanggan</option>
+                                        <select name="po_id" id="selectedPO"
+                                                class="form-select form-select-solid po-select2">
+                                            <option></option>
                                         </select>
-                                    </div>
-                                </div>
-                                <div :class="contactHasOfferingLetter === null ? 'col-lg-6 d-none' : 'col-lg-6'"
-                                     x-transition>
-                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
-                                        Surat Penawaran
-                                    </label>
-                                    <div class="mb-5">
-                                        <select name="offering_letter_id" id="offering_letter_id"
-                                                class="form-select form-select-solid">
-                                            <option :value="contactHasOfferingLetter?.id"
-                                                    x-text="contactHasOfferingLetter?.offering_number"></option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
-                                        File PO.
-                                    </label>
-                                    <div class="mb-5">
-                                        <input name="file_po" class="form-control form-control-solid" type="file"
-                                               accept="application/pdf"/>
                                     </div>
                                 </div>
                             </div>
@@ -532,28 +505,20 @@
                             }
                         },
                         ajax: {
-                            url: '/income-transactions/fab/contact/data',
+                            url: '/income-transactions/fab/po/data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
                             processResults: data => ({results: data}),
                             cache: true
                         }
-                    }).on('change', async function () {
-                        const val = $(this).select2('data')[0];
-                        const resp = await axios.get(`/income-transactions/fab/offering-letter/${val.id}`);
-                        if (Object.keys(resp.data).length >= 1) {
-                            self.contactHasOfferingLetter = resp.data;
-                        } else {
-                            self.contactHasOfferingLetter = null;
-                        }
                     });
                 },
                 async selectedContact() {
-                    const selectedContact = $('#selectedContact');
-                    const response = await axios.get(`/income-transactions/fab/get-selected-contact/${this.id}`);
+                    const selectedPO = $('#selectedPO');
+                    const response = await axios.get(`/income-transactions/fab/get-selected-po/${this.id}`);
                     const option = new Option(response.data.name, response.data.id, true, true);
-                    selectedContact.append(option).trigger('change').trigger({
+                    selectedPO.append(option).trigger('change').trigger({
                         type: 'select2:select',
                         params: {results: response.data}
                     });

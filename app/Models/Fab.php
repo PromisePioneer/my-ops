@@ -11,16 +11,13 @@ class Fab extends Model
     protected $table = 'fab';
 
     protected $fillable = [
-        'offering_letter_id',
+        'po_id',
         'fab_number',
         'contract_number',
         'date',
-        'contact_id',
         'pic',
         'created_by',
-        'contact_id',
         'created_by',
-        'file_po'
     ];
 
     public function contact(): BelongsTo
@@ -36,6 +33,11 @@ class Fab extends Model
     public function fabPic(): BelongsTo
     {
         return $this->belongsTo(User::class, 'pic');
+    }
+
+    public function po(): BelongsTo
+    {
+        return $this->belongsTo(PurchaseOrder::class, 'po_id');
     }
 
 

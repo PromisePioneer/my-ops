@@ -39,40 +39,16 @@
                         <div class="separator separator-dashed my-10"></div>
                         <div class="mb-0">
                             <div class="row gx-10 mb-5">
-                                <div class="col-lg-6">
+                                <div class="col-md-6">
                                     <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
-                                        Pelanggan
+                                        PO
                                     </label>
                                     <div class="mb-5">
-                                        <select name="contact_id"
-                                                class="form-select form-select-solid contacts-select2">
+                                        <select name="po_id"
+                                                class="form-select form-select-solid po-select2">
                                             <option></option>
                                         </select>
                                     </div>
-                                </div>
-                                <div :class="contactHasOfferingLetter === null ? 'col-lg-6 d-none' : 'col-lg-6'"
-                                     x-transition>
-                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
-                                        Surat Penawaran
-                                    </label>
-                                    <div class="mb-5">
-                                        <select name="offering_letter_id" id="offering_letter_id"
-                                                class="form-select form-select-solid">
-                                            <option :value="contactHasOfferingLetter?.id"
-                                                    x-text="contactHasOfferingLetter?.offering_number"></option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
-                                    File PO.
-                                </label>
-                                <div class="mb-5">
-                                    <input name="file_po" class="form-control form-control-solid" type="file"
-                                           accept="application/pdf"/>
                                 </div>
                             </div>
                         </div>
@@ -251,7 +227,7 @@
                     skl_id: '',
                 }],
                 async init() {
-                    await this.getContactData();
+                    await this.getPOData();
                     await this.getSKL();
                     await this.getUserData();
 
@@ -424,35 +400,18 @@
                         return Number(total) + Number(field.price)
                     }, 0);
                 },
-                async getContactData() {
-                    const self = this;
-                    $(".contacts-select2").select2({
+                async getPOData() {
+                    $(".po-select2").select2({
                         allowClear: true,
-                        placeholder: "Pilih Contact",
-                        escapeMarkup: function (markup) {
-                            return markup;
-                        },
-                        language: {
-                            noResults: function () {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#contact-create">Tambahkan terlebih dahulu</a>`;
-                            }
-                        },
+                        placeholder: "Pilih PO",
                         ajax: {
-                            url: '/income-transactions/fab/contact/data',
+                            url: '/income-transactions/fab/po/data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),
                             processResults: (data) => ({results: data}),
                             cache: true
                         },
-                    }).on('change', async function () {
-                        const val = $(".contacts-select2").val();
-                        const resp = await axios.get(`/income-transactions/fab/offering-letter/${val}`);
-                        if (Object.keys(resp.data).length >= 1) {
-                            self.contactHasOfferingLetter = resp.data;
-                        } else {
-                            self.contactHasOfferingLetter = null;
-                        }
                     });
                 },
                 async getUnitType(response, index) {

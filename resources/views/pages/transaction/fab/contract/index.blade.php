@@ -581,7 +581,7 @@
         <h2>KONTRAK BERLANGGANAN <i>(SUBSCRIPTION CONTRACT)</i></h2>
         <h2>PT. MAYATAMA SOLUSINDO</h2>
         <h2>&</h2>
-        <h2>{{ $fab->contact->company_name }}</h2>
+        <h2>{{ $fab->po->contact->company_name }}</h2>
     </div>
     <div class="separator border border-1 border-black text-center mx-6 mb-2"></div>
     <div class="text-center">
@@ -625,23 +625,24 @@
             <tr>
                 <td class="text-start">Nama</td>
                 <td>:</td>
-                <td>{{ $fab->contact->pic_name }}</td>
+                <td>{{ $fab->po->contact->pic_name }}</td>
             </tr>
             <tr>
                 <td class="text-start">Jabatan</td>
                 <td>:</td>
-                <td>{{ $fab->contact->pic_position }}</td>
+                <td>{{ $fab->po->contact->pic_position }}</td>
             </tr>
             <tr>
                 <td class="text-start">Alamat</td>
                 <td>:</td>
-                <td>{{ $fab->contact?->company_address ?? '-' }}</td>
+                <td>{{ $fab->po->contact?->company_address ?? '-' }}</td>
             </tr>
         </table>
     </div>
 
 
-    <p>Bertindak untuk dan atas nama <b>{{ $fab->contact->company_name }}</b> yang selanjutnya disebut <b>PELANGGAN</b>.
+    <p>Bertindak untuk dan atas nama <b>{{ $fab->po->contact->company_name }}</b> yang selanjutnya disebut
+        <b>PELANGGAN</b>.
     </p>
     <br>
     <p>
@@ -901,8 +902,8 @@
     <div style="margin-top: 140px">
         <div class="d-flex justify-content-around align-items-center">
             <div class="text-center">
-                <p class="fw-bolder" style="margin-bottom: 60px">{{ $fab->contact->company_name }}</p>
-                <p class="fw-bolder">{{ $fab->contact->pic_name }}</p>
+                <p class="fw-bolder" style="margin-bottom: 60px">{{ $fab->po->contact->company_name }}</p>
+                <p class="fw-bolder">{{ $fab->po->contact->pic_name }}</p>
             </div>
             <div class="text-center">
                 <p class="fw-bolder" style="margin-bottom: 60px">PT Mayatama Solusindo</p>

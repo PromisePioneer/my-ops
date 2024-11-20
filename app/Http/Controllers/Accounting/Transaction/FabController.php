@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Accounting\Transaction;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaction\Fab\FabRequest;
-use App\Models\Branch;
 use App\Models\CompanyProfile;
 use App\Models\Contact;
 use App\Models\Fab;
 use App\Models\FabHasSKL;
 use App\Models\FabServiceCategory;
-use App\Models\OfferingLetter;
+use App\Models\PurchaseOrder;
 use App\Models\ServiceCategory;
 use App\Models\SKL;
 use App\Models\TaxSetting;
@@ -25,27 +25,18 @@ use Illuminate\View\View;
 use Spatie\Browsershot\Browsershot;
 use Throwable;
 
-class FabController extends Controller
+#[AllowDynamicProperties] class FabController extends Controller
 {
-    public int $perPage = 10;
-    private ServiceCategory $serviceCategory;
-    private Contact $contact;
-    private Branch $branch;
-    private FabService $fabService;
-    private FabServiceCategory $fabServiceCategory;
-    private SKL $skl;
-    private UnitType $unitType;
-    private User $user;
 
     public function __construct()
     {
         $this->serviceCategory = new ServiceCategory();
         $this->contact = new Contact();
-        $this->branch = new Branch();
         $this->fabService = new FabService();
         $this->skl = new SKL();
         $this->unitType = new UnitType();
         $this->user = new User();
+        $this->purchaseOrder = new PurchaseOrder();
     }
 
     /**
@@ -95,12 +86,6 @@ class FabController extends Controller
         return response()->json($contact);
     }
 
-    public function getOfferingLetterIfExists(Contact $contact): JsonResponse
-    {
-        $test = OfferingLetter::where('contact_id', $contact->id)->first();
-        return response()->json($test);
-    }
-
     /**
      * @throws AuthorizationException
      */
@@ -110,6 +95,11 @@ class FabController extends Controller
         $this->authorize('update', Fab::class);
         $services = $this->serviceCategory->getData($request);
         return response()->json($services);
+    }
+
+    public function getPOData(Request $request): JsonResponse
+    {
+        return response()->json($this->purchaseOrder->getData($request));
     }
 
 
@@ -168,7 +158,7 @@ class FabController extends Controller
     public function convertCompanyNameToTextCapitalize(Fab $fab): string
     {
 
-        $companyName = strtolower($fab->contact->company_name);
+        $companyName = strtolower($fab->po->contact->company_name);
 
 
         $convertCompanyNameToArray = explode(" ", $companyName);
@@ -243,13 +233,12 @@ class FabController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function selectedContact(Fab $fab): JsonResponse
+    public function selectedPO(Fab $fab): JsonResponse
     {
         $this->authorize('update', $fab);
+        $selectedPO = $this->purchaseOrder->getSelectedData($fab->po_id);
 
-        $selectedContact = $this->contact->getSelectedData($fab->contact_id);
-
-        return response()->json($selectedContact);
+        return response()->json($selectedPO);
     }
 
     /**

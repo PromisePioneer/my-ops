@@ -2,16 +2,10 @@
 
 namespace App\Models;
 
-use Eloquent;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 class Contact extends Model
 {
@@ -48,7 +42,7 @@ class Contact extends Model
             $query->where('pic_name', 'like', '%' . $request->search . '%')
                 ->where('pic_name', 'like', '%' . $request->search . '%');
         }
-        $contact = $query->get(['id', 'pic_name', 'company_name']);
+        $contact = $query->get(['id', 'pic_name', 'company_name', 'company_code']);
 
         return $contact->map(function ($item) {
             return [
