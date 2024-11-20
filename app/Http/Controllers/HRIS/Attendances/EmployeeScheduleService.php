@@ -37,9 +37,10 @@ class EmployeeScheduleService
 
             $period = CarbonPeriod::create($startDate, $endDate);
 
-            $employeeSchedules = EmployeeSchedule::where('user_id', $item->id)
+            $employeeSchedules = EmployeeSchedule::with('workTime')
+                ->where('employee_id', $item->absent_id)
                 ->whereBetween('date', [$startDate, $endDate])
-                ->paginate(10)
+                ->get()
                 ->keyBy('date');
 
 
@@ -53,14 +54,15 @@ class EmployeeScheduleService
                 ]);
             }
 
-
             return [
                 'id' => $item->id,
                 'name' => $item->name,
+                'absent_id' => $item->absent_id,
                 'date' => collect($dates)->map(function ($date) {
                     return [
                         'period_date' => $date['periodDate'],
                         'schedules_date' => $date['employeeSchedules'],
+                        'work_time_schedules' => $date['employeeSchedules']?->workTime?->name . ' (' . $date['employeeSchedules']?->workTime?->clock_in . ' - ' . $date['employeeSchedules']?->workTime?->clock_out . ') ',
                     ];
                 })->values()->toArray(),
             ];
@@ -68,15 +70,5 @@ class EmployeeScheduleService
 
         $userData->setCollection($data);
         return $userData;
-    }
-
-
-    public function paginate($items, $perPage = 15, $page = null, $options = [])
-    {
-        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
-
-        $items = $items instanceof Collection ? $items : Collection::make($items);
-
-        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 }

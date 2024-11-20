@@ -35,19 +35,19 @@ class IclockService
             ]
         );
 
-        return "GET OPTION FROM: {$request->input('SN')}\r\n".
-            "Stamp=9999\r\n".
-            'OpStamp='.time()."\r\n".
-            "ErrorDelay=60\r\n".
-            "Delay=30\r\n".
-            "ResLogDay=18250\r\n".
-            "ResLogDelCount=10000\r\n".
-            "ResLogCount=50000\r\n".
-            "TransTimes=00:00;14:05\r\n".
-            "TransInterval=1\r\n".
-            "TransFlag=1111000000\r\n".
-            "TimeZone=7\r\n".
-            "Realtime=1\r\n".
+        return "GET OPTION FROM: {$request->input('SN')}\r\n" .
+            "Stamp=9999\r\n" .
+            'OpStamp=' . time() . "\r\n" .
+            "ErrorDelay=60\r\n" .
+            "Delay=30\r\n" .
+            "ResLogDay=18250\r\n" .
+            "ResLogDelCount=10000\r\n" .
+            "ResLogCount=50000\r\n" .
+            "TransTimes=00:00;14:05\r\n" .
+            "TransInterval=1\r\n" .
+            "TransFlag=1111000000\r\n" .
+            "TimeZone=7\r\n" .
+            "Realtime=1\r\n" .
             'Encrypt=0';
     }
 
@@ -98,15 +98,15 @@ class IclockService
                     $processedCount++;
                 }
 
-                return 'OK: '.$processedCount;
+                return 'OK: ' . $processedCount;
             });
 
-            return 'OK: '.$processedCount;
+            return 'OK: ' . $processedCount;
         } catch (Throwable $e) {
             // Log and report any errors
             Log::info($e);
 
-            return 'ERROR: '.$e."\n";
+            return 'ERROR: ' . $e . "\n";
         }
     }
 
@@ -115,7 +115,7 @@ class IclockService
         // Filter out empty lines and count valid ones
         $count = count(array_filter($lines, fn($line) => !empty(trim($line))));
 
-        return 'OK: '.$count;
+        return 'OK: ' . $count;
     }
 
     private function prepareAttendanceData(string $line, Request $request): array
@@ -189,9 +189,9 @@ class IclockService
     {
         if ($this->isValidTime($time, $shift->time_to_checkout, $shift->end_time_to_checkout)) {
             $existingCheckOut = Attendances::where('employee_id', $attendanceData['employee_id'])
-            ->whereDate('timestamp', $date)
-            ->where('status1', 1)
-            ->exists();
+                ->whereDate('timestamp', $date)
+                ->where('status1', 1)
+                ->exists();
 
             if (!$existingCheckOut) {
                 Attendances::create($attendanceData);

@@ -613,6 +613,11 @@
                                 Pengaturan Jam Kerja
                             </x-dropdown-menu-item>
                         @endcan
+                        <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'employee-schedules'"
+                                href="{{ url('adms/employee-schedules') }}">
+                            Pengaturan Jadwal Karyawan
+                        </x-dropdown-menu-item>
                         @can('Lihat Riwayat Absensi')
                             <x-dropdown-menu-item
                                     :active="request()->segment(2) === 'attendances-summary'"
