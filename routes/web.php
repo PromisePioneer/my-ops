@@ -905,6 +905,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [BastController::class, 'index']);
             Route::get('/data', [BastController::class, 'data']);
             Route::get('/search', [BastController::class, 'search']);
+            Route::get('/baa/data', [BastController::class, 'getBAAData']);
+            Route::get('/baa/selected/{bast}', [BastController::class, 'selectedBAA']);
             Route::get('/create', [BastController::class, 'create']);
             Route::get('/branch/data', [BastController::class, 'branchData']);
             Route::get('/filter/branch/data/{branch}', [BastController::class, 'filterByBranch']);

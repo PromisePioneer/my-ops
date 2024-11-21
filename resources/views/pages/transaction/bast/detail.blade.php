@@ -1,4 +1,5 @@
-@php use Carbon\Carbon; @endphp
+@php use function App\Helper\formatDate; @endphp
+@php @endphp
 @extends('layouts.template')
 @section('page-title', 'Detail BAST')
 @section('content')
@@ -10,166 +11,164 @@
                     <img class="w-100" src="{{ asset('assets/media/logos/kop-header.png') }}" alt="">
                 </div>
                 <div class="card-body p-12">
-                    <div class="row mb-10">
+                    <div class="text-center mb-15">
+                        <h2><u>BERITA ACARA SERAH TERIMA (“BAST”)</u></h2>
+                        <h2>{{ $bast->bast_number }}</h2>
+                    </div>
+
+                    <div>
+                        <p>Pada hari ini {{ formatDate($bast->date) }} kami yang bertandatangan dibawah ini:</p>
+                    </div>
+
+                    <div class="ms-5 mb-4">
+                        <table>
+                            <tr>
+                                <td class="min-w-100px">Nama</td>
+                                <td class="min-w-1px">:</td>
+                                <td class="px-10">{{ $bast->baa->fab->fabPic->name }}</td>
+                            </tr>
+                            <tr>
+                                <td>Jabatan</td>
+                                <td>:</td>
+                                <td class="px-10">{{ $bast->baa->fab->fabPic->roles[0]?->name ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td>Perusahaan</td>
+                                <td>:</td>
+                                <td class="px-10">PT Mayatama Solusindo</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <p>Selanjutnya disebut “<b>MYFIBER</b>”.</p>
+
+                    <div class="ms-5 mb-4">
+                        <table>
+                            <tr>
+                                <td class="min-w-100px">Nama</td>
+                                <td class="min-w-1px">:</td>
+                                <td class="px-10">{{ $bast->baa->fab->po->contact->pic_name }}</td>
+                            </tr>
+                            <tr>
+                                <td>Jabatan</td>
+                                <td>:</td>
+                                <td class="px-10">{{ $bast->baa->fab->po->contact->pic_position }}</td>
+                            </tr>
+                            <tr>
+                                <td>Perusahaan</td>
+                                <td>:</td>
+                                <td class="px-10">{{ $bast->baa->fab->po->contact->company_name }}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div>
+                        <p>Selanjutnya disebut “<b>PELANGGAN</b>”.</p>
+                    </div>
+
+                    <p>
+                        <b>PELANGGAN</b> dan <b>MYFIBER</b> secara bersama-sama selanjutnya disebut juga “Para Pihak”,
+                        dengan ini
+                        menerangkan bahwa pekerjaan sebagai berikut:
+                    </p>
+
+                    <div>
+                        <table class="table table-bordered border-black">
+                            <thead>
+                            <tr>
+                                <th class="w-10px">No</th>
+                                <th class="text-center">Keterangan</th>
+                                <th class="text-center">Data</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td class="text-center">1</td>
+                                <td><b>Tanggal PO</b></td>
+                                <td>{{ formatDate($bast->baa->fab->po->date) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">2</td>
+                                <td><b>Nama Pekerjaan</b></td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">3</td>
+                                <td><b>Nomor PO</b></td>
+                                <td>{{ $bast->baa->fab->po->po_number }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">4</td>
+                                <td><b>Nilai PO</b></td>
+                                <td class="py-0">
+                                    <div class=" border-bottom border-black">
+                                        @foreach($getPoItem as $poItem)
+                                            <div class="d-flex justify-content-between">
+                                                <div>{{ $poItem->item }}</div>
+                                                <div>Rp.{{ number_format($poItem->price) }}</div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>PPN</div>
+                                        <div>Rp.{{ number_format($totalPPN) }}</div>
+                                    </div>
+                                    <div
+                                        class="d-flex align-items-center justify-content-between border-bottom border-black">
+                                        <div>Total</div>
+                                        <div>Rp.{{ number_format($getPoItem->sum('price')) }}</div>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="text-black fw-bolder text-uppercase">Total Keseluruhan</div>
+                                        <div class="text-black fw-bolder text-uppercase">
+                                            Rp.{{ number_format($total)  }}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">5</td>
+                                <td><b>Cara Pembayaran</b></td>
+                                <td>
+                                    <p class="p-0 m-0">{{ $companyProfile->bank }}</p>
+                                    <p class="p-0 m-0">A/C No: {{ $companyProfile->bank_account_number }}</p>
+                                    <p class="p-0 m-0">Nama Akun: {{ $companyProfile->bank_account_name }}</p>
+                                    <p>
+                                        Atau rekening bank sebagaimana ditentukan di dalam tagihan (invoice)
+                                        MAYATAMA.
+                                    </p>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p class="mb-20">
+                        Pada tanggal tersebut perkerjaan sudah selesai dikerjakan dan ditest dengan hasil baik. Demikian
+                        Berita Acara Serah Terima ini dibuat dan ditandatangani oleh <b>PARA PIHAK</b> dalam rangkap 2
+                        (dua)
+                        asli yang sama bunyinya, mempunyai kekuatan hukum yang sama dan mengikat <b>PARA PIHAK</b> pada
+                        tanggal
+                        ditanda tanganinya BAST ini.
+                    </p>
+
+
+                    <div class="d-flex align-items-center justify-content-around">
                         <div class="text-center">
-                            <div class="mb-1">
-                                <h2>
-                                    BERITA ACARA SERAH TERIMA (“BAST”)
-                                </h2>
+                            <div><b>MY FIBER</b></div>
+                            <div style="margin-bottom: 7rem"><b>PT Mayatama Solusindo</b></div>
+                            <div>{{ $bast->baa->fab->fabPic->name }}</div>
+                            <div>{{ $bast->baa->fab->fabPic->roles[0]?->name ?? '-' }}</div>
+                        </div>
+                        <div class="text-center">
+                            <div><b>PELANGGAN</b></div>
+                            <div style="margin-bottom: 7rem"><b>{{ $bast->baa->fab->po->contact->company_name }}</b>
                             </div>
-                            <div>
-                                <h3>
-                                    {{ $bast->bast_number }}
-                                </h3>
-                            </div>
+                            <div>{{ $bast->baa->fab->po->contact->pic_name }}</div>
+                            <div>{{ $bast->baa->fab->po->contact->pic_position }}</div>
                         </div>
                     </div>
 
-                    @php
-                        $date = Carbon::parse($bast->date)->locale('id');
-                        $date->settings(['formatFunction' => 'translatedFormat']);
-                    @endphp
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="text-black fs-6 fw-normal mb-3">
-                                <p> Pada hari ini {{ $date->format('l') }} Tanggal {{ $date->format('j') }}
-                                    Bulan {{ $date->format('F') }} Tahun {{ $date->format('Y') }}. Kami yang bertanda
-                                    tangan di bawah ini menyatakan :</p>
-                            </div>
-                        </div>
-
-                        <div class="text-center">
-                            <table class="mt-5" style="margin-left: auto; margin-right: auto;">
-                                <thead>
-                                <tr>
-                                    <th class="px-3 text-start">Nama &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</th>
-                                    <td class="text-start">{{ $bast->first_party_identity_name }} </td>
-                                </tr>
-                                <tr>
-                                    <th class="text-start">Jabatan &nbsp;:</th>
-                                    <td class="text-start">{{ $bast->first_party_position }}</td>
-                                </tr>
-                                </thead>
-                            </table>
-                        </div>
-
-                        <div class="ml-3 mt-10">
-                            <p>Dalam hal ini bertindak untuk dan atas nama PT. Mayatama Solusindo yang Selanjutnya
-                                disebut <b>PIHAK PERTAMA</b></p>
-                        </div>
-
-                        <div class="text-center">
-                            <table class="mt-5" style="margin-left: auto; margin-right: auto;">
-                                <thead>
-                                <tr>
-                                    <th class="px-3 text-start">Nama &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</th>
-                                    <td class="text-start">{{ $bast->contact->full_name }} </td>
-                                </tr>
-                                <tr>
-                                    <th class="text-start">Perusahaan &nbsp;:</th>
-                                    <td class="text-start">{{ $bast->contact->company_name }}</td>
-                                </tr>
-                                </thead>
-                            </table>
-                        </div>
-
-                        <div class="ml-3 mt-10">
-                            <p>Dalam hal ini bertindak untuk dan atas nama PT. Mayatama Solusindo yang Selanjutnya
-                                disebut <b>PIHAK KEDUA</b></p>
-                        </div>
-
-                        <div class="ml-3 mt-10">
-                            <p>{{ $bast->objective }}</p>
-                        </div>
-
-
-                        <div class="pb-4">
-                            <div class="d-flex justify-content-between flex-column flex-md-row">
-                                <div class="flex-grow-1 pt-8 mb-13">
-                                    <div class="table-responsive mb-4 row justify-content-center">
-                                        <table class="table table-sm gs-7 gy-7 gx-7 border border-dark"
-                                               style="margin-left: auto; margin-right: auto;">
-                                            <thead>
-                                            <tr class="fw-bolder fs-6 text-gray-800 border border-dark bg-primary">
-                                                <th>No</th>
-                                                <th>Barang</th>
-                                                <th>Qty</th>
-                                                <th>SN/Kode</th>
-                                                <th>Keterangan</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-
-                                            @forelse($bastProducts as $product)
-                                                <tr class="fw-bolder fs-6 text-gray-800 border border-dark">
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $product->product_name }}</td>
-                                                    <td>{{ $product->qty }}</td>
-                                                    <td>{{ $product->serial_number }}</td>
-                                                    <td> {{ $product->description }}</td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="5" class="text-center">Data Barang Kosong</td>
-                                                </tr>
-                                            @endforelse
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class=" mb-10">
-                                        <p>Demikianlah berita acara serah terima barang ini di perbuat oleh kedua belah
-                                            pihak, sejak penandatanganan berita acara ini, maka barang tersebut, menjadi
-                                            tanggung jawab <b>PIHAK KEDUA</b>.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex flex-row align-items-center justify-content-between text-center px-10">
-                            <div class="">
-                                <table class="p-3">
-                                    <thead>
-                                    <tr>
-                                        <th>Yang Menyerahkan :</th>
-                                    </tr>
-                                    <tr>
-                                        <th class="pb-20">PIHAK PERTAMA</th>
-                                    </tr>
-                                    <tr>
-                                        <th></th>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-center"><u>{{ $bast->first_party_identity_name }}</u></th>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-center">{{ $bast->first_party_position }}</th>
-                                    </tr>
-                                    </thead>
-                                </table>
-                            </div>
-                            <div class="">
-                                <table class="p-3">
-                                    <thead>
-                                    <tr>
-                                        <th>Yang Menerima :</th>
-                                    </tr>
-                                    <tr>
-                                        <th class="pb-20">PIHAK KEDUA</th>
-                                    </tr>
-                                    <tr>
-                                        <th></th>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-center"><u>{{ $bast->contact->full_name }}</u></th>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-center">{{ $bast->contact->company_name }}</th>
-                                    </tr>
-                                    </thead>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div class="card-footer p-0 border-0">
                     <img class="w-100" src="{{ asset('assets/media/logos/kop-footer.png') }}" alt="">
@@ -198,12 +197,10 @@
                             </div>
                         @endif
                         @if($bast->status === 1)
-                            @if(isset($letterHead))
                                 <a href="{{ url('income-transactions/bast/export-pdf/'. $bast->id) }}"
                                    class="btn btn-light-info w-100 mb-4" target="_blank">
                                     Print PDF
                                 </a>
-                            @endif
                         @endif
                         @if($bast->status === 0)
                             <button type="button" @click="confirm()" href="#" class="btn btn-primary w-100"

@@ -2,33 +2,46 @@
 
 namespace App\Service\Transaction;
 
+use App\Models\BAA;
 use App\Models\Bast;
-use App\Models\BastProduct;
-use App\Service\HelperService\HandleFileUploadService;
+use App\Models\Contact;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
 use Throwable;
-
+use function App\Helper\convertToRoman;
 use function App\Helper\formatDate;
 
 class BastService
 {
     private static int $perPage = 10;
-    private HandleFileUploadService $handleFileUploadService;
 
-    public function __construct()
+    public function generateBastNumber(Request $request)
     {
-        $this->handleFileUploadService = new HandleFileUploadService();
+        $baa = BAA::with('fab')->where('id', $request->baa_id)->first();
+        $bast = Bast::latest()->first();
+
+        $companyCode = Contact::where('id', $baa->fab->po->contact->id)->first()->company_code;
+        $month = convertToRoman(Carbon::parse($request->date)->format('m'));
+        $year = Carbon::parse($request->date)->format('Y');
+
+        if ($bast) {
+            $convertInvNumberToArray = explode('/', $bast->bast_number);
+            $startingNumber = $convertInvNumberToArray[0];
+            $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
+
+            return $startValue . '/' . 'BAST/' . 'MYT-' . $companyCode . '/' . $month . '/' . $year;
+        }
+
+        $startingNumber = '000';
+        $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
+
+        return $startValue . '/' . 'BAST/' . 'MYT-' . $companyCode . '/' . $month . '/' . $year;
     }
 
-
-    public function data(Request $request): LengthAwarePaginator
+    public function data(): LengthAwarePaginator
     {
-        $data = Bast::with('contact', 'user')
-            ->where('branch_id', $request->user()->branch_id)
-            ->paginate(self::$perPage);
-
+        $data = Bast::with('baa')->paginate(self::$perPage);
         return self::formattedData($data);
     }
 
@@ -38,11 +51,10 @@ class BastService
         $data = $bastData->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
+                'date' => formatDate($item->date),
                 'bast_number' => $item->bast_number,
-                'contact' => $item->contact->full_name,
+                'contact' => $item->baa->fab->po->contact->pic_name . ' - ' . $item->baa->fab->po->contact->company_name,
                 'status' => $item->status,
-                'created_at' => formatDate($item->created_at),
-                'created_by' => $item->user->name,
             ];
         });
 
@@ -54,10 +66,7 @@ class BastService
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-
         $query = Bast::with('contact', 'user')->where('branch_id', $request->user()->branch_id);
-
-
         if (!empty($search)) {
             $query->where('bast_number', 'like', '%'.$search.'%')
                 ->where('branch_id', $request->user()->branch_id)
@@ -84,38 +93,17 @@ class BastService
      */
     public function store($request): void
     {
-        DB::transaction(function () use ($request) {
-            $data = $request->validated();
-            $data['branch_id'] = $request->user()->branch_id;
-            $data['file'] = $this->handleFileUploadService->upload($request, 'documents/bast', 'file');
-            $data['created_by'] = $request->user()->id;
-            $bast = Bast::create($data);
-            BastProduct::whereIn('bast_id', [$bast->id])->delete();
-            $this->bastProductCreateOrUpdate($request, $bast);
-        });
+        $data = $request->validated();
+        $data['bast_number'] = self::generateBastNumber($request);
+        Bast::create($data);
     }
-
-    public function bastProductCreateOrUpdate($request, $bast): void
-    {
-        foreach ($request['data'] as $key => $value) {
-            $value['bast_id'] = $bast->id;
-            BastProduct::create($value);
-        }
-    }
-
     /**
      * @throws Throwable
      */
     public function update($request, $bast): void
     {
-        DB::transaction(function () use ($request, $bast) {
-            $data = $request->validated();
-            $data['branch_id'] = $request->user()->branch_id;
-            $data['file'] = $this->handleFileUploadService->upload($request, 'documents/bast', 'file', $bast->file);
-            $data['created_by'] = $request->user()->id;
-            $bast->update($data);
-            BastProduct::whereIn('bast_id', [$bast->id])->delete();
-            $this->bastProductCreateOrUpdate($request, $bast);
-        });
+        $data = $request->validated();
+        $data['bast_number'] = self::generateBastNumber($request);
+        $bast->update($data);
     }
 }

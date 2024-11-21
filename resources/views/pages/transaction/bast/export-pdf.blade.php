@@ -6,101 +6,146 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-
     <style>
         *, *::before, *::after {
             box-sizing: border-box;
         }
 
+
         * {
             margin: 0;
         }
 
+
+        @page {
+            margin: 0 0;
+        }
+
         body {
+            margin: 4.5cm 0.7cm 2cm;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             font-family: Poppins, Helvetica, sans-serif;
             font-size: 62.5%;
+            box-sizing: border-box;
         }
 
-        .kop-header {
-            margin: 0 auto;
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4.5cm;
         }
 
-        .kop-image-header {
-            width: 100%;
-        }
-
-        .kop-image-footer {
-            width: 100%;
-            margin-bottom: 100px;
-        }
-
-        .container {
-            margin: 20px 20px 0px 20px;
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 5cm;
         }
 
         .wrapper {
+            margin-top: 10px !important;
             position: relative;
-            min-height: 100%;
-            margin-bottom: -100px; /* Adjust based on footer height */
         }
 
-        .heading-toolbar {
-            margin-top: 40px;
-            text-align: center;
-            font-size: 15px;
-        }
-
-        .heading-text {
-            margin-top: 40px;
-            font-size: 13px;
-            margin-bottom: 20px;
+        .text-center {
             text-align: center;
         }
 
-        .secondary-text {
-            margin-top: 20px;
-            font-size: 13px;
-            margin-bottom: 20px;
-            text-align: center;
+        .mb-15 {
+            margin-bottom: 1.75rem !important
         }
 
-        .third-text {
-            margin-top: 20px;
-            font-size: 13px;
-            margin-bottom: 20px;
-            text-align: justify;
-            padding: 0 25px 0 25px;
+        .ms-5 {
+            margin-left: 1.25rem !important
         }
 
-
-        .foreword {
-            font-size: 13px;
+        .mb-4 {
+            margin-bottom: 1rem !important
         }
 
-        table {
+        .min-w-100px {
+            min-width: 100px !important
+        }
+
+        .min-w-1px {
+            min-width: 1px !important
+        }
+
+        .px-10 {
+            padding-right: 2.5rem !important;
+            padding-left: 2.5rem !important
+        }
+
+        .table {
             width: 100%;
+            margin-bottom: 1rem;
+            vertical-align: top;
+        }
+
+        .custom-bordered, .custom-bordered th .custom-bordered tr, .custom-bordered td {
+            border: 1px solid black;
             border-collapse: collapse;
         }
 
-
-        .product-table, .product-table-tr, .product-table-th, .product-table-td {
-            border: 1px solid;
-            padding: 10px;
+        .custom-bordered table .custom-bordered th .custom-bordered tr .custom-bordered .td {
+            border: 1px solid black;
+            border-collapse: collapse;
         }
 
-        .bg-primary {
-            background-color: rgb(0, 158, 247);
+        .table-bordered > :not(caption) > * {
+            border-width: 1px 0;
+            border-style: solid;
+            border-color: black;
         }
 
-
-        .kop-footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
+        .table-bordered > :not(caption) > * > * {
+            border-width: 0 1px;
+            border-style: solid;
+            border-color: black;
         }
 
+        .py-1 {
+            padding-top: .3rem !important;
+            padding-bottom: .3rem !important
+        }
+
+        .px-1 {
+            padding-right: .25rem !important;
+            padding-left: .25rem !important
+        }
+
+        .d-flex {
+            display: flex !important
+        }
+
+        .justify-content-between {
+            justify-content: space-between !important
+        }
+
+        .border-bottom {
+            border-bottom: 1px solid black !important
+        }
+
+        .text-uppercase {
+            text-transform: uppercase !important
+        }
+
+        .fw-bolder {
+            font-weight: 700 !important
+        }
+
+        .justify-content-around {
+            justify-content: space-around !important
+        }
+
+        .mb-1 {
+            margin-bottom: 0.25rem !important;
+        }
 
     </style>
 
@@ -110,220 +155,181 @@
 <body>
 
 @php
-    $date = \Carbon\Carbon::parse($bast->date)->locale('id');
-        $date->settings(['formatFunction' => 'translatedFormat']);
+    use function App\Helper\formatDate;
 @endphp
 
+
+<header>
+    <img
+        src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-header.png'))) }}"
+        width="100%" height="100%"/>
+</header>
+
 <div class="wrapper">
-    <div class="kop-header">
-        <img class="kop-image-header"
-             src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-headers.png'))) }}"/>
+    <div class="text-center mb-15">
+        <h2><u>BERITA ACARA SERAH TERIMA (“BAST”)</u></h2>
+        <h2>{{ $bast->bast_number }}</h2>
     </div>
 
-
-    <div class="heading-toolbar">
-        <h3>BERITA ACARA SERAH TERIMA (“BAST”)</h3>
-        <h3>{{ $bast->bast_number }}</h3>
-
+    <div>
+        <p>Pada hari ini {{ formatDate($bast->date) }} kami yang bertandatangan dibawah ini:</p>
     </div>
 
-    <div class="heading-text">
-        <p> Pada hari ini {{ $date->format('l') }} Tanggal {{ $date->format('j') }}
-            Bulan {{ $date->format('F') }} Tahun {{ $date->format('Y') }}. Kami yang bertanda
-            tangan di bawah ini menyatakan :</p>
+    <div class="ms-5 mb-4">
+        <table>
+            <tr>
+                <td class="min-w-100px">Nama</td>
+                <td class="min-w-1px">:</td>
+                <td class="px-10">{{ $bast->baa->fab->fabPic->name }}</td>
+            </tr>
+            <tr>
+                <td>Jabatan</td>
+                <td>:</td>
+                <td class="px-10">{{ $bast->baa->fab->fabPic->roles[0]?->name ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td>Perusahaan</td>
+                <td>:</td>
+                <td class="px-10">PT Mayatama Solusindo</td>
+            </tr>
+        </table>
     </div>
 
+    <p>Selanjutnya disebut “<b>MYFIBER</b>”.</p>
 
-    <div style="text-align: center;">
-        <div class="first-party-information" style="display: inline-block; text-align: left;">
-            <table
-                style="width: auto; margin-left: auto; margin-right: auto; text-align: left; border-collapse: collapse;">
-                <tr>
-                    <th style="text-align: left; padding: 2px;">
-                        <p style="font-size: 12px; margin: 0;">Nama</p>
-                    </th>
-                    <th style="text-align: center; padding: 2px;">:</th>
-                    <th style="text-align: left; padding: 2px;">
-                        <p style="font-size: 12px; margin: 0;">{{ $bast->first_party_identity_name }}</p>
-                    </th>
-                </tr>
-                <tr>
-                    <th style="text-align: right; padding: 2px;">
-                        <p style="font-size: 12px; margin: 0;">Jabatan</p>
-                    </th>
-                    <th style="text-align: left; padding: 2px;">:</th>
-                    <th style="text-align: left; padding: 2px;">
-                        <p style="font-size: 12px; margin: 0;">{{ $bast->first_party_position }}</p>
-                    </th>
-                </tr>
-            </table>
-        </div>
+    <div class="ms-5 mb-4">
+        <table>
+            <tr>
+                <td class="min-w-100px">Nama</td>
+                <td class="min-w-1px">:</td>
+                <td class="px-10">{{ $bast->baa->fab->po->contact->pic_name }}</td>
+            </tr>
+            <tr>
+                <td>Jabatan</td>
+                <td>:</td>
+                <td class="px-10">{{ $bast->baa->fab->po->contact->pic_position }}</td>
+            </tr>
+            <tr>
+                <td>Perusahaan</td>
+                <td>:</td>
+                <td class="px-10">{{ $bast->baa->fab->po->contact->company_name }}</td>
+            </tr>
+        </table>
     </div>
 
-    <div class="secondary-text">
-        <p>Dalam hal ini bertindak untuk dan atas nama PT. Mayatama Solusindo yang Selanjutnya
-            disebut &nbsp; <b>PIHAK PERTAMA</b></p>
+    <div class="mb-1">
+        <p>Selanjutnya disebut “<b>PELANGGAN</b>”.</p>
     </div>
 
-    <div style="text-align: center;">
-        <div class="first-party-information" style="display: inline-block; text-align: left;">
-            <table
-                style="width: auto; margin-left: auto; margin-right: auto; text-align: left; border-collapse: collapse;">
-                <tr>
-                    <th style="text-align: left; padding: 2px;">
-                        <p style="font-size: 12px; margin: 0;">Nama</p>
-                    </th>
-                    <th style="text-align: center; padding: 2px;">:</th>
-                    <th style="text-align: left; padding: 2px;">
-                        <p style="font-size: 12px; margin: 0;">{{ $bast->contact->full_name }}</p>
-                    </th>
-                </tr>
-                <tr>
-                    <th style="text-align: left; padding: 2px;">
-                        <p style="font-size: 12px; margin: 0;">Perusahaan</p>
-                    </th>
-                    <th style="text-align: left; padding: 2px;">:</th>
-                    <th style="text-align: left; padding: 2px;">
-                        <p style="font-size: 12px; margin: 0;">{{ $bast->contact->company_name }}</p>
-                    </th>
-                </tr>
-            </table>
-        </div>
-    </div>
+    <p class="mb-4">
+        <b>PELANGGAN</b> dan <b>MYFIBER</b> secara bersama-sama selanjutnya disebut juga “Para Pihak”,
+        dengan ini
+        menerangkan bahwa pekerjaan sebagai berikut:
+    </p>
 
-    <div class="secondary-text">
-        <p>Dalam hal ini bertindak untuk dan atas nama {{ $bast->contact->company_name }} yang Selanjutnya
-            disebut &nbsp; <b>PIHAK KEDUA</b></p>
-    </div>
-
-
-    <div class="third-text">
-        <p>{{ $bast->objective }}</p>
-    </div>
-
-
-    <div class="container">
-        <table class="product-table">
+    <div>
+        <table class="ms-5 table custom-bordered table-bordered" style="width: 700px">
             <thead>
-            <tr class="bg-primary product-table-tr">
-                <th class="product-table-th">No</th>
-                <th class="product-table-th">Barang</th>
-                <th class="product-table-th">Qty</th>
-                <th class="product-table-th">SN / Kode</th>
-                <th class="product-table-th">Keterangan</th>
+            <tr class="py-1">
+                <th class="w-10px py-1">No</th>
+                <th class="text-center py-1">Keterangan</th>
+                <th class="text-center py-1">Data</th>
             </tr>
             </thead>
             <tbody>
-            @forelse($bastProducts as $product)
-                <tr class="product-table-tr">
-                    <td class="product-table-td">{{ $loop->iteration }}</td>
-                    <td class="product-table-td">{{ $product->product_name }}</td>
-                    <td class="product-table-td">{{ $product->qty }} Mbps</td>
-                    <td class="product-table-td">{{ $product->serial_number }}</td>
-                    <td class="product-table-td"> {{ $product->description }}</td>
-                </tr>
-
-            @empty
-                <tr>
-                    <td colspan="5" class="product-table-td" style="text-align: center">Data Barang Kosong</td>
-                </tr>
-            @endforelse
+            <tr>
+                <td class="text-center py-1">1</td>
+                <td class="py-1 px-1"><b>Tanggal PO</b></td>
+                <td class="py-1 px-1">{{ formatDate($bast->baa->fab->po->date) }}</td>
+            </tr>
+            <tr>
+                <td class="text-center py-1">2</td>
+                <td class="py-1 px-1"><b>Nama Pekerjaan</b></td>
+                <td class="py-1 px-1">-</td>
+            </tr>
+            <tr>
+                <td class="text-center py-1">3</td>
+                <td class="py-1 px-1"><b>Nomor PO</b></td>
+                <td class="py-1 px-1">{{ $bast->baa->fab->po->po_number }}</td>
+            </tr>
+            <tr>
+                <td class="text-center py-1">4</td>
+                <td class="py-1 px-1"><b>Nilai PO</b></td>
+                <td class="py-0 px-1">
+                    <div class="border-bottom border-black">
+                        @foreach($getPoItem as $poItem)
+                            <div class="d-flex justify-content-between">
+                                <div>{{ $poItem->item }}</div>
+                                <div>Rp.{{ number_format($poItem->price) }}</div>
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>PPN</div>
+                        <div>Rp.{{ number_format($totalPPN) }}</div>
+                    </div>
+                    <div
+                        class="d-flex align-items-center justify-content-between border-bottom border-black">
+                        <div>Total</div>
+                        <div>Rp.{{ number_format($getPoItem->sum('price')) }}</div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="text-black fw-bolder text-uppercase">Total Keseluruhan</div>
+                        <div class="text-black fw-bolder text-uppercase">
+                            Rp.{{ number_format($total)  }}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center px-1">5</td>
+                <td class="px-1"><b>Cara Pembayaran</b></td>
+                <td class="px-1">
+                    <p class="p-0 m-0">{{ $companyProfile->bank }}</p>
+                    <p class="p-0 m-0">A/C No: {{ $companyProfile->bank_account_number }}</p>
+                    <p class="p-0 m-0">Nama Akun: {{ $companyProfile->bank_account_name }}</p>
+                    <p>
+                        Atau rekening bank sebagaimana ditentukan di dalam tagihan (invoice)
+                        MAYATAMA.
+                    </p>
+                </td>
+            </tr>
             </tbody>
         </table>
     </div>
 
-    <div class="third-text">
-        <p>Demikianlah berita acara serah terima barang ini di perbuat oleh kedua belah pihak, sejak penandatanganan
-            berita acara ini, maka barang tersebut, menjadi tanggung jawab <b>PIHAK KEDUA</b>.</p>
-    </div>
+    <p class="mb-20" style="line-height: 1.5; margin-bottom: .3rem">
+        Pada tanggal tersebut perkerjaan sudah selesai dikerjakan dan ditest dengan hasil baik. Demikian
+        Berita Acara Serah Terima ini dibuat dan ditandatangani oleh <b>PARA PIHAK</b> dalam rangkap 2
+        (dua)
+        asli yang sama bunyinya, mempunyai kekuatan hukum yang sama dan mengikat <b>PARA PIHAK</b> pada
+        tanggal
+        ditanda tanganinya BAST ini.
+    </p>
 
 
-    <div style="text-align: center; margin-top: 90px">
-        <div class="signature-table" style="display: inline-block; text-align: left; margin-right: 100px;">
-            <table style="width: auto; margin-left: auto; margin-right: auto; text-align: left; border-collapse: collapse;">
-                <tr>
-                    <th style="text-align: right; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;">Yang Menyerahkan:</p>
-                    </th>
-                    <th style="text-align: center; padding: 8px;"></th>
-                </tr>
-                <tr>
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;"></p>
-                    </th>
-                    <th style="text-align: center; padding: 8px;"></th>
-                </tr>
-                <tr>
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;"></p>
-                    </th>
-                    <th style="text-align: center; padding: 8px;"></th>
-                </tr>
-                <tr>
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;"></p>
-                    </th>
-                    <th style="text-align: center; padding: 8px;"></th>
-                </tr>
-                <tr>
-                    <th style="text-align: center; padding: 8px 8px 0 8px;">
-                        <p style="font-size: 12px; margin: 0; text-decoration: underline">{{ $bast->first_party_identity_name }}</p>
-                    </th>
-                </tr>
-                <tr style="padding: 0">
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0; ">{{ $bast->first_party_position }}</p>
-                    </th>
-                </tr>
-            </table>
+    <div class="d-flex align-items-center justify-content-around">
+        <div class="text-center">
+            <div><b>MY FIBER</b></div>
+            <div style="margin-bottom: 5rem"><b>PT Mayatama Solusindo</b></div>
+            <div>{{ $bast->baa->fab->fabPic->name }}</div>
+            <div>{{ $bast->baa->fab->fabPic->roles[0]?->name ?? '-' }}</div>
         </div>
-
-
-        <div class="signature-table" style="display: inline-block; text-align: left; margin-left: 100px;">
-            <table style="width: auto; margin-left: auto; margin-right: auto; text-align: left; border-collapse: collapse;">
-                <tr>
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;">Yang Menerima:</p>
-                    </th>
-                    <th style="text-align: center; padding: 8px;"></th>
-                </tr>
-                <tr>
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;"></p>
-                    </th>
-                    <th style="text-align: center; padding: 8px;"></th>
-                </tr>
-                <tr>
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;"></p>
-                    </th>
-                    <th style="text-align: center; padding: 8px;"></th>
-                </tr>
-                <tr>
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;"></p>
-                    </th>
-                    <th style="text-align: center; padding: 8px;"></th>
-                </tr>
-                <tr>
-                    <th style="text-align: center; padding: 8px 8px 0 8px;">
-                        <p style="font-size: 12px; margin: 0; text-decoration: underline">{{ $bast->contact->full_name }}</p>
-                    </th>
-                </tr>
-                <tr style="padding: 0">
-                    <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;">{{ $bast->contact->company_name }}</p>
-                    </th>
-                </tr>
-            </table>
+        <div class="text-center">
+            <div><b>PELANGGAN</b></div>
+            <div style="margin-bottom: 5rem"><b>{{ $bast->baa->fab->po->contact->company_name }}</b>
+            </div>
+            <div>{{ $bast->baa->fab->po->contact->pic_name }}</div>
+            <div>{{ $bast->baa->fab->po->contact->pic_position }}</div>
         </div>
-    </div>
-
-
-    <div class="kop-footer">
-        <img class="kop-image-footer"
-             src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"/>
     </div>
 </div>
+
+
+<footer>
+    <img
+        src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"
+        width="100%" height="100%"/>
+</footer>
 </body>
 </html>

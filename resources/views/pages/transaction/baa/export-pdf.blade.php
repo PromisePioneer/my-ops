@@ -136,7 +136,6 @@
     .custom-bordered table .custom-bordered th .custom-bordered tr .custom-bordered .td {
         border: 1px solid black;
         border-collapse: collapse;
-
     }
 
     .lh-lg {

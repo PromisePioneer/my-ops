@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Transaction\Bast;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class BastRequest extends FormRequest
@@ -18,50 +19,25 @@ class BastRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      */
-    public function rules(): array
+    public function rules(Request $request): array
     {
         return [
-            'contact_id' => [
+            'baa_id' => [
                 'required',
-                Rule::exists('contacts', 'id'),
+                Rule::unique('bast', 'baa_id')->ignore($request->route('bast') === null),
             ],
-            'bast_number' => ['required'],
             'date' => ['required', 'date'],
-            'first_party_identity_name' => ['required'],
-            'first_party_position' => ['required'],
-            'objective' => ['required', 'string'],
-            'file' => [
-                Rule::requiredIf(function () {
-                    return request()->route('bast') === null;
-                }),
-                'mimes:pdf',
-                'max:2048',
-            ],
-            'data.*.product_name' => ['required'],
-            'data.*.qty' => ['required', 'string'],
-            'data.*.serial_number' => ['required'],
-            'data.*.description' => ['nullable'],
+            'invoice_address' => ['required', 'string'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'bast_number.required' => 'Nomor bast tidak boleh kosong.',
-            'contact_id.required' => 'Pelanggan tidak boleh kosong.',
-            'contact_id.exists' => 'Pelanggan tidak ditemukan.',
-            'date.required' => 'Tanggal tidak boleh kosong.',
-            'date.date' => 'Tanggal tidak valid.',
-            'first_party_identity_name.required' => 'Nama pihak pertama tidak boleh kosong.',
-            'first_party_position.required' => 'Jabatan pihak pertama tidak boleh kosong.',
-            'objective.required' => 'Tujuan tidak boleh kosong.',
-            'file.required_if' => 'File tidak boleh kosong.',
-            'file.mimes' => 'File harus berupa pdf.',
-            'file.max' => 'File tidak boleh lebih dari 2MB.',
-            'data.*.product_name.required' => 'Produk tidak boleh kosong.',
-            'data.*.qty.required' => 'Jumlah tidak boleh kosong.',
-            'data.*.serial_number.required' => 'Serial number tidak boleh kosong.',
-
+            'baa_id.required' => 'BAA tidak boleh kosong',
+            'date.required' => 'Tanggal tidak boleh kosong',
+            'date.date' => 'Tanggal tidak valid',
+            'invoice_address.required' => 'Alamat Invoice tidak boleh kosong',
         ];
     }
 }

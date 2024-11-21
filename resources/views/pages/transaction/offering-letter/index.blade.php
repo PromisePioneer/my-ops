@@ -14,23 +14,6 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-                    <div class="d-flex justify-content-end">
-                        <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" style="">
-                            <div class="px-7 py-5">
-                                <div class="fs-5 text-dark fw-bolder">Filter</div>
-                            </div>
-                            <div class="separator border-gray-200"></div>
-                            <div class="px-7 py-5">
-                                <div class="mb-10">
-                                    <label class="form-label fs-6 fw-bold">Cabang:</label>
-                                    <select name="" id=""
-                                            class="form-select form-select-solid filter-branch-select2">
-                                        <option></option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div class="d-flex justify-content-end" data-kt-product-table-toolbar="base">
                         <template x-if="Number(createPermission) === 1">
                             <a href="{{ url('/income-transactions/offering-letters/create') }}"

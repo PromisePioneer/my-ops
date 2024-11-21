@@ -15,33 +15,15 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-                    <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-light-info me-3 btn-sm " data-kt-menu-trigger="click"
-                                data-kt-menu-placement="bottom-end">
-                            <span class="svg-icon svg-icon-2">
-                                <i class="bi bi-funnel-fill"></i>
-                            </span>
-                            Filter
-                        </button>
-                        <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" style="">
-                            <div class="px-7 py-5">
-                                <div class="fs-5 text-dark fw-bolder">Filter</div>
-                            </div>
-                            <div class="separator border-gray-200"></div>
-                            <div class="px-7 py-5">
-                                <div class="mb-10">
-                                    <label class="form-label fs-6 fw-bold">Cabang:</label>
-                                    <select name="" id=""
-                                            class="form-select form-select-solid filter-branch-select2">
-                                        <option value="0">Pilih Cabang</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div class="d-flex justify-content-end" data-kt-product-table-toolbar="base">
                         <a href="{{ url('/income-transactions/bast/create') }}"
-                           class="btn btn-primary btn-sm">Tambah</a>
+                           class="btn btn-light-primary btn-sm">
+                            <i class="ki-duotone ki-message-add fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i> Tambah
+                        </a>
                     </div>
                     <div class="d-flex justify-content-end align-items-center d-none"
                          data-kt-product-table-toolbar="selected">
@@ -61,17 +43,12 @@
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
-                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                        <input class="form-check-input" type="checkbox" data-kt-check="true"
-                                               data-kt-check-target="#kt_table_products .form-check-input" value="1"/>
-                                    </div>
+                                    No
                                 </th>
-                                <th class="min-w-125px">Nomor BAST</th>
+                                <th class="min-w-125px">Tanggal</th>
+                                <th class="min-w-125px">Nomor</th>
                                 <th class="min-w-100px">Pelanggan</th>
                                 <th class="min-w-125px">Status</th>
-                                <th class="min-w-125px">Lampiran</th>
-                                <th class="min-w-125px">Tgl Dibuat</th>
-                                <th class="min-w-125px">Dibuat Oleh</th>
                             </thead>
                             <tbody class="fw-bold">
                             <template x-if="isLoading">
@@ -92,13 +69,10 @@
                                     </td>
                                 </tr>
                             </template>
-                            <template x-for="bast in bastList?.data" :key="bast.id">
+                            <template x-for="(bast, index) in bastList?.data" :key="bast.id">
                                 <tr>
-                                    <td>
-                                        <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                            <input class="form-check-input" type="checkbox" value="1"/>
-                                        </div>
-                                    </td>
+                                    <td x-text="startIndex + index++"></td>
+                                    <td x-text="bast.date"></td>
                                     <td>
                                         <a :href="`/income-transactions/bast/detail/${bast.id}`"
                                            x-text="bast.bast_number"></a>
@@ -114,12 +88,6 @@
                                             <span class="badge bg-success">Terkonfirmasi</span>
                                         </td>
                                     </template>
-                                    <td>
-                                        <a :href="`/income-transactions/bast/view-file/${bast.id}`"
-                                           class="btn btn-sm btn-info"><i class="bi bi-file-earmark-break-fill"></i></a>
-                                    </td>
-                                    <td x-text="bast.created_at"></td>
-                                    <td x-text="bast.created_by"></td>
                                 </tr>
                             </template>
                             </tbody>
@@ -150,21 +118,12 @@
                 filterCategory: '',
                 async init() {
                     await this.getBastData();
-                    await this.filterByBranch();
                 },
                 async paginationEndPoint(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
                         this.bastList = resp.data
                     }
-                },
-                async filterData() {
-                    this.isLoading = true;
-                    this.bastList = await axios.get('/income-transactions/bast/filter-category', {
-                        params: {filterCategory: this.filterCategory},
-                        headers: {'Content-Type': 'application/json'}
-                    });
-                    this.isLoading = false;
                 },
                 async searchData() {
                     this.isLoading = true;
@@ -180,51 +139,11 @@
                         this.isLoading = false;
                     }
                 },
-                async updatePaymentStatus(id) {
-                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
-                        try {
-                            await axios.post(`/income-transactions/bast/update-payment-status/${id}`);
-                            await showAlert('success', 'Data sukses dihapus');
-                            await this.init();
-                        } catch (error) {
-                            console.error(error);
-                            await showAlert('error', 'Terjadi kesalahan');
-                        }
-                    });
-                },
                 async getBastData() {
                     const bast = await axios.get('/income-transactions/bast/data');
                     this.bastList = bast.data;
                     this.startIndex = this.bastList.from;
                     this.isLoading = false;
-                },
-                async filterByBranch() {
-                    const self = this;
-                    $(".filter-branch-select2").select2({
-                        ajax: {
-                            url: '/income-transactions/bast/branch/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true
-                        }
-                    }).on('change', async function (e) {
-                        const selectedBranch = $(this).select2('data')[0];
-                        const response = await axios.get(`/income-transactions/bast/filter/branch/data/${selectedBranch.id}`);
-                        self.bastList = response.data;
-                    });
-                },
-                formatDate(val) {
-                    if (val) {
-                        const date = new Date(val);
-                        const formatter = new Intl.DateTimeFormat('en-US', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric'
-                        });
-                        return formatter.format(date);
-                    }
                 },
             }
         }

@@ -2,34 +2,26 @@
 
 namespace App\Http\Controllers\Accounting\Transaction;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaction\Bast\BastRequest;
+use App\Models\BAA;
 use App\Models\Bast;
 use App\Models\BastProduct;
 use App\Models\Branch;
+use App\Models\CompanyProfile;
 use App\Models\Contact;
+use App\Models\PurchaseOrderItem;
+use App\Models\TaxSetting;
 use App\Service\Transaction\BastService;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Spatie\Browsershot\Browsershot;
 
-class BastController extends Controller
+#[AllowDynamicProperties] class BastController extends Controller
 {
-    public int $perPage = 10;
-
-    private Contact $contact;
-
-    private BastService $bastService;
-
-    private Bast $bast;
-
-    private BastProduct $bastProduct;
-
-    private Branch $branch;
-
     public function __construct()
     {
         $this->contact = new Contact();
@@ -37,6 +29,7 @@ class BastController extends Controller
         $this->bast = new Bast();
         $this->bastProduct = new BastProduct();
         $this->branch = new Branch();
+        $this->baa = new BAA();
     }
 
     public function index(): View
@@ -44,10 +37,9 @@ class BastController extends Controller
         return view('pages.transaction.bast.index');
     }
 
-    public function data(Request $request): JsonResponse
+    public function data(): JsonResponse
     {
-        $bast = $this->bastService->data($request);
-
+        $bast = $this->bastService->data();
         return response()->json($bast);
     }
 
@@ -57,21 +49,14 @@ class BastController extends Controller
         return response()->json($searchQuery);
     }
 
+    public function getBAAData(Request $request): JsonResponse
+    {
+        return response()->json($this->baa->getData($request));
+    }
+
     public function branchData(Request $request): JsonResponse
     {
         return response()->json($this->branch->getData($request));
-    }
-
-    public function filterByBranch(Branch $branch): JsonResponse
-    {
-        return response()->json($this->bast->filterDataBasedOnBranch($branch->id, $this->perPage));
-    }
-
-    public function contactData(Request $request): JsonResponse
-    {
-        $contact = $this->contact->getData($request);
-
-        return response()->json($contact);
     }
 
     public function create(): View
@@ -88,6 +73,12 @@ class BastController extends Controller
         ]);
     }
 
+
+    public function selectedBAA(Bast $bast): JsonResponse
+    {
+        return response()->json($this->baa->getSelectedData($bast->baa_id));
+    }
+
     public function edit(Bast $bast): View
     {
         return view('pages.transaction.bast.edit', compact('bast'));
@@ -95,14 +86,14 @@ class BastController extends Controller
 
     public function detail(Bast $bast): View
     {
-        $bastProducts = $this->bastProduct->getData($bast->id);
-        return view('pages.transaction.bast.detail', compact('bast', 'bastProducts'));
+        $getPoItem = PurchaseOrderItem::where('po_id', $bast->baa->fab->po->id)->get();
+        $getPPN = TaxSetting::where('name', 'PPN')->first();
+        $totalPPN = $getPPN->rate / 100 * $getPoItem->sum('price');
+        $total = $getPoItem->sum('price') + $totalPPN;
+        $companyProfile = CompanyProfile::first();
+        return view('pages.transaction.bast.detail', compact('bast', 'getPoItem', 'totalPPN', 'total', 'companyProfile'));
     }
 
-    public function getProductBast(Bast $bast): JsonResponse
-    {
-        return response()->json($this->bastProduct->getData($bast->id));
-    }
 
     public function getSelectedContact(Bast $bast): JsonResponse
     {
@@ -131,9 +122,7 @@ class BastController extends Controller
 
     public function destroy(Bast $bast): JsonResponse
     {
-        Storage::delete($bast->file);
         $bast->delete();
-
         return response()->json([
             'message' => 'data berhasil dihapus',
         ], 201);
@@ -146,13 +135,26 @@ class BastController extends Controller
 
     public function exportToPDF(Bast $bast): Response
     {
-        $bastProducts = $this->bastProduct->getData($bast->id);
 
-        $pdf = PDF::loadView('pages.transaction.bast.export-pdf', compact('bastProducts', 'bast'))->setPaper(
-            'A4',
-            'portrait'
-        );
+        $getPoItem = PurchaseOrderItem::where('po_id', $bast->baa->fab->po->id)->get();
+        $getPPN = TaxSetting::where('name', 'PPN')->first();
+        $totalPPN = $getPPN->rate / 100 * $getPoItem->sum('price');
+        $total = $getPoItem->sum('price') + $totalPPN;
+        $companyProfile = CompanyProfile::first();
+        $view = view('pages.transaction.bast.export-pdf', compact('bast', 'getPoItem', 'totalPPN', 'total', 'companyProfile'))->render();
+        $pdf = Browsershot::html($view)
+            ->setChromePath('/usr/bin/chromium')
+            ->noSandbox()
+            ->waitUntilNetworkIdle()
+            ->ignoreHttpsErrors()
+            ->format('A4')
+            ->setEnvironmentOptions([
+                'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
+            ])->pdf();
 
-        return $pdf->stream();
+        return new Response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $bast->bast_number . '".pdf"',
+        ]);
     }
 }
