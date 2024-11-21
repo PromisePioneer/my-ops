@@ -131,6 +131,7 @@
                 async init() {
                     const resp = await axios.get('/adms/employee-schedules/data');
                     this.employeeSchedules = resp.data
+                    await this.getWorkTimeData();
                 },
                 formatDate(val) {
                     const date = new Date(val);
