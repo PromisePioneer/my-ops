@@ -41,21 +41,27 @@ use Illuminate\View\View;
         return response()->json($this->workTime->getSelectedData($employeeSchedule->work_time_id));
     }
 
-    public function getSchedules($date, User $user): JsonResponse
+    public function getSchedules($date, $absentId): JsonResponse
     {
-        $employeeSchedules = EmployeeSchedule::whereDate('date', $date)->where('employee_id', $user->absent_id)->first();
+        $employeeSchedules = EmployeeSchedule::whereDate('date', $date)->where('employee_id', $absentId)->first();
         return response()->json($employeeSchedules);
     }
 
-    public function saveSchedules(EmployeeScheduleRequest $request): JsonResponse
+    public function saveSchedules(Request $request): JsonResponse
     {
-        EmployeeSchedule::updateOrCreate([
+
+        // dd($request);
+
+
+      $test =  EmployeeSchedule::updateOrCreate([
             'work_time_id' => $request->work_time_id,
             'employee_id' => $request->employee_id,
         ], [
             'date' => $request->date,
             'status' => $request->status
         ]);
+
+        // dd($test);
 
         return response()->json(['message' => 'Data berhasil disimpan.']);
     }

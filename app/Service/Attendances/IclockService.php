@@ -4,10 +4,12 @@ namespace App\Service\Attendances;
 
 use App\Models\Attendances;
 use App\Models\DeviceLog;
+use App\Models\EmployeeSchedule;
 use App\Models\FingerLog;
 use App\Models\FpDevice;
 use App\Models\UserWorkTime;
 use App\Models\WorkTime;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -87,7 +89,7 @@ class IclockService
                     //                    }
 
                     // Get shift information for the user
-                    $shift = $this->getShiftForUser($attendanceData['employee_id']);
+                    $shift = $this->getShiftForUser($attendanceData['employee_id'], $attendanceData['timestamp']);
                     //                    dd(!$shift);
                     //                    if (!$shift) {
                     //                        continue;
@@ -139,14 +141,23 @@ class IclockService
         return isset($value) && $value !== '' ? (int)$value : null;
     }
 
-    private function getShiftForUser(string $employeeId)
+    private function getShiftForUser(string $employeeId, $date)
     {
-        $userShift = UserWorkTime::whereHas('user', function ($query) use ($employeeId) {
-            $query->where('absent_id', $employeeId);
-        })->first();
+        // Log::info($date);
+
+        // $userShift = UserWorkTime::whereHas('user', function ($query) use ($employeeId) {
+        //     $query->where('absent_id', $employeeId);
+        // })->first();
+
+        $userShift = EmployeeSchedule::with('workTime')
+        ->where('employee_id', $employeeId)
+        ->whereDate('date', Carbon::parse($date))
+        ->first();
+
+
 
         return $userShift
-            ? WorkTime::find($userShift->work_time_id) ?? WorkTime::find(1)
+            ? WorkTime::find($userShift->workTime->id) ?? WorkTime::find(1)
             : WorkTime::find(1);
     }
 

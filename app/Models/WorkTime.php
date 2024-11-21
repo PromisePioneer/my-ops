@@ -63,6 +63,6 @@ class WorkTime extends Model
 
     public function employeeSchedules(): HasOne
     {
-        return $this->hasOne(EmployeeSchedule::class);
+        return $this->hasOne(EmployeeSchedule::class, 'work_time_id');
     }
 }

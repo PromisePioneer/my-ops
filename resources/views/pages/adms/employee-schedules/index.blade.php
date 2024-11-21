@@ -150,6 +150,8 @@
                     }
                 },
                 async getSchedules(employeeId, date) {
+                    console.log(employeeId);
+
                     const resp = await axios.get(`/adms/employee-schedules/get-schedules/${date}/${employeeId}`);
                     if (Object.keys(resp.data).length) {
                         this.schedulesValue = resp.data;

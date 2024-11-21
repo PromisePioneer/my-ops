@@ -27,7 +27,7 @@ class EmployeeScheduleRequest extends FormRequest
         return [
             'date' => ['required', 'date'],
             'work_time_id' => ['required'],
-            'employee_id' => ['required', 'exists:users,id'],
+            // 'employee_id' => ['required', 'exists:users,absent_id'],
             'status' => ['required', Rule::in('H', 'L')],
         ];
     }
@@ -40,8 +40,8 @@ class EmployeeScheduleRequest extends FormRequest
             'date.date' => ['Tanggal tidak valid'],
             'work_time_id.required' => ['Jam kerja tidak boleh kosong'],
             'work_time_id.work_time' => ['Jam kerja tidak valid'],
-            'employee_id.required' => ['Karyawan tidak boleh kosong'],
-            'employee_id.exists' => ['Karyawan tidak valid'],
+            // 'employee_id.required' => ['Karyawan tidak boleh kosong'],
+            // 'employee_id.exists' => ['Karyawan tidak valid'],
             'status.required' => ['Status tidak boleh kosong'],
             'status.in' => ['Status tidak valid'],
         ];
