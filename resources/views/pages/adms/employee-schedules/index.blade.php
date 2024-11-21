@@ -161,7 +161,7 @@
                 },
                 async getWorkTimeData() {
                     $(`.work-time-select2`).select2({
-                        placeholder: "Pilih Kategori",
+                        placeholder: "Pilih Jam Kerja",
                         allowClear: true,
                         ajax: {
                             url: '/adms/employee-schedules/work-time/data',
