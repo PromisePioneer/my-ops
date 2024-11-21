@@ -6,9 +6,6 @@ use App\Models\EmployeeSchedule;
 use App\Models\User;
 use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\CarbonPeriod;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Collection;
 
 class EmployeeScheduleService
 {
@@ -23,7 +20,7 @@ class EmployeeScheduleService
 
     public function data()
     {
-        $user = User::orderBy('nip')->paginate(self::$perPage);
+        $user = User::paginate(self::$perPage);
         return self::formattedData($user);
     }
 
