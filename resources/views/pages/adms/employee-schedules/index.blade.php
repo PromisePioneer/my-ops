@@ -145,7 +145,7 @@
                 async paginationEndPoint(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
-                        this.branches = resp.data
+                        this.employeeSchedules = resp.data
                     }
                 },
                 async getSchedules(employeeId, date) {
