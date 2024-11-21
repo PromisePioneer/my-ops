@@ -142,6 +142,12 @@
                     };
                     return date.toLocaleDateString("id", options)
                 },
+                async paginationEndPoint(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
+                        this.branches = resp.data
+                    }
+                },
                 async getSchedules(employeeId, date) {
                     const resp = await axios.get(`/adms/employee-schedules/get-schedules/${date}/${employeeId}`);
                     if (Object.keys(resp.data).length) {

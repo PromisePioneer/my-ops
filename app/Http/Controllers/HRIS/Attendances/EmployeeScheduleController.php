@@ -14,8 +14,6 @@ use Illuminate\View\View;
 
 #[AllowDynamicProperties] class EmployeeScheduleController extends Controller
 {
-
-
     public function __construct()
     {
         $this->employeeScheduleService = new EmployeeScheduleService();
