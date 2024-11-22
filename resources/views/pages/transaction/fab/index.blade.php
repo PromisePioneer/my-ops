@@ -15,6 +15,7 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-product-table-toolbar="base">
+                        <template x-if="Number(createPermission) === 1">
                         <a href="{{ url('/income-transactions/fab/create') }}"
                            class="btn btn-light-primary btn-sm">
                             <i class="ki-duotone ki-message-add fs-2">
@@ -23,15 +24,7 @@
                                 <span class="path3"></span>
                             </i> Tambah
                         </a>
-                    </div>
-                    <div class="d-flex justify-content-end align-items-center d-none"
-                         data-kt-product-table-toolbar="selected">
-                        <div class="fw-bolder me-5">
-                            <span class="me-2" data-kt-product-table-select="selected_count"></span>Selected
-                        </div>
-                        <button type="button" class="btn btn-danger" data-kt-product-table-select="delete_selected">
-                            Delete Selected
-                        </button>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -45,6 +38,7 @@
                                 <th class="min-w-125px">Nomor</th>
                                 <th class="min-w-125px">Tanggal</th>
                                 <th class="min-w-125px">Pelanggan</th>
+                                <th class="min-w-125px">Status</th>
                                 <th class="min-w-125px">Dibuat Oleh</th>
                             </thead>
                             <tbody class="fw-bold">
@@ -71,11 +65,21 @@
                                     <td x-text="startIndex + index++">
                                     </td>
                                     <td>
-                                        <a :href="`/income-transactions/fab/detail/${fab.id}`"
+                                        <a :href="Number(createPermission) === 1 ? `/income-transactions/fab/detail/${fab.id}` : '#'"
                                            x-text="fab.code"></a>
                                     </td>
                                     <td x-text="fab.date"></td>
                                     <td x-text="fab.contact"></td>
+                                    <template x-if="fab.status === 0">
+                                        <td>
+                                            <span class="badge bg-warning">Pending</span>
+                                        </td>
+                                    </template>
+                                    <template x-if="fab.status === 1">
+                                        <td>
+                                            <span class="badge bg-success">Terkonfirmasi</span>
+                                        </td>
+                                    </template>
                                     <td x-text="fab.created_by"></td>
                                 </tr>
                             </template>
@@ -103,6 +107,8 @@
     <script>
         function FABData() {
             return {
+                createPermission: "{{ request()->user()->can('Tambah Data Fab') }}",
+                viewDetailPermission: "{{ request()->user()->can('Lihat Detail Data Fab') }}",
                 subcriptions: [],
                 startIndex: null,
                 isLoading: true,

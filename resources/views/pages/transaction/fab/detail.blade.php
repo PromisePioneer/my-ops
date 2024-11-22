@@ -279,36 +279,46 @@
                 @if($fab->status === 0)
                     <div class="p-5 row ">
                         <div class="col">
-                            <a href="{{ url('income-transactions/fab/edit/' . $fab->id) }}"
-                               class="btn btn-light btn-active-light-info w-100">Ubah</a>
+                            @can('Edit Data Fab')
+                                <a href="{{ url('income-transactions/fab/edit/' . $fab->id) }}"
+                                   class="btn btn-light btn-active-light-info btn-sm w-100">Ubah</a>
+                            @endcan
                         </div>
                         <div class="col">
-                            <button type="button" @click="destroy({{ $fab->id }})"
-                                    class="btn btn-light btn-active-light-danger w-100">Hapus
-                            </button>
+                            @can('Hapus Data Fab')
+                                <button type="button" @click="destroy({{ $fab->id }})"
+                                        class="btn btn-light btn-sm btn-active-light-danger w-100">Hapus
+                                </button>
+                            @endcan
                         </div>
                     </div>
                 @endif
                 <div class="px-3">
                     @if($fab->status === 0)
-                        <button type="button" class="btn btn-primary" @click="confirm()"
-                                x-text="buttonLoading ? 'Loading' : 'Konfirmasi FAB'">
-                            Konfirmasi
-                        </button>
+                        @can('Konfirmasi Data Fab')
+                            <button type="button" class="btn btn-primary btn-sm" @click="confirm()"
+                                    x-text="buttonLoading ? 'Loading' : 'Konfirmasi FAB'">
+                                Konfirmasi
+                            </button>
+                        @endcan
                     @endif
                 </div>
             </div>
 
             @if($fab->status === 1)
                 <div class="d-flex align-items-center justify-content-between p-3">
-                    <a href="{{ url('income-transactions/fab/export-pdf/'. $fab->id) }}"
-                       class="btn btn-light-info me-3 btn-sm" target="_blank">
-                        Print FAB
-                    </a>
+                    @can('Print Data Fab')
+                        <a href="{{ url('income-transactions/fab/export-pdf/'. $fab->id) }}"
+                           class="btn btn-light-info me-3 btn-sm" target="_blank">
+                            Print FAB
+                        </a>
+                    @endcan
+                    @can('Print Kontrak')
                     <a href="{{ url('income-transactions/fab/contract-pdf/'. $fab->id) }}"
                        class="btn btn-light-primary btn-sm" target="_blank">
                         Print Kontrak
                     </a>
+                    @endcan
                 </div>
             @endif
         </div>

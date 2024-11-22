@@ -81,11 +81,6 @@
                                             <span class="badge bg-success">Terkonfirmasi</span>
                                         </td>
                                     </template>
-                                    <template x-if="offeringLetter.status === 2">
-                                        <td>
-                                            <span class="badge bg-danger">Buat PO</span>
-                                        </td>
-                                    </template>
                                     <td x-text="formatDate(offeringLetter.created_at)"></td>
                                     <td x-text="offeringLetter.created_by"></td>
                                 </tr>

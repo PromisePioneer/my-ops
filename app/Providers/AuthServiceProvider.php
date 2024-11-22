@@ -6,10 +6,12 @@ namespace App\Providers;
 use App\Models\Account;
 use App\Models\AccountTransaction;
 use App\Models\AttendancesSummary;
+use App\Models\Boq;
 use App\Models\Branch;
 use App\Models\Company;
 use App\Models\Contact;
 use App\Models\Department;
+use App\Models\Fab;
 use App\Models\LeaveAndPermission;
 use App\Models\NationalHoliday;
 use App\Models\OfferingLetter;
@@ -67,12 +69,12 @@ class AuthServiceProvider extends ServiceProvider
         Permission::class => PermissionPolicy::class,
         LeaveAndPermission::class => LeaveAndPermissionPolicy::class,
         AttendancesSummary::class => AttendanceRecordPolicy::class,
-        BoqPolicy::class => BoqPolicy::class,
+        Boq::class => BoqPolicy::class,
         AccountTransaction::class => InitialBalancePolicy::class,
         Company::class => CompanyPolicy::class,
         OfferingLetter::class => OfferingLetterPolicy::class,
-        FabPolicy::class => FabPolicy::class,
-        PurchaseOrderPolicy::class => PurchaseOrder::class,
+        Fab::class => FabPolicy::class,
+        PurchaseOrder::class => PurchaseOrderPolicy::class,
     ];
 
     /**

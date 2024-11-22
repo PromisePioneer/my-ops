@@ -95,6 +95,7 @@ class FabService
                 'id' => $item->id,
                 'code' => $item->fab_number,
                 'contact' => $item->po->contact->company_name . ' (' . $item->po->contact->pic_name . ')',
+                'status' => $item->status,
                 'created_by' => $item->user->name,
             ];
         });
