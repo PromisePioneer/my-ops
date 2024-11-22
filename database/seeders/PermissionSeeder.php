@@ -14,6 +14,9 @@ class PermissionSeeder extends Seeder
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
         $this->BoQ();
         $this->branch();
+        $this->fab();
+        $this->po();
+        $this->offeringLetter();
     }
 
 
