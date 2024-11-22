@@ -32,14 +32,16 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-end" data-kt-product-table-toolbar="base">
-                        <a href="{{ url('/income-transactions/po/create') }}"
-                           class="btn btn-light-primary btn-sm">
-                            <i class="ki-duotone ki-message-add fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                            </i> Tambah
-                        </a>
+                        <template x-if="Number(createPermission) === 1">
+                            <a href="{{ url('/income-transactions/po/create') }}"
+                               class="btn btn-light-primary btn-sm">
+                                <i class="ki-duotone ki-message-add fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i> Tambah
+                            </a>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -83,7 +85,7 @@
                                     <td x-text="startIndex + index++">
                                     </td>
                                     <td>
-                                        <a :href="`/income-transactions/po/detail/${po.id}`"
+                                        <a :href="`${Number(viewDetailPermission) === 1 ? `/income-transactions/po/detail/${po.id}` : '#'}`"
                                            x-text="po.po_number"></a>
                                     </td>
                                     <td x-text="po.subject"></td>
@@ -125,6 +127,8 @@
     <script>
         function purchaseOrderData() {
             return {
+                createPermission: "{{ request()->user()->can('Tambah Data PO') }}",
+                viewDetailPermission: "{{ request()->user()->can('Lihat Detail PO') }}",
                 isLoading: false,
                 startIndex: null,
                 search: '',

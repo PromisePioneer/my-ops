@@ -12,6 +12,7 @@ use App\Models\TaxSetting;
 use App\Models\UnitType;
 use App\Models\User;
 use App\Service\PurchaseOrderService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -29,46 +30,78 @@ use Throwable;
         $this->user = new User();
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function index(): View
     {
+        $this->authorize('viewAny', PurchaseOrder::class);
         return view('pages.transaction.purchase-orders.index');
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function data(): JsonResponse
     {
+        $this->authorize('view', PurchaseOrder::class);
         return response()->json($this->purchaseOrderService->data());
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function search(Request $request): JsonResponse
     {
+        $this->authorize('view', PurchaseOrder::class);
         return response()->json($this->purchaseOrderService->search($request));
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getContactData(Request $request): JsonResponse
     {
+        $this->authorize('create', PurchaseOrder::class);
         return response()->json($this->contact->getData($request));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getOfferingLetterIfExists(Contact $contact): JsonResponse
     {
+        $this->authorize('create', PurchaseOrder::class);
         $data = OfferingLetter::where('contact_id', $contact->id)->first();
         return response()->json($data);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getUnitTypeData(Request $request): JsonResponse
     {
+        $this->authorize('create', PurchaseOrder::class);
         return response()->json($this->unitType->getData($request));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getUserData(Request $request): JsonResponse
     {
+        $this->authorize('create', PurchaseOrder::class);
         return response()->json($this->user->getUser($request));
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function create(): View
     {
+        $this->authorize('create', PurchaseOrder::class);
         return view('pages.transaction.purchase-orders.create');
     }
 
@@ -78,29 +111,46 @@ use Throwable;
      */
     public function store(PORequest $request): JsonResponse
     {
+        $this->authorize('create', PurchaseOrder::class);
         $this->purchaseOrderService->store($request);
         return response()->json(['message' => 'Purchase Order berhasil ditambahkan.']);
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function selectedPIC(PurchaseOrder $purchaseOrder): JsonResponse
     {
+        $this->authorize('update', PurchaseOrder::class);
         return response()->json($this->user->getSelectedData($purchaseOrder->pic));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function selectedContact(PurchaseOrder $purchaseOrder): JsonResponse
     {
+        $this->authorize('update', PurchaseOrder::class);
         return response()->json($this->contact->getSelectedData($purchaseOrder->contact_id));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getPurchaseOrderItem(PurchaseOrder $purchaseOrder): JsonResponse
     {
+        $this->authorize('update', PurchaseOrder::class);
         $poItem = PurchaseOrderItem::where('po_id', $purchaseOrder->id)->get();
         return response()->json($poItem);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function edit(PurchaseOrder $purchaseOrder): View
     {
+        $this->authorize('update', PurchaseOrder::class);
         return view('pages.transaction.purchase-orders.edit', compact('purchaseOrder'));
     }
 
@@ -110,13 +160,18 @@ use Throwable;
      */
     public function update(PurchaseOrder $purchaseOrder, PORequest $request): JsonResponse
     {
+        $this->authorize('update', PurchaseOrder::class);
         $this->purchaseOrderService->update($request, $purchaseOrder);
         return response()->json(['message' => 'Purchase Order berhasil disimpan.']);
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function detail(PurchaseOrder $purchaseOrder): View
     {
+        $this->authorize('viewDetail', PurchaseOrder::class);
         $purchaseOrderItem = PurchaseOrderItem::where('po_id', $purchaseOrder->id)->get();
         $poCompany = $this->purchaseOrderService->convertCompanyNameToTextCapitalize($purchaseOrder);
 
@@ -129,8 +184,12 @@ use Throwable;
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function confirm(PurchaseOrder $purchaseOrder): JsonResponse
     {
+        $this->authorize('confirm', PurchaseOrder::class);
         $purchaseOrder->update([
             'status' => 1
         ]);
@@ -138,23 +197,29 @@ use Throwable;
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function destroy(PurchaseOrder $purchaseOrder): JsonResponse
     {
+        $this->authorize('delete', PurchaseOrder::class);
         return response()->json($purchaseOrder->delete());
     }
 
 
-    public function exportToPDF(PurchaseOrder $purchaseOrder)
+    /**
+     * @throws AuthorizationException
+     */
+    public function exportToPDF(PurchaseOrder $purchaseOrder): Response
     {
+        $this->authorize('print', PurchaseOrder::class);
         $purchaseOrderItem = PurchaseOrderItem::with('unitType')
             ->where('po_id', $purchaseOrder->id)
             ->get();
 
         $getPPN = TaxSetting::where('name', 'PPN')->first();
 
-
         $poCompany = $this->purchaseOrderService->convertCompanyNameToTextCapitalize($purchaseOrder);
-
         $totalPPN = $getPPN->rate / 100 * $purchaseOrderItem->sum('price');
         $total = $purchaseOrderItem->sum('price') + $totalPPN;
 

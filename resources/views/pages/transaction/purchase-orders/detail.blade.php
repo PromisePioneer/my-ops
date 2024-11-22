@@ -128,13 +128,13 @@
                     <div class="mb-0">
                         @if($purchaseOrder->status === 0)
                             <div class="row mb-5">
-                                @can('Edit Data Penawaran')
+                                @can('Edit Data PO')
                                     <div class="col">
                                         <a href="{{ url('income-transactions/po/edit/' . $purchaseOrder->id) }}"
                                            class="btn btn-light btn-active-light-info w-100">Ubah</a>
                                     </div>
                                 @endcan
-                                @can('Hapus Data Penawaran')
+                                @can('Hapus Data PO')
                                     <div class="col">
                                         <button type="button" @click="destroy({{ $purchaseOrder->id }})"
                                                 class="btn btn-light btn-active-light-danger w-100">Hapus
@@ -142,17 +142,19 @@
                                     </div>
                                 @endcan
                             </div>
-                            @can('Konfirmasi Data Penawaran')
+                            @can('Konfirmasi Data PO')
                                 <button type="button" @click="confirmPO()"
                                         class="btn btn-primary w-100 mb-4">
                                     Konfirmasi
                                 </button>
                             @endcan
                         @else
+                            @can('Print Data PO')
                             <a href="{{ url('income-transactions/po/export-pdf/'. $purchaseOrder->id) }}"
                                class="btn btn-light-info w-100 mb-4" target="_blank">
                                 Print PDF
                             </a>
+                            @endcan
                         @endif
                     </div>
                 </div>
@@ -168,6 +170,8 @@
             return {
                 id: "{{ $purchaseOrder->id }}",
                 buttonLoading: false,
+                editPermission: "{{ request()->user()->can('Edit Data PO') }}",
+                deletePermission: "{{ request()->user()->can('Hapus Data PO') }}",
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {

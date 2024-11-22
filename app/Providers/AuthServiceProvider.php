@@ -14,6 +14,7 @@ use App\Models\LeaveAndPermission;
 use App\Models\NationalHoliday;
 use App\Models\OfferingLetter;
 use App\Models\Product;
+use App\Models\PurchaseOrder;
 use App\Models\ServiceCategory;
 use App\Models\SP;
 use App\Models\User;
@@ -32,6 +33,7 @@ use App\Policies\NationalHolidayPolicy;
 use App\Policies\OfferingLetterPolicy;
 use App\Policies\PermissionPolicy;
 use App\Policies\ProductPolicy;
+use App\Policies\PurchaseOrderPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\ServiceCategoriesPolicy;
 use App\Policies\SpPolicy;
@@ -70,6 +72,7 @@ class AuthServiceProvider extends ServiceProvider
         Company::class => CompanyPolicy::class,
         OfferingLetter::class => OfferingLetterPolicy::class,
         FabPolicy::class => FabPolicy::class,
+        PurchaseOrderPolicy::class => PurchaseOrder::class,
     ];
 
     /**

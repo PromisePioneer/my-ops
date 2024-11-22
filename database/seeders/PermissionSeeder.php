@@ -16,10 +16,31 @@ class PermissionSeeder extends Seeder
         $this->branch();
     }
 
+
+    public function po(): void
+    {
+        $permissions = [
+            'Lihat Menu PO',
+            'Lihat Data PO',
+            'Tambah Data PO',
+            'Edit Data PO',
+            'Lihat Detail PO',
+            'Hapus Data PO',
+            'Print Data PO',
+            'Konfirmasi Data PO',
+            'Print Data PO'
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+    }
+
     public function fab(): void
     {
         $permissions = [
             'Lihat Menu Fab',
+            'Lihat Data Fab',
             'Tambah Data Fab',
             'Edit Data Fab',
             'Lihat Detail Fab',
