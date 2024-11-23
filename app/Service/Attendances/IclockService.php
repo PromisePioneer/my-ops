@@ -206,7 +206,6 @@ class IclockService
 
             if (!$existingCheckOut) {
                 Attendances::create($attendanceData);
-                Log::info('hai');
             }
         }
     }

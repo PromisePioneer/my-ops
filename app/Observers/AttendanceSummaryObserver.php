@@ -8,7 +8,7 @@ use App\Models\EmployeeSchedule;
 use App\Models\User;
 use App\Models\WorkTime;
 use Carbon\Carbon;
-use Log;
+use Illuminate\Support\Facades\Log;
 
 class AttendanceSummaryObserver
 {
@@ -28,6 +28,16 @@ class AttendanceSummaryObserver
         ->where('employee_id', $attendances->employee_id)
         ->whereDate('date', Carbon::parse($attendances->timestamp))
         ->first() ?? WorkTime::where('name', 'Default')->first();
+
+
+        Log::error($userWorktime);
+
+
+
+        if ($userWorktime->status === 'L') {
+            Log::info('nice');
+        }
+
 
         $attendancesSummary = AttendancesSummary::updateOrCreate([
             'date' => Carbon::parse($attendances->timestamp)->format('Y-m-d'),
