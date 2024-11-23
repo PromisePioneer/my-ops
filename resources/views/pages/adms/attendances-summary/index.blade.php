@@ -57,7 +57,6 @@
                                            x-text="`(${attendance.user_nip}) ${attendance.user_name}`"></a>
                                     </td>
                                     <td x-text="`${attendance.role}`"></td>
-
                                     <td x-text="`${attendance.total_minutes_late} Menit`"></td>
                                     <td x-text="`${attendance.total_present} Hari`"></td>
                                     <td x-text="`${attendance.total_not_check_in}`"></td>

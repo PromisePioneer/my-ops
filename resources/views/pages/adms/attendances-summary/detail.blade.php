@@ -62,8 +62,8 @@
                                     <th class="text-center">Action</th>
                                 </tr>
                                 </thead>
-                                <tbody class="fw-bold">
                                 <template x-if="isLoading">
+                                <tbody class="fw-bold">
                                     <tr>
                                         <td colspan="5">
                                             <div style="text-align: center;">
@@ -73,17 +73,29 @@
                                             </div>
                                         </td>
                                     </tr>
+                                </tbody>
                                 </template>
                                 <template x-if="!isLoading && attendancesSummaryRecords.length === 0">
+                                    <tbody>
                                     <tr>
                                         <td colspan="9">
                                             <center>Data Tidak Ditemukan</center>
                                         </td>
                                     </tr>
+                                    </tbody>
                                 </template>
                                 <template x-for="(attendance, index) in attendancesSummaryRecords" :key="index">
-                                    <tr>
-                                        <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
+                                    <tbody>
+                                    <template x-if="attendance.schedule === 'L'">
+                                        <tr class="bg-warning text-center fw-bold">
+                                            <td x-text="formatDate(attendance.date_period)"></td>
+                                            <td colspan="5">LIBUR</td>
+                                        </tr>
+                                    </template>
+                                    <template x-if="attendance.schedule === null">
+                                        <tr>
+                                            <td class="text-center"
+                                                x-text="formatDate(attendance.date_period)"></td>
                                         <td class="text-center" x-text="attendance.clock_in"></td>
                                         <td class="text-center" x-text="attendance.clock_out"></td>
                                         <td class="text-center" x-text="attendance.late"></td>
@@ -102,8 +114,9 @@
                                             </button>
                                         </td>
                                     </tr>
+                                    </template>
+                                    </tbody>
                                 </template>
-                                </tbody>
                             </table>
                         </div>
                     </div>

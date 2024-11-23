@@ -3,6 +3,8 @@
 namespace App\Service\Attendances;
 
 use App\Models\AttendancesSummary;
+use App\Models\EmployeeSchedule;
+use App\Models\LeaveAndPermission;
 use App\Models\User;
 use App\Models\WorkTime;
 use App\Service\HelperService\FinancialClosePeriodService;
@@ -38,16 +40,21 @@ class AttendanceSummaryDetailService
             ->get()
             ->keyBy('date');
 
-        $period = CarbonPeriod::create($startDate, $endDate);
+        $employeeSchedule = EmployeeSchedule::where('employee_id', $empId)
+            ->whereBetween('date', [$startDate, $endDate])->orderBy('date', 'asc')->get()->keyBy('date');
 
+        $user = User::where('absent_id', $empId)->first();
+        $period = CarbonPeriod::create($startDate, $endDate);
+        $getLeaves = $this->getLeaves($user, $startDate, $endDate);
 
         $dates = [];
-
         foreach ($period as $date) {
             $formattedDate = $date->format('Y-m-d');
             $dates[$formattedDate] = collect([
                 'attendancesDate' => $formattedDate,
                 'attendanceData' => $attendancesData->get($formattedDate),
+                'employeeSchedule' => $employeeSchedule->get($formattedDate),
+                'leaves' => $getLeaves
             ]);
         }
 
@@ -57,9 +64,10 @@ class AttendanceSummaryDetailService
     public function formattedData($attendanceSummary, $empId)
     {
         return $attendanceSummary->map(function ($item) use ($empId) {
-
             $userWorktime = WorkTime::where('id', $item['attendanceData']?->work_time_id)->first()
                 ?? null;
+
+//            dd($item['leaves']);
 
             return [
                 'date_period' => $item['attendancesDate'],
@@ -67,8 +75,40 @@ class AttendanceSummaryDetailService
                 'clock_out' => $item['attendanceData']?->clock_out,
                 'late' => $this->calculateLate($item, $userWorktime) ?? null,
                 'work_time' => $userWorktime->name ?? '',
+                'schedule' => $item['employeeSchedule']?->status,
             ];
         });
+    }
+
+
+    public function getLeaves($user, $startDate, $endDate)
+    {
+        $leaveAndPermission = LeaveAndPermission::where('user_id', $user->id)
+            ->where('leaves_status', 'Cuti')
+            ->whereBetween('start_date', [$startDate, $endDate])
+            ->orWhereBetween('end_date', [$startDate, $endDate])
+            ->get();
+
+        foreach ($leaveAndPermission as $dates) {
+            $leavePeriod = CarbonPeriod::create($dates->start_date, $dates->end_date);
+        }
+
+        $leavesDate = [];
+
+        foreach ($leavePeriod as $date) {
+            $leavesDate[] = $date->format('Y-m-d');
+        }
+
+        $leaves = [];
+        foreach ($leavesDate as $date) {
+            $leaves[$date] = collect([
+                'leaves_date' => $date,
+                'status' => 'Cuti'
+            ]);
+        }
+
+
+        return $leaves;
     }
 
 
@@ -77,9 +117,8 @@ class AttendanceSummaryDetailService
         if (!empty($userWorktime)) {
             $expectedCheckIn = Carbon::parse($item['attendancesDate'])
                     ->format('Y-m-d') . ' ' . $userWorktime->clock_in;
-            $actualCheckIn = Carbon::parse($item['attendancesDate'])->format(
-                    'Y-m-d'
-                ) . ' ' . $item['attendanceData']?->clock_in;
+            $actualCheckIn = Carbon::parse($item['attendancesDate'])
+                    ->format('Y-m-d') . ' ' . $item['attendanceData']?->clock_in;
 
             $parseExpectedCheckIn = Carbon::parse($expectedCheckIn);
             $parseActualCheckIn = Carbon::parse($actualCheckIn);

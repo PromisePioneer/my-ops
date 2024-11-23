@@ -15,14 +15,16 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-product-table-toolbar="base">
-                        <a href="{{ url('/income-transactions/baa/create') }}"
-                           class="btn btn-light-primary btn-sm">
-                            <i class="ki-duotone ki-message-add fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                            </i> Tambah
-                        </a>
+                        <template x-if="Number(createPermission) === 1">
+                            <a href="{{ url('/income-transactions/baa/create') }}"
+                               class="btn btn-light-primary btn-sm">
+                                <i class="ki-duotone ki-message-add fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i> Tambah
+                            </a>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -62,7 +64,7 @@
                                 <tr>
                                     <td x-text="startIndex + index++"></td>
                                     <td>
-                                        <a :href="`/income-transactions/baa/detail/${activation.id}`"
+                                        <a :href="Number(viewDetailPermission) === 1 ? `/income-transactions/baa/detail/${activation.id}` : '#'"
                                            x-text="activation.baa_number"></a>
                                     </td>
                                     <td x-text="activation.date"></td>
@@ -100,6 +102,8 @@
     <script>
         function baaData() {
             return {
+                createPermission: "{{ request()->user()->can('Tambah Data BAA') }}",
+                viewDetail: "{{ request()->user()->can('Lihat Detail Data BAA') }}",
                 search: '',
                 startIndex: null,
                 isLoading: false,

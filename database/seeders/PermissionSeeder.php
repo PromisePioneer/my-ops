@@ -17,6 +17,28 @@ class PermissionSeeder extends Seeder
         $this->fab();
         $this->po();
         $this->offeringLetter();
+        $this->baa();
+    }
+
+
+    public function baa(): void
+    {
+        $permissions = [
+            'Lihat Menu BAA',
+            'Lihat Data BAA',
+            'Tambah Data BAA',
+            'Edit Data BAA',
+            'Hapus Data BAA',
+            'Lihat Detail Data BAA',
+            'Konfirmasi BAA',
+            'Print Data BAA',
+            'Buat SPK / Ubah SPK',
+            'Print SPK'
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
     }
 
 
@@ -31,7 +53,6 @@ class PermissionSeeder extends Seeder
             'Hapus Data PO',
             'Print Data PO',
             'Konfirmasi Data PO',
-            'Print Data PO'
         ];
 
         foreach ($permissions as $permission) {
@@ -56,7 +77,6 @@ class PermissionSeeder extends Seeder
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);
         }
-
     }
 
 
