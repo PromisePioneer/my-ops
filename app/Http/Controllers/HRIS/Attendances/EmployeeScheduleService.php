@@ -27,12 +27,12 @@ class EmployeeScheduleService
 
     public function formattedData($userData)
     {
-        $data = $userData->getCollection()->map(function ($item) {
+        $startDate = $this->financialClosePeriodService->startDate();
+        $endDate = $this->financialClosePeriodService->endDate();
 
-            $startDate = $this->financialClosePeriodService->startDate();
-            $endDate = $this->financialClosePeriodService->endDate();
+        $period = CarbonPeriod::create($startDate, $endDate);
+        $data = $userData->getCollection()->map(function ($item) use ($startDate, $endDate, $period) {
 
-            $period = CarbonPeriod::create($startDate, $endDate);
 
             $employeeSchedules = EmployeeSchedule::with('workTime')
                 ->where('employee_id', $item->absent_id)
@@ -42,6 +42,7 @@ class EmployeeScheduleService
 
 
             $dates = [];
+
 
             foreach ($period as $date) {
                 $formattedDate = $date->format('Y-m-d');

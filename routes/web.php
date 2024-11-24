@@ -15,6 +15,7 @@ use App\Http\Controllers\Accounting\Transaction\FabController;
 use App\Http\Controllers\Accounting\Transaction\InitialBalanceController;
 use App\Http\Controllers\Accounting\Transaction\InvoiceController;
 use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
+use App\Http\Controllers\AreaController;
 use App\Http\Controllers\BAAController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
@@ -274,6 +275,12 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
     Route::prefix('general-master-data')->group(function () {
+        Route::prefix('area')->group(function () {
+            Route::get('/', [AreaController::class, 'index']);
+            Route::get('/data', [AreaController::class, 'data']);
+            Route::get('/search', [AreaController::class, 'search']);
+        });
+
         Route::prefix('branch')->group(function () {
             Route::get('/', [BranchesController::class, 'index']);
             Route::get('/data', [BranchesController::class, 'data']);

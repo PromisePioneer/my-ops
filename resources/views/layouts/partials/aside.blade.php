@@ -164,6 +164,11 @@
                             href="{{ url('general-master-data/companies') }}">
                             Data Perusahaan
                         </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'area'"
+                            href="{{ url('general-master-data/area') }}">
+                            Area
+                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
                 <x-dropdown-menu :active="request()->segment(1) === 'finances-master-data'">
@@ -384,34 +389,34 @@
                                 Penawaran
                             </x-dropdown-menu-item>
                         @endcan
-                            @can('Lihat Menu PO')
-                                <x-dropdown-menu-item
+                        @can('Lihat Menu PO')
+                            <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'po'"
                                 href="{{ url('/income-transactions/po') }}">
-                                    Purchase Order
-                                </x-dropdown-menu-item>
-                            @endcan
-                            <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'fab'"
-                                href="{{ url('/income-transactions/fab') }}">
-                                FAB
+                                Purchase Order
                             </x-dropdown-menu-item>
-                            <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'baa'"
-                                href="{{ url('/income-transactions/baa') }}">
-                                BAA
-                            </x-dropdown-menu-item>
-                            <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'bast'"
-                                href="{{ url('/income-transactions/bast') }}">
-                                BAST
-                            </x-dropdown-menu-item>
-                            <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'invoice'"
-                                href="{{ url('/income-transactions/invoice') }}">
-                                Invoice
-                            </x-dropdown-menu-item>
-                        @endslot
+                        @endcan
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'fab'"
+                            href="{{ url('/income-transactions/fab') }}">
+                            FAB
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'baa'"
+                            href="{{ url('/income-transactions/baa') }}">
+                            BAA
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'bast'"
+                            href="{{ url('/income-transactions/bast') }}">
+                            BAST
+                        </x-dropdown-menu-item>
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'invoice'"
+                            href="{{ url('/income-transactions/invoice') }}">
+                            Invoice
+                        </x-dropdown-menu-item>
+                    @endslot
                 </x-dropdown-menu>
 
                 <x-dropdown-menu :active="request()->segment(1) === 'expenditure-transactions'">
