@@ -63,7 +63,7 @@
                                 </tr>
                                 </thead>
                                 <template x-if="isLoading">
-                                <tbody class="fw-bold">
+                                    <tbody class="fw-bold">
                                     <tr>
                                         <td colspan="5">
                                             <div style="text-align: center;">
@@ -73,7 +73,7 @@
                                             </div>
                                         </td>
                                     </tr>
-                                </tbody>
+                                    </tbody>
                                 </template>
                                 <template x-if="!isLoading && attendancesSummaryRecords.length === 0">
                                     <tbody>
@@ -85,35 +85,56 @@
                                     </tbody>
                                 </template>
                                 <template x-for="(attendance, index) in attendancesSummaryRecords" :key="index">
-                                    <tbody>
-                                    <template x-if="attendance.schedule === 'L'">
-                                        <tr class="bg-warning text-center fw-bold">
+                                    <tbody class="fw-bolder">
+                                    <template x-if="attendance.leaves?.status === 'Cuti'">
+                                        <tr class="bg-success text-center">
                                             <td x-text="formatDate(attendance.date_period)"></td>
-                                            <td colspan="5">LIBUR</td>
+                                            <td colspan="5">CUTI</td>
                                         </tr>
                                     </template>
-                                    <template x-if="attendance.schedule === null">
+                                    <template x-if="attendance.permission?.status === 'Izin'">
+                                        <tr class="bg-danger text-white text-center">
+                                            <td x-text="formatDate(attendance.date_period)"></td>
+                                            <td colspan="5">IZIN</td>
+                                        </tr>
+                                    </template>
+                                    <template x-if="attendance?.sick?.status === 'Sakit'">
+                                        <tr class="bg-primary text-center">
+                                            <td class="text-center"
+                                                x-text="formatDate(attendance.date_period)"></td>
+                                            <td colspan="5" class=" border border-3">SAKIT</td>
+                                        </tr>
+                                    </template>
+                                    <template x-if="attendance.schedule === 'L'">
+                                        <tr class="bg-warning text-center">
+                                            <td class="text-center  border border-3"
+                                                x-text="formatDate(attendance.date_period)"></td>
+                                            <td colspan="5" class=" border border-3">LIBUR</td>
+                                        </tr>
+                                    </template>
+                                    <template
+                                        x-if="attendance.schedule === null && attendance.leaves === null && attendance.sick === null && attendance.permission === null">
                                         <tr>
                                             <td class="text-center"
                                                 x-text="formatDate(attendance.date_period)"></td>
-                                        <td class="text-center" x-text="attendance.clock_in"></td>
-                                        <td class="text-center" x-text="attendance.clock_out"></td>
-                                        <td class="text-center" x-text="attendance.late"></td>
-                                        <td class="text-center" x-text="attendance.work_time"></td>
-                                        <td class="text-center">
-                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-attendance-correction"
-                                                    @click="correction(attendance.date_period)">
-                                                <i class="ki-duotone ki-setting-3">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                    <span class="path3"></span>
-                                                    <span class="path4"></span>
-                                                    <span class="path5"></span>
-                                                </i>
-                                            </button>
-                                        </td>
-                                    </tr>
+                                            <td class="text-center" x-text="attendance.clock_in"></td>
+                                            <td class="text-center" x-text="attendance.clock_out"></td>
+                                            <td class="text-center" x-text="attendance.late"></td>
+                                            <td class="text-center" x-text="attendance.work_time"></td>
+                                            <td class="text-center">
+                                                <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                        data-bs-target="#modal-attendance-correction"
+                                                        @click="correction(attendance.date_period)">
+                                                    <i class="ki-duotone ki-setting-3">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                        <span class="path3"></span>
+                                                        <span class="path4"></span>
+                                                        <span class="path5"></span>
+                                                    </i>
+                                                </button>
+                                            </td>
+                                        </tr>
                                     </template>
                                     </tbody>
                                 </template>

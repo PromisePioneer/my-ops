@@ -46,15 +46,23 @@ class AttendanceSummaryDetailService
         $user = User::where('absent_id', $empId)->first();
         $period = CarbonPeriod::create($startDate, $endDate);
         $getLeaves = $this->getLeaves($user, $startDate, $endDate);
+        $getSick = $this->getSick($user, $startDate, $endDate);
+        $getPermission = $this->getPermission($user, $startDate, $endDate);
+
 
         $dates = [];
         foreach ($period as $date) {
             $formattedDate = $date->format('Y-m-d');
+            $leaveDetails = $getLeaves[$formattedDate] ?? null;
+            $sickDetails = $getSick[$formattedDate] ?? null;
+            $permissionDetails = $getPermission[$formattedDate] ?? null;
             $dates[$formattedDate] = collect([
                 'attendancesDate' => $formattedDate,
                 'attendanceData' => $attendancesData->get($formattedDate),
                 'employeeSchedule' => $employeeSchedule->get($formattedDate),
-                'leaves' => $getLeaves
+                'leaves' => $leaveDetails,
+                'sick' => $sickDetails,
+                'permission' => $permissionDetails,
             ]);
         }
 
@@ -67,8 +75,6 @@ class AttendanceSummaryDetailService
             $userWorktime = WorkTime::where('id', $item['attendanceData']?->work_time_id)->first()
                 ?? null;
 
-//            dd($item['leaves']);
-
             return [
                 'date_period' => $item['attendancesDate'],
                 'clock_in' => $item['attendanceData']?->clock_in,
@@ -76,37 +82,105 @@ class AttendanceSummaryDetailService
                 'late' => $this->calculateLate($item, $userWorktime) ?? null,
                 'work_time' => $userWorktime->name ?? '',
                 'schedule' => $item['employeeSchedule']?->status,
+                'leaves' => $item['leaves'],
+                'sick' => $item['sick'],
+                'permission' => $item['permission'],
             ];
         });
     }
 
 
+    public function getPermission($user, $startDate, $endDate): array
+    {
+        $sick = LeaveAndPermission::where('user_id', $user->id)
+            ->where('leaves_status', 'Izin')
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('start_date', [$startDate, $endDate])
+                    ->orWhereBetween('end_date', [$startDate, $endDate]);
+            })
+            ->get();
+
+        $permissionPeriod = [];
+
+        foreach ($sick as $dates) {
+            $permissionPeriod = array_merge(
+                $permissionPeriod,
+                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
+            );
+        }
+
+        $sick = [];
+        foreach ($permissionPeriod as $date) {
+            $formattedDate = Carbon::parse($date)->format('Y-m-d');
+            $sick[$formattedDate] = collect([
+                'permission_date' => $formattedDate,
+                'status' => 'Izin',
+            ]);
+        }
+
+        return $sick;
+    }
+
+
+    public function getSick($user, $startDate, $endDate)
+    {
+        $sick = LeaveAndPermission::where('user_id', $user->id)
+            ->where('leaves_status', 'Sakit')
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('start_date', [$startDate, $endDate])
+                    ->orWhereBetween('end_date', [$startDate, $endDate]);
+            })
+            ->get();
+
+        $sickPeriod = [];
+
+        foreach ($sick as $dates) {
+            $sickPeriod = array_merge(
+                $sickPeriod,
+                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
+            );
+        }
+
+        $sick = [];
+        foreach ($sickPeriod as $date) {
+            $formattedDate = Carbon::parse($date)->format('Y-m-d');
+            $sick[$formattedDate] = collect([
+                'sick_date' => $formattedDate,
+                'status' => 'Sakit',
+            ]);
+        }
+
+        return $sick;
+    }
+
     public function getLeaves($user, $startDate, $endDate)
     {
         $leaveAndPermission = LeaveAndPermission::where('user_id', $user->id)
             ->where('leaves_status', 'Cuti')
-            ->whereBetween('start_date', [$startDate, $endDate])
-            ->orWhereBetween('end_date', [$startDate, $endDate])
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('start_date', [$startDate, $endDate])
+                    ->orWhereBetween('end_date', [$startDate, $endDate]);
+            })
             ->get();
 
+        $leavePeriods = [];
+
+        // Combine all leave periods into one collection
         foreach ($leaveAndPermission as $dates) {
-            $leavePeriod = CarbonPeriod::create($dates->start_date, $dates->end_date);
-        }
-
-        $leavesDate = [];
-
-        foreach ($leavePeriod as $date) {
-            $leavesDate[] = $date->format('Y-m-d');
+            $leavePeriods = array_merge(
+                $leavePeriods,
+                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
+            );
         }
 
         $leaves = [];
-        foreach ($leavesDate as $date) {
-            $leaves[$date] = collect([
-                'leaves_date' => $date,
-                'status' => 'Cuti'
+        foreach ($leavePeriods as $date) {
+            $formattedDate = Carbon::parse($date)->format('Y-m-d');
+            $leaves[$formattedDate] = collect([
+                'leaves_date' => $formattedDate,
+                'status' => 'Cuti',
             ]);
         }
-
 
         return $leaves;
     }
