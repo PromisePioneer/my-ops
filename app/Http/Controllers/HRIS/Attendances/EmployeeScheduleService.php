@@ -25,7 +25,6 @@ class EmployeeScheduleService
     }
 
 
-
     public function formattedData($userData)
     {
         $startDate = $this->financialClosePeriodService->startDate();
@@ -40,7 +39,6 @@ class EmployeeScheduleService
         $period = CarbonPeriod::create($startDate, $endDate);
 
         $data = $userData->getCollection()->map(function ($item) use ($period, $allSchedules) {
-            // Get schedules for the current employee
             $employeeSchedules = $allSchedules->get($item->id)?->keyBy('date') ?? collect();
 
             // Create dates data

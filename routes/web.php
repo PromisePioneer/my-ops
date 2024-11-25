@@ -15,7 +15,7 @@ use App\Http\Controllers\Accounting\Transaction\FabController;
 use App\Http\Controllers\Accounting\Transaction\InitialBalanceController;
 use App\Http\Controllers\Accounting\Transaction\InvoiceController;
 use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
-use App\Http\Controllers\AreaController;
+use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\BAAController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
@@ -279,6 +279,13 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [AreaController::class, 'index']);
             Route::get('/data', [AreaController::class, 'data']);
             Route::get('/search', [AreaController::class, 'search']);
+            Route::post('/', [AreaController::class, 'store']);
+            Route::get('/branch/data', [AreaController::class, 'getBranchData']);
+            Route::get('/branch/selected/{area}', [AreaController::class, 'selectedBranch']);
+            Route::post('/destroy', [AreaController::class, 'destroy']);
+            Route::get('/{area}', [AreaController::class, 'edit']);
+            Route::post('/{area}', [AreaController::class, 'update']);
+            Route::get('detail/{area}', [AreaController::class, 'detail']);
         });
 
         Route::prefix('branch')->group(function () {

@@ -1,9 +1,6 @@
 @extends('layouts.template')
-@section('page-title', 'Master Umum - Area Management')
 @section('content')
-    <div x-data="areaData()">
-        @include('pages.general-master-data.area.modal.create')
-        @include('pages.general-master-data.area.modal.edit')
+    <div x-data="assignUser()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -96,9 +93,7 @@
                                         </div>
                                     </td>
                                     <td x-text="area.branch.name"></td>
-                                    <td>
-                                        <a :href="`/general-master-data/area/detail/${area.id}`" x-text="area.name"></a>
-                                    </td>
+                                    <td x-text="area.name"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(area.id)">
@@ -126,129 +121,19 @@
             </div>
         </div>
     </div>
-    @include('components.toast')
 @endsection
 @push('script')
     <script>
-        function areaData() {
+        function assignUser() {
             return {
-                isLoading: false,
-                areas: [],
-                search: '',
-                selectedCheckBox: [],
-                selectAll: false,
-                singleChecked: false,
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 formCreate: document.getElementById('form-create'),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
-                formEdit: document.getElementById('form-edit'),
-                buttonLoading: false,
-                editVal: '',
+                usersArea: [],
                 async init() {
-                    await this.getBranchData();
-                    await this.getArea();
-                },
-                toggleAllCheckBox() {
-                    this.selectAll = !this.selectAll;
-                    this.singleChecked = false;
-                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                    this.selectedCheckBox = [];
-                    checkboxes.forEach((checkbox) => {
-                        checkbox.checked = this.selectAll;
-                        if (this.selectAll) {
-                            this.selectedCheckBox.push(checkbox.value);
-                        }
-                    });
-                    this.selectedCheckBox.shift();
-                },
-                selectCheckBox(event) {
-                    const checkboxId = event.target.value;
-                    if (event.target.checked) {
-                        this.selectedCheckBox.push(checkboxId);
-                    } else {
-                        const index = this.selectedCheckBox.indexOf(checkboxId);
-                        if (index !== -1) {
-                            this.selectedCheckBox.splice(index, 1);
-                        }
-                    }
-                },
-                async getArea() {
-                    const resp = await axios.get('/general-master-data/area/data')
-                    this.areas = resp.data;
-                },
-                async searchData() {
 
                 },
-                async paginationEndPoint(url) {
-                    if (url) {
-                        const resp = await axios.get(`${url}`);
-                        this.branches = resp.data
-                    }
-                },
-
-                async save() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post('/general-master-data/area/', new FormData(this.formCreate))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.formCreate.reset();
-                        this.modalCreate.hide();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
-                async edit(id) {
-                    const resp = await axios.get(`/general-master-data/area/${id}`);
-                    this.editVal = resp.data;
-
-                    await this.selectedBranch();
-                },
-                async update(id) {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post(`/general-master-data/area/${id}`, new FormData(this.formEdit))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.formEdit.reset();
-                        this.modalEdit.hide();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
-                async getBranchData() {
-                    $(".branch-select2").select2({
-                        placeholder: 'Pilih Cabang',
-                        allowClear: true,
-                        ajax: {
-                            url: '/general-master-data/area/branch/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async selectedBranch() {
-                    const selectedBranch = $('#selected-branch');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/general-master-data/area/branch/selected/${this.editVal.id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedBranch.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
+                async getAssociatedUsers() {
+                }
             }
         }
     </script>
