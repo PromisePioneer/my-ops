@@ -41,11 +41,13 @@ class AreaDetailController extends Controller
     {
         $search = $request->search;
 
-        $query = User::where('active', 1)
-            ->where('branch_id', $area->branch_id)->whereDoesntHave('userHasArea')
-            ->whereHas('roles', function ($query) {
-                $query->whereIn('name', ['Head Engineer', 'Engineer']);
-            })
+        $query = User::where(function ($query) use ($area) {
+            $query->whereDoesntHave('userHasArea')
+                ->whereHas('roles', function ($query) {
+                    $query->whereIn('name', ['Head Engineer', 'Engineer']);
+                });
+        })->where('branch_id', $area->branch_id)
+            ->where('active', 1)
             ->orderBy('name')
             ->select('id', 'name', 'nip');
 
