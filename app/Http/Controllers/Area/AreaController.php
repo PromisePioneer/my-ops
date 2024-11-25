@@ -34,7 +34,7 @@ use Illuminate\View\View;
     {
         $search = $request->input('search');
 
-        $area = Area::when(!empty($search), function ($query) use ($search) {
+        $area = Area::with('branch')->when(!empty($search), function ($query) use ($search) {
             $query->where('name', 'like', '%' . $search . '%')
                 ->orWhereHas('branch', function ($query) use ($search) {
                     $query->where('name', 'like', '%' . $search . '%');

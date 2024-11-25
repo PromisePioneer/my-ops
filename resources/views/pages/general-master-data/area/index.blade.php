@@ -142,6 +142,7 @@
                 formCreate: document.getElementById('form-create'),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formEdit: document.getElementById('form-edit'),
+                formDelete: document.getElementById('form-delete'),
                 buttonLoading: false,
                 editVal: '',
                 async init() {
@@ -177,12 +178,20 @@
                     this.areas = resp.data;
                 },
                 async searchData() {
-
+                    try {
+                        const resp = await axios.get(`/general-master-data/area/search/`, {
+                            params: {search: this.search},
+                            headers: {'Content-Type': 'application/json'}
+                        });
+                        this.areas = resp.data;
+                    } catch (error) {
+                        console.log(error);
+                    }
                 },
                 async paginationEndPoint(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
-                        this.branches = resp.data
+                        this.areas = resp.data
                     }
                 },
 
@@ -247,6 +256,18 @@
                     selectedBranch.append(option).trigger('change').trigger({
                         type: 'select2:select',
                         params: {results: response}
+                    });
+                },
+                async destroy() {
+                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                        try {
+                            await axios.post(`/general-master-data/area/destroy`, new FormData(this.formDelete));
+                            await showAlert('success', 'Data sukses dihapus');
+                            await this.init();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
                     });
                 },
             }
