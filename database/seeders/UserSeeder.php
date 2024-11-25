@@ -7,6 +7,7 @@ use App\Models\User;
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UserSeeder extends Seeder
 {
@@ -95,5 +96,26 @@ class UserSeeder extends Seeder
             'company_id' => 1,
             'placement' => 'Pusat',
         ]);
+
+
+        for ($i = 0; $i < 10; $i++) {
+            $kca = User::factory()->create([
+                'absent_id' => fake()->unique()->randomDigit(),
+                'join_date' => $faker->date(),
+                'name' => fake()->unique()->name,
+                'email' => fake()->unique()->email . '@mayatama.net',
+                'password' => Hash::make('12345678'),
+                'branch_id' => 1,
+                'company_id' => 1,
+                'placement' => 'Cabang',
+            ]);
+
+            $kca->assignRole('Head Engineer');
+        }
+
+
+        $superAdminRole = Role::create(['name' => 'Super Admin']);
+        $superAdmin = User::where('name', 'Super Admin')->first();
+        $superAdmin->assignRole($superAdminRole);
     }
 }

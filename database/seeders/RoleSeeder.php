@@ -68,6 +68,7 @@ class RoleSeeder extends Seeder
         //area
         Role::create(['name' => 'Head Engineer']);
         Role::create(['name' => 'Senior Engineer']);
+        Role::create(['name' => 'Engineer']);
 
 
         //Programmer
@@ -75,9 +76,7 @@ class RoleSeeder extends Seeder
         Role::create(['name' => 'Testing Role']);
 
 
-        $superAdminRole = Role::create(['name' => 'Super Admin']);
-        $superAdmin = User::where('name', 'Super Admin')->first();
-        $superAdmin->assignRole($superAdminRole);
+
 
 
 //        $director = User::where('name', ['Director'])->first();

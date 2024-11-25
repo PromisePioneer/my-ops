@@ -17,16 +17,11 @@
             <form id="form-create" @submit.prevent="save()">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Cabang</label>
-                        <select name="branch_id" id="branch_id" class="form-select form-select-solid branch-select2"
-                                data-parent-dropdown="#modal-create">
+                        <label for="name" class="required form-label">KCA / WKCA / TEKNISI</label>
+                        <select name="user_id" id="user_id" class="form-select form-select-solid users-select2"
+                                data-dropdown-parent="#modal-create">
                             <option></option>
                         </select>
-                    </div>
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Nama</label>
-                        <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama Area"/>
                     </div>
                 </div>
 

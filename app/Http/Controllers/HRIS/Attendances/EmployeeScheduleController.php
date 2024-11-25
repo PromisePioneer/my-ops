@@ -4,12 +4,11 @@ namespace App\Http\Controllers\HRIS\Attendances;
 
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\EmployeeScheduleRequest;
 use App\Models\EmployeeSchedule;
-use App\Models\User;
 use App\Models\WorkTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 #[AllowDynamicProperties] class EmployeeScheduleController extends Controller
@@ -38,6 +37,7 @@ use Illuminate\View\View;
 
     public function selectedWorkTime(EmployeeSchedule $employeeSchedule): JsonResponse
     {
+        dd($employeeSchedule->id);
         return response()->json($this->workTime->getSelectedData($employeeSchedule->work_time_id));
     }
 
@@ -49,20 +49,15 @@ use Illuminate\View\View;
 
     public function saveSchedules(Request $request): JsonResponse
     {
-
-        // dd($request);
-
-
-      $test =  EmployeeSchedule::updateOrCreate([
-            'work_time_id' => $request->work_time_id,
-            'employee_id' => $request->employee_id,
-        ], [
-            'date' => $request->date,
-            'status' => $request->status
-        ]);
-
-        // dd($test);
-
+        DB::transaction(function () use ($request) {
+            EmployeeSchedule::updateOrCreate([
+                'employee_id' => $request->employee_id,
+                'work_time_id' => $request->work_time_id,
+            ], [
+                'status' => $request->status,
+                'date' => $request->date,
+            ]);
+        });
         return response()->json(['message' => 'Data berhasil disimpan.']);
     }
 }

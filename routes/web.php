@@ -16,6 +16,7 @@ use App\Http\Controllers\Accounting\Transaction\InitialBalanceController;
 use App\Http\Controllers\Accounting\Transaction\InvoiceController;
 use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
 use App\Http\Controllers\Area\AreaController;
+use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\BAAController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
@@ -286,6 +287,14 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/{area}', [AreaController::class, 'edit']);
             Route::post('/{area}', [AreaController::class, 'update']);
             Route::get('detail/{area}', [AreaController::class, 'detail']);
+        });
+
+        Route::prefix('area-detail')->group(function () {
+            Route::get('/data/{area}', [AreaDetailController::class, 'data']);
+            Route::get('/users/data/{area}', [AreaDetailController::class, 'getUser']);
+            Route::post('/destroy', [AreaDetailController::class, 'destroy']);
+            Route::post('/{area}', [AreaDetailController::class, 'assignUser']);
+            Route::get('/search/{area}', [AreaDetailController::class, 'search']);
         });
 
         Route::prefix('branch')->group(function () {

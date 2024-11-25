@@ -173,10 +173,7 @@
                             processResults: (data) => ({results: data}),
                             cache: true
                         }
-                    }).on('select2:select', function (resp) {
-                        const data = resp.params.data;
-                        response.service_category_id = data.id
-                    });
+                    })
                 },
                 async selectedWorkTime() {
                     const selectedWorkTime = $('#selectedWorkTime');

@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('user_has_area', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('area_id')->constrained('areas')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }
@@ -22,6 +23,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('user_has_area');
     }
 };
