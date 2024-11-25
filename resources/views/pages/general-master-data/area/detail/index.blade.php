@@ -184,7 +184,7 @@
                 },
                 async getUserData() {
                     $(".users-select2").select2({
-                        placeholder: 'Pilih Cabang',
+                        placeholder: 'Pilih KCA/WKCA/Teknisi',
                         allowClear: true,
                         ajax: {
                             url: `/general-master-data/area-detail/users/data/${this.id}`,
