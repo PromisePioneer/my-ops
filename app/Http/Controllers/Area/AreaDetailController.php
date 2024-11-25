@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Area;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserHasAreaRequest;
 use App\Models\Area;
-use App\Models\User;
 use App\Models\UserHasArea;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AreaDetailController extends Controller
 {
@@ -41,12 +41,8 @@ class AreaDetailController extends Controller
     {
         $search = $request->search;
 
-        $query = User::where(function ($query) use ($area) {
-            $query->whereDoesntHave('userHasArea')
-                ->whereHas('roles', function ($query) {
-                    $query->whereIn('name', ['Head Engineer', 'Engineer']);
-                });
-        })->where('branch_id', $area->branch_id)
+        $query = DB::table('users')
+            ->where('branch_id', $area->branch_id)
             ->where('active', 1)
             ->orderBy('name')
             ->select('id', 'name', 'nip');
