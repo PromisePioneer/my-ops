@@ -44,7 +44,7 @@ class AreaDetailController extends Controller
 
         $branch = Branch::where('id', $area->branch_id)->first();
 
-        dd($area->branch_id);
+        dd($area);
 
 
         $query = DB::table('users')
