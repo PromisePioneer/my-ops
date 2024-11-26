@@ -27,7 +27,7 @@ class EmployeeScheduleService
         $user = User::with('roles', 'userHasArea');
 
 
-        if ($request->user()->hasRole('NOC Supervisor', 'NOC Staff')) {
+        if ($request->user()->hasRole('NOC Supervisor')) {
             $user->whereHas('roles', function ($query) {
                 $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
             })->whereNull('branch_id')->paginate(self::$perPage);
@@ -38,13 +38,13 @@ class EmployeeScheduleService
         }
 
 
-        if ($request->user()->hasRole('Head Engineer', 'Senior Engineer', 'Engineer')) {
+        if ($request->user()->hasRole('Head Engineer', 'Senior Engineer')) {
             $user->whereHas('userHasArea', function ($query) use ($request) {
                 $query->where('area_id', $request->user()->userHasArea->area_id);
             })->where('branch_id', $request->user()->branch_id)->paginate(self::$perPage);
         }
 
-        if ($request->user()->hasAnyRole('Customer Service Leader', 'Customer Service Staff')) {
+        if ($request->user()->hasAnyRole('Customer Service Leader')) {
             $user->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff']);
             })->where(function ($query) use ($request) {
@@ -54,7 +54,7 @@ class EmployeeScheduleService
         }
 
 
-        if ($request->user()->hasAnyRole('Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff')) {
+        if ($request->user()->hasAnyRole('Finance & Accounting Supervisor')) {
             $user->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff']);
             })->whereNull('branch_id')->paginate(self::$perPage);
@@ -63,6 +63,20 @@ class EmployeeScheduleService
 
         if ($request->user()->hasRole('Branch Manager')) {
             $user->where('branch_id', $request->user()->branch_id)->paginate(self::$perPage);
+        }
+
+
+        if ($request->user()->hasAnyRole('KU Head Engineer')) {
+            $user->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['KU Head Engineer', 'KU Engineer']);
+            });
+        }
+
+
+        if ($request->user()->hasAnyRole('Quality Controller Supervisor')) {
+            $user->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Quality Controller Supervisor', 'Quality Control Staff']);
+            });
         }
 
 
