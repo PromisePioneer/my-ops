@@ -47,8 +47,10 @@ class UserHasAreaRequest extends FormRequest
     {
         return function ($attribute, $value, $fail) use ($request) {
 
+            $getUserInput = User::with('roles')->where('id', $value)->first();
+
             foreach ($this->getAssociatedUser($request) as $user) {
-                if ($user->hasRole('Head Engineer')) {
+                if ($user->hasRole('Head Engineer') && $getUserInput->hasRole('Head Engineer')) {
                     return $fail('KCA sudah ada');
                 };
             }
