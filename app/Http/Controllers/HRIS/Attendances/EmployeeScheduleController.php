@@ -29,7 +29,6 @@ use Illuminate\View\View;
         return response()->json($this->employeeScheduleService->data());
     }
 
-
     public function getWorkTime(Request $request): JsonResponse
     {
         return response()->json($this->workTime->getData($request));
@@ -51,10 +50,10 @@ use Illuminate\View\View;
         DB::transaction(function () use ($request) {
             EmployeeSchedule::updateOrCreate([
                 'employee_id' => $request->employee_id,
-                'work_time_id' => $request->work_time_id,
-            ], [
-                'status' => $request->status,
                 'date' => $request->date,
+            ], [
+                'work_time_id' => $request->work_time_id,
+                'status' => $request->status,
             ]);
         });
         return response()->json(['message' => 'Data berhasil disimpan.']);

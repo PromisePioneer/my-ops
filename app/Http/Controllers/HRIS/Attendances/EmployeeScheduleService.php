@@ -31,15 +31,16 @@ class EmployeeScheduleService
         $endDate = $this->financialClosePeriodService->endDate();
 
         // Fetch all schedules grouped by employee_id
-        $allSchedules = EmployeeSchedule::with('workTime')
-            ->whereBetween('date', [$startDate, $endDate])
-            ->get()
-            ->groupBy('employee_id');
+
 
         $period = CarbonPeriod::create($startDate, $endDate);
 
-        $data = $userData->getCollection()->map(function ($item) use ($period, $allSchedules) {
-            $employeeSchedules = $allSchedules->get($item->id)?->keyBy('date') ?? collect();
+        $data = $userData->getCollection()->map(function ($item) use ($startDate, $endDate, $period) {
+            $allSchedules = EmployeeSchedule::with('workTime')
+                ->whereBetween('date', [$startDate, $endDate])
+                ->where('employee_id', $item->absent_id)
+                ->get()
+                ->keyBy('date');
 
             // Create dates data
             $dates = [];
@@ -47,18 +48,17 @@ class EmployeeScheduleService
                 $formattedDate = $date->format('Y-m-d');
                 $dates[$formattedDate] = [
                     'periodDate' => $formattedDate,
-                    'employeeSchedules' => $employeeSchedules->get($formattedDate),
+                    'employeeSchedules' => $allSchedules->get($formattedDate),
                 ];
             }
 
-            // Map the final structure
             return [
                 'id' => $item->id,
                 'name' => $item->name,
                 'absent_id' => $item->absent_id,
                 'date' => collect($dates)->map(function ($date) {
                     return [
-                        'period_date' => $date['periodDate'], // Safely access periodDate
+                        'period_date' => $date['periodDate'],
                         'schedules_date' => $date['employeeSchedules'],
                         'work_time_schedules' => $date['employeeSchedules']?->workTime?->name .
                             ' (' . $date['employeeSchedules']?->workTime?->clock_in .
