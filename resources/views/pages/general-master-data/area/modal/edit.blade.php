@@ -27,7 +27,7 @@
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama</label>
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama Cabang" :value="editVal.name"/>
+                               placeholder="Nama Area" :value="editVal.name"/>
                     </div>
                 </div>
 
