@@ -19,7 +19,7 @@
                     <div class="mb-10">
                         <label for="name" class="required form-label">Cabang</label>
                         <select name="branch_id" id="selected-branch"
-                                data-parent-dropdown="#modal-edit"
+                                data-dropdown-parent="#modal-edit"
                                 class="form-select form-select-solid branch-select2">
                             <option></option>
                         </select>
