@@ -295,6 +295,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/destroy', [AreaDetailController::class, 'destroy']);
             Route::post('/{area}', [AreaDetailController::class, 'assignUser']);
             Route::get('/search/{area}', [AreaDetailController::class, 'search']);
+            Route::get('users/selected/{area}', [AreaDetailController::class, 'selectedUser']);
         });
 
         Route::prefix('branch')->group(function () {

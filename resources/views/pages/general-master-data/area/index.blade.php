@@ -213,7 +213,7 @@
                 async edit(id) {
                     const resp = await axios.get(`/general-master-data/area/${id}`);
                     this.editVal = resp.data;
-
+                    await this.getBranchData();
                     await this.selectedBranch();
                 },
                 async update(id) {

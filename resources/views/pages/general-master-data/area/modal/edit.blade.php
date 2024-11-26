@@ -18,7 +18,8 @@
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Cabang</label>
-                        <select name="branch_id" id="selected-branch" class="form-select form-select-solid">
+                        <select name="branch_id" id="selected-branch"
+                                class="form-select form-select-solid branch-select2">
                             <option></option>
                         </select>
                     </div>

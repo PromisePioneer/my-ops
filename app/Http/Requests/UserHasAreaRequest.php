@@ -46,6 +46,9 @@ class UserHasAreaRequest extends FormRequest
     public function uniqueEngineerRole(Request $request): Closure
     {
         return function ($attribute, $value, $fail) use ($request) {
+
+            dd($this->getAssociatedUser($request)->hasRole('Head Engineer'));
+
             if ($this->getAssociatedUser($request)?->hasRole('Head Engineer')) {
                 return $fail('KCA sudah ada');
             };
