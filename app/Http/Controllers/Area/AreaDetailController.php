@@ -46,7 +46,7 @@ class AreaDetailController extends Controller
 
 
         $query = DB::table('users')
-            ->where('branch_id', 1)
+            ->where('branch_id', (int)$branch->id)
 //            ->where('active', 1)
             ->orderBy('name')
             ->select('id', 'name', 'nip');
