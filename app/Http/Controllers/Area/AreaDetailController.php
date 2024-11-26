@@ -45,7 +45,7 @@ class AreaDetailController extends Controller
         $branch = Branch::where('id', $area->branch_id)->first();
 
         $query = DB::table('users')
-            ->whereDoesntHave('userHasArea')
+            ->doesntHave('userHasArea')
             ->whereHas('roles', function ($query) use ($area) {
                 $query->whereIn('name', ['Head Engineer']);
             })
