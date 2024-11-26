@@ -38,7 +38,7 @@ class AreaDetailController extends Controller
         return response()->json($area);
     }
 
-    public function getUser(Request $request, Area $area): array
+    public function getUser(Request $request, Area $area): JsonResponse
     {
         $search = $request->search;
 
@@ -60,12 +60,14 @@ class AreaDetailController extends Controller
 
         $users = $query->get();
 
-        return $users->map(function ($item) {
+        $getUsers = $users->map(function ($item) {
             return [
                 'id' => $item->id,
                 'text' => $item->nip . ' ' . $item->name,
             ];
         })->toArray();
+
+        return response()->json($getUsers);
     }
 
 
