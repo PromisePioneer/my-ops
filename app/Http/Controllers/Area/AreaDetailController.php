@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Area;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserHasAreaRequest;
 use App\Models\Area;
-use App\Models\Branch;
 use App\Models\User;
 use App\Models\UserHasArea;
 use Illuminate\Http\JsonResponse;
@@ -41,9 +40,6 @@ class AreaDetailController extends Controller
     public function getUser(Request $request, Area $area): array
     {
         $search = $request->search;
-
-        $branch = Branch::where('id', $area->branch_id)->first();
-
         $query = User::with('roles')->whereDoesntHave('userHasArea')
             ->whereHas('roles', function ($query) use ($area) {
                 $query->whereIn('name', ['Head Engineer', 'Engineer']);
