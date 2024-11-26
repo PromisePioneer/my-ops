@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Area;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserHasAreaRequest;
 use App\Models\Area;
+use App\Models\Branch;
 use App\Models\UserHasArea;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -41,7 +42,11 @@ class AreaDetailController extends Controller
     {
         $search = $request->search;
 
+        $branch = Branch::where('id', $area->branch_id)->first();
+
+
         $query = DB::table('users')
+            ->where('branch_id', $branch->id)
             ->where('active', 1)
             ->orderBy('name')
             ->select('id', 'name', 'nip');
