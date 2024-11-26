@@ -44,9 +44,9 @@ class AreaDetailController extends Controller
 
         $branch = Branch::where('id', $area->branch_id)->first();
 
-        $query = User::whereDoesntHave('userHasArea')
+        $query = User::with('roles')->whereDoesntHave('userHasArea')
             ->whereHas('roles', function ($query) use ($area) {
-                $query->whereIn('name', ['Head Engineer']);
+                $query->whereIn('name', ['Head Engineer', 'Engineer']);
             })
             ->where('branch_id', $area->branch_id)
             ->where('active', 1)
@@ -65,7 +65,7 @@ class AreaDetailController extends Controller
         return $users->map(function ($item) {
             return [
                 'id' => $item->id,
-                'text' => $item->nip . ' ' . $item->name,
+                'text' => '(' . $item->nip . ')' . ' ' . '(' . $item->roles->pluck('name')->implode(', ') . ')' . ' ' . $item->name,
             ];
         })->toArray();
     }
