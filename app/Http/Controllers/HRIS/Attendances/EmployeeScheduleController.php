@@ -37,7 +37,6 @@ use Illuminate\View\View;
 
     public function selectedWorkTime(EmployeeSchedule $employeeSchedule): JsonResponse
     {
-        dd($employeeSchedule->id);
         return response()->json($this->workTime->getSelectedData($employeeSchedule->work_time_id));
     }
 
