@@ -47,7 +47,7 @@ class UserHasAreaRequest extends FormRequest
     {
         return function ($attribute, $value, $fail) use ($request) {
 
-            dd($this->getAssociatedUser($request));
+            dd($this->getAssociatedUser($request)?->hasRole('Head Engineer'));
 
             if ($this->getAssociatedUser($request)?->hasRole('Head Engineer')) {
                 return $fail('KCA sudah ada');
@@ -60,6 +60,6 @@ class UserHasAreaRequest extends FormRequest
     {
         return User::with('roles')->whereHas('userHasArea', function ($query) use ($request) {
             $query->where('area_id', $request->route('area')->id);
-        })->first();
+        })->get();
     }
 }
