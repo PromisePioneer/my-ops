@@ -24,7 +24,7 @@ class AreaRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
-            'branch_id' => ['required', Rule::exists('branches', 'id'), Rule::unique('areas', 'branch_id')->ignore($request->route('area'))],
+            'branch_id' => ['required', Rule::exists('branches', 'id')],
             'name' => ['required', 'string'],
         ];
     }
