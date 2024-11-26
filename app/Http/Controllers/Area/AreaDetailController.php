@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserHasAreaRequest;
 use App\Models\Area;
 use App\Models\Branch;
+use App\Models\User;
 use App\Models\UserHasArea;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class AreaDetailController extends Controller
 {
@@ -44,8 +44,7 @@ class AreaDetailController extends Controller
 
         $branch = Branch::where('id', $area->branch_id)->first();
 
-        $query = DB::table('users')
-            ->doesntHave('userHasArea')
+        $query = User::whereDoesntHave('userHasArea')
             ->whereHas('roles', function ($query) use ($area) {
                 $query->whereIn('name', ['Head Engineer']);
             })
