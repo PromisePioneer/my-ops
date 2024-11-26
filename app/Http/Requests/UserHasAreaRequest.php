@@ -47,7 +47,7 @@ class UserHasAreaRequest extends FormRequest
     {
         return function ($attribute, $value, $fail) use ($request) {
 
-            dd($this->getAssociatedUser($request)->hasRole('Head Engineer'));
+            dd($this->getAssociatedUser($request));
 
             if ($this->getAssociatedUser($request)?->hasRole('Head Engineer')) {
                 return $fail('KCA sudah ada');
