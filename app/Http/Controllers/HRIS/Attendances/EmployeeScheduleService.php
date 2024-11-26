@@ -24,17 +24,47 @@ class EmployeeScheduleService
         $startDate = $this->financialClosePeriodService->startDate();
         $endDate = $this->financialClosePeriodService->endDate();
 
-        $user = User::with('roles');
+        $user = User::with('roles', 'userHasArea');
 
-        if ($request->user()->role('Super Admin')) {
-            $data = $user->paginate(self::$perPage);
-        }
 
-        if ($request->user()->role('NOC Supervisor')) {
-            $data = $user->whereHas('roles', function ($query) {
+        if ($request->user()->hasRole('NOC Supervisor', 'NOC Staff')) {
+            $user->whereHas('roles', function ($query) {
                 $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
             })->whereNull('branch_id')->paginate(self::$perPage);
         }
+
+        if ($request->user()->hasRole('Super Admin')) {
+            $user->paginate(self::$perPage);
+        }
+
+
+        if ($request->user()->hasRole('Head Engineer', 'Senior Engineer', 'Engineer')) {
+            $user->whereHas('userHasArea', function ($query) use ($request) {
+                $query->where('area_id', $request->user()->userHasArea->area_id);
+            })->where('branch_id', $request->user()->branch_id)->paginate(self::$perPage);
+        }
+
+        if ($request->user()->hasAnyRole('Customer Service Leader', 'Customer Service Staff')) {
+            $user->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff']);
+            })->where(function ($query) use ($request) {
+                $query->whereNull('branch_id')->orWhereIn('branch_id', [1]);
+            })
+                ->paginate(self::$perPage);
+        }
+
+
+        if ($request->user()->hasAnyRole('Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff')) {
+            $user->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff']);
+            })->whereNull('branch_id')->paginate(self::$perPage);
+        }
+
+
+        if ($request->user()->hasRole('Branch Manager')) {
+            $user->where('branch_id', $request->user()->branch_id)->paginate(self::$perPage);
+        }
+
 
         $data = $user->paginate(self::$perPage);
 
@@ -96,6 +126,7 @@ class EmployeeScheduleService
                             ' - ' . $date['employeeSchedules']?->workTime?->clock_out . ')',
                     ];
                 })->values()->toArray(),
+                'area' => $item->userHasArea?->area,
             ];
         });
 
