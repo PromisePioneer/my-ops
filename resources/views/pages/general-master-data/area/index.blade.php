@@ -61,6 +61,7 @@
                                 </th>
                                 <th class="min-w-125px">Cabang</th>
                                 <th class="min-w-125px">Nama</th>
+                                <th class="min-w-125px">Total Karyawan</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -99,6 +100,7 @@
                                     <td>
                                         <a :href="`/general-master-data/area/detail/${area.id}`" x-text="area.name"></a>
                                     </td>
+                                    <td x-text="`${area.area_has_user_count} Karyawan`"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(area.id)">

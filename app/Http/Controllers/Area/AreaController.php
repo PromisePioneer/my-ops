@@ -26,7 +26,7 @@ use Illuminate\View\View;
 
     public function data(): JsonResponse
     {
-        $area = Area::with('branch')->paginate(10);
+        $area = Area::with('branch')->withCount('areaHasUser')->paginate(10);
         return response()->json($area);
     }
 
@@ -66,7 +66,6 @@ use Illuminate\View\View;
 
     public function getBranchData(Request $request): JsonResponse
     {
-
         $branch = $this->branch->getData($request);
         return response()->json($branch);
     }
