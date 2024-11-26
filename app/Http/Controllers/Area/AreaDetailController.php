@@ -51,12 +51,12 @@ class AreaDetailController extends Controller
             ->orderBy('name')
             ->select('id', 'name', 'nip');
 
-        if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('nip', 'like', '%' . $search . '%');
-            });
-        }
+//        if (!empty($search)) {
+//            $query->where(function ($q) use ($search) {
+//                $q->where('name', 'like', '%' . $search . '%')
+//                    ->orWhere('nip', 'like', '%' . $search . '%');
+//            });
+//        }
 
         $users = $query->get();
 
