@@ -38,38 +38,37 @@ class AreaDetailController extends Controller
         return response()->json($area);
     }
 
-    public function getUser(Request $request, Area $area): JsonResponse
+    public function getUser(Request $request, Area $area): array
     {
         $search = $request->search;
 
         $branch = Branch::where('id', $area->branch_id)->first();
 
-        dd($area);
-
-
         $query = DB::table('users')
-            ->where('branch_id', $branch->id)
-//            ->where('active', 1)
+            ->whereDoesntHave('userHasArea')
+            ->whereHas('roles', function ($query) use ($area) {
+                $query->whereIn('name', ['Head Engineer']);
+            })
+            ->where('branch_id', $area->branch_id)
+            ->where('active', 1)
             ->orderBy('name')
             ->select('id', 'name', 'nip');
 
-//        if (!empty($search)) {
-//            $query->where(function ($q) use ($search) {
-//                $q->where('name', 'like', '%' . $search . '%')
-//                    ->orWhere('nip', 'like', '%' . $search . '%');
-//            });
-//        }
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('nip', 'like', '%' . $search . '%');
+            });
+        }
 
         $users = $query->get();
 
-        $getUsers = $users->map(function ($item) {
+        return $users->map(function ($item) {
             return [
                 'id' => $item->id,
                 'text' => $item->nip . ' ' . $item->name,
             ];
         })->toArray();
-
-        return response()->json($getUsers);
     }
 
 
