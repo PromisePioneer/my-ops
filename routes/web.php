@@ -1043,10 +1043,12 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('/employee-schedules')->group(function () {
             Route::get('/', [EmployeeScheduleController::class, 'index']);
             Route::get('/data', [EmployeeScheduleController::class, 'data']);
+            Route::get('/search', [EmployeeScheduleController::class, 'search']);
             Route::get('/get-schedules/{date}/{employeeId}', [EmployeeScheduleController::class, 'getSchedules']);
             Route::get('/work-time/data', [EmployeeScheduleController::class, 'getWorkTime']);
             Route::get('/work-time/selected/{employeeSchedule}', [EmployeeScheduleController::class, 'selectedWorkTime']);
             Route::post('/', [EmployeeScheduleController::class, 'saveSchedules']);
+            Route::post('/filter', [EmployeeScheduleController::class, 'filterByDate']);
         });
     });
 

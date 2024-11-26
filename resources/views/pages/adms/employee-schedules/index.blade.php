@@ -55,6 +55,27 @@
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
                 </div>
+                <div class="card-toolbar">
+                    <form @submit.prevent="filterByDate()" id="form-filter">
+                        <div class="d-flex align-items-center justify-content-between">
+
+                            <div class="me-3">
+                                <label for="name" class="form-label mt-3">Filter Jadwal :</label>
+                            </div>
+                            <div class="me-3">
+                                <input type="date" class="form-control form-control-solid date" name="start_date"
+                                       placeholder="Pilih Tanggal Awal"/>
+                            </div>
+                            <div class="me-3">
+                                <input type="date" class="form-control form-control-solid date"
+                                       placeholder="Pilih Tanggal Akhir" name="end_date"/>
+                            </div>
+                            <div>
+                                <button type="submit" class="btn btn-sm btn-light-info">Filter</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
             <div class="card-body py-3">
                 <div class="py-5">
@@ -128,10 +149,15 @@
                 schedulesValue: null,
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 formCreate: document.getElementById('form-create'),
+                formFilter: document.getElementById('form-filter'),
                 async init() {
                     const resp = await axios.get('/adms/employee-schedules/data');
                     this.employeeSchedules = resp.data
                     await this.getWorkTimeData();
+                },
+                async filterByDate() {
+                    const resp = await axios.post('/adms/employee-schedules/filter', new FormData(this.formFilter));
+                    this.employeeSchedules = resp.data;
                 },
                 formatDate(val) {
                     const date = new Date(val);
@@ -149,8 +175,19 @@
                         this.employeeSchedules = resp.data
                     }
                 },
-                async getSchedules(employeeId, date) {
+                async searchData() {
+                    try {
+                        const resp = await axios.get('/adms/employee-schedules/search', {
+                            params: {search: this.search},
+                            headers: {'Content-Type': 'application/json'}
+                        });
 
+                        this.employeeSchedules = resp.data;
+                    } catch (error) {
+                        console.log(error);
+                    }
+                },
+                async getSchedules(employeeId, date) {
                     const resp = await axios.get(`/adms/employee-schedules/get-schedules/${date}/${employeeId}`);
                     if (Object.keys(resp.data).length) {
                         this.schedulesValue = resp.data;
@@ -158,9 +195,7 @@
                         this.schedulesValue = {date: date, employee_id: employeeId};
                     }
                     await this.getWorkTimeData();
-                    await this.selectedWorkTime()
-
-
+                    await this.selectedWorkTime();
                 },
                 async getWorkTimeData() {
                     $(`.work-time-select2`).select2({

@@ -11,7 +11,6 @@
                     @csrf
                     <div class="card-body">
                         <div class="row mb-4">
-                            @if(Auth::user()->branch_id === null)
                                 <div class="col-md-6" x-model="placement">
                                     <label class="col-form-label required fw-bold fs-6">Penempatan</label>
                                     <select name="placement" id="selectedPlacement"
@@ -28,7 +27,6 @@
                                         <option value="0">Pilih Cabang</option>
                                     </select>
                                 </div>
-                            @endif
                         </div>
                         <div class="row mb-4">
                             <div class="col-lg-6">

@@ -117,5 +117,6 @@ class UserSeeder extends Seeder
         $superAdminRole = Role::create(['name' => 'Super Admin']);
         $superAdmin = User::where('name', 'Super Admin')->first();
         $superAdmin->assignRole($superAdminRole);
+
     }
 }

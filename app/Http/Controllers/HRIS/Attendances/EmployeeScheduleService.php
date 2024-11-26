@@ -6,6 +6,7 @@ use App\Models\EmployeeSchedule;
 use App\Models\User;
 use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\CarbonPeriod;
+use Illuminate\Http\Request;
 
 class EmployeeScheduleService
 {
@@ -18,20 +19,50 @@ class EmployeeScheduleService
         $this->financialClosePeriodService = new FinancialClosePeriodService();
     }
 
-    public function data()
-    {
-        $user = User::paginate(self::$perPage);
-        return self::formattedData($user);
-    }
-
-
-    public function formattedData($userData)
+    public function data(Request $request)
     {
         $startDate = $this->financialClosePeriodService->startDate();
         $endDate = $this->financialClosePeriodService->endDate();
 
-        // Fetch all schedules grouped by employee_id
+        $user = User::with('roles');
 
+        if ($request->user()->role('Super Admin')) {
+            $data = $user->paginate(self::$perPage);
+        }
+
+        if ($request->user()->role('NOC Supervisor')) {
+            $data = $user->whereHas('roles', function ($query) {
+                $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
+            })->whereNull('branch_id')->paginate(self::$perPage);
+        }
+
+        $data = $user->paginate(self::$perPage);
+
+        return self::formattedData($data, $startDate, $endDate);
+    }
+
+
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $startDate = $this->financialClosePeriodService->startDate();
+        $endDate = $this->financialClosePeriodService->endDate();
+
+        $user = User::when(!empty($search), function ($query) use ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        })->paginate(self::$perPage);
+        return self::formattedData($user, $startDate, $endDate);
+    }
+
+    public function filterByDate($startDate, $endDate)
+    {
+        $user = User::paginate(self::$perPage);
+        return self::formattedData($user, $startDate, $endDate);
+    }
+
+
+    public function formattedData($userData, $startDate, $endDate)
+    {
 
         $period = CarbonPeriod::create($startDate, $endDate);
 
