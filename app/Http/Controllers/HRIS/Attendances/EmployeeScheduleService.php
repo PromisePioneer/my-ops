@@ -33,7 +33,7 @@ class EmployeeScheduleService
             })->whereNull('branch_id')->paginate(self::$perPage);
         }
 
-        if ($request->user()->hasRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner')) {
+        if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner')) {
             $user->paginate(self::$perPage);
         }
 
@@ -68,14 +68,14 @@ class EmployeeScheduleService
         }
 
 
-        if ($request->user()->hasAnyRole('KU Head Engineer')) {
+        if ($request->user()->hasRole('KU Head Engineer')) {
             $user->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['KU Head Engineer', 'KU Engineer']);
             });
         }
 
 
-        if ($request->user()->hasAnyRole('Quality Controller Supervisor')) {
+        if ($request->user()->hasRole('Quality Controller Supervisor')) {
             $user->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Quality Controller Supervisor', 'Quality Control Staff']);
             });
