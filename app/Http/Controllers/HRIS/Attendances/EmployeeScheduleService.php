@@ -24,7 +24,7 @@ class EmployeeScheduleService
         $startDate = $this->financialClosePeriodService->startDate();
         $endDate = $this->financialClosePeriodService->endDate();
 
-        $user = User::with('roles', 'userHasArea');
+        $user = User::with('roles', 'userHasArea')->orderBy('name');
 
 
         if ($request->user()->hasRole('NOC Supervisor')) {
@@ -51,8 +51,7 @@ class EmployeeScheduleService
                 $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff']);
             })->where(function ($query) use ($request) {
                 $query->whereNull('branch_id')->orWhereIn('branch_id', [1]);
-            })
-                ->paginate(self::$perPage);
+            })->paginate(self::$perPage);
         }
 
 
