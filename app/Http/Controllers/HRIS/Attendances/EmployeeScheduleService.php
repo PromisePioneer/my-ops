@@ -41,7 +41,9 @@ class EmployeeScheduleService
         if ($request->user()->hasRole('Head Engineer', 'Senior Engineer')) {
             $user->whereHas('userHasArea', function ($query) use ($request) {
                 $query->where('area_id', $request->user()->userHasArea->area_id);
-            })->where('branch_id', $request->user()->branch_id);
+            })->where(function ($query) use ($request) {
+                $query->where('branch_id', $request->user()->branch_id);
+            });
         }
 
         if ($request->user()->hasAnyRole('Customer Service Leader')) {
