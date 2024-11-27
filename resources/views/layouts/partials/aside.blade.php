@@ -252,74 +252,59 @@
                                 Bill Of Quantity
                             </x-dropdown-menu-item>
                         @endcan
-                        <x-dropdown-menu-item
-                            :active="request()->is('inventory')"
-                            href="{{ url('inventory') }}">
-                            Persediaan Barang
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->is('operational/fo-cables*')"
-                            href="{{ url('operational/fo-cables') }}">
-                            Barang Masuk
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->is('operational/poles*')"
-                            href="{{ url('operational/poles') }}">
-                            Barang Keluar
-                        </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
 
-                <x-dropdown-menu :active="request()->is('operational/*')">
-                    @slot('parentIcon')
-                        <i class="ki-duotone ki-dollar fs-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                            <span class="path3"></span>
-                        </i>
-                    @endslot
-                    @slot('menuTitle')
-                        Data Aset Lapangan
-                    @endslot
-                    @slot('menuItem')
-                        <x-dropdown-menu-item
-                            :active="request()->is('operational/odp*')"
-                            href="{{ url('operational/odp') }}">
-                            ODP & Homepass
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->is('operational/fo-cables*')"
-                            href="{{ url('operational/fo-cables') }}">
-                            Kabel FO
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->is('operational/poles*')"
-                            href="{{ url('operational/poles') }}">
-                            Tiang
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'joint-closures'"
-                            href="{{ url('/operational/joint-closures') }}">
-                            Joint Closure
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'invoice'"
-                            href="{{ url('/income-transactions/invoice') }}">
-                            Aset Lapangan
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'invoice'"
-                            href="{{ url('/income-transactions/invoice') }}">
-                            Data Core
-                        </x-dropdown-menu-item>
+                {{--                <x-dropdown-menu :active="request()->is('operational/*')">--}}
+                {{--                    @slot('parentIcon')--}}
+                {{--                        <i class="ki-duotone ki-dollar fs-2">--}}
+                {{--                            <span class="path1"></span>--}}
+                {{--                            <span class="path2"></span>--}}
+                {{--                            <span class="path3"></span>--}}
+                {{--                        </i>--}}
+                {{--                    @endslot--}}
+                {{--                    @slot('menuTitle')--}}
+                {{--                        Data Aset Lapangan--}}
+                {{--                    @endslot--}}
+                {{--                    @slot('menuItem')--}}
+                {{--                        <x-dropdown-menu-item--}}
+                {{--                            :active="request()->is('operational/odp*')"--}}
+                {{--                            href="{{ url('operational/odp') }}">--}}
+                {{--                            ODP & Homepass--}}
+                {{--                        </x-dropdown-menu-item>--}}
+                {{--                        <x-dropdown-menu-item--}}
+                {{--                            :active="request()->is('operational/fo-cables*')"--}}
+                {{--                            href="{{ url('operational/fo-cables') }}">--}}
+                {{--                            Kabel FO--}}
+                {{--                        </x-dropdown-menu-item>--}}
+                {{--                        <x-dropdown-menu-item--}}
+                {{--                            :active="request()->is('operational/poles*')"--}}
+                {{--                            href="{{ url('operational/poles') }}">--}}
+                {{--                            Tiang--}}
+                {{--                        </x-dropdown-menu-item>--}}
+                {{--                        <x-dropdown-menu-item--}}
+                {{--                            :active="request()->segment(2) === 'joint-closures'"--}}
+                {{--                            href="{{ url('/operational/joint-closures') }}">--}}
+                {{--                            Joint Closure--}}
+                {{--                        </x-dropdown-menu-item>--}}
+                {{--                        <x-dropdown-menu-item--}}
+                {{--                            :active="request()->segment(2) === 'invoice'"--}}
+                {{--                            href="{{ url('/income-transactions/invoice') }}">--}}
+                {{--                            Aset Lapangan--}}
+                {{--                        </x-dropdown-menu-item>--}}
+                {{--                        <x-dropdown-menu-item--}}
+                {{--                            :active="request()->segment(2) === 'invoice'"--}}
+                {{--                            href="{{ url('/income-transactions/invoice') }}">--}}
+                {{--                            Data Core--}}
+                {{--                        </x-dropdown-menu-item>--}}
 
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'invoice'"
-                            href="{{ url('/income-transactions/invoice') }}">
-                            Coverage Area
-                        </x-dropdown-menu-item>
-                    @endslot
-                </x-dropdown-menu>
+                {{--                        <x-dropdown-menu-item--}}
+                {{--                            :active="request()->segment(2) === 'invoice'"--}}
+                {{--                            href="{{ url('/income-transactions/invoice') }}">--}}
+                {{--                            Coverage Area--}}
+                {{--                        </x-dropdown-menu-item>--}}
+                {{--                    @endslot--}}
+                {{--                </x-dropdown-menu>--}}
 
                 <x-menu-sections>Jurnal</x-menu-sections>
 
@@ -350,21 +335,21 @@
                             href="{{ url('/journals/general-ledger/') }}">
                             Buku Besar
                         </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'financial-report'"
-                            href="{{ url('/journals/financial-report/') }}">
-                            Laporan Keuangan
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'income-statement'"
-                            href="{{ url('/journals/income-statement/') }}">
-                            Laba Rugi
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'cashflow-statement'"
-                            href="{{ url('/journals/cashflow-statement/') }}">
-                            Laporan Arus Kas
-                        </x-dropdown-menu-item>
+                        {{--                        <x-dropdown-menu-item--}}
+                        {{--                            :active="request()->segment(2) === 'financial-report'"--}}
+                        {{--                            href="{{ url('/journals/financial-report/') }}">--}}
+                        {{--                            Laporan Keuangan--}}
+                        {{--                        </x-dropdown-menu-item>--}}
+                        {{--                        <x-dropdown-menu-item--}}
+                        {{--                            :active="request()->segment(2) === 'income-statement'"--}}
+                        {{--                            href="{{ url('/journals/income-statement/') }}">--}}
+                        {{--                            Laba Rugi--}}
+                        {{--                        </x-dropdown-menu-item>--}}
+                        {{--                        <x-dropdown-menu-item--}}
+                        {{--                            :active="request()->segment(2) === 'cashflow-statement'"--}}
+                        {{--                            href="{{ url('/journals/cashflow-statement/') }}">--}}
+                        {{--                            Laporan Arus Kas--}}
+                        {{--                        </x-dropdown-menu-item>--}}
                     @endslot
                 </x-dropdown-menu>
 
@@ -472,28 +457,28 @@
                 {{--                    @endslot--}}
                 {{--                </x-dropdown-menu>--}}
 
-                <x-menu-sections>Penyesuaian Jurnal</x-menu-sections>
+                {{--                <x-menu-sections>Penyesuaian Jurnal</x-menu-sections>--}}
 
-                <x-dropdown-menu :active="request()->segment(1) === 'journal-adjustment'">
-                    @slot('parentIcon')
-                        <i class="bi bi-tag-fill fs-1"></i>
-                    @endslot
-                    @slot('menuTitle')
-                        Penyesuaian Jurnal
-                    @endslot
-                    @slot('menuItem')
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'initial-journal'"
-                            href="{{ url('journal-adjustment/initial-journal') }}">
-                            Jurnal Awal
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'adjustment'"
-                            href="{{ url('journal-adjustment/adjustment') }}">
-                            Penyesuaian
-                        </x-dropdown-menu-item>
-                    @endslot
-                </x-dropdown-menu>
+                {{--                <x-dropdown-menu :active="request()->segment(1) === 'journal-adjustment'">--}}
+                {{--                    @slot('parentIcon')--}}
+                {{--                        <i class="bi bi-tag-fill fs-1"></i>--}}
+                {{--                    @endslot--}}
+                {{--                    @slot('menuTitle')--}}
+                {{--                        Penyesuaian Jurnal--}}
+                {{--                    @endslot--}}
+                {{--                    @slot('menuItem')--}}
+                {{--                        <x-dropdown-menu-item--}}
+                {{--                            :active="request()->segment(2) === 'initial-journal'"--}}
+                {{--                            href="{{ url('journal-adjustment/initial-journal') }}">--}}
+                {{--                            Jurnal Awal--}}
+                {{--                        </x-dropdown-menu-item>--}}
+                {{--                        <x-dropdown-menu-item--}}
+                {{--                            :active="request()->segment(2) === 'adjustment'"--}}
+                {{--                            href="{{ url('journal-adjustment/adjustment') }}">--}}
+                {{--                            Penyesuaian--}}
+                {{--                        </x-dropdown-menu-item>--}}
+                {{--                    @endslot--}}
+                {{--                </x-dropdown-menu>--}}
 
                 <x-menu-sections>Utilitas</x-menu-sections>
 
@@ -513,11 +498,11 @@
                             href="{{ url('utility/company-profile') }}">
                             Profil Perusahaan
                         </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'letter-head'"
-                            href="{{ url('utility/letter-head') }}">
-                            Kop Surat
-                        </x-dropdown-menu-item>
+{{--                        <x-dropdown-menu-item--}}
+                            {{--                            :active="request()->segment(2) === 'letter-head'"--}}
+                            {{--                            href="{{ url('utility/letter-head') }}">--}}
+                            {{--                            Kop Surat--}}
+                            {{--                        </x-dropdown-menu-item>--}}
                     @endslot
                 </x-dropdown-menu>
 
@@ -540,11 +525,11 @@
                             href="{{ url('payroll/setting') }}">
                             Pengaturan
                         </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'generate'"
-                            href="{{ url('payroll/generate') }}">
-                            Generate Payroll
-                        </x-dropdown-menu-item>
+{{--                        <x-dropdown-menu-item--}}
+                            {{--                            :active="request()->segment(2) === 'generate'"--}}
+                            {{--                            href="{{ url('payroll/generate') }}">--}}
+                            {{--                            Generate Payroll--}}
+                            {{--                        </x-dropdown-menu-item>--}}
                     @endslot
                 </x-dropdown-menu>
                 <x-dropdown-menu :active="request()->segment(1) === 'manage-users'">

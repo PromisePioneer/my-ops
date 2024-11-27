@@ -64,7 +64,7 @@
                                 <tr>
                                     <td x-text="startIndex + index++"></td>
                                     <td>
-                                        <a :href="Number(viewDetailPermission) === 1 ? `/income-transactions/baa/detail/${activation.id}` : '#'"
+                                        <a :href="`/income-transactions/baa/detail/${activation.id}`"
                                            x-text="activation.baa_number"></a>
                                     </td>
                                     <td x-text="activation.date"></td>

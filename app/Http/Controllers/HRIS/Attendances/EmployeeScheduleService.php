@@ -33,7 +33,7 @@ class EmployeeScheduleService
             })->whereNull('branch_id')->paginate(self::$perPage);
         }
 
-        if ($request->user()->hasRole('Super Admin')) {
+        if ($request->user()->hasRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner')) {
             $user->paginate(self::$perPage);
         }
 

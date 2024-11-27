@@ -107,7 +107,7 @@
                                     <td x-text="`${asset.branch_name ?? 'Pusat'}`"></td>
                                     <td x-text="asset.debit_account"></td>
                                     <td>
-                                        <a :href="`/master/assets/detail/${asset.id}`" x-text="asset.name"></a>
+                                        <a :href="`/finances-master-data/assets/detail/${asset.id}`" x-text="asset.name"></a>
                                     </td>
                                     <td x-text="asset.unit"></td>
                                     <td x-text="asset.useful_life"></td>

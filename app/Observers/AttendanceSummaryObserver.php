@@ -35,7 +35,7 @@ class AttendanceSummaryObserver
 
 
         if ($userWorktime->status === 'L') {
-            Log::info('nice');
+            return;
         }
 
 

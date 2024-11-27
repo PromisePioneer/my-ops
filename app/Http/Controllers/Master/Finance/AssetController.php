@@ -111,7 +111,7 @@ class AssetController extends Controller
 
     public function detail(Asset $asset): View
     {
-        return view('pages.master.assets.detail', compact('asset'));
+        return view('pages.finance-master-data.assets.detail', compact('asset'));
     }
 
     public function getDetailData(Asset $asset): JsonResponse
