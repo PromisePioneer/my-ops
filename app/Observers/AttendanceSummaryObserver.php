@@ -42,7 +42,7 @@ class AttendanceSummaryObserver
         $attendancesSummary = AttendancesSummary::updateOrCreate([
             'date' => Carbon::parse($attendances->timestamp)->format('Y-m-d'),
             'employee_id' => $attendances->employee_id,
-            'work_time_id' => $userWorkTime?->workTime?->id ?? $userWorktime->id,
+            'work_time_id' => $userWorktime?->workTime?->id ?? $userWorktime->id,
         ], []);
 
         if ($attendances->status1 === 0) {

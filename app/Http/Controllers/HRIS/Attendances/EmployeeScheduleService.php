@@ -32,7 +32,7 @@ class EmployeeScheduleService
 
         $user = $this->query();
 
-        if ($request->user()->hasRole('NOC Supervisor')) {
+        if ($request->user()->hasAnyRole('NOC Supervisor', 'NOC Staff')) {
             $user->whereHas('roles', function ($query) {
                 $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
             })->whereNull('branch_id');
@@ -110,7 +110,7 @@ class EmployeeScheduleService
         $user = $this->query();
 
 
-        if ($request->user()->hasRole('NOC Supervisor')) {
+        if ($request->user()->hasAnyRole('NOC Supervisor', 'NOC Staff')) {
             $user->whereHas('roles', function ($query) {
                 $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
             })->whereNull('branch_id');
@@ -189,7 +189,7 @@ class EmployeeScheduleService
 
         $user = $this->query();
 
-        if ($request->user()->hasRole('NOC Supervisor')) {
+        if ($request->user()->hasAnyRole('NOC Supervisor', 'NOC Staff')) {
             $user->whereHas('roles', function ($query) {
                 $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
             })->whereNull('branch_id')->paginate(self::$perPage);
