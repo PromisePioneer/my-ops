@@ -62,6 +62,13 @@ class EmployeeScheduleService
         }
 
 
+        if ($request->user()->hasAnyRole('Head Of Electrical Engineer')) {
+            $user->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer']);
+            })->whereNull('branch_id');
+        }
+
+
         if ($request->user()->hasRole('Branch Manager')) {
             $user->where('branch_id', $request->user()->branch_id)->paginate(self::$perPage);
         }
