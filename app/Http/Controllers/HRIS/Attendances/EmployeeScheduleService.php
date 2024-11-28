@@ -42,7 +42,8 @@ class EmployeeScheduleService
             $user->whereHas('userHasArea', function ($query) use ($request) {
                 $query->where('area_id', $request->user()->userHasArea->area_id);
             })->where(function ($query) use ($request) {
-                $query->where('branch_id', $request->user()->branch_id);
+                $query->where('branch_id', $request->user()->branch_id)
+                    ->where('active', 1);
             });
         }
 
@@ -50,7 +51,8 @@ class EmployeeScheduleService
             $user->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff']);
             })->where(function ($query) use ($request) {
-                $query->whereNull('branch_id')->orWhereIn('branch_id', [1]);
+                $query->whereNull('branch_id')->orWhereIn('branch_id', [1])
+                    ->where('active', 1);;
             })->paginate(self::$perPage);
         }
 
