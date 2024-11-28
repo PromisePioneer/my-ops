@@ -132,9 +132,9 @@ class AttendancesSummaryService
             },
         ]);
 
-        if ($request->user()->can('Lihat Data Riwayat Absensi Cabang Sendiri')) {
-            $data->where('branch_id', $request->user()->branch_id);
-        }
+//        if ($request->user()->can('Lihat Data Riwayat Absensi Cabang Sendiri')) {
+//            $data->where('branch_id', $request->user()->branch_id);
+//        }
 
 
         if (!empty($search)) {
