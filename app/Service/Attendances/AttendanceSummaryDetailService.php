@@ -165,7 +165,6 @@ class AttendanceSummaryDetailService
 
         $leavePeriods = [];
 
-        // Combine all leave periods into one collection
         foreach ($leaveAndPermission as $dates) {
             $leavePeriods = array_merge(
                 $leavePeriods,
