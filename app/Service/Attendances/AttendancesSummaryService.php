@@ -69,12 +69,17 @@ class AttendancesSummaryService
             }
 
 
+            if (Carbon::now() === $this->financialClosePeriodService->endDate()) {
+                $totalMinutesLate -= 60;
+            }
+
+
             return [
                 'id' => $user->id,
                 'user_nip' => $user->nip,
                 'user_name' => $user->name,
                 'role' => $user->roles[0]?->name ?? '',
-                'total_minutes_late' => (int)$totalMinutesLate > 15 ? $totalMinutesLate - 60 : $totalMinutesLate - 0,
+                'total_minutes_late' => (int)$totalMinutesLate,
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
                 'total_present' => $totalPresent . '/' . (int)$periodOfWork,
