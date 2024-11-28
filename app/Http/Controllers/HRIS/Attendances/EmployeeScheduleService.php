@@ -107,9 +107,77 @@ class EmployeeScheduleService
         $startDate = $this->financialClosePeriodService->startDate();
         $endDate = $this->financialClosePeriodService->endDate();
 
-        $user = User::when(!empty($search), function ($query) use ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
-        })->paginate(self::$perPage);
+        $user = $this->query();
+
+
+        if ($request->user()->hasRole('NOC Supervisor')) {
+            $user->whereHas('roles', function ($query) {
+                $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
+            })->whereNull('branch_id');
+        }
+
+        if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner')) {
+            $user->paginate(self::$perPage);
+        }
+
+
+        if ($request->user()->hasAnyRole('Head Engineer', 'Senior Engineer')) {
+            $user->whereHas('userHasArea', function ($query) use ($request) {
+                $query->where('area_id', $request->user()->userHasArea->area_id);
+            })->where(function ($query) use ($request) {
+                $query->where('branch_id', $request->user()->branch_id)
+                    ->where('active', 1);
+            });
+        }
+
+        if ($request->user()->hasAnyRole('Customer Service Leader')) {
+            $user->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff']);
+            })->where(function ($query) use ($request) {
+                $query->whereNull('branch_id')->orWhereIn('branch_id', [1])
+                    ->where('active', 1);;
+            });
+        }
+
+
+        if ($request->user()->hasAnyRole('Finance & Accounting Supervisor')) {
+            $user->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff']);
+            })->whereNull('branch_id');
+        }
+
+
+        if ($request->user()->hasAnyRole('Head Of Electrical Engineer')) {
+            $user->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer']);
+            })->whereNull('branch_id');
+        }
+
+
+        if ($request->user()->hasRole('Branch Manager')) {
+            $user->where('branch_id', $request->user()->branch_id)->paginate(self::$perPage);
+        }
+
+
+        if ($request->user()->hasRole('KU Head Engineer')) {
+            $user->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['KU Head Engineer', 'KU Engineer']);
+            });
+        }
+
+
+        if ($request->user()->hasRole('Quality Controller Supervisor')) {
+            $user->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Quality Controller Supervisor', 'Quality Control Staff']);
+            });
+        }
+
+
+        if (!empty($search)) {
+            $user->where('name', 'like', '%' . $search . '%');
+        }
+
+
         return self::formattedData($user, $startDate, $endDate);
     }
 
