@@ -178,7 +178,10 @@ class EmployeeScheduleService
         }
 
 
-        return self::formattedData($user, $startDate, $endDate);
+        $data = $user->paginate(self::$perPage);
+
+
+        return self::formattedData($data, $startDate, $endDate);
     }
 
     public function filterByDate($request, $startDate, $endDate)
