@@ -54,7 +54,7 @@ class EmployeeScheduleService
 
         if ($request->user()->hasAnyRole('Customer Service Leader')) {
             $user->whereHas('roles', function ($query) use ($request) {
-                $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff']);
+                $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff', 'After Sales Customer Service']);
             })->where(function ($query) use ($request) {
                 $query->whereNull('branch_id')->orWhereIn('branch_id', [1])
                     ->where('active', 1);;
@@ -132,7 +132,7 @@ class EmployeeScheduleService
 
         if ($request->user()->hasAnyRole('Customer Service Leader')) {
             $user->whereHas('roles', function ($query) use ($request) {
-                $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff']);
+                $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff', 'After Sales Customer Service']);
             })->where(function ($query) use ($request) {
                 $query->whereNull('branch_id')->orWhereIn('branch_id', [1])
                     ->where('active', 1);;
