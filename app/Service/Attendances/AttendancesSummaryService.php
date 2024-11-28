@@ -31,7 +31,7 @@ class AttendancesSummaryService
             'attendancesSummary' => function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('date', [$startDate, $endDate]);
             }, 'roles'
-        ])->where('active', true);
+        ])->where('active', 1);
 
         $attendanceSummary = $data->paginate(self::$perPage)->onEachSide(1);
         return self::formattedData($attendanceSummary, $startDate, $endDate);
@@ -142,9 +142,9 @@ class AttendancesSummaryService
                 ->orWhere('nip', 'like', '%' . $search . '%');
         }
 
-        $data = $data->paginate(10)->onEachSide(1);
+        $user = $data->paginate(10)->onEachSide(1);
 
 
-        return self::formattedData($data, $startDate, $endDate);
+        return self::formattedData($user, $startDate, $endDate);
     }
 }
