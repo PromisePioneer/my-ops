@@ -136,15 +136,12 @@ class AttendancesSummaryService
         $endDate = Carbon::parse($request->end_date) ?? $this->financialClosePeriodService->endDate();
         $search = $request->input('search');
 
+
         $data = User::with([
             'attendancesSummary' => function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('date', [$startDate, $endDate]);
             },
         ]);
-
-//        if ($request->user()->can('Lihat Data Riwayat Absensi Cabang Sendiri')) {
-//            $data->where('branch_id', $request->user()->branch_id);
-//        }
 
 
         if (!empty($search)) {

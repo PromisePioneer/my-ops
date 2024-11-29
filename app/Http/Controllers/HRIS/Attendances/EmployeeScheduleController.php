@@ -35,6 +35,7 @@ use Illuminate\View\View;
         return response()->json($this->workTime->getData($request));
     }
 
+
     public function search(Request $request): JsonResponse
     {
         return response()->json($this->employeeScheduleService->search($request));

@@ -7,6 +7,9 @@ use App\Models\User;
 use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
 
 class EmployeeScheduleService
 {
@@ -278,25 +281,38 @@ class EmployeeScheduleService
                 ];
             }
 
+
+            $test = $this->paginate($dates);
+
+            $test2 = $test->getCollection()->map(function ($date) {
+                return [
+                    'period_date' => $date['periodDate'],
+                    'schedules_date' => $date['employeeSchedules'],
+                    'work_time_schedules' => $date['employeeSchedules']?->workTime?->name .
+                        ' (' . $date['employeeSchedules']?->workTime?->clock_in .
+                        ' - ' . $date['employeeSchedules']?->workTime?->clock_out . ')',
+                ];
+            })->values();
+
             return [
                 'id' => $item->id,
                 'name' => $item->name,
                 'absent_id' => $item->absent_id,
-                'date' => collect($dates)->map(function ($date) {
-                    return [
-                        'period_date' => $date['periodDate'],
-                        'schedules_date' => $date['employeeSchedules'],
-                        'work_time_schedules' => $date['employeeSchedules']?->workTime?->name .
-                            ' (' . $date['employeeSchedules']?->workTime?->clock_in .
-                            ' - ' . $date['employeeSchedules']?->workTime?->clock_out . ')',
-                    ];
-                })->values()->toArray(),
+                'date' => $test->setCollection($test2),
                 'area' => $item->userHasArea?->area,
             ];
         });
 
         $userData->setCollection($data);
         return $userData;
+    }
+
+
+    public function paginate($items, $perPage = 3, $page = null, $options = []): LengthAwarePaginator
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 
 }

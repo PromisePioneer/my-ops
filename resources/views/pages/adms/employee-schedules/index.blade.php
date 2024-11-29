@@ -87,7 +87,7 @@
 
                                     </th>
                                     <template x-if="employeeSchedules?.data.length > 0">
-                                        <template x-for="date in employeeSchedules?.data[0].date"
+                                        <template x-for="date in employeeSchedules?.data[0].date.data"
                                                   :key="date.period_date">
                                             <th class="min-w-325px bg-light text-center text-black border border-black"
                                                 x-text="formatDate(date.period_date)">
@@ -102,7 +102,7 @@
                                     <tr>
                                         <td class="bg-dark border border-black text-white px-2 fix"
                                             x-text="employeeSchedule?.name"></td>
-                                        <template x-for="dates in employeeSchedule?.date">
+                                        <template x-for="dates in employeeSchedule?.date.data">
                                             <td :class="`${dates.schedules_date?.status === 'L' ? 'border border-black text-center bg-warning' : dates.schedules_date?.status === 'H' ? 'border border-black text-center bg-primary' : 'border border-black text-center bg-light'}`">
                                                 <div>
                                                     <a href="#" data-bs-toggle="modal"
@@ -149,9 +149,20 @@
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 formCreate: document.getElementById('form-create'),
                 async init() {
-                    const resp = await axios.get('/adms/employee-schedules/data');
-                    this.employeeSchedules = resp.data
+                    await this.getEmployeeSchedules();
                     await this.getWorkTimeData();
+                },
+                async getEmployeeSchedules() {
+                    const start_date = document.getElementById('start_date');
+                    const end_date = document.getElementById('end_date');
+
+                    const resp = await axios.get('/adms/employee-schedules/data', {
+                        params: {
+                            startDate: start_date,
+                            endDate: end_date
+                        }
+                    });
+                    this.employeeSchedules = resp.data
                 },
                 async filterByDate() {
                     const start_date = document.getElementById('start_date');
@@ -238,11 +249,13 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/adms/employee-schedules/', new FormData(this.formCreate))
+                        await axios.post('/adms/employee-schedules/', new FormData(this.formCreate)).then(async res => {
+                            const resp = await axios.get(`${this.employeeSchedules.path}?page=${this.employeeSchedules.current_page}`);
+                            this.employeeSchedules = resp.data
+                        })
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
-                        await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))

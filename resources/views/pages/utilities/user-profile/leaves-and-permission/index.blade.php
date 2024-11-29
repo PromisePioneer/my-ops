@@ -10,9 +10,6 @@
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
-                        <span class="svg-icon svg-icon-1 position-absolute ms-6">
-                           <i class="bi bi-search"></i>
-                        </span>
                         <h3>Sisa Cuti : <span x-text="totalLeavesAllowance"></span></h3>
                     </div>
                 </div>
