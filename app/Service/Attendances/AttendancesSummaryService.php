@@ -101,7 +101,7 @@ class AttendancesSummaryService
         if ($parseActualCheckIn->greaterThan($parseExpectedCheckIn)) {
 
 
-            dd(Carbon::parse($expectedCheckIn)->diffInMinutes($parseActualCheckIn) > 2);
+            dd(Carbon::parse($expectedCheckIn)->diffInMinutes($parseActualCheckIn));
 //
 //            if () {
 //                return 0;
