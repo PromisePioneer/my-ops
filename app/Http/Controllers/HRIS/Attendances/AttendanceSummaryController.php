@@ -85,6 +85,14 @@ class AttendanceSummaryController extends Controller
         return response()->json($attendaceVal);
     }
 
+    public function filter(Request $request): JsonResponse
+    {
+        $startDate = Carbon::parse($request->start_date);
+        $endDate = Carbon::parse($request->end_date);
+        return response()->json($this->attendanceSummaryService->filter($startDate, $endDate));
+    }
+
+
     public function saveCorrection(AttendanceCorrectionRequest $request, User $user, $datePeriod = null): JsonResponse
     {
         $parseDatePeriod = Carbon::parse($datePeriod)->format('Y-m-d');

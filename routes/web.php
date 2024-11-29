@@ -1036,8 +1036,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/detail/correction/{datePeriod}/{user}', [AttendanceSummaryController::class, 'correction']);
             Route::post(
                 '/detail/correction/save/{user}/{datePeriod?}',
-                [AttendanceSummaryController::class, 'saveCorrection']
-            );
+                [AttendanceSummaryController::class, 'saveCorrection']);
+            Route::get('/filter', [AttendanceSummaryController::class, 'filter']);
         });
 
         Route::prefix('/employee-schedules')->group(function () {

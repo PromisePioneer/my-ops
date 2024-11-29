@@ -99,78 +99,92 @@
                     @endslot
                 </x-single-menu-item>
                 <x-menu-sections>Master Data</x-menu-sections>
-                <x-dropdown-menu :active="request()->segment(1) === 'general-master-data'">
-                    @slot('parentIcon')
-                        <i class="ki-duotone ki-element-7 fs-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                        </i>
-                    @endslot
-                    @slot('menuTitle')
-                        Master Umum
-                    @endslot
-                    @slot('menuItem')
-                        @can('Lihat Cabang')
+                @canany('Lihat Menu Cabang', 'Lihat Menu Kontak', 'Lihat Menu SKL', 'Lihat Menu Produk', 'Lihat Menu Kategori Layanan', 'Lihat Menu Departemen', 'Lihat Menu Jabatan', 'Lihat Menu Paket Broadband', 'Lihat Menu Data Perusahaan', 'Lihat Menu Area')
+                    <x-dropdown-menu :active="request()->segment(1) === 'general-master-data'">
+                        @slot('parentIcon')
+                            <i class="ki-duotone ki-element-7 fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        @endslot
+                        @slot('menuTitle')
+                            Master Umum
+                        @endslot
+                        @slot('menuItem')
+                            @can('Lihat Menu Cabang')
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'branch'"
+                                    href="{{ url('general-master-data/branch') }}">
+                                    Cabang
+                                </x-dropdown-menu-item>
+                            @endcan
+                            @can('Lihat Menu Kontak')
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'contact'"
+                                    href="{{ url('general-master-data/contact') }}">
+                                    Contact
+                                </x-dropdown-menu-item>
+                            @endcan
+                            @can('Lihat Menu SKL')
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'skl'"
+                                    href="{{ url('general-master-data/skl') }}">
+                                    Syarat Ketentuan Layanan
+                                </x-dropdown-menu-item>
+                            @endcan
+                            @can('Lihat Menu Satuan')
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'unit-types'"
+                                    href="{{ url('general-master-data/unit-types/') }}">
+                                    Satuan
+                                </x-dropdown-menu-item>
+                            @endcan
+                            @can('Lihat Menu Produk')
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'product'"
+                                    href="{{ url('general-master-data/product') }}">
+                                    Produk
+                                </x-dropdown-menu-item>
+                            @endcan
+                            @can('Lihat Menu Kategori Layanan')
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'service-categories'"
+                                    href="{{ url('general-master-data/service-categories') }}">
+                                    Kategori Layanan
+                                </x-dropdown-menu-item>
+                            @endcan
+                            @can('Lihat Menu Departemen')
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'department'"
+                                    href="{{ url('general-master-data/department') }}">
+                                    Department
+                                </x-dropdown-menu-item>
+                            @endcan
                             <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'branch'"
-                                href="{{ url('general-master-data/branch') }}">
-                                Cabang
+                                :active="request()->segment(2) === 'roles'"
+                                href="{{ url('general-master-data/roles') }}">
+                                Jabatan
                             </x-dropdown-menu-item>
-                        @endcan
-                        @can('Lihat Kontak')
                             <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'contact'"
-                                href="{{ url('general-master-data/contact') }}">
-                                Contact
+                                :active="request()->segment(2) === 'broadband-packet'"
+                                href="{{ url('general-master-data/broadband-packet') }}">
+                                Paket Broadband
                             </x-dropdown-menu-item>
-                        @endcan
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'skl'"
-                            href="{{ url('general-master-data/skl') }}">
-                            Syarat Ketentuan Layanan
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'unit-types'"
-                            href="{{ url('general-master-data/unit-types/') }}">
-                            Satuan
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'product'"
-                            href="{{ url('general-master-data/product') }}">
-                            Produk
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'service-categories'"
-                            href="{{ url('general-master-data/service-categories') }}">
-                            Kategori Layanan
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'department'"
-                            href="{{ url('general-master-data/department') }}">
-                            Department
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'roles'"
-                            href="{{ url('general-master-data/roles') }}">
-                            Jabatan
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'broadband-packet'"
-                            href="{{ url('general-master-data/broadband-packet') }}">
-                            Paket Broadband
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'companies'"
-                            href="{{ url('general-master-data/companies') }}">
-                            Data Perusahaan
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'area'"
-                            href="{{ url('general-master-data/area') }}">
-                            Area
-                        </x-dropdown-menu-item>
-                    @endslot
-                </x-dropdown-menu>
+                            <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'companies'"
+                                href="{{ url('general-master-data/companies') }}">
+                                Data Perusahaan
+                            </x-dropdown-menu-item>
+                            <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'area'"
+                                href="{{ url('general-master-data/area') }}">
+                                Area
+                            </x-dropdown-menu-item>
+                        @endslot
+                    </x-dropdown-menu>
+                @endcanany
+
+
                 <x-dropdown-menu :active="request()->segment(1) === 'finances-master-data'">
                     @slot('parentIcon')
                         <i class="ki-duotone ki-element-7 fs-2">
@@ -498,11 +512,11 @@
                             href="{{ url('utility/company-profile') }}">
                             Profil Perusahaan
                         </x-dropdown-menu-item>
-{{--                        <x-dropdown-menu-item--}}
-                            {{--                            :active="request()->segment(2) === 'letter-head'"--}}
-                            {{--                            href="{{ url('utility/letter-head') }}">--}}
-                            {{--                            Kop Surat--}}
-                            {{--                        </x-dropdown-menu-item>--}}
+                        {{--                        <x-dropdown-menu-item--}}
+                        {{--                            :active="request()->segment(2) === 'letter-head'"--}}
+                        {{--                            href="{{ url('utility/letter-head') }}">--}}
+                        {{--                            Kop Surat--}}
+                        {{--                        </x-dropdown-menu-item>--}}
                     @endslot
                 </x-dropdown-menu>
 
@@ -525,11 +539,11 @@
                             href="{{ url('payroll/setting') }}">
                             Pengaturan
                         </x-dropdown-menu-item>
-{{--                        <x-dropdown-menu-item--}}
-                            {{--                            :active="request()->segment(2) === 'generate'"--}}
-                            {{--                            href="{{ url('payroll/generate') }}">--}}
-                            {{--                            Generate Payroll--}}
-                            {{--                        </x-dropdown-menu-item>--}}
+                        {{--                        <x-dropdown-menu-item--}}
+                        {{--                            :active="request()->segment(2) === 'generate'"--}}
+                        {{--                            href="{{ url('payroll/generate') }}">--}}
+                        {{--                            Generate Payroll--}}
+                        {{--                        </x-dropdown-menu-item>--}}
                     @endslot
                 </x-dropdown-menu>
                 <x-dropdown-menu :active="request()->segment(1) === 'manage-users'">

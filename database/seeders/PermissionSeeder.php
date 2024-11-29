@@ -24,6 +24,7 @@ class PermissionSeeder extends Seeder
         $this->broadbandPacket();
         $this->companyData();
         $this->area();
+        $this->unitType();
 
 
         //accounting master data
@@ -865,10 +866,10 @@ class PermissionSeeder extends Seeder
     public function branch(): void
     {
         $permissions = [
-            'Lihat Cabang',
-            'Tambah Cabang',
-            'Edit Cabang',
-            'Hapus Cabang',
+            'Lihat Menu Cabang',
+            'Tambah Data Cabang',
+            'Edit Data Cabang',
+            'Hapus Data Cabang',
         ];
 
         foreach ($permissions as $permission) {

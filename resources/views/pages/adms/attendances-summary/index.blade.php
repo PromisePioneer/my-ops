@@ -14,7 +14,12 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-
+                    <div class="d-flex align-items-center justify-content-center">
+                        <input type="date" class="form-control form-control-solid me-3" id="start_date"
+                               name="start_date">
+                        <input type="date" class="form-control form-control-solid me-3" id="end_date" name="end_date">
+                        <button class="btn btn-light-primary btn-sm" @click="filter()">Filter</button>
+                    </div>
                 </div>
             </div>
             <div class="card-body py-3">
@@ -116,6 +121,24 @@
                         this.attendanceSummary = resp.data
                     }
                 },
+                async filter() {
+                    const startDate = document.getElementById('start_date')?.value ?? '';
+                    const endDate = document.getElementById('end_date')?.value ?? '';
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get(`/adms/attendances-summary/filter`, {
+                            params: {
+                                start_date: startDate,
+                                end_date: endDate,
+                            }
+                        });
+                        this.attendanceSummary = resp.data;
+                    } catch (e) {
+                        console.log(e);
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
                 getMonths() {
                     this.months = [
                         {"value": 1, "name": "Januari"},
@@ -177,9 +200,6 @@
                     const [month, year] = val.split('-');
                     const date = new Date(year, month - 1, 1);
                     return `${this.getMonthName(date.getMonth())} ${date.getFullYear()}`;
-                },
-                async filter() {
-
                 },
                 getMonthName(monthIndex) {
                     const monthNames = [

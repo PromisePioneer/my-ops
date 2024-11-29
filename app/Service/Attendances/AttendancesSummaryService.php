@@ -113,6 +113,19 @@ class AttendancesSummaryService
     }
 
 
+    public function filter($startDate, $endDate): LengthAwarePaginator
+    {
+        $data = User::with([
+            'attendancesSummary' => function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('date', [$startDate, $endDate]);
+            }, 'roles'
+        ])->where('active', 1);
+
+        $attendanceSummary = $data->paginate(self::$perPage)->onEachSide(1);
+        return self::formattedData($attendanceSummary, $startDate, $endDate);
+    }
+
+
     public function getUserWorktime($user)
     {
         $attendancesSummary = AttendancesSummary::where('employee_id', $user->absent_id)->first();
