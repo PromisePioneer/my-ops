@@ -660,51 +660,49 @@
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
-                @canany('Lihat Menu Riyawat Absensi', 'Lihat Menu Hari Libur Nasional', 'Lihat Menu Mesin Absen', 'Lihat Menu Pengaturan Jam Kerja', 'Lihat Menu Riyawat Absensi')
-                    <x-dropdown-menu :active="request()->segment(1) === 'adms'">
-                        @slot('parentIcon')
-                            <i class="bi bi-app-indicator"></i>
-                        @endslot
-                        @slot('menuTitle')
-                            Data Absensi
-                        @endslot
-                        @slot('menuItem')
-                            @can('Lihat Menu Hari Libur Nasional')
-                                <x-dropdown-menu-item
-                                    :active="request()->segment(2) === 'national-holiday'"
-                                    href="{{ url('adms/national-holiday') }}">
-                                    Libur Nasional
-                                </x-dropdown-menu-item>
-                            @endcan
-                            @can('Lihat Menu Mesin Absen')
-                                <x-dropdown-menu-item
-                                    :active="request()->segment(2) === 'fp-devices'"
-                                    href="{{ url('adms/fp-devices') }}">
-                                    Mesin Absen
-                                </x-dropdown-menu-item>
-                            @endcan
-                            @can('Lihat Menu Pengaturan Jam Kerja')
-                                <x-dropdown-menu-item
-                                    :active="request()->segment(2) === 'work-time'"
-                                    href="{{ url('adms/work-time') }}">
-                                    Pengaturan Jam Kerja
-                                </x-dropdown-menu-item>
-                            @endcan
+                <x-dropdown-menu :active="request()->segment(1) === 'adms'">
+                    @slot('parentIcon')
+                        <i class="bi bi-app-indicator"></i>
+                    @endslot
+                    @slot('menuTitle')
+                        Data Absensi
+                    @endslot
+                    @slot('menuItem')
+                        @can('Lihat Menu Hari Libur Nasional')
                             <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'employee-schedules'"
-                                href="{{ url('adms/employee-schedules') }}">
-                                Pengaturan Jadwal Karyawan
+                                :active="request()->segment(2) === 'national-holiday'"
+                                href="{{ url('adms/national-holiday') }}">
+                                Libur Nasional
                             </x-dropdown-menu-item>
-                            @can('Lihat Menu Riwayat Absensi')
-                                <x-dropdown-menu-item
-                                    :active="request()->segment(2) === 'attendances-summary'"
-                                    href="{{ url('adms/attendances-summary') }}">
-                                    Riwayat Absensi
-                                </x-dropdown-menu-item>
-                            @endcan
-                        @endslot
-                    </x-dropdown-menu>
-                @endcanany
+                        @endcan
+                        @can('Lihat Menu Mesin Absen')
+                            <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'fp-devices'"
+                                href="{{ url('adms/fp-devices') }}">
+                                Mesin Absen
+                            </x-dropdown-menu-item>
+                        @endcan
+                        @can('Lihat Menu Pengaturan Jam Kerja')
+                            <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'work-time'"
+                                href="{{ url('adms/work-time') }}">
+                                Pengaturan Jam Kerja
+                            </x-dropdown-menu-item>
+                        @endcan
+                        <x-dropdown-menu-item
+                            :active="request()->segment(2) === 'employee-schedules'"
+                            href="{{ url('adms/employee-schedules') }}">
+                            Pengaturan Jadwal Karyawan
+                        </x-dropdown-menu-item>
+                        @can('Lihat Menu Riwayat Absensi')
+                            <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'attendances-summary'"
+                                href="{{ url('adms/attendances-summary') }}">
+                                Riwayat Absensi
+                            </x-dropdown-menu-item>
+                        @endcan
+                    @endslot
+                </x-dropdown-menu>
             </div>
         </div>
     </div>
