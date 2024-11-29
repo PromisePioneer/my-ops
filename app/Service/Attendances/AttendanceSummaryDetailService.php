@@ -81,7 +81,7 @@ class AttendanceSummaryDetailService
                 'clock_out' => $item['attendanceData']?->clock_out,
                 'late' => $this->calculateLate($item, $userWorktime) ?? null,
                 'work_time' => $userWorktime->name ?? '',
-                'schedule' => $item['employeeSchedule']?->status,
+                'schedule' => $item['employeeSchedule']?->status ?? '',
                 'leaves' => $item['leaves'],
                 'sick' => $item['sick'],
                 'permission' => $item['permission'],
