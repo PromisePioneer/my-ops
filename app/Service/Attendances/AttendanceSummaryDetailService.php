@@ -80,11 +80,11 @@ class AttendanceSummaryDetailService
                 'clock_in' => $item['attendanceData']?->clock_in,
                 'clock_out' => $item['attendanceData']?->clock_out,
                 'late' => $this->calculateLate($item, $userWorktime) ?? null,
-                'work_time' => $userWorktime->name ?? '',
+                'work_time' => $userWorktime->name ?? null,
                 'schedule' => $item['employeeSchedule']?->status ?? '',
-                'leaves' => $item['leaves'] ?? '',
-                'sick' => $item['sick'] ?? '',
-                'permission' => $item['permission'] ?? '',
+                'leaves' => $item['leaves'] ?? null,
+                'sick' => $item['sick'] ?? null,
+                'permission' => $item['permission'] ?? null,
             ];
         });
     }
