@@ -56,7 +56,6 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-                    <form @submit.prevent="filterByDate()" id="form-filter">
                         <div class="d-flex align-items-center justify-content-between">
 
                             <div class="me-3">
@@ -71,10 +70,10 @@
                                        placeholder="Pilih Tanggal Akhir" name="end_date"/>
                             </div>
                             <div>
-                                <button type="submit" class="btn btn-sm btn-light-info">Filter</button>
+                                <button type="button" @click="filterByDate()" class="btn btn-sm btn-light-info">Filter
+                                </button>
                             </div>
                         </div>
-                    </form>
                 </div>
             </div>
             <div class="card-body py-3">
@@ -149,14 +148,20 @@
                 schedulesValue: null,
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 formCreate: document.getElementById('form-create'),
-                formFilter: document.getElementById('form-filter'),
                 async init() {
                     const resp = await axios.get('/adms/employee-schedules/data');
                     this.employeeSchedules = resp.data
                     await this.getWorkTimeData();
                 },
                 async filterByDate() {
-                    const resp = await axios.post('/adms/employee-schedules/filter', new FormData(this.formFilter));
+                    const start_date = document.getElementById('start_date');
+                    const end_date = document.getElementById('end_date');
+                    const resp = await axios.post('/adms/employee-schedules/filter', {
+                        params: {
+                            startDate: start_date,
+                            endDate: end_date,
+                        }
+                    });
                     this.employeeSchedules = resp.data;
                 },
                 formatDate(val) {
@@ -177,8 +182,14 @@
                 },
                 async searchData() {
                     try {
+                        const start_date = document.getElementById('start_date');
+                        const end_date = document.getElementById('end_date');
                         const resp = await axios.get('/adms/employee-schedules/search', {
-                            params: {search: this.search},
+                            params: {
+                                search: this.search,
+                                start_date: start_date,
+                                end_date: end_date,
+                            },
                             headers: {'Content-Type': 'application/json'}
                         });
 

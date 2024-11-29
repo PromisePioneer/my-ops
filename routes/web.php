@@ -1027,7 +1027,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [AttendanceSummaryController::class, 'index']);
             Route::get('/data', [AttendanceSummaryController::class, 'data']);
             Route::get('/search', [AttendanceSummaryController::class, 'search']);
-            Route::post('/filter-date', [AttendanceSummaryController::class, 'filterByDate']);
+            Route::get('/filter-date', [AttendanceSummaryController::class, 'filterByDate']);
             Route::get('/detail/correction/work-time/data', [AttendanceSummaryController::class, 'getWorkTime']);
             Route::get('/detail/correction/work-time/selected/{workTime}', [AttendanceSummaryController::class, 'selectedData']);
             Route::get('/detail/{user}', [AttendanceSummaryController::class, 'detail']);

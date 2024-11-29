@@ -15,9 +15,10 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex align-items-center justify-content-center">
-                        <input type="date" class="form-control form-control-solid me-3" id="start_date"
-                               name="start_date">
-                        <input type="date" class="form-control form-control-solid me-3" id="end_date" name="end_date">
+                        <input type="date" class="form-control form-control-solid me-3 date" id="start_date"
+                               name="start_date" placeholder="Tanggal awal">
+                        <input type="date" class="form-control form-control-solid me-3 date" id="end_date"
+                               name="end_date" placeholder="Tanggal akhir">
                         <button class="btn btn-light-primary btn-sm" @click="filter()">Filter</button>
                     </div>
                 </div>
@@ -191,10 +192,15 @@
                 },
                 async searchData() {
                     this.isLoading = true;
+
+                    const startDate = document.getElementById('start_date')?.value;
+                    const endDate = document.getElementById('end_date')?.value;
                     try {
                         const response = await axios.get('/adms/attendances-summary/search', {
                             params: {
                                 search: this.search,
+                                start_date: startDate,
+                                end_date: endDate,
                             },
                             headers: {'Content-Type': 'application/json'}
                         });
