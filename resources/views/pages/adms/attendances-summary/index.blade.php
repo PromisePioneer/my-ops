@@ -116,8 +116,17 @@
                     }
                 },
                 async paginationEndPointForAttendanceSummary(url) {
+                    const startDate = document.getElementById('start_date')?.value ?? '';
+                    const endDate = document.getElementById('end_date')?.value ?? '';
+
+
                     if (url) {
-                        const resp = await axios.get(`${url}`);
+                        const resp = await axios.get(`${url}`, {
+                            params: {
+                                start_date: startDate,
+                                end_date: endDate
+                            }
+                        });
                         this.attendanceSummary = resp.data
                     }
                 },
