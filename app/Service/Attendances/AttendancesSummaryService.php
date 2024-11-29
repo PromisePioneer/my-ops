@@ -64,10 +64,7 @@ class AttendancesSummaryService
                 }
 
                 $userWorktime = WorkTime::where('id', $attendance->work_time_id)->first();
-
-                if ($totalMinutesLate > 2.5) {
-                    $totalMinutesLate += $this->calculateLate($userWorktime, $attendance);
-                }
+                $totalMinutesLate += $this->calculateLate($userWorktime, $attendance);
             }
 
 
@@ -102,6 +99,11 @@ class AttendancesSummaryService
         $parseActualCheckIn = Carbon::parse($actualCheckIn);
 
         if ($parseActualCheckIn->greaterThan($parseExpectedCheckIn)) {
+
+            if (Carbon::parse($expectedCheckIn)->diffInMinutes($parseActualCheckIn) > 2.5) {
+                return 0;
+            }
+
             return Carbon::parse($expectedCheckIn)->diffInMinutes($actualCheckIn);
         }
 
