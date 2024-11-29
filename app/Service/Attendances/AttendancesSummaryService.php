@@ -99,15 +99,9 @@ class AttendancesSummaryService
         $parseActualCheckIn = Carbon::parse($actualCheckIn);
 
         if ($parseActualCheckIn->greaterThan($parseExpectedCheckIn)) {
-
-
-            dd(Carbon::parse($expectedCheckIn)->diffInMinutes($parseActualCheckIn));
-//
-//            if () {
-//                return 0;
-//            }
-
-            return Carbon::parse($expectedCheckIn)->diffInMinutes($actualCheckIn);
+            if (Carbon::parse($expectedCheckIn)->diffInMinutes($parseActualCheckIn) > 2.5) {
+                return Carbon::parse($expectedCheckIn)->diffInMinutes($actualCheckIn);
+            }
         }
 
 
