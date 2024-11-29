@@ -82,9 +82,9 @@ class AttendanceSummaryDetailService
                 'late' => $this->calculateLate($item, $userWorktime) ?? null,
                 'work_time' => $userWorktime->name ?? '',
                 'schedule' => $item['employeeSchedule']?->status ?? '',
-                'leaves' => $item['leaves'],
-                'sick' => $item['sick'],
-                'permission' => $item['permission'],
+                'leaves' => $item['leaves'] ?? '',
+                'sick' => $item['sick'] ?? '',
+                'permission' => $item['permission'] ?? '',
             ];
         });
     }
