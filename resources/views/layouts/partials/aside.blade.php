@@ -184,7 +184,7 @@
                     </x-dropdown-menu>
                 @endcanany
 
-
+                @canany('Lihat Menu Akun', 'Lihat Menu Saldo Awal', 'Lihat Menu Pengaturan Pajak', 'Lihat Menu Aset')
                 <x-dropdown-menu :active="request()->segment(1) === 'finances-master-data'">
                     @slot('parentIcon')
                         <i class="ki-duotone ki-element-7 fs-2">
@@ -196,28 +196,37 @@
                         Master Keuangan
                     @endslot
                     @slot('menuItem')
+                            @can('Lihat Menu Akun')
                         <x-dropdown-menu-item
                             :active="request()->segment(2) === 'account'"
                             href="{{ url('finances-master-data/account') }}">
                             Daftar Akun
                         </x-dropdown-menu-item>
+                            @endcan
+                            @can('Lihat Menu Saldo Awal')
                         <x-dropdown-menu-item
                             :active="request()->segment(2) === 'initial-balances'"
                             href="{{ url('finances-master-data/initial-balances') }}">
                             Saldo Awal
                         </x-dropdown-menu-item>
+                            @endcan
+                            @can('Lihat Menu Pengaturan Pajak')
                         <x-dropdown-menu-item
                             :active="request()->segment(2) === 'tax-settings'"
                             href="{{ url('finances-master-data/tax-settings') }}">
                             Pengaturan Pajak
                         </x-dropdown-menu-item>
+                            @endcan
+                            @can('Lihat Menu Aset')
                         <x-dropdown-menu-item
                             :active="request()->segment(2) === 'assets'"
                             href="{{ url('finances-master-data/assets') }}">
                             Daftar Aset
                         </x-dropdown-menu-item>
+                            @endcan
                     @endslot
                 </x-dropdown-menu>
+                @endcanany
                 <x-dropdown-menu :active="request()->segment(1) === 'operational-master-data'">
                     @slot('parentIcon')
                         <i class="ki-duotone ki-element-7 fs-2">
