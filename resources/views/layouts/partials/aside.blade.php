@@ -98,7 +98,9 @@
                         Dashboard
                     @endslot
                 </x-single-menu-item>
-                <x-menu-sections>Master Data</x-menu-sections>
+                @canany('Lihat Menu Supplier', 'Lihat Menu Kategori Barang', 'Lihat Menu Kode Joint Closure','Lihat Menu Cabang', 'Lihat Menu Kontak', 'Lihat Menu SKL', 'Lihat Menu Produk', 'Lihat Menu Kategori Layanan', 'Lihat Menu Departemen', 'Lihat Menu Jabatan', 'Lihat Menu Paket Broadband', 'Lihat Menu Data Perusahaan', 'Lihat Menu Area','Lihat Menu Akun', 'Lihat Menu Saldo Awal', 'Lihat Menu Pengaturan Pajak', 'Lihat Menu Aset')
+                    <x-menu-sections>Master Data</x-menu-sections>
+                @endcanany
                 @canany('Lihat Menu Cabang', 'Lihat Menu Kontak', 'Lihat Menu SKL', 'Lihat Menu Produk', 'Lihat Menu Kategori Layanan', 'Lihat Menu Departemen', 'Lihat Menu Jabatan', 'Lihat Menu Paket Broadband', 'Lihat Menu Data Perusahaan', 'Lihat Menu Area')
                     <x-dropdown-menu :active="request()->segment(1) === 'general-master-data'">
                         @slot('parentIcon')

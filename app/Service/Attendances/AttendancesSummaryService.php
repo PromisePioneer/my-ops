@@ -65,7 +65,9 @@ class AttendancesSummaryService
 
                 $userWorktime = WorkTime::where('id', $attendance->work_time_id)->first();
 
-                $totalMinutesLate += $this->calculateLate($userWorktime, $attendance);
+                if ($totalMinutesLate > 2.5) {
+                    $totalMinutesLate += $this->calculateLate($userWorktime, $attendance);
+                }
             }
 
 
@@ -74,7 +76,7 @@ class AttendancesSummaryService
                 'user_nip' => $user->nip,
                 'user_name' => $user->name,
                 'role' => $user->roles[0]?->name ?? '',
-                'total_minutes_late' => (int)$totalMinutesLate > 60 ? (int)$totalMinutesLate - 60 : (int)$totalMinutesLate,
+                'total_minutes_late' => $totalMinutesLate,
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
                 'total_present' => $totalPresent . '/' . (int)$periodOfWork,
