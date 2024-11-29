@@ -185,76 +185,84 @@
                 @endcanany
 
                 @canany('Lihat Menu Akun', 'Lihat Menu Saldo Awal', 'Lihat Menu Pengaturan Pajak', 'Lihat Menu Aset')
-                <x-dropdown-menu :active="request()->segment(1) === 'finances-master-data'">
-                    @slot('parentIcon')
-                        <i class="ki-duotone ki-element-7 fs-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                        </i>
-                    @endslot
-                    @slot('menuTitle')
-                        Master Keuangan
-                    @endslot
-                    @slot('menuItem')
+                    <x-dropdown-menu :active="request()->segment(1) === 'finances-master-data'">
+                        @slot('parentIcon')
+                            <i class="ki-duotone ki-element-7 fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        @endslot
+                        @slot('menuTitle')
+                            Master Keuangan
+                        @endslot
+                        @slot('menuItem')
                             @can('Lihat Menu Akun')
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'account'"
-                            href="{{ url('finances-master-data/account') }}">
-                            Daftar Akun
-                        </x-dropdown-menu-item>
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'account'"
+                                    href="{{ url('finances-master-data/account') }}">
+                                    Daftar Akun
+                                </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Saldo Awal')
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'initial-balances'"
-                            href="{{ url('finances-master-data/initial-balances') }}">
-                            Saldo Awal
-                        </x-dropdown-menu-item>
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'initial-balances'"
+                                    href="{{ url('finances-master-data/initial-balances') }}">
+                                    Saldo Awal
+                                </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Pengaturan Pajak')
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'tax-settings'"
-                            href="{{ url('finances-master-data/tax-settings') }}">
-                            Pengaturan Pajak
-                        </x-dropdown-menu-item>
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'tax-settings'"
+                                    href="{{ url('finances-master-data/tax-settings') }}">
+                                    Pengaturan Pajak
+                                </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Aset')
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'assets'"
-                            href="{{ url('finances-master-data/assets') }}">
-                            Daftar Aset
-                        </x-dropdown-menu-item>
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'assets'"
+                                    href="{{ url('finances-master-data/assets') }}">
+                                    Daftar Aset
+                                </x-dropdown-menu-item>
                             @endcan
-                    @endslot
-                </x-dropdown-menu>
+                        @endslot
+                    </x-dropdown-menu>
                 @endcanany
-                <x-dropdown-menu :active="request()->segment(1) === 'operational-master-data'">
-                    @slot('parentIcon')
-                        <i class="ki-duotone ki-element-7 fs-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                        </i>
-                    @endslot
-                    @slot('menuTitle')
-                        Master Operasional
-                    @endslot
-                    @slot('menuItem')
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'suppliers'"
-                            href="{{ url('operational-master-data/suppliers') }}">
-                            Supplier
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'inventory-categories'"
-                            href="{{ url('operational-master-data/inventory-categories') }}">
-                            Kategori Barang
-                        </x-dropdown-menu-item>
-                        <x-dropdown-menu-item
-                            :active="request()->segment(2) === 'joint-closures-code'"
-                            href="{{ url('operational-master-data/joint-closures-code') }}">
-                            Kode Joint Closure
-                        </x-dropdown-menu-item>
-                    @endslot
-                </x-dropdown-menu>
+                @canany('Lihat Menu Supplier', 'Lihat Menu Kategori Barang', 'Lihat Menu Kode Joint Closure')
+                    <x-dropdown-menu :active="request()->segment(1) === 'operational-master-data'">
+                        @slot('parentIcon')
+                            <i class="ki-duotone ki-element-7 fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                        @endslot
+                        @slot('menuTitle')
+                            Master Operasional
+                        @endslot
+                        @slot('menuItem')
+                            @can('Lihat Menu Supplier')
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'suppliers'"
+                                    href="{{ url('operational-master-data/suppliers') }}">
+                                    Supplier
+                                </x-dropdown-menu-item>
+                            @endcan
+                            @can('Lihat Menu Kategori Barang')
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'inventory-categories'"
+                                    href="{{ url('operational-master-data/inventory-categories') }}">
+                                    Kategori Barang
+                                </x-dropdown-menu-item>
+                            @endcan
+                            @can('Lihat Menu Kode Joint Closure')
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'joint-closures-code'"
+                                    href="{{ url('operational-master-data/joint-closures-code') }}">
+                                    Kode Joint Closure
+                                </x-dropdown-menu-item>
+                            @endcan
+                        @endslot
+                    </x-dropdown-menu>
+                @endcanany
                 <x-menu-sections>Inventory</x-menu-sections>
                 <x-dropdown-menu :active="request()->is('inventory/*')">
                     @slot('parentIcon')
