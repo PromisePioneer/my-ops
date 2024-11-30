@@ -87,7 +87,7 @@
 
                                     </th>
                                     <template x-if="employeeSchedules?.data.length > 0">
-                                        <template x-for="date in employeeSchedules?.data[0].date.data"
+                                        <template x-for="date in employeeSchedules?.data[0].date"
                                                   :key="date.period_date">
                                             <th class="min-w-325px bg-light text-center text-black border border-black"
                                                 x-text="formatDate(date.period_date)">
@@ -102,7 +102,7 @@
                                     <tr>
                                         <td class="bg-dark border border-black text-white px-2 fix"
                                             x-text="employeeSchedule?.name"></td>
-                                        <template x-for="dates in employeeSchedule?.date.data">
+                                        <template x-for="dates in employeeSchedule?.date">
                                             <td :class="`${dates.schedules_date?.status === 'L' ? 'border border-black text-center bg-warning' : dates.schedules_date?.status === 'H' ? 'border border-black text-center bg-primary' : 'border border-black text-center bg-light'}`">
                                                 <div>
                                                     <a href="#" data-bs-toggle="modal"

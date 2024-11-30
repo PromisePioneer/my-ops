@@ -282,23 +282,19 @@ class EmployeeScheduleService
             }
 
 
-            $test = $this->paginate($dates);
-
-            $test2 = $test->getCollection()->map(function ($date) {
-                return [
-                    'period_date' => $date['periodDate'],
-                    'schedules_date' => $date['employeeSchedules'],
-                    'work_time_schedules' => $date['employeeSchedules']?->workTime?->name .
-                        ' (' . $date['employeeSchedules']?->workTime?->clock_in .
-                        ' - ' . $date['employeeSchedules']?->workTime?->clock_out . ')',
-                ];
-            })->values();
-
             return [
                 'id' => $item->id,
                 'name' => $item->name,
                 'absent_id' => $item->absent_id,
-                'date' => $test->setCollection($test2),
+                'date' => collect($dates)->map(function ($date) {
+                    return [
+                        'period_date' => $date['periodDate'],
+                        'schedules_date' => $date['employeeSchedules'],
+                        'work_time_schedules' => $date['employeeSchedules']?->workTime?->name .
+                            ' (' . $date['employeeSchedules']?->workTime?->clock_in .
+                            ' - ' . $date['employeeSchedules']?->workTime?->clock_out . ')',
+                    ];
+                })->values(),
                 'area' => $item->userHasArea?->area,
             ];
         });
