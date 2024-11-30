@@ -47,7 +47,7 @@
         <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
             <div id="kt_header" style="" class="header align-items-stretch">
                 <div class="header-brand">
-                    <a href="{{ url('/home') }}">
+                    <a href="{{ url()->current() }}">
                         <img alt="Logo" src="{{ asset('assets/media/logos/mayatama-logo-full.png')}}"
                              width="150px"/>
                     </a>
