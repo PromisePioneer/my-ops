@@ -6,6 +6,7 @@ use App\Models\EmployeeSchedule;
 use App\Models\User;
 use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\CarbonPeriod;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -23,7 +24,7 @@ class EmployeeScheduleService
     }
 
 
-    public function query()
+    public function query(): Builder
     {
         return User::with('roles', 'userHasArea')->orderBy('name');
     }

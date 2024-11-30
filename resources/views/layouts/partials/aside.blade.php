@@ -692,7 +692,7 @@
                         <x-dropdown-menu-item
                             :active="request()->segment(2) === 'employee-schedules'"
                             href="{{ url('adms/employee-schedules') }}">
-                            Pengaturan Jadwal Karyawan
+                            Pengaturan Jadwal Libur
                         </x-dropdown-menu-item>
                         @can('Lihat Menu Riwayat Absensi')
                             <x-dropdown-menu-item
