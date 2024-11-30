@@ -1048,7 +1048,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/work-time/data', [EmployeeScheduleController::class, 'getWorkTime']);
             Route::get('/work-time/selected/{employeeSchedule}', [EmployeeScheduleController::class, 'selectedWorkTime']);
             Route::post('/', [EmployeeScheduleController::class, 'saveSchedules']);
-            Route::post('/filter', [EmployeeScheduleController::class, 'filterByDate']);
+            Route::get('/filter', [EmployeeScheduleController::class, 'filterByDate']);
         });
     });
 

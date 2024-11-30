@@ -57,16 +57,15 @@
                 </div>
                 <div class="card-toolbar">
                         <div class="d-flex align-items-center justify-content-between">
-
                             <div class="me-3">
                                 <label for="name" class="form-label mt-3">Filter Jadwal :</label>
                             </div>
                             <div class="me-3">
                                 <input type="date" class="form-control form-control-solid date" name="start_date"
-                                       placeholder="Pilih Tanggal Awal"/>
+                                       id="start_date" placeholder="Pilih Tanggal Awal"/>
                             </div>
                             <div class="me-3">
-                                <input type="date" class="form-control form-control-solid date"
+                                <input type="date" class="form-control form-control-solid date" id="end_date"
                                        placeholder="Pilih Tanggal Akhir" name="end_date"/>
                             </div>
                             <div>
@@ -153,8 +152,8 @@
                     await this.getWorkTimeData();
                 },
                 async getEmployeeSchedules() {
-                    const start_date = document.getElementById('start_date');
-                    const end_date = document.getElementById('end_date');
+                    const start_date = document.getElementById('start_date')?.value ?? null;
+                    const end_date = document.getElementById('end_date')?.value ?? null;
 
                     const resp = await axios.get('/adms/employee-schedules/data', {
                         params: {
@@ -165,12 +164,12 @@
                     this.employeeSchedules = resp.data
                 },
                 async filterByDate() {
-                    const start_date = document.getElementById('start_date');
-                    const end_date = document.getElementById('end_date');
-                    const resp = await axios.post('/adms/employee-schedules/filter', {
+                    const startDate = document.getElementById('start_date')?.value ?? null;
+                    const endDate = document.getElementById('end_date')?.value ?? null;
+                    const resp = await axios.get('/adms/employee-schedules/filter', {
                         params: {
-                            startDate: start_date,
-                            endDate: end_date,
+                            start_date: startDate,
+                            end_date: endDate,
                         }
                     });
                     this.employeeSchedules = resp.data;
@@ -186,8 +185,15 @@
                     return date.toLocaleDateString("id", options)
                 },
                 async paginationEndPoint(url) {
+                    const startDate = document.getElementById('start_date').value;
+                    const endDate = document.getElementById('end_date').value;
                     if (url) {
-                        const resp = await axios.get(`${url}`);
+                        const resp = await axios.get(`${url}`, {
+                            params: {
+                                start_date: startDate,
+                                end_date: endDate,
+                            }
+                        });
                         this.employeeSchedules = resp.data
                     }
                 },
@@ -248,9 +254,16 @@
                 },
                 async save() {
                     this.buttonLoading = true;
+                    const startDate = document.getElementById('start_date').value;
+                    const endDate = document.getElementById('end_date').value;
                     try {
                         await axios.post('/adms/employee-schedules/', new FormData(this.formCreate)).then(async res => {
-                            const resp = await axios.get(`${this.employeeSchedules.path}?page=${this.employeeSchedules.current_page}`);
+                            const resp = await axios.get(`${this.employeeSchedules.path}?page=${this.employeeSchedules.current_page}`, {
+                                params: {
+                                    start_date: startDate,
+                                    end_date: endDate
+                                }
+                            });
                             this.employeeSchedules = resp.data
                         })
                         await showAlert('success', 'Data berhasil disimpan')

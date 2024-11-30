@@ -171,8 +171,8 @@
                     this.attendancesSummaryRecords = resp.data
                 },
                 async filter() {
-                    const startDate = document.getElementById('start_date')?.value ?? '';
-                    const endDate = document.getElementById('end_date')?.value ?? '';
+                    const startDate = document.getElementById('start_date')?.value ?? null;
+                    const endDate = document.getElementById('end_date')?.value ?? null;
                     this.isLoading = true;
                     try {
                         const resp = await axios.get(`/adms/attendances-summary/detail/filter/${this.id}`, {
@@ -234,8 +234,10 @@
                 },
                 async saveCorrection(datePeriod) {
                     this.buttonLoading = true;
+                    const startDate = document.getElementById('start_date')?.value ?? null;
+                    const endDate = document.getElementById('end_date')?.value ?? null;
                     try {
-                        await axios.post(`/adms/attendances-summary/detail/correction/save/${this.id}/${datePeriod}`, new FormData(this.formCorrection))
+                        await axios.post(`/adms/attendances-summary/detail/correction/save/${this.id}/${datePeriod}`, new FormData(this.formCorrection));
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCorrection.reset();
                         this.modalCorrection.hide();

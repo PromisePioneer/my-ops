@@ -179,8 +179,16 @@
                 },
                 async filterDate() {
                     this.isLoading = true;
+                    const startDate = document.getElementById('start_date');
+                    const endDate = document.getElementById('end_date');
                     try {
-                        const resp = await axios.post('/adms/attendances-summary/filter-date', new FormData(this.filterDateForm));
+                        const resp = await axios.get('/adms/attendances-summary/filter-date', {
+                            params: {
+                                search: this.search,
+                                start_date: startDate,
+                                end_date: endDate,
+                            }
+                        });
                         this.attendanceSummary = resp.data;
                         this.startIndex = this.attendanceSummary.from;
                     } catch (error) {

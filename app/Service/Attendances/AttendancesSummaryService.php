@@ -131,9 +131,12 @@ class AttendancesSummaryService
 
     public function search(Request $request): LengthAwarePaginator
     {
-
-        $startDate = Carbon::parse($request->start_date) ?? $this->financialClosePeriodService->startDate();
-        $endDate = Carbon::parse($request->end_date) ?? $this->financialClosePeriodService->endDate();
+        $startDate = isset($request->start_date)
+            ? Carbon::parse($request->start_date)
+            : $this->financialClosePeriodService->startDate();
+        $endDate = isset($request->end_date)
+            ? Carbon::parse($request->end_date)
+            : $this->financialClosePeriodService->endDate();
         $search = $request->input('search');
 
 

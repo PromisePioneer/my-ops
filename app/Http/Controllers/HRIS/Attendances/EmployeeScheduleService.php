@@ -198,7 +198,7 @@ class EmployeeScheduleService
         if ($request->user()->hasAnyRole('NOC Supervisor', 'NOC Staff')) {
             $user->whereHas('roles', function ($query) {
                 $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
-            })->whereNull('branch_id')->paginate(self::$perPage);
+            })->whereNull('branch_id');
         }
 
         if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner')) {
@@ -228,7 +228,7 @@ class EmployeeScheduleService
         if ($request->user()->hasAnyRole('Finance & Accounting Supervisor')) {
             $user->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff']);
-            })->whereNull('branch_id')->paginate(self::$perPage);
+            })->whereNull('branch_id');
         }
 
 
@@ -240,7 +240,7 @@ class EmployeeScheduleService
 
 
         if ($request->user()->hasRole('Branch Manager')) {
-            $user->where('branch_id', $request->user()->branch_id)->paginate(self::$perPage);
+            $user->where('branch_id', $request->user()->branch_id);
         }
 
 
@@ -267,6 +267,7 @@ class EmployeeScheduleService
     {
 
         $period = CarbonPeriod::create($startDate, $endDate);
+
 
         $data = $userData->getCollection()->map(function ($item) use ($startDate, $endDate, $period) {
             $allSchedules = EmployeeSchedule::with('workTime')

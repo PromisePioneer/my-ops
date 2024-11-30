@@ -10,7 +10,6 @@ use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-
 use function App\Helper\formatDate;
 
 class AttendanceRecordController extends Controller
@@ -27,7 +26,6 @@ class AttendanceRecordController extends Controller
     {
         return view('pages.utilities.user-profile.attendance-records.index');
     }
-
 
     public function data(Request $request, User $user = null): JsonResponse
     {
