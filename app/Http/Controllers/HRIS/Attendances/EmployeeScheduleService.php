@@ -68,7 +68,9 @@ class EmployeeScheduleService
         if ($request->user()->hasAnyRole('Finance & Accounting Supervisor')) {
             $user->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff', 'Stocker Staff']);
-            })->whereNull('branch_id');
+            })->where(function ($query) use ($request) {
+                $query->whereNull('branch_id')->orWhereIn('branch_id', [1]);
+            });
         }
 
 
