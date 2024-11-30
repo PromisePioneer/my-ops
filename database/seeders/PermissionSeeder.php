@@ -426,7 +426,7 @@ class PermissionSeeder extends Seeder
     public function payrollSetting(): void
     {
         $permissions = [
-            'Lihat Menu Payrol',
+            'Lihat Menu Payroll',
             'Lihat Periode Payroll',
             'Lihat Payroll Component',
             'Lihat BPJS',
@@ -441,7 +441,7 @@ class PermissionSeeder extends Seeder
     public function companyProfile(): void
     {
         $permissions = [
-            'Lihat Menu Profil Perusahaan',
+        'Lihat Menu Profil Perusahaan',
             'Update Profile Perusahaan',
         ];
 
