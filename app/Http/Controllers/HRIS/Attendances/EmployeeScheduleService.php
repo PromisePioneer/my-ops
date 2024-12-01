@@ -101,7 +101,7 @@ class EmployeeScheduleService
         }
 
 
-        $data = $user->paginate(self::$perPage)->onEachSide(2);
+        $data = $user->paginate(self::$perPage)->onEachSide(1);
 
         return self::formattedData($data, $startDate, $endDate);
     }
