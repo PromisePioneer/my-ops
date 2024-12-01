@@ -3,7 +3,6 @@
 @section('content')
     @include('pages.utilities.user-profile.partials.header')
     <div x-data="userAttendanceRecordsData()">
-        @include('pages.manage-users.user.modal.import')
         <div class="d-flex flex-column flex-xl-row">
             <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
                 <div class="card card-flush">
@@ -49,12 +48,14 @@
                                         <th class="text-center">Tanggal</th>
                                         <th class="text-center">Check In</th>
                                         <th class="text-center">Check Out</th>
+                                        <th class="text-center">Terlambat</th>
+                                        <th class="text-center">Jam Kerja</th>
                                     </tr>
                                     </thead>
-                                    <tbody class="fw-bold text-gray-600">
                                     <template x-if="isLoading">
+                                        <tbody class="fw-bold">
                                         <tr>
-                                            <td colspan="5">
+                                            <td colspan="4">
                                                 <div style="text-align: center;">
                                                     <div class="spinner-border" role="status">
                                                         <span class="visually-hidden">Loading...</span>
@@ -62,36 +63,62 @@
                                                 </div>
                                             </td>
                                         </tr>
+                                        </tbody>
                                     </template>
-                                    <template x-if="!isLoading && users.data?.length === 0">
+                                    <template x-if="!isLoading && attendanceRecords.length === 0">
+                                        <tbody class="fw-bold">
                                         <tr>
-                                            <td colspan="9">
+                                            <td colspan="4">
                                                 <center>Data Tidak Ditemukan</center>
                                             </td>
                                         </tr>
+                                        </tbody>
                                     </template>
                                     <template x-for="(userAttendance, index) in attendanceRecords" :key="index">
-                                        <tr>
-                                            <td class="text-center" x-text="userAttendance.date_period"></td>
-                                            <td class="text-center" x-text="userAttendance.clock_in"></td>
-                                            <td class="text-center" x-text="userAttendance.clock_out"></td>
-                                        </tr>
+                                        <tbody class="fw-bolder">
+                                        <template x-if="userAttendance.leaves?.status === 'Cuti'">
+                                            <tr class="bg-success text-center">
+                                                <td x-text="formatDate(userAttendance.date_period)"></td>
+                                                <td colspan="4">CUTI</td>
+                                            </tr>
+                                        </template>
+                                        <template x-if="userAttendance.permission?.status === 'Izin'">
+                                            <tr class="bg-danger text-white text-center">
+                                                <td x-text="formatDate(userAttendance.date_period)"></td>
+                                                <td colspan="4">IZIN</td>
+                                            </tr>
+                                        </template>
+                                        <template x-if="userAttendance?.sick?.status === 'Sakit'">
+                                            <tr class="bg-primary text-center">
+                                                <td class="text-center"
+                                                    x-text="formatDate(userAttendance.date_period)"></td>
+                                                <td colspan="4" class=" border border-3">SAKIT</td>
+                                            </tr>
+                                        </template>
+                                        <template x-if="userAttendance.schedule === 'L'">
+                                            <tr class="bg-warning text-center">
+                                                <td class="text-center  border border-3"
+                                                    x-text="formatDate(userAttendance.date_period)"></td>
+                                                <td colspan="4" class=" border border-3">LIBUR</td>
+                                            </tr>
+                                        </template>
+                                        <template
+                                            x-if="userAttendance.schedule === null && userAttendance.leaves === null && userAttendance.sick === null && userAttendance.permission === null || userAttendance.schedule === 'H'">
+                                            <tr>
+                                                <td class="text-center"
+                                                    x-text="formatDate(userAttendance.date_period)"></td>
+                                                <td class="text-center" x-text="userAttendance.clock_in"></td>
+                                                <td class="text-center" x-text="userAttendance.clock_out"></td>
+                                                <td class="text-center" x-text="userAttendance.late"></td>
+                                                <td class="text-center" x-text="userAttendance.work_time"></td>
+                                            </tr>
+                                        </template>
+                                        </tbody>
                                     </template>
-                                    </tbody>
                                 </table>
                             </div>
                             <div class="text-center mt-10">
                                 <div class="col-sm-12  d-flex align-items-center justify-content-end">
-                                    <template x-for="pagination in users.links">
-                                        <ul class="pagination">
-                                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                                <button
-                                                        class="page-link"
-                                                        @click="paginationEndPoint(pagination.url)"
-                                                        x-html="pagination.label"></button>
-                                            </li>
-                                        </ul>
-                                    </template>
                                 </div>
                             </div>
                         </div>
@@ -106,7 +133,6 @@
 @push('script')
     <script>
         $('.date').flatpickr();
-
         function userAttendanceRecordsData() {
             return {
                 isLoading: false,
@@ -142,7 +168,18 @@
                     } finally {
                         this.isLoading = false;
                     }
-                }
+                },
+                formatDate(val) {
+                    const date = new Date(val);
+
+                    const options = {
+                        weekday: "short",
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "numeric",
+                    };
+                    return date.toLocaleDateString("id", options)
+                },
             }
         }
     </script>

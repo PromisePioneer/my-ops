@@ -92,12 +92,10 @@
             </div>
         </div>
     </div>
-
 @endsection
 @push('script')
     <script>
         $('.date').flatpickr();
-
         function attendancesSummary() {
             return {
                 isLoading: false,

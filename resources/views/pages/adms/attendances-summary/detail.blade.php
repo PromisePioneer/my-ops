@@ -164,8 +164,8 @@
                 async init() {
                     await this.getAttendanceSummaryRecords();
                     await this.getWorkTimeData();
-
                 },
+
                 async getAttendanceSummaryRecords() {
                     const resp = await axios.get(`/adms/attendances-summary/detail/data/${this.id}`);
                     this.attendancesSummaryRecords = resp.data
@@ -202,7 +202,6 @@
                         month: "2-digit",
                         day: "numeric",
                     };
-
                     return date.toLocaleDateString("id", options)
                 },
                 async selectedWorkTime() {
