@@ -215,6 +215,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/search', [ManageUserLeavesController::class, 'search']);
             Route::get('/{leaveAndPermission}', [ManageUserLeavesController::class, 'detail']);
             Route::post('/{leaveAndPermission}', [ManageUserLeavesController::class, 'changeStatus']);
+            Route::get('/users/data', [ManageUserLeavesController::class, 'getUserData']);
+            Route::post('/', [ManageUserLeavesController::class, 'store']);
         });
 
         Route::prefix('sp')->group(function () {

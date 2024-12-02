@@ -4,6 +4,7 @@
     <div x-data="leavesData()">
         @include('pages.manage-users.leaves.modal.confirm')
         @include('pages.manage-users.leaves.modal.detail')
+        @include('pages.manage-users.leaves.modal.create')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -17,6 +18,12 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                        <button class="btn btn-light-primary btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-create"
+                        >
+                            Tambah
+                        </button>
                     </div>
                 </div>
             </div>
@@ -75,7 +82,7 @@
                                         </template>
                                     </td>
                                     <template
-                                            x-if="leave.confirmation_status === 'Diterima' || leave.confirmation_status === 'Ditolak'">
+                                        x-if="leave.confirmation_status === 'Diterima' || leave.confirmation_status === 'Ditolak'">
                                         <td>
                                             <button class="btn btn-info btn-sm" disabled>
                                                 <i class="bi bi-gear-fill"></i>
@@ -126,8 +133,12 @@
 @endsection
 @push('script')
     <script>
+        $('.date').flatpickr();
+
         function leavesData() {
             return {
+                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
+                formCreate: document.getElementById('form-create'),
                 buttonLoading: false,
                 isLoading: false,
                 leaves: [],
@@ -141,6 +152,7 @@
                 async init() {
                     this.isLoading = true;
                     await this.getLeavesData();
+                    await this.getUserData();
                     this.isLoading = false;
                 },
                 async searchData() {
@@ -162,6 +174,23 @@
                         const resp = await axios.get(`${url}`);
                         this.leaves = resp.data
                     }
+                },
+                async getUserData() {
+                    $(".users-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Karyawan",
+                        ajax: {
+                            url: '/manage-users/leaves/users/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async save(){
+
                 },
                 async detail(id) {
                     const resp = await axios.get(`/manage-users/leaves/${id}`);

@@ -143,17 +143,10 @@ class IclockService
 
     private function getShiftForUser(string $employeeId, $date)
     {
-        // Log::info($date);
-
-        // $userShift = UserWorkTime::whereHas('user', function ($query) use ($employeeId) {
-        //     $query->where('absent_id', $employeeId);
-        // })->first();
-
         $userShift = EmployeeSchedule::with('workTime')
-        ->where('employee_id', $employeeId)
-        ->whereDate('date', Carbon::parse($date))
-        ->first();
-
+            ->where('employee_id', $employeeId)
+            ->whereDate('date', Carbon::parse($date))
+            ->first();
 
 
         return $userShift
