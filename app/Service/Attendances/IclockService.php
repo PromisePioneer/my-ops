@@ -169,13 +169,13 @@ class IclockService
     private function processCheckIn(array $attendanceData, $shift, string $date, string $time): void
     {
         Log::info($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin));
-        Attendances::create($attendanceData);
 
 
 
         if ($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin)) {
             $existingRecord = $this->getAttendanceRecord($attendanceData['employee_id'], $date);
             if (!$existingRecord) {
+                Attendances::create($attendanceData);
             }
         }
     }
