@@ -188,12 +188,19 @@ class AttendanceSummaryDetailService
     public function calculateLate($item, $userWorktime = null): null|string
     {
         if (!empty($userWorktime)) {
+
             $expectedCheckIn = Carbon::parse($item['attendancesDate'])
                     ->format('Y-m-d') . ' ' . $userWorktime->clock_in;
+
             $actualCheckIn = Carbon::parse($item['attendancesDate'])
                     ->format('Y-m-d') . ' ' . $item['attendanceData']?->clock_in;
 
             $parseExpectedCheckIn = Carbon::parse($expectedCheckIn);
+
+            if ($parseExpectedCheckIn->toTimeString()) {
+                $parseExpectedCheckIn = $parseExpectedCheckIn->addDays();
+            }
+
             $parseActualCheckIn = Carbon::parse($actualCheckIn);
 
             if ($parseActualCheckIn->greaterThan($parseExpectedCheckIn)) {

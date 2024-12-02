@@ -11,7 +11,6 @@ use App\Models\UserWorkTime;
 use App\Models\WorkTime;
 use App\Service\Attendances\AttendancesSummaryService;
 use App\Service\Attendances\AttendanceSummaryDetailService;
-use App\Service\WorkTimeService;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -96,10 +95,8 @@ class AttendanceSummaryController extends Controller
     public function saveCorrection(AttendanceCorrectionRequest $request, User $user, $datePeriod = null): JsonResponse
     {
         $parseDatePeriod = Carbon::parse($datePeriod)->format('Y-m-d');
-        $attendaceVal = AttendancesSummary::where('employee_id', $user->absent_id)->whereDate(
-            'date',
-            $parseDatePeriod
-        )->first();
+        $attendaceVal = AttendancesSummary::where('employee_id', $user->absent_id)
+            ->whereDate('date', $parseDatePeriod)->first();
 
         if ($attendaceVal) {
             $attendaceVal->update([
