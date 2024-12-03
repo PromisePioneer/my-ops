@@ -44,6 +44,13 @@ class RoleController extends Controller
         return response()->json($this->roleService->searchRole($request));
     }
 
+    public function create(): View
+    {
+        $permissions = Permission::get(['id', 'name']);
+
+        return view('pages.general-master-data.role.create', compact('permissions'));
+    }
+
 
     public function getDepartments(Request $request): JsonResponse
     {
@@ -57,16 +64,14 @@ class RoleController extends Controller
         return response()->json($this->departments->getSelectedData($data->department->first()->id));
     }
 
-    public function getPermission(): JsonResponse
-    {
-        $permission = Permission::all();
-        return response()->json($permission);
-    }
 
-    public function edit(Role $role): JsonResponse
+    public function edit(Role $role): View
     {
-        $rolesData = Role::with('permissions')->where('id', $role->id)->first();
-        return response()->json($rolesData);
+        $permissions = Permission::all();
+
+        $roleHasPermissions = $role->permissions()->pluck('name')->toArray();
+
+        return view('pages.general-master-data.role.edit', compact('role', 'permissions', 'roleHasPermissions'));
     }
 
     /**
@@ -74,6 +79,7 @@ class RoleController extends Controller
      */
     public function store(RoleRequest $request): JsonResponse
     {
+
         DB::transaction(function () use ($request) {
             $role = Role::create(['name' => $request->input('name')]);
             RoleHasDepartment::create([
@@ -86,12 +92,6 @@ class RoleController extends Controller
         return response()->json([
             'message' => 'data sukses disimpan!',
         ]);
-    }
-
-
-    public function create(): View
-    {
-        return view('pages.master.role.create');
     }
 
     public function show(Role $role): JsonResponse

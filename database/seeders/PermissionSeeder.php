@@ -105,6 +105,13 @@ class PermissionSeeder extends Seeder
     }
 
 
+    public function policyMenu()
+    {
+        $permissions = [
+            ''
+        ];
+    }
+
     public function attendancesSummary(): void
     {
         $permissions = [
@@ -441,7 +448,7 @@ class PermissionSeeder extends Seeder
     public function companyProfile(): void
     {
         $permissions = [
-        'Lihat Menu Profil Perusahaan',
+            'Lihat Menu Profil Perusahaan',
             'Update Profile Perusahaan',
         ];
 

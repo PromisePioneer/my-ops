@@ -398,6 +398,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::delete('/{role}', [RoleController::class, 'destroy']);
             Route::get('/detail/{role}', [RoleController::class, 'detail']);
             Route::get('/detail/associated-users/{role}', [RoleController::class, 'associatedUsers']);
+
         });
 
         Route::prefix('broadband-packet')->group(function () {

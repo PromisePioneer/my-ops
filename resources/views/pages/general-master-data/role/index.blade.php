@@ -2,8 +2,6 @@
 @section('page-title', 'Data Role')
 @section('content')
     <div x-data="rolesData">
-        @include('pages.general-master-data.role.modal.create')
-        @include('pages.general-master-data.role.modal.edit')
         <div class="card shadow-sm mb-4">
             <div class="card-header">
                 <div class="card-title">
@@ -31,8 +29,7 @@
                     <div class="card-px text-center py-20 my-10">
                         <h2 class="fs-2x fw-bolder mb-10">Data Tidak Ditemukan</h2>
                         <p class="text-gray-400 fs-4 fw-bold mb-10">Saat ini data yang anda cari tidak ditemukan.</p>
-                        <a href="#" class="btn btn-primary" data-bs-toggle="modal"
-                           data-bs-target="#modal-create">Tambah Role</a>
+                        <a href="{{ url('general-master-data/roles/create') }}" class="btn btn-primary">Tambah Role</a>
                     </div>
                 </div>
             </div>
@@ -65,15 +62,10 @@
                             </div>
                         </div>
                         <div class="card-footer flex-wrap pt-0">
-{{--                            <a :href="`/master/roles/detail/${role.id}`"--}}
-                            {{--                               class="btn btn-light btn-active-primary my-1 me-2">--}}
-                            {{--                                <i class="bi bi-box-arrow-right fs-3"></i>--}}
-                            {{--                            </a>--}}
-                            <button type="button" class="btn btn-light btn-active-primary my-1 me-2"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-edit" @click="edit(role.id)">
+                            <a :href="`/general-master-data/roles/edit/${role.id}`"
+                               class="btn btn-light btn-active-primary my-1 me-2">
                                 <i class="bi bi-pencil-square fs-3"></i>
-                            </button>
+                            </a>
                             <button type="button" class="btn btn-light btn-active-light-danger my-1"
                                     @click="destroy(role.id)">
                                 <i class="bi bi-trash fs-3"></i>
@@ -86,12 +78,10 @@
                 <div class="ol-md-4">
                     <div class="card h-md-100">
                         <div class="card-body d-flex flex-center">
-                            <button type="button" class="btn btn-clear d-flex flex-column flex-center" @click="add()"
-                                    data-bs-toggle="modal" data-bs-target="#modal-create">
-                                <img src="assets/media/illustrations/sketchy-1/4.png" alt=""
-                                     class="mw-100 mh-150px mb-7">
+                            <a href="{{ url('general-master-data/roles/create')  }}"
+                               class="btn btn-clear d-flex flex-column flex-center">
                                 <div class="fw-bolder fs-3 text-gray-600 text-hover-primary">Tambah Role Baru</div>
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -113,22 +103,15 @@
                 search: '',
                 editVal: '',
                 roleId: '',
-                formEdit: document.getElementById('form-edit'),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
-                formCreate: document.getElementById('form-create'),
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 async init() {
                     await this.getRole();
                 },
                 async add() {
                     await this.getAllPermissions();
-                    await this.getDepartments();
                 },
                 async edit(id) {
                     const resp = await axios.get(`/general-master-data/roles/edit/${id}`);
                     await this.getAllPermissions();
-                    await this.getDepartments();
-                    await this.selectedDepartment(id);
                     this.editVal = resp.data;
                 },
                 async getRole() {
@@ -209,31 +192,7 @@
                     const resp = await axios.get('/general-master-data/roles/permissions/data');
                     this.permissionData = resp.data;
                 },
-                async getDepartments() {
-                    $(".departments-select2").select2({
-                        ajax: {
-                            url: '/general-master-data/roles/departments/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async selectedDepartment(id) {
-                    const selectedDepartment = $('#selectedDepartment');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/general-master-data/roles/departments/data/selected/${id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedDepartment.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                }
+
             }
         }
     </script>

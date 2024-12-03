@@ -17,24 +17,24 @@ class PermissionPolicy
 
     public function view(User $user): bool
     {
-        return $user->can('Lihat Hak Akses');
+        return $user->can('Lihat Menu Permission');
     }
 
 
     public function create(User $user): bool
     {
-        return $user->can('Tambah Hak Akses');
+        return $user->can('Tambah Data Permission');
     }
 
 
     public function update(User $user): bool
     {
-        return $user->can('Update Hak Akses');
+        return $user->can('Edit Data Permission');
     }
 
 
     public function delete(User $user): bool
     {
-        return $user->can('Hapus Hak Akses');
+        return $user->can('Hapus Data Permission');
     }
 }
