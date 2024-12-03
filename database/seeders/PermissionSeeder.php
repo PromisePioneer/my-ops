@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
@@ -260,7 +259,8 @@ class PermissionSeeder extends Seeder
             'Edit Data Karyawan',
             'Hapus Data Karyawan',
             'Aktifasi Data Karyawan',
-            'Lihat Detail Data Karyawan'
+            'Lihat Detail Data Karyawan',
+            'Import Data Karyawan'
         ];
 
         foreach ($permissions as $permission) {

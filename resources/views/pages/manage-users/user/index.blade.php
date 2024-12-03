@@ -4,75 +4,96 @@
     <div x-data="userData()">
         @include('pages.manage-users.user.modal.import')
         <div class="d-flex flex-column flex-xl-row">
-            <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
-                <div class="card card-flush">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <h2 class="mb-0">Data Karyawan</h2>
-                        </div>
-                    </div>
-                    <form id="form-filter" @submit.prevent="filter()">
-                        <div class="card-body pt-0">
-                            <div class="d-flex flex-column text-gray-600">
-                                <div class="d-flex align-items-center py-2">
-                                    <select class="form-select form-select-solid branch-select2"
-                                            name="branch_id" id="branch_id">
-                                    </select>
-                                </div>
-                                <div class="d-flex align-items-center py-2">
-                                    <select name="company_id" id="company_id"
-                                            class="form-select form-select-solid companies-select2">
-                                        <option></option>
-                                    </select>
-                                </div>
-                                <div class="d-flex align-items-center py-2">
-                                    <input type="number" name="year" id="year" class="form-control form-control-solid"
-                                           placeholder="Filter Berdasarkan Tahun">
-                                </div>
-                                <div class="d-flex align-items-center py-2">
-                                    <select class="form-select form-select-solid"
-                                            name="month" id="month" data-control="select2"
-                                            data-placeholder="Pilih Bulan">
-                                        <option></option>
-                                        <template x-for="month in months" :key="index">
-                                            <option :value="month.number" x-text="month.name"></option>
-                                        </template>
-                                    </select>
-                                </div>
-                                <div class="d-flex align-items-center py-2">
-                                    <select class="form-select form-select-solid" name="active" id="active"
-                                            data-control="select2"
-                                            data-placeholder="Select an option" data-allow-clear="true">
-                                        <option></option>
-                                        <option value="1">Aktif</option>
-                                        <option value="0">Tidak Aktif</option>
-                                    </select>
-                                </div>
+            @canany([
+                    'Filter Data Karyawan Berdasarkan Cabang',
+                     'Filter Data Karyawan Berdasarkan Perusahaan',
+                     'Filter Data Karyawan Berdasarkan Tahun',
+                     'Filter Data Karyawan Berdasarkan Bulan',
+                     'Filter Data Karyawan Berdasarkan Aktif Dan Tidak Aktif',
+            ])
+                <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
+                    <div class="card card-flush">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2 class="mb-0">Data Karyawan</h2>
                             </div>
                         </div>
-                        <div class="card-footer pt-4 text-end">
-                            <button type="submit" class="btn btn-light btn-active-primary btn-sm">
-                                Filter
-                            </button>
-                        </div>
-                    </form>
+                        <form id="form-filter" @submit.prevent="filter()">
+                            <div class="card-body pt-0">
+                                <div class="d-flex flex-column text-gray-600">
+                                    <div class="d-flex align-items-center py-2">
+                                        <select class="form-select form-select-solid branch-select2"
+                                                name="branch_id" id="branch_id">
+                                        </select>
+                                    </div>
+                                    <div class="d-flex align-items-center py-2">
+                                        @can('Filter Data Karyawan Berdasarkan Cabang')
+                                            <select name="company_id" id="company_id"
+                                                    class="form-select form-select-solid companies-select2">
+                                                <option></option>
+                                            </select>
+                                        @endcan
+                                    </div>
+                                    <div class="d-flex align-items-center py-2">
+                                        @can('Filter Data Karyawan Berdasarkan Tahun')
+                                            <input type="number" name="year" id="year"
+                                                   class="form-control form-control-solid"
+                                                   placeholder="Filter Berdasarkan Tahun">
+                                        @endcan
+                                    </div>
+                                    <div class="d-flex align-items-center py-2">
+                                        @can('Filter Data Karyawan Berdasarkan Bulan')
+                                            <select class="form-select form-select-solid"
+                                                    name="month" id="month" data-control="select2"
+                                                    data-placeholder="Pilih Bulan">
+                                                <option></option>
+                                                <template x-for="month in months" :key="index">
+                                                    <option :value="month.number" x-text="month.name"></option>
+                                                </template>
+                                            </select>
+                                        @endcan
+                                    </div>
+                                    <div class="d-flex align-items-center py-2">
+                                        @can('Filter Data Karyawan Berdasarkan Aktif Dan Tidak Aktif')
+                                            <select class="form-select form-select-solid" name="active" id="active"
+                                                    data-control="select2"
+                                                    data-placeholder="Select an option" data-allow-clear="true">
+                                                <option></option>
+                                                <option value="1">Aktif</option>
+                                                <option value="0">Tidak Aktif</option>
+                                            </select>
+                                        @endcan
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer pt-4 text-end">
+                                <button type="submit" class="btn btn-light btn-active-primary btn-sm">
+                                    Filter
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            @endcanany
             <div class="flex-lg-row-fluid ms-lg-10">
                 <div class="card card-flush mb-6 mb-xl-9">
                     <div class="card-header pt-5">
                         <div class="card-title">
-                            <a href="{{ url('manage-users/users/create') }}"
-                               class="btn btn-light btn-active-primary btn-sm mx-1">
-                                <i class="bi bi-plus-circle-fill"></i> Tambah
-                            </a>
-                            <button class="btn btn-light btn-active-info btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#modal-import">
+                            @can('Tambah Data Karyawan')
+                                <a href="{{ url('manage-users/users/create') }}"
+                                   class="btn btn-light btn-active-primary btn-sm mx-1">
+                                    <i class="bi bi-plus-circle-fill"></i> Tambah
+                                </a>
+                            @endcan
+                            @can('Import Data Karyawan')
+                                <button class="btn btn-light btn-active-info btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#modal-import">
                                <span class="svg-icon">
                                     <i class="bi bi-upload fs-5"></i>
                                </span>
-                                Import
-                            </button>
+                                    Import
+                                </button>
+                            @endcan
                         </div>
                         <div class="card-toolbar">
                             <div class="d-flex align-items-center position-relative my-1"
@@ -84,8 +105,9 @@
                                                                       width="8.15546" height="2" rx="1"
                                                                       transform="rotate(45 17.0365 15.1223)"
                                                                       fill="black"></rect>
-																<path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
-                                                                      fill="black"></path>
+																<path
+                                                                        d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
+                                                                        fill="black"></path>
 															</svg>
 														</span>
                                 <input type="text" class="form-control form-control-solid w-250px ps-15"
@@ -117,9 +139,11 @@
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                         <th class="w-10px pe-2">
-                                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                            <div
+                                                    class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                                 <input class="form-check-input" type="checkbox"
-                                                       @click="toggleAllCheckBox()">
+                                                       @click="toggleAllCheckBox()"
+                                                       :disabled="Number(deletePermission) !== 1">
                                             </div>
                                         </th>
                                         <th>Cabang</th>
@@ -127,10 +151,13 @@
                                         <th>NIK</th>
                                         <th>Karyawan</th>
                                         <th>Tanggal Masuk</th>
-                                        <th class="text-end min-w-100px sorting_disabled" rowspan="1" colspan="1"
-                                            aria-label="Actions" style="width: 135.25px;">
-                                            Actions
-                                        </th>
+                                        <template
+                                                x-if="Number(editPermission === 1) || Number(activationPermission) === 1">
+                                            <th class="text-end min-w-100px sorting_disabled" rowspan="1" colspan="1"
+                                                aria-label="Actions" style="width: 135.25px;">
+                                                Actions
+                                            </th>
+                                        </template>
                                     </tr>
                                     </thead>
                                     <tbody class="fw-bold text-gray-600">
@@ -158,7 +185,8 @@
                                                 <div class="form-check form-check-sm form-check-custom form-check-solid"
                                                      @click="selectCheckBox($event)">
                                                     <input class="form-check-input" type="checkbox" :value="user.id"
-                                                           :id="'checkbox-' + user.id"/>
+                                                           :id="'checkbox-' + user.id"
+                                                           :disabled="Number(deletePermission) !== 1"/>
                                                 </div>
                                             </td>
                                             <td x-text="user.branch ?? 'Pusat'"></td>
@@ -175,26 +203,31 @@
                                                     </a>
                                                 </div>
                                                 <div class="d-flex flex-column">
-                                                    <a :href="`/manage-users/users/detail/${user.id}`"
+                                                    <a :href="Number(viewDetailPermission) === 1 ? `/manage-users/users/detail/${user.id}` : '#'"
                                                        class="text-gray-800 text-hover-primary mb-1">
                                                         <span x-text="user.name"></span>
                                                     </a>
                                                     <span class="badge badge-light-info fw-bolder fs-8"
                                                           x-text="user.roles ?? ''">
-                                                        </span>
+                                                    </span>
                                                 </div>
                                             </td>
                                             @include('pages.manage-users.user.modal.import')
                                             <td x-text="user.join_date"></td>
                                             <td class="text-end">
-                                                <a :href="`/manage-users/users/edit/${user.id}`"
-                                                   class="btn btn-light btn-active-primary btn-sm">
-                                                    <i class="bi bi-pencil-square"></i>
-                                                </a>
-                                                <button :class="`${user.active ? 'btn btn-light btn-active-danger btn-sm' : 'btn btn-light btn-active-success btn-sm'}`"
-                                                        @click="changeActiveStatus(user.id)">
-                                                    <i :class="`${user.active ? 'bi bi-x-circle-fill' : 'bi bi-check-circle'}`"></i>
-                                                </button>
+                                                <template x-if="editPermission">
+                                                    <a :href="`/manage-users/users/edit/${user.id}`"
+                                                       class="btn btn-light btn-active-primary btn-sm">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </a>
+                                                </template>
+                                                <template x-if="Number(activationPermission) === 1">
+                                                    <button
+                                                            :class="`${user.active ? 'btn btn-light btn-active-danger btn-sm' : 'btn btn-light btn-active-success btn-sm'}`"
+                                                            @click="changeActiveStatus(user.id)">
+                                                        <i :class="`${user.active ? 'bi bi-x-circle-fill' : 'bi bi-check-circle'}`"></i>
+                                                    </button>
+                                                </template>
                                             </td>
                                         </tr>
                                     </template>
@@ -227,6 +260,10 @@
     <script>
         function userData() {
             return {
+                deletePermission: "{{ request()->user()->can('Hapus Data Karyawan') }}",
+                viewDetailPermission: "{{ request()->user()->can('Lihat Detail Data Karyawan') }}",
+                editPermission: "{{ request()->user()->can('Edit Data Karyawan')  }}",
+                activationPermission: "{{ request()->user()->can('Aktifasi Data Karyawan') }}",
                 buttonLoading: false,
                 year: [{}],
                 users: [],
