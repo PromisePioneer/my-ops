@@ -55,7 +55,9 @@
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3"
                                          @click="toggleAllCheckBox()">
-                                        <input class="form-check-input" type="checkbox" value="1"/>
+                                        <input class="form-check-input" type="checkbox" :disabled="
+                                        Number(deletePermission) !== 1"
+                                        />
                                     </div>
                                 </th>
                                 <th class="min-w-125px">PIC</th>
@@ -88,13 +90,13 @@
                                 </tbody>
                             </template>
                             <template x-for="(contact,index) in contacts?.data" :key="index">
-                                <tbody class=" fw-bold">
+                                <tbody class="fw-bold">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
                                             <input class="form-check-input" type="checkbox" :value="contact.id"
-                                                   :id="'checkbox-' + contact.id"/>
+                                                   :id="'checkbox-' + contact.id" :disabled="Number(deletePermission) !== 1"/>
                                         </div>
                                     </td>
                                     <td x-text="contact.pic_name"></td>
@@ -133,8 +135,9 @@
     <script defer>
         function contactData() {
             return {
-                createPermission: "{{  request()->user()->can('Lihat Kontak')  }}",
-                editPermission: "{{  request()->user()->can('Edit Kontak')  }}",
+                createPermission: "{{  request()->user()->can('Tambah Data Kontak')  }}",
+                editPermission: "{{  request()->user()->can('Edit Data Kontak')  }}",
+                deletePermission: "{{ request()->user()->can('Hapus Data Kontak') }}",
                 contacts: [],
                 isLoading: true,
                 buttonLoading: false,

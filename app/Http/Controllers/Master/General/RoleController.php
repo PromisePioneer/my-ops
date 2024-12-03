@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Master\General;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Role\RoleRequest;
 use App\Models\Department;
@@ -15,12 +16,9 @@ use Illuminate\View\View;
 use Spatie\Permission\Models\Permission;
 use Throwable;
 
-class RoleController extends Controller
+#[AllowDynamicProperties] class RoleController extends Controller
 {
     public readonly int $perPage;
-
-    private RoleService $roleService;
-    private Department $departments;
 
     public function __construct()
     {
@@ -68,9 +66,7 @@ class RoleController extends Controller
     public function edit(Role $role): View
     {
         $permissions = Permission::all();
-
         $roleHasPermissions = $role->permissions()->pluck('name')->toArray();
-
         return view('pages.general-master-data.role.edit', compact('role', 'permissions', 'roleHasPermissions'));
     }
 

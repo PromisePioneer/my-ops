@@ -12,8 +12,14 @@ return new class extends Migration {
     {
         Schema::create('role_has_department', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('role_id')->constrained('roles');
-            $table->foreignId('department_id')->constrained('departments');
+            $table->foreignId('role_id')
+                ->constrained('roles')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+            $table->foreignId('department_id')
+                ->constrained('departments')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
             $table->timestamps();
         });
     }
