@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FingerLog;
 use App\Service\Attendances\IclockService;
 use Illuminate\Http\Request;
-use MehediJaman\LaravelZkteco\LaravelZkteco;
+use Jmrashed\Zkteco\Lib\ZKTeco;
 use Throwable;
 
 class IclockController extends Controller
@@ -24,7 +24,8 @@ class IclockController extends Controller
 
     public function register()
     {
-
+        $zk = new ZKTeco('103.153.21.78', '4370');
+        $zk->connect();
     }
 
     public function handshake(Request $request): string
@@ -47,22 +48,6 @@ class IclockController extends Controller
     {
         $content['url'] = json_encode($request->all());
         $cmdId = 1;
-
-
-
-        return "C:{{$cmdId}}:ENROLL_FP\r\n" .
-            "PIN={{UserId}}\r\n" .
-            'OpStamp=' . time() . "\r\n" .
-            "ErrorDelay=60\r\n" .
-            "Delay=30\r\n" .
-            "ResLogDay=18250\r\n" .
-            "ResLogDelCount=10000\r\n" .
-            "ResLogCount=50000\r\n" .
-            "TransTimes=00:00;14:05\r\n" .
-            "TransInterval=1\r\n" .
-            "TransFlag=1111000000\r\n" .
-            "TimeZone=7\r\n" .
-            "Realtime=1\r\n" .
-            'Encrypt=0';
+        return "C:{}:ENROLL_FP<spasi>PIN={{UserId}}<tab>FID={{FingerPrintID}}<tab>RETRY={{NumberOfRetry}}<tab>OVERWRITE={{OverwriteExisting}}";
     }
 }
