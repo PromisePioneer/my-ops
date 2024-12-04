@@ -166,6 +166,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/contract-file/{user}', [JobInformationController::class, 'contractFile']);
         });
 
+
         Route::prefix('educations')->group(function () {
             Route::get('/{user}', [EducationController::class, 'getRelatedUserEducation']);
             Route::post('/{user}', [EducationController::class, 'update']);
@@ -1242,6 +1243,11 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/', [PayrollHistoryController::class, 'index']);
         Route::get('/data', [PayrollHistoryController::class, 'data']);
     });
+
+
 });
+
+
+Route::get('/get-attendance', [IclockController::class, 'register']);
 
 

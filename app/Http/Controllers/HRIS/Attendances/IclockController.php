@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FingerLog;
 use App\Service\Attendances\IclockService;
 use Illuminate\Http\Request;
+use MehediJaman\LaravelZkteco\LaravelZkteco;
 use Throwable;
 
 class IclockController extends Controller
@@ -18,6 +19,13 @@ class IclockController extends Controller
     public function __construct()
     {
         $this->iclockService = new IclockService();
+    }
+
+
+    public function register()
+    {
+        $zk = new LaravelZkteco('203.153.21.78', '4370');
+        $zk->connect();
     }
 
     public function handshake(Request $request): string
