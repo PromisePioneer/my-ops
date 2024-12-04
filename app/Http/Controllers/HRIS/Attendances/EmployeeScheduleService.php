@@ -29,6 +29,8 @@ class EmployeeScheduleService
         return User::with('roles', 'userHasArea')->orderBy('name');
     }
 
+
+
     public function data(Request $request)
     {
         $startDate = $this->financialClosePeriodService->startDate();
