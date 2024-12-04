@@ -25,16 +25,26 @@ class IclockController extends Controller
 
     #[NoReturn] public function register(Request $request): string
     {
-        $getContent = $request->getContent();
-        Log::info($getContent);
+        // Ambil serial number (SN) dari mesin
+        $sn = $request->query('SN');
 
-        $rand = mt_rand();
-        return "C:$rand:" .
-            "ENROLL_FP " .
-            "PIN={{UserId}}\t" .
-            "FID={{FingerPrintID}}\t" .
-            "RETRY={{NumberOfRetry}}\t" .
-            "OVERWRITE={{OverwriteExisting}}";
+        if (!$sn) {
+            return response("Missing SN parameter", 400);
+        }
+
+        // Logika untuk menentukan perintah berdasarkan SN atau kondisi lainnya
+        $command = sprintf(
+            "C:%d:ENROLL_FP PIN=%d\tFID=%d\tRETRY=%d\tOVERWRITE=%d",
+            1, // CmdId
+            12345, // UserId
+            1, // Fingerprint ID
+            3, // Retry count
+            1  // Overwrite existing
+        );
+
+        // Respons ke mesin
+        return response($command, 200)
+            ->header('Content-Type', 'text/plain');
     }
 
     public function handshake(Request $request): string
