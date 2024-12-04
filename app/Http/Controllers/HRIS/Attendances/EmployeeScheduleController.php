@@ -18,6 +18,7 @@ use Illuminate\View\View;
     {
         $this->employeeScheduleService = new EmployeeScheduleService();
         $this->workTime = new WorkTime();
+
     }
 
     public function index(): View

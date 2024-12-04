@@ -39,7 +39,9 @@ class EmployeeScheduleService
         if ($request->user()->hasAnyRole('NOC Supervisor', 'NOC Staff')) {
             $user->whereHas('roles', function ($query) {
                 $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
-            })->whereNull('branch_id');
+            })->where(function ($query) {
+                $query->whereNull('branch_id')->orWhere('branch_id', 1);
+            });
         }
 
         if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner')) {
