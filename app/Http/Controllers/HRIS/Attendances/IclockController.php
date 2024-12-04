@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\FingerLog;
 use App\Service\Attendances\IclockService;
 use Illuminate\Http\Request;
-use Jmrashed\Zkteco\Lib\ZKTeco;
+use Illuminate\Support\Facades\Log;
+use JetBrains\PhpStorm\NoReturn;
 use Throwable;
 
 class IclockController extends Controller
@@ -22,11 +23,18 @@ class IclockController extends Controller
     }
 
 
-    public function register()
+    #[NoReturn] public function register(Request $request): string
     {
-        ini_set('max_execution_time', 300);
-        $zk = new ZKTeco('192.168.112.201', '4370');
-        $zk->connect();
+        $getContent = $request->getContent();
+        Log::info($getContent);
+
+        $rand = mt_rand();
+        return "C:$rand:" .
+            "ENROLL_FP " .
+            "PIN={{UserId}}\t" .
+            "FID={{FingerPrintID}}\t" .
+            "RETRY={{NumberOfRetry}}\t" .
+            "OVERWRITE={{OverwriteExisting}}";
     }
 
     public function handshake(Request $request): string
