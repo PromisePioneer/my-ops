@@ -25,7 +25,7 @@ class IclockController extends Controller
     public function register()
     {
         ini_set('max_execution_time', 300);
-        $zk = new ZKTeco('103.153.21.78', '4370');
+        $zk = new ZKTeco('192.168.112.201', '4370');
         $zk->connect();
     }
 
