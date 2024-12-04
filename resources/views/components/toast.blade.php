@@ -1,9 +1,8 @@
 <div>
-    <!-- Because you are alive, everything is possible. - Thich Nhat Hanh -->
 </div>
 
 <script>
-    let Toast; // Declare Toast globally
+    let Toast;
 
     document.addEventListener('DOMContentLoaded', () => {
         Toast = Swal.mixin({

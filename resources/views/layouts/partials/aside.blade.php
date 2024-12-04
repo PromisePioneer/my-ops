@@ -98,10 +98,10 @@
                         Dashboard
                     @endslot
                 </x-single-menu-item>
-                @canany('Lihat Menu Supplier', 'Lihat Menu Kategori Barang', 'Lihat Menu Kode Joint Closure','Lihat Menu Cabang', 'Lihat Menu Kontak', 'Lihat Menu SKL', 'Lihat Menu Produk', 'Lihat Menu Kategori Layanan', 'Lihat Menu Departemen', 'Lihat Menu Jabatan', 'Lihat Menu Paket Broadband', 'Lihat Menu Data Perusahaan', 'Lihat Menu Area','Lihat Menu Akun', 'Lihat Menu Saldo Awal', 'Lihat Menu Pengaturan Pajak', 'Lihat Menu Aset')
+                @canany(['Lihat Menu Supplier', 'Lihat Menu Kategori Barang', 'Lihat Menu Kode Joint Closure','Lihat Menu Cabang', 'Lihat Menu Kontak', 'Lihat Menu SKL', 'Lihat Menu Produk', 'Lihat Menu Kategori Layanan', 'Lihat Menu Departemen', 'Lihat Menu Jabatan', 'Lihat Menu Paket Broadband', 'Lihat Menu Data Perusahaan', 'Lihat Menu Area','Lihat Menu Akun', 'Lihat Menu Saldo Awal', 'Lihat Menu Pengaturan Pajak', 'Lihat Menu Aset'])
                     <x-menu-sections>Master Data</x-menu-sections>
                 @endcanany
-                @canany('Lihat Menu Cabang', 'Lihat Menu Kontak', 'Lihat Menu SKL', 'Lihat Menu Produk', 'Lihat Menu Kategori Layanan', 'Lihat Menu Departemen', 'Lihat Menu Jabatan', 'Lihat Menu Paket Broadband', 'Lihat Menu Data Perusahaan', 'Lihat Menu Area')
+                @canany(['Lihat Menu Cabang', 'Lihat Menu Kontak', 'Lihat Menu SKL', 'Lihat Menu Produk', 'Lihat Menu Kategori Layanan', 'Lihat Menu Departemen', 'Lihat Menu Jabatan', 'Lihat Menu Paket Broadband', 'Lihat Menu Data Perusahaan', 'Lihat Menu Area'])
                     <x-dropdown-menu :active="request()->segment(1) === 'general-master-data'">
                         @slot('parentIcon')
                             <i class="ki-duotone ki-element-7 fs-2">
@@ -124,7 +124,7 @@
                                 <x-dropdown-menu-item
                                         :active="request()->segment(2) === 'contact'"
                                         href="{{ url('general-master-data/contact') }}">
-                                    Contact
+                                    Pelanggan
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu SKL')
@@ -601,7 +601,7 @@
                         @endslot
                     </x-dropdown-menu>
                 @endcan
-                @canany('Lihat Menu Data Karyawan', 'Lihat Menu Manajemen Cuti', 'Lihat Menu Permission', 'Lihat Menu Manajemen Cuti', 'Lihat Menu Surat Peringatan', 'Lihat Menu Kontrak Karyawan', 'Lihat Menu SK')
+                @canany(['Lihat Menu Data Karyawan', 'Lihat Menu Manajemen Cuti', 'Lihat Menu Permission', 'Lihat Menu Manajemen Cuti', 'Lihat Menu Surat Peringatan', 'Lihat Menu Kontrak Karyawan', 'Lihat Menu SK'])
                     <x-dropdown-menu :active="request()->segment(1) === 'manage-users'">
                         @slot('parentIcon')
                             <i class="ki-duotone ki-profile-user fs-2">

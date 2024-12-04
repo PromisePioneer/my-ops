@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
-
 use function App\Helper\randomDigits;
 
 class UserService
@@ -127,24 +126,28 @@ class UserService
         $users = User::with('branch', 'roles', 'company')
             ->where('active', $request->active ?? true);
 
-        if ($request->branch_id) {
+        if ($request->user()->can('Filter Data Karyawan Berdasarkan Cabang') && $request->branch_id) {
             $users->where('branch_id', $request->branch_id);
         }
 
-
-        if ($request->company_id) {
+        if ($request->user()->can('Filter Data Karyawan Berdasarkan Perusahaan') && $request->company_id) {
             $users->where('company_id', $request->company_id);
         }
 
-        if ($request->year) {
+        if ($request->user()->can('Filter Data Karyawan Berdasarkan Tahun') && $request->year) {
             $users->whereYear('join_date', $request->year);
         }
 
-        if ($request->month) {
+        if ($request->user()->can('Filter Data Karyawan Berdasarkan Bulan') && $request->month) {
             $users->whereMonth('join_date', '=', $request->month);
         }
 
-        if ($request->month && $request->year) {
+        if (
+            $request->user()->can('Filter Data Karyawan Berdasarkan Tahun')
+            && $request->user()->can('Filter Data Karyawan Berdasarkan Bulan')
+            && $request->month
+            && $request->year
+        ) {
             $users->whereDate('join_date', Carbon::parse('01-'.$request->month.'-'.$request->year));
         }
 

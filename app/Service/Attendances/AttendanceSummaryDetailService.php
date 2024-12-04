@@ -196,15 +196,16 @@ class AttendanceSummaryDetailService
                     ->format('Y-m-d') . ' ' . $item['attendanceData']?->clock_in;
 
             $parseExpectedCheckIn = Carbon::parse($expectedCheckIn);
+            $parseActualCheckIn = Carbon::parse($actualCheckIn);
 
-            if ($parseExpectedCheckIn->toTimeString()) {
+            if ($parseExpectedCheckIn->toTimeString() === "00:00:00") {
                 $parseExpectedCheckIn = $parseExpectedCheckIn->addDays();
             }
 
-            $parseActualCheckIn = Carbon::parse($actualCheckIn);
+
 
             if ($parseActualCheckIn->greaterThan($parseExpectedCheckIn)) {
-                return Carbon::parse($expectedCheckIn)->diffInMinutes(Carbon::parse($actualCheckIn)) . ' Menit';
+                $parseExpectedCheckIn->diffInMinutes($parseActualCheckIn) . ' Menit';
             }
         }
 

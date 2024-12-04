@@ -261,7 +261,8 @@
                             const resp = await axios.get(`${this.employeeSchedules.path}?page=${this.employeeSchedules.current_page}`, {
                                 params: {
                                     start_date: startDate,
-                                    end_date: endDate
+                                    end_date: endDate,
+                                    search: this.search
                                 }
                             });
                             this.employeeSchedules = resp.data

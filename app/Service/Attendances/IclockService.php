@@ -168,6 +168,10 @@ class IclockService
 
     private function processCheckIn(array $attendanceData, $shift, string $date, string $time): void
     {
+        Log::info($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin));
+
+
+
         if ($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin)) {
             $existingRecord = $this->getAttendanceRecord($attendanceData['employee_id'], $date);
             if (!$existingRecord) {
@@ -176,9 +180,25 @@ class IclockService
         }
     }
 
-    private function isValidTime(string $time, string $startTime, string $endTime): bool
+    private function isValidTime(string $time, string $startTime, string $endTime)
     {
-        return $time >= $startTime && $time < $endTime;
+
+
+        $times = Carbon::parse(Carbon::now()
+        ->format('Y-m-d') . ' ' . $time);
+
+        $startTimes = Carbon::parse(Carbon::now()
+        ->format('Y-m-d') . ' ' . $startTime);
+
+        if($startTimes->toTimeString() === "00:00:00"){
+            $startTimes = $startTimes->addDays();
+        }
+
+        $endTimes = Carbon::parse(Carbon::now()
+        ->format('Y-m-d') . ' ' . $endTime);
+
+
+        return $times->greaterThanOrEqualTo($startTimes) && $times->lessThanOrEqualTo($endTimes);
     }
 
     private function getAttendanceRecord(string $employeeId, string $date, string $order = 'asc')

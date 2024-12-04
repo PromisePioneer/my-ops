@@ -1,0 +1,160 @@
+@extends('layouts.template')
+@section('Jabatan', 'Tambah Jabatan')
+@section('content')
+    <div x-data="generateRole()">
+        <div class="card p-10">
+            <div class="card-header border-0 pt-10">
+                <a class="btn btn-light-info btn-sm mb-6" href="{{ url('general-master-data/roles/') }}">Kembali</a>
+            </div>
+            <div class="card-body py-3">
+                <form id="form" @submit.prevent="save()">
+                    @csrf
+                    <div class="card-body">
+                        <div class="d-flex flex-column scroll-y me-n7 pe-7"
+                             data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}"
+                             data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_update_role_header"
+                             data-kt-scroll-wrappers="#kt_modal_update_role_scroll" data-kt-scroll-offset="300px"
+                             style="max-height: 627px;">
+                            <div class="row mb-7">
+                                <div class="col-md-6">
+                                    <label class="fs-5 fw-bolder form-label mb-2">
+                                        <span class="required">Nama Jabatan</span>
+                                    </label>
+                                    <input class="form-control form-control-solid" name="name"
+                                           placeholder="Nama Jabatan">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="fs-5 fw-bolder form-label mb-2">
+                                        <span class="required">Department</span>
+                                    </label>
+                                    <select class="form-select form-select-solid departments-select2"
+                                            name="department_id"
+                                            id="department_id">
+                                        <option value="0">Pilih</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="fv-row">
+                                <label class="fs-5 fw-bolder form-label mb-10">Hak Akses Menu</label>
+                                <div class="form-check mb-4">
+                                    <label
+                                        class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                        <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
+                                        <span
+                                            class="form-check-label text-capitalize fw-bold">
+                                                        Pilih Semua
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="row justify-content-center align-items-center">
+                                    @foreach($permissions as $permission)
+                                        <div class="col-md-6">
+                                            <div class="form-check mb-4">
+                                                <label
+                                                    class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           value="{{ $permission->name }}"
+                                                           name="permission[]"
+                                                           multiple
+                                                    >
+                                                    <span class="form-check-label text-capitalize text-gray-600 fw-bold"
+                                                    >
+                                                        {{ $permission->name }}
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="separator py-2"></div>
+
+                    <div class="float-end d-flex py-6 px-9">
+                        <button type="reset" class="btn btn-light btn-active-light-primary me-2 btn-sm">Reset</button>
+                        <button type="submit" class="btn btn-sm btn-light-primary"
+                                :disabled="buttonLoading">
+                            <i class="ki-duotone ki-click fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                                <span class="path5"></span>
+                            </i>
+                            <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @include('components.toast')
+@endsection
+@push('script')
+    <script>
+        function generateRole() {
+            return {
+                buttonLoading: false,
+                selectedCheckBox: [],
+                selectAll: false,
+                singleChecked: false,
+                form: document.getElementById('form'),
+                async init() {
+                    await this.getDepartmentData();
+                },
+                async save() {
+                    this.buttonLoading = true
+                    try {
+                        await axios.post(`/general-master-data/roles/`, new FormData(this.form))
+                        await showAlert('success', 'Data berhasil disimpan');
+                        window.location.href = "/general-master-data/roles/";
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async getDepartmentData() {
+                    $(".departments-select2").select2({
+                        ajax: {
+                            url: '/general-master-data/roles/departments/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                toggleAllCheckBox() {
+                    this.selectAll = !this.selectAll;
+                    this.singleChecked = false;
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    this.selectedCheckBox = [];
+                    checkboxes.forEach((checkbox) => {
+                        checkbox.checked = this.selectAll;
+                        if (this.selectAll) {
+                            this.selectedCheckBox.push(checkbox.value);
+                        }
+                    });
+                    this.selectedCheckBox.shift();
+                },
+                selectCheckBox(event) {
+                    const checkboxId = event.target.value;
+                    if (event.target.checked) {
+                        this.selectedCheckBox.push(checkboxId);
+                    } else {
+                        const index = this.selectedCheckBox.indexOf(checkboxId);
+                        if (index !== -1) {
+                            this.selectedCheckBox.splice(index, 1);
+                        }
+                    }
+                },
+
+            }
+        }
+    </script>
+@endpush

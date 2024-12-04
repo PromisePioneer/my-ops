@@ -120,7 +120,7 @@ class UserController extends Controller
      */
     public function edit(User $user): View
     {
-        $this->authorize('update', User::class);
+        $this->authorize('update', $user);
         $roles = Role::pluck('name', 'name')->all();
         $userRole = $user->roles->pluck('name', 'name')->all();
         return view('pages.manage-users.user.edit', compact('user', 'userRole', 'roles'));
@@ -161,9 +161,15 @@ class UserController extends Controller
         return response()->json($this->company->getSelectedData($user->company_id));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function detail(User $user): View
     {
-        $role = Role::with('department')->where('id', $user->roles[0]->id ?? null)->first();
+        $this->authorize('viewDetail', User::class);
+        $role = Role::with('department')
+            ->where('id', $user->roles[0]->id ?? null)
+            ->first();
         return view('pages.manage-users.user.detail', compact('user', 'role'));
     }
 
@@ -172,7 +178,7 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, User $user): JsonResponse
     {
-        $this->authorize('viewDetail', User::class);
+        $this->authorize('update', User::class);
         $this->userService->update($request, $user);
         return response()->json([
             'message' => 'data sukses diupdate!',
@@ -184,11 +190,6 @@ class UserController extends Controller
         return response()->json($this->department->getData($request));
     }
 
-    public function getAbsentData(User $user): JsonResponse
-    {
-        return response()->json($this->attendances->getAttendancesDataBasedOnUserId($this->perPage, $user->absent_id));
-    }
-
     public function show(User $user): JsonResponse
     {
         $users = $user->with('roles')->find($user->id);
@@ -197,6 +198,7 @@ class UserController extends Controller
 
     public function import(Request $request): JsonResponse
     {
+        $this->authorize('import', User::class);
         ini_set('max_execution_time', 180);
         $file = $request->file('file_import');
         Excel::import(new UserImport(), $file);

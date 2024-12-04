@@ -17,15 +17,17 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                        <button type="button" class="btn btn-light-primary btn-sm"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-create">
-                            <i class="ki-duotone ki-message-add fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                            </i> Tambah
-                        </button>
+                        @can('Tambah Data Permission')
+                            <button type="button" class="btn btn-light-primary btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-create">
+                                <i class="ki-duotone ki-message-add fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i> Tambah
+                            </button>
+                        @endcan
                     </div>
                     <div class="d-flex justify-content-end align-items-center d-none"
                          data-kt-user-table-toolbar="selected">
@@ -61,7 +63,8 @@
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                             <th class="w-10px pe-2">
                                 <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                    <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
+                                    <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()"
+                                           :disabled="Number(deletePermission) !== 1">
                                 </div>
                             </th>
                             <th class="min-w-125px text-center">Nama</th>
@@ -92,18 +95,21 @@
                                     <div class="form-check form-check-sm form-check-custom form-check-solid"
                                          @click="selectCheckBox($event)">
                                         <input class="form-check-input" type="checkbox" :value="permission.id"
-                                               :id="'checkbox-' + permission.id"/>
+                                               :id="'checkbox-' + permission.id"
+                                               :disabled="Number(deletePermission) !== 1"/>
                                     </div>
                                 </td>
                                 <td class=" text-center" x-text="permission.name"></td>
                                 <td class="text-center">
-                                    <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                            data-bs-target="#modal-edit" @click="edit(permission.id)">
-                                        <i class="ki-duotone ki-pencil fs-2">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                        </i>
-                                    </button>
+                                    <template x-if="Number(editPermission) === 1">
+                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#modal-edit" @click="edit(permission.id)">
+                                            <i class="ki-duotone ki-pencil fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </button>
+                                    </template>
                                 </td>
                             </tr>
                         </template>
@@ -131,6 +137,8 @@
     <script defer>
         function permissionsData() {
             return {
+                editPermission: "{{ request()->user()->can('Edit Data Permission') }}",
+                deletePermission: "{{ request()->user()->can('Hapus Data Permission') }}",
                 buttonLoading: false,
                 permissions: null,
                 isLoading: true,
@@ -144,6 +152,7 @@
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formDelete: document.getElementById('form-delete'),
+
                 async init() {
                     const permission = await axios.get('/manage-users/permissions/data');
                     this.permissions = permission.data

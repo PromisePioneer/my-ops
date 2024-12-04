@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
@@ -105,6 +104,13 @@ class PermissionSeeder extends Seeder
         $this->attendancesSummary();
     }
 
+
+    public function policyMenu()
+    {
+        $permissions = [
+            ''
+        ];
+    }
 
     public function attendancesSummary(): void
     {
@@ -260,7 +266,8 @@ class PermissionSeeder extends Seeder
             'Edit Data Karyawan',
             'Hapus Data Karyawan',
             'Aktifasi Data Karyawan',
-            'Lihat Detail Data Karyawan'
+            'Lihat Detail Data Karyawan',
+            'Import Data Karyawan'
         ];
 
         foreach ($permissions as $permission) {
@@ -441,7 +448,7 @@ class PermissionSeeder extends Seeder
     public function companyProfile(): void
     {
         $permissions = [
-        'Lihat Menu Profil Perusahaan',
+            'Lihat Menu Profil Perusahaan',
             'Update Profile Perusahaan',
         ];
 
