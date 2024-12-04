@@ -11,27 +11,28 @@
                     @csrf
                     <div class="card-body">
                         <div class="row mb-4">
-                                <div class="col-md-6" x-model="placement">
-                                    <label class="col-form-label required fw-bold fs-6">Penempatan</label>
-                                    <select name="placement" id="selectedPlacement"
-                                            class="form-select form-select-solid user-placement-select2">
-                                        <option value="0" selected>Pilih</option>
-                                        <option value="Cabang">Cabang</option>
-                                        <option value="Pusat">Pusat</option>
-                                    </select>
-                                </div>
-                                <div class="col-lg-6" x-show="placement === 'Cabang'" x-transition x-cloak>
-                                    <label class="col-form-label required fw-bold fs-6">Cabang</label>
-                                    <select :name="`${placement === 'Cabang' ? 'branch_id' : ''}`"
-                                            class="form-select form-select-solid branchSelect2">
-                                        <option value="0">Pilih Cabang</option>
-                                    </select>
-                                </div>
+                            <div class="col-md-6" x-model="placement">
+                                <label class="col-form-label required fw-bold fs-6">Penempatan</label>
+                                <select name="placement" id="selectedPlacement"
+                                        class="form-select form-select-solid user-placement-select2">
+                                    <option value="0" selected>Pilih</option>
+                                    <option value="Cabang">Cabang</option>
+                                    <option value="Pusat">Pusat</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-6" x-show="placement === 'Cabang'" x-transition x-cloak>
+                                <label class="col-form-label required fw-bold fs-6">Cabang</label>
+                                <select :name="`${placement === 'Cabang' ? 'branch_id' : ''}`"
+                                        class="form-select form-select-solid branchSelect2">
+                                    <option value="0">Pilih Cabang</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="row mb-4">
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">ID Absen</label>
                                 <input type="number" class="form-control form-control-solid" name="absent_id"
+                                       id="absent_id"
                                        placeholder="ID Absen" value="{{$randomAbsentId }}">
                             </div>
                             <div class="col-lg-6">
@@ -102,6 +103,11 @@
                         </button>
                     </div>
                 </form>
+
+
+                <button @click="remoteEnroll()">Daftarkan ID FingerPrint</button>
+
+
             </div>
         </div>
     </div>
@@ -116,6 +122,7 @@
                 role: null,
                 buttonLoading: false,
                 form: document.getElementById('form'),
+                formAbsentIdCreate: document.getElementById('formAbsentIdCreate'),
                 placement: false,
                 async init() {
                     await this.getBranchData();
@@ -151,6 +158,22 @@
                             cache: true
                         }
                     });
+                },
+                async remoteEnroll() {
+                    const absentId = document.getElementById('absent_id')?.value ?? null;
+                    this.isLoading = true;
+                    try {
+                        await axios.get('/iclock/getrequest', {
+                            params: {
+                                cmd_id: 1,
+                                absent_id: absentId
+                            }
+                        })
+                    }catch (e){
+                        console.log(e)
+                    }finally {
+                        this.isLoading = false;
+                    }
                 },
                 async getCompany() {
                     $(".companies-select2").select2({
