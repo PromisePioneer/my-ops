@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FingerLog;
 use App\Service\Attendances\IclockService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use MehediJaman\LaravelZkteco\LaravelZkteco;
 use Throwable;
 
@@ -48,8 +49,7 @@ class IclockController extends Controller
         $content['url'] = json_encode($request->all());
         $cmdId = 1;
 
-
-        dd($request->all());
+        Log::info($content);
 
 
         return "C:{{$cmdId}}:ENROLL_FP\r\n" .
