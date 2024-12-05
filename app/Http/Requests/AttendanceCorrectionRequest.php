@@ -27,7 +27,7 @@ class AttendanceCorrectionRequest extends FormRequest
         return [
             'date' => ['required', 'date'],
             'clock_in' => 'nullable',
-            'clock_out' => ['nullable', $this->validateClockOut($request)],
+            'clock_out' => ['nullable'],
         ];
     }
 
