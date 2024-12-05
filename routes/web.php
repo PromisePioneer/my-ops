@@ -20,6 +20,7 @@ use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\BAAController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
+use App\Http\Controllers\HRIS\Attendances\DeviceCommandController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
 use App\Http\Controllers\HRIS\Attendances\FpDevicesController;
 use App\Http\Controllers\HRIS\Attendances\IclockController;
@@ -993,6 +994,11 @@ Route::group(['middleware' => ['auth']], static function () {
     });
 
     Route::prefix('/adms')->group(function () {
+
+        Route::prefix('/device-command')->group(function () {
+            Route::get('/', [DeviceCommandController::class, 'index']);
+        });
+
         Route::prefix('/national-holiday')->group(function () {
             Route::get('/', [NationalHolidayController::class, 'index']);
             Route::get('/data', [NationalHolidayController::class, 'data']);

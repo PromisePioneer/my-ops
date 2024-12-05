@@ -701,6 +701,11 @@
                                 Riwayat Absensi
                             </x-dropdown-menu-item>
                         @endcan
+                            <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'attendances-summary'"
+                                href="{{ url('adms/attendances-summary') }}">
+                                Riwayat Absensi
+                            </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
             </div>
