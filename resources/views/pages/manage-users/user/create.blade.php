@@ -105,7 +105,10 @@
                 </form>
 
 
-                <button @click="remoteEnroll()">Daftarkan ID FingerPrint</button>
+                <form id="form-absent-id" @submit.prevent="remoteEnroll()">
+                    <input type="hidden" name="absent_id" value="12345">
+                    <button type="submit">Daftarkan Absen ID</button>
+                </form>
 
 
             </div>
@@ -122,7 +125,7 @@
                 role: null,
                 buttonLoading: false,
                 form: document.getElementById('form'),
-                formAbsentIdCreate: document.getElementById('formAbsentIdCreate'),
+                formAbsentIdCreate: document.getElementById('form-absent-id'),
                 placement: false,
                 async init() {
                     await this.getBranchData();
@@ -165,9 +168,9 @@
                     try {
                         await axios.get('/iclock/getrequest', {
                             params: {
-                                cmd_id: 1,
-                                absent_id: absentId
-                            }
+                                SN: "AEWD233960062",
+                            },
+                            headers: { 'cmdId': 1 }
                         })
                     }catch (e){
                         console.log(e)
