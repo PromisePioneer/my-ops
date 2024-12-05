@@ -30,15 +30,15 @@ class IclockController extends Controller
         }
 
         $cmdId = 1;
-        $userId = 12345;
+        $userId = 1188388;
         // Logika untuk menentukan perintah berdasarkan SN atau kondisi lainnya
         $command = sprintf(
             "C:%d:ENROLL_FP PIN=%d\tFID=%d\tRETRY=%d\tOVERWRITE=%d",
             $cmdId, // CmdId
             $userId, // UserId
             1, // Fingerprint ID
-            0, // Retry count
-            1  // Overwrite existing
+            2, // Retry count
+            0 // Overwrite existing
         );
 
 

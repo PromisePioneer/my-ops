@@ -170,7 +170,11 @@
                             params: {
                                 SN: "AEWD233960062",
                             },
-                            headers: { 'cmdId': 1 }
+                            // headers: {
+                            //     'Custom-Data': JSON.stringify({
+                            //         'absent_id': absentId
+                            //     })
+                            // }
                         })
                     }catch (e){
                         console.log(e)
