@@ -28,7 +28,6 @@ class ProductController extends Controller
     public function index(): View
     {
         $this->authorize('view', Product::class);
-
         return view('pages.general-master-data.product.index');
     }
 
@@ -38,7 +37,6 @@ class ProductController extends Controller
     public function data(): JsonResponse
     {
         $this->authorize('view', Product::class);
-
         return response()->json($this->product->getDataWithPagination($this->perPage));
     }
 
@@ -48,7 +46,6 @@ class ProductController extends Controller
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', Product::class);
-
         return response()->json($this->product->searchData($request, $this->perPage));
     }
 
@@ -70,7 +67,7 @@ class ProductController extends Controller
      */
     public function show(Product $product): JsonResponse
     {
-        $this->authorize('update produk', $product);
+        $this->authorize('update', $product);
 
         return response()->json($product);
     }
@@ -80,7 +77,7 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, Product $product): JsonResponse
     {
-        $this->authorize('update produk', $product);
+        $this->authorize('update', $product);
         $product->update($request->validated());
 
         return response()->json([
