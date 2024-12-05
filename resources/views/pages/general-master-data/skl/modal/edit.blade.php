@@ -18,8 +18,8 @@
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Syarat Ketentuan Layanan</label>
-                        <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama" :value="editVal.name"/>
+                        <textarea type="text" id="name" name="name" class="form-control form-control-solid"
+                                  placeholder="Nama" data-kt-autosize="true" x-text="editVal.name"></textarea>
                     </div>
                 </div>
 

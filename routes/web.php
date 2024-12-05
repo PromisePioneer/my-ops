@@ -334,9 +334,9 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [SKLController::class, 'data']);
             Route::get('/search', [SKLController::class, 'search']);
             Route::post('/', [SKLController::class, 'store']);
-            Route::get('/{offeringLetterSKL}', [SKLController::class, 'edit']);
+            Route::get('/{skl}', [SKLController::class, 'edit']);
             Route::post('/destroy', [SKLController::class, 'destroy']);
-            Route::post('/{offeringLetterSKL}', [SKLController::class, 'update']);
+            Route::post('/{skl}', [SKLController::class, 'update']);
         });
 
         //contact
@@ -994,10 +994,6 @@ Route::group(['middleware' => ['auth']], static function () {
     });
 
     Route::prefix('/adms')->group(function () {
-
-        Route::prefix('/device-command')->group(function () {
-            Route::get('/', [DeviceCommandController::class, 'index']);
-        });
 
         Route::prefix('/national-holiday')->group(function () {
             Route::get('/', [NationalHolidayController::class, 'index']);

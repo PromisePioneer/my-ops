@@ -782,9 +782,9 @@ class PermissionSeeder extends Seeder
     {
         $permissions = [
             'Lihat Menu SKL',
-            'Tambah Menu SKL',
-            'Edit Menu SKL',
-            'Hapus Menu SKL',
+            'Tambah Data SKL',
+            'Edit Data SKL',
+            'Hapus Data SKL',
         ];
 
         foreach ($permissions as $permission) {

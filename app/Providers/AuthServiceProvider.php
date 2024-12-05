@@ -18,7 +18,9 @@ use App\Models\OfferingLetter;
 use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\ServiceCategory;
+use App\Models\SKL;
 use App\Models\SP;
+use App\Models\UnitType;
 use App\Models\User;
 use App\Models\WorkTime;
 use App\Policies\AccountPolicy;
@@ -38,7 +40,9 @@ use App\Policies\ProductPolicy;
 use App\Policies\PurchaseOrderPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\ServiceCategoriesPolicy;
+use App\Policies\SKLPolicy;
 use App\Policies\SpPolicy;
+use App\Policies\UnitTypePolicy;
 use App\Policies\UserPolicy;
 use App\Policies\WorkTimePolicy;
 use Carbon\Carbon;
@@ -75,6 +79,8 @@ class AuthServiceProvider extends ServiceProvider
         OfferingLetter::class => OfferingLetterPolicy::class,
         Fab::class => FabPolicy::class,
         PurchaseOrder::class => PurchaseOrderPolicy::class,
+        SKL::class => SKLPolicy::class,
+        UnitType::class => UnitTypePolicy::class,
     ];
 
     /**

@@ -16,16 +16,18 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-                    <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                        <button type="button" class="btn btn-light-primary btn-sm"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-unit-type-create">
-                            <i class="ki-duotone ki-message-add fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                            </i> Tambah
-                        </button>
+                    <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                        @can('Tambah Data Satuan')
+                            <button type="button" class="btn btn-light-primary btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-unit-type-create">
+                                <i class="ki-duotone ki-message-add fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i> Tambah
+                            </button>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -54,11 +56,13 @@
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input" type="checkbox"
-                                               @click="toggleAllCheckBox()">
+                                               @click="toggleAllCheckBox()" :disabled="Number(deletePermission) !== 1">
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Nama Satuan</th>
+                                <template x-if="Number(editPermission) === 1">
                                 <th class="min-w-125px">Actions</th>
+                                </template>
                             </tr>
                             </thead>
                             <tbody class="fw-bold">
@@ -86,10 +90,12 @@
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
                                             <input class="form-check-input" type="checkbox" :value="unitType.id"
-                                                   :id="'checkbox-' + unitType.id"/>
+                                                   :id="'checkbox-' + unitType.id"
+                                                   :disabled="Number(deletePermission) !== 1"/>
                                         </div>
                                     </td>
                                     <td x-text="unitType.name"></td>
+                                    <template x-if="Number(editPermission) === 1">
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-unit-type-edit" @click="edit(unitType.id)">
@@ -99,6 +105,7 @@
                                             </i>
                                         </button>
                                     </td>
+                                    </template>
                                 </tr>
                             </template>
                             </tbody>
@@ -123,6 +130,9 @@
     <script defer>
         function unitTypesData() {
             return {
+                createPermission: "{{ request()->user()->can('Tambah Data Satuan') }}",
+                editPermission: "{{ request()->user()->can('Edit Data Satuan') }}",
+                deletePermission: "{{ request()->user()->can('Hapus Data Satuan') }}",
                 unitTypes: [],
                 isLoading: true,
                 buttonLoading: false,
@@ -162,17 +172,19 @@
                     }
                 },
                 toggleAllCheckBox() {
-                    this.selectAll = !this.selectAll;
-                    this.singleChecked = false;
-                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                    this.selectedCheckBox = [];
-                    checkboxes.forEach((checkbox) => {
-                        checkbox.checked = this.selectAll;
-                        if (this.selectAll) {
-                            this.selectedCheckBox.push(checkbox.value);
-                        }
-                    });
-                    this.selectedCheckBox.shift();
+                    if (Number(this.deletePermission) === 1) {
+                        this.selectAll = !this.selectAll;
+                        this.singleChecked = false;
+                        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                        this.selectedCheckBox = [];
+                        checkboxes.forEach((checkbox) => {
+                            checkbox.checked = this.selectAll;
+                            if (this.selectAll) {
+                                this.selectedCheckBox.push(checkbox.value);
+                            }
+                        });
+                        this.selectedCheckBox.shift();
+                    }
                 },
                 selectCheckBox(event) {
                     const checkboxId = event.target.value;
@@ -201,13 +213,13 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/general-master-data/unit-types/${id}`);
+                    const resp = await axios.get(`/general-master-data/unit-types/show/${id}`);
                     this.editVal = resp.data;
                 },
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/general-master-data/unit-types/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/general-master-data/unit-types/update/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.modalEdit.hide();
                         this.formEdit.reset();
