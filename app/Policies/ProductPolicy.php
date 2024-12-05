@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Models\Product;
 use App\Models\User;
 
 class ProductPolicy
@@ -17,21 +16,21 @@ class ProductPolicy
 
     public function view(User $user): bool
     {
-        return $user->can('Lihat Produk');
+        return $user->can('Lihat Menu Produk');
     }
 
     public function create(User $user): bool
     {
-        return $user->can('Tambah Produk');
+        return $user->can('Tambah Data Produk');
     }
 
-    public function update(User $user, Product $product): bool
+    public function update(User $user): bool
     {
-        return $user->can('Update Produk');
+        return $user->can('Update Data Produk');
     }
 
     public function delete(User $user): bool
     {
-        return $user->can('Hapus Produk');
+        return $user->can('Hapus Data Produk');
     }
 }
