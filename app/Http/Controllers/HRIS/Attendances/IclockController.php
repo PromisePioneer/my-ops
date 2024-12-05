@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\FingerLog;
 use App\Service\Attendances\IclockService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use JetBrains\PhpStorm\NoReturn;
 use Throwable;
 
 class IclockController extends Controller
@@ -23,27 +25,34 @@ class IclockController extends Controller
 
    public function register(Request $request)
     {
-//        $sn = $request->query('SN');
-//
-//        if (!$sn) {
-//            return response("Missing SN parameter", 400);
-//        }
-//
-//        $cmdId = 1;
-//        $userId = 12345;
-//        $command = sprintf(
-//            "C:%d:ENROLL_FP PIN=%d\tFID=%d\tRETRY=%d\tOVERWRITE=%d",
-//            $cmdId, // CmdId
-//            $userId, // UserId
-//            1, // Fingerprint ID
-//            0, // Retry count
-//            1  // Overwrite existing
-//        );
-//
-//
-//        // Respons ke mesin
-//        return response($command, 200)
-//            ->header('Content-Type', 'text/plain');
+        // Ambil serial number (SN) dari mesin
+        // $sn = $request->query('SN');
+
+        // if (!$sn) {
+        //     return response("Missing SN parameter", 400);
+        // }
+
+        // $cmdId = 1;
+        // $userId = 12345;
+        // // Logika untuk menentukan perintah berdasarkan SN atau kondisi lainnya
+        // $command = sprintf(
+        //     "C:%d:ENROLL_FP PIN=%d\tFID=%d\tRETRY=%d\tOVERWRITE=%d",
+        //     $cmdId, // CmdId
+        //     $userId, // UserId
+        //     1, // Fingerprint ID
+        //     0, // Retry count
+        //     1  // Overwrite existing
+        // );
+
+
+        // if($command[1] === $userId){
+        //     return;
+        // }
+
+
+        // // Respons ke mesin
+        // return response($command, 200)
+        //     ->header('Content-Type', 'text/plain');
     }
 
     public function handshake(Request $request): string
