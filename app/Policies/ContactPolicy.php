@@ -16,21 +16,21 @@ class ContactPolicy
 
     public function view(User $user): bool
     {
-        return $user->can('Lihat Kontak');
+        return $user->can('Lihat Menu Kontak');
     }
 
     public function create(User $user): bool
     {
-        return $user->can('Tambah Kontak');
+        return $user->can('Tambah Data Kontak');
     }
 
     public function update(User $user): bool
     {
-        return $user->can('Edit Kontak');
+        return $user->can('Edit Data Kontak');
     }
 
     public function delete(User $user): bool
     {
-        return $user->can('Hapus Kontak');
+        return $user->can('Hapus Data Kontak');
     }
 }

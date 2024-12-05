@@ -19,7 +19,7 @@ class ContactController extends Controller
      */
     public function index(): View
     {
-        $this->authorize('Lihat Kontak');
+        $this->authorize('view', Contact::class);
         return view('pages.general-master-data.contact.index');
     }
 
@@ -29,7 +29,7 @@ class ContactController extends Controller
      */
     public function data(Request $request): JsonResponse
     {
-        $this->authorize('Lihat Kontak');
+        $this->authorize('view', Contact::class);
         $contact = Contact::paginate(self::$perPage);
         return response()->json($contact);
     }
@@ -39,7 +39,7 @@ class ContactController extends Controller
      */
     public function search(Request $request): JsonResponse
     {
-        $this->authorize('Lihat Kontak');
+        $this->authorize('view', Contact::class);
         $search = $request->input('search');
         $contact = Contact::when(!empty($search), function ($query) use ($search) {
             $query->where('full_name', 'like', '%' . $search . '%')
@@ -63,7 +63,7 @@ class ContactController extends Controller
      */
     public function store(ContactRequest $request): JsonResponse
     {
-        $this->authorize('Tambah Kontak');
+        $this->authorize('create', Contact::class);
         Contact::create($request->validated());
 
         return response()->json([
@@ -76,7 +76,7 @@ class ContactController extends Controller
      */
     public function edit(Contact $contact): JsonResponse
     {
-        $this->authorize('Edit Kontak');
+        $this->authorize('update', Contact::class);
         return response()->json($contact);
     }
 
@@ -85,7 +85,7 @@ class ContactController extends Controller
      */
     public function update(ContactRequest $request, Contact $contact): JsonResponse
     {
-        $this->authorize('Edit Kontak');
+        $this->authorize('update', Contact::class);
         $contact->update($request->validated());
         return response()->json([
             'message' => 'data berhasil disimpan',
@@ -97,7 +97,7 @@ class ContactController extends Controller
      */
     public function destroy(Request $request, Contact $contact): JsonResponse
     {
-        $this->authorize('Hapus Kontak');
+        $this->authorize('delete', Contact::class);
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
         $contact->whereIn('id', $explodeID)->delete();
