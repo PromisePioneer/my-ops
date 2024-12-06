@@ -2,20 +2,13 @@
 
 namespace App\Policies;
 
-use App\Models\Company;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class CompanyPolicy
 {
-    public function viewAny(User $user): bool
-    {
-        //
-    }
-
     public function view(User $user): bool
     {
-        return $user->can('Lihat Data Perusahaan');
+        return $user->can('Lihat Menu Data Perusahaan');
     }
 
     public function create(User $user): bool

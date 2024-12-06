@@ -5,9 +5,11 @@ namespace App\Providers;
 // use Illuminate\Support\Facades\Gate;
 use App\Models\Account;
 use App\Models\AccountTransaction;
+use App\Models\Area;
 use App\Models\AttendancesSummary;
 use App\Models\Boq;
 use App\Models\Branch;
+use App\Models\BroadbandPacket;
 use App\Models\Company;
 use App\Models\Contact;
 use App\Models\Department;
@@ -24,9 +26,11 @@ use App\Models\UnitType;
 use App\Models\User;
 use App\Models\WorkTime;
 use App\Policies\AccountPolicy;
+use App\Policies\AreaPolicy;
 use App\Policies\AttendanceRecordPolicy;
 use App\Policies\BoqPolicy;
 use App\Policies\BranchPolicy;
+use App\Policies\BroadbandPacketPolicy;
 use App\Policies\CompanyPolicy;
 use App\Policies\ContactPolicy;
 use App\Policies\DepartmentPolicy;
@@ -81,6 +85,8 @@ class AuthServiceProvider extends ServiceProvider
         PurchaseOrder::class => PurchaseOrderPolicy::class,
         SKL::class => SKLPolicy::class,
         UnitType::class => UnitTypePolicy::class,
+        BroadbandPacket::class => BroadbandPacketPolicy::class,
+        Area::class => AreaPolicy::class,
     ];
 
     /**

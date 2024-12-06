@@ -16,21 +16,21 @@ class RolePolicy
 
     public function view(User $user): bool
     {
-        return $user->can('Lihat Jabatan');
+        return $user->can('Lihat Menu Jabatan');
     }
 
     public function create(User $user): bool
     {
-        return $user->can('Tambah Jabatan');
+        return $user->can('Tambah Data Jabatan');
     }
 
     public function update(User $user): bool
     {
-        return $user->can('Update Jabatan');
+        return $user->can('Update Data Jabatan');
     }
 
     public function delete(User $user): bool
     {
-        return $user->can('Hapus Jabatan');
+        return $user->can('Hapus Data Jabatan');
     }
 }

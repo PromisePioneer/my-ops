@@ -6,31 +6,23 @@ use App\Models\User;
 
 class DepartmentPolicy
 {
-    /**
-     * Create a new policy instance.
-     */
-    public function __construct()
-    {
-        //
-    }
-
     public function view(User $user): bool
     {
-        return $user->can('Lihat Departemen');
+        return $user->can('Lihat Menu Departemen');
     }
 
     public function create(User $user): bool
     {
-        return $user->can('Tambah Departemen');
+        return $user->can('Tambah Data Departemen');
     }
 
     public function update(User $user): bool
     {
-        return $user->can('Update Departemen');
+        return $user->can('Update Data Departemen');
     }
 
     public function delete(User $user): bool
     {
-        return $user->can('Hapus Departemen');
+        return $user->can('Hapus Data Departemen');
     }
 }
