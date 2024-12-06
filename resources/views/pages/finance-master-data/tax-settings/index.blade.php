@@ -18,15 +18,17 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-category-table-toolbar="base">
-                        <button type="button" class="btn btn-light-primary btn-sm"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-create">
-                            <i class="ki-duotone ki-message-add fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                            </i> Tambah
-                        </button>
+                        @can('Tambah Data Pengaturan Pajak')
+                            <button type="button" class="btn btn-light-primary btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-create">
+                                <i class="ki-duotone ki-message-add fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i> Tambah
+                            </button>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -60,7 +62,9 @@
                                 </th>
                                 <th class="min-w-125px">Nama Pajak</th>
                                 <th class="min-w-125px">Rate</th>
-                                <th class="min-w-125px">Actions</th>
+                                <template x-if="Number(deletePermission) === 1">
+                                    <th class="min-w-125px">Actions</th>
+                                </template>
                             </thead>
                             <template x-if="isLoading">
                                 <tbody class="fw-bold">
@@ -91,19 +95,22 @@
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
                                             <input class="form-check-input" type="checkbox" :value="tax.id"
-                                                   :id="'checkbox-' + tax.id"/>
+                                                   :id="'checkbox-' + tax.id"
+                                                   :disabled="Number(deletePermission) !== 1"/>
                                         </div>
                                     </td>
                                     <td x-text="tax.name"></td>
                                     <td x-text="`${tax.rate} %`"></td>
                                     <td>
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(tax.id)">
-                                            <i class="ki-duotone ki-pencil fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </button>
+                                        <template x-if="Number(editPermission) === 1">
+                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-edit" @click="edit(tax.id)">
+                                                <i class="ki-duotone ki-pencil fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                            </button>
+                                        </template>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -129,6 +136,8 @@
     <script>
         function taxSettingsData() {
             return {
+                editPermission: "{{ request()->user()->can('Edit Data Pengaturan Pajak') }}",
+                deletePermission: "{{ request()->user()->can('Hapus Data Pengaturan Pajak') }}",
                 taxSettings: [],
                 buttonLoading: false,
                 isLoading: true,

@@ -1,4 +1,4 @@
-@php use Carbon\Carbon; @endphp
+@php @endphp
 @extends('layouts.template')
 @section('page-title', 'Data Saldo Awal')
 @section('content')
@@ -48,15 +48,17 @@
                 <div class="card card-flush mb-6 mb-xl-9">
                     <div class="card-header pt-5">
                         <div class="card-title">
-                            <button type="button" class="btn btn-light-primary btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
-                                <i class="ki-duotone ki-message-add fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                </i> Tambah
-                            </button>
+                            @can('Tambah Data Saldo Awal')
+                                <button type="button" class="btn btn-light-primary btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-create">
+                                    <i class="ki-duotone ki-message-add fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i> Tambah
+                                </button>
+                            @endcan
                         </div>
                         <div class="card-toolbar">
                             <div class="d-flex align-items-center position-relative my-1"
@@ -68,8 +70,9 @@
                                                                       width="8.15546" height="2" rx="1"
                                                                       transform="rotate(45 17.0365 15.1223)"
                                                                       fill="black"></rect>
-																<path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
-                                                                      fill="black"></path>
+																<path
+                                                                    d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
+                                                                    fill="black"></path>
 															</svg>
 														</span>
                                 <input type="text" class="form-control form-control-solid w-250px ps-15"
@@ -99,7 +102,8 @@
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                         <th class="w-10px pe-2">
-                                            <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                            <div
+                                                class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                             </div>
                                         </th>
                                         <th class="min-w-125px">Akun</th>
@@ -130,8 +134,7 @@
                                         </tr>
                                         </tbody>
                                     </template>
-                                    <template x-for="(account, index) in initialBalances?.data"
-                                              :key="index">
+                                    <template x-for="(account, index) in initialBalances?.data" :key="index">
                                         <tbody style="cursor:pointer" class="fw-bold">
                                         <tr>
                                             <td>
@@ -142,7 +145,7 @@
                                                             <input class="form-check-input" type="checkbox"
                                                                    :value="account.id"
                                                                    :id="'checkbox-' + account.id"
-                                                                   :disabled="account.initial_balance === null"/>
+                                                                   :disabled="account.initial_balance === null || Number(deletePermission) !== 1"/>
                                                         </template>
                                                     </template>
                                                 </div>
@@ -172,12 +175,15 @@
                                                   :key="subAccount.id">
                                             <tr>
                                                 <td>
-                                                    <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                                         @click="selectCheckBox($event)">
+                                                    <div
+                                                        class="form-check form-check-sm form-check-custom form-check-solid"
+                                                        @click="selectCheckBox($event)">
                                                         <input class="form-check-input" type="checkbox"
                                                                :value="subAccount.id"
                                                                :id="'checkbox-' + subAccount.id"
-                                                               :disabled="branchId === null"/>
+                                                               :disabled="branchId === null
+                                                               || Number(deletePermission) !== 1"
+                                                        />
                                                     </div>
                                                 </td>
                                                 <td placement="center"
@@ -185,16 +191,18 @@
                                                 <td x-text="subAccount.initial_balance"></td>
                                                 <td>
                                                     <template x-if="branchId !== null">
-                                                        <button class="btn btn-light-primary btn-sm"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#modal-edit"
-                                                                @click="edit(subAccount.id)"
-                                                                :disabled="subAccount.initial_balance === null">
-                                                            <i class="ki-duotone ki-pencil fs-2">
-                                                                <span class="path1"></span>
-                                                                <span class="path2"></span>
-                                                            </i>
-                                                        </button>
+                                                        <template x-if="Number(editPermission) === 1">
+                                                            <button class="btn btn-light-primary btn-sm"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#modal-edit"
+                                                                    @click="edit(subAccount.id)"
+                                                                    :disabled="subAccount.initial_balance === null">
+                                                                <i class="ki-duotone ki-pencil fs-2">
+                                                                    <span class="path1"></span>
+                                                                    <span class="path2"></span>
+                                                                </i>
+                                                            </button>
+                                                        </template>
                                                     </template>
                                                 </td>
                                             </tr>
@@ -221,9 +229,7 @@
 @endsection
 @push('script')
     <script defer>
-
         const disabledMonths = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
         $('.date').flatpickr({
             monthSelectorType: 'static',
             disable: [
@@ -235,6 +241,8 @@
 
         function InitialBalancesData() {
             return {
+                editPermission: "{{ request()->user()->can('Edit Data Saldo Awal') }}",
+                deletePermission: "{{ request()->user()->can('Hapus Data Saldo Awal') }}",
                 initialBalances: [],
                 isLoading: false,
                 buttonLoading: false,
@@ -274,7 +282,6 @@
                                 search: this.search,
                                 branch_id: this.branchId,
                             },
-                            headers: {'Content-Type': 'application/json'}
                         });
 
                         this.initialBalances = resp.data
@@ -289,17 +296,19 @@
                     }
                 },
                 toggleAllCheckBox() {
-                    this.selectAll = !this.selectAll;
-                    this.singleChecked = false;
-                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                    this.selectedCheckBox = [];
-                    checkboxes.forEach((checkbox) => {
-                        checkbox.checked = this.selectAll;
-                        if (this.selectAll) {
-                            this.selectedCheckBox.push(checkbox.value);
-                        }
-                    });
-                    this.selectedCheckBox.shift();
+                    if (Number(this.deletePermission) !== 1) {
+                        this.selectAll = !this.selectAll;
+                        this.singleChecked = false;
+                        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                        this.selectedCheckBox = [];
+                        checkboxes.forEach((checkbox) => {
+                            checkbox.checked = this.selectAll;
+                            if (this.selectAll) {
+                                this.selectedCheckBox.push(checkbox.value);
+                            }
+                        });
+                        this.selectedCheckBox.shift();
+                    }
                 },
                 selectCheckBox(event) {
                     const checkboxId = event.target.value;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Accounting\Transaction;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InitialBalanceRequest;
 use App\Models\Account;
@@ -10,15 +11,13 @@ use App\Models\Branch;
 use App\Service\InitialBalanceService;
 use Carbon\Carbon;
 use DB;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class InitialBalanceController extends Controller
+#[AllowDynamicProperties] class InitialBalanceController extends Controller
 {
-    private Account $account;
-    private InitialBalanceService $initialBalanceService;
-    private Branch $branch;
 
     public function __construct()
     {
@@ -27,21 +26,33 @@ class InitialBalanceController extends Controller
         $this->branch = new Branch();
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function index(): View
     {
+        $this->authorize('view', AccountTransaction::class);
         return view('pages.finance-master-data.initial-balances.index');
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function data(): JsonResponse
     {
+        $this->authorize('view', AccountTransaction::class);
         $data = $this->initialBalanceService->data();
         return response()->json($data);
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getAccountData(Request $request): JsonResponse
     {
+        $this->authorize('view', AccountTransaction::class);
         $search = $request->input('search');
         $query = Account::with('children')->whereNull('parent_id')
             ->orderby('code')
@@ -85,25 +96,42 @@ class InitialBalanceController extends Controller
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getBranchData(Request $request): JsonResponse
     {
+        $this->authorize('view', AccountTransaction::class);
         return response()->json($this->branch->getData($request));
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function search(Request $request): JsonResponse
     {
+        $this->authorize('view', AccountTransaction::class);
         return response()->json($this->initialBalanceService->search($request));
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function filter(Request $request): JsonResponse
     {
+        $this->authorize('view', AccountTransaction::class);
+        $this->authorize('filterBranch', AccountTransaction::class);
         return response()->json($this->initialBalanceService->filter($request));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function store(InitialBalanceRequest $request): JsonResponse
     {
+        $this->authorize('create', AccountTransaction::class);
         AccountTransaction::create([
             'branch_id' => $request->branch_id ?? null,
             'date' => $request->date,
@@ -117,10 +145,13 @@ class InitialBalanceController extends Controller
     }
 
 
-    public function edit(Request $request, Account $account): JsonResponse
+    /**
+     * @throws AuthorizationException
+     */
+    public function edit(Request $request, AccountTransaction $account): JsonResponse
     {
+        $this->authorize('update', $account);
         $branchId = $request->branch_id;
-
         $data = $account->join(
             'account_transactions',
             'account_transactions.account_id',
@@ -134,19 +165,31 @@ class InitialBalanceController extends Controller
         return response()->json($data);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function selectedBranch(Branch $branch): JsonResponse
     {
+        $this->authorize('update', AccountTransaction::class);
         return response()->json($this->branch->getSelectedData($branch->id));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function selectedAccountData(Account $account): JsonResponse
     {
+        $this->authorize('update', $account);
         return response()->json($this->account->getSelectedAccount($account->id));
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function update(InitialBalanceRequest $request, AccountTransaction $accountTransaction): JsonResponse
     {
+        $this->authorize('update', $accountTransaction);
         $accountTransaction->update([
             'branch_id' => $request?->branch_id ?? null,
             'date' => $request->date,
@@ -159,8 +202,12 @@ class InitialBalanceController extends Controller
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function destroy(Account $account, Request $request): JsonResponse
     {
+        $this->authorize('delete', $account);
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
 

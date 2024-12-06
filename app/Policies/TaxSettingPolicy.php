@@ -4,15 +4,14 @@ namespace App\Policies;
 
 use App\Models\User;
 
-class InitialBalancePolicy
+class TaxSettingPolicy
 {
-
     /**
      * Determine whether the user can view the model.
      */
     public function view(User $user): bool
     {
-        return $user->can('Lihat Menu Saldo Awal');
+        return $user->can('Lihat Menu Pengaturan Pajak');
     }
 
     /**
@@ -20,7 +19,7 @@ class InitialBalancePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('Tambah Data Saldo Awal');
+        return $user->can('Tambah Data Pengaturan Pajak');
     }
 
     /**
@@ -28,7 +27,7 @@ class InitialBalancePolicy
      */
     public function update(User $user): bool
     {
-        return $user->can('Edit Data Saldo Awal');
+        return $user->can('Edit Data Pengaturan Pajak');
     }
 
     /**
@@ -36,13 +35,6 @@ class InitialBalancePolicy
      */
     public function delete(User $user): bool
     {
-        return $user->can('Hapus Data Saldo Awal');
+        return $user->can('Hapus Data Pengaturan Pajak');
     }
-
-
-    public function filterBranch(User $user): bool
-    {
-        return $user->can('Filter Data Berdasarkan Cabang');
-    }
-
 }

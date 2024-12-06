@@ -6,6 +6,7 @@ namespace App\Providers;
 use App\Models\Account;
 use App\Models\AccountTransaction;
 use App\Models\Area;
+use App\Models\Asset;
 use App\Models\AttendancesSummary;
 use App\Models\Boq;
 use App\Models\Branch;
@@ -22,11 +23,13 @@ use App\Models\PurchaseOrder;
 use App\Models\ServiceCategory;
 use App\Models\SKL;
 use App\Models\SP;
+use App\Models\TaxSetting;
 use App\Models\UnitType;
 use App\Models\User;
 use App\Models\WorkTime;
 use App\Policies\AccountPolicy;
 use App\Policies\AreaPolicy;
+use App\Policies\AssetPolicy;
 use App\Policies\AttendanceRecordPolicy;
 use App\Policies\BoqPolicy;
 use App\Policies\BranchPolicy;
@@ -46,6 +49,7 @@ use App\Policies\RolePolicy;
 use App\Policies\ServiceCategoriesPolicy;
 use App\Policies\SKLPolicy;
 use App\Policies\SpPolicy;
+use App\Policies\TaxSettingPolicy;
 use App\Policies\UnitTypePolicy;
 use App\Policies\UserPolicy;
 use App\Policies\WorkTimePolicy;
@@ -87,6 +91,8 @@ class AuthServiceProvider extends ServiceProvider
         UnitType::class => UnitTypePolicy::class,
         BroadbandPacket::class => BroadbandPacketPolicy::class,
         Area::class => AreaPolicy::class,
+        TaxSetting::class => TaxSettingPolicy::class,
+        Asset::class => AssetPolicy::class,
     ];
 
     /**

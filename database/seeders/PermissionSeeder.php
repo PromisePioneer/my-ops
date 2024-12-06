@@ -611,7 +611,8 @@ class PermissionSeeder extends Seeder
             'Tambah Data Aset',
             'Lihat Detail Data Aset',
             'Hapus Data Aset',
-            'Konfirmasi Data Aset'
+            'Konfirmasi Data Aset',
+            'Import Data Aset',
         ];
 
         foreach ($permissions as $permission) {

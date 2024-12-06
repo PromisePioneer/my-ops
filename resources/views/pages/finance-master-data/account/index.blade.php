@@ -19,6 +19,7 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                        @can('Tambah Data Akun')
                         <button type="button" class="btn btn-light-primary btn-sm"
                                 data-bs-toggle="modal"
                                 data-bs-target="#modal-create">
@@ -28,6 +29,7 @@
                                 <span class="path3"></span>
                             </i> Tambah
                         </button>
+                        @endcan
                     </div>
                     <div class="d-flex justify-content-end align-items-center d-none"
                          data-kt-user-table-toolbar="selected">
@@ -65,7 +67,10 @@
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                        <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
+                                        <input class="form-check-input"
+                                               type="checkbox" @click="toggleAllCheckBox()"
+                                               :disabled="Number(deletePermission) !== 1"
+                                        >
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Akun</th>
@@ -102,7 +107,8 @@
                                              @click="selectCheckBox($event)">
                                             <input class="form-check-input" type="checkbox"
                                                    :value="account.account_id"
-                                                   :id="'checkbox-' + account.account_id"/>
+                                                   :id="'checkbox-' + account.account_id"
+                                                   :disabled="Number(deletePermission) !== 1"/>
                                         </div>
                                     </td>
                                     <td>
@@ -136,7 +142,8 @@
                                                  @click="selectCheckBox($event)">
                                                 <input class="form-check-input" type="checkbox"
                                                        :value="subAccount.sub_account_id"
-                                                       :id="'checkbox-' + subAccount.sub_account_id"/>
+                                                       :id="'checkbox-' + subAccount.sub_account_id"
+                                                       :disabled="Number(deletePermission) !== 1"/>
                                             </div>
                                         </td>
                                         <td placement="center"
@@ -177,6 +184,8 @@
     <script>
         function accountData() {
             return {
+                editPermission: "{{ request()->user()->can('Edit Data Akun') }}",
+                deletePermission: "{{ request()->user()->can('Hapus Data Akun') }}",
                 accounts: [],
                 buttonLoading: false,
                 isLoading: true,

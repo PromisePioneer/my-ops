@@ -20,21 +20,25 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            <button type="button" class="btn btn-light-success btn-sm me-3"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-import">
-                                <i class="bi bi-file-earmark-excel"></i>
-                                Import
-                            </button>
-                            <button type="button" class="btn btn-light-primary btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
-                                <i class="ki-duotone ki-message-add fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                </i> Tambah
-                            </button>
+                            @can('Import Data Aset')
+                                <button type="button" class="btn btn-light-success btn-sm me-3"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-import">
+                                    <i class="bi bi-file-earmark-excel"></i>
+                                    Import
+                                </button>
+                            @endcan
+                            @can('Tambah Data Aset')
+                                <button type="button" class="btn btn-light-primary btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-create">
+                                    <i class="ki-duotone ki-message-add fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i> Tambah
+                                </button>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -63,7 +67,9 @@
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                        <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
+                                        <input class="form-check-input" type="checkbox"
+                                               @click="toggleAllCheckBox()"
+                                               :disabled="Number(deletePermission) !== 1">
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Cabang</th>
@@ -100,28 +106,33 @@
                                              @click="selectCheckBox($event)">
                                             <template x-if="asset.status === 0">
                                                 <input class="form-check-input" type="checkbox" :value="asset.id"
-                                                       :id="'checkbox-' + asset.id"/>
+                                                       :id="'checkbox-' + asset.id"
+                                                       :disabled="Number(deletePermission) !== 1"/>
                                             </template>
                                         </div>
                                     </td>
                                     <td x-text="`${asset.branch_name ?? 'Pusat'}`"></td>
                                     <td x-text="asset.debit_account"></td>
                                     <td>
-                                        <a :href="`/finances-master-data/assets/detail/${asset.id}`" x-text="asset.name"></a>
+                                        <a :href="`${Number(viewDetailPermission) === 1 ? `/finances-master-data/assets/detail/${asset.id}` : '' }`"
+                                           x-text="asset.name"></a>
                                     </td>
                                     <td x-text="asset.unit"></td>
                                     <td x-text="asset.useful_life"></td>
                                     <td x-text="asset.price_per_unit"></td>
                                     <td>
                                         <template x-if="asset.status == 0">
-                                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-edit" @click="edit(asset.id)">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
+                                            <template x-if="Number(editPermission) === 1">
+                                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                        data-bs-target="#modal-edit" @click="edit(asset.id)">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                            </template>
                                         </template>
-                                        <button :class="`${asset.status  === 1  ? 'btn btn-success btn-sm' : 'btn btn-danger btn-sm'}`"
-                                                @click="asset.status === 0 ? check(asset.id) : ''"
-                                                :disabled="asset.status === 1">
+                                        <button
+                                            :class="`${asset.status  === 1  ? 'btn btn-success btn-sm' : 'btn btn-danger btn-sm'}`"
+                                            @click="asset.status === 0 ? check(asset.id) : ''"
+                                            :disabled="asset.status === 1">
                                             <i class="ki-duotone ki-check-square">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
@@ -154,6 +165,9 @@
 
         function assetsData() {
             return {
+                deletePermission: "{{ request()->user()->can('Hapus Data Aset') }}",
+                viewDetailPermission: "{{ request()->user()->can('Lihat Detail Data Aset') }}",
+                editPermission: "{{ request()->user()->can('Edit Data Aset') }}",
                 assets: [],
                 isLoading: false,
                 buttonLoading: false,
