@@ -101,7 +101,11 @@
                 @canany(['Lihat Menu Supplier', 'Lihat Menu Kategori Barang', 'Lihat Menu Kode Joint Closure','Lihat Menu Cabang', 'Lihat Menu Kontak', 'Lihat Menu SKL', 'Lihat Menu Produk', 'Lihat Menu Kategori Layanan', 'Lihat Menu Departemen', 'Lihat Menu Jabatan', 'Lihat Menu Paket Broadband', 'Lihat Menu Data Perusahaan', 'Lihat Menu Area','Lihat Menu Akun', 'Lihat Menu Saldo Awal', 'Lihat Menu Pengaturan Pajak', 'Lihat Menu Aset'])
                     <x-menu-sections>Master Data</x-menu-sections>
                 @endcanany
-                @canany(['Lihat Menu Cabang', 'Lihat Menu Kontak', 'Lihat Menu SKL', 'Lihat Menu Produk', 'Lihat Menu Kategori Layanan', 'Lihat Menu Departemen', 'Lihat Menu Jabatan', 'Lihat Menu Paket Broadband', 'Lihat Menu Data Perusahaan', 'Lihat Menu Area', 'Lihat Menu Satuan' ])
+                @canany(['Lihat Menu Cabang', 'Lihat Menu Kontak', 'Lihat Menu SKL',
+                 'Lihat Menu Produk', 'Lihat Menu Kategori Layanan', 'Lihat Menu Departemen',
+                 'Lihat Menu Jabatan', 'Lihat Menu Paket Broadband', 'Lihat Menu Data Perusahaan',
+                  'Lihat Menu Area', 'Lihat Menu Satuan'
+                  ])
                     <x-dropdown-menu :active="request()->segment(1) === 'general-master-data'">
                         @slot('parentIcon')
                             <i class="ki-duotone ki-element-7 fs-2">
@@ -162,33 +166,33 @@
                                     Department
                                 </x-dropdown-menu-item>
                             @endcan
-                                @can('Lihat Menu Jabatan')
-                                    <x-dropdown-menu-item
+                            @can('Lihat Menu Jabatan')
+                                <x-dropdown-menu-item
                                     :active="request()->segment(2) === 'roles'"
                                     href="{{ url('general-master-data/roles') }}">
-                                        Jabatan
-                                    </x-dropdown-menu-item>
-                                @endcan
-                                @can('Lihat Menu Paket Broadband')
-                                    <x-dropdown-menu-item
+                                    Jabatan
+                                </x-dropdown-menu-item>
+                            @endcan
+                            @can('Lihat Menu Paket Broadband')
+                                <x-dropdown-menu-item
                                     :active="request()->segment(2) === 'broadband-packet'"
                                     href="{{ url('general-master-data/broadband-packet') }}">
-                                        Paket Broadband
-                                    </x-dropdown-menu-item>
-                                @endcan
-                                @can('Lihat Menu Data Perusahaan')
-                                    <x-dropdown-menu-item
+                                    Paket Broadband
+                                </x-dropdown-menu-item>
+                            @endcan
+                            @can('Lihat Menu Data Perusahaan')
+                                <x-dropdown-menu-item
                                     :active="request()->segment(2) === 'companies'"
                                     href="{{ url('general-master-data/companies') }}">
-                                        Data Perusahaan
-                                    </x-dropdown-menu-item>
-                                @endcan
-                                <x-dropdown-menu-item
-                                    :active="request()->segment(2) === 'area'"
-                                    href="{{ url('general-master-data/area') }}">
-                                    Area
+                                    Data Perusahaan
                                 </x-dropdown-menu-item>
-                            @endslot
+                            @endcan
+                            <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'area'"
+                                href="{{ url('general-master-data/area') }}">
+                                Area
+                            </x-dropdown-menu-item>
+                        @endslot
                     </x-dropdown-menu>
                 @endcanany
 
