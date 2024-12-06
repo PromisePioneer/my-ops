@@ -2,7 +2,7 @@
     <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Accounting Software</title>
+    <title>Mayatama Solusindo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta charset="utf-8"/>
     <meta property="og:locale" content="en_US"/>
