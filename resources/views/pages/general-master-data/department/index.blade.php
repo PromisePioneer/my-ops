@@ -55,7 +55,8 @@
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th>
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                        <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
+                                        <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()"
+                                               :disabled="Number(deletePermission) !== 1">
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Kode</th>
@@ -91,26 +92,28 @@
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
                                             <input class="form-check-input" type="checkbox" :value="department.id"
-                                                   :id="'checkbox-' + department.id"/>
+                                                   :id="'checkbox-' + department.id"
+                                                   :disabled="Number(deletePermission) !== 1"/>
                                         </div>
                                     </td>
                                     <td x-text="department.code"></td>
                                     <td x-text="department.name"></td>
                                     <td>
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(department.id)">
-                                            <i class="ki-duotone ki-pencil fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </button>
+                                        <template x-if="Number(editPermission) === 1">
+                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-edit" @click="edit(department.id)">
+                                                <i class="ki-duotone ki-pencil fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                            </button>
+                                        </template>
                                     </td>
                                 </tr>
                                 </tbody>
                             </template>
                         </table>
                     </div>
-                    <ul class="pagination float-end mb-4">
                         <ul class="pagination float-end mb-4 mt-4">
                             <template x-for="pagination in departments.links">
                                 <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
@@ -120,7 +123,6 @@
                                 </li>
                             </template>
                         </ul>
-                    </ul>
                 </div>
             </div>
         </div>
@@ -131,6 +133,8 @@
     <script>
         function departmentsData() {
             return {
+                editPermission: "{{ request()->user()->can('Edit Data Departemen') }}",
+                deletePermission: "{{ request()->user()->can('Hapus Data Permission') }}",
                 isLoading: false,
                 buttonLoading: false,
                 departments: [],
@@ -162,17 +166,19 @@
 
                 },
                 toggleAllCheckBox() {
-                    this.selectAll = !this.selectAll;
-                    this.singleChecked = false;
-                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                    this.selectedCheckBox = [];
-                    checkboxes.forEach((checkbox) => {
-                        checkbox.checked = this.selectAll;
-                        if (this.selectAll) {
-                            this.selectedCheckBox.push(checkbox.value);
-                        }
-                    });
-                    this.selectedCheckBox.shift();
+                    if (Number(this.deletePermission) === 1) {
+                        this.selectAll = !this.selectAll;
+                        this.singleChecked = false;
+                        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                        this.selectedCheckBox = [];
+                        checkboxes.forEach((checkbox) => {
+                            checkbox.checked = this.selectAll;
+                            if (this.selectAll) {
+                                this.selectedCheckBox.push(checkbox.value);
+                            }
+                        });
+                        this.selectedCheckBox.shift();
+                    }
                 },
                 selectCheckBox(event) {
                     const checkboxId = event.target.value;

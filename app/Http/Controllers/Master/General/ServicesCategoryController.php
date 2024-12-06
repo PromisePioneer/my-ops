@@ -22,7 +22,6 @@ class ServicesCategoryController extends Controller
     public function index(): View
     {
         $this->authorize('view', ServiceCategory::class);
-
         return view('pages.general-master-data.services-categories.index');
     }
 
@@ -60,7 +59,7 @@ class ServicesCategoryController extends Controller
     public function store(ServicesCategoryRequest $request): JsonResponse
     {
         $this->authorize('create', ServiceCategory::class);
-        $services = ServiceCategory::create($request->validated());
+        ServiceCategory::create($request->validated());
 
         return response()->json([
             'message' => 'data berhasil disimpan',

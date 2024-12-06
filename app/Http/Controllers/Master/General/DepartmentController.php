@@ -89,7 +89,7 @@ class DepartmentController extends Controller
      */
     public function destroy(Request $request, Department $department): JsonResponse
     {
-//        $this->authorize('delete', $department);
+        $this->authorize('delete', $department);
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
         $department->whereIn('id', $explodeID)->delete();

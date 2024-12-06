@@ -62,14 +62,18 @@
                             </div>
                         </div>
                         <div class="card-footer flex-wrap pt-0">
-                            <a :href="`/general-master-data/roles/edit/${role.id}`"
-                               class="btn btn-light btn-active-primary my-1 me-2">
-                                <i class="bi bi-pencil-square fs-3"></i>
-                            </a>
-                            <button type="button" class="btn btn-light btn-active-light-danger my-1"
-                                    @click="destroy(role.id)">
-                                <i class="bi bi-trash fs-3"></i>
-                            </button>
+                            <template x-if="Number(editPermission) === 1">
+                                <a :href="`/general-master-data/roles/edit/${role.id}`"
+                                   class="btn btn-light btn-active-primary my-1 me-2">
+                                    <i class="bi bi-pencil-square fs-3"></i>
+                                </a>
+                            </template>
+                            <template x-if="Number(deletePermission) === 1">
+                                <button type="button" class="btn btn-light btn-active-light-danger my-1"
+                                        @click="destroy(role.id)">
+                                    <i class="bi bi-trash fs-3"></i>
+                                </button>
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -78,10 +82,12 @@
                 <div class="ol-md-4">
                     <div class="card h-md-100">
                         <div class="card-body d-flex flex-center">
-                            <a href="{{ url('general-master-data/roles/create')  }}"
-                               class="btn btn-clear d-flex flex-column flex-center">
-                                <div class="fw-bolder fs-3 text-gray-600 text-hover-primary">Tambah Role Baru</div>
-                            </a>
+                            @can('Tambah Data Jabatan')
+                                <a href="{{ url('general-master-data/roles/create')  }}"
+                                   class="btn btn-clear d-flex flex-column flex-center">
+                                    <div class="fw-bolder fs-3 text-gray-600 text-hover-primary">Tambah Role Baru</div>
+                                </a>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -95,6 +101,8 @@
     <script defer>
         function rolesData() {
             return {
+                editPermission: "{{ request()->user()->can('Edit Data Jabatan') }}",
+                deletePermission: "{{ request()->user()->can('Hapus Data Jabatan')  }}",
                 buttonLoading: false,
                 roles: null,
                 isLoading: true,

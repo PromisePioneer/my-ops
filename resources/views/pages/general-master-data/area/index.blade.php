@@ -18,15 +18,17 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            <button type="button" class="btn btn-light-primary btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
-                                <i class="ki-duotone ki-message-add fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                </i> Tambah
-                            </button>
+                            @can('Tambah Data Area')
+                                <button type="button" class="btn btn-light-primary btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-create">
+                                    <i class="ki-duotone ki-message-add fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i> Tambah
+                                </button>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -56,7 +58,7 @@
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input" type="checkbox"
-                                               @click="toggleAllCheckBox()">
+                                               @click="toggleAllCheckBox()" :disabled="Number(deletePermission) !== 1">
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Cabang</th>
@@ -93,7 +95,9 @@
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
                                             <input class="form-check-input" type="checkbox" :value="area.id"
-                                                   :id="'checkbox-' + area.id"/>
+                                                   :id="'checkbox-' + area.id"
+                                                   :disabled="Number(deletePermission) !== 1"
+                                            />
                                         </div>
                                     </td>
                                     <td x-text="area.branch.name"></td>
@@ -134,6 +138,8 @@
     <script>
         function areaData() {
             return {
+                editPermission: "{{ request()->user()->can('Edit Data Area') }}",
+                deletePermission: "{{ request()->user()->can('Hapus Data Area') }}",
                 isLoading: false,
                 areas: [],
                 search: '',
@@ -152,17 +158,19 @@
                     await this.getArea();
                 },
                 toggleAllCheckBox() {
-                    this.selectAll = !this.selectAll;
-                    this.singleChecked = false;
-                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                    this.selectedCheckBox = [];
-                    checkboxes.forEach((checkbox) => {
-                        checkbox.checked = this.selectAll;
-                        if (this.selectAll) {
-                            this.selectedCheckBox.push(checkbox.value);
-                        }
-                    });
-                    this.selectedCheckBox.shift();
+                    if (Number(this.deletePermission) === 1) {
+                        this.selectAll = !this.selectAll;
+                        this.singleChecked = false;
+                        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                        this.selectedCheckBox = [];
+                        checkboxes.forEach((checkbox) => {
+                            checkbox.checked = this.selectAll;
+                            if (this.selectAll) {
+                                this.selectedCheckBox.push(checkbox.value);
+                            }
+                        });
+                        this.selectedCheckBox.shift();
+                    }
                 },
                 selectCheckBox(event) {
                     const checkboxId = event.target.value;

@@ -15,6 +15,9 @@ class CompanyController extends Controller
 
     private static int $perPage = 10;
 
+    /**
+     * @throws AuthorizationException
+     */
     public function index(): View
     {
         $this->authorize('view', Company::class);
@@ -22,6 +25,9 @@ class CompanyController extends Controller
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function data(): JsonResponse
     {
         $this->authorize('view', Company::class);
@@ -30,6 +36,9 @@ class CompanyController extends Controller
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', Company::class);
@@ -46,6 +55,9 @@ class CompanyController extends Controller
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function store(CompanyRequest $request): JsonResponse
     {
         $this->authorize('create', Company::class);
@@ -53,6 +65,9 @@ class CompanyController extends Controller
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function edit(Company $company): JsonResponse
     {
         $this->authorize('edit', $company);
@@ -60,6 +75,9 @@ class CompanyController extends Controller
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function update(CompanyRequest $request, Company $company): JsonResponse
     {
         $this->authorize('edit', $company);
