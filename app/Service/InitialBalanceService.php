@@ -16,6 +16,7 @@ class InitialBalanceService
         $data = Account::with('accountTransaction', 'children')
             ->whereNull('parent_id')
             ->paginate(self::$perPage);
+
         return $this->formattedData($data);
     }
 
@@ -25,9 +26,8 @@ class InitialBalanceService
         $search = $request->input('search');
 
 
-        $query = Account::with('accountTransaction', 'children')->whereHas('accountTransaction', function ($query) {
-            $query->whereYear('date', Carbon::now()->subYear());
-        })->whereNull('parent_id');
+        $query = Account::with('accountTransaction', 'children')->whereNull('parent_id');
+
 
         if (!empty($search)) {
             $query->where('name', 'like', '%'.$search.'%')->orWhere('code', 'like', '%'.$search.'%');
@@ -42,6 +42,8 @@ class InitialBalanceService
     public function formattedData($account, ?Request $request = null)
     {
         $data = $account->getCollection()->map(function ($account) use ($request) {
+
+
             if ($account->children->count() > 0) {
                 $initialBalance = $account->children->sum(function ($transaction) use ($request) {
                     return $this->getFilteredTransactionSum($transaction, 'SA', $request);

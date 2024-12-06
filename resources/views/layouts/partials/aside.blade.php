@@ -196,7 +196,7 @@
                     </x-dropdown-menu>
                 @endcanany
 
-                @canany('Lihat Menu Akun', 'Lihat Menu Saldo Awal', 'Lihat Menu Pengaturan Pajak', 'Lihat Menu Aset')
+                @canany(['Lihat Menu Akun', 'Lihat Menu Saldo Awal', 'Lihat Menu Pengaturan Pajak', 'Lihat Menu Aset'])
                     <x-dropdown-menu :active="request()->segment(1) === 'finances-master-data'">
                         @slot('parentIcon')
                             <i class="ki-duotone ki-element-7 fs-2">

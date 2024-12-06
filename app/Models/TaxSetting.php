@@ -14,4 +14,5 @@ class TaxSetting extends Model
         'name',
         'rate',
     ];
+
 }

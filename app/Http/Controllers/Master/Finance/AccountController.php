@@ -2,26 +2,19 @@
 
 namespace App\Http\Controllers\Master\Finance;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Account\AccountRequest;
 use App\Models\Account;
 use App\Models\Branch;
 use App\Service\Accounts\AccountService;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-class AccountController extends Controller
+#[AllowDynamicProperties] class AccountController extends Controller
 {
-
-    use HandlesAuthorization;
-
-    public int $perPage = 10;
-    private Branch $branch;
-    private Account $account;
-    private AccountService $accountService;
 
     public function __construct()
     {
@@ -42,6 +35,7 @@ class AccountController extends Controller
 
     public function createChildAccount(AccountRequest $request, Account $account): JsonResponse
     {
+        $this->authorize('create', $account);
         Account::create([
             'name' => $request->name,
             'code' => $request->code,

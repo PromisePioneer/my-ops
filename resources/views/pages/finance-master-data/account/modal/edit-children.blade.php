@@ -29,7 +29,7 @@
                     <div class="mb-10">
                         <label for="name" class="required form-label">Parent Account</label>
                         <select name="parent_id" class="form-select form-select-solid">
-                            <option :value="editVal.parent.id" x-text="editVal.parent.name"></option>
+                            <option :value="editVal?.parent.id" x-text="editVal?.parent?.name"></option>
                         </select>
                     </div>
                 </div>
