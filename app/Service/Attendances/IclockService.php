@@ -171,11 +171,11 @@ class IclockService
         Log::info($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin));
 
 
+        Attendances::create($attendanceData);
 
         if ($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin)) {
             $existingRecord = $this->getAttendanceRecord($attendanceData['employee_id'], $date);
             if (!$existingRecord) {
-                Attendances::create($attendanceData);
             }
         }
     }
@@ -211,6 +211,7 @@ class IclockService
 
     private function processCheckOut(array $attendanceData, $shift, string $date, string $time): void
     {
+        Attendances::create($attendanceData);
         if ($this->isValidTime($time, $shift->time_to_checkout, $shift->end_time_to_checkout)) {
             $existingCheckOut = Attendances::where('employee_id', $attendanceData['employee_id'])
                 ->whereDate('timestamp', $date)
@@ -218,7 +219,6 @@ class IclockService
                 ->exists();
 
             if (!$existingCheckOut) {
-                Attendances::create($attendanceData);
             }
         }
     }

@@ -17,42 +17,50 @@ class AttendanceSummaryObserver
      */
     public function created(Attendances $attendances): void
     {
-        $user = User::where('absent_id', $attendances->employee_id)->first() ?? null;
-
-        // $userWorktime = WorkTime::whereHas('userWorktime', function ($item) use ($attendances, $user) {
-        //     $item->where('user_id', $user->id);
-        // })->first() ?? WorkTime::where('name', 'Default')->first();
 
 
-        $userWorktime =  EmployeeSchedule::with('workTime')
+        $findLastCheckIn = AttendancesSummary::where('employee_id', $attendances->employee_id)
+        ->whereNull('clock_out')
+        ->latest()
+        ->first();
+
+    $clockIn = Carbon::parse($attendances->timestamp);
+
+    // Adjust clockIn date based on work_time_id
+    if ($findLastCheckIn && $findLastCheckIn->work_time_id === 6) {
+        $clockIn = Carbon::parse($findLastCheckIn->date);
+        Log::info('Adjusted clockIn based on last check-in: ' . $clockIn->toDateTimeString());
+    }
+
+        $userWorktime = EmployeeSchedule::with('workTime')
         ->where('employee_id', $attendances->employee_id)
-        ->whereDate('date', Carbon::parse($attendances->timestamp))
+        ->whereDate('date', Carbon::parse($findLastCheckIn->date))
         ->first() ?? WorkTime::where('name', 'Default')->first();
 
 
-        Log::error($userWorktime);
 
+    // Update or create attendance summary
+    $attendancesSummary = AttendancesSummary::updateOrCreate([
+        'date' => $clockIn->format('Y-m-d'),
+        'employee_id' => $attendances->employee_id,
+        'work_time_id' => $userWorktime?->workTime?->id ?? $userWorktime->id,
+    ], []);
 
+    // Handle clock_in or clock_out updates
+    if ($attendances->status1 === 0) {
+        $attendancesSummary->clock_in = $clockIn->format('H:i');
+        Log::info('Clock-in recorded: ' . $attendancesSummary->clock_in);
+    } elseif ($attendances->status1 === 1) {
+        $clockOutTime = Carbon::parse($attendances->timestamp)->format('H:i:s');
+        $attendancesSummary->clock_out = Carbon::parse($clockIn->format('Y-m-d') . ' ' . $clockOutTime)->format('H:i');
+        Log::info('Clock-out recorded: ' . $attendancesSummary->clock_out);
+    }
 
-        if ($userWorktime->status === 'L') {
-            return;
-        }
+    // Save the attendance summary
+    $attendancesSummary->save();
 
-
-        $attendancesSummary = AttendancesSummary::updateOrCreate([
-            'date' => Carbon::parse($attendances->timestamp)->format('Y-m-d'),
-            'employee_id' => $attendances->employee_id,
-            'work_time_id' => $userWorktime?->workTime?->id ?? $userWorktime->id,
-        ], []);
-
-        if ($attendances->status1 === 0) {
-            $attendancesSummary->clock_in = Carbon::parse($attendances->timestamp)->format('H:i');
-        } elseif ($attendances->status1 === 1) {
-            $attendancesSummary->clock_out = Carbon::parse($attendances->timestamp)->format('H:i');
-        }
-
-        $attendancesSummary->save();
-
+    // Final debug log
+    Log::info('Final AttendancesSummary: ', $attendancesSummary->toArray());
 
     }
 
