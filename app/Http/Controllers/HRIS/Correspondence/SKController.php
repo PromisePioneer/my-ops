@@ -9,11 +9,11 @@ use App\Models\Role;
 use App\Models\SK;
 use App\Models\User;
 use App\Service\User\SKService;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
+use Spatie\Browsershot\Browsershot;
 use Throwable;
 
 class SKController extends Controller
@@ -105,11 +105,25 @@ class SKController extends Controller
     public function exportToPDF(SK $sk): Response
     {
         $operationalManager = User::role('Operational Manager')->first();
-        $pdf = Pdf::loadView(
-            'pages.manage-users.sk.sk-pdf',
-            compact('operationalManager', 'sk')
-        )->setPaper('A4', 'portrait');
 
-        return $pdf->stream();
+        $view = view('pages.manage-users.sk.sk-pdf',
+            compact('operationalManager', 'sk'));
+
+
+        $pdf = Browsershot::html($view)
+            ->setChromePath('/usr/bin/chromium')
+            ->noSandbox()
+            ->waitUntilNetworkIdle()
+            ->ignoreHttpsErrors()
+            ->format('A4')
+            ->setEnvironmentOptions([
+                'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
+            ])->pdf();
+
+        return new Response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="example.pdf',
+        ]);
+
     }
 }

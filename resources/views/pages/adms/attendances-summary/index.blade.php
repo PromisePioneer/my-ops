@@ -2,6 +2,38 @@
 @section('content')
 
     <div x-data="attendancesSummary()">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h3 class="card-title">Filter</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <label for="name" class="form-label">Departemen</label>
+                        <select class="form-select form-select-solid form-select-sm departments-select2" name="" id="">
+                            <option></option>
+                        </select>
+                    </div>
+                    <div class="col-lg-4">
+                        <label for="name" class="form-label">Cabang</label>
+                        <select class="form-select form-select-solid form-select-sm branch-select2" name=""
+                                id="">
+                            <option></option>
+                        </select>
+                    </div>
+                    <div class="col-lg-4">
+                        <label for="name" class="form-label">Jabatan</label>
+                        <select class="form-select form-select-solid form-select-sm roles-select2" name=""
+                                id=""></select>
+                    </div>
+                </div>
+                <div class="float-end mt-10">
+                    <button class="btn btn-light-primary btn-sm">Filter</button>
+                </div>
+            </div>
+        </div>
+
+
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -107,6 +139,51 @@
                 async init() {
                     await this.getAttendanceSummary();
                     await this.getMonths();
+                    await this.getBranchData();
+                    await this.getRoleData();
+                    await this.getDepartmentData();
+                },
+                async getDepartmentData() {
+                    $(".departments-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Departement",
+                        ajax: {
+                            url: '/adms/attendances-summary/department/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async getBranchData() {
+                    $(".branch-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Cabang",
+                        ajax: {
+                            url: '/adms/attendances-summary/branch/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async getRoleData() {
+                    $(".roles-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Jabatan",
+                        ajax: {
+                            url: '/adms/attendances-summary/roles/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
                 },
                 async paginationEndPointForAttendanceSummaryDetail(url) {
                     if (url) {
@@ -198,7 +275,6 @@
                 },
                 async searchData() {
                     this.isLoading = true;
-
                     const startDate = document.getElementById('start_date')?.value;
                     const endDate = document.getElementById('end_date')?.value;
                     try {

@@ -10,7 +10,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-
 use function App\Helper\convertToRoman;
 
 class SKService
@@ -73,9 +72,9 @@ class SKService
 
     public function store(SKRequest $request)
     {
+//        dd($request->all());
         DB::transaction(callback: function () use ($request) {
             $user = User::with('roles')->where('id', $request->user_id)->first();
-
             SK::create([
                 'sk_number' => self::generateSKNumber($request),
                 'user_id' => $request->user_id,

@@ -1,5 +1,5 @@
 @php use Carbon\Carbon;use SimpleSoftwareIO\QrCode\Facades\QrCode; @endphp
-        <!doctype html>
+    <!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -113,13 +113,15 @@
 
 
 <header>
-    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-header.png'))) }}"
-         width="100%" height="100%"/>
+    <img
+        src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-header.png'))) }}"
+        width="100%" height="100%"/>
 </header>
 
 <footer>
-    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"
-         width="100%" height="100%"/>
+    <img
+        src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"
+        width="100%" height="100%"/>
 </footer>
 
 <main>
@@ -130,7 +132,7 @@
         </div>
 
 
-        <p style="font-size: 11px; text-align: justify;  text-justify: inter-word; margin-top: 11px ">
+        <p style="font-size: 11px; text-align: justify;  text-justify: inter-word; margin-top: 11px; line-height: 1.5">
             Dengan ini, kami menyatakan bahwa berdasarkan pertimbangan matang dan hasil evaluasi kinerja, serta
             untuk memenuhi kebutuhan perusahaan, kami secara resmi
             menetapkan jabatan bagi:
@@ -159,7 +161,7 @@
             </tbody>
         </table>
 
-        <p style="font-size: 11px; text-align: justify;  text-justify: inter-word; margin-top: 11px ">
+        <p style="font-size: 11px; text-align: justify;  text-justify: inter-word; margin-top: 11px; line-height: 1.5">
             Penetapan jabatan ini berlaku mulai tanggal
             <b>{{ Carbon::parse($sk->date)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('l, j F Y') }}</b>.
             Surat keputusan ini berlaku efektif sejak tanggal ditetapkan dan menggantikan semua keputusan sebelumnya
@@ -184,8 +186,8 @@
                     <th style="text-align: center; padding: 8px;">
                         <p style="font-size: 12px; margin: 0;">
                             <img
-                                    src="data:image/png;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sk/export-pdf/1' . $sk->id))) !!} "
-                                    width="100px" height="70px">
+                                src="data:image/svg+xml;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sk/export-pdf/' . $sk->id))) !!} "
+                                width="100px" height="70px">
                         </p>
                     </th>
                     <th style="text-align: center; padding: 8px;">

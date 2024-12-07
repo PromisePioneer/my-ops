@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers\HRIS\Attendances;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AttendanceCorrectionRequest;
 use App\Http\Requests\AttendancesSummaryFilterByDateRequest;
 use App\Models\AttendancesSummary;
+use App\Models\Branch;
+use App\Models\Department;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\UserWorkTime;
 use App\Models\WorkTime;
@@ -17,19 +21,16 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-class AttendanceSummaryController extends Controller
+#[AllowDynamicProperties] class AttendanceSummaryController extends Controller
 {
-    public readonly int $perPage;
-    private AttendancesSummaryService $attendanceSummaryService;
-    private AttendanceSummaryDetailService $attendanceSummaryDetailService;
-    private WorkTime $workTime;
-
     public function __construct()
     {
-        $this->perPage = 10;
         $this->attendanceSummaryService = new AttendancesSummaryService();
         $this->attendanceSummaryDetailService = new AttendanceSummaryDetailService();
         $this->workTime = new WorkTime();
+        $this->department = new Department();
+        $this->branch = new Branch();
+        $this->role = new Role();
     }
 
     /**
@@ -45,6 +46,21 @@ class AttendanceSummaryController extends Controller
     public function data(Request $request): JsonResponse
     {
         return response()->json($this->attendanceSummaryService->data($request));
+    }
+
+    public function getDepartmentData(Request $request): JsonResponse
+    {
+        return response()->json($this->department->getData($request));
+    }
+
+    public function getBranchData(Request $request): JsonResponse
+    {
+        return response()->json($this->branch->getData($request));
+    }
+
+    public function getRolesData(Request $request): JsonResponse
+    {
+        return response()->json($this->role->getData($request));
     }
 
     public function search(Request $request): JsonResponse
@@ -68,7 +84,6 @@ class AttendanceSummaryController extends Controller
 
     public function detailData(Request $request, User $user): JsonResponse
     {
-
         return response()->json($this->attendanceSummaryDetailService->data($request, $user->absent_id));
     }
 
