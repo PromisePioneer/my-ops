@@ -7,7 +7,6 @@ use App\Http\Requests\SPRequest;
 use App\Models\SP;
 use App\Models\User;
 use App\Service\User\SpService;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -15,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Spatie\Browsershot\Browsershot;
 use Throwable;
 
 class SPController extends Controller
@@ -81,7 +81,8 @@ class SPController extends Controller
             ->where('expired_if_has_new_sp', false)
             ->where('end_date', '>', Carbon::now())
             ->first();
-        $endData = Carbon::parse($request->start_date)->addMonth(6);
+
+        $endData = Carbon::parse($request->start_date)->addMonth();
         DB::transaction(function () use ($request, $currentSP, $endData) {
             $sp = SP::create([
                 'start_date' => $request->start_date,
@@ -92,7 +93,7 @@ class SPController extends Controller
                 'sp_type' => $request->sp_type,
                 'created_by' => $request->user()->id,
                 'list_of_reason' => json_encode($request['data']),
-                'punished_by' => $request->user()->id,
+                'punished_by' => $request->punished_by
             ]);
 
             if ($currentSP) {
@@ -132,6 +133,7 @@ class SPController extends Controller
             'sp_type' => $request->sp_type,
             'created_by' => $request->user()->id,
             'list_of_reason' => json_encode($request['data']),
+            'punished_by' => $request->punished_by
         ]);
 
         return response()->json([
@@ -164,6 +166,11 @@ class SPController extends Controller
         return response()->json($this->user->getSelectedData($sp->user_id));
     }
 
+    public function selectedPunishedBy(Sp $sp): JsonResponse
+    {
+        return response()->json($this->user->getSelectedData($sp->punished_by));
+    }
+
     /**
      * @throws AuthorizationException
      */
@@ -176,7 +183,6 @@ class SPController extends Controller
     public function getListOfReason(SP $sp): JsonResponse
     {
         $listOfReason = json_decode($sp->list_of_reason);
-
         return response()->json($listOfReason);
     }
 
@@ -191,22 +197,32 @@ class SPController extends Controller
         return response()->json($sp);
     }
 
-    public function exportToPDF(Request $request, SP $sp): Response
+    public function exportToPDF(SP $sp): Response
     {
         $punishedBy = User::with('roles')->where('id', $sp->punished_by)->first();
         $operationalManager = User::role('Operational Manager')->with('roles')->first();
 
         $spReasonList = json_decode($sp?->list_of_reason);
 
-        $pdf = Pdf::loadView(
-            'pages.manage-users.sp.export-pdf',
-            compact('sp', 'punishedBy', 'operationalManager', 'spReasonList')
-        )->setPaper(
-            'A4',
-            'portrait'
-        );
+        $view = view('pages.manage-users.sp.export-pdf',
+            compact('sp', 'punishedBy', 'operationalManager', 'spReasonList'));
 
-        return $pdf->stream();
+
+        $pdf = Browsershot::html($view)
+            ->setChromePath('/usr/bin/chromium')
+            ->noSandbox()
+            ->waitUntilNetworkIdle()
+            ->ignoreHttpsErrors()
+            ->format('A4')
+            ->setEnvironmentOptions([
+                'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
+            ])->pdf();
+
+
+        return new Response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="example.pdf',
+        ]);
     }
 
     public function show(SP $sp): JsonResponse

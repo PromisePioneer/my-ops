@@ -5,7 +5,6 @@ namespace App\Observers;
 use App\Models\Attendances;
 use App\Models\AttendancesSummary;
 use App\Models\EmployeeSchedule;
-use App\Models\User;
 use App\Models\WorkTime;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -17,8 +16,6 @@ class AttendanceSummaryObserver
      */
     public function created(Attendances $attendances): void
     {
-
-
         $findLastCheckIn = AttendancesSummary::where('employee_id', $attendances->employee_id)
         ->whereNull('clock_out')
         ->latest()
@@ -52,7 +49,14 @@ class AttendanceSummaryObserver
         Log::info('Clock-in recorded: ' . $attendancesSummary->clock_in);
     } elseif ($attendances->status1 === 1) {
         $clockOutTime = Carbon::parse($attendances->timestamp)->format('H:i:s');
-        $attendancesSummary->clock_out = Carbon::parse($clockIn->format('Y-m-d') . ' ' . $clockOutTime)->format('H:i');
+        if ($attendancesSummary->clock_in === null) {
+            $attendancesSummary->date = $clockIn->subDay()->format('Y-m-d');
+            $attendancesSummary->clock_out = Carbon::parse($clockIn->format('Y-m-d') . ' ' . $clockOutTime)->subDay()->format('H:i');
+        } else {
+            $attendancesSummary->clock_out = Carbon::parse($clockIn->format('Y-m-d') . ' ' . $clockOutTime)->format('H:i');
+        }
+
+
         Log::info('Clock-out recorded: ' . $attendancesSummary->clock_out);
     }
 

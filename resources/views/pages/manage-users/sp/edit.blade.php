@@ -5,7 +5,6 @@
         <script src="{{ asset('assets/plugins/custom/tinymce/tinymce.bundle.js') }}"></script>
     @endpush
     <div class="d-flex flex-column flex-lg-row" x-data="generateSP()">
-        @include('pages.master.contact.modal.create')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
                 <form id="form" @submit.prevent="save()">
@@ -16,8 +15,8 @@
                                      data-bs-toggle="tooltip" data-bs-trigger="hover">
                                     <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal akhir :</div>
                                     <div class="position-relative d-flex align-items-center w-150px">
-                                        <input type="date" class="form-control form-control-white fw-bolder pe-5 date"
-                                               placeholder="Tanggal" name="date" id="date"
+                                        <input type="date" class="form-control form-control-solid fw-bolder pe-5 date"
+                                               placeholder="Tanggal" name="start_date" id="start_date"
                                                value="{{ $sp->start_date }}"/>
                                     </div>
                                 </div>
@@ -53,6 +52,19 @@
                                             </option>
                                         </select>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="mb-5">
+                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">
+                                        Yang Memberi Sanksi
+                                    </label>
+                                    <select name="punished_by" class="form-select form-select-solid users-select2"
+                                            id="selectedPunishedBy">
+                                        <option></option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -119,6 +131,7 @@
                     await this.getListOfReason();
                     await this.getUserData();
                     await this.selectedUserData();
+                    await this.selectedPunishBy();
                 },
                 add() {
                     this.fields.push({
@@ -161,6 +174,19 @@
                             processResults: (data) => ({results: data}),
                             cache: true
                         }
+                    });
+                },
+                async selectedPunishBy() {
+                    const selectedPunishedBy = $('#selectedPunishedBy');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/manage-users/sp/punished-by/selected/${this.spId}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedPunishedBy.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
                     });
                 },
                 async selectedUserData() {

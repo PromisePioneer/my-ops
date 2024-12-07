@@ -190,7 +190,19 @@
                     });
                 },
                 async save(){
-
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/manage-users/leaves/', new FormData(this.formCreate))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.formCreate.reset();
+                        this.modalCreate.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
                 },
                 async detail(id) {
                     const resp = await axios.get(`/manage-users/leaves/${id}`);

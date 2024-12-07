@@ -32,7 +32,6 @@ class IclockService
         FpDevice::updateOrCreate(
             ['serial_number' => $request->input('SN')],
             [
-                'name' => $request->input('SN'),
                 'online' => now(),
             ]
         );
@@ -114,7 +113,6 @@ class IclockService
 
     private function handleOperLog(array $lines): string
     {
-        // Filter out empty lines and count valid ones
         $count = count(array_filter($lines, fn($line) => !empty(trim($line))));
 
         return 'OK: ' . $count;

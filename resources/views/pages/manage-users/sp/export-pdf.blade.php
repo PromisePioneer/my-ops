@@ -1,5 +1,5 @@
 @php use SimpleSoftwareIO\QrCode\Facades\QrCode; @endphp
-        <!doctype html>
+    <!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -23,13 +23,13 @@
             margin: 0 0;
         }
 
-        /** Define now the real margins of every page in the PDF **/
         body {
-            margin: 3cm 2cm 2cm;
+            margin: 4.5cm 0.7cm 2cm;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             font-family: Poppins, Helvetica, sans-serif;
             font-size: 62.5%;
+            box-sizing: border-box;
         }
 
 
@@ -38,7 +38,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 3cm;
+            height: 4.5cm;
         }
 
         footer {
@@ -50,66 +50,40 @@
         }
 
         .wrapper {
+            margin-top: 150px !important;
             position: relative;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .text-center {
+            text-align: center !important;
         }
 
-        .table-heading-container {
-            float: left;
-            display: inline-block;
+        .fs-3 {
+            font-size: calc(1.26rem + .12vw) !important
         }
 
-        .table-heading .table-data-heading {
-            border: none !important;
-            width: 50%;
-            text-align: left;
+        .fs-4 {
+            font-size: 1.25rem !important
         }
 
-        .heading-toolbar {
-            text-align: center;
-            font-size: 15px;
-            font-weight: 400;
+        .mb-4 {
+            margin-bottom: 1rem !important
         }
 
-        .clearfix {
-            clear: both;
+        .fs-9 {
+            font-size: .75rem !important
         }
 
-
-        .table-heading .table-data-heading {
-            /*border: 1px solid;*/
-            border: none !important;
-            width: 50%;
-            text-align: left;
+        .ms-5 {
+            margin-left: 1.25rem !important
         }
 
-
-        .table-heading-container {
-            width: 48%;
-            margin-right: 10%;
-            float: left;
-            display: inline-block;
+        .mb-2 {
+            margin-bottom: .5rem !important
         }
 
-        .clearfix {
-            clear: both;
-        }
-
-        .table-heading .table-data-heading {
-            /*border: 1px solid;*/
-            border: none !important;
-            margin-bottom: 100px;
-            width: 50%;
-            text-align: left;
-        }
-
-
-        .heading-separator {
-            margin-bottom: 0;
+        .ms-n3 {
+            margin-left: -.75rem !important
         }
     </style>
 </head>
@@ -129,79 +103,74 @@
 @endphp
 
 <header>
-    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-header.png'))) }}"
-         width="100%" height="100%"/>
+    <img
+        src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-header.png'))) }}"
+        width="100%" height="100%"/>
 </header>
 
 <div class="wrapper">
-    <div class="heading-toolbar">
-        <p style="font-size: 26px"><u>Surat Peringatan {{ $super }} ({{ $sp->sp_type }})</u></p>
-        <p style="font-size: 17px; ">Nomor : {{ $sp->sp_number }}</p>
+    <div class="text-center mb-4">
+        <p class="fs-3"><u>Surat Peringatan {{ $super }} ({{ $sp->sp_type }})</u></p>
+        <p class="fs-4">Nomor : {{ $sp->sp_number }}</p>
     </div>
-    <p style="font-size: 13px; margin: 10px 40px 0 30px;">Surat peringatan ini ditujukan kepada : </p>
-    <div style="margin: 0 30px 0 40px">
-        <div class="heading-separator table-heading-container">
-            <table class="table-heading">
-                <tbody>
-                <tr>
-                    <td class="table-data-heading" style="font-size: 13px;">
-                        Nama
-                    </td>
-                    <td class="table-data-heading" style="font-size: 13px; text-align: left;">
-                        :
-                    </td>
-                    <td class="table-data-heading" style="font-size: 13px;width: 100%">
-                        {{ $sp->user->name }}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="table-data-heading" style="font-size: 13px;">
-                        <p class="heading-text">NIK</p>
-                    </td>
-                    <td class="table-data-heading" style="font-size: 13px; width: 1px; text-align: left;">
-                        :
-                    </td>
-                    <td class="table-data-heading" style="font-size: 13px; width: 100%">
-                        {{ $sp->user->nip }}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="table-data-heading" style="font-size: 13px;width: 90px">
-                        <p class="heading-text">Jabatan</p>
-                    </td>
-                    <td class="table-data-heading" style="font-size: 13px; width: 1px; text-align: left;">
-                        :
-                    </td>
-                    <td class="table-data-heading" style="font-size: 13px; width: 100%">
-                        {{ $sp?->user?->roles?->first()?->name  }}
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <p class="fs-9">Surat peringatan ini ditujukan kepada : </p>
+    <table class="ms-10 fs-9 mb-4">
+        <tbody>
+        <tr>
+            <td>
+                Nama
+            </td>
+            <td>
+                :
+            </td>
+            <td>
+                {{ $sp->user->name }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>NIK</p>
+            </td>
+            <td>
+                :
+            </td>
+            <td>
+                {{ $sp->user->nip }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>Jabatan</p>
+            </td>
+            <td>
+                :
+            </td>
+            <td>
+                {{ $sp?->user?->roles?->first()?->name  }}
+            </td>
+        </tr>
+        </tbody>
+    </table>
 
-    <div class="clearfix"></div>
 
     @if($sp->sp_type === 'SP-1' || $sp->sp_type === 'SP-2')
-        <div style="margin: 0 30px 0 40px; font-size: 13px">
-            Sehubungan sikap indisipliner dan pelanggaran terhadap tata tertib perusahaan yang saudara
-            lakukan, yaitu sebagai berikut :
-            <div style="padding: 5px 0 3px 0"></div>
-            <ol>
+        <div>
+            <p class="fs-9 mb-2">
+                Sehubungan sikap indisipliner dan pelanggaran terhadap tata tertib perusahaan yang saudara
+                lakukan, yaitu sebagai berikut :
+            </p>
+            <ol class="fs-9 mb-2 ms-n3">
                 @foreach($spReasonList as $spReason)
                     <li>{{ $spReason->list_of_reason }}</li>
                 @endforeach
             </ol>
-
-            <div style="padding: 5px 0 3px 0"></div>
-            <p>
+            <p class="fs-9 mb-2">
                 Maka dengan ini saudara dikenakan. Adapun ketentuan
                 <span style="color: red">{{ $sp->sp_type }}</span> yang telah ditetapkan oleh manajemen untuk saudara
                 adalah sebagai
                 berikut:
             </p>
-            <ol style="line-height: 1.7em">
+            <ol style="line-height: 1.7em" class="fs-9 ms-n3 mb-4">
                 <li>Surat Peringatan Pertama berlaku untuk 6 (enam) bulan kedepan sejak diterbitkan.</li>
                 <li>Jika didapati saudara kembali melakukan tindakan indispliner dan/atau pelanggaran tata tertib,
                     sehingga saudara dianggap meremehkan peraturan dan peringatan yang berlaku, maka
@@ -223,9 +192,8 @@
                 </li>
             </ol>
 
-            <div style="padding: 5px 0 3px 0"></div>
 
-            <p>
+            <p class="fs-9 ">
                 Demikian Surat Peringatan ini dibuat agar dapat diperhatikan dan ditaati oleh yang
                 bersangkutan.
             </p>
@@ -235,29 +203,29 @@
 
 
         @if($sp->sp_type === 'SP-3')
-            <div style="margin: 0 30px 0 40px; font-size: 13px">
+            <div class="fs-9 mb-2">
                 Sehubungan sikap indisipliner dan pelanggaran terhadap tata tertib perusahaan yang saudara
                 lakukan, yaitu sebagai berikut :
                 <div style="padding: 5px 0 3px 0"></div>
-                <ol>
+                <ol class="fs-9 mb-2 ms-n3">
                     @foreach($spReasonList as $spReason)
                         <li>{{ $spReason->list_of_reason }}</li>
                     @endforeach
                 </ol>
-                <div style="padding: 5px 0 3px 0"></div>
 
-                <p> Kami ingin mengingatkan Anda bahwa tindakan pelanggaran terhadap kebijakan perusahaan dapat
+                <p class="fs-9 mb-2"> Kami ingin mengingatkan Anda bahwa tindakan pelanggaran terhadap kebijakan
+                    perusahaan dapat
                     berdampak serius tidak hanya pada kinerja Anda sendiri tetapi juga pada citra perusahaan secara
                     keseluruhan.</p>
                 <br>
-                <p>
+                <p class="fs-9 mb-2">
                     Sehubungan dengan hal ini, kami sangat menyesalkan bahwa upaya-upaya untuk memperbaiki
                     perilaku Anda belum memberikan hasil yang diharapkan. Oleh karena itu, dengan penuh penyesalan,
                     kami harus memberikan sanksi terberat yang telah disepakati oleh perusahaan untuk pelanggaran
                     yang telah terjadi.
                 </p>
                 <br>
-                <p>
+                <p class="fs-9 mb-2">
                     Dengan ini, kami menyampaikan bahwa sanksi yang diberlakukan atas pelanggaran-pelanggaran yang
                     telah terjadi adalah pengunduran diri dari jabatan Anda di perusahaan ini. Anda diharapkan untuk
                     mengajukan pengunduran diri secara tertulis dalam waktu <b>7 (tujuh) hari</b> kerja sejak tanggal
@@ -267,7 +235,7 @@
         @endif
 
         <br>
-        @if($punishedBy->hasAnyRole(['FA & Tax Manager', 'Director', 'Operational Manager']))
+        @if($punishedBy->hasRole('Operational Manager'))
             <div style="margin-right: 30px;float: right">
                 <table>
                     <tr>
@@ -280,8 +248,8 @@
                         <th style="text-align: center; padding: 8px;">
                             <p style="font-size: 12px; margin: 0;">
                                 <img
-                                        src="data:image/png;base64, {!! base64_encode(QrCode::format('png')->size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
-                                        width="100px" height="70px">
+                                    src="data:image/png;base64, {!! base64_encode(QrCode::format('png')->size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                    width="100px" height="70px">
                             </p>
                         </th>
                     </tr>
@@ -314,8 +282,8 @@
                         <th style="text-align: center; padding: 8px;">
                             <p style="font-size: 12px; margin: 0;">
                                 <img
-                                        src="data:image/png;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
-                                        width="100px" height="70px">
+                                    src="data:image/png;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                    width="100px" height="70px">
                             </p>
                         </th>
                         <th style="text-align: center; padding: 8px;">
@@ -346,8 +314,8 @@
                         <th style="text-align: center; padding: 8px;">
                             <p style="font-size: 12px; margin: 0;">
                                 <img
-                                        src="data:image/png;base64, {!! base64_encode(QrCode::size(10)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
-                                        width="100px" height="70px">
+                                    src="data:image/png;base64, {!! base64_encode(QrCode::size(10)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                    width="100px" height="70px">
                             </p>
                         </th>
                         <th style="text-align: center; padding: 8px;">
@@ -370,8 +338,9 @@
         @endif
 
         <footer>
-            <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"
-                 width="100%" height="100%"/>
+            <img
+                src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"
+                width="100%" height="100%"/>
         </footer>
 </div>
 </body>

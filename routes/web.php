@@ -215,6 +215,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [ManageUserLeavesController::class, 'index']);
             Route::get('/data', [ManageUserLeavesController::class, 'data']);
             Route::get('/search', [ManageUserLeavesController::class, 'search']);
+            Route::post('/', [ManageUserLeavesController::class, 'store']);
             Route::get('/{leaveAndPermission}', [ManageUserLeavesController::class, 'detail']);
             Route::post('/{leaveAndPermission}', [ManageUserLeavesController::class, 'changeStatus']);
             Route::get('/users/data', [ManageUserLeavesController::class, 'getUserData']);
@@ -228,6 +229,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/users/data', [SpController::class, 'getUserData']);
             Route::get('/create', [SpController::class, 'create']);
             Route::post('/', [SpController::class, 'store']);
+            Route::get('/punished-by/selected/{sp}', [SpController::class, 'selectedPunishedBy']);
             Route::get('/users/data/selected/{sp}', [SpController::class, 'selectedUserdata']);
             Route::get('/list-of-reason/{sp}', [SpController::class, 'getListOfReason']);
             Route::get('/{sp}', [SpController::class, 'edit']);

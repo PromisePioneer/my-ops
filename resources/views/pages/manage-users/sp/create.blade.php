@@ -48,6 +48,18 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="mb-5">
+                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">
+                                        Yang Memberi Sanksi
+                                    </label>
+                                    <select name="punished_by" class="form-select form-select-solid users-select2">
+                                        <option></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                         <div class="table-responsive mb-20">
                             <table class="table g-5 gs-0 mb-0 fw-bolder text-gray-700" data-kt-element="items">
                                 <thead>
@@ -163,8 +175,6 @@
                             self.currentSP.current_sp.sp_type === 'SP-3') {
                             self.SPType.splice(0, 2);
                         }
-
-                        console.log(self.SPType)
                     })
                 },
                 async getUserData() {

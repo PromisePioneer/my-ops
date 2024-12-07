@@ -177,6 +177,7 @@ use Illuminate\View\View;
 
     public function store(LeaveAndPermissionRequest $request): JsonResponse
     {
+
         LeaveAndPermission::create([
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,

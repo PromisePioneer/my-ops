@@ -1,4 +1,4 @@
-@php use SimpleSoftwareIO\QrCode\Facades\QrCode; @endphp
+@php @endphp
         <!doctype html>
 <html lang="en">
 <head>
@@ -113,13 +113,15 @@
 
 
 <header>
-    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-header.png'))) }}"
-         width="100%" height="100%"/>
+    <img
+        src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-header.png'))) }}"
+        width="100%" height="100%"/>
 </header>
 
 <footer>
-    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"
-         width="100%" height="100%"/>
+    <img
+        src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/logos/kop-footer.png'))) }}"
+        width="100%" height="100%"/>
 </footer>
 
 <main>
@@ -305,7 +307,8 @@
                             </tbody>
                         </table>
                     </li>
-                    <li>
+                    @pageBreak
+                    <li style="margin-top: 155px">
                         <p>
                             Dalam rangka pendayagunaan sumber daya manusia dalam memenuhi kepentingan operasional,
                             <b>PIHAK PERTAMA</b> selanjutnya berwenang mengangkat, menempatkan dan atau mengalih
@@ -381,8 +384,9 @@
                 </ol>
             </div>
 
+                @pageBreak
 
-            <div style="text-align: center; margin-top: 75px">
+                <div style="text-align: center; margin-top: 155px">
                 <p style="font-size: 11px; font-weight: bold"><u>PASAL 3</u></p>
                 <p style="font-size: 11px; font-weight: bold"><u>TATA TERTIB PERUSAHAAN</u></p>
             </div>
@@ -456,8 +460,8 @@
                 </li>
             </ol>
 
-
-            <div style="text-align: center; margin-top: 75px">
+            @pageBreak
+            <div style="text-align: center; margin-top: 155px">
                 <p style="font-size: 11px; font-weight: bold"><u>PASAL 6</u></p>
                 <p style="font-size: 11px; font-weight: bold"><u>TUNJANGAN HARI RAYA</u></p>
             </div>
@@ -542,7 +546,8 @@
                             dengan maksimal 2 hari dalam sebulan.
                         </p>
                     </li>
-                    <li>
+                    @pageBreak
+                    <li style="margin-top: 155px">
                         <p>Berdasarkan Pasal 93 Ayat (2) dan (4) UU Ketenagakerjaan disebutkan bahwa bahwa hak cuti
                             dengan alasan penting memiliki ketentuan sebagai berikut:
                         </p>
@@ -602,8 +607,8 @@
                 </ol>
             </div>
 
-
-            <div style="text-align: center; margin-top: 75px">
+            @pageBreak
+            <div style="text-align: center; margin-top: 155px">
                 <p style="font-size: 11px; font-weight: bold"><u>PASAL 9</u></p>
                 <p style="font-size: 11px; font-weight: bold"><u>HARI, JAM KERJA DAN LEMBUR</u></p>
             </div>
@@ -686,8 +691,8 @@
                 </ol>
             </div>
 
-
-            <div style="text-align: center; margin-top: 75px">
+            @pageBreak
+            <div style="text-align: center; margin-top: 155px">
                 <p style="font-size: 11px; font-weight: bold"><u>PASAL 10</u></p>
                 <p style="font-size: 11px; font-weight: bold"><u>TUGAS DAN KEWAJIBAN <b>PIHAK KEDUA</b></u></p>
             </div>
@@ -794,8 +799,8 @@
                 </ol>
             </div>
 
-
-            <div style="text-align: center; margin-top: 130px">
+            @pageBreak
+            <div style="text-align: center; margin-top: 155px">
                 <p style="font-size: 11px; font-weight: bold"><u>PASAL 11</u></p>
                 <p style="font-size: 11px; font-weight: bold"><u>TUGAS DAN KEWAJIBAN <b>PIHAK PERTAMA</b></u></p>
             </div>
@@ -908,7 +913,8 @@
                             </li>
                         </ol>
                     </li>
-                    <li>
+                    @pageBreak
+                    <li style="margin-top: 155px">
                         <p>
                             Untuk memelihara keselamatan kerja, <b>PIHAK PERTAMA</b> menyediakan alat-alat keselamatan
                             kerja
@@ -1010,7 +1016,8 @@
             </div>
 
 
-            <div style="text-align: center; margin-top: 95px">
+            @pageBreak
+            <div style="text-align: center; margin-top: 155px">
                 <p style="font-size: 11px; font-weight: bold"><u>PASAL 15</u></p>
                 <p style="font-size: 11px; font-weight: bold"><u>PEMUTUSAN HUBUNGAN KERJA ( PHK )</u></p>
             </div>
@@ -1120,7 +1127,8 @@
                             Perusahaan pailit.
                         </p>
                     </li>
-                    <li>
+                    @pageBreak
+                    <li style="margin-top: 155px">
                         <p>
                             Adanya permohonan pemutusan hubungan kerja yang diajukan oleh pekerja/buruh dengan alasan
                             pengusaha melakukan perbuatan sebagai berikut:
@@ -1250,8 +1258,8 @@
                 </ol>
             </div>
 
-
-            <div style="text-align: center; margin-top: 95px">
+            @pageBreak
+            <div style="text-align: center; margin-top: 155px">
                 <p style="font-size: 11px; font-weight: bold"><u>PASAL 17</u></p>
                 <p style="font-size: 11px; font-weight: bold"><u>PELANGGARAN BERIKUT SANKSI</u></p>
             </div>
@@ -1346,7 +1354,9 @@
                 </ol>
             </div>
 
-            <div style="text-align: center; margin-top: 95px">
+            @pageBreak
+
+            <div style="text-align: center; margin-top: 155px">
                 <p style="font-size: 11px; font-weight: bold"><u>PASAL 18</u></p>
                 <p style="font-size: 11px; font-weight: bold"><u>HAK BELA DIRI</u></p>
             </div>
@@ -1435,7 +1445,8 @@
                                 2/2004).
                             </p>
                         </li>
-                        <li>
+                        @pageBreak
+                        <li style="margin-top: 155px">
                             <p>
                                 Prosedur yang disediakan antara lain melalui mediasi hubungan industrial atau konsiliasi
                                 hubungan industrial atau arbitrase hubungan industrial. Bila masih juga gagal, maka
@@ -1500,8 +1511,9 @@
                     </ol>
                 </div>
 
+                @pageBreak
 
-                <div style="text-align: center; margin-top: 75px">
+                <div style="text-align: center; margin-top: 155px">
                     <p style="font-size: 11px; font-weight: bold"><u>PASAL 22</u></p>
                     <p style="font-size: 11px; font-weight: bold"><u>PENUTUP</u></p>
                 </div>
@@ -1530,8 +1542,11 @@
         </div>
         <div style="margin-top: 30px"></div>
         <div style="text-align: center;">
-
-            @if($contract->user?->branch?->code === null || $contract->user?->branch?->code === 100)
+            @if(
+                 $contract->user?->branch?->code == 101
+                 || $contract->user?->branch?->code == null
+                 || $contract->user?->branch?->code == 100
+              )
                 <div style="display: inline-block; vertical-align: top; margin-right: 30px;">
                     <table style="border-collapse: collapse; margin: 0;">
                         <tr>
@@ -1546,31 +1561,33 @@
                         </tr>
                         <tr>
                             <th style="padding: 8px; text-align: center;">
-                                <p style="margin: 0; font-size: 12px; text-decoration: underline;">{{ $directorRole->name }}</p>
+                                <p style="margin: 0; font-size: 12px; text-decoration: underline;">
+                                    {{ $directorRole->name }}
+                                </p>
                             </th>
                         </tr>
                     </table>
                 </div>
-                {{--            @else--}}
-                {{--                <div style="display: inline-block; vertical-align: top; margin-right: 30px;">--}}
-                {{--                    <table style="border-collapse: collapse; margin: 0;">--}}
-                {{--                        <tr>--}}
-                {{--                            <th style="padding: 8px; text-align: center;">--}}
-                {{--                                <p style="margin: 0; font-size: 12px;">PIHAK PERTAMA</p>--}}
-                {{--                            </th>--}}
-                {{--                        </tr>--}}
-                {{--                        <tr>--}}
-                {{--                            <th style="text-align: center; padding-bottom: 75px;">--}}
-                {{--                                <p style="font-size: 12px; margin: 0;"></p>--}}
-                {{--                            </th>--}}
-                {{--                        </tr>--}}
-                {{--                        <tr>--}}
-                {{--                            <th style="padding: 8px; text-align: center;">--}}
-                {{--                                <p style="margin: 0; font-size: 12px; text-decoration: underline;">{{ $branchManagerRole->name }}</p>--}}
-                {{--                            </th>--}}
-                {{--                        </tr>--}}
-                {{--                    </table>--}}
-                {{--                </div>--}}
+            @else
+                <div style="display: inline-block; vertical-align: top; margin-right: 30px;">
+                    <table style="border-collapse: collapse; margin: 0;">
+                        <tr>
+                            <th style="padding: 8px; text-align: center;">
+                                <p style="margin: 0; font-size: 12px;">PIHAK PERTAMA</p>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="text-align: center; padding-bottom: 75px;">
+                                <p style="font-size: 12px; margin: 0;"></p>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="padding: 8px; text-align: center;">
+                                <p style="margin: 0; font-size: 12px; text-decoration: underline;">{{ $branchManagerRole?->name }}</p>
+                            </th>
+                        </tr>
+                    </table>
+                </div>
             @endif
 
             <div style="display: inline-block; vertical-align: top; margin-left: 200px;">

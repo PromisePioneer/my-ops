@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Accounting\Transaction;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaction\OfferingLetter\OfferingLetterRequest;
 use App\Models\Contact;
@@ -21,16 +22,9 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Spatie\Browsershot\Browsershot;
 
-class OfferingLettersController extends Controller
+#[AllowDynamicProperties] class OfferingLettersController extends Controller
 {
     public int $perPage = 10;
-    protected OfferingLetterService $OfferingLetterService;
-    private Contact $contact;
-    private serviceCategory $serviceCategory;
-    private OfferingLetterService $offeringLetterService;
-    private User $user;
-    private UnitType $unitType;
-    private SKL $offeringLetterSKL;
 
     public function __construct()
     {

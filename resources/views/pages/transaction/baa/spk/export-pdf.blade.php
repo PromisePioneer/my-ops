@@ -6,14 +6,13 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>{{ $sp->sp_number }}</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 </head>
 
 <style>
-
     *, *::before, *::after {
         box-sizing: border-box;
     }
@@ -23,18 +22,13 @@
         margin: 0;
     }
 
-    html {
-        -webkit-print-color-adjust: exact;
-    }
-
 
     @page {
         margin: 0 0;
     }
 
-
     body {
-        margin: 4cm 1cm 2cm;
+        margin: 4.5cm 0.7cm 2cm;
         line-height: 1.5;
         -webkit-font-smoothing: antialiased;
         font-family: Poppins, Helvetica, sans-serif;
@@ -59,170 +53,10 @@
         height: 5cm;
     }
 
-
     .wrapper {
-        margin-top: 10px;
+        margin-top: 150px !important;
         position: relative;
     }
-
-    .text-center {
-        text-align: center !important
-    }
-
-    .mb-19 {
-        margin-bottom: 4.75rem !important
-    }
-
-    .mb-20 {
-        margin-bottom: 5rem !important
-    }
-
-    .mb-2 {
-        margin-bottom: .5rem !important
-    }
-
-    .text-uppercase {
-        text-transform: uppercase !important
-    }
-
-    .text-decoration-underline {
-        text-decoration: underline !important
-    }
-
-    .fs-5 {
-        font-size: 1.15rem !important
-    }
-
-    .text-justify {
-        text-align: justify;
-    }
-
-    .ms-10 {
-        margin-left: 2.5rem !important
-    }
-
-    .mb-4 {
-        margin-bottom: 1rem !important
-    }
-
-
-    .mb-3 {
-        margin-bottom: .75rem !important
-    }
-
-
-    .table {
-        width: 100%;
-        margin-bottom: 1rem;
-        vertical-align: top;
-    }
-
-    .w-3px {
-        width: 3px !important
-    }
-
-    .text-start {
-        text-align: left !important
-    }
-
-    .border-top {
-        border-top: 1px solid black;
-    }
-
-    .border-bottom {
-        border-bottom: 1px solid black;
-    }
-
-    .custom-bordered table .custom-bordered th .custom-bordered tr .custom-bordered .td {
-        border: 1px solid black;
-        border-collapse: collapse;
-
-    }
-
-    .lh-lg {
-        line-height: 1.75 !important
-    }
-
-    .d-flex {
-        display: flex;
-    }
-
-    .align-items-center {
-        align-items: center !important
-    }
-
-    .justify-content-around {
-        justify-content: space-around !important
-    }
-
-    .custom-bordered, .custom-bordered th .custom-bordered tr, .custom-bordered td {
-        border: 1px solid black;
-        border-collapse: collapse;
-    }
-
-
-    .table {
-        width: 100%;
-        margin-bottom: 1rem;
-        vertical-align: top;
-    }
-
-    .py-4 {
-        padding-top: 0.5rem !important;
-        padding-bottom: 0.5rem !important
-    }
-
-    .mb-5 {
-        margin-bottom: 1.25rem !important
-    }
-
-    .mb-7 {
-        margin-bottom: 1.75rem !important
-    }
-
-    .w-50 {
-        width: 50% !important
-    }
-
-    .table-bordered > :not(caption) > * {
-        border-width: 1px 0;
-        border-style: solid;
-        border-color: black;
-    }
-
-    .table-bordered > :not(caption) > * > * {
-        border-width: 0 1px;
-        border-style: solid;
-        border-color: black;
-    }
-
-
-    .fw-bolder {
-        font-weight: 700 !important
-    }
-
-    .fs-6 {
-        font-size: 1.075rem !important
-    }
-
-    .fs-8 {
-        font-size: .85rem !important
-    }
-
-    .ms-5 {
-        margin-left: 1.25rem !important
-    }
-
-
-    .px-2 {
-        padding-right: .5rem !important;
-        padding-left: .5rem !important
-    }
-
-    .fs-9 {
-        font-size: .75rem !important
-    }
-
 </style>
 <body>
 <header>

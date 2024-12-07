@@ -3,17 +3,16 @@
 namespace App\Http\Controllers\HRIS\Correspondence;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\User\ContractManagementRequest;
 use App\Models\Branch;
 use App\Models\ContractManagement;
 use App\Models\User;
 use App\Service\User\ContractManagementService;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
+use Spatie\Browsershot\Browsershot;
 
 class ContractManagementController extends Controller
 {
@@ -90,22 +89,33 @@ class ContractManagementController extends Controller
 
     public function contractFile(User $user): Response
     {
-        $contract = ContractManagement::with('user', 'user.education', 'user.identityInformation')->where(
+        $contract = ContractManagement::with('user', 'user.education', 'user.identityInformation')
+            ->where(
             'user_id',
             $user->id
         )->first();
-        $directorRole = User::role('Director')->with('identityInformation')->where(
-            'branch_id',
-            $user->branch_id
-        )->first();
+        $directorRole = User::role('Director')->with('identityInformation', 'branch')->first();
         $branchManagerRole = User::role('Branch Manager')->with('identityInformation')->first();
+        $view = view('pages.manage-users.contract-management.contract-file',
+            compact('contract', 'directorRole', 'branchManagerRole'));
 
-        $pdf = Pdf::loadView(
-            'pages.manage-users.contract-management.contract-file',
-            compact('contract', 'directorRole', 'branchManagerRole')
-        )->setPaper('A4', 'portrait');
 
-        return $pdf->stream();
+        $pdf = Browsershot::html($view)
+            ->setChromePath('/usr/bin/chromium')
+            ->noSandbox()
+            ->waitUntilNetworkIdle()
+            ->ignoreHttpsErrors()
+            ->format('A4')
+            ->setEnvironmentOptions([
+                'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
+            ])->pdf();
+
+
+        return new Response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="example.pdf',
+        ]);
+
     }
 
 

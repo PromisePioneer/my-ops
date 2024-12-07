@@ -31,6 +31,7 @@ class SPRequest extends FormRequest
                 Rule::in('SP-1', 'SP-2', 'SP-3'),
             ],
             'data.*.list_of_reason' => ['required', 'string'],
+            'punished_by' => ['required', 'string'],
         ];
     }
 
@@ -44,6 +45,7 @@ class SPRequest extends FormRequest
             'sp_type.required' => 'Karyawan tidak boleh kosong',
             'sp_type.in' => 'Tipe SP tidak valid',
             'data.*.list_of_reason.required' => 'Alasan tidak boleh kosong',
+            'punished_by.required' => 'yang memberi sanksi tidak boleh kosong',
         ];
     }
 }
