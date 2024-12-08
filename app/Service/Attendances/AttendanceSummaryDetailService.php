@@ -72,14 +72,17 @@ class AttendanceSummaryDetailService
     public function formattedData($attendanceSummary, $empId)
     {
         return $attendanceSummary->map(function ($item) use ($empId) {
+
+
             $userWorktime = WorkTime::where('id', $item['attendanceData']?->work_time_id)->first()
-                ?? null;
+                ?? WorkTime::find(1);
+
 
             return [
                 'date_period' => $item['attendancesDate'],
                 'clock_in' => $item['attendanceData']?->clock_in,
                 'clock_out' => $item['attendanceData']?->clock_out,
-                'late' => $this->calculateLate($item, $userWorktime) ?? null,
+                'late' => $this->calculateLate($item, $userWorktime),
                 'work_time' => $userWorktime->name ?? null,
                 'schedule' => $item['employeeSchedule']?->status ?? null,
                 'leaves' => $item['leaves'] ?? null,
@@ -185,33 +188,35 @@ class AttendanceSummaryDetailService
     }
 
 
-    public function calculateLate($item, $userWorktime = null): null|string
+    public function calculateLate($item, $userWorktime = null): ?string
     {
-        if (!empty($userWorktime)) {
+        if (!empty($userWorktime) && !empty($item['attendanceData']?->clock_in)) {
+            $attendanceDate = Carbon::parse($item['attendancesDate']);
 
-            $expectedCheckIn = Carbon::parse($item['attendancesDate'])
+            $expectedCheckIn = $attendanceDate->copy()
                     ->format('Y-m-d') . ' ' . $userWorktime->clock_in;
-
-            $actualCheckIn = Carbon::parse($item['attendancesDate'])
-                    ->format('Y-m-d') . ' ' . $item['attendanceData']?->clock_in;
-
             $parseExpectedCheckIn = Carbon::parse($expectedCheckIn);
+
+            $actualCheckIn = $attendanceDate->copy()
+                    ->format('Y-m-d') . ' ' . $item['attendanceData']->clock_in;
             $parseActualCheckIn = Carbon::parse($actualCheckIn);
 
-            if ($parseExpectedCheckIn->toTimeString() === "00:00:00") {
-                $parseExpectedCheckIn = $parseExpectedCheckIn->addDays();
+            if (Carbon::parse($item['attendancesDate'] . ' ' . $userWorktime->clock_out)->greaterThan(Carbon::parse($item['attendancesDate'] . ' ' . $userWorktime->clock_in))) {
+
+                if ($parseActualCheckIn->hour > Carbon::parse($item['attendancesDate'] . ' ' . $userWorktime->clock_in)->hour) {
+                    $parseExpectedCheckIn = $attendanceDate->copy()->addDay()->format('Y-m-d') . ' ' . $userWorktime->clock_in;
+                    $parseExpectedCheckIn = Carbon::parse($parseExpectedCheckIn);
+                }
             }
 
-
-
             if ($parseActualCheckIn->greaterThan($parseExpectedCheckIn)) {
-                $parseExpectedCheckIn->diffInMinutes($parseActualCheckIn) . ' Menit';
+                $minutesLate = $parseExpectedCheckIn->diffInMinutes($parseActualCheckIn);
+                return $minutesLate . ' Menit';
             }
         }
 
         return null;
     }
-
 
     public function filterByDate(Request $request, User $user)
     {
