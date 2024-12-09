@@ -16,7 +16,6 @@ return new class () extends Migration {
             $table->string('name');
             $table->time('clock_in');
             $table->time('clock_out');
-            $table->string('')
             $table->time('time_to_checkin');
             $table->time('end_time_to_checkin');
             $table->time('time_to_checkout');
