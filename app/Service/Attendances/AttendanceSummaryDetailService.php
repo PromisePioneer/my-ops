@@ -191,32 +191,25 @@ class AttendanceSummaryDetailService
     public function calculateLate($item, $userWorktime = null): ?string
     {
         if (!empty($userWorktime) && !empty($item['attendanceData']?->clock_in)) {
-            $attendanceDate = Carbon::parse($item['attendancesDate']);
+            $actualCheckIn = Carbon::parse($item['attendanceData']?->clock_in);
 
-            $expectedCheckIn = $attendanceDate->copy()
-                    ->format('Y-m-d') . ' ' . $userWorktime->clock_in;
-            $parseExpectedCheckIn = Carbon::parse($expectedCheckIn);
+            $workDate = $item['attendanceData']?->date;
+            $expectedCheckIn = Carbon::parse("$workDate {$userWorktime->clock_in}");
 
-            $actualCheckIn = $attendanceDate->copy()
-                    ->format('Y-m-d') . ' ' . $item['attendanceData']->clock_in;
-            $parseActualCheckIn = Carbon::parse($actualCheckIn);
 
-            if (Carbon::parse($item['attendancesDate'] . ' ' . $userWorktime->clock_out)->greaterThan(Carbon::parse($item['attendancesDate'] . ' ' . $userWorktime->clock_in))) {
-
-                if ($parseActualCheckIn->hour > Carbon::parse($item['attendancesDate'] . ' ' . $userWorktime->clock_in)->hour) {
-                    $parseExpectedCheckIn = $attendanceDate->copy()->addDay()->format('Y-m-d') . ' ' . $userWorktime->clock_in;
-                    $parseExpectedCheckIn = Carbon::parse($parseExpectedCheckIn);
-                }
+            if ($expectedCheckIn->lessThan($actualCheckIn) && $expectedCheckIn->toTimeString() === "00:00:00") {
+                $expectedCheckIn->addDays();
             }
 
-            if ($parseActualCheckIn->greaterThan($parseExpectedCheckIn)) {
-                $minutesLate = $parseExpectedCheckIn->diffInMinutes($parseActualCheckIn);
-                return $minutesLate . ' Menit';
+            if ($actualCheckIn->greaterThan($expectedCheckIn)) {
+                $lateness = $expectedCheckIn->diffInMinutes($actualCheckIn);
+                return "$lateness menit";
             }
         }
 
         return null;
     }
+
 
     public function filterByDate(Request $request, User $user)
     {

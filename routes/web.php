@@ -1250,11 +1250,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/', [PayrollHistoryController::class, 'index']);
         Route::get('/data', [PayrollHistoryController::class, 'data']);
     });
-
-
 });
 
-
-Route::get('/get-attendance', [IclockController::class, 'register']);
 
 

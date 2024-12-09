@@ -28,7 +28,6 @@ class IclockService
         ];
         DeviceLog::create($data);
 
-        // update status device
         FpDevice::updateOrCreate(
             ['serial_number' => $request->input('SN')],
             [
@@ -54,47 +53,26 @@ class IclockService
 
     public function recieveRecords(Request $request): string
     {
-        //        // Log incoming request data
         $content['url'] = json_encode($request->all());
         $content['data'] = $request->getContent();
         FingerLog::create($content);
 
+
         $processedCount = 0;
         try {
             DB::transaction(function () use ($processedCount, $request) {
-                // Split input lines by various line breaks
                 $inputLines = preg_split('/\r\n|\r|\n/', $request->getContent());
 
-                // Handle OPERLOG case separately
                 if ($request->input('table') == 'OPERLOG') {
                     return $this->handleOperLog($inputLines);
                 }
 
-                // Process each line for attendance records
                 foreach ($inputLines as $line) {
-                    // Skip empty lines
                     if (empty(trim($line))) {
                         continue;
                     }
-
-                    // Prepare attendance data
                     $attendanceData = $this->prepareAttendanceData($line, $request);
-                    //                    dd($attendanceData);
-
-                    //                    dd($this->isValidUserShift($attendanceData['employee_id']));
-                    //                    // Check if user shift is valid
-                    //                    if (!$this->isValidUserShift($attendanceData['employee_id'])) {
-                    //                        continue;
-                    //                    }
-
-                    // Get shift information for the user
                     $shift = $this->getShiftForUser($attendanceData['employee_id'], $attendanceData['timestamp']);
-                    //                    dd(!$shift);
-                    //                    if (!$shift) {
-                    //                        continue;
-                    //                    }
-
-                    // Process the attendance record
                     $this->processAttendanceRecord($attendanceData, $shift);
                     $processedCount++;
                 }
@@ -154,66 +132,57 @@ class IclockService
 
     private function processAttendanceRecord(array $attendanceData, $shift): void
     {
-        $date = date('Y-m-d', strtotime($attendanceData['timestamp']));
-        $time = date('H:i:s', strtotime($attendanceData['timestamp']));
+        $date = Carbon::parse($attendanceData['timestamp']);
+
 
         if ($attendanceData['status1'] == 0) {
-            $this->processCheckIn($attendanceData, $shift, $date, $time);
+            $this->processCheckIn($attendanceData, $shift, $date, $date);
         } elseif ($attendanceData['status1'] == 1) {
-            $this->processCheckOut($attendanceData, $shift, $date, $time);
+            $this->processCheckOut($attendanceData, $shift, $date, $date);
         }
+
     }
 
     private function processCheckIn(array $attendanceData, $shift, string $date, string $time): void
     {
-        Log::info($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin));
-
-
-
         if ($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin)) {
-            $existingRecord = $this->getAttendanceRecord($attendanceData['employee_id'], $date);
+            $existingRecord = Attendances::where('employee_id', $attendanceData['employee_id'])
+                ->whereDate('timestamp', Carbon::parse($date))
+                ->where('status1', 0)
+                ->exists();
             if (!$existingRecord) {
                 Attendances::create($attendanceData);
             }
         }
     }
 
-    private function isValidTime(string $time, string $startTime, string $endTime)
+    private function isValidTime($date, string $startTime, string $endTime): bool
     {
 
+        $dateTime = Carbon::parse($date);
+        $times = $dateTime;
 
-        $times = Carbon::parse(Carbon::now()
-        ->format('Y-m-d') . ' ' . $time);
+        $startTimes = Carbon::parse($dateTime
+                ->format('Y-m-d') . ' ' . $startTime);
 
-        $startTimes = Carbon::parse(Carbon::now()
-        ->format('Y-m-d') . ' ' . $startTime);
-
-        if($startTimes->toTimeString() === "00:00:00"){
-            $startTimes = $startTimes->addDays();
+        if ($times->lessThan($startTimes) && $times->toTimeString() === "00:00:00") {
+            $startTimes->addDays();
         }
 
-        $endTimes = Carbon::parse(Carbon::now()
-        ->format('Y-m-d') . ' ' . $endTime);
+        $endTimes = Carbon::parse($dateTime
+                ->format('Y-m-d') . ' ' . $endTime);
 
 
         return $times->greaterThanOrEqualTo($startTimes) && $times->lessThanOrEqualTo($endTimes);
-    }
-
-    private function getAttendanceRecord(string $employeeId, string $date, string $order = 'asc')
-    {
-        return Attendances::where('employee_id', $employeeId)
-            ->whereDate('timestamp', $date)
-            ->orderBy('timestamp', $order)
-            ->first();
     }
 
     private function processCheckOut(array $attendanceData, $shift, string $date, string $time): void
     {
         if ($this->isValidTime($time, $shift->time_to_checkout, $shift->end_time_to_checkout)) {
             $existingCheckOut = Attendances::where('employee_id', $attendanceData['employee_id'])
-            ->whereDate('timestamp', $date)
-            ->where('status1', 1)
-            ->exists();
+                ->whereDate('timestamp', Carbon::parse($date))
+                ->where('status1', 1)
+                ->exists();
 
             if (!$existingCheckOut) {
                 Attendances::create($attendanceData);

@@ -32,13 +32,15 @@
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Clock In</label>
-                        <input type="time" id="clock_in" name="clock_in" class="form-control form-control-solid"
+                        <input type="datetime-local" id="clock_in" name="clock_in"
+                               class="form-control form-control-solid"
                                placeholder="Nama Cabang" :value="correctionVal?.clock_in"/>
                     </div>
 
                     <div class="mb-10">
                         <label for="name" class="required form-label">Clock Out</label>
-                        <input type="time" id="clock_out" name="clock_out" class="form-control form-control-solid"
+                        <input type="datetime-local" id="clock_out" name="clock_out"
+                               class="form-control form-control-solid"
                                placeholder="Nama Cabang" :value="correctionVal?.clock_out"/>
                     </div>
                 </div>

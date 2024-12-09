@@ -14,8 +14,8 @@ return new class extends Migration {
             $table->id();
             $table->string('employee_id');
             $table->date('date');
-            $table->time('clock_in')->nullable();
-            $table->time('clock_out')->nullable();
+            $table->dateTime('clock_in')->nullable();
+            $table->dateTime('clock_out')->nullable();
             $table->timestamps();
         });
     }

@@ -88,28 +88,24 @@ class AttendancesSummaryService
     public function calculateLate($userWorktime, $attendance): float|int
     {
         $totalMinutesLate = 0;
-        $expectedCheckInTime = $userWorktime->clock_in;
-        $expectedCheckIn = Carbon::parse($attendance->date)->format(
-                'Y-m-d'
-            ) . ' ' . $expectedCheckInTime;
-        $actualCheckIn = Carbon::parse($attendance->date)->format('Y-m-d') . ' ' . $attendance->clock_in;
+        $actualCheckIn = Carbon::parse($attendance->clock_in);
+        $workDate = $attendance?->date;
+
+        $expectedCheckIn = Carbon::parse("$workDate {$userWorktime->clock_in}");
 
 
-        $parseExpectedCheckIn = Carbon::parse($expectedCheckIn);
 
 
-        $parseActualCheckIn = Carbon::parse($actualCheckIn);
+        if ($expectedCheckIn->lessThan($actualCheckIn) && $expectedCheckIn->toTimeString() === "00:00:00") {
+            $expectedCheckIn->addDays();
+        }
 
 
-        if ($parseExpectedCheckIn->toTimeString() === "00:00:00") {
-            $parseExpectedCheckIn = $parseExpectedCheckIn->addDays();
-           }
-
-
-        if ($parseActualCheckIn->greaterThan($parseExpectedCheckIn)) {
-            if (Carbon::parse($expectedCheckIn)->diffInMinutes($parseActualCheckIn) > 2.5) {
-                return $parseExpectedCheckIn->diffInMinutes($parseActualCheckIn);
-            }
+        if ($actualCheckIn->greaterThan($expectedCheckIn)) {
+            $lateness = $expectedCheckIn->diffInMinutes($actualCheckIn);
+            $totalMinutesLate += $lateness;
+        } else {
+            return 0;
         }
 
 
