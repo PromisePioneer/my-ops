@@ -203,7 +203,7 @@ class AttendanceSummaryDetailService
 
             if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                 $lateness = $expectedCheckIn->diffInMinutes($actualCheckIn);
-                return "$lateness menit";
+                return number_format($lateness, 1) . "menit";
             }
         }
 
