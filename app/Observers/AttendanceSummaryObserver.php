@@ -16,11 +16,12 @@ class AttendanceSummaryObserver
     {
         $timestamp = Carbon::parse($attendances->timestamp);
 
-        $user = User::where('absent_id', $attendances->employee_id)->first();
+        $workTime = EmployeeSchedule::with('workTime')
+        ->where('employee_id', $attendances->employee_id)
+        ->whereDate('date', Carbon::parse($attendances->timestamp))
+        ->first();
 
-        $workTime =  WorkTime::whereHas('userWorktime', function ($item) use ($attendances, $user) {
-            $item->where('user_id', $user->id);
-            })->first();
+
         if ($attendances->status1 === 0) {
             $workTime = WorkTime::whereTime('time_to_checkin', '<=', $timestamp->toTimeString())
                 ->whereTime('end_time_to_checkin', '>=', $timestamp->toTimeString())
@@ -49,7 +50,7 @@ class AttendanceSummaryObserver
             $attendancesSummary = new AttendancesSummary([
                 'date' => $timestamp->format('Y-m-d'),
                 'employee_id' => $attendances->employee_id,
-                'work_time_id' => $workTime->id,
+                'work_time_id' => $workTime?->workTime?->id ?? $workTime->id,
             ]);
         }
 
