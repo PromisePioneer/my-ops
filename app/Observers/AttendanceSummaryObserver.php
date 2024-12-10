@@ -5,7 +5,6 @@ namespace App\Observers;
 use App\Models\Attendances;
 use App\Models\AttendancesSummary;
 use App\Models\EmployeeSchedule;
-use App\Models\User;
 use App\Models\WorkTime;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -16,20 +15,28 @@ class AttendanceSummaryObserver
     {
         $timestamp = Carbon::parse($attendances->timestamp);
 
-        $workTime = EmployeeSchedule::with('workTime')
-        ->where('employee_id', $attendances->employee_id)
-        ->whereDate('date', Carbon::parse($attendances->timestamp))
-        ->first();
+        $workTime = null;
 
 
         if ($attendances->status1 === 0) {
-            $workTime = WorkTime::whereTime('time_to_checkin', '<=', $timestamp->toTimeString())
+            $workTime = EmployeeSchedule::with('workTime')
+                ->where('employee_id', $attendances->employee_id)
+                ->whereDate('date', Carbon::parse($attendances->timestamp))
+                ->first() ?? WorkTime::whereTime('time_to_checkin', '<=', $timestamp->toTimeString())
                 ->whereTime('end_time_to_checkin', '>=', $timestamp->toTimeString())
                 ->first();
         } elseif ($attendances->status1 === 1) {
-            $workTime = WorkTime::whereTime('time_to_checkout', '<=', $timestamp->toTimeString())
+            $workTime = EmployeeSchedule::with('workTime')
+                ->where('employee_id', $attendances->employee_id)
+                ->whereDate('date', Carbon::parse($attendances->timestamp))
+                ->first() ?? WorkTime::whereTime('time_to_checkout', '<=', $timestamp->toTimeString())
                 ->whereTime('end_time_to_checkout', '>=', $timestamp->toTimeString())
                 ->first();
+        }
+
+
+        if ($workTime?->status === 'L') {
+            return;
         }
 
         if (!$workTime) {
