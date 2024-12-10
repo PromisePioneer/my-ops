@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Models\Attendances;
 use App\Models\AttendancesSummary;
 use App\Models\EmployeeSchedule;
+use App\Models\User;
 use App\Models\WorkTime;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +16,11 @@ class AttendanceSummaryObserver
     {
         $timestamp = Carbon::parse($attendances->timestamp);
 
-        $workTime = null;
+        $user = User::where('absent_id', $attendances->employee_id)->first();
+
+        $workTime =  WorkTime::whereHas('userWorktime', function ($item) use ($attendances, $user) {
+            $item->where('user_id', $user->id);
+            })->first();
         if ($attendances->status1 === 0) {
             $workTime = WorkTime::whereTime('time_to_checkin', '<=', $timestamp->toTimeString())
                 ->whereTime('end_time_to_checkin', '>=', $timestamp->toTimeString())
