@@ -13,7 +13,6 @@ use Spatie\Permission\Models\Permission;
 class PermissionController extends Controller
 {
     public int $perPage = 10;
-
     /**
      * @throws AuthorizationException
      */

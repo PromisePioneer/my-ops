@@ -88,11 +88,12 @@ class AttendancesSummaryService
     public function calculateLate($userWorktime, $attendance): float|int
     {
         $totalMinutesLate = 0;
-        $actualCheckIn = Carbon::parse($attendance->clock_in);
+
+        $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);
+
         $workDate = $attendance?->date;
 
-        $expectedCheckIn = Carbon::parse("$workDate {$userWorktime->clock_in}");
-
+        $expectedCheckIn = Carbon::parse("$workDate {$userWorktime?->clock_in}");
 
         if ($expectedCheckIn->lessThan($actualCheckIn) && $expectedCheckIn->toTimeString() === "00:00:00") {
             $expectedCheckIn->addDays();
@@ -101,10 +102,7 @@ class AttendancesSummaryService
         if ($actualCheckIn->greaterThan($expectedCheckIn)) {
             $lateness = $expectedCheckIn->diffInMinutes($actualCheckIn);
             $totalMinutesLate += $lateness;
-        } else {
-            return 0;
         }
-
 
         return $totalMinutesLate;
     }

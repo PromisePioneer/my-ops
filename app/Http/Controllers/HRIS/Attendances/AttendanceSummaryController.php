@@ -117,8 +117,8 @@ use Illuminate\View\View;
             $attendaceVal->update([
                 'work_time_id' => $request->input('work_time_id'),
                 'date' => $request->input('date'),
-                'clock_in' => $request->input('clock_in'),
-                'clock_out' => $request->input('clock_out'),
+                'clock_in' => Carbon::parse($request->input('clock_in')),
+                'clock_out' => Carbon::parse($request->input('clock_out')),
             ]);
         } else {
             AttendancesSummary::create([
@@ -126,7 +126,7 @@ use Illuminate\View\View;
                 'date' => $request->input('date'),
                 'clock_in' => $request->input('clock_in'),
                 'employee_id' => $user->absent_id,
-                'clock_out' => $request->input('clock_out'),
+                'clock_out' => Carbon::parse($request->input('clock_out')),
             ]);
         }
 
