@@ -73,7 +73,7 @@ class AttendancesSummaryService
                 'user_nip' => $user->nip,
                 'user_name' => $user->name,
                 'role' => $user->roles[0]?->name ?? '',
-                'total_minutes_late' => $totalMinutesLate,
+                'total_minutes_late' => (float)$totalMinutesLate,
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
                 'total_present' => $totalPresent . '/' . (int)$periodOfWork,

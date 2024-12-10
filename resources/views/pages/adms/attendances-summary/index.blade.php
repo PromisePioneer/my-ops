@@ -1,6 +1,5 @@
 @extends('layouts.template')
 @section('content')
-
     <div x-data="attendancesSummary()">
         <div class="card shadow-sm mb-4">
             <div class="card-header">
