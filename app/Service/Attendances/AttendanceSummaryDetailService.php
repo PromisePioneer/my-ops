@@ -198,7 +198,7 @@ class AttendanceSummaryDetailService
 
 
             if ($expectedCheckIn->lessThan($actualCheckIn) && $expectedCheckIn->toTimeString() === "00:00:00") {
-                $expectedCheckIn->addDays(2);
+                $expectedCheckIn->addDays();
             }
 
             if ($actualCheckIn->greaterThan($expectedCheckIn)) {
