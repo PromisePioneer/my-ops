@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Models\Attendances;
 use App\Models\AttendancesSummary;
 use App\Models\EmployeeSchedule;
+use App\Models\User;
 use App\Models\WorkTime;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -16,21 +17,23 @@ class AttendanceSummaryObserver
         $timestamp = Carbon::parse($attendances->timestamp);
 
         $workTime = null;
-
+        $user = User::where('absent_id', $attendances->employee_id)->first();
 
         if ($attendances->status1 === 0) {
-            $workTime = EmployeeSchedule::with('workTime')
-                ->where('employee_id', $attendances->employee_id)
-                ->whereDate('date', Carbon::parse($attendances->timestamp))
-                ->first() ?? WorkTime::whereTime('time_to_checkin', '<=', $timestamp->toTimeString())
+            $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : WorkTime::whereTime('time_to_checkin', '<=', $timestamp->toTimeString())
                 ->whereTime('end_time_to_checkin', '>=', $timestamp->toTimeString())
-                ->first();
-        } elseif ($attendances->status1 === 1) {
-            $workTime = EmployeeSchedule::with('workTime')
+                ->first() ?? EmployeeSchedule::with('workTime')
                 ->where('employee_id', $attendances->employee_id)
-                ->whereDate('date', Carbon::parse($attendances->timestamp))
-                ->first() ?? WorkTime::whereTime('time_to_checkout', '<=', $timestamp->toTimeString())
+                ->whereDate('date', $timestamp)
+                ->first();
+
+
+        } elseif ($attendances->status1 === 1) {
+            $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : WorkTime::whereTime('time_to_checkout', '<=', $timestamp->toTimeString())
                 ->whereTime('end_time_to_checkout', '>=', $timestamp->toTimeString())
+                ->first() ?? EmployeeSchedule::with('workTime')
+                ->where('employee_id', $attendances->employee_id)
+                ->whereDate('date', $timestamp)
                 ->first();
         }
 
@@ -47,10 +50,11 @@ class AttendanceSummaryObserver
         $attendancesSummary = AttendancesSummary::where('employee_id', $attendances->employee_id)
             ->where('work_time_id', $workTime->id)
             ->where(function ($query) use ($timestamp) {
-                $query->where('date', $timestamp->format('Y-m-d'))
-                    ->orWhere('date', $timestamp->copy()->subDay()->format('Y-m-d'));
+                $query->whereDate('date', $timestamp)
+                    ->orWhereDate('date', $timestamp->copy()->subDay());
             })
             ->first();
+
 
 
         if (!$attendancesSummary) {
