@@ -80,7 +80,7 @@ class AttendanceSummaryDetailService
 
             return [
                 'date_period' => $item['attendancesDate'],
-                'clock_in' => $item['attendanceData']?->clock_in,
+                'clock_in' => Carbon::make($item['attendanceData']?->clock_in)?->format('d/m/Y H:i:s') ?? null,
                 'clock_out' => $item['attendanceData']?->clock_out,
                 'late' => $this->calculateLate($item, $userWorktime),
                 'work_time' => $userWorktime->name ?? null,

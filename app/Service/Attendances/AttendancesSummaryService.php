@@ -88,11 +88,8 @@ class AttendancesSummaryService
     public function calculateLate($userWorktime, $attendance): float|int
     {
         $totalMinutesLate = 0;
-
         $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);
-
         $workDate = $attendance?->date;
-
         $expectedCheckIn = Carbon::parse("$workDate {$userWorktime?->clock_in}");
 
         if ($expectedCheckIn->lessThan($actualCheckIn) && $expectedCheckIn->toTimeString() === "00:00:00") {
@@ -110,10 +107,9 @@ class AttendancesSummaryService
 
     public function filter($startDate, $endDate, $roleId, $branchId): LengthAwarePaginator
     {
-
         $data = User::with([
             'attendancesSummary' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('date', [$startDate, $endDate]);
+                $query->whereBetween('date', [$startDate ?? $this->financialClosePeriodService->startDate(), $endDate ?? $this->financialClosePeriodService->endDate()]);
             }
         ])->when(!empty($branchId), function ($query) use ($roleId) {
             $query->where(function ($query) use ($roleId) {
