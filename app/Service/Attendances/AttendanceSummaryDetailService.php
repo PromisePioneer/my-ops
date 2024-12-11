@@ -201,6 +201,11 @@ class AttendanceSummaryDetailService
                 $expectedCheckIn->addDays();
             }
 
+            if ($expectedCheckIn->greaterThan($actualCheckIn) && $expectedCheckIn->toTimeString() === "00:00:00") {
+                $expectedCheckIn->subDay();
+            }
+
+
             if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                 $lateness = $expectedCheckIn->diffInMinutes($actualCheckIn);
                 return number_format($lateness, 1) . "menit";
