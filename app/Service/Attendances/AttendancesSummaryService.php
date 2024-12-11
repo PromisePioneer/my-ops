@@ -108,13 +108,22 @@ class AttendancesSummaryService
     }
 
 
-    public function filter($startDate, $endDate): LengthAwarePaginator
+    public function filter($startDate, $endDate, $roleId, $branchId): LengthAwarePaginator
     {
+
         $data = User::with([
             'attendancesSummary' => function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('date', [$startDate, $endDate]);
-            }, 'roles'
-        ])->where('active', 1);
+            }
+        ])->when(!empty($branchId), function ($query) use ($roleId) {
+            $query->where(function ($query) use ($roleId) {
+                $query->where('branch_id', $branchId ?? null);
+            });
+        })->when(!empty($roleId), function ($query) use ($roleId) {
+            $query->whereHas('roles', function ($query) use ($roleId) {
+                $query->where('id', $roleId);
+            });
+        })->where('active', 1);
 
         $attendanceSummary = $data->paginate(self::$perPage)->onEachSide(1);
         return self::formattedData($attendanceSummary, $startDate, $endDate);

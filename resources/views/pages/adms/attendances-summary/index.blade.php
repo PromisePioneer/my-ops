@@ -6,28 +6,36 @@
                 <h3 class="card-title">Filter</h3>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-lg-4">
-                        <label for="name" class="form-label">Departemen</label>
-                        <select class="form-select form-select-solid form-select-sm departments-select2" name="" id="">
-                            <option></option>
-                        </select>
-                    </div>
+                <div class="row mb-4 justify-content-center">
                     <div class="col-lg-4">
                         <label for="name" class="form-label">Cabang</label>
-                        <select class="form-select form-select-solid form-select-sm branch-select2" name=""
-                                id="">
+                        <select class="form-select form-select-solid form-select-sm branch-select2" name="branch_id"
+                                id="branch_id">
                             <option></option>
                         </select>
                     </div>
                     <div class="col-lg-4">
                         <label for="name" class="form-label">Jabatan</label>
-                        <select class="form-select form-select-solid form-select-sm roles-select2" name=""
-                                id=""></select>
+                        <select class="form-select form-select-solid form-select-sm roles-select2" name="role_id"
+                                id="role_id"></select>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-lg-4">
+                        <label for="name" class="form-label">Tanggal Awal</label>
+                        <input type="date" class="form-control form-control-solid form-control-sm me-3 date"
+                               id="start_date"
+                               name="start_date" placeholder="Tanggal awal">
+                    </div>
+                    <div class="col-lg-4">
+                        <label for="name" class="form-label">Tanggal Akhir</label>
+                        <input type="date" class="form-control form-control-solid form-control-sm me-3 date"
+                               id="end_date"
+                               name="end_date" placeholder="Tanggal akhir">
                     </div>
                 </div>
                 <div class="float-end mt-10">
-                    <button class="btn btn-light-primary btn-sm">Filter</button>
+                    <button class="btn btn-light-primary btn-sm" @click="filter()">Filter</button>
                 </div>
             </div>
         </div>
@@ -42,15 +50,6 @@
                         </span>
                         <input type="text" name="search" x-model="search" @input.debounce="searchData()"
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
-                    </div>
-                </div>
-                <div class="card-toolbar">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <input type="date" class="form-control form-control-solid me-3 date" id="start_date"
-                               name="start_date" placeholder="Tanggal awal">
-                        <input type="date" class="form-control form-control-solid me-3 date" id="end_date"
-                               name="end_date" placeholder="Tanggal akhir">
-                        <button class="btn btn-light-primary btn-sm" @click="filter()">Filter</button>
                     </div>
                 </div>
             </div>
@@ -208,12 +207,16 @@
                 async filter() {
                     const startDate = document.getElementById('start_date')?.value ?? '';
                     const endDate = document.getElementById('end_date')?.value ?? '';
+                    const branch_id = $('#branch_id').val();
+                    const role_id = $('#role_id').val()
                     this.isLoading = true;
                     try {
                         const resp = await axios.get(`/adms/attendances-summary/filter`, {
                             params: {
                                 start_date: startDate,
                                 end_date: endDate,
+                                branch_id: branch_id,
+                                role_id: role_id
                             }
                         });
                         this.attendanceSummary = resp.data;
@@ -251,16 +254,42 @@
                         this.isLoading = false;
                     }
                 },
+                async additionalFilter() {
+                    this.isLoading = true;
+
+
+                    try {
+                        const resp = await axios.get('/adms/attendances-summary/additional-filter', {
+                            params: {
+                                department_id: department,
+                                branch_id: branch_id,
+                                role: role,
+                            }
+                        })
+
+                        this.attendanceSummary = resp.data
+                    } catch (e) {
+                        console.log(e);
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
                 async filterDate() {
                     this.isLoading = true;
                     const startDate = document.getElementById('start_date');
                     const endDate = document.getElementById('end_date');
+                    const department = $('#department_id').val();
+                    const branch_id = $('#branch_id').val();
+                    const role = $('#role_id').val();
                     try {
                         const resp = await axios.get('/adms/attendances-summary/filter-date', {
                             params: {
                                 search: this.search,
                                 start_date: startDate,
                                 end_date: endDate,
+                                department: department,
+                                branch_id: branch_id,
+                                role: role,
                             }
                         });
                         this.attendanceSummary = resp.data;

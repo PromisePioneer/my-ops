@@ -103,7 +103,10 @@ use Illuminate\View\View;
     {
         $startDate = Carbon::parse($request->start_date);
         $endDate = Carbon::parse($request->end_date);
-        return response()->json($this->attendanceSummaryService->filter($startDate, $endDate));
+        $branchId = $request->branch_id;
+        $roleId = $request->role_id;
+
+        return response()->json($this->attendanceSummaryService->filter($startDate, $endDate, $roleId, $branchId));
     }
 
 
