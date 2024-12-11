@@ -81,7 +81,7 @@ class AttendanceSummaryDetailService
             return [
                 'date_period' => $item['attendancesDate'],
                 'clock_in' => Carbon::make($item['attendanceData']?->clock_in)?->format('d/m/Y H:i:s') ?? null,
-                'clock_out' => $item['attendanceData']?->clock_out,
+                'clock_out' => Carbon::make($item['attendanceData']?->clock_out)?->format('d/m/Y H:i:s') ?? null,
                 'late' => $this->calculateLate($item, $userWorktime),
                 'work_time' => $userWorktime->name ?? null,
                 'schedule' => $item['employeeSchedule']?->status ?? null,
@@ -193,18 +193,28 @@ class AttendanceSummaryDetailService
         if (!empty($userWorktime) && !empty($item['attendanceData']?->clock_in)) {
             $actualCheckIn = Carbon::parse($item['attendanceData']?->clock_in);
 
-            $workDate = $item['attendanceData']?->date;
+            $workDate = $actualCheckIn->copy()->format('Y-m-d');
+
             $expectedCheckIn = Carbon::parse("$workDate {$userWorktime->clock_in}");
 
+            if ($expectedCheckIn->greaterThan($actualCheckIn) || $expectedCheckIn->lessThan($actualCheckIn) && $userWorktime->name === "Malam") {
+                $newExpectedCheckIn = $expectedCheckIn->copy();
+                if ($actualCheckIn->greaterThan($newExpectedCheckIn)) {
+                    $newExpectedCheckIn1 = $expectedCheckIn->copy()->addDays();
+                    if ($actualCheckIn->greaterThan($newExpectedCheckIn1)) {
+                        $lateness = $newExpectedCheckIn1->diffInMinutes($actualCheckIn);
+                        return number_format($lateness, 1) . "menit";
+                    }
+                }
 
-            if ($expectedCheckIn->lessThan($actualCheckIn) && $expectedCheckIn->toTimeString() === "00:00:00") {
-                $expectedCheckIn->addDays();
+                if ($actualCheckIn->lessThan($newExpectedCheckIn)) {
+                    $newExpectedCheckIn2 = $expectedCheckIn->copy()->subDays();
+                    if ($actualCheckIn->greaterThan($newExpectedCheckIn2)) {
+                        $lateness = $newExpectedCheckIn2->diffInMinutes($actualCheckIn);
+                        return number_format($lateness, 1) . "menit";
+                    }
+                }
             }
-
-            if ($expectedCheckIn->greaterThan($actualCheckIn) && $expectedCheckIn->toTimeString() === "00:00:00") {
-                $expectedCheckIn->subDay();
-            }
-
 
             if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                 $lateness = $expectedCheckIn->diffInMinutes($actualCheckIn);
