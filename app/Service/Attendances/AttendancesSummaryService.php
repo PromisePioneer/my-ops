@@ -107,9 +107,13 @@ class AttendancesSummaryService
 
     public function filter($startDate, $endDate, $roleId, $branchId): LengthAwarePaginator
     {
+        $startDate = $startDate ?? $this->financialClosePeriodService->startDate();
+        $endDate = $endDate ?? $this->financialClosePeriodService->endDate();
+
+
         $data = User::with([
             'attendancesSummary' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('date', [$startDate ?? $this->financialClosePeriodService->startDate(), $endDate ?? $this->financialClosePeriodService->endDate()]);
+                $query->whereBetween('date', [$startDate, $endDate]);
             }
         ])->when(!empty($branchId), function ($query) use ($roleId) {
             $query->where(function ($query) use ($roleId) {
