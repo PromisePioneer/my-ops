@@ -30,11 +30,11 @@ class AttendanceSummaryObserver
 
         } elseif ($attendances->status1 === 1) {
             $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : WorkTime::whereTime('time_to_checkout', '<=', $timestamp->toTimeString())
-                ->whereTime('end_time_to_checkout', '>=', $timestamp->toTimeString())
-                ->first() ?? EmployeeSchedule::with('workTime')
-                ->where('employee_id', $attendances->employee_id)
-                ->whereDate('date', $timestamp)
-                ->first();
+            ->whereTime('end_time_to_checkout', '>=', $timestamp->toTimeString())
+            ->first() ?? EmployeeSchedule::with('workTime')
+            ->where('employee_id', $attendances->employee_id)
+            ->whereDate('date', $timestamp)
+            ->first();
         }
 
 
@@ -48,12 +48,15 @@ class AttendanceSummaryObserver
         }
 
         $attendancesSummary = AttendancesSummary::where('employee_id', $attendances->employee_id)
-            ->where('work_time_id', $workTime->id)
+            ->where('work_time_id', $workTime?->workTime?->id ?? $workTime->id)
             ->where(function ($query) use ($timestamp) {
                 $query->whereDate('date', $timestamp)
                     ->orWhereDate('date', $timestamp->copy()->subDay());
             })
-            ->first();
+            ->latest()->first();
+
+
+            Log::info($attendancesSummary);
 
 
 
