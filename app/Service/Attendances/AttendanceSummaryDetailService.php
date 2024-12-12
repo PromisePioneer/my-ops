@@ -72,17 +72,27 @@ class AttendanceSummaryDetailService
     public function formattedData($attendanceSummary, $empId)
     {
         return $attendanceSummary->map(function ($item) use ($empId) {
-
-
             $userWorktime = WorkTime::where('id', $item['attendanceData']?->work_time_id)->first()
                 ?? WorkTime::find(1);
+
+            $lateness = 0;
+            if (!empty($userWorktime) && !empty($item['attendanceData']?->clock_in)) {
+
+                $workDate = $item['attendanceData']?->date;
+                $expectedCheckIn = Carbon::parse("$workDate {$userWorktime->clock_in}");
+                $actualCheckIn = Carbon::parse($item['attendanceData']?->clock_in);
+
+                if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
+                    $lateness = $expectedCheckIn->diffInMinutes($actualCheckIn);
+                }
+            }
 
 
             return [
                 'date_period' => $item['attendancesDate'],
                 'clock_in' => Carbon::make($item['attendanceData']?->clock_in)?->format('d/m/Y H:i:s') ?? null,
                 'clock_out' => Carbon::make($item['attendanceData']?->clock_out)?->format('d/m/Y H:i:s') ?? null,
-                'late' => $this->calculateLate($item, $userWorktime),
+                'late' => $lateness ?? null,
                 'work_time' => $userWorktime->name ?? null,
                 'schedule' => $item['employeeSchedule']?->status ?? null,
                 'leaves' => $item['leaves'] ?? null,
@@ -190,22 +200,7 @@ class AttendanceSummaryDetailService
 
     public function calculateLate($item, $userWorktime = null): ?string
     {
-        if (!empty($userWorktime) && !empty($item['attendanceData']?->clock_in)) {
-            $actualCheckIn = Carbon::parse($item['attendanceData']?->clock_in);
 
-            $workDate = $item['attendanceData']?->date;
-            $expectedCheckIn = Carbon::parse("$workDate {$userWorktime->clock_in}");
-
-            $newExpectedCheckIn = null;
-            if ($expectedCheckIn->lessThan($actualCheckIn) && $expectedCheckIn->toTimeString() === "00:00:00") {
-                $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
-            }
-
-            if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
-                $lateness = $newExpectedCheckIn ? $newExpectedCheckIn->diffInMinutes($actualCheckIn) : $expectedCheckIn->diffInMinutes($actualCheckIn);
-                return (int)$lateness . " menit";
-            }
-        }
 
         return null;
     }
