@@ -92,7 +92,7 @@ class AttendanceSummaryDetailService
                 'date_period' => $item['attendancesDate'],
                 'clock_in' => Carbon::make($item['attendanceData']?->clock_in)?->format('d/m/Y H:i:s') ?? null,
                 'clock_out' => Carbon::make($item['attendanceData']?->clock_out)?->format('d/m/Y H:i:s') ?? null,
-                'late' => $lateness ?? null,
+                'late' => (int)$lateness ?? null,
                 'work_time' => $userWorktime->name ?? null,
                 'schedule' => $item['employeeSchedule']?->status ?? null,
                 'leaves' => $item['leaves'] ?? null,
