@@ -25,7 +25,7 @@ class AttendanceSummaryObserver
                 ->first() ?? EmployeeSchedule::with('workTime')
                 ->where('employee_id', $attendances->employee_id)
                 ->whereDate('date', $timestamp)
-                ->first();
+                ->first() ?? WorkTime::find(1);
 
 //            dd($workTime);
 
@@ -36,7 +36,7 @@ class AttendanceSummaryObserver
             ->first() ?? EmployeeSchedule::with('workTime')
             ->where('employee_id', $attendances->employee_id)
             ->whereDate('date', $timestamp)
-            ->first();
+                ->first() ?? WorkTime::find(1);
         }
 
 
