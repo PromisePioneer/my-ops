@@ -186,8 +186,8 @@ class IclockService
                 ->where('status1', 1)
                 ->exists();
 
+        Attendances::create($attendanceData);
             if (!$existingCheckOut) {
-                Attendances::create($attendanceData);
             }
 //        }
     }

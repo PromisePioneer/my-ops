@@ -53,7 +53,7 @@ class AttendanceSummaryObserver
         $attendancesSummary = AttendancesSummary::where('employee_id', $attendances->employee_id)
             ->where('work_time_id', $workTime?->workTime?->id ?? $workTime->id);
 
-        if ($workTime?->workTime?->clock_in !== "00:00:00") {
+        if ($workTime?->workTime?->clock_in !== "00:00:00" && $workTime->clock_out !== "01:00:00") {
             $attendancesSummary->whereDate('date', $timestamp);
         }
 
@@ -61,8 +61,15 @@ class AttendanceSummaryObserver
             $attendancesSummary->whereDate('date', $timestamp->copy()->subDay());
         }
 
+        if ($workTime->clock_out === "01:00:00") {
+            $attendancesSummary->whereDate('date', $timestamp->copy()->subDay());
+        }
+
+//        dd($timestamp->copy()->subDay()->format('Y-m-d'));
+
 
         $attendancesSummary = $attendancesSummary->latest()->first();
+
 
 
 
@@ -75,6 +82,7 @@ class AttendanceSummaryObserver
         }
 
         $expectedCheckIn = Carbon::make($timestamp->format('Y-m-d') . $workTime->workTime?->clock_in);
+        $expectedCheckOut = Carbon::make($timestamp->format('Y-m-d') . $workTime->workTime?->clock_out);
 
         if ($attendances->status1 === 0 && !$attendancesSummary->clock_in) {
             $clockInTimestamp = $timestamp->copy()->subDays();
@@ -85,8 +93,12 @@ class AttendanceSummaryObserver
             }
 
         } elseif ($attendances->status1 === 1 && !$attendancesSummary->clock_out) {
-//            dd('test');
-            $attendancesSummary->clock_out = $timestamp;
+            $clockOutTimestamp = $timestamp->copy();
+            if ($workTime?->workTime?->clock_out === "00:00:00" && $expectedCheckOut->greaterThan($timestamp)) {
+                $attendancesSummary->clock_out = $clockOutTimestamp;
+            } else {
+                $attendancesSummary->clock_out = $timestamp;
+            }
         }
 
         $attendancesSummary->save();
