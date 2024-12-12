@@ -75,7 +75,7 @@ class AttendanceSummaryDetailService
             $userWorktime = WorkTime::where('id', $item['attendanceData']?->work_time_id)->first()
                 ?? WorkTime::find(1);
 
-            $lateness = 0;
+            $lateness = null;
             if (!empty($userWorktime) && !empty($item['attendanceData']?->clock_in)) {
 
                 $workDate = $item['attendanceData']?->date;
