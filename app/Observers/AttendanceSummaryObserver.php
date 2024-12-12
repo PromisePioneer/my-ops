@@ -27,6 +27,8 @@ class AttendanceSummaryObserver
                 ->whereDate('date', $timestamp)
                 ->first();
 
+//            dd($workTime);
+
 
         } elseif ($attendances->status1 === 1) {
             $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : WorkTime::whereTime('time_to_checkout', '<=', $timestamp->toTimeString())
@@ -68,8 +70,18 @@ class AttendanceSummaryObserver
             ]);
         }
 
+        $expectedCheckIn = Carbon::make($timestamp->format('Y-m-d') . $workTime->workTime?->clock_in);
+
         if ($attendances->status1 === 0 && !$attendancesSummary->clock_in) {
-            $attendancesSummary->clock_in = $timestamp;
+
+            $clockInTimestamp = $timestamp->copy()->subDays();
+
+            if ($workTime?->workTime?->clock_in === "00:00:00" && $expectedCheckIn->lessThan($expectedCheckIn)) {
+                $attendancesSummary->clock_in = $clockInTimestamp;
+            } else {
+                $attendancesSummary->clock_in = $timestamp;
+            }
+
         } elseif ($attendances->status1 === 1 && !$attendancesSummary->clock_out) {
             $attendancesSummary->clock_out = $timestamp;
         }
