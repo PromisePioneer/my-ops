@@ -75,24 +75,12 @@ class AttendanceSummaryDetailService
             $userWorktime = WorkTime::where('id', $item['attendanceData']?->work_time_id)->first()
                 ?? WorkTime::find(1);
 
-            $lateness = null;
-            if (!empty($userWorktime) && !empty($item['attendanceData']?->clock_in)) {
-
-                $workDate = $item['attendanceData']?->date;
-                $expectedCheckIn = Carbon::parse("$workDate {$userWorktime->clock_in}");
-                $actualCheckIn = Carbon::parse($item['attendanceData']?->clock_in);
-
-                if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
-                    $lateness = $expectedCheckIn->diffInMinutes($actualCheckIn);
-                }
-            }
-
 
             return [
                 'date_period' => $item['attendancesDate'],
                 'clock_in' => Carbon::make($item['attendanceData']?->clock_in)?->format('d/m/Y H:i:s') ?? null,
                 'clock_out' => Carbon::make($item['attendanceData']?->clock_out)?->format('d/m/Y H:i:s') ?? null,
-                'late' => (int)$lateness ?? null,
+                'late' => $this->calculateLate($item, $userWorktime) ?? null,
                 'work_time' => $userWorktime->name ?? null,
                 'schedule' => $item['employeeSchedule']?->status ?? null,
                 'leaves' => $item['leaves'] ?? null,
@@ -200,8 +188,17 @@ class AttendanceSummaryDetailService
 
     public function calculateLate($item, $userWorktime = null): ?string
     {
+        if (!empty($userWorktime) && !empty($item['attendanceData']?->clock_in)) {
 
+            $workDate = $item['attendanceData']?->date;
+            $expectedCheckIn = Carbon::parse("$workDate {$userWorktime->clock_in}");
+            $actualCheckIn = Carbon::parse($item['attendanceData']?->clock_in);
 
+            if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
+                $lateness = $expectedCheckIn->diffInMinutes($actualCheckIn);
+                return "$lateness menit";
+            }
+        }
         return null;
     }
 
