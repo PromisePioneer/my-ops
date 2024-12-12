@@ -199,9 +199,7 @@ class AttendanceSummaryDetailService
             $newExpectedCheckIn = null;
             if ($expectedCheckIn->lessThan($actualCheckIn) && $expectedCheckIn->toTimeString() === "00:00:00") {
                 $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
-//                dd('test');
             }
-//            dd($newExpectedCheckIn, $actualCheckIn);
 
             if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
                 $lateness = $newExpectedCheckIn ? $newExpectedCheckIn->diffInMinutes($actualCheckIn) : $expectedCheckIn->diffInMinutes($actualCheckIn);
