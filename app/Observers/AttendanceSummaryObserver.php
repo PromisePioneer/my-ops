@@ -30,6 +30,7 @@ class AttendanceSummaryObserver
 //            dd($workTime);
 
 
+
         } elseif ($attendances->status1 === 1) {
             $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : WorkTime::whereTime('time_to_checkout', '<=', $timestamp->toTimeString())
             ->whereTime('end_time_to_checkout', '>=', $timestamp->toTimeString())
@@ -50,15 +51,18 @@ class AttendanceSummaryObserver
         }
 
         $attendancesSummary = AttendancesSummary::where('employee_id', $attendances->employee_id)
-            ->where('work_time_id', $workTime?->workTime?->id ?? $workTime->id)
-            ->where(function ($query) use ($timestamp) {
-                $query->whereDate('date', $timestamp)
-                    ->orWhereDate('date', $timestamp->copy()->subDay());
-            })
-            ->latest()->first();
+            ->where('work_time_id', $workTime?->workTime?->id ?? $workTime->id);
+
+        if ($workTime?->workTime?->clock_in !== "00:00:00") {
+            $attendancesSummary->whereDate('date', $timestamp);
+        }
+
+        if ($workTime?->workTime?->clock_in === "00:00:00") {
+            $attendancesSummary->whereDate('date', $timestamp->copy()->subDay());
+        }
 
 
-            Log::info($attendancesSummary);
+        $attendancesSummary = $attendancesSummary->latest()->first();
 
 
 
@@ -73,16 +77,15 @@ class AttendanceSummaryObserver
         $expectedCheckIn = Carbon::make($timestamp->format('Y-m-d') . $workTime->workTime?->clock_in);
 
         if ($attendances->status1 === 0 && !$attendancesSummary->clock_in) {
-
             $clockInTimestamp = $timestamp->copy()->subDays();
-
-            if ($workTime?->workTime?->clock_in === "00:00:00" && $expectedCheckIn->lessThan($expectedCheckIn)) {
+            if ($workTime?->workTime?->clock_in === "00:00:00" && $expectedCheckIn->lessThan($timestamp)) {
                 $attendancesSummary->clock_in = $clockInTimestamp;
             } else {
                 $attendancesSummary->clock_in = $timestamp;
             }
 
         } elseif ($attendances->status1 === 1 && !$attendancesSummary->clock_out) {
+//            dd('test');
             $attendancesSummary->clock_out = $timestamp;
         }
 
