@@ -32,7 +32,7 @@ use function App\Helper\formatDate;
             return [
                 'id' => $item->id,
                 'user_id' => $item->user->id,
-                'user_name' => $item->user->name,
+                'user_name' => '(' . $item->user->nip . ') ' . $item->user->name,
                 'start_date' => formatDate($item->start_date),
                 'end_date' => formatDate($item->end_date),
                 'leaves_status' => $item->leaves_status,

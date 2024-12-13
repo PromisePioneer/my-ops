@@ -11,7 +11,7 @@ class CalculateUserLeaves
 {
     public function calculate(Request $request): int
     {
-        $user = User::where('id', $request->user_id ?? $request->user()->id)->first();
+        $user = User::where('id', $request->user_id ?? $request->user_id ?? $request->user()->id)->first();
         $joinDate = Carbon::parse($user->join_date);
         $now = Carbon::now();
         $yearsOfService = $joinDate->diffInYears($now);

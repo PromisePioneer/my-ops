@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Inventory\Pole;
 
+use AllowDynamicProperties;
 use App\Exports\PoleExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PoleRequest;
@@ -15,11 +16,8 @@ use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-class PoleController extends Controller
+#[AllowDynamicProperties] class PoleController extends Controller
 {
-
-    private Branch $branch;
-
     public function __construct()
     {
         $this->branch = new Branch();

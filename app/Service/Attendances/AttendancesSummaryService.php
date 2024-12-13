@@ -158,8 +158,6 @@ class AttendancesSummaryService
         }
 
         $user = $data->paginate(10)->onEachSide(1);
-
-
         return self::formattedData($user, $startDate, $endDate);
     }
 }

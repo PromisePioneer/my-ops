@@ -8,6 +8,7 @@ use App\Http\Requests\User\ManageUserLeaveAndPermissionRequest;
 use App\Http\Requests\UserProfile\LeaveAndPermissionRequest;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
+use App\Service\LeaveAndPermission\CalculateUserLeaves;
 use App\Service\LeaveAndPermission\ManageUserLeaveAndPermissionService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -20,6 +21,7 @@ use Illuminate\View\View;
     {
         $this->manageUserLeaveAndPermissionService = new ManageUserLeaveAndPermissionService();
         $this->user = new User();
+        $this->calculateUserLeaves = new CalculateUserLeaves();
     }
 
     /**
@@ -35,6 +37,11 @@ use Illuminate\View\View;
     public function getUserData(Request $request): JsonResponse
     {
         return response()->json($this->manageUserLeaveAndPermissionService->getUserData($request));
+    }
+
+    public function selectedUserData(Request $request, LeaveAndPermission $leaveAndPermission): JsonResponse
+    {
+        return response()->json($this->user->getSelectedData($leaveAndPermission->user_id));
     }
 
     /**
@@ -84,6 +91,12 @@ use Illuminate\View\View;
     }
 
 
+    public function getTotalLeavesLeft(Request $request): JsonResponse
+    {
+        return response()->json($this->calculateUserLeaves->calculate($request));
+    }
+
+
     public function store(LeaveAndPermissionRequest $request): JsonResponse
     {
         LeaveAndPermission::create([
@@ -96,5 +109,38 @@ use Illuminate\View\View;
         ]);
 
         return response()->json(['message' => 'Data berhasil disimpan.']);
+    }
+
+
+    public function edit(LeaveAndPermission $leaveAndPermission): JsonResponse
+    {
+        return response()->json($leaveAndPermission);
+    }
+
+    public function update(LeaveAndPermissionRequest $request, LeaveAndPermission $leaveAndPermission): JsonResponse
+    {
+        $leaveAndPermission->update([
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'user_id' => $request->user_id,
+            'reason' => $request->reason,
+            'leaves_status' => $request->leaves_status,
+            'sick_letter' => $request->sick_letter,
+        ]);
+
+        return response()->json(['message' => 'Data berhasil disimpan.']);
+    }
+
+
+    public function destroy(Request $request, LeaveAndPermission $leaveAndPermission): JsonResponse
+    {
+//        $this->authorize('delete', $leaveAndPermission);
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $leaveAndPermission->whereIn('id', $explodeID)->delete();
+
+        return response()->json([
+            'message' => 'Data berhasil disimpan'
+        ]);
     }
 }

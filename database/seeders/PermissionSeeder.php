@@ -232,6 +232,7 @@ class PermissionSeeder extends Seeder
             'Tambah Data Manajemen Cuti',
             'Edit Data Manajemen Cuti',
             'Hapus Data Manajemen Cuti',
+            'Konfirmasi Data Manajemen Cuti'
         ];
 
         foreach ($permissions as $permission) {

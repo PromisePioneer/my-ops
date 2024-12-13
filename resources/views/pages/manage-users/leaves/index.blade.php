@@ -5,6 +5,7 @@
         @include('pages.manage-users.leaves.modal.confirm')
         @include('pages.manage-users.leaves.modal.detail')
         @include('pages.manage-users.leaves.modal.create')
+        @include('pages.manage-users.leaves.modal.edit')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -28,18 +29,39 @@
                 </div>
             </div>
             <div class="card-body py-3">
+                <div class="col-12">
+                    <form id="form-delete" @submit.prevent="destroy()">
+                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                        <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                                x-show="selectedCheckBox.length > 0"
+                                x-transition x-cloak>
+                            <i class="ki-duotone ki-trash-square fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
+                            Hapus
+                        </button>
+                    </form>
+                </div>
                 <div class="py-5">
                     <div class="table-responsive">
                         <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="w-10px pe-2">No</th>
+                                <th class="w-10px pe-2">
+                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                        <input class="form-check-input" type="checkbox"
+                                               @click="toggleAllCheckBox()">
+                                    </div>
+                                </th>
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Tanggal</th>
                                 <th class="min-w-125px">Alasan Cuti</th>
                                 <th class="min-w-125px">Status Cuti</th>
                                 <th class="min-w-125px">Status Konfirmasi</th>
-                                <th class="min-w-125px">Status Cuti</th>
+                                <th class="min-w-125px">Action</th>
                             </thead>
                             <tbody class=" fw-bold">
                             <template x-if="isLoading">
@@ -62,7 +84,13 @@
                             </template>
                             <template x-for="(leave, index) in leaves?.data" :key="leave.id">
                                 <tr>
-                                    <td x-text="startIndex + index++"></td>
+                                    <td>
+                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                             @click="selectCheckBox($event)">
+                                            <input class="form-check-input" type="checkbox" :value="leave.id"
+                                                   :id="'checkbox-' + leave.id"/>
+                                        </div>
+                                    </td>
                                     <td>
                                         <a :href="`/manage-users/users/detail/${leave.user_id}`"
                                            x-text="leave.user_name"></a>
@@ -95,20 +123,25 @@
                                     </template>
                                     <template x-if="leave.confirmation_status === 'Diproses'">
                                         <td>
-                                            @can('Acc Cuti')
-                                                <button class="btn btn-info btn-sm" data-bs-toggle="modal"
-                                                        data-bs-target="#modal-confirm"
-                                                        @click="openConfirmModal(leave.id)"
-                                                        :disabled="Number(currentLoginId) === Number(leave.user_id)">
-                                                    <i class="bi bi-gear-fill"></i>
-                                                </button>
-                                            @endcan
-                                            @can('Lihat Detail Cuti')
-                                                <button class="btn btn-dark btn-sm" data-bs-toggle="modal"
-                                                        data-bs-target="#modal-detail" @click="detail(leave.id)">
-                                                    <i class="bi bi-eye-fill"></i>
-                                                </button>
-                                            @endcan
+                                            <button class="btn btn-info btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-confirm"
+                                                    @click="openConfirmModal(leave.id)"
+                                                    :disabled="Number(currentLoginId) === Number(leave.user_id)">
+                                                <i class="bi bi-gear-fill"></i>
+                                            </button>
+                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-edit" @click="edit(leave.id)">
+                                                <i class="ki-duotone ki-pencil fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                            </button>
+                                            <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-detail" @click="edit(leave.id)">
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+
+
                                         </td>
                                     </template>
                                 </tr>
@@ -138,11 +171,15 @@
         function leavesData() {
             return {
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
+                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formCreate: document.getElementById('form-create'),
                 buttonLoading: false,
                 isLoading: false,
                 leaves: [],
                 search: '',
+                selectedCheckBox: [],
+                selectAll: false,
+                singleChecked: false,
                 currentLoginId: "{{ Auth::id() }}",
                 id: '',
                 detailValue: '',
@@ -154,6 +191,30 @@
                     await this.getLeavesData();
                     await this.getUserData();
                     this.isLoading = false;
+                },
+                toggleAllCheckBox() {
+                    this.selectAll = !this.selectAll;
+                    this.singleChecked = false;
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    this.selectedCheckBox = [];
+                    checkboxes.forEach((checkbox) => {
+                        checkbox.checked = this.selectAll;
+                        if (this.selectAll) {
+                            this.selectedCheckBox.push(checkbox.value);
+                        }
+                    });
+                    this.selectedCheckBox.shift();
+                },
+                selectCheckBox(event) {
+                    const checkboxId = event.target.value;
+                    if (event.target.checked) {
+                        this.selectedCheckBox.push(checkboxId);
+                    } else {
+                        const index = this.selectedCheckBox.indexOf(checkboxId);
+                        if (index !== -1) {
+                            this.selectedCheckBox.splice(index, 1);
+                        }
+                    }
                 },
                 async searchData() {
                     this.isLoading = true;
@@ -174,6 +235,19 @@
                         const resp = await axios.get(`${url}`);
                         this.leaves = resp.data
                     }
+                },
+                async selectedUserData(id) {
+                    const selectedUser = $('#selectedUser');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/manage-users/leaves/users/selected/${id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedUser.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
                 },
                 async getUserData() {
                     $(".users-select2").select2({
@@ -211,6 +285,11 @@
                 openConfirmModal(id) {
                     this.id = id;
                 },
+                async edit(id) {
+                    const resp = await axios.get(`/manage-users/leaves/edit/${id}`);
+                    this.editVal = resp.data;
+                    await this.selectedUserData(this.editVal.id);
+                },
                 async confirm() {
                     this.buttonLoading = true;
                     try {
@@ -230,7 +309,19 @@
                     const resp = await axios.get('/manage-users/leaves/data');
                     this.leaves = resp.data
                     this.startIndex = resp.data.from;
-                }
+                },
+                async destroy() {
+                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                        try {
+                            await axios.post(`/general-master-data/branch/destroy`, new FormData(this.formDelete));
+                            await showAlert('success', 'Data sukses dihapus');
+                            await this.init();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
+                },
             }
         }
     </script>

@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="modal-create">
+<div class="modal fade" tabindex="-1" id="modal-edit">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -13,7 +13,7 @@
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Pilih Karyawan</label>
-                        <select name="user_id" id="user_id" class="form-select form-select-solid users-select2">
+                        <select name="user_id" id="selectedUser" class="form-select form-select-solid users-select2">
                             <option></option>
                         </select>
                     </div>
@@ -21,21 +21,21 @@
                         <label for="name" class="required form-label">Tanggal Mulai</label>
                         <input type="date" id="start_date" name="start_date"
                                class="form-control form-control-solid date"
-                               placeholder="Tanggal Mulai"/>
+                               placeholder="Tanggal Mulai" :value="editVal.start_date"/>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Tanggal Selesai</label>
                         <input type="date" id="end_date" name="end_date" class="form-control form-control-solid date"
-                               placeholder="Tanggal Selesai"/>
+                               placeholder="Tanggal Selesai" :value="editVal.end_date"/>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Status Cuti</label>
                         <select name="leaves_status" id="leaves_status" class="form-select form-select-solid"
                                 x-model="sickLetter">
                             <option value="0" selected>Pilih</option>
-                            <option value="Sakit">Sakit</option>
-                            <option value="Cuti">Cuti</option>
-                            <option value="Izin">Izin</option>
+                            <option value="Sakit" :selected="editVal.leaves_status === 'Sakit'">Sakit</option>
+                            <option value="Cuti" :selected="editVal.leaves_status === 'Cuti'">Cuti</option>
+                            <option value="Izin" :selected="editVal.leaves_status === 'Izin'">Izin</option>
                         </select>
                     </div>
                     <div class="mb-10" x-show="sickLetter === 'Sakit'" x-transition>
@@ -47,7 +47,7 @@
                     <div class="mb-10">
                         <label for="name" class="required form-label">Alasan Cuti</label>
                         <textarea type="date" id="reason" name="reason" class="form-control form-control-solid"
-                                  data-kt-autosize="true" placeholder="ALasan Cuti"></textarea>
+                                  data-kt-autosize="true" placeholder="ALasan Cuti" x-text="editVal.reason"></textarea>
                     </div>
                 </div>
 
