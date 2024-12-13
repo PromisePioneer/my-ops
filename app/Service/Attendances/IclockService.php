@@ -151,8 +151,8 @@ class IclockService
                 ->whereDate('timestamp', Carbon::parse($date))
                 ->where('status1', 0)
                 ->exists();
+        if (!$existingRecord) {
                 Attendances::create($attendanceData);
-            if (!$existingRecord) {
             }
 //        }
     }
