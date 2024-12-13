@@ -611,7 +611,7 @@
                         @endslot
                     </x-dropdown-menu>
                 @endcan
-                @canany(['Lihat Menu Data Karyawan', 'Lihat Menu Manajemen Cuti', 'Lihat Menu Permission', 'Lihat Menu Manajemen Cuti', 'Lihat Menu Surat Peringatan', 'Lihat Menu Kontrak Karyawan', 'Lihat Menu SK'])
+                @canany(['Lihat Menu Data Karyawan', 'Lihat Menu Manajemen Cuti', 'Lihat Menu Permission', 'Lihat Menu Manajemen Cuti', 'Lihat Menu SP', 'Lihat Menu Kontrak Karyawan', 'Lihat Menu SK'])
                     <x-dropdown-menu :active="request()->segment(1) === 'manage-users'">
                         @slot('parentIcon')
                             <i class="ki-duotone ki-profile-user fs-2">
@@ -646,7 +646,7 @@
                                     Manajemen Cuti
                                 </x-dropdown-menu-item>
                             @endcan
-                            @can('Lihat Menu Surat Peringatan')
+                            @can('Lihat Menu SP')
                                 <x-dropdown-menu-item
                                     :active="request()->segment(2) === 'sp'"
                                     href="{{ url('manage-users/sp') }}">

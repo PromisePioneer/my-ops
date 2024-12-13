@@ -105,7 +105,7 @@ class UserSeeder extends Seeder
                 'name' => fake()->unique()->name,
                 'email' => fake()->unique()->email . '@mayatama.net',
                 'password' => Hash::make('12345678'),
-                'branch_id' => 1,
+                'branch_id' => 3,
                 'company_id' => 1,
                 'placement' => 'Cabang',
             ]);

@@ -9,36 +9,27 @@
             <div class="card p-10">
                 <form id="form" @submit.prevent="save()">
                     <div class="card-body p-12">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="row"
-                                     data-bs-toggle="tooltip" data-bs-trigger="hover">
-                                    <div class="col-md-6">
-                                        <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">Tanggal</label>
-                                        <input type="date" class="form-control form-control-solid fw-bolder pe-5 date"
-                                               placeholder="Tanggal" name="start_date" id="start_date"
-                                               :value="currentSP?.reset_date ?? ''"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="separator separator-dashed my-10"></div>
                         <div class="row gx-10 mb-5">
                             <div class="col-lg-6">
+                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">Tanggal</label>
+                                <input type="date" class="form-control form-control-solid fw-bolder pe-5 date"
+                                       placeholder="Tanggal" name="start_date" id="start_date"
+                                       :value="currentSP?.reset_date ?? ''"/>
+                            </div>
+                            <div class="col-lg-6">
                                 <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">Karyawan</label>
                                 <div class="mb-5">
-                                    <select name="user_id" class="form-select form-select-solid users-select2"
-                                            data-placeholder="Select an option">
-                                        <option selected>Pilih Karyawan</option>
+                                    <select name="user_id" class="form-select form-select-solid users-select2">
+                                        <option></option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-group row mb-6">
                                     <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">Tipe SP</label>
-                                    <div class="col-lg-11 fv-row">
-                                        <select name="sp_type" class="form-select form-select-solid account-select2"
-                                                data-placeholder="Select an option">
+                                    <div class="col-lg-12 fv-row">
+                                        <select name="sp_type" class="form-select form-select-solid account-select2">
                                             <option value="0" selected disabled>Pilih</option>
                                             <template x-for="(spType, index) in SPType" :key="index">
                                                 <option :value="spType.name" x-text="spType.name"></option>
@@ -47,14 +38,12 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
                             <div class="col-lg-6">
                                 <div class="mb-5">
                                     <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">
                                         Yang Memberi Sanksi
                                     </label>
-                                    <select name="punished_by" class="form-select form-select-solid users-select2">
+                                    <select name="punished_by" class="form-select form-select-solid sp-pic">
                                         <option></option>
                                     </select>
                                 </div>
@@ -126,7 +115,9 @@
                 async init() {
                     await this.getUserData();
                     await this.getCurrentSp();
+                    await this.getSPPic();
                     this.SPType.push(
+                        {name: 'ST'},
                         {name: "SP-1"},
                         {name: "SP-2"},
                         {name: "SP-3"},
@@ -179,8 +170,24 @@
                 },
                 async getUserData() {
                     $(".users-select2").select2({
+                        placeholder: "Pilih karyawan",
+                        allowClear: true,
                         ajax: {
                             url: '/manage-users/sp/users/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async getSPPic() {
+                    $(".sp-pic").select2({
+                        allowClear: true,
+                        placeholder: "Pilih yang memberi sanksi",
+                        ajax: {
+                            url: '/manage-users/sp/sp-pic/data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),

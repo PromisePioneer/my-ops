@@ -8,7 +8,7 @@
                 <div class="card card-flush">
                     <div class="card-header">
                         <div class="card-title">
-                            <h2 class="mb-0" x-text="spDetailCard.sp_number"></h2>
+                            <h2 class="mb-0" x-text="spDetailCard?.sp_number"></h2>
                         </div>
                     </div>
                     <div class="card-body pt-0">
@@ -19,27 +19,27 @@
                             </div>
                             <div class="d-flex align-items-center py-2">
                                 <span class="fw-bold text-gray-600">NAMA: &nbsp;</span>
-                                <span x-text="spDetailCard.user_id"></span>
+                                <span x-text="spDetailCard?.user_id"></span>
                             </div>
                             <div class="d-flex align-items-center py-2">
                                 <span class="fw-bold text-gray-600">TIPE SP : &nbsp;</span>
-                                <span class="badge bg-danger" x-text="spDetailCard.sp_type"></span>
+                                <span class="badge bg-danger" x-text="spDetailCard?.sp_type"></span>
                             </div>
                             <div class="d-flex align-items-center py-2">
                                 <span class="fw-bold text-gray-600">Tanggal Berlaku : &nbsp;</span>
-                                <span x-text="spDetailCard.date"></span>
+                                <span x-text="spDetailCard?.date"></span>
                             </div>
                             <div class="d-flex align-items-center py-2">
                                 <span class="fw-bold text-gray-600">Diberi Sanksi Oleh : &nbsp;</span>
-                                <span x-text="spDetailCard.punished_by"></span>
+                                <span x-text="spDetailCard?.punished_by"></span>
                             </div>
                             <div class="d-flex align-items-center py-2">
                                 <span class="fw-bold text-gray-600">Dibuat Oleh : &nbsp;</span>
-                                <span x-text="spDetailCard.created_by"></span>
+                                <span x-text="spDetailCard?.created_by"></span>
                             </div>
                             <div class="d-flex align-items-center py-2">
                                 <span class="fw-bold text-gray-600">File : &nbsp;</span>
-                                <a :href="`/manage-users/sp/export-pdf/${spDetailCard.id}`"
+                                <a :href="`/manage-users/sp/export-pdf/${spDetailCard?.id}`"
                                    class="btn btn-danger btn-sm">
                                     <i class="bi bi-file-pdf-fill"></i>
                                 </a>
@@ -132,7 +132,7 @@
                                     <template x-for="sp in spList.data" :key="sp.id">
                                         <tbody class="fw-bold">
                                         <tr @click="spDetail(sp.id)" style="cursor: pointer"
-                                            :class="{'table-active': spDetailCard.id === sp.id}">
+                                            :class="{'table-active': spDetailCard?.id === sp.id}">
                                             <td x-text="sp.sp_number"></td>
                                             <td x-text="sp.branch?.name ?? 'Pusat'"></td>
                                             <td x-text="sp.user_id"></td>
@@ -168,8 +168,8 @@
                 </div>
             </div>
         </div>
-        @include('components.toast')
     </div>
+        @include('components.toast')
 @endsection
 @push('script')
     <script>

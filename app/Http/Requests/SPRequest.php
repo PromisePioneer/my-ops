@@ -28,7 +28,7 @@ class SPRequest extends FormRequest
             'start_date' => ['required', 'date'],
             'sp_type' => [
                 'required',
-                Rule::in('SP-1', 'SP-2', 'SP-3'),
+                Rule::in('ST', 'SP-1', 'SP-2', 'SP-3'),
             ],
             'data.*.list_of_reason' => ['required', 'string'],
             'punished_by' => ['required', 'string'],

@@ -16,13 +16,9 @@ use Illuminate\View\View;
 
 #[AllowDynamicProperties] class ManageUserLeavesController extends Controller
 {
-    private static int $perPage = 10;
-
-    private ManageUserLeaveAndPermissionService $leaveAndPermissionService;
-
     public function __construct()
     {
-        $this->leaveAndPermissionService = new ManageUserLeaveAndPermissionService();
+        $this->manageUserLeaveAndPermissionService = new ManageUserLeaveAndPermissionService();
         $this->user = new User();
     }
 
@@ -38,94 +34,7 @@ use Illuminate\View\View;
 
     public function getUserData(Request $request): JsonResponse
     {
-
-        $search = $request->search;
-
-        $query = User::where('active', '=', 1)
-            ->orderBy('name')
-            ->select('id', 'name', 'nip');
-
-        if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('nip', 'like', '%' . $search . '%');
-            });
-        }
-
-        if ($request->user()->hasAnyRole('NOC Supervisor', 'NOC Staff')) {
-            $query->whereHas('roles', function ($query) {
-                $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
-            })->whereNull('branch_id');
-        }
-
-        if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner')) {
-            $query->paginate(self::$perPage);
-        }
-
-
-        if ($request->user()->hasAnyRole('Head Engineer', 'Senior Engineer')) {
-            $query->whereHas('userHasArea', function ($query) use ($request) {
-                $query->where('area_id', $request->user()->userHasArea->area_id);
-            })->where(function ($query) use ($request) {
-                $query->where('branch_id', $request->user()->branch_id)
-                    ->where('active', 1);
-            });
-        }
-
-        if ($request->user()->hasAnyRole('Customer Service Leader')) {
-            $query->whereHas('roles', function ($query) use ($request) {
-                $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff', 'After Sales Customer Service']);
-            })->where(function ($query) use ($request) {
-                $query->whereNull('branch_id')->orWhereIn('branch_id', [1])
-                    ->where('active', 1);;
-            });
-        }
-
-
-        if ($request->user()->hasAnyRole('Finance & Accounting Supervisor')) {
-            $query->whereHas('roles', function ($query) use ($request) {
-                $query->whereIn('name', ['Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff', 'Stocker Staff', 'Inventory Controller Supervisor']);
-            })->where(function ($query) use ($request) {
-                $query->whereNull('branch_id')->orWhereIn('branch_id', [1])->where('active', 1);;
-            });
-        }
-
-
-        if ($request->user()->hasAnyRole('Head Of Electrical Engineer')) {
-            $query->whereHas('roles', function ($query) use ($request) {
-                $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer']);
-            })->whereNull('branch_id');
-        }
-
-
-        if ($request->user()->hasRole('Branch Manager')) {
-            $query->where('branch_id', $request->user()->branch_id)->paginate(self::$perPage);
-        }
-
-
-        if ($request->user()->hasRole('KU Head Engineer')) {
-            $query->whereHas('roles', function ($query) use ($request) {
-                $query->whereIn('name', ['KU Head Engineer', 'KU Engineer']);
-            });
-        }
-
-
-        if ($request->user()->hasRole('Quality Controller Supervisor')) {
-            $query->whereHas('roles', function ($query) use ($request) {
-                $query->whereIn('name', ['Quality Controller Supervisor', 'Quality Control Staff']);
-            });
-        }
-
-        $users = $query->get();
-
-        $data = $users->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'text' => $item->nip . ' ' . $item->name,
-            ];
-        });
-
-        return response()->json($data);
+        return response()->json($this->manageUserLeaveAndPermissionService->getUserData($request));
     }
 
     /**
@@ -134,7 +43,7 @@ use Illuminate\View\View;
     public function data(Request $request): JsonResponse
     {
         $this->authorize('view', LeaveAndPermission::class);
-        $query = $this->leaveAndPermissionService->data($request);
+        $query = $this->manageUserLeaveAndPermissionService->data($request);
         return response()->json($query);
     }
 
@@ -144,7 +53,7 @@ use Illuminate\View\View;
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', LeaveAndPermission::class);
-        return response()->json($this->leaveAndPermissionService->search($request));
+        return response()->json($this->manageUserLeaveAndPermissionService->search($request));
     }
 
     /**
@@ -161,7 +70,7 @@ use Illuminate\View\View;
      */
     public function changeStatus(
         ManageUserLeaveAndPermissionRequest $request,
-        LeaveAndPermission                  $leaveAndPermission
+        LeaveAndPermission $leaveAndPermission
     ): JsonResponse
     {
         $this->authorize('changeStatus', LeaveAndPermission::class);
@@ -177,7 +86,6 @@ use Illuminate\View\View;
 
     public function store(LeaveAndPermissionRequest $request): JsonResponse
     {
-
         LeaveAndPermission::create([
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
@@ -186,7 +94,6 @@ use Illuminate\View\View;
             'leaves_status' => $request->leaves_status,
             'sick_letter' => $request->sick_letter,
         ]);
-
 
         return response()->json(['message' => 'Data berhasil disimpan.']);
     }

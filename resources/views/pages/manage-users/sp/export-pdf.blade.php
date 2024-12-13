@@ -93,11 +93,16 @@
 
 @php
     $super = '';
+    if ($sp->sp_type === 'ST'){
+        $super = 'Surat Teguran';
+    }
     if ($sp->sp_type === 'SP-1'){
         $super = 'Pertama';
-    }elseif ($sp->sp_type === 'SP-2'){
+    }
+    if($sp->sp_type === 'SP-2'){
         $super = 'Kedua';
-    }else{
+    }
+    if($sp->sp_type === 'SP-3'){
         $super = 'Ketiga';
     }
 @endphp
@@ -110,7 +115,8 @@
 
 <div class="wrapper">
     <div class="text-center mb-4">
-        <p class="fs-3"><u>Surat Peringatan {{ $super }} ({{ $sp->sp_type }})</u></p>
+        <p class="fs-3"><u>{{ $sp->sp_type === "ST" ? "Surat Teguran" : "Surat Peringatan" }}
+                ({{ $sp->sp_type === "ST" ? 'ST' : $sp->sp_type }})</u></p>
         <p class="fs-4">Nomor : {{ $sp->sp_number }}</p>
     </div>
     <p class="fs-9">Surat peringatan ini ditujukan kepada : </p>
@@ -152,6 +158,10 @@
         </tbody>
     </table>
 
+
+    {{--    @if($sp->sp_type === 'ST')--}}
+
+    {{--    @endif--}}
 
     @if($sp->sp_type === 'SP-1' || $sp->sp_type === 'SP-2')
         <div>
@@ -248,7 +258,7 @@
                         <th style="text-align: center; padding: 8px;">
                             <p style="font-size: 12px; margin: 0;">
                                 <img
-                                    src="data:image/png;base64, {!! base64_encode(QrCode::format('png')->size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                    src="data:image/svg+xml;base64, {!! base64_encode(QrCode::format('png')->size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
                                     width="100px" height="70px">
                             </p>
                         </th>
@@ -282,7 +292,7 @@
                         <th style="text-align: center; padding: 8px;">
                             <p style="font-size: 12px; margin: 0;">
                                 <img
-                                    src="data:image/png;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                    src="data:image/svg+xml;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
                                     width="100px" height="70px">
                             </p>
                         </th>
@@ -314,7 +324,7 @@
                         <th style="text-align: center; padding: 8px;">
                             <p style="font-size: 12px; margin: 0;">
                                 <img
-                                    src="data:image/png;base64, {!! base64_encode(QrCode::size(10)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                    src="data:image/svg+xml;base64, {!! base64_encode(QrCode::size(10)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
                                     width="100px" height="70px">
                             </p>
                         </th>

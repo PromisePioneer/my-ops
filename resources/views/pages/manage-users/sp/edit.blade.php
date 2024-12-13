@@ -13,19 +13,19 @@
                             <div class="col-lg-6">
                                 <div class="d-flex align-items-center flex-equal fw-row me-4 order-2"
                                      data-bs-toggle="tooltip" data-bs-trigger="hover">
-                                    <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal akhir :</div>
-                                    <div class="position-relative d-flex align-items-center w-150px">
-                                        <input type="date" class="form-control form-control-solid fw-bolder pe-5 date"
-                                               placeholder="Tanggal" name="start_date" id="start_date"
-                                               value="{{ $sp->start_date }}"/>
-                                    </div>
+
                                 </div>
                             </div>
                         </div>
-                        <div class="separator separator-dashed my-10"></div>
                         <div class="row gx-10 mb-5">
                             <div class="col-lg-6">
-                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">Karyawan</label>
+                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Tanggal</label>
+                                <input type="date" class="form-control form-control-solid fw-bolder pe-5 date"
+                                       placeholder="Tanggal" name="start_date" id="start_date"
+                                       value="{{ $sp->start_date }}"/>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Karyawan</label>
                                 <div class="mb-5">
                                     <select name="user_id" id="selectedUser"
                                             class="form-select form-select-solid users-select2"
@@ -36,32 +36,31 @@
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-group row mb-6">
-                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">Tipe SP</label>
-                                    <div class="col-lg-11 fv-row">
-                                        <select name="sp_type" class="form-select form-select-solid account-select2"
-                                                data-placeholder="Select an option">
-                                            <option value="0" selected disabled>Pilih</option>
-                                            <option value="SP-1" {{ $sp->sp_type === 'SP-1' ? 'selected' : '' }}>
-                                                SP-1
-                                            </option>
-                                            <option value="SP-2" {{ $sp->sp_type === 'SP-2'  ? 'selected' : '' }}>
-                                                SP-2
-                                            </option>
-                                            <option value="SP-3" {{ $sp->sp_typ === 'SP-3'  ? 'selected' : '' }}>
-                                                SP-3
-                                            </option>
-                                        </select>
-                                    </div>
+                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Tipe SP</label>
+                                    <select name="sp_type" class="form-select form-select-solid account-select2"
+                                            data-placeholder="Select an option">
+                                        <option value="0" selected disabled>Pilih</option>
+                                        <option value="ST" {{ $sp->sp_type === 'ST' ? 'selected' : '' }}>
+                                            ST
+                                        </option>
+                                        <option value="SP-1" {{ $sp->sp_type === 'SP-1' ? 'selected' : '' }}>
+                                            SP-1
+                                        </option>
+                                        <option value="SP-2" {{ $sp->sp_type === 'SP-2'  ? 'selected' : '' }}>
+                                            SP-2
+                                        </option>
+                                        <option value="SP-3" {{ $sp->sp_typ === 'SP-3'  ? 'selected' : '' }}>
+                                            SP-3
+                                        </option>
+                                    </select>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
                             <div class="col-lg-6">
                                 <div class="mb-5">
-                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">
+                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
                                         Yang Memberi Sanksi
                                     </label>
-                                    <select name="punished_by" class="form-select form-select-solid users-select2"
+                                    <select name="punished_by" class="form-select form-select-solid sp-pic"
                                             id="selectedPunishedBy">
                                         <option></option>
                                     </select>
@@ -120,6 +119,7 @@
 @endsection
 @push('script')
     <script>
+        $('.date').flatpickr();
         function generateSP() {
             return {
                 fields: [],
@@ -132,6 +132,7 @@
                     await this.getUserData();
                     await this.selectedUserData();
                     await this.selectedPunishBy();
+                    await this.getSPPic();
                 },
                 add() {
                     this.fields.push({
@@ -168,6 +169,20 @@
                     $(".users-select2").select2({
                         ajax: {
                             url: '/manage-users/sp/users/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async getSPPic() {
+                    $(".sp-pic").select2({
+                        allowClear: true,
+                        placeholder: "Pilih yang memberi sanksi",
+                        ajax: {
+                            url: '/manage-users/sp/sp-pic/data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),

@@ -29,10 +29,8 @@ class SPController extends Controller
 
     public function __construct()
     {
-        $this->sp = new SP();
-        $this->perPage = 10;
-        $this->user = new User();
         $this->spService = new SPService();
+        $this->user = new User();
     }
 
     /**
@@ -50,7 +48,7 @@ class SPController extends Controller
     public function data(): JsonResponse
     {
         //        $this->authorize('view', SP::class);
-        return response()->json($this->sp->getDataWithPagination($this->perPage));
+        return response()->json($this->spService->data());
     }
 
     /**
@@ -59,7 +57,7 @@ class SPController extends Controller
     public function search(Request $request): JsonResponse
     {
         //        $this->authorize('view', SP::class);
-        return response()->json($this->sp->searchDataWithPagination($request, $this->perPage));
+        return response()->json($this->spService->search($request));
     }
 
     /**
@@ -67,8 +65,12 @@ class SPController extends Controller
      */
     public function getUserData(Request $request): JsonResponse
     {
-        //        $this->authorize('create', SP::class);
-        return response()->json($this->user->getUser($request));
+        return response()->json($this->spService->getEmployeeData($request));
+    }
+
+    public function getSPPIC(Request $request): JsonResponse
+    {
+        return response()->json($this->spService->getSPPic($request));
     }
 
     /**
@@ -82,7 +84,7 @@ class SPController extends Controller
             ->where('end_date', '>', Carbon::now())
             ->first();
 
-        $endData = Carbon::parse($request->start_date)->addMonth();
+        $endData = Carbon::parse($request->start_date)->addMonths(6);
         DB::transaction(function () use ($request, $currentSP, $endData) {
             $sp = SP::create([
                 'start_date' => $request->start_date,
@@ -125,16 +127,7 @@ class SPController extends Controller
      */
     public function update(SPRequest $request, SP $sp): JsonResponse
     {
-        $sp->update([
-            'date' => $request->date,
-            'branch_id' => $request->user()->branch_id,
-            'user_id' => $request->user_id,
-            'sp_number' => $this->spService->generateSpNumber($request),
-            'sp_type' => $request->sp_type,
-            'created_by' => $request->user()->id,
-            'list_of_reason' => json_encode($request['data']),
-            'punished_by' => $request->punished_by
-        ]);
+        $this->spService->update($request, $sp);
 
         return response()->json([
             'message' => 'Data berhasil disimpan.',
@@ -227,6 +220,6 @@ class SPController extends Controller
 
     public function show(SP $sp): JsonResponse
     {
-        return response()->json($this->sp->showSPDetail($sp));
+        return response()->json($this->spService->showSPDetail($sp));
     }
 }
