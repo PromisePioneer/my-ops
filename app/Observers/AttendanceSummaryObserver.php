@@ -27,7 +27,7 @@ class AttendanceSummaryObserver
                 ->whereDate('date', $timestamp)
                 ->first() ?? WorkTime::find(1);
 
-//            dd($workTime);
+
 
 
 
@@ -50,6 +50,9 @@ class AttendanceSummaryObserver
             return;
         }
 
+        $expectedCheckIn = Carbon::make($timestamp->format('Y-m-d') . $workTime->workTime?->clock_in);
+
+
         $attendancesSummary = AttendancesSummary::where('employee_id', $attendances->employee_id)
             ->where('work_time_id', $workTime?->workTime?->id ?? $workTime->id);
 
@@ -58,7 +61,11 @@ class AttendanceSummaryObserver
         }
 
         if ($workTime?->workTime?->clock_in === "00:00:00") {
-            $attendancesSummary->whereDate('date', $timestamp->copy()->subDay());
+            if($expectedCheckIn->lessThan($timestamp)){
+                $attendancesSummary->whereDate('date', $timestamp);
+            }else{
+                $attendancesSummary->whereDate('date', $timestamp->subDay());
+            }
         }
 
         if ($workTime->clock_out === "01:00:00") {
@@ -68,9 +75,10 @@ class AttendanceSummaryObserver
 //        dd($timestamp->copy()->subDay()->format('Y-m-d'));
 
 
-        $attendancesSummary = $attendancesSummary->latest()->first();
+        $attendancesSummary = $attendancesSummary->first();
 
 
+        Log::info($attendancesSummary);
 
 
         if (!$attendancesSummary) {
@@ -81,19 +89,21 @@ class AttendanceSummaryObserver
             ]);
         }
 
-        $expectedCheckIn = Carbon::make($timestamp->format('Y-m-d') . $workTime->workTime?->clock_in);
         $expectedCheckOut = Carbon::make($timestamp->format('Y-m-d') . $workTime->workTime?->clock_out);
 
         if ($attendances->status1 === 0 && !$attendancesSummary->clock_in) {
             $clockInTimestamp = $timestamp->copy()->subDays();
-            if ($workTime?->workTime?->clock_in === "00:00:00" && $expectedCheckIn->lessThan($timestamp)) {
+
+            // Log::info($expectedCheckIn->lessThan($timestamp));
+
+            if ($workTime?->workTime?->clock_in === "00:00:00" && $expectedCheckIn->greaterThan($timestamp)) {
                 $attendancesSummary->clock_in = $clockInTimestamp;
             } else {
                 $attendancesSummary->clock_in = $timestamp;
             }
 
         } elseif ($attendances->status1 === 1 && !$attendancesSummary->clock_out) {
-            $clockOutTimestamp = $timestamp->copy();
+            $clockOutTimestamp = $timestamp->copy()->addDays();
             if ($workTime?->workTime?->clock_out === "00:00:00" && $expectedCheckOut->greaterThan($timestamp)) {
                 $attendancesSummary->clock_out = $clockOutTimestamp;
             } else {
