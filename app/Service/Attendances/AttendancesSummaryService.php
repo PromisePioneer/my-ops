@@ -92,9 +92,13 @@ class AttendancesSummaryService
         $workDate = $attendance?->date;
         $expectedCheckIn = Carbon::parse("$workDate {$userWorktime?->clock_in}");
 
+        $newExpectedCheckIn = null;
+        if ($userWorktime->name === "Malam") {
+            $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
+        }
 
-        if ($actualCheckIn->greaterThan($expectedCheckIn)) {
-            $lateness = $expectedCheckIn->diffInMinutes($actualCheckIn);
+        if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
+            $lateness = $newExpectedCheckIn ? $newExpectedCheckIn->diffInMinutes($actualCheckIn) : $expectedCheckIn->diffInMinutes($actualCheckIn);
             $totalMinutesLate += $lateness;
         }
 

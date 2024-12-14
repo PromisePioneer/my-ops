@@ -14,7 +14,7 @@ class WorkTimeSeeder extends Seeder
     {
         WorkTime::create([
             'id' => 1,
-            'name' => 'Default',
+            'name' => 'Pagi',
             'clock_in' => '08:00',
             'clock_out' => '17:00',
             'time_to_checkin' => '07:00',
@@ -33,44 +33,25 @@ class WorkTimeSeeder extends Seeder
             'end_time_to_checkout' => '23:59',
         ]);
 
-        WorkTime::create([
-            'name' => 'NOC Pagi',
-            'clock_in' => '08:00',
-            'clock_out' => '17:00',
-            'time_to_checkin' => '06:00',
-            'end_time_to_checkin' => '10:00',
-            'time_to_checkout' => '16:00',
-            'end_time_to_checkout' => '23:59',
-        ]);
 
         WorkTime::create([
-            'name' => 'NOC Malam',
+            'name' => 'Malam',
             'clock_in' => '00:00',
             'clock_out' => '09:00',
             'time_to_checkin' => '23:00',
             'end_time_to_checkin' => '02:00',
-            'time_to_checkout' => '08:00',
-            'end_time_to_checkout' => '11:59',
+            'time_to_checkout' => '09:00',
+            'end_time_to_checkout' => '12:00',
         ]);
 
         WorkTime::create([
-            'name' => 'CS Pagi',
-            'clock_in' => '07:45',
-            'clock_out' => '17:00',
-            'time_to_checkin' => '06:00',
-            'end_time_to_checkin' => '10:00',
-            'time_to_checkout' => '16:00',
-            'end_time_to_checkout' => '23:00',
-        ]);
-
-        WorkTime::create([
-            'name' => 'CS Malam',
-            'clock_in' => '18:00',
-            'clock_out' => '03:00',
-            'time_to_checkin' => '17:00',
-            'end_time_to_checkin' => '20:00',
-            'time_to_checkout' => '03:00',
-            'end_time_to_checkout' => '06:00',
+            'name' => 'Sore',
+            'clock_in' => '16:00',
+            'clock_out' => '01:00',
+            'time_to_checkin' => '15:00',
+            'end_time_to_checkin' => '18:00',
+            'time_to_checkout' => '01:00',
+            'end_time_to_checkout' => '05:00',
         ]);
 
         WorkTime::create([
