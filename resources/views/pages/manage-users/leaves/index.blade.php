@@ -186,6 +186,7 @@
                 modalConfirm: new bootstrap.Modal(document.getElementById('modal-confirm')),
                 formConfirm: document.getElementById('form-confirm'),
                 modalDetail: new bootstrap.Modal(document.getElementById('modal-detail')),
+                leavesLeft: 0,
                 async init() {
                     this.isLoading = true;
                     await this.getLeavesData();
@@ -250,6 +251,8 @@
                     });
                 },
                 async getUserData() {
+
+                    const self = this;
                     $(".users-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Karyawan",
@@ -261,9 +264,18 @@
                             processResults: data => ({results: data}),
                             cache: true
                         }
+                    }).on('change', async function (e) {
+                        const userId = $(".users-select2").val()
+                        const resp = await axios.get(`/manage-users/leaves/leaves-left`, {
+                            params: {
+                                user_id: userId
+                            }
+                        });
+
+                        self.leavesLeft = resp.data
                     });
                 },
-                async save(){
+                async save() {
                     this.buttonLoading = true;
                     try {
                         await axios.post('/manage-users/leaves/', new FormData(this.formCreate))

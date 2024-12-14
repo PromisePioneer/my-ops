@@ -13,7 +13,8 @@
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Pilih Karyawan</label>
-                        <select name="user_id" id="user_id" class="form-select form-select-solid users-select2">
+                        <select name="user_id" id="user_id" class="form-select form-select-solid users-select2"
+                                data-dropdown-parent="#modal-create">
                             <option></option>
                         </select>
                     </div>
@@ -27,6 +28,11 @@
                         <label for="name" class="required form-label">Tanggal Selesai</label>
                         <input type="date" id="end_date" name="end_date" class="form-control form-control-solid date"
                                placeholder="Tanggal Selesai"/>
+                    </div>
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Sisa Cuti</label>
+                        <input type="text" class="form-control form-control-solid"
+                               readonly :value="leavesLeft"/>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Status Cuti</label>

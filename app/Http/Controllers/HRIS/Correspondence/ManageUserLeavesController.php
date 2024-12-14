@@ -77,7 +77,7 @@ use Illuminate\View\View;
      */
     public function changeStatus(
         ManageUserLeaveAndPermissionRequest $request,
-        LeaveAndPermission $leaveAndPermission
+        LeaveAndPermission                  $leaveAndPermission
     ): JsonResponse
     {
         $this->authorize('changeStatus', LeaveAndPermission::class);

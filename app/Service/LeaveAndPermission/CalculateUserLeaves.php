@@ -9,9 +9,9 @@ use Illuminate\Http\Request;
 
 class CalculateUserLeaves
 {
-    public function calculate(Request $request): int
+    public function calculate(Request $request, $userId = null): int
     {
-        $user = User::where('id', $request->user_id ?? $request->user_id ?? $request->user()->id)->first();
+        $user = User::where('id', $request->user_id ?? $request->user()->id)->first();
         $joinDate = Carbon::parse($user->join_date);
         $now = Carbon::now();
         $yearsOfService = $joinDate->diffInYears($now);
@@ -35,7 +35,7 @@ class CalculateUserLeaves
 
     public function getDiffDays(Request $request, int $leaveQuota, Carbon $now): int
     {
-        $totalLeaves = LeaveAndPermission::where('user_id', $request->user()->id)
+        $totalLeaves = LeaveAndPermission::where('user_id', $request->user_id ?? $request->user()->id)
             ->where('confirmation_status', 'Diterima')
             ->get();
 

@@ -212,6 +212,7 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
         Route::prefix('leaves')->group(function () {
+            Route::get('/leaves-left', [ManageUserLeavesController::class, 'getTotalLeavesLeft']);
             Route::get('/', [ManageUserLeavesController::class, 'index']);
             Route::get('/data', [ManageUserLeavesController::class, 'data']);
             Route::get('/search', [ManageUserLeavesController::class, 'search']);
@@ -224,7 +225,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/edit/{leaveAndPermission}', [ManageUserLeavesController::class, 'edit']);
             Route::post('/update/{leaveAndPermission}', [ManageUserLeavesController::class, 'update']);
             Route::post('/destroy', [ManageUserLeavesController::class, 'destroy']);
-            Route::get('/leaves-and-permission');
         });
 
         Route::prefix('sp')->group(function () {
