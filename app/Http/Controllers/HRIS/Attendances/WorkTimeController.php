@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\HRIS\Attendances;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ADMS\UserWorkTimeRequest;
 use App\Http\Requests\ADMS\WorkTimeRequest;
 use App\Models\User;
-use App\Models\UserWorkTime;
 use App\Models\WorkTime;
 use App\Service\WorkTimeService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -14,22 +14,14 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-class WorkTimeController extends Controller
+#[AllowDynamicProperties] class WorkTimeController extends Controller
 {
     public readonly int $perPage;
-
-    private WorkTime $workTime;
-
-    private User $user;
-
-    private UserWorkTime $userWorkTime;
-    private WorkTimeService $workTimeService;
 
     public function __construct()
     {
         $this->workTime = new WorkTime();
         $this->user = new User();
-        $this->userWorkTime = new UserWorkTime();
         $this->perPage = 10;
         $this->workTimeService = new WorkTimeService();
     }
@@ -125,11 +117,6 @@ class WorkTimeController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function getSelectedUserWorkTime(WorkTime $workTime): JsonResponse
-    {
-        $this->authorize('update', WorkTime::class);
-        return response()->json($this->userWorkTime->getSelectedUserShift($workTime->id));
-    }
 
     /**
      * @throws AuthorizationException
@@ -153,36 +140,4 @@ class WorkTimeController extends Controller
         return view('pages.adms.work-time.detail', compact('workTime'));
     }
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function detailData(WorkTime $workTime): JsonResponse
-    {
-        $this->authorize('viewDetail', WorkTime::class);
-        return response()->json($this->userWorkTime->getDetailUserOnSelectedWorkTime($workTime->id, $this->perPage));
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function searchDetailData(Request $request, WorkTime $workTime): JsonResponse
-    {
-        $this->authorize('viewDetail', WorkTime::class);
-        return response()->json(
-            $this->userWorkTime->searchDetailUserOnSelectedWorkTIme($request, $workTime->id, $this->perPage)
-        );
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function destroyDetailWorktimeUser(Request $request, UserWorkTime $userWorkTime): JsonResponse
-    {
-        $this->authorize('destroy', UserWorkTime::class);
-        $implodeID = implode(',', $request->get('id'));
-        $explodeID = explode(',', $implodeID);
-        $userWorkTime->whereIn('id', $explodeID)->delete();
-
-        return response()->json(['message' => 'data berhasil dihapus']);
-    }
 }

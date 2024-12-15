@@ -94,7 +94,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <a :href="`/adms/work-time/detail/${shift.id}`" x-text="shift.name"></a>
+                                        <a href="#" x-text="shift.name"></a>
                                     </td>
                                     <td x-text="shift.clock_in"></td>
                                     <td x-text="shift.clock_out"></td>
