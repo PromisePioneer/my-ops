@@ -82,14 +82,17 @@ use function App\Helper\formatDate;
             });
         }
 
+        if ($request->user()->hasAnyRole(['Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner'])) {
+            $query->paginate(self::$perPage);
+        }
+
         if ($request->user()->hasRole('NOC Supervisor')) {
             $query->whereHas('roles', function ($query) {
                 $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
-            })->whereNull('branch_id');
-        }
-
-        if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner')) {
-            $query->paginate(self::$perPage);
+            })->where(function ($query) {
+                $query->whereNull('branch_id')
+                    ->orWhere('branch_id', 1);
+            });
         }
 
 

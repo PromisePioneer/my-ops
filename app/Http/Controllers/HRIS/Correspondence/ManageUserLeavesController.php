@@ -72,7 +72,7 @@ use Illuminate\View\View;
         LeaveAndPermission  $leaveAndPermission
     ): JsonResponse
     {
-        $this->authorize('changeStatus', LeaveAndPermission::class);
+        $this->authorize('confirm', LeaveAndPermission::class);
         $data = $request->validated();
         $data['acc_by'] = $request->user()->id;
         $leaveAndPermission->update($data);

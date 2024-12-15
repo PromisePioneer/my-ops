@@ -639,7 +639,7 @@
                                     Hak Akses
                                 </x-dropdown-menu-item>
                             @endcan
-                            @can('Lihat Manajemen Cuti')
+                            @can('Lihat Menu Manajemen Cuti')
                                 <x-dropdown-menu-item
                                     :active="request()->segment(2) === 'leaves'"
                                     href="{{ url('manage-users/leaves') }}">

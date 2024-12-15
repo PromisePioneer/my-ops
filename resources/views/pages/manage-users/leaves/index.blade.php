@@ -91,7 +91,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <a :href="`/manage-users/users/detail/${leave.user_id}`"
+                                          <a :href="`${Number(viewDetailUserPermission) === 1 ? `/manage-users/users/detail/${leave.user_id}` : '#'}`"
                                            x-text="leave.user_name"></a>
                                     </td>
                                     <td x-text="`${leave.start_date} - ${leave.end_date}`"></td>
@@ -111,33 +111,32 @@
                                     <template
                                         x-if="leave.confirmation_status === 'Diterima' || leave.confirmation_status === 'Ditolak'">
                                         <td>
+                                            <button class="btn btn-light-primary btn-sm" disabled>
+                                                <i class="ki-duotone ki-pencil fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                            </button>
                                             <button class="btn btn-info btn-sm" disabled>
                                                 <i class="bi bi-gear-fill"></i>
-                                            </button>
-                                            <button class="btn btn-dark btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-detail" @click="detail(leave.id)">
-                                                <i class="bi bi-eye-fill"></i>
                                             </button>
                                         </td>
                                     </template>
                                     <template x-if="leave.confirmation_status === 'Diproses'">
                                         <td>
-                                            <button class="btn btn-info btn-sm" data-bs-toggle="modal"
+                                            <template x-if="Number(confirmPermission) === 1">
+                                                <button class="btn btn-info btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modal-confirm"
-                                                    @click="openConfirmModal(leave.id)"
-                                                    :disabled="Number(currentLoginId) === Number(leave.user_id)">
+                                                        @click="openConfirmModal(leave.id)">
                                                 <i class="bi bi-gear-fill"></i>
-                                            </button>
+                                                </button>
+                                            </template>
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modal-edit" @click="edit(leave.id)">
                                                 <i class="ki-duotone ki-pencil fs-2">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
                                                 </i>
-                                            </button>
-                                            <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-detail" @click="edit(leave.id)">
-                                                <i class="bi bi-eye-fill"></i>
                                             </button>
                                         </td>
                                     </template>
@@ -167,6 +166,8 @@
 
         function leavesData() {
             return {
+                viewDetailUserPermission: "{{ request()->user( )->can('Lihat Detail Data Karyawan') }}",
+                confirmPermission: "{{request()->user()->can('Konfirmasi Data Manajemen Cuti')}}",
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formCreate: document.getElementById('form-create'),

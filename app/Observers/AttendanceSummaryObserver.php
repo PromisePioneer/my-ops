@@ -44,6 +44,11 @@ class AttendanceSummaryObserver
             }
         }
 
+
+        if ($workTime?->status === 'L') {
+            return;
+        }
+
         if (!$workTime) {
             Log::warning('No matching WorkTime found for timestamp: ' . $timestamp);
             return;
