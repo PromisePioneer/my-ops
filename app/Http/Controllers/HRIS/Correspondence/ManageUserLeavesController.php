@@ -63,21 +63,13 @@ use Illuminate\View\View;
         return response()->json($this->manageUserLeaveAndPermissionService->search($request));
     }
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function detail(LeaveAndPermission $leaveAndPermission): JsonResponse
-    {
-        $this->authorize('viewDetail', LeaveAndPermission::class);
-        return response()->json($leaveAndPermission->with('user')->first());
-    }
 
     /**
      * @throws AuthorizationException
      */
     public function changeStatus(
         ManageUserLeaveAndPermissionRequest $request,
-        LeaveAndPermission                  $leaveAndPermission
+        LeaveAndPermission  $leaveAndPermission
     ): JsonResponse
     {
         $this->authorize('changeStatus', LeaveAndPermission::class);
@@ -107,6 +99,7 @@ use Illuminate\View\View;
             'leaves_status' => $request->leaves_status,
             'sick_letter' => $request->sick_letter,
         ]);
+
 
         return response()->json(['message' => 'Data berhasil disimpan.']);
     }
