@@ -71,7 +71,7 @@ class AttendancesSummaryService
             return [
                 'id' => $user->id,
                 'user_nip' => $user->nip,
-                'user_name' => $user->name,
+                'user_name' => $user?->name,
                 'role' => $user->roles[0]?->name ?? '',
                 'total_minutes_late' => (int)$totalMinutesLate,
                 'total_not_check_in' => $totalNotCheckIn,
@@ -93,7 +93,7 @@ class AttendancesSummaryService
         $expectedCheckIn = Carbon::parse("$workDate {$userWorktime?->clock_in}");
 
         $newExpectedCheckIn = null;
-        if ($userWorktime->name === "Malam") {
+        if ($userWorktime?->name === "Malam") {
             $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
         }
 

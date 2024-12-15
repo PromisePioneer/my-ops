@@ -3,7 +3,6 @@
 @section('content')
     <div x-data="leavesData()">
         @include('pages.manage-users.leaves.modal.confirm')
-        @include('pages.manage-users.leaves.modal.detail')
         @include('pages.manage-users.leaves.modal.create')
         @include('pages.manage-users.leaves.modal.edit')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
@@ -140,8 +139,6 @@
                                                     data-bs-target="#modal-detail" @click="edit(leave.id)">
                                                 <i class="bi bi-eye-fill"></i>
                                             </button>
-
-
                                         </td>
                                     </template>
                                 </tr>
@@ -173,6 +170,7 @@
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formCreate: document.getElementById('form-create'),
+                formEdit: document.getElementById('form-edit'),
                 buttonLoading: false,
                 isLoading: false,
                 leaves: [],
@@ -185,7 +183,6 @@
                 detailValue: '',
                 modalConfirm: new bootstrap.Modal(document.getElementById('modal-confirm')),
                 formConfirm: document.getElementById('form-confirm'),
-                modalDetail: new bootstrap.Modal(document.getElementById('modal-detail')),
                 leavesLeft: 0,
                 async init() {
                     this.isLoading = true;
@@ -238,6 +235,7 @@
                     }
                 },
                 async selectedUserData(id) {
+                    const self = this;
                     const selectedUser = $('#selectedUser');
                     const response = await $.ajax({
                         type: 'GET',
@@ -249,9 +247,15 @@
                         type: 'select2:select',
                         params: {results: response}
                     });
+
+                    const resp = await axios.get('/manage-users/leaves/leaves-left', {
+                        params: {
+                            user_id: response.id
+                        }
+                    });
+                    this.leavesLeft = resp.data;
                 },
                 async getUserData() {
-
                     const self = this;
                     $(".users-select2").select2({
                         allowClear: true,
@@ -290,9 +294,20 @@
                         this.buttonLoading = false;
                     }
                 },
-                async detail(id) {
-                    const resp = await axios.get(`/manage-users/leaves/${id}`);
-                    this.detailValue = resp.data;
+                async update(id) {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/manage-users/leaves/update/${id}`, new FormData(this.formEdit))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.formEdit.reset();
+                        this.modalEdit.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
                 },
                 openConfirmModal(id) {
                     this.id = id;

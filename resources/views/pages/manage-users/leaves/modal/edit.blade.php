@@ -9,7 +9,7 @@
                 </div>
             </div>
 
-            <form id="form-create" @submit.prevent="save()">
+            <form id="form-edit" @submit.prevent="update(editVal.id)">
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Pilih Karyawan</label>
@@ -27,6 +27,11 @@
                         <label for="name" class="required form-label">Tanggal Selesai</label>
                         <input type="date" id="end_date" name="end_date" class="form-control form-control-solid date"
                                placeholder="Tanggal Selesai" :value="editVal.end_date"/>
+                    </div>
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Sisa Cuti</label>
+                        <input type="text" class="form-control form-control-solid"
+                               readonly :value="leavesLeft"/>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Status Cuti</label>

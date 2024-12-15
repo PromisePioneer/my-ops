@@ -154,15 +154,15 @@ class AttendanceSummaryDetailService
         return $sick;
     }
 
-    public function getLeaves($user, $startDate, $endDate)
+    public function getLeaves($user, $startDate, $endDate): array
     {
         $leaveAndPermission = LeaveAndPermission::where('user_id', $user->id)
             ->where('leaves_status', 'Cuti')
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('start_date', [$startDate, $endDate])
                     ->orWhereBetween('end_date', [$startDate, $endDate]);
-            })
-            ->get();
+            })->get();
+
 
         $leavePeriods = [];
 
