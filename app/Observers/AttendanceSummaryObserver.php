@@ -80,6 +80,9 @@ class AttendanceSummaryObserver
 //        dd($attendancesSummary);
 
 
+
+
+
         if (!$attendancesSummary) {
             $attendancesSummary = new AttendancesSummary([
                 'date' => $timestamp->format('Y-m-d'),
