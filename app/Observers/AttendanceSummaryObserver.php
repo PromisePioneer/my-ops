@@ -25,6 +25,16 @@ class AttendanceSummaryObserver
                 ->where('employee_id', $attendances->employee_id)
                 ->whereDate('date', $timestamp)
                 ->first() ?? WorkTime::find(1);
+
+
+            if ($timestamp->toTimeString() >= "00:00:00" && $timestamp->toTimeString() <= "02:00:00") {
+                $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : EmployeeSchedule::with('workTime')
+                    ->where('employee_id', $attendances->employee_id)
+                    ->whereDate('date', $timestamp->copy()->subDay())
+                    ->first() ?? WorkTime::find(1);
+
+            }
+
         } elseif ($attendances->status1 === 1) {
             if ($timestamp->toTimeString() >= "9:00:00" && "12:00:00" <= $timestamp->toTimeString()) {
                 $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : EmployeeSchedule::with('workTime')
@@ -57,14 +67,19 @@ class AttendanceSummaryObserver
         $attendancesSummary = AttendancesSummary::where('employee_id', $attendances->employee_id)
             ->where('work_time_id', $workTime?->workTime?->id ?? $workTime->id);
 
-
         if ($workTime?->workTime?->name === "Malam" || $workTime?->workTime?->name === "Sore") {
             $attendancesSummary->whereDate('date', $timestamp->copy()->subDays());
+
+            if ($attendancesSummary->whereDate('date', $timestamp->copy()->subDays())->exists() && $attendances->status1 === 0) {
+                $attendancesSummary->whereDate('date', $timestamp);
+            }
         } else {
             $attendancesSummary->whereDate('date', $timestamp);
         }
 
         $attendancesSummary = $attendancesSummary->first();
+
+//        dd($attendancesSummary);
 
 
         if (!$attendancesSummary) {
@@ -85,12 +100,8 @@ class AttendanceSummaryObserver
             }
             $attendancesSummary->clock_in = $newTimestamp ?: $timestamp;
         } elseif ($attendances->status1 === 1 && !$attendancesSummary->clock_out) {
-            $newTimestamp = null;
-            $expectedClockOut = Carbon::parse($timestamp->format('Y-m-d') . ' ' . $workTime->clock_in);
-            if ($timestamp->greaterThan($expectedClockOut) && $workTime?->workTime?->name === "Malam") {
-                $newTimestamp = $timestamp->copy()->addDays();
-            }
-            $attendancesSummary->clock_out = $newTimestamp ?: $timestamp;
+
+            $attendancesSummary->clock_out = $timestamp;
         }
 
         $attendancesSummary->save();

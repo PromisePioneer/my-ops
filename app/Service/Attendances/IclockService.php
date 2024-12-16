@@ -119,11 +119,20 @@ class IclockService
 
     private function getShiftForUser(string $employeeId, $date)
     {
+
         $userShift = EmployeeSchedule::with('workTime')
-            ->where('employee_id', $employeeId)
-            ->whereDate('date', Carbon::parse($date))
-            ->orWhereDate('date', Carbon::parse($date)->copy()->subDays())
-            ->first();
+            ->where('employee_id', $employeeId);
+
+        $newDates = Carbon::parse(Carbon::parse($date)->copy()->addDays()->format('Y-m-d') . "00:00:00");
+
+        if (Carbon::parse($date)->greaterThan($newDates)) {
+            $userShift->whereDate('date', Carbon::parse($date)->copy()->subDays());
+        } else {
+            $userShift->whereDate('date', Carbon::parse($date));
+        }
+
+
+        $userShift = $userShift->first();
 
         return $userShift
             ? WorkTime::find($userShift->workTime->id) ?? WorkTime::find(1)
@@ -144,45 +153,45 @@ class IclockService
 
     private function processCheckIn(array $attendanceData, $shift, string $date, string $time): void
     {
-//        if ($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin, $shift->name)) {
+
+
+        if ($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin, $shift->name)) {
             $existingRecord = Attendances::where('employee_id', $attendanceData['employee_id'])
                 ->whereDate('timestamp', Carbon::parse($date))
                 ->where('status1', 0)
                 ->exists();
-        if (!$existingRecord) {
             Attendances::create($attendanceData);
+            if (!$existingRecord) {
+            }
         }
-//        }
     }
 
     private function isValidTime($date, string $startTime, string $endTime, $name): bool
     {
+        $dateTime = Carbon::parse($date);
+        $times = $dateTime;
+
+
+        $startTimes = Carbon::parse($dateTime
+                ->format('Y-m-d') . ' ' . $startTime);
+
+        $endTimes = Carbon::parse($dateTime
+                ->format('Y-m-d') . ' ' . $endTime);
+
+
+        $newEndTimes = null;
+        $newStartTimes = null;
         if ($name === 'Malam') {
-            $dateTime = Carbon::parse($date);
-            $times = $dateTime;
+            $newEndTimes = $endTimes->copy()->addDays();
 
-            $startTimes = Carbon::parse($dateTime
-                    ->format('Y-m-d') . ' ' . $startTime);
-
-            $endTimes = Carbon::parse($dateTime
-                    ->format('Y-m-d') . ' ' . $endTime);
-
-
-            $startTimesForCrossMidnightShift = null;
-            $endTimesForCrossMidnightShift = null;
-            if ($name === "Malam" && $times->greaterThan($startTimes)) {
-                $endTimesForCrossMidnightShift = $endTimes->copy()->addDays();
+            if ($times->toTimeString() <= $startTimes->toTimeString()) {
+                $newStartTimes = $startTimes->copy()->subDays();
             }
-
-            if ($name === "Malam" && $times->lessThan($startTimes)) {
-                $startTimesForCrossMidnightShift = $startTimes->copy()->subDays();
-            }
-
-            return $times->greaterThanOrEqualTo($startTimesForCrossMidnightShift ?? $startTimes)
-                && $times->lessThanOrEqualTo($endTimesForCrossMidnightShift ?? $endTimes);
         }
 
-        return true;
+
+        return $times->greaterThanOrEqualTo($newStartTimes ?? $startTimes) && $times->lessThanOrEqualTo($newEndTimes ?? $endTimes);
+
     }
 
     private function processCheckOut(array $attendanceData, $shift, string $date, string $time): void
@@ -193,8 +202,8 @@ class IclockService
             ->where('status1', 1)
             ->exists();
 
+        Attendances::create($attendanceData);
         if (!$existingCheckOut) {
-            Attendances::create($attendanceData);
         }
 //        }
     }
