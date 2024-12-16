@@ -105,10 +105,10 @@
                 </form>
 
 
-                <form id="form-absent-id" @submit.prevent="remoteEnroll()">
-                    <input type="hidden" name="absent_id" value="12345">
-                    <button type="submit">Daftarkan Absen ID</button>
-                </form>
+{{--                <form id="form-absent-id" @submit.prevent="remoteEnroll()">--}}
+                {{--                    <input type="hidden" name="absent_id" value="12345">--}}
+                {{--                    <button type="submit">Daftarkan Absen ID</button>--}}
+                {{--                </form>--}}
 
 
             </div>
