@@ -2,9 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\AttendancesSummary;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class AttendanceSummaryPolicy
 {
@@ -13,7 +11,7 @@ class AttendanceSummaryPolicy
      */
     public function view(User $user): bool
     {
-        return $user->can('Lihat Riwayat Absensi');
+        return $user->can('Lihat Menu Riwayat Absensi');
     }
 
 

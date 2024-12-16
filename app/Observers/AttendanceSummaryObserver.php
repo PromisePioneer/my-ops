@@ -15,8 +15,6 @@ class AttendanceSummaryObserver
     public function created(Attendances $attendances): void
     {
         $timestamp = Carbon::parse($attendances->timestamp);
-
-
         $workTime = null;
         $user = User::where('absent_id', $attendances->employee_id)->first();
 
@@ -24,6 +22,7 @@ class AttendanceSummaryObserver
             $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : EmployeeSchedule::with('workTime')
                 ->where('employee_id', $attendances->employee_id)
                 ->whereDate('date', $timestamp)
+                ->orWhereDate('date', $timestamp->copy()->subDays())
                 ->first() ?? WorkTime::find(1);
         } elseif ($attendances->status1 === 1) {
             if ($timestamp->toTimeString() >= "9:00:00" && "12:00:00" <= $timestamp->toTimeString()) {
@@ -44,10 +43,9 @@ class AttendanceSummaryObserver
             }
         }
 
-
-        if ($workTime?->status === 'L') {
-            return;
-        }
+//        if ($workTime?->status === 'L') {
+//            return;
+//        }
 
         if (!$workTime) {
             Log::warning('No matching WorkTime found for timestamp: ' . $timestamp);

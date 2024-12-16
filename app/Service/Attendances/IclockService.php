@@ -7,7 +7,6 @@ use App\Models\DeviceLog;
 use App\Models\EmployeeSchedule;
 use App\Models\FingerLog;
 use App\Models\FpDevice;
-use App\Models\UserWorkTime;
 use App\Models\WorkTime;
 use Carbon\Carbon;
 use Exception;
@@ -134,6 +133,7 @@ class IclockService
     {
         $date = Carbon::parse($attendanceData['timestamp']);
 
+
         if ($attendanceData['status1'] == 0) {
             $this->processCheckIn($attendanceData, $shift, $date, $date);
         } elseif ($attendanceData['status1'] == 1) {
@@ -145,44 +145,40 @@ class IclockService
     private function processCheckIn(array $attendanceData, $shift, string $date, string $time): void
     {
 //        if ($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin, $shift->name)) {
+        Attendances::create($attendanceData);
             $existingRecord = Attendances::where('employee_id', $attendanceData['employee_id'])
                 ->whereDate('timestamp', Carbon::parse($date))
                 ->where('status1', 0)
                 ->exists();
         if (!$existingRecord) {
-            Attendances::create($attendanceData);
         }
 //        }
     }
 
     private function isValidTime($date, string $startTime, string $endTime, $name): bool
     {
-        if ($name === 'Malam') {
-            $dateTime = Carbon::parse($date);
-            $times = $dateTime;
+        $dateTime = Carbon::parse($date);
+        $times = $dateTime;
 
-            $startTimes = Carbon::parse($dateTime
-                    ->format('Y-m-d') . ' ' . $startTime);
+        $startTimes = Carbon::parse($dateTime->format('Y-m-d') . ' ' . $startTime);
+        $endTimes = Carbon::parse($dateTime->format('Y-m-d') . ' ' . $endTime);
 
-            $endTimes = Carbon::parse($dateTime
-                    ->format('Y-m-d') . ' ' . $endTime);
+        $newStartTimesForMidnightShift = null;
+        $newEndtimesForMidnightShift = null;
+        if ($name == 'Malam') {
+            $newStartTimesForMidnightShift = $startTimes->copy();
+            $newEndtimesForMidnightShift = $endTimes->copy();
 
-
-            $startTimesForCrossMidnightShift = null;
-            $endTimesForCrossMidnightShift = null;
-            if ($name === "Malam" && $times->greaterThan($startTimes)) {
-                $endTimesForCrossMidnightShift = $endTimes->copy()->addDays();
+            if ($times->lessThan($newStartTimesForMidnightShift)) {
+                $newStartTimesForMidnightShift->subDays();
             }
 
-            if ($name === "Malam" && $times->lessThan($startTimes)) {
-                $startTimesForCrossMidnightShift = $startTimes->copy()->subDays();
+            if ($times->greaterThan($newEndtimesForMidnightShift)) {
+                $newEndtimesForMidnightShift->addDays();
             }
-
-            return $times->greaterThanOrEqualTo($startTimesForCrossMidnightShift ?? $startTimes)
-                && $times->lessThanOrEqualTo($endTimesForCrossMidnightShift ?? $endTimes);
         }
 
-        return true;
+        return $times->greaterThanOrEqualTo($newStartTimesForMidnightShift ?? $startTimes) && $times->lessThanOrEqualTo($newEndTimesForMidnightShift ?? $endTimes);
     }
 
     private function processCheckOut(array $attendanceData, $shift, string $date, string $time): void
