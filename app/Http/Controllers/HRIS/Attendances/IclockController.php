@@ -5,6 +5,7 @@ namespace App\Http\Controllers\HRIS\Attendances;
 use App\Http\Controllers\Controller;
 use App\Models\FingerLog;
 use App\Service\Attendances\IclockService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Throwable;
 
@@ -32,14 +33,25 @@ class IclockController extends Controller
         $cmdId = 1;
         $userId = 1188388;
         // Logika untuk menentukan perintah berdasarkan SN atau kondisi lainnya
-        $command = sprintf(
-            "C:%d:ENROLL_FP PIN=%d\tFID=%d\tRETRY=%d\tOVERWRITE=%d",
-            $cmdId, // CmdId
-            $userId, // UserId
-            1, // Fingerprint ID
-            2, // Retry count
-            0 // Overwrite existing
-        );
+//        $command = sprintf(
+//            "C:%d:ENROLL_FP PIN=%d\tFID=%d\tRETRY=%d\tOVERWRITE=%d",
+//            $cmdId, // CmdId
+//            $userId, // UserId
+//            1, // Fingerprint ID
+//            2, // Retry count
+//            0 // Overwrite existing
+//        );
+
+
+       $startDate = Carbon::parse('2024-12-16 00:00:00');
+       $endDate = Carbon::parse('2024-12-17 00:00:00');
+
+
+       $command = sprintf(
+           "C:%d:DATA QUERY ATTLOG StartTime%d\tEndTime=%d",
+           $cmdId,
+           $startDate,
+           $endDate);
 
 
         // Respons ke mesin
