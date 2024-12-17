@@ -183,16 +183,16 @@ class IclockService
 
     private function processCheckOut(array $attendanceData, $shift, string $date, string $time): void
     {
-        if ($this->isValidTime($time, $shift->time_to_checkout, $shift->end_time_to_checkout, $shift->name)) {
+//        if ($this->isValidTime($time, $shift->time_to_checkout, $shift->end_time_to_checkout)) {
         $existingCheckOut = Attendances::where('employee_id', $attendanceData['employee_id'])
             ->whereDate('timestamp', Carbon::parse($date))
             ->where('status1', 1)
             ->exists();
 
-            if (!$existingCheckOut) {
-                Attendances::create($attendanceData);
-            }
+        if (!$existingCheckOut) {
+            Attendances::create($attendanceData);
         }
+//        }
     }
 
     private function logError(Exception $exception): void

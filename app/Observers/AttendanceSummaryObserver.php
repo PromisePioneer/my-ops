@@ -19,7 +19,7 @@ class AttendanceSummaryObserver
         $user = User::where('absent_id', $attendances->employee_id)->first();
 
         if ($attendances->status1 === 0) {
-            $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : EmployeeSchedule::with('workTime')
+            $workTime =  EmployeeSchedule::with('workTime')
                 ->where('employee_id', $attendances->employee_id)
                 ->whereDate('date', $timestamp)
                 ->orWhereDate('date', $timestamp->copy()->subDays())
@@ -27,7 +27,7 @@ class AttendanceSummaryObserver
 
 
             if ($timestamp->toTimeString() >= "00:00:00" && $timestamp->toTimeString() <= "02:00:00") {
-                $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : EmployeeSchedule::with('workTime')
+                $workTime =  EmployeeSchedule::with('workTime')
                     ->where('employee_id', $attendances->employee_id)
                     ->whereDate('date', $timestamp->copy()->subDay())
                     ->first() ?? WorkTime::find(1);
@@ -36,17 +36,17 @@ class AttendanceSummaryObserver
 
         } elseif ($attendances->status1 === 1) {
             if ($timestamp->toTimeString() >= "9:00:00" && "12:00:00" <= $timestamp->toTimeString()) {
-                $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : EmployeeSchedule::with('workTime')
+                $workTime =  EmployeeSchedule::with('workTime')
                     ->where('employee_id', $attendances->employee_id)
                     ->whereDate('date', $timestamp->copy()->subDay())
                     ->first() ?? WorkTime::find(1);
             } elseif ($timestamp->toTimeString() >= "01:00:00" && $timestamp->toTimeString() <= "05:00:00") {
-                $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : EmployeeSchedule::with('workTime')
+                $workTime =  EmployeeSchedule::with('workTime')
                     ->where('employee_id', $attendances->employee_id)
                     ->whereDate('date', $timestamp->copy()->subDay())
                     ->first() ?? WorkTime::find(1);
             } else {
-                $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : EmployeeSchedule::with('workTime')
+                $workTime =  EmployeeSchedule::with('workTime')
                     ->where('employee_id', $attendances->employee_id)
                     ->whereDate('date', $timestamp)
                     ->first() ?? WorkTime::find(1);
