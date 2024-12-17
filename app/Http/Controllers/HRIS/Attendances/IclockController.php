@@ -47,7 +47,7 @@ class IclockController extends Controller
 
 
        $command = sprintf(
-           "C:%d:DATA QUERY ATTLOG StartTime%d\tEndTime=%d",
+           "C:%d:DATA QUERY ATTLOG StartTime=%d\tEndTime=%d",
            $cmdId,
            $startDate,
            $endDate);
