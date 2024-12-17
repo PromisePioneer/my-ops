@@ -5,7 +5,6 @@ namespace App\Http\Controllers\HRIS\Attendances;
 use App\Http\Controllers\Controller;
 use App\Models\FingerLog;
 use App\Service\Attendances\IclockService;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Throwable;
 
@@ -43,8 +42,8 @@ class IclockController extends Controller
 //        );
 
 
-       $startDate = Carbon::parse('2024-12-16 00:00:00');
-       $endDate = Carbon::parse('2024-12-17 00:00:00');
+       $startDate = '2024-12-16 00:00:00';
+       $endDate = '2024-12-17 00:00:00';
 
 
        $command = sprintf(

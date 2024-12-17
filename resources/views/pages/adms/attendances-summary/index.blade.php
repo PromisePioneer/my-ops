@@ -52,6 +52,13 @@
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
                 </div>
+                <div class="card-toolbar">
+                        <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                            <button type="button" @click="remoteEnroll()" class="btn btn-primary btn-sm">
+                                Import Data Absen
+                            </button>
+                        </div>
+                </div>
             </div>
             <div class="card-body py-3">
                 <div class="py-5">
@@ -193,7 +200,6 @@
                     const startDate = document.getElementById('start_date')?.value ?? '';
                     const endDate = document.getElementById('end_date')?.value ?? '';
 
-
                     if (url) {
                         const resp = await axios.get(`${url}`, {
                             params: {
@@ -256,8 +262,6 @@
                 },
                 async additionalFilter() {
                     this.isLoading = true;
-
-
                     try {
                         const resp = await axios.get('/adms/attendances-summary/additional-filter', {
                             params: {
@@ -332,6 +336,26 @@
                         "Juli", "Agustus", "September", "Oktober", "November", "December"
                     ];
                     return monthNames[monthIndex];
+                },
+                async remoteEnroll() {
+                    const absentId = document.getElementById('absent_id')?.value ?? null;
+                    this.isLoading = true;
+                    try {
+                        await axios.get('/iclock/getrequest', {
+                            params: {
+                                SN: "AEWD233960062",
+                            },
+                            // headers: {
+                            //     'Custom-Data': JSON.stringify({
+                            //         'absent_id': absentId
+                            //     })
+                            // }
+                        })
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
             }
         }
