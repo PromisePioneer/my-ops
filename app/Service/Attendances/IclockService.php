@@ -144,15 +144,15 @@ class IclockService
 
     private function processCheckIn(array $attendanceData, $shift, string $date, string $time): void
     {
-//        if ($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin, $shift->name)) {
-        Attendances::create($attendanceData);
+        if ($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin, $shift->name)) {
             $existingRecord = Attendances::where('employee_id', $attendanceData['employee_id'])
                 ->whereDate('timestamp', Carbon::parse($date))
                 ->where('status1', 0)
                 ->exists();
-        if (!$existingRecord) {
+            if (!$existingRecord) {
+                Attendances::create($attendanceData);
+            }
         }
-//        }
     }
 
     private function isValidTime($date, string $startTime, string $endTime, $name): bool
@@ -183,9 +183,6 @@ class IclockService
 
     private function processCheckOut(array $attendanceData, $shift, string $date, string $time): void
     {
-
-
-
 //        if ($this->isValidTime($time, $shift->time_to_checkout, $shift->end_time_to_checkout)) {
         $existingCheckOut = Attendances::where('employee_id', $attendanceData['employee_id'])
             ->whereDate('timestamp', Carbon::parse($date))
