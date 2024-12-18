@@ -9,6 +9,7 @@ use App\Http\Requests\AttendancesSummaryFilterByDateRequest;
 use App\Models\AttendancesSummary;
 use App\Models\Branch;
 use App\Models\Department;
+use App\Models\FpDevice;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\UserWorkTime;
@@ -31,6 +32,7 @@ use Illuminate\View\View;
         $this->department = new Department();
         $this->branch = new Branch();
         $this->role = new Role();
+        $this->fpDevice = new FpDevice();
     }
 
     /**
@@ -144,7 +146,7 @@ use Illuminate\View\View;
         return response()->json($this->workTime->getData($request));
     }
 
-    public function selectedData(WorkTime $workTime)
+    public function selectedData(WorkTime $workTime): JsonResponse
     {
         return response()->json($this->workTime->getSelectedData($workTime->id));
     }
@@ -157,25 +159,10 @@ use Illuminate\View\View;
     }
 
 
-    public function simpanAbsenTanpaMesin(Request $request): \Illuminate\Http\RedirectResponse
+
+    public function getFpDevice(Request $request)
     {
-        $userShift = UserWorkTime::whereHas('user', function ($query) use ($request) {
-            $query->where('absent_id', $request->input('employee_id'));
-        })->first();
-
-        $workTime = WorkTime::find($userShift->work_time_id)->first() ?? WorkTime::where('name', 'Default')->first();
-
-        AttendancesSummary::updateOrCreate([
-            'date' => date('y-m-d'),
-            'employee_id' => $request->input('employee_id'),
-            'work_time_id' => $workTime->id,
-        ], [
-            'clock_in' => $request->input('clock_in'),
-            'clock_out' => $request->input('clock_out'),
-        ]);
-
-
-        return redirect()->route('absenTanpaMesin');
+        return response()->json($this->fpDevice->getData($request));
     }
 
 }

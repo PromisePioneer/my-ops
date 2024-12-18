@@ -2,40 +2,13 @@
 
 namespace App\Models;
 
-use Eloquent;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
-/**
- * @property int $id
- * @property int $branch_id
- * @property string $version
- * @property string $ip_address
- * @property string $port
- * @property string $key
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Branch $branch
- *
- * @method static Builder|FpDevice newModelQuery()
- * @method static Builder|FpDevice newQuery()
- * @method static Builder|FpDevice query()
- * @method static Builder|FpDevice whereBranchId($value)
- * @method static Builder|FpDevice whereCreatedAt($value)
- * @method static Builder|FpDevice whereId($value)
- * @method static Builder|FpDevice whereIpAddress($value)
- * @method static Builder|FpDevice whereKey($value)
- * @method static Builder|FpDevice wherePort($value)
- * @method static Builder|FpDevice whereUpdatedAt($value)
- * @method static Builder|FpDevice whereVersion($value)
- *
- * @mixin Eloquent
- */
+
 class FpDevice extends Model
 {
     protected $table = 'fp_devices';
@@ -66,5 +39,36 @@ class FpDevice extends Model
             ->where('name', 'like', '%'.$search.'%')
             ->where('serial_number', 'like', '%'.$search.'%')
             ->get();
+    }
+
+
+    public function getData(Request $request): array
+    {
+        $search = $request->input('search');
+        $query = self::when(!empty($search), function ($query) use ($search) {
+            $query->where('serial_number', 'like', '%' . $search . '%');
+        })->orderby('serial_number')->select('id', 'serial_number')->get();
+
+        return $query->map(function ($c) {
+            return [
+                'id' => $c->id,
+                'text' => $c->serial_number,
+            ];
+        })->toArray();
+    }
+
+
+    public function getSelectedData(?int $branchId = null): ?array
+    {
+        $branch = self::where('id', $branchId)->first();
+
+        if ($branchId === null) {
+            return null;
+        }
+
+        return [
+            'id' => $branch->id,
+            'name' => $branch->sn,
+        ];
     }
 }

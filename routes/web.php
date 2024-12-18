@@ -20,7 +20,6 @@ use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\BAAController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
-use App\Http\Controllers\HRIS\Attendances\DeviceCommandController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
 use App\Http\Controllers\HRIS\Attendances\FpDevicesController;
 use App\Http\Controllers\HRIS\Attendances\IclockController;
@@ -1053,6 +1052,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 '/detail/correction/save/{user}/{datePeriod?}',
                 [AttendanceSummaryController::class, 'saveCorrection']);
             Route::get('/filter', [AttendanceSummaryController::class, 'filter']);
+            Route::get('/get-fp-devices', [AttendanceSummaryController::class, 'getFpDevice']);
         });
 
         Route::prefix('/employee-schedules')->group(function () {
