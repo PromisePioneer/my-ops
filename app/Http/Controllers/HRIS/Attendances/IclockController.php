@@ -47,7 +47,7 @@ class IclockController extends Controller
        $endDate = Carbon::make('2024-12-16 23:00:00');
 
        $command = sprintf(
-           "C:%d:DATA QUERY ATTLOG StartTime=%s\tEndTime=%s",
+           "C:%d:DATA QUERY ATTLOG StartTime%s\tEndTime=%s",
            $cmdId,
            $startDate,
            $endDate);
