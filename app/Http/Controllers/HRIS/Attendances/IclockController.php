@@ -34,6 +34,9 @@ class IclockController extends Controller
             return response("Missing SN parameter", 400);
         }
 
+
+
+
         $cmdId = 1;
         $userId = 1188388;
         // Logika untuk menentukan perintah berdasarkan SN atau kondisi lainnya
