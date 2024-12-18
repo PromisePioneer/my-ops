@@ -226,6 +226,8 @@ class IclockService
 
 
 
+
+
         // Validate if the time falls within check-in window and shift duration
         return $dateTime->between($checkOutStartTime, $checkOutEndTime) &&
             $dateTime->between($shiftStart, $shiftEnd);

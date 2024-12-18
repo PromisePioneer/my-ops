@@ -90,6 +90,10 @@ class AttendanceSummaryObserver
         }
 
 
+
+
+
+
         $summary = $summary->first();
 
 
