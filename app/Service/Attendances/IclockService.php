@@ -151,61 +151,92 @@ class IclockService
 
     }
 
-    private function processCheckIn(array $attendanceData, $shift, string $date, string $time): void
+    private function processCheckIn(array $attendanceData, $shift, string $date): void
     {
-
-
-        if ($this->isValidTime($time, $shift->time_to_checkin, $shift->end_time_to_checkin, $shift->name)) {
-            $existingRecord = Attendances::where('employee_id', $attendanceData['employee_id'])
-                ->whereDate('timestamp', Carbon::parse($date))
-                ->where('status1', 0)
-                ->exists();
+        if ($this->isValidTime($date, $shift->clock_in, $shift->clock_out, $shift->time_to_checkin, $shift->end_time_to_checkin)) {
             Attendances::create($attendanceData);
-            if (!$existingRecord) {
-            }
         }
     }
 
-    private function isValidTime($date, string $startTime, string $endTime, $name): bool
+    private function isValidTime($date, string $startTime, string $endTime, string $checkInStart, string $checkInEnd): bool
     {
         $dateTime = Carbon::parse($date);
-        $times = $dateTime;
+
+        $shiftStart = Carbon::parse($dateTime->format('Y-m-d') . ' ' . $startTime);
+        $shiftEnd = Carbon::parse($dateTime->format('Y-m-d') . ' ' . $endTime);
 
 
-        $startTimes = Carbon::parse($dateTime
-                ->format('Y-m-d') . ' ' . $startTime);
+        if ($endTime < $startTime) {
+            $shiftEnd->addDay();
+        }
 
-        $endTimes = Carbon::parse($dateTime
-                ->format('Y-m-d') . ' ' . $endTime);
+        $checkInStartTime = Carbon::parse($dateTime->format('Y-m-d') . ' ' . $checkInStart);
+        $checkInEndTime = Carbon::parse($dateTime->format('Y-m-d') . ' ' . $checkInEnd);
 
+        if ($checkInEnd < $checkInStart) {
+            $checkInEndTime->addDay();
+        }
 
-        $newEndTimes = null;
-        $newStartTimes = null;
-        if ($name === 'Malam') {
-            $newEndTimes = $endTimes->copy()->addDays();
-
-            if ($times->toTimeString() <= $startTimes->toTimeString()) {
-                $newStartTimes = $startTimes->copy()->subDays();
-            }
+        if ($dateTime->lessThan($checkInStartTime) && $checkInStart === '23:00:00') {
+            $checkInStartTime->subDay();
+            $shiftStart->subDay();
         }
 
 
-        return $times->greaterThanOrEqualTo($newStartTimes ?? $startTimes) && $times->lessThanOrEqualTo($newEndTimes ?? $endTimes);
+        if ($dateTime->greaterThan($checkInStartTime) && $checkInStart === '23:00:00') {
+            $shiftStart->addDays();
+        }
 
+        if ($checkInStart === "15:00:00" && $dateTime->lessThan($shiftStart)) {
+            $shiftStart->subHours();
+        }
+
+//        dd($shiftStart);
+
+        // Validate if the time falls within check-in window and shift duration
+        return $dateTime->between($checkInStartTime, $checkInEndTime) &&
+            $dateTime->between($shiftStart, $shiftEnd);
     }
+
+
+    private function isValidTimeCheckOut($date, string $startTime, string $endTime, string $checkOutStart, string $checkOutEnd): bool
+    {
+        $dateTime = Carbon::parse($date);
+
+        $shiftStart = Carbon::parse($dateTime->format('Y-m-d') . ' ' . $startTime);
+        $shiftEnd = Carbon::parse($dateTime->format('Y-m-d') . ' ' . $endTime);
+
+
+        if ($endTime > $startTime) {
+            $shiftEnd->addDay();
+        }
+
+        $checkOutStartTime = Carbon::parse($dateTime->format('Y-m-d') . ' ' . $checkOutStart);
+        $checkOutEndTime = Carbon::parse($dateTime->format('Y-m-d') . ' ' . $checkOutEnd);
+
+        if ($checkOutEnd > $checkOutStart && $checkOutStart === '23:00:00') {
+            $checkOutEndTime->addDay();
+        }
+
+        if ($dateTime->lessThan($checkOutStartTime) && $checkOutStart === '23:00:00') {
+            $checkOutStartTime->subDay();
+            $shiftStart->subDay();
+        }
+
+
+
+
+        // Validate if the time falls within check-in window and shift duration
+        return $dateTime->between($checkOutStartTime, $checkOutEndTime) &&
+            $dateTime->between($shiftStart, $shiftEnd);
+    }
+
 
     private function processCheckOut(array $attendanceData, $shift, string $date, string $time): void
     {
-//        if ($this->isValidTime($time, $shift->time_to_checkout, $shift->end_time_to_checkout)) {
-        $existingCheckOut = Attendances::where('employee_id', $attendanceData['employee_id'])
-            ->whereDate('timestamp', Carbon::parse($date))
-            ->where('status1', 1)
-            ->exists();
-
-        Attendances::create($attendanceData);
-        if (!$existingCheckOut) {
+        if ($this->isValidTimeCheckOut($time, $shift->clock_in, $shift->clock_out, $shift->time_to_checkout, $shift->end_time_to_checkout)) {
+            Attendances::create($attendanceData);
         }
-//        }
     }
 
     private function logError(Exception $exception): void

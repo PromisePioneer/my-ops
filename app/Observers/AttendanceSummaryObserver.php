@@ -17,93 +17,118 @@ class AttendanceSummaryObserver
         $timestamp = Carbon::parse($attendances->timestamp);
 
 
-        $workTime = null;
+        // Fetch user and role
         $user = User::where('absent_id', $attendances->employee_id)->first();
-
-        if ($attendances->status1 === 0) {
-            $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : EmployeeSchedule::with('workTime')
-                ->where('employee_id', $attendances->employee_id)
-                ->whereDate('date', $timestamp)
-                ->first() ?? WorkTime::find(1);
-
-
-            if ($timestamp->toTimeString() >= "00:00:00" && $timestamp->toTimeString() <= "02:00:00") {
-                $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : EmployeeSchedule::with('workTime')
-                    ->where('employee_id', $attendances->employee_id)
-                    ->whereDate('date', $timestamp->copy()->subDay())
-                    ->first() ?? WorkTime::find(1);
-
-            }
-
-        } elseif ($attendances->status1 === 1) {
-            if ($timestamp->toTimeString() >= "9:00:00" && "12:00:00" <= $timestamp->toTimeString()) {
-                $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : EmployeeSchedule::with('workTime')
-                    ->where('employee_id', $attendances->employee_id)
-                    ->whereDate('date', $timestamp->copy()->subDay())
-                    ->first() ?? WorkTime::find(1);
-            } elseif ($timestamp->toTimeString() >= "01:00:00" && $timestamp->toTimeString() <= "05:00:00") {
-                $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : EmployeeSchedule::with('workTime')
-                    ->where('employee_id', $attendances->employee_id)
-                    ->whereDate('date', $timestamp->copy()->subDay())
-                    ->first() ?? WorkTime::find(1);
-            } else {
-                $workTime = $user->hasRole('Engineer') ? WorkTime::find(2) : EmployeeSchedule::with('workTime')
-                    ->where('employee_id', $attendances->employee_id)
-                    ->whereDate('date', $timestamp)
-                    ->first() ?? WorkTime::find(1);
-            }
-        }
-
-
-        if ($workTime?->status === 'L') {
+        if (!$user) {
+            Log::warning("No user found for employee_id: {$attendances->employee_id}");
             return;
         }
+
+        // Fetch WorkTime based on user role and shift timing
+        $workTime = $this->getWorkTime($attendances, $user, $timestamp);
+
 
         if (!$workTime) {
             Log::warning('No matching WorkTime found for timestamp: ' . $timestamp);
             return;
         }
 
-        $attendancesSummary = AttendancesSummary::where('employee_id', $attendances->employee_id)
-            ->where('work_time_id', $workTime?->workTime?->id ?? $workTime->id);
-
-        if ($workTime?->workTime?->name === "Malam" || $workTime?->workTime?->name === "Sore") {
-            $attendancesSummary->whereDate('date', $timestamp->copy()->subDays());
-
-            if ($attendancesSummary->whereDate('date', $timestamp->copy()->subDays())->exists() && $attendances->status1 === 0) {
-                $attendancesSummary->whereDate('date', $timestamp);
-            }
-        } else {
-            $attendancesSummary->whereDate('date', $timestamp);
+        // Skip processing for 'L' status
+        if ($workTime->status === 'L') {
+            return;
         }
 
-        $attendancesSummary = $attendancesSummary->first();
+        // Find or create AttendancesSummary
+        $attendancesSummary = $this->findOrCreateSummary($attendances, $workTime, $timestamp);
 
 //        dd($attendancesSummary);
 
-
-        if (!$attendancesSummary) {
-            $attendancesSummary = new AttendancesSummary([
-                'date' => $timestamp->format('Y-m-d'),
-                'employee_id' => $attendances->employee_id,
-                'work_time_id' => $workTime?->workTime?->id ?? $workTime->id,
-            ]);
-        }
-
+        // Update clock-in or clock-out
         if ($attendances->status1 === 0 && !$attendancesSummary->clock_in) {
-            $newTimestamp = null;
-            $expectedClockIn = Carbon::parse($timestamp->format('Y-m-d') . ' ' . $workTime->clock_in)->addDays();
-
-
-            if ($timestamp->greaterThan($expectedClockIn) && $workTime?->workTime?->name === "Malam") {
-                $newTimestamp = $timestamp->copy()->addDays();
-            }
-            $attendancesSummary->clock_in = $newTimestamp ?: $timestamp;
+            $attendancesSummary->clock_in = $this->adjustClockIn($attendances, $workTime, $timestamp);
         } elseif ($attendances->status1 === 1 && !$attendancesSummary->clock_out) {
-
             $attendancesSummary->clock_out = $timestamp;
         }
 
         $attendancesSummary->save();
     }
+
+    private function getWorkTime(Attendances $attendances, User $user, Carbon $timestamp): ?WorkTime
+    {
+        $isEngineer = $user->hasRole('Engineer');
+        $queryDate = $timestamp->copy();
+
+        // Handle night shifts crossing midnight
+        if ($timestamp->toTimeString() <= '02:00:00') {
+            $queryDate->subDay();
+        }
+
+        $workTime = $isEngineer
+            ? WorkTime::find(2)
+            : EmployeeSchedule::with('workTime')
+                ->where('employee_id', $attendances->employee_id)
+                ->whereDate('date', $queryDate)
+                ->first()?->workTime;
+
+        return $workTime ?: WorkTime::find(1); // Default WorkTime
+    }
+
+    private function findOrCreateSummary(Attendances $attendances, WorkTime $workTime, Carbon $timestamp): AttendancesSummary
+    {
+        $queryDate = $this->getShiftDate($timestamp, $workTime);
+
+        $summary = AttendancesSummary::where('employee_id', $attendances->employee_id)
+            ->where('work_time_id', $workTime?->workTime?->id ?? $workTime->id);
+
+
+        if ($attendances->status1 === 1 && $workTime->name === "Malam") {
+            $summary->whereDate('date', $queryDate)->orWhereDate('date', $queryDate->subDay());
+        }
+
+        if ($attendances->status1 === 0) {
+            $summary->whereDate('date', $queryDate);
+        }
+
+
+        $summary = $summary->first();
+
+
+//        dd($summary);
+
+        if (!$summary) {
+            $summary = new AttendancesSummary([
+                'date' => $queryDate->format('Y-m-d'),
+                'employee_id' => $attendances->employee_id,
+                'work_time_id' => $workTime->id,
+            ]);
+        }
+
+        return $summary;
+    }
+
+    private function adjustClockIn(Attendances $attendances, WorkTime $workTime, Carbon $timestamp): Carbon
+    {
+        $expectedClockIn = Carbon::parse($timestamp->format('Y-m-d') . ' ' . $workTime->clock_in);
+
+
+//        // Adjust clock-in for night shifts
+//        if ($timestamp->greaterThan($expectedClockIn) && $workTime->name === 'Malam') {
+//            return $timestamp->copy()->addDay();
+//        }
+
+        return $timestamp;
+    }
+
+
+    private function getShiftDate(Carbon $timestamp, WorkTime $workTime): Carbon
+    {
+        // If shift is 'Malam' and time is between 00:00 and 02:00, it belongs to the previous day
+        if ($workTime->name === 'Malam' && $timestamp->toTimeString() <= '02:00:00') {
+            return $timestamp->copy()->subDay();
+        }
+
+
+        return $timestamp->copy();
+    }
+
 }
