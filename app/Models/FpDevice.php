@@ -51,7 +51,7 @@ class FpDevice extends Model
 
         return $query->map(function ($c) {
             return [
-                'id' => $c->id,
+                'id' => $c->serial_number,
                 'text' => $c->serial_number,
             ];
         })->toArray();
