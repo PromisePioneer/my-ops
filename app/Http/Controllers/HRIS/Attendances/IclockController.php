@@ -27,6 +27,9 @@ class IclockController extends Controller
 
         $sn = $request->query('SN');
 
+
+
+
         if (!$sn) {
             return response("Missing SN parameter", 400);
         }
