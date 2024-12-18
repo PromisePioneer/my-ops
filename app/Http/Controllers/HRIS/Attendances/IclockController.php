@@ -24,6 +24,7 @@ class IclockController extends Controller
 
    public function register(Request $request)
     {
+
         $sn = $request->query('SN');
 
         if (!$sn) {
@@ -43,8 +44,8 @@ class IclockController extends Controller
 //        );
 
 
-       $startDate = Carbon::make('2024-11-28 00:00:00');
-       $endDate = Carbon::make('2024-12-16 23:00:00');
+       $startDate = Carbon::make($request->header('startdate'));
+       $endDate = Carbon::make($request->header('enddate'));
 
        $command = sprintf(
            "C:%d:DATA QUERY ATTLOG StartTime%s\tEndTime=%s",
@@ -52,10 +53,7 @@ class IclockController extends Controller
            $startDate,
            $endDate);
 
-
-
-
-        // Respons ke mesin
+       // Respons ke mesin
         return response($command, 200)
             ->header('Content-Type', 'text/plain');
     }

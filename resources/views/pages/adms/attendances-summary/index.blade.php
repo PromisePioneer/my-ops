@@ -1,6 +1,7 @@
 @extends('layouts.template')
 @section('content')
     <div x-data="attendancesSummary()">
+        @include('pages.adms.attendances-summary.modal.get-attendance-data');
         <div class="card shadow-sm mb-4">
             <div class="card-header">
                 <h3 class="card-title">Filter</h3>
@@ -53,11 +54,14 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-                        <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                            <button type="button" @click="remoteEnroll()" class="btn btn-primary btn-sm">
-                                Import Data Absen
-                            </button>
-                        </div>
+                    <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                        <button type="button" data-bs-toggle="modal"
+                                data-bs-target="#modal-get-attendances-data"
+                                class="btn btn-primary btn-sm"
+                        >
+                            Import Data Absen
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="card-body py-3">
@@ -135,11 +139,13 @@
         $('.date').flatpickr();
         function attendancesSummary() {
             return {
+                buttonLoading: false,
                 isLoading: false,
                 attendanceSummary: null,
                 startIndex: null,
                 search: '',
                 months: [],
+                getAttendaceDataModal: new bootstrap.Modal(document.getElementById('modal-get-attendances-data')),
                 attendanceSummaryDetail: [],
                 async init() {
                     await this.getAttendanceSummary();
@@ -147,6 +153,7 @@
                     await this.getBranchData();
                     await this.getRoleData();
                     await this.getDepartmentData();
+                    await this.getFpDeviceData();
                 },
                 async getDepartmentData() {
                     $(".departments-select2").select2({
@@ -337,26 +344,43 @@
                     ];
                     return monthNames[monthIndex];
                 },
-                async remoteEnroll() {
-                    const absentId = document.getElementById('absent_id')?.value ?? null;
-                    this.isLoading = true;
+                async getAttendanceData() {
+                    this.buttonLoading = true;
+                    const serial_number = $('#serial_number').val();
+                    const startDate = document.getElementById('start_date').value ?? '';
+                    const endDate = document.getElementById('end_date').value ?? '';
                     try {
                         await axios.get('/iclock/getrequest', {
                             params: {
-                                SN: "AEWD233960062",
+                                SN: serial_number,
                             },
-                            // headers: {
-                            //     'Custom-Data': JSON.stringify({
-                            //         'absent_id': absentId
-                            //     })
-                            // }
+                            headers: {
+                                'startDate': startDate,
+                                'endDate': endDate,
+                            },
                         })
                     } catch (e) {
                         console.log(e)
                     } finally {
-                        this.isLoading = false;
+                        setTimeout(() => {
+                            this.buttonLoading = false;
+                        }, 12000);
                     }
                 },
+                async getFpDeviceData() {
+                    $(".devices-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih mesin.',
+                        ajax: {
+                            url: '/adms/attendances-summary/get-fp-devices',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                }
             }
         }
     </script>
