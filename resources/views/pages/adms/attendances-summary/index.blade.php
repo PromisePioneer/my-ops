@@ -1,7 +1,7 @@
 @extends('layouts.template')
 @section('content')
     <div x-data="attendancesSummary()">
-        @include('pages.adms.attendances-summary.modal.get-attendance-data');
+        @include('pages.adms.attendances-summary.modal.get-attendance-data')
         <div class="card shadow-sm mb-4">
             <div class="card-header">
                 <h3 class="card-title">Filter</h3>
