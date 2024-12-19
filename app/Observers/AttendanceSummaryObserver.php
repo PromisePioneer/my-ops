@@ -85,7 +85,7 @@ class AttendanceSummaryObserver
             $summary->whereDate('date', $queryDate)->orWhereDate('date', $queryDate->subDay());
         }
 
-        if ($attendances->status1 === 0) {
+        if ($attendances->status1 === 0 || $attendances->status1 === 1) {
             $summary->whereDate('date', $queryDate);
         }
 
