@@ -35,8 +35,7 @@ class IclockController extends Controller
 
 
 
-        $cmdId = 1;
-        $userId = 1188388;
+        $cmdId = 2;
         // Logika untuk menentukan perintah berdasarkan SN atau kondisi lainnya
 //        $command = sprintf(
 //            "C:%d:ENROLL_FP PIN=%d\tFID=%d\tRETRY=%d\tOVERWRITE=%d",
