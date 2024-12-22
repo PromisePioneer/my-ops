@@ -33,10 +33,6 @@ class AttendanceSummaryObserver
             return;
         }
 
-        // Skip processing for 'L' status
-        if ($workTime->status === 'L') {
-            return;
-        }
 
         // Find or create AttendancesSummary
         $attendancesSummary = $this->findOrCreateSummary($attendances, $workTime, $timestamp);
