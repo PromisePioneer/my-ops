@@ -33,10 +33,6 @@ class AttendanceSummaryObserver
             return;
         }
 
-        // Skip processing for 'L' status
-        if ($workTime->status === 'L') {
-            return;
-        }
 
         // Find or create AttendancesSummary
         $attendancesSummary = $this->findOrCreateSummary($attendances, $workTime, $timestamp);
@@ -55,6 +51,7 @@ class AttendanceSummaryObserver
 
     private function getWorkTime(Attendances $attendances, User $user, Carbon $timestamp): ?WorkTime
     {
+
         $isEngineer = $user->hasRole('Engineer');
         $queryDate = $timestamp->copy();
 
@@ -70,6 +67,7 @@ class AttendanceSummaryObserver
                 ->whereDate('date', $queryDate)
                 ->first()?->workTime;
 
+
         return $workTime ?: WorkTime::find(1); // Default WorkTime
     }
 
@@ -77,21 +75,18 @@ class AttendanceSummaryObserver
     {
         $queryDate = $this->getShiftDate($timestamp, $workTime);
 
+
         $summary = AttendancesSummary::where('employee_id', $attendances->employee_id)
             ->where('work_time_id', $workTime?->workTime?->id ?? $workTime->id);
 
 
-        if ($attendances->status1 === 1 && $workTime->name === "Malam") {
+        if ($attendances->status1 === 1 && $workTime->name === "Malam" || $workTime->name === "Sore") {
             $summary->whereDate('date', $queryDate)->orWhereDate('date', $queryDate->subDay());
         }
 
         if ($attendances->status1 === 0 || $attendances->status1 === 1) {
             $summary->whereDate('date', $queryDate);
         }
-
-
-
-
 
 
         $summary = $summary->first();
@@ -113,13 +108,6 @@ class AttendanceSummaryObserver
     private function adjustClockIn(Attendances $attendances, WorkTime $workTime, Carbon $timestamp): Carbon
     {
         $expectedClockIn = Carbon::parse($timestamp->format('Y-m-d') . ' ' . $workTime->clock_in);
-
-
-//        // Adjust clock-in for night shifts
-//        if ($timestamp->greaterThan($expectedClockIn) && $workTime->name === 'Malam') {
-//            return $timestamp->copy()->addDay();
-//        }
-
         return $timestamp;
     }
 
@@ -130,8 +118,6 @@ class AttendanceSummaryObserver
         if ($workTime->name === 'Malam' && $timestamp->toTimeString() <= '02:00:00') {
             return $timestamp->copy()->subDay();
         }
-
-
         return $timestamp->copy();
     }
 

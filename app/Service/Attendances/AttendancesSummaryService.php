@@ -169,8 +169,11 @@ class AttendancesSummaryService
             $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
         }
 
-        if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
-            $lateness = $newExpectedCheckIn ? $newExpectedCheckIn->diffInMinutes($actualCheckIn) : $expectedCheckIn->diffInMinutes($actualCheckIn);
+        $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
+
+
+        if ($checkInToUse->diffInMinutes($actualCheckIn) >= 2.5) {
+            $lateness = $checkInToUse->diffInMinutes($actualCheckIn);
             $totalMinutesLate += $lateness;
         }
 
