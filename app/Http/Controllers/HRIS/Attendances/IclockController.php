@@ -24,9 +24,7 @@ class IclockController extends Controller
 
    public function register(Request $request)
     {
-
         $sn = $request->query('SN');
-
 
 
 
@@ -54,7 +52,7 @@ class IclockController extends Controller
        $endDate = Carbon::make($request->header('enddate'));
 
        $command = sprintf(
-           "C:%s:DATA QUERY ATTLOG StartTime%s\tEndTime=%s",
+           "C:%d:DATA QUERY ATTLOG StartTime=%s\tEndTime=%s",
            $cmdId,
            $startDate,
            $endDate);
