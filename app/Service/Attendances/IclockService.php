@@ -7,7 +7,6 @@ use App\Models\DeviceLog;
 use App\Models\EmployeeSchedule;
 use App\Models\FingerLog;
 use App\Models\FpDevice;
-use App\Models\UserWorkTime;
 use App\Models\WorkTime;
 use Carbon\Carbon;
 use Exception;
