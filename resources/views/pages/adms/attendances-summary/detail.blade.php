@@ -2,7 +2,7 @@
 @section('page-title', 'Detail Riwayat Absensi')
 @section('content')
     <div x-data="attendancesSummaryDetail()">
-        @include('pages.adms.attendances-summary.modal.correction')
+{{--        @include('pages.adms.attendances-summary.modal.correction')--}}
         <div class="d-flex flex-column flex-xl-row">
             <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
                 <div class="card card-flush">
@@ -159,8 +159,8 @@
                 attendancesSummaryRecords: [],
                 id: "{{ $user->id }}",
                 correctionVal: null,
-                formCorrection: document.getElementById('form-attendance-correction'),
-                modalCorrection: new bootstrap.Modal(document.getElementById('modal-attendance-correction')),
+                // formCorrection: document.getElementById('form-attendance-correction'),
+                // modalCorrection: new bootstrap.Modal(document.getElementById('modal-attendance-correction')),
                 async init() {
                     await this.getAttendanceSummaryRecords();
                     await this.getWorkTimeData();
