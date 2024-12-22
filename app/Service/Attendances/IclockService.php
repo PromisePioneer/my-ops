@@ -72,7 +72,9 @@ class IclockService
                         continue;
                     }
                     $attendanceData = $this->prepareAttendanceData($line, $request);
-                    $shift = $this->getShiftForUser($attendanceData['employee_id'], $attendanceData['timestamp']);
+                    $shift = $this->getShiftForUser($attendanceData['employee_id'], $attendanceData['timestamp'], $attendanceData['status1']);
+//dd($shift);
+
                     $this->processAttendanceRecord($attendanceData, $shift);
                     $processedCount++;
                 }
@@ -117,26 +119,32 @@ class IclockService
         return isset($value) && $value !== '' ? (int)$value : null;
     }
 
-    private function getShiftForUser(string $employeeId, $date)
+    private function getShiftForUser(string $employeeId, $date, $status1)
     {
+        $dateTime = Carbon::parse($date);
 
+        // Attempt to find the shift for the exact date
         $userShift = EmployeeSchedule::with('workTime')
             ->where('employee_id', $employeeId);
 
-        $newDates = Carbon::parse(Carbon::parse($date)->copy()->addDays()->format('Y-m-d') . "00:00:00");
 
-        if (Carbon::parse($date)->greaterThan($newDates)) {
-            $userShift->whereDate('date', Carbon::parse($date)->copy()->subDays());
+        if ($dateTime->toTimeString() >= "01:00:00" && $dateTime->toTimeString() <= "05:00:00" && $status1 === 1) {
+            $userShift->whereDate('date', $dateTime->subDay()->format('Y-m-d'));
         } else {
-            $userShift->whereDate('date', Carbon::parse($date));
+            $userShift->whereDate('date', $dateTime->format('Y-m-d'));
         }
 
 
         $userShift = $userShift->first();
 
-        return $userShift
-            ? WorkTime::find($userShift->workTime->id) ?? WorkTime::find(1)
-            : WorkTime::find(1);
+
+        if (!$userShift) {
+            // Return default work time if no shift is found
+            return WorkTime::find(1);
+        }
+
+
+        return $userShift->workTime ?? WorkTime::find(1); // Fallback if the current time doesn't match the shift
     }
 
     private function processAttendanceRecord(array $attendanceData, $shift): void
@@ -222,10 +230,6 @@ class IclockService
             $checkOutStartTime->subDay();
             $shiftStart->subDay();
         }
-
-
-
-
 
 
         // Validate if the time falls within check-in window and shift duration
