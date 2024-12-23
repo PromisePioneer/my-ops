@@ -61,22 +61,22 @@ class GoodsServices
             $unitType['name'],
             number_format($goods->total_price)
         );
-        $kasAccount = $this->subAccount->getKasSubAccount();
+//        $kasAccount = $this->subAccount->getKasSubAccount();
 
-        DB::transaction(function () use ($goods, $description, $kasAccount) {
-            $this->accountTransactionService->createDebitTransaction(
-                $description,
-                $goods->total_price,
-                $goods->account_id
-            );
-            $this->accountTransactionService->createCreditTransaction(
-                $description,
-                $goods->total_price,
-                $kasAccount->id
-            );
+//        DB::transaction(function () use ($goods, $description, $kasAccount) {
+//            $this->accountTransactionService->createDebitTransaction(
+//                $description,
+//                $goods->total_price,
+//                $goods->account_id
+//            );
+//            $this->accountTransactionService->createCreditTransaction(
+//                $description,
+//                $goods->total_price,
+//                $kasAccount->id
+//            );
             $goods->confirmation_status = 1;
             $goods->save();
-        });
+//        });
     }
 
 

@@ -12,7 +12,6 @@ use App\Models\Department;
 use App\Models\FpDevice;
 use App\Models\Role;
 use App\Models\User;
-use App\Models\UserWorkTime;
 use App\Models\WorkTime;
 use App\Service\Attendances\AttendancesSummaryService;
 use App\Service\Attendances\AttendanceSummaryDetailService;
@@ -160,7 +159,7 @@ use Illuminate\View\View;
 
 
 
-    public function getFpDevice(Request $request)
+    public function getFpDevice(Request $request): JsonResponse
     {
         return response()->json($this->fpDevice->getData($request));
     }
