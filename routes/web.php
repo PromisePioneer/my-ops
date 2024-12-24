@@ -66,6 +66,7 @@ use App\Http\Controllers\Inventory\Stock\GoodsController;
 use App\Http\Controllers\Inventory\Stock\InventoryCategoryController;
 use App\Http\Controllers\Inventory\Stock\UnitTypesController;
 use App\Http\Controllers\Inventory\Stock\UsedItemsController;
+use App\Http\Controllers\ListOfItemController;
 use App\Http\Controllers\Master\Finance\AccountController;
 use App\Http\Controllers\Master\Finance\AssetController;
 use App\Http\Controllers\Master\Finance\TaxSettingController;
@@ -732,25 +733,32 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
     Route::prefix('inventory')->group(function () {
-        Route::prefix('goods')->group(function () {
-            Route::get('/unit-types/data', [GoodsController::class, 'getUnitTypesData']);
-            Route::get('/', [GoodsController::class, 'index']);
-            Route::get('/data', [GoodsController::class, 'data']);
-            Route::get('/branch/data', [GoodsController::class, 'branchData']);
-            Route::get('/filter/branch/data/{branch}', [GoodsController::class, 'filterByBranch']);
-            Route::get('/search', [GoodsController::class, 'search']);
-            Route::get('/create', [GoodsController::class, 'create']);
-            Route::get('/related-accounts/data', [GoodsController::class, 'getRelatedAccounts']);
-            Route::post('/', [GoodsController::class, 'store']);
-            Route::get('/edit/{goods}', [GoodsController::class, 'edit']);
-            Route::get('/get-selected-unit-type/{goods}', [GoodsController::class, 'getSelectedUnitType']);
-            Route::get('/get-selected-sub-account/{goods}', [GoodsController::class, 'getSelectedSubAccount']);
-            Route::post('/update/{goods}', [GoodsController::class, 'update']);
-            Route::post('/confirm/{goods}', [GoodsController::class, 'confirm']);
-            Route::get('/detail/data/{goods}', [GoodsController::class, 'show']);
-            Route::get('/used-items-detail/{goods}', [GoodsController::class, 'useItemDetail']);
-            Route::delete('/{goods}', [GoodsController::class, 'destroy']);
+
+        Route::prefix('list-of-items')->group(function () {
+            Route::get('/', [ListOfItemController::class, 'index']);
+            Route::get('/data', [ListOfItemController::class, 'data']);
         });
+
+
+//        Route::prefix('goods')->group(function () {
+//            Route::get('/unit-types/data', [GoodsController::class, 'getUnitTypesData']);
+//            Route::get('/', [GoodsController::class, 'index']);
+//            Route::get('/data', [GoodsController::class, 'data']);
+//            Route::get('/branch/data', [GoodsController::class, 'branchData']);
+//            Route::get('/filter/branch/data/{branch}', [GoodsController::class, 'filterByBranch']);
+//            Route::get('/search', [GoodsController::class, 'search']);
+//            Route::get('/create', [GoodsController::class, 'create']);
+//            Route::get('/related-accounts/data', [GoodsController::class, 'getRelatedAccounts']);
+//            Route::post('/', [GoodsController::class, 'store']);
+//            Route::get('/edit/{goods}', [GoodsController::class, 'edit']);
+//            Route::get('/get-selected-unit-type/{goods}', [GoodsController::class, 'getSelectedUnitType']);
+//            Route::get('/get-selected-sub-account/{goods}', [GoodsController::class, 'getSelectedSubAccount']);
+//            Route::post('/update/{goods}', [GoodsController::class, 'update']);
+//            Route::post('/confirm/{goods}', [GoodsController::class, 'confirm']);
+//            Route::get('/detail/data/{goods}', [GoodsController::class, 'show']);
+//            Route::get('/used-items-detail/{goods}', [GoodsController::class, 'useItemDetail']);
+//            Route::delete('/{goods}', [GoodsController::class, 'destroy']);
+//        });
 
         Route::prefix('used-items')->group(function () {
             Route::get('/get-used-items/{goods}', [UsedItemsController::class, 'getUsedItems']);

@@ -296,6 +296,11 @@
                                     Bill Of Quantity
                                 </x-dropdown-menu-item>
                             @endcan
+                            <x-dropdown-menu-item
+                                :active="request()->is('inventory/list-of-items*')"
+                                href="{{ url('inventory/list-of-items') }}">
+                                Daftar Barang
+                            </x-dropdown-menu-item>
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
@@ -711,7 +716,7 @@
                                 Riwayat Absensi
                             </x-dropdown-menu-item>
                         @endcan
-                        @endslot
+                    @endslot
                 </x-dropdown-menu>
             </div>
         </div>
