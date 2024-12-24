@@ -62,11 +62,9 @@ use App\Http\Controllers\Inventory\ODP\ODPController;
 use App\Http\Controllers\Inventory\ODP\ODPMapController;
 use App\Http\Controllers\Inventory\Pole\PoleController;
 use App\Http\Controllers\Inventory\Pole\PoleMapController;
-use App\Http\Controllers\Inventory\Stock\GoodsController;
 use App\Http\Controllers\Inventory\Stock\InventoryCategoryController;
 use App\Http\Controllers\Inventory\Stock\UnitTypesController;
 use App\Http\Controllers\Inventory\Stock\UsedItemsController;
-use App\Http\Controllers\ListOfItemController;
 use App\Http\Controllers\Master\Finance\AccountController;
 use App\Http\Controllers\Master\Finance\AssetController;
 use App\Http\Controllers\Master\Finance\TaxSettingController;
@@ -82,6 +80,7 @@ use App\Http\Controllers\Master\General\ServicesCategoryController;
 use App\Http\Controllers\Master\General\SKLController;
 use App\Http\Controllers\Master\Operational\JointClosureCodeController;
 use App\Http\Controllers\Master\Operational\SupplierController;
+use App\Http\Controllers\PoListOfItemController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
 use App\Http\Controllers\UserProfile\UserLeaveAndPermissionController;
@@ -735,8 +734,19 @@ Route::group(['middleware' => ['auth']], static function () {
     Route::prefix('inventory')->group(function () {
 
         Route::prefix('list-of-items')->group(function () {
-            Route::get('/', [ListOfItemController::class, 'index']);
-            Route::get('/data', [ListOfItemController::class, 'data']);
+            Route::prefix('po')->group(function () {
+                Route::get('/', [PoListOfItemController::class, 'index']);
+                Route::get('/data', [PoListOfItemController::class, 'data']);
+                Route::get('/create', [PoListOfItemController::class, 'create']);
+                Route::get('/supplier/data', [PoListOfItemController::class, 'getSupplierData']);
+                Route::get('/supplier/selected/{poListOfItem}', [PoListOfItemController::class, 'selectedSupplier']);
+                Route::get('/branch/data', [PoListOfItemController::class, 'getBranchData']);
+                Route::get('/branch/selected/{poListOfItem}', [PoListOfItemController::class, 'selectedBranch']);
+                Route::post('/store', [PoListOfItemController::class, 'store']);
+                Route::get('/edit/{poListOfItem}', [PoListOfItemController::class, 'edit']);
+                Route::post('/update/{poListOfItem}', [PoListOfItemController::class, 'update']);
+                Route::get('/detail/{poListOfItem}', [PoListOfItemController::class, 'detail']);
+            });
         });
 
 

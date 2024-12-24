@@ -2,7 +2,7 @@
 @section('page-title','Daftar Barang')
 @section('content')
     <div x-data="listOfItemData()">
-        @include('pages.inventory.list-of-items.modal.detail')
+        @include('pages.inventory.list-of-items.po.modal.detail')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -16,12 +16,9 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                        <button class="btn btn-light-primary btn-sm"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-create"
-                        >
+                        <a class="btn btn-light-primary btn-sm" href="{{ url('inventory/list-of-items/po/create') }}">
                             Tambah
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -53,15 +50,10 @@
                                                @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
-                                <th class="min-w-125px">SN</th>
                                 <th class="min-w-125px">Tanggal Masuk</th>
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Harga Satuan</th>
-                                <th class="min-w-125px">Ongkir</th>
-                                <th class="min-w-125px">PPN</th>
-                                <th class="min-w-125px">Total</th>
-                                <th class="min-w-125px">Supplier</th>
-                                <th class="min-w-125px">Resi Surat Jalan</th>
+                                <th class="min-w-125px">Qty</th>
                                 <th class="min-w-125px">Action</th>
                             </thead>
                             <tbody class=" fw-bold">
@@ -76,36 +68,39 @@
                                     </td>
                                 </tr>
                             </template>
-                            <template x-if="!isLoading && leaves.data?.length === 0">
+                            <template x-if="!isLoading && listOfItems.data?.length === 0">
                                 <tr>
                                     <td colspan="9">
                                         <center>Data Tidak Ditemukan</center>
                                     </td>
                                 </tr>
                             </template>
-                            <template x-for="(item, index) in listOfItems?.data" :key="listOfItems.id">
+                            <template x-for="(item, index) in listOfItems?.data" :key="index">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="leave.id"
+                                            <input class="form-check-input" type="checkbox" :value="item.id"
                                                    :id="'checkbox-' + item.id"/>
                                         </div>
                                     </td>
-                                    <td x-text="item.sn"></td>
                                     <td x-text="item.date"></td>
                                     <td x-text="item.name"></td>
                                     <td x-text="item.unit_price"></td>
-                                    <td x-text="item.shipping_cost"></td>
-                                    <td x-text="item.ppn"></td>
-                                    <td x-text="item.total_price"></td>
-                                    <td x-text="item.supplier"></td>
-                                    <td x-text="item.travel_letter_receipt"></td>
+                                    <td x-text="item.qty"></td>
                                     <td>
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-detail" @click="detail(item.id)">
                                             <i class="fas fa-eye"></i>
                                         </button>
+                                        <a :href="`/inventory/list-of-items/po/edit/${item.id}`"
+                                           class="btn btn-light-primary btn-sm">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <button class="btn btn-light-info btn-sm" @click="confirm(item.id)">
+                                            <i class="bi bi-check-square"></i>
+                                        </button>
+
                                     </td>
                                 </tr>
                             </template>
@@ -113,7 +108,7 @@
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4">
-                        <template x-for="pagination in leaves.links">
+                        <template x-for="(pagination, index) in listOfItems.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                 <button class="page-link" @click="paginationEndPoint(pagination.url)"
                                         x-html="pagination.label">
@@ -125,6 +120,7 @@
             </div>
         </div>
     </div>
+    @include('components.toast')
 @endsection
 @push('script')
     <script>
@@ -133,10 +129,31 @@
                 modalDetail: new bootstrap.Modal(document.getElementById('modal-detail')),
                 isLoading: false,
                 listOfItems: [],
+                detailVal: {},
+                search: '',
+                selectedCheckBox: [],
                 async init() {
-                    const resp = await axios.get('/inventory/list-of-items/data');
-                    this.listOfItems = resp.data;
-                }
+                    await this.getListOfItem();
+                },
+                async getListOfItem() {
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/inventory/list-of-items/po/data');
+                        this.listOfItems = resp.data;
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+                async detail(id) {
+                    try {
+                        const resp = await axios(`/inventory/list-of-items/po/detail/${id}`);
+                        this.detailVal = resp.data;
+                    } catch (e) {
+                        console.log(e)
+                    }
+                },
             }
         }
     </script>

@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ListOfItem extends Model
+class PoListOfItem extends Model
 {
-    protected $table = 'list_of_items';
+    protected $table = 'po_list_of_items';
     protected $fillable = [
-        'sn',
+        'branch_id',
+        'invoice_number',
+        'po_number',
         'name',
         'date',
         'unit_price',
@@ -18,7 +20,6 @@ class ListOfItem extends Model
         'ppn',
         'total_price',
         'supplier_id',
-        'supplier_id',
         'travel_letter_receipt',
     ];
 
@@ -26,5 +27,10 @@ class ListOfItem extends Model
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class, 'supplier_id');
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

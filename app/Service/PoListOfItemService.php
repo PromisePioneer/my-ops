@@ -2,17 +2,27 @@
 
 namespace App\Service;
 
-use App\Models\ListOfItem;
+use App\Models\PoListOfItem;
+use App\Models\TaxSetting;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use function App\Helper\formatDate;
 
-class ListOfItemService
+class PoListOfItemService
 {
 
     private static int $perPage = 10;
 
+
+    public function query(): Builder
+    {
+        return PoListOfItem::with('supplier', 'branch');
+    }
+
     public function data(): LengthAwarePaginator
     {
-        $data = ListOfItem::with('supplier')->paginate(self::$perPage);
+        $data = $this->query()->paginate(self::$perPage);
         return self::formattedData($data);
     }
 
@@ -22,10 +32,12 @@ class ListOfItemService
         $data = $listOfItem->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
+                'branch_id' => $item->branch->name,
                 'sn' => $item->sn,
-                'date' => $item->date,
+                'date' => formatDate($item->date),
                 'name' => $item->name,
-                'unit_price' => $item->unit_price,
+                'qty' => $item->qty,
+                'unit_price' => 'Rp ' . number_format($item->unit_price, 2),
                 'shipping_cost' => $item->shipping_cost,
                 'supplier' => $item->supplier?->name,
                 'ppn' => $item->ppn,
@@ -38,8 +50,16 @@ class ListOfItemService
         return $listOfItem;
     }
 
-    public function search()
+    public function search(Request $request)
     {
 
+        $data = $this->query()->when('');
+
+
+    }
+
+    public function getPPN()
+    {
+        return TaxSetting::where('name', 'PPN')->first()?->rate;
     }
 }

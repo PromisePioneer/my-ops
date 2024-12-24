@@ -298,62 +298,12 @@
                             @endcan
                             <x-dropdown-menu-item
                                 :active="request()->is('inventory/list-of-items*')"
-                                href="{{ url('inventory/list-of-items') }}">
-                                Daftar Barang
+                                href="{{ url('inventory/list-of-items/po') }}">
+                                PO Barang
                             </x-dropdown-menu-item>
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
-                {{--                <x-dropdown-menu :active="request()->is('operational/*')">--}}
-                {{--                    @slot('parentIcon')--}}
-                {{--                        <i class="ki-duotone ki-dollar fs-2">--}}
-                {{--                            <span class="path1"></span>--}}
-                {{--                            <span class="path2"></span>--}}
-                {{--                            <span class="path3"></span>--}}
-                {{--                        </i>--}}
-                {{--                    @endslot--}}
-                {{--                    @slot('menuTitle')--}}
-                {{--                        Data Aset Lapangan--}}
-                {{--                    @endslot--}}
-                {{--                    @slot('menuItem')--}}
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                            :active="request()->is('operational/odp*')"--}}
-                {{--                            href="{{ url('operational/odp') }}">--}}
-                {{--                            ODP & Homepass--}}
-                {{--                        </x-dropdown-menu-item>--}}
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                            :active="request()->is('operational/fo-cables*')"--}}
-                {{--                            href="{{ url('operational/fo-cables') }}">--}}
-                {{--                            Kabel FO--}}
-                {{--                        </x-dropdown-menu-item>--}}
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                            :active="request()->is('operational/poles*')"--}}
-                {{--                            href="{{ url('operational/poles') }}">--}}
-                {{--                            Tiang--}}
-                {{--                        </x-dropdown-menu-item>--}}
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                            :active="request()->segment(2) === 'joint-closures'"--}}
-                {{--                            href="{{ url('/operational/joint-closures') }}">--}}
-                {{--                            Joint Closure--}}
-                {{--                        </x-dropdown-menu-item>--}}
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                            :active="request()->segment(2) === 'invoice'"--}}
-                {{--                            href="{{ url('/income-transactions/invoice') }}">--}}
-                {{--                            Aset Lapangan--}}
-                {{--                        </x-dropdown-menu-item>--}}
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                            :active="request()->segment(2) === 'invoice'"--}}
-                {{--                            href="{{ url('/income-transactions/invoice') }}">--}}
-                {{--                            Data Core--}}
-                {{--                        </x-dropdown-menu-item>--}}
-
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                            :active="request()->segment(2) === 'invoice'"--}}
-                {{--                            href="{{ url('/income-transactions/invoice') }}">--}}
-                {{--                            Coverage Area--}}
-                {{--                        </x-dropdown-menu-item>--}}
-                {{--                    @endslot--}}
-                {{--                </x-dropdown-menu>--}}
 
 
                 @canany('Lihat Menu Jurnal Umum', 'Lihat Menu Buku Besar', 'Lihat Menu Neraca Saldo')

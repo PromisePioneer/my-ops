@@ -14,7 +14,7 @@
                 </div>
             </div>
 
-            <form id="form-supplier-create" @submit.prevent="save()">
+            <form id="form-supplier-create" @submit.prevent="saveSupplier()">
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama</label>

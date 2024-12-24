@@ -10,9 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('list_of_items', function (Blueprint $table) {
+        Schema::create('po_list_of_items', function (Blueprint $table) {
             $table->id();
-            $table->string('sn');
+            $table->foreignId('branch_id')
+                ->nullable()
+                ->constrained('branches')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->string('po_number');
+            $table->string('invoice_number');
             $table->string('name');
             $table->date('date');
             $table->double('unit_price');

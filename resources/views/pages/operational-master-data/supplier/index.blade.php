@@ -198,7 +198,7 @@
                         }
                     }
                 },
-                async save() {
+                async saveSupplier() {
                     this.buttonLoading = true;
                     try {
                         await axios.post('/operational-master-data/suppliers', new FormData(this.formCreate))
