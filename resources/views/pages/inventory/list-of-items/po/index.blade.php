@@ -2,6 +2,7 @@
 @section('page-title','Daftar Barang')
 @section('content')
     <div x-data="listOfItemData()">
+        @include('pages.operational-master-data.items.modal.create')
         @include('pages.inventory.list-of-items.po.modal.detail')
         @include('pages.inventory.list-of-items.po.modal.confirm')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
@@ -98,10 +99,12 @@
                                            class="btn btn-light-primary btn-sm">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
-                                        <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-confirm" @click="detail(item.id)">
-                                            <i class="bi bi-check-square"></i>
-                                        </button>
+                                        <template x-if="item.status === 0">
+                                            <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-confirm" @click="detail(item.id)">
+                                                <i class="bi bi-check-square"></i>
+                                            </button>
+                                        </template>
                                     </td>
                                 </tr>
                             </template>
@@ -137,6 +140,8 @@
                 search: '',
                 confirmVal: {},
                 selectedCheckBox: [],
+                itemsCanBeUsed: 0,
+                itemCannotBeUsed: 0,
                 async init() {
                     await this.getListOfItem();
                     await this.getItemCategories();
@@ -156,12 +161,14 @@
                     try {
                         const resp = await axios(`/inventory/list-of-items/po/detail/${id}`);
                         this.detailVal = resp.data;
+                        this.itemsCanBeUsed = this.detailVal.qty;
                     } catch (e) {
                         console.log(e)
                     }
                 },
                 async getItemCategories() {
                     $(".item-categories-select2").select2({
+                        escapeMarkup: markup => (markup),
                         allowClear: true,
                         placeholder: 'Pilih Kategori Barang',
                         ajax: {
@@ -177,6 +184,9 @@
                 async confirm() {
                     this.buttonLoading = true;
                     try {
+                        if (this.itemsCanBeUsed > this.detailVal.qty) {
+                            throw new Error(showAlert('error', 'Kuantitas tidak sesuai PO barang yang diterima'));
+                        }
                         await axios.post(`/inventory/list-of-items/po/confirm/${this.detailVal.id}`, new FormData(this.formConfirm))
                         await showAlert('success', 'Data berhasil disimpan');
                         await this.modalConfirm.hide();

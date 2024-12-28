@@ -7,6 +7,7 @@
         }
     </style>
     <div class="d-flex flex-column flex-lg-row" x-data="generateBoQ()">
+        @include('pages.operational-master-data.items.modal.create')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
                 <form id="form" @submit.prevent="generateBoQ()">
@@ -55,8 +56,8 @@
                                 <template x-for="(field,index) in boqCommodities" :key="index">
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td class="ps-0 text-center" style='text-align:center; vertical-align:middle'>
-                                            <select name="" id=""
-                                                    class="form-select form-select-solid central-warehouse-stock">
+                                            <select :name="`data[${index}][item_id]`" id="item_id"
+                                                    class="form-select form-select-solid items-select2">
                                                 <option></option>
                                             </select>
                                         </td>
@@ -249,8 +250,10 @@
             return {
                 buttonLoading: false,
                 form: document.getElementById('form'),
+                modalItem: new bootstrap.Modal(document.getElementById('modal-item-create')),
+                formItem: document.getElementById('form-item-create'),
                 boqCommodities: [{
-                    name: '',
+                    item_id: '',
                     merk: '',
                     qty: 1,
                     unit_type_id: null,
@@ -270,7 +273,7 @@
                     this.$nextTick(async () => {
                         await this.getUsersData();
                         await this.getUnitTypeData();
-                        await this.getCentralWarehouseStock();
+                        await this.getItems();
                         $(".date").flatpickr();
                     });
                 },
@@ -320,10 +323,10 @@
                     this.$nextTick(() => {
                         $(".date").flatpickr();
                         this.getUnitTypeData();
-                        this.getCentralWarehouseStock()
+                        this.getItems()
                     })
                     this.boqCommodities.push({
-                        name: '',
+                        item_id: '',
                         merk: '',
                         qty: '',
                         unit_type_id: '',
@@ -362,12 +365,18 @@
                 calculateTotalAll() {
                     return this.boqCommodities.reduce((total, field) => total + (field.qty * field.unit_price), 0);
                 },
-                async getCentralWarehouseStock() {
-                    $(".central-warehouse-stock").select2({
+                async getItems() {
+                    $(".items-select2").select2({
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-item-create">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
                         allowClear: true,
                         placeholder: "Pilih Barang",
                         ajax: {
-                            url: '/inventory/boq/get-stock-from-central-warehouse/data',
+                            url: '/inventory/boq/items/data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),
@@ -382,6 +391,21 @@
                         currency: "IDR"
                     });
                     return IDR.format(curr);
+                },
+                async saveItem() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/operational-master-data/items', new FormData(this.formItem))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.formItem.reset();
+                        this.modalItem.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
                 },
             }
         }

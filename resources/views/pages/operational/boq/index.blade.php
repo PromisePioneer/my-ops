@@ -57,7 +57,9 @@
                                 <th class="min-w-125px">No. BoQ</th>
                                 <th class="min-w-125px">Judul</th>
                                 <th class="min-w-125px">Tanggal</th>
-                                <th class="min-w-125px">Status</th>
+                                <th class="min-w-125px">Manop Approval</th>
+                                <th class="min-w-125px">Director Approval</th>
+                                <th class="min-w-125px">GM Approval</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -109,6 +111,22 @@
                                         </template>
                                         <template x-if="boq.status === 'Revisi'">
                                             <span class="badge bg-black text-white">Revisi</span>
+                                        </template>
+                                    </td>
+                                    <td>
+                                        <template x-if="boq.known_by_director === 0">
+                                            <span class="badge bg-warning text-white">Pending</span>
+                                        </template>
+                                        <template x-if="boq.known_by_director === 1">
+                                            <span class="badge bg-success text-white">Diterima</span>
+                                        </template>
+                                    </td>
+                                    <td>
+                                        <template x-if="boq.known_by_gm === 0">
+                                            <span class="badge bg-warning text-white">Pending</span>
+                                        </template>
+                                        <template x-if="boq.known_by_gm === 1">
+                                            <span class="badge bg-success text-white">Diterima</span>
                                         </template>
                                     </td>
                                     <td>

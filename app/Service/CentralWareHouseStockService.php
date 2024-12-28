@@ -3,15 +3,10 @@
 namespace App\Service;
 
 use App\Models\CentralWarehouseStock;
-use App\Models\Contact;
-use App\Models\Invoice;
 use App\Models\PoListOfItem;
-use App\Models\Supplier;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use function App\Helper\convertToRoman;
 
 class CentralWareHouseStockService
 {
@@ -41,7 +36,7 @@ class CentralWareHouseStockService
 
     public function query(): Builder
     {
-        return CentralWareHouseStock::with('po');
+        return CentralWareHouseStock::with('po', 'item');
     }
 
 
@@ -49,4 +44,6 @@ class CentralWareHouseStockService
     {
         return $this->query()->paginate(self::$perPage);
     }
+
+
 }

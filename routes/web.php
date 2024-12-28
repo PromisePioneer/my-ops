@@ -760,6 +760,8 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/detail/{poListOfItem}', [PoListOfItemController::class, 'detail']);
                 Route::post('/confirm/{poListOfItem}', [PoListOfItemController::class, 'confirm']);
                 Route::get('/item-categories/data', [PoListOfItemController::class, 'getItemCategories']);
+                Route::get('/items/data', [PoListOfItemController::class, 'getItem']);
+                Route::get('/item/selected/{poListOfItem}', [PoListOfItemController::class, 'selectedItem']);
             });
 
 
@@ -819,7 +821,8 @@ Route::group(['middleware' => ['auth']], static function () {
             );
             Route::post('/known-by-director/{boq}', [BoqController::class, 'knownByDirector']);
             Route::post('/known-by-gm/{boq}', [BoqController::class, 'knownByGeneralManager']);
-            Route::get('/get-stock-from-central-warehouse/data', [BoqController::class, 'getAllStockFromCentralWarehouseStock']);
+            Route::get('/items/data', [BoqController::class, 'getItemData']);
+            Route::get('/items/selected/{item}', [BoqController::class, 'selectedItem']);
         });
     });
 

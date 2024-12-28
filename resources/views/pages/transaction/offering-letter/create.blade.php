@@ -307,7 +307,6 @@
                 },
                 calculateTotal(index) {
                     this.offeringLetterProductService[index].total_price = this.offeringLetterProductService[index].price;
-                    console.log(this.offeringLetterProductService[index].total_price);
                 },
                 calculateTotalAll() {
                     return this.offeringLetterProductService.reduce((total, field) => {

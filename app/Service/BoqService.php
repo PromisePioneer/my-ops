@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Throwable;
-
 use function App\Helper\formatDate;
 
 class BoqService
@@ -50,12 +49,12 @@ class BoqService
 
     private static function boqDataQuery(Request $request)
     {
-        return Boq::with('branch', 'submitterName')
-            ->when($request->user()->can('Lihat Data BoQ Sesuai Cabang Masing2'), function ($query) use ($request) {
-                $query->where('branch_id', $request->user()->branch_id);
-            })->when($request->user()->can('Lihat Pengajuan BoQ Pribadi'), function ($query) use ($request) {
-                $query->where('submitter_id', $request->user()->id);
-            });
+        return Boq::with('branch', 'submitterName');
+//            ->when($request->user()->can('Lihat Data BoQ Sesuai Cabang Masing2'), function ($query) use ($request) {
+//                $query->where('branch_id', $request->user()->branch_id);
+//            })->when($request->user()->can('Lihat Pengajuan BoQ Pribadi'), function ($query) use ($request) {
+//                $query->where('submitter_id', $request->user()->id);
+//            });
     }
 
 
@@ -89,6 +88,8 @@ class BoqService
                 'title' => $item->title,
                 'date' => formatDate($item->date),
                 'status' => $item->operational_manager_approval,
+                'known_by_director' => $item->known_by_director,
+                'known_by_gm' => $item->known_by_gm,
                 'submitter' => $item->submitterName?->name,
                 'submitter_id' => $item->submitter_id,
                 'approved_by' => $item->approvedBy?->name,

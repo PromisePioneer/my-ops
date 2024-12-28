@@ -13,12 +13,10 @@ return new class extends Migration {
         Schema::create('boq_commodities', function (Blueprint $table) {
             $table->id();
             $table->foreignId('boq_id')->constrained('boq')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('central_warehouse_stock_id')
-                ->nullable()
-                ->constrained('central_warehouse_stocks')
+            $table->foreignId('item_id')
+                ->constrained('items')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->string('name')->nullable();
             $table->string('merk')->nullable();
             $table->string('qty');
             $table->foreignId('unit_type_id')->constrained('unit_types')->cascadeOnUpdate();

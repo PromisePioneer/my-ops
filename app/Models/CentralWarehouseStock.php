@@ -12,6 +12,7 @@ class CentralWarehouseStock extends Model
     protected $fillable = [
         'sn',
         'po_items_id',
+        'item_id',
         'category_id',
         'name',
         'qty'
@@ -51,5 +52,10 @@ class CentralWarehouseStock extends Model
             'id' => $centralWarehouseStock->id,
             'name' => $centralWarehouseStock->name,
         ];
+    }
+
+    public function item(): BelongsTo
+    {
+        return $this->belongsTo(Item::class, 'item_id');
     }
 }

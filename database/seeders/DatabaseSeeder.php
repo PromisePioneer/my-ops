@@ -39,7 +39,8 @@ class DatabaseSeeder extends Seeder
             JointClosureCodeSeeder::class,
             AttendancesSummarySeeder::class,
             ItemCategoriesSeeder::class,
-
+            ItemSeeder::class,
+            SupplierSeeder::class,
         ]);
     }
 }

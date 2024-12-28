@@ -7,6 +7,7 @@
         }
     </style>
     <div class="d-flex flex-column flex-lg-row" x-data="generateBoQ()">
+        @include('pages.operational-master-data.items.modal.create')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
                 <form id="form" @submit.prevent="generateBoQ()">
@@ -55,9 +56,8 @@
                                 <template x-for="(field,index) in boqCommodities" :key="index">
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td class="ps-0 text-center" style='text-align:center; vertical-align:middle'>
-                                            <input type="text" class="form-control form-control-solid mb-2"
-                                                   x-model="field.name" :name="`data[${index}][name]`"
-                                                   placeholder="Nama Barang">
+                                            <select :name="`data[${index}][item_id]`" :id="`selectedItem-${index}`"
+                                                    class="form-select form-select-solid items-select2"></select>
                                         </td>
                                         <td class="ps-0" style='text-align:center; vertical-align:middle'>
                                             <input type="text" class="form-control form-control-solid" min="1"
@@ -269,6 +269,7 @@
                     this.$nextTick(async () => {
                         await this.getUsersData();
                         await this.getUnitTypeData();
+                        await this.getItem();
                         $(".date").flatpickr();
                     });
                 },
@@ -287,6 +288,23 @@
                                 var option = new Option(response.name, response.id, true, true);
                                 selectedUnitType.append(option).trigger('change');
                                 selectedUnitType.trigger({
+                                    type: 'select2:select',
+                                    params: {
+                                        results: response
+                                    }
+                                });
+                                field.unit_type_id = response.id;
+                            });
+
+                            const selectedItem = $(`#selectedItem-${index}`);
+                            $.ajax({
+                                type: 'GET',
+                                dataType: "JSON",
+                                url: `/inventory/boq/items/selected/${field.item_id}`,
+                            }).then(function (response) {
+                                var option = new Option(response.name, response.id, true, true);
+                                selectedItem.append(option).trigger('change');
+                                selectedItem.trigger({
                                     type: 'select2:select',
                                     params: {
                                         results: response
@@ -385,10 +403,11 @@
                     this.$nextTick(() => {
                         $(".date").flatpickr();
                         this.getUnitTypeData();
+                        this.getItem();
                     })
 
                     this.boqCommodities.push({
-                        name: '',
+                        item_id: '',
                         merk: '',
                         qty: '',
                         unit_type_id: '',
@@ -434,6 +453,26 @@
                     });
                     return IDR.format(curr);
                 },
+                async getItem() {
+                    $(".items-select2").select2({
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-item-create">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
+                        allowClear: true,
+                        placeholder: "Pilih Barang",
+                        ajax: {
+                            url: '/inventory/boq/items/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
+                    });
+                }
             }
         }
     </script>

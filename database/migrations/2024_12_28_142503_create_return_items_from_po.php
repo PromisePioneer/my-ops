@@ -10,18 +10,18 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('central_warehouse_stocks', function (Blueprint $table) {
+        Schema::create('return_items_from_po', function (Blueprint $table) {
             $table->id();
-            $table->string('sn')->unique();
-            $table->foreignId('po_items_id')->constrained('po_list_of_items')
-                ->cascadeOnDelete()
+            $table->foreignId('po_id')
+                ->constrained('po_list_of_items')
+                ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-            $table->foreignId('item_id')->constrained('items')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('category_id')->constrained('item_categories')
+            $table->foreignId('category_id')->constrained('item_categories');
+            $table->foreignId('item_id')->constrained('items')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->string('merk')->nullable();
             $table->integer('qty');
+            $table->string('reason');
             $table->timestamps();
         });
     }
@@ -31,7 +31,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('central_warehouse_stocks');
+        Schema::dropIfExists('return_items_from_po');
     }
 };

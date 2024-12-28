@@ -136,10 +136,10 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                formCreate: document.getElementById('form-create'),
-                formEdit: document.getElementById('form-edit'),
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
+                formCreate: document.getElementById('form-item-create'),
+                formEdit: document.getElementById('form-item-edit'),
+                modalCreate: new bootstrap.Modal(document.getElementById('modal-item-create')),
+                modalEdit: new bootstrap.Modal(document.getElementById('modal-item-edit')),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
                     await this.getBranchData();
@@ -197,7 +197,7 @@
                         }
                     }
                 },
-                async save() {
+                async saveItem() {
                     this.buttonLoading = true;
                     try {
                         await axios.post('/operational-master-data/items', new FormData(this.formCreate))

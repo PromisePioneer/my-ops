@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="modal-edit">
+<div class="modal fade" tabindex="-1" id="modal-item-edit">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -14,7 +14,7 @@
                 </div>
             </div>
 
-            <form id="form-edit" @submit.prevent="update(editVal.id)">
+            <form id="form-item-edit" @submit.prevent="update(editVal.id)">
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama Barang</label>

@@ -2,6 +2,7 @@
 @section('page-title', 'PO Barang - Ubah PO')
 @section('content')
     <div x-data="generateListOfItem">
+        @include('pages.operational-master-data.items.modal.create')
         @include('pages.operational-master-data.supplier.modal.create')
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
@@ -27,8 +28,10 @@
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <label class="col-form-label required fw-bold fs-6">Nama Barang</label>
-                                <input type="text" class="form-control form-control-solid" name="name" id="name"
-                                       placeholder="Nama Barang" value="{{ $poListOfItem->name }}">
+                                <select name="item_id" id="selected-item"
+                                        class="form-select form-select-solid items-select2">
+                                    <option></option>
+                                </select>
                             </div>
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">Harga Satuan</label>
@@ -124,10 +127,14 @@
                 buttonLoading: false,
                 supplierModal: new bootstrap.Modal(document.getElementById('modal-supplier-create')),
                 supplierForm: document.getElementById('form-supplier-create'),
+                itemModal: new bootstrap.Modal(document.getElementById('modal-item-create')),
+                itemForm: document.getElementById('form-item-create'),
                 form: document.getElementById('form'),
                 async init() {
                     await this.getSupplierData();
                     await this.selectedSupplier();
+                    await this.getItem();
+                    await this.selectedItem();
                 },
                 async getSupplierData() {
                     $(".supplier-select2").select2({
@@ -191,6 +198,54 @@
                         this.buttonLoading = false;
                     }
                 },
+                async getItem() {
+                    $(".items-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Barang",
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-item-create">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
+                        ajax: {
+                            url: '/inventory/list-of-items/po/items/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async selectedItem() {
+                    const selectedBranch = $('#selected-item');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/inventory/list-of-items/po/item/selected/${this.id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedBranch.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
+                async saveItem() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/operational-master-data/items', new FormData(this.itemForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.itemForm.reset();
+                        this.itemModal.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                }
             }
         }
     </script>

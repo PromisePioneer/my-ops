@@ -1,7 +1,15 @@
 @extends('layouts.template')
 @section('page-title', 'Inventory Controller - Tambah Daftar Barang')
 @section('content')
+    <style>
+        .modal-open .select2-container--bootstrap5 .select2-dropdown {
+            z-index: 1020 !important;
+        }
+    </style>
+
+
     <div x-data="generateListOfItem">
+        @include('pages.operational-master-data.items.modal.create')
         @include('pages.operational-master-data.supplier.modal.create')
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
@@ -27,8 +35,10 @@
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <label class="col-form-label required fw-bold fs-6">Nama Barang</label>
-                                <input type="text" class="form-control form-control-solid" name="name" id="name"
-                                       placeholder="Nama Barang">
+                                <select name="item_id" id="item_id"
+                                        class="form-select form-select-solid items-select2">
+                                    <option></option>
+                                </select>
                             </div>
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">Harga Satuan</label>
@@ -66,7 +76,7 @@
                                 <label class="col-form-label required fw-bold fs-6">Resi Surat Jalan</label>
                                 <input type="text"
                                        class="form-control form-control-lg form-control-solid"
-                                       placeholder="Resi Surat Jalan" name="travel_receipt"/>
+                                       placeholder="Resi Surat Jalan" name="travel_letter_receipt"/>
                             </div>
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">Tanggal Masuk</label>
@@ -74,16 +84,6 @@
                                        class="form-control form-control-lg form-control-solid date"
                                        placeholder="Tanggal Masuk"/>
                             </div>
-                        </div>
-
-                        <div class="row mb-4">
-                            <div class="col-lg-6">
-                                <label class="col-form-label required fw-bold fs-6">Resi Surat Jalan</label>
-                                <input type="text" name="travel_letter_receipt" id="travel_letter_receipt"
-                                       class="form-control form-control-solid"
-                                       placeholder="Resi Surat Jalan"/>
-                            </div>
-                            <div class="col-lg-6"></div>
                         </div>
 
                         <div class="separator py-2"></div>
@@ -129,10 +129,13 @@
                 buttonLoading: false,
                 supplierModal: new bootstrap.Modal(document.getElementById('modal-supplier-create')),
                 supplierForm: document.getElementById('form-supplier-create'),
+                itemModal: new bootstrap.Modal(document.getElementById('modal-item-create')),
+                itemForm: document.getElementById('form-item-create'),
                 form: document.getElementById('form'),
                 async init() {
                     await this.getSupplierData();
                     await this.getBranchData();
+                    await this.getItem();
                 },
                 async getSupplierData() {
                     $(".supplier-select2").select2({
@@ -197,6 +200,42 @@
                         }
                     });
                 },
+
+                async getItem() {
+                    $(".items-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Barang",
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-item-create">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
+                        ajax: {
+                            url: '/inventory/list-of-items/po/items/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async saveItem() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/operational-master-data/items', new FormData(this.itemForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.itemForm.reset();
+                        this.itemModal.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                }
             }
         }
     </script>

@@ -50,7 +50,7 @@
                                 @foreach($boqCommodity as $commodity)
                                     <tr>
                                         <td class="text-center">{{ $loop->iteration }}</td>
-                                        <td class="text-center">{{ $commodity->name }}</td>
+                                        <td class="text-center">{{ $commodity->item->name }}</td>
                                         <td class="text-center">{{ $commodity->merk }}</td>
                                         <td class="text-center">{{ $commodity->qty }}</td>
                                         <td class="text-center">{{ $commodity->unitType->name }}</td>
@@ -158,7 +158,7 @@
                         </div>
                     @endcan
                 @endif
-                @if($boq->approved_by_operational_manager === 1  && $boq->known_by_director === 0 && Auth::user()->roles[0]?->name === 'Director')
+                @if($boq->operational_manager_approval === "Diterima"  && $boq->known_by_director === 0 && Auth::user()->roles[0]?->name === 'Director')
                     <button class="float-end btn btn-light-primary btn-sm" @click="knownByDirector()">
                         Mengetahui Direktur
                     </button>

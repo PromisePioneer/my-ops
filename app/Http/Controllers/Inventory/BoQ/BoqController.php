@@ -9,7 +9,7 @@ use App\Http\Requests\BoqRequest;
 use App\Models\Boq;
 use App\Models\BoqCommodity;
 use App\Models\BoqTimelineProject;
-use App\Models\CentralWarehouseStock;
+use App\Models\Item;
 use App\Models\UnitType;
 use App\Models\User;
 use App\Service\BoqService;
@@ -28,7 +28,7 @@ use Throwable;
         $this->boqService = new BoqService();
         $this->unitType = new UnitType();
         $this->user = new User();
-        $this->centralWarehouseStock = new CentralWarehouseStock();
+        $this->item = new Item();
     }
 
     public function index(): View
@@ -123,7 +123,9 @@ use Throwable;
             $query->where('name', 'General Manager');
         })->first();
 
-        $boqCommodity = BoqCommodity::with('unitType')->where('boq_id', $boq->id)->get();
+        $boqCommodity = BoqCommodity::with('unitType', 'item')->where('boq_id', $boq->id)->get();
+
+//        dd($boqCommodity);
 
         $boqProjectTimeline = BoqTimelineProject::with('unitType', 'picName')
             ->where('boq_id', $boq->id)
@@ -178,8 +180,13 @@ use Throwable;
     }
 
 
-    public function getAllStockFromCentralWarehouseStock(Request $request)
+    public function getItemData(Request $request): JsonResponse
     {
-        return response()->json($this->centralWarehouseStock->getData($request));
+        return response()->json($this->item->getData($request));
+    }
+
+    public function selectedItem(Item $item): JsonResponse
+    {
+        return response()->json($this->item->getSelectedData($item->id));
     }
 }

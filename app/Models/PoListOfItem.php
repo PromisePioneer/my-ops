@@ -11,7 +11,7 @@ class PoListOfItem extends Model
     protected $fillable = [
         'invoice_number',
         'po_number',
-        'name',
+        'item_id',
         'date',
         'unit_price',
         'qty',
@@ -27,6 +27,11 @@ class PoListOfItem extends Model
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class, 'supplier_id');
+    }
+
+    public function item(): BelongsTo
+    {
+        return $this->belongsTo(Item::class, 'item_id');
     }
 
     public function branch(): BelongsTo

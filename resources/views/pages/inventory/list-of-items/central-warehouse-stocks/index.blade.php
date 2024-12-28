@@ -90,8 +90,11 @@
                                     </td>
                                     <td x-text="item.po.po_number"></td>
                                     <td x-text="item.sn"></td>
-                                    <td x-text="item.name"></td>
+                                    <td x-text="item.item.name"></td>
                                     <td x-text="item.qty"></td>
+                                    <td>
+                                        <a href="">tes</a>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </template>

@@ -34,7 +34,7 @@ class PoListOfItemService
                 'id' => $item->id,
                 'sn' => $item->sn,
                 'date' => formatDate($item->date),
-                'name' => $item->name,
+                'name' => $item->item->name,
                 'qty' => $item->qty,
                 'unit_price' => 'Rp ' . number_format($item->unit_price, 2),
                 'shipping_cost' => $item->shipping_cost,

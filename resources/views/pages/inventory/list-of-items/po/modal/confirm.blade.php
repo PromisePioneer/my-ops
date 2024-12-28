@@ -33,10 +33,26 @@
                                    :value="detailVal.name">
                         </div>
                         <div class="col-lg-6">
-                            <label class="form-label required">Kuantitas</label>
-                            <input type="text" class="form-control form-control-solid" name="qty"
-                                   :value="detailVal.qty ">
+                            <label class="form-label required">Kuantitas (Barang layak pakai)</label>
+                            <input type="number" class="form-control form-control-solid" name="qty_can_be_used"
+                                   :max="itemsCanBeUsed"
+                                   x-model="itemsCanBeUsed"
+                                   :value="detailVal.qty">
                         </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-lg-6">
+                            <label class="form-label required">Kuantitas (barang yang tidak layak pakai)</label>
+                            <input type="text" class="form-control form-control-solid" name="qty_cannot_be_used"
+                                   :value="detailVal.qty - itemsCanBeUsed" x-model="itemCannotBeUsed" readonly>
+                            <span class="text-danger">Kuantitas barang tidak layak pakai akan otomatis masuk ke return PO</span>
+                        </div>
+                    </div>
+                    <div x-show="detailVal.qty - itemsCanBeUsed > 0" x-transition>
+                        <label class="form-label">Alasan Barang di retur (Jika retur)</label>
+                        <textarea name="reason" id="reason"
+                                  class="form-control form-control-solid" data-kt-autosize="true"></textarea>
                     </div>
                     <div class="mt-10">
                     <span class="text-danger">

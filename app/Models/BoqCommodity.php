@@ -13,7 +13,7 @@ class BoqCommodity extends Model
     protected $table = 'boq_commodities';
     protected $fillable = [
         'boq_id',
-        'name',
+        'item_id',
         'merk',
         'qty',
         'unit_type_id',
@@ -27,6 +27,11 @@ class BoqCommodity extends Model
     public function boq(): BelongsTo
     {
         return $this->belongsTo(Boq::class, 'boq_id');
+    }
+
+    public function item(): BelongsTo
+    {
+        return $this->belongsTo(Item::class, 'item_id');
     }
 
 

@@ -27,7 +27,7 @@ class BoqRequest extends FormRequest
         return [
             'title' => ['required'],
             'date' => ['required', 'date', 'after:now'],
-            'data.*.name' => ['required'],
+            'data.*.item_id' => ['required'],
             'data.*.qty' => ['required'],
             'data.*.unit_type_id' => ['required', Rule::exists('unit_types', 'id')],
             'data.*.unit_price' => ['required'],
@@ -50,7 +50,7 @@ class BoqRequest extends FormRequest
             'title.required' => 'Judul tidak boleh kosong',
             'date.required' => 'Tanggal tidak boleh kosong',
             'date.date' => 'Tanggal tidak valid.',
-            'data.*.name.required' => 'Nama barang tidak boleh kosong',
+            'data.*.item_id.required' => 'Nama barang tidak boleh kosong',
             'data.*.qty.required' => 'Kuantitas barang tidak boleh kosong',
             'data.*.unit_type_id.required' => 'UOM barang tidak boleh kosong',
             'data.*.unit_price.required' => 'Harga satuan tidak boleh kosong',

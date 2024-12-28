@@ -6,8 +6,10 @@ use AllowDynamicProperties;
 use App\Http\Requests\PoListOfItemRequest;
 use App\Models\Branch;
 use App\Models\CentralWarehouseStock;
+use App\Models\Item;
 use App\Models\ItemCategory;
 use App\Models\PoListOfItem;
+use App\Models\ReturnItemFromPo;
 use App\Models\Supplier;
 use App\Service\CentralWareHouseStockService;
 use App\Service\PoListOfItemService;
@@ -25,13 +27,13 @@ use function App\Helper\formatDate;
         $this->branch = new Branch();
         $this->itemCategory = new ItemCategory();
         $this->centralWareHouseStockService = new CentralWareHouseStockService();
+        $this->item = new Item();
     }
 
     public function index(): View
     {
         return view('pages.inventory.list-of-items.po.index');
     }
-
 
     public function data(): JsonResponse
     {
@@ -58,13 +60,14 @@ use function App\Helper\formatDate;
 
     public function store(PoListOfItemRequest $request): JsonResponse
     {
+
         $ppn = $this->poListOfItemService->getPPN();
         $total_price = $request->qty * $request->unit_price;
 
         PoListOfItem::create([
             'po_number' => $request->po_number,
             'invoice_number' => $request->invoice_number,
-            'name' => $request->name,
+            'item_id' => $request->item_id,
             'date' => $request->date,
             'unit_price' => $request->unit_price,
             'qty' => $request->qty,
@@ -99,7 +102,7 @@ use function App\Helper\formatDate;
             'id' => $poListOfItem->id,
             'po_number' => $poListOfItem->po_number,
             'invoice_number' => $poListOfItem->invoice_number,
-            'name' => $poListOfItem->name,
+            'name' => $poListOfItem->item->name,
             'date' => formatDate($poListOfItem->date),
             'unit_price' => number_format($poListOfItem->unit_price),
             'qty' => $poListOfItem->qty,
@@ -113,14 +116,11 @@ use function App\Helper\formatDate;
 
     public function update(PoListOfItemRequest $request, PoListOfItem $poListOfItem): JsonResponse
     {
-
-
         $ppn = $this->poListOfItemService->getPPN();
         $total_price = $request->qty * $request->unit_price;
 
-
         $poListOfItem->update([
-            'name' => $request->name,
+            'name' => $request->item_id,
             'date' => $request->date,
             'unit_price' => $request->unit_price,
             'qty' => $request->qty,
@@ -141,13 +141,24 @@ use function App\Helper\formatDate;
             'status' => 1
         ]);
 
+        if ($request->qty_cannot_be_used > 0) {
+            ReturnItemFromPo::create([
+                'po_id' => $poListOfItem->id,
+                'item_id' => $poListOfItem->item_id,
+                'category_id' => $request->category_id,
+                'qty' => $request->qty_cannot_be_used,
+                'reason' => $request->reason
+            ]);
+        }
+
         CentralWarehouseStock::create([
             'sn' => $this->centralWareHouseStockService->generateSN($poListOfItem),
             'po_items_id' => $poListOfItem->id,
-            'name' => $poListOfItem->name,
-            'qty' => $request->qty,
+            'item_id' => $poListOfItem->item_id,
+            'qty' => $request->qty_can_be_used,
             'category_id' => $request->category_id
         ]);
+
 
         return response()->json(['message' => 'Data berhasil disimpan']);
     }
@@ -162,5 +173,15 @@ use function App\Helper\formatDate;
     public function getItemCategories(Request $request): JsonResponse
     {
         return response()->json($this->itemCategory->getData($request));
+    }
+
+    public function getItem(Request $request): JsonResponse
+    {
+        return response()->json($this->item->getData($request));
+    }
+
+    public function selectedItem(PoListOfItem $poListOfItem): JsonResponse
+    {
+        return response()->json($this->item->getSelectedData($poListOfItem->item_id));
     }
 }

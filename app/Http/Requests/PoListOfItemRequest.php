@@ -25,9 +25,9 @@ class PoListOfItemRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
-            'po_number' => ['required', Rule::unique('po_list_of_items', 'po_number')],
-            'invoice_number' => ['required', Rule::unique('po_list_of_items', 'invoice_number')],
-            'name' => ['required', 'string'],
+            'po_number' => ['required', Rule::unique('po_list_of_items', 'po_number')->ignore($request->route('poListOfItem')),],
+            'invoice_number' => ['required', Rule::unique('po_list_of_items', 'invoice_number')->ignore($request->route('poListOfItem'))],
+            'item_id' => ['required', 'string'],
             'date' => ['required', 'date'],
             'unit_price' => ['required'],
             'qty' => ['required'],
@@ -45,7 +45,7 @@ class PoListOfItemRequest extends FormRequest
             'po_number.unique' => 'Nomor PO sudah terdaftar',
             'invoice_number.unique' => 'Nomor Invoice sudah terdaftar',
             'invoice_number.required' => 'Nomor Invoice tidak boleh kosong',
-            'name.required' => 'Nama barang tidak boleh kosong.',
+            'item_id.required' => 'Nama barang tidak boleh kosong.',
             'date.required' => 'Tanggal Masuk tidak boleh kosong.',
             'unit_price.required' => 'Harga satuan tidak boleh kosong.',
             'qty.required' => 'Jumlah barang tidak boleh kosong.',
