@@ -1,10 +1,10 @@
 @extends('layouts.template')
-@section('page-title', 'Data Kategori Barang')
+@section('page-title', 'Master Operasional - Barang')
 @section('content')
-    <div x-data="inventoryData()">
+    <div x-data="itemData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.operational-master-data.inventory-categories.modal.create')
-            @include('pages.operational-master-data.inventory-categories.modal.edit')
+            @include('pages.operational-master-data.items.modal.create')
+            @include('pages.operational-master-data.items.modal.edit')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="card-body py-3">
-                <div class="col-12 ">
+                <div class="col-12">
                     <form id="form-delete" @submit.prevent="destroy()">
                         <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
@@ -50,12 +50,13 @@
                 </div>
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
+                        <table class="table align-middle fs-6 gy-5" id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                        <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
+                                        <input class="form-check-input" type="checkbox"
+                                               @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Nama</th>
@@ -64,7 +65,7 @@
                             <template x-if="isLoading">
                                 <tbody class="fw-bold">
                                 <tr>
-                                    <td colspan="3">
+                                    <td colspan="9">
                                         <div style="text-align: center;">
                                             <div class="spinner-border" role="status">
                                                 <span class="visually-hidden">Loading...</span>
@@ -74,29 +75,29 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-if="!isLoading && inventoryCategories.data?.length === 0">
+                            <template x-if="!isLoading && items.data?.length === 0">
                                 <tbody class="fw-bold">
                                 <tr>
-                                    <td colspan="3">
+                                    <td colspan="9">
                                         <center>Data Tidak Ditemukan</center>
                                     </td>
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-for="category in inventoryCategories?.data" :key="category.id">
+                            <template x-for="item in items?.data" :key="item.id">
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="category.id"
-                                                   :id="'checkbox-' + category.id"/>
+                                            <input class="form-check-input" type="checkbox" :value="item.id"
+                                                   :id="'checkbox-' + item.id"/>
                                         </div>
                                     </td>
-                                    <td x-text="category.name"></td>
+                                    <td x-text="item.name"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(category.id)">
+                                                data-bs-target="#modal-edit" @click="edit(item.id)">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
@@ -109,7 +110,7 @@
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4 mt-4">
-                        <template x-for="pagination in inventoryCategories.links">
+                        <template x-for="pagination in items.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                 <button class="page-link" @click="paginationEndPoint(pagination.url)"
                                         x-html="pagination.label">
@@ -125,10 +126,10 @@
 @endsection
 @push('script')
     <script defer>
-        function inventoryData() {
+        function itemData() {
             return {
-                inventoryCategories: [],
-                isLoading: true,
+                items: [],
+                isLoading: false,
                 buttonLoading: false,
                 selectedCheckBox: [],
                 selectAll: false,
@@ -141,14 +142,27 @@
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
-                    await this.getInventoryCategories();
+                    await this.getBranchData();
+                },
+                async getBranchData() {
+                    this.isLoading = false;
+                    try {
+                        const resp = await axios.get('/operational-master-data/items/data');
+                        this.items = resp.data
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async searchData() {
                     try {
-                        this.inventoryCategories = await axios.get('/operational-master-data/inventory-categories/search', {
+                        const resp = await axios.get('/operational-master-data/items/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
+
+                        this.items = resp.data;
                     } catch (error) {
                         console.log(error);
                     }
@@ -156,7 +170,7 @@
                 async paginationEndPoint(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
-                        this.inventoryCategories = resp.data
+                        this.items = resp.data
                     }
                 },
                 toggleAllCheckBox() {
@@ -186,7 +200,7 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/operational-master-data/inventory-categories', new FormData(this.formCreate))
+                        await axios.post('/operational-master-data/items', new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
@@ -199,13 +213,13 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/operational-master-data/inventory-categories/${id}`);
+                    const resp = await axios.get(`/operational-master-data/items/${id}`);
                     this.editVal = resp.data;
                 },
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/operational-master-data/inventory-categories/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/operational-master-data/items/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.modalEdit.hide();
                         this.formEdit.reset();
@@ -220,7 +234,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/operational-master-data/inventory-categories/destroy`, new FormData(this.formDelete));
+                            await axios.post(`/operational-master-data/items/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -229,11 +243,6 @@
                         }
                     });
                 },
-                async getInventoryCategories() {
-                    const inventoryCategories = await axios.get('/operational-master-data/inventory-categories/data');
-                    this.inventoryCategories = inventoryCategories.data
-                    this.isLoading = false;
-                }
             }
         }
     </script>

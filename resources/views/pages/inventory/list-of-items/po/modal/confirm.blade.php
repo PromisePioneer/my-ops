@@ -1,0 +1,65 @@
+<div class="modal fade" tabindex="-1" id="modal-confirm">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Konfirmasi Barang</h5>
+                <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
+                     aria-label="Close">
+                    <span class="svg-icon svg-icon-2x">
+                        <i class="ki-duotone ki-technology-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </span>
+                </div>
+            </div>
+
+            <form id="form-confirm" @submit.prevent="confirm()">
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-lg-6">
+                            <label class="form-label required">Kategori Barang</label>
+                            <select name="category_id" id="category_id"
+                                    class="form-select form-select-solid item-categories-select2"
+                                    data-dropdown-parent="#modal-confirm">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-lg-6">
+                            <label class="form-label required">Nama Barang</label>
+                            <input type="text" disabled class="form-control form-control-solid"
+                                   :value="detailVal.name">
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="form-label required">Kuantitas</label>
+                            <input type="text" class="form-control form-control-solid" name="qty"
+                                   :value="detailVal.qty ">
+                        </div>
+                    </div>
+                    <div class="mt-10">
+                    <span class="text-danger">
+                         Notes : Jika kuantitas barang yang sampai tidak sesuai, maka ubah kuantitas barang sesuai barang yang diterima.
+                    </span>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
+                            <i class="ki-duotone ki-click fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                                <span class="path5"></span>
+                            </i>
+                            <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

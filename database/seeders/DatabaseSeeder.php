@@ -38,6 +38,8 @@ class DatabaseSeeder extends Seeder
             TaxSettingSeeder::class,
             JointClosureCodeSeeder::class,
             AttendancesSummarySeeder::class,
+            ItemCategoriesSeeder::class,
+
         ]);
     }
 }

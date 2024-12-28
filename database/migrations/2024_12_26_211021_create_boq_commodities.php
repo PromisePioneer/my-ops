@@ -13,7 +13,12 @@ return new class extends Migration {
         Schema::create('boq_commodities', function (Blueprint $table) {
             $table->id();
             $table->foreignId('boq_id')->constrained('boq')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('name');
+            $table->foreignId('central_warehouse_stock_id')
+                ->nullable()
+                ->constrained('central_warehouse_stocks')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->string('name')->nullable();
             $table->string('merk')->nullable();
             $table->string('qty');
             $table->foreignId('unit_type_id')->constrained('unit_types')->cascadeOnUpdate();
@@ -31,6 +36,6 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('boq_requests');
+        Schema::dropIfExists('boq_commodities');
     }
 };

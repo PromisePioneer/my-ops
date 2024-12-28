@@ -4,33 +4,33 @@ namespace App\Http\Controllers\Inventory\Stock;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InventoryCategoryRequest;
-use App\Models\InventoryCategory;
+use App\Models\ItemCategory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-class InventoryCategoryController extends Controller
+class ItemCategoryController extends Controller
 {
 
     private static int $perPage = 10;
 
     public function index(): View
     {
-        return view('pages.operational-master-data.inventory-categories.index');
+        return view('pages.operational-master-data.item-categories.index');
     }
 
     public function data(): JsonResponse
     {
-        return response()->json(InventoryCategory::paginate(self::$perPage));
+        return response()->json(ItemCategory::paginate(self::$perPage));
     }
 
     public function search(Request $request): JsonResponse
     {
         $search = $request->input('search');
-        $query = InventoryCategory::orderBy('created_at');
+        $query = ItemCategory::orderBy('created_at');
 
         if (!empty($search)) {
-            $query->where('name', 'like', '%'.$search.'%');
+            $query->where('name', 'like', '%' . $search . '%');
         }
 
         $category = $query->paginate(self::$perPage);
@@ -39,27 +39,27 @@ class InventoryCategoryController extends Controller
 
     public function store(InventoryCategoryRequest $request): JsonResponse
     {
-        InventoryCategory::create($request->validated());
+        ItemCategory::create($request->validated());
         return response()->json(['message' => 'Data sukses disimpan.']);
     }
 
-    public function edit(InventoryCategory $inventoryCategory): JsonResponse
+    public function edit(ItemCategory $itemCategory): JsonResponse
     {
-        return response()->json($inventoryCategory);
+        return response()->json($itemCategory);
     }
 
-    public function update(InventoryCategoryRequest $request, InventoryCategory $inventoryCategory): JsonResponse
+    public function update(InventoryCategoryRequest $request, ItemCategory $itemCategory): JsonResponse
     {
-        return response()->json($inventoryCategory->update($request->validated()));
+        return response()->json($itemCategory->update($request->validated()));
     }
 
 
-    public function destroy(Request $request, InventoryCategory $inventoryCategory)
+    public function destroy(Request $request, ItemCategory $itemCategory)
     {
         $this->authorize('delete', $request);
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
-        $inventoryCategory->whereIn('id', $explodeID)->delete();
+        $itemCategory->whereIn('id', $explodeID)->delete();
 
         return response()->json([
             'message' => 'data berhasil dihapus',
