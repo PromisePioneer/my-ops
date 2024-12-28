@@ -2,7 +2,7 @@
 @section('page-title', 'Detail Riwayat Absensi')
 @section('content')
     <div x-data="attendancesSummaryDetail()">
-{{--        @include('pages.adms.attendances-summary.modal.correction')--}}
+       @include('pages.adms.attendances-summary.modal.correction')
         <div class="d-flex flex-column flex-xl-row">
             <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
                 <div class="card card-flush">
@@ -59,7 +59,7 @@
                                     <th class="text-center">Clock Out</th>
                                     <th class="text-center">Terlambat</th>
                                     <th class="text-center">Jam Kerja</th>
-                                    {{--                                    <th class="text-center">Action</th>--}}
+                                                                       <th class="text-center">Action</th>
                                 </tr>
                                 </thead>
                                 <template x-if="isLoading">
@@ -121,19 +121,19 @@
                                             <td class="text-center" x-text="attendance.clock_out"></td>
                                             <td class="text-center" x-text="attendance.late"></td>
                                             <td class="text-center" x-text="attendance.work_time"></td>
-{{--                                            <td class="text-center">--}}
-                                            {{--                                                <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"--}}
-                                            {{--                                                        data-bs-target="#modal-attendance-correction"--}}
-                                            {{--                                                        @click="correction(attendance.date_period)">--}}
-                                            {{--                                                    <i class="ki-duotone ki-setting-3">--}}
-                                            {{--                                                        <span class="path1"></span>--}}
-                                            {{--                                                        <span class="path2"></span>--}}
-                                            {{--                                                        <span class="path3"></span>--}}
-                                            {{--                                                        <span class="path4"></span>--}}
-                                            {{--                                                        <span class="path5"></span>--}}
-                                            {{--                                                    </i>--}}
-                                            {{--                                                </button>--}}
-                                            {{--                                            </td>--}}
+                                           <td class="text-center">
+                                                                                           <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                                                                   data-bs-target="#modal-attendance-correction"
+                                                                                                   @click="correction(attendance.date_period)">
+                                                                                               <i class="ki-duotone ki-setting-3">
+                                                                                                   <span class="path1"></span>
+                                                                                                   <span class="path2"></span>
+                                                                                                   <span class="path3"></span>
+                                                                                                   <span class="path4"></span>
+                                                                                                   <span class="path5"></span>
+                                                                                               </i>
+                                                                                           </button>
+                                                                                       </td>
                                         </tr>
                                     </template>
                                     </tbody>

@@ -25,13 +25,13 @@
                     <div class="col-lg-4">
                         <label for="name" class="form-label">Tanggal Awal</label>
                         <input type="date" class="form-control form-control-solid form-control-sm me-3 date"
-                               id="start_date"
+                               id="start_dates"
                                name="start_date" placeholder="Tanggal awal">
                     </div>
                     <div class="col-lg-4">
                         <label for="name" class="form-label">Tanggal Akhir</label>
                         <input type="date" class="form-control form-control-solid form-control-sm me-3 date"
-                               id="end_date"
+                               id="end_dates"
                                name="end_date" placeholder="Tanggal akhir">
                     </div>
                 </div>
@@ -105,7 +105,7 @@
                                     </td>
                                     <td x-text="`${attendance.role}`"></td>
                                     <td x-text="`${attendance.total_minutes_late} Menit`"></td>
-                                    <td x-text="`${attendance.total_present} Hari`"></td>
+                                    <td x-text="`${attendance.total_present}`"></td>
                                     <td x-text="`${attendance.total_not_check_in}`"></td>
                                     <td x-text="`${attendance.total_not_check_out}`"></td>
                                     <td>
@@ -204,8 +204,8 @@
                     }
                 },
                 async paginationEndPointForAttendanceSummary(url) {
-                    const startDate = document.getElementById('start_date')?.value ?? '';
-                    const endDate = document.getElementById('end_date')?.value ?? '';
+                    const startDate = document.getElementById('start_dates')?.value ?? '';
+                    const endDate = document.getElementById('end_dates')?.value ?? '';
 
                     if (url) {
                         const resp = await axios.get(`${url}`, {
@@ -218,8 +218,11 @@
                     }
                 },
                 async filter() {
-                    const startDate = document.getElementById('start_date')?.value ?? '';
-                    const endDate = document.getElementById('end_date')?.value ?? '';
+                    const startDate = document.getElementById('start_dates')?.value ?? '';
+                    const endDate = document.getElementById('end_dates')?.value ?? '';
+
+                    // console.log(startDate);
+
                     const branch_id = $('#branch_id').val();
                     const role_id = $('#role_id').val()
                     this.isLoading = true;
@@ -287,8 +290,8 @@
                 },
                 async filterDate() {
                     this.isLoading = true;
-                    const startDate = document.getElementById('start_date');
-                    const endDate = document.getElementById('end_date');
+                    const startDate = document.getElementById('start_dates');
+                    const endDate = document.getElementById('end_dates');
                     const department = $('#department_id').val();
                     const branch_id = $('#branch_id').val();
                     const role = $('#role_id').val();
@@ -314,8 +317,8 @@
                 },
                 async searchData() {
                     this.isLoading = true;
-                    const startDate = document.getElementById('start_date')?.value;
-                    const endDate = document.getElementById('end_date')?.value;
+                    const startDate = document.getElementById('start_dates')?.value;
+                    const endDate = document.getElementById('end_dates')?.value;
                     try {
                         const response = await axios.get('/adms/attendances-summary/search', {
                             params: {

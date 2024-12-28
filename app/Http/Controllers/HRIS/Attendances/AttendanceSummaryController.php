@@ -103,6 +103,7 @@ use Illuminate\View\View;
 
     public function filter(Request $request): JsonResponse
     {
+
         $startDate = Carbon::make($request->start_date);
         $endDate = Carbon::make($request->end_date);
         $branchId = $request->branch_id;
@@ -118,7 +119,6 @@ use Illuminate\View\View;
         $attendaceVal = AttendancesSummary::where('employee_id', $user->absent_id)
             ->whereDate('date', $parseDatePeriod)->first();
 
-//        dd($request->all());
 
         if ($attendaceVal) {
             $attendaceVal->update([

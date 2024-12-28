@@ -118,7 +118,11 @@ class AttendancesSummaryService
             $periodOfWork = $startDate->diffInDays($endDate) - $startDate->diffInWeeks($endDate) - $nationalHoliday;
             $totalNotCheckIn = 0;
             $totalNotCheckOut = 0;
-            $totalPresent = 0;
+            $totalPresent = $user->attendancesSummary->count();
+
+
+
+            // dd($startDate, $endDate);
 
             foreach ($user->attendancesSummary as $attendance) {
                 if (empty($attendance->clock_in) && $attendance->clock_out) {
@@ -129,10 +133,6 @@ class AttendancesSummaryService
                     if (empty($attendance->clock_out) && $attendance->clock_in) {
                         $totalNotCheckOut++;
                     }
-                }
-
-                if ($attendance->clock_in || $attendance->clock_out) {
-                    $totalPresent++;
                 }
 
                 $userWorktime = WorkTime::where('id', $attendance->work_time_id)->first();
@@ -148,7 +148,7 @@ class AttendancesSummaryService
                 'total_minutes_late' => (int)$totalMinutesLate,
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
-                'total_present' => $totalPresent . '/' . (int)$periodOfWork,
+                'total_present' => $totalPresent,
             ];
         });
 

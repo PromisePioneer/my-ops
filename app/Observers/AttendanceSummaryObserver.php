@@ -17,7 +17,7 @@ class AttendanceSummaryObserver
         $timestamp = Carbon::parse($attendances->timestamp);
 
 
-        // Fetch user and role
+        // // Fetch user and role
         $user = User::where('absent_id', $attendances->employee_id)->first();
         if (!$user) {
             Log::warning("No user found for employee_id: {$attendances->employee_id}");

@@ -138,17 +138,18 @@ class IclockService
 
 
         if (!$userShift) {
-            // Return default work time if no shift is found
             return WorkTime::find(1);
         }
 
 
-        return $userShift->workTime ?? WorkTime::find(1); // Fallback if the current time doesn't match the shift
+        return $userShift->workTime ?? WorkTime::find(1);
     }
 
     private function processAttendanceRecord(array $attendanceData, $shift): void
     {
         $date = Carbon::parse($attendanceData['timestamp']);
+
+        Log::info($attendanceData);
 
         if ($attendanceData['status1'] == 0) {
             $this->processCheckIn($attendanceData, $shift, $date, $date);
@@ -250,12 +251,5 @@ class IclockService
             'data' => $exception->getMessage(),
         ]);
         report($exception);
-    }
-
-    private function isValidUserShift(string $employeeId): bool
-    {
-        return UserWorkTime::whereHas('user', function ($query) use ($employeeId) {
-            $query->where('absent_id', $employeeId);
-        })->exists();
     }
 }

@@ -24,8 +24,7 @@ class IclockController extends Controller
 
    public function register(Request $request)
     {
-        $sn = $request->query('SN');
-
+        $sn = "AEWD233960062";
 
 
         if (!$sn) {
@@ -34,8 +33,7 @@ class IclockController extends Controller
 
 
 
-
-        $cmdId = 2;
+        $cmdId = 1;
         // Logika untuk menentukan perintah berdasarkan SN atau kondisi lainnya
 //        $command = sprintf(
 //            "C:%d:ENROLL_FP PIN=%d\tFID=%d\tRETRY=%d\tOVERWRITE=%d",
@@ -47,11 +45,11 @@ class IclockController extends Controller
 //        );
 
 
-       $startDate = Carbon::make($request->header('startdate'));
-       $endDate = Carbon::make($request->header('enddate'));
+       $startDate = "2024-12-27 06:00:00";
+       $endDate = "2024-12-27 23:00:00";
 
        $command = sprintf(
-           "C:%d:DATA QUERY ATTLOG StartTime=%s\tEndTime=%s",
+           "C:%d:DATA QUERY ATTLOG StartTime%s\tEndTime=%s",
            $cmdId,
            $startDate,
            $endDate);

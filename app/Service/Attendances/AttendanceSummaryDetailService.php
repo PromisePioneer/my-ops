@@ -224,13 +224,30 @@ class AttendanceSummaryDetailService
 
         $period = CarbonPeriod::create($startDate, $endDate);
 
+
+        $employeeSchedule = EmployeeSchedule::where('employee_id', $user->absent_id)
+        ->whereBetween('date', [$startDate, $endDate])->orderBy('date', 'asc')->get()->keyBy('date');
+
+    $user = User::where('absent_id', $user->absent_id)->first();
+    $period = CarbonPeriod::create($startDate, $endDate);
+    $getLeaves = $this->getLeaves($user, $startDate, $endDate);
+    $getSick = $this->getSick($user, $startDate, $endDate);
+    $getPermission = $this->getPermission($user, $startDate, $endDate);
+
         $dates = [];
 
         foreach ($period as $date) {
             $formattedDate = $date->format('Y-m-d');
+            $leaveDetails = $getLeaves[$formattedDate] ?? null;
+            $sickDetails = $getSick[$formattedDate] ?? null;
+            $permissionDetails = $getPermission[$formattedDate] ?? null;
             $dates[$formattedDate] = collect([
                 'attendancesDate' => $formattedDate,
                 'attendanceData' => $attendancesData->get($formattedDate),
+                'employeeSchedule' => $employeeSchedule->get($formattedDate),
+                'leaves' => $leaveDetails,
+                'sick' => $sickDetails,
+                'permission' => $permissionDetails,
             ]);
         }
 

@@ -27,7 +27,7 @@ class FinancialClosePeriodService
 
     public function endDate(): Carbon
     {
-        $year = Carbon::now()->year;
+        $year = Carbon::now()->month == 12 ? Carbon::now()->addYear()->year : Carbon::now()->year;
         $month = Carbon::now()->month;
         $date = CutOffPayrollSetting::first()->attendance_period_end;
         $startDate = (int)$this->startDate()->format('m');
