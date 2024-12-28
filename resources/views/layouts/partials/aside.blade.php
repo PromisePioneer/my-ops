@@ -258,10 +258,15 @@
                                     Supplier
                                 </x-dropdown-menu-item>
                             @endcan
+                            <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'items'"
+                                href="{{ url('operational-master-data/items') }}">
+                                Master Barang
+                            </x-dropdown-menu-item>
                             @can('Lihat Menu Kategori Barang')
                                 <x-dropdown-menu-item
-                                    :active="request()->segment(2) === 'inventory-categories'"
-                                    href="{{ url('operational-master-data/inventory-categories') }}">
+                                    :active="request()->segment(2) === 'item-categories'"
+                                    href="{{ url('operational-master-data/item-categories') }}">
                                     Kategori Barang
                                 </x-dropdown-menu-item>
                             @endcan
@@ -296,59 +301,19 @@
                                     Bill Of Quantity
                                 </x-dropdown-menu-item>
                             @endcan
+                            <x-dropdown-menu-item
+                                :active="request()->is('inventory/list-of-items/po*')"
+                                href="{{ url('inventory/list-of-items/po') }}">
+                                PO Barang
+                            </x-dropdown-menu-item>
+                            <x-dropdown-menu-item
+                                :active="request()->is('inventory/list-of-items/central-warehouse-stocks')"
+                                href="{{ url('inventory/list-of-items/central-warehouse-stocks') }}">
+                                Daftar Barang (Pusat)
+                            </x-dropdown-menu-item>
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
-                {{--                <x-dropdown-menu :active="request()->is('operational/*')">--}}
-                {{--                    @slot('parentIcon')--}}
-                {{--                        <i class="ki-duotone ki-dollar fs-2">--}}
-                {{--                            <span class="path1"></span>--}}
-                {{--                            <span class="path2"></span>--}}
-                {{--                            <span class="path3"></span>--}}
-                {{--                        </i>--}}
-                {{--                    @endslot--}}
-                {{--                    @slot('menuTitle')--}}
-                {{--                        Data Aset Lapangan--}}
-                {{--                    @endslot--}}
-                {{--                    @slot('menuItem')--}}
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                            :active="request()->is('operational/odp*')"--}}
-                {{--                            href="{{ url('operational/odp') }}">--}}
-                {{--                            ODP & Homepass--}}
-                {{--                        </x-dropdown-menu-item>--}}
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                            :active="request()->is('operational/fo-cables*')"--}}
-                {{--                            href="{{ url('operational/fo-cables') }}">--}}
-                {{--                            Kabel FO--}}
-                {{--                        </x-dropdown-menu-item>--}}
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                            :active="request()->is('operational/poles*')"--}}
-                {{--                            href="{{ url('operational/poles') }}">--}}
-                {{--                            Tiang--}}
-                {{--                        </x-dropdown-menu-item>--}}
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                            :active="request()->segment(2) === 'joint-closures'"--}}
-                {{--                            href="{{ url('/operational/joint-closures') }}">--}}
-                {{--                            Joint Closure--}}
-                {{--                        </x-dropdown-menu-item>--}}
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                            :active="request()->segment(2) === 'invoice'"--}}
-                {{--                            href="{{ url('/income-transactions/invoice') }}">--}}
-                {{--                            Aset Lapangan--}}
-                {{--                        </x-dropdown-menu-item>--}}
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                            :active="request()->segment(2) === 'invoice'"--}}
-                {{--                            href="{{ url('/income-transactions/invoice') }}">--}}
-                {{--                            Data Core--}}
-                {{--                        </x-dropdown-menu-item>--}}
-
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                            :active="request()->segment(2) === 'invoice'"--}}
-                {{--                            href="{{ url('/income-transactions/invoice') }}">--}}
-                {{--                            Coverage Area--}}
-                {{--                        </x-dropdown-menu-item>--}}
-                {{--                    @endslot--}}
-                {{--                </x-dropdown-menu>--}}
 
 
                 @canany('Lihat Menu Jurnal Umum', 'Lihat Menu Buku Besar', 'Lihat Menu Neraca Saldo')
@@ -711,7 +676,7 @@
                                 Riwayat Absensi
                             </x-dropdown-menu-item>
                         @endcan
-                        @endslot
+                    @endslot
                 </x-dropdown-menu>
             </div>
         </div>
