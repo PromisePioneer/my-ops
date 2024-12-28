@@ -114,8 +114,13 @@ class AttendancesSummaryService
     {
         $data = $user->getCollection()->map(function ($user) use ($startDate, $endDate) {
             $nationalHoliday = NationalHoliday::whereBetween('date', [$startDate, $endDate])->count();
+
             $totalMinutesLate = 0;
-            $periodOfWork = $startDate->diffInDays($endDate) - $startDate->diffInWeeks($endDate) - $nationalHoliday;
+//            $periodOfWork = $startDate->diffInDays($endDate) - $startDate->diffInWeeks($endDate) - $nationalHoliday;
+
+
+//            dd($startDate, $endDate);
+//            dd($periodOfWork);
             $totalNotCheckIn = 0;
             $totalNotCheckOut = 0;
             $totalPresent = 0;

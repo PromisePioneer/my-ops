@@ -258,10 +258,15 @@
                                     Supplier
                                 </x-dropdown-menu-item>
                             @endcan
+                            <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'items'"
+                                href="{{ url('operational-master-data/items') }}">
+                                Master Barang
+                            </x-dropdown-menu-item>
                             @can('Lihat Menu Kategori Barang')
                                 <x-dropdown-menu-item
-                                    :active="request()->segment(2) === 'inventory-categories'"
-                                    href="{{ url('operational-master-data/inventory-categories') }}">
+                                    :active="request()->segment(2) === 'item-categories'"
+                                    href="{{ url('operational-master-data/item-categories') }}">
                                     Kategori Barang
                                 </x-dropdown-menu-item>
                             @endcan
@@ -297,9 +302,14 @@
                                 </x-dropdown-menu-item>
                             @endcan
                             <x-dropdown-menu-item
-                                :active="request()->is('inventory/list-of-items*')"
+                                :active="request()->is('inventory/list-of-items/po*')"
                                 href="{{ url('inventory/list-of-items/po') }}">
                                 PO Barang
+                            </x-dropdown-menu-item>
+                            <x-dropdown-menu-item
+                                :active="request()->is('inventory/list-of-items/central-warehouse-stocks')"
+                                href="{{ url('inventory/list-of-items/central-warehouse-stocks') }}">
+                                Daftar Barang (Pusat)
                             </x-dropdown-menu-item>
                         @endslot
                     </x-dropdown-menu>

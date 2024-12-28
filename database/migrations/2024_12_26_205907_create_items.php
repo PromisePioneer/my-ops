@@ -10,16 +10,9 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('list_of_items', function (Blueprint $table) {
+        Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('po_items_id')->constrained('po_list_of_items')
-                ->cascadeOnDelete()
-                ->cascadeOnDelete();
-            $table->foreignId('category_id')->constrained('inventory_categories')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
             $table->string('name');
-            $table->integer('qty');
             $table->timestamps();
         });
     }
@@ -29,6 +22,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('list_of_items');
+        Schema::dropIfExists('items');
     }
 };

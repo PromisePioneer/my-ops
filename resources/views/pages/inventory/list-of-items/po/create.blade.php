@@ -12,16 +12,6 @@
                 <div class="card-body">
                     <form id="form" @submit.prevent="save()">
                         <div class="row mb-4">
-                            <div class="col-lg-6">
-                                <label class="col-form-label required fw-bold fs-6">Diperuntukkan untuk Cabang</label>
-                                <select name="branch_id" id="branch_id"
-                                        class="form-select form-select-solid branch-select2">
-                                    <option></option>
-                                </select>
-                                <span class="text-danger mt-10">Kosongkan jika diperuntukkan untuk pusat</span>
-                            </div>
-                        </div>
-                        <div class="row mb-4">
                             <div class="col-md-6">
                                 <label class="col-form-label required fw-bold fs-6">No. Invoice</label>
                                 <input type="text" class="form-control form-control-solid" name="invoice_number"
@@ -30,7 +20,7 @@
                             </div>
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">No. PO</label>
-                                <input type="number" class="form-control form-control-solid" name="po_number"
+                                <input type="text" class="form-control form-control-solid" name="po_number"
                                        id="po_number" placeholder="No. PO">
                             </div>
                         </div>

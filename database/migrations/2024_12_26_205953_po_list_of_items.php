@@ -12,25 +12,24 @@ return new class extends Migration {
     {
         Schema::create('po_list_of_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('branch_id')
-                ->nullable()
-                ->constrained('branches')
+            $table->string('po_number')->unique();
+            $table->string('invoice_number')->unique();
+            $table->foreignId('item_id')
+                ->constrained('items')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->string('po_number');
-            $table->string('invoice_number');
-            $table->string('name');
             $table->date('date');
             $table->double('unit_price');
             $table->integer('qty');
             $table->double('shipping_cost');
-            $table->double('ppn');
+            $table->double('ppn')->nullable();
             $table->double('total_price');
             $table->foreignId('supplier_id')->nullable()
                 ->constrained('suppliers')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->string('travel_letter_receipt');
+            $table->boolean('status')->default(0);
             $table->timestamps();
         });
     }

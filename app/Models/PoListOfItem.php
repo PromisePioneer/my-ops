@@ -9,7 +9,6 @@ class PoListOfItem extends Model
 {
     protected $table = 'po_list_of_items';
     protected $fillable = [
-        'branch_id',
         'invoice_number',
         'po_number',
         'name',
@@ -21,6 +20,7 @@ class PoListOfItem extends Model
         'total_price',
         'supplier_id',
         'travel_letter_receipt',
+        'status',
     ];
 
 

@@ -3,6 +3,7 @@
 @section('content')
     <div x-data="listOfItemData()">
         @include('pages.inventory.list-of-items.po.modal.detail')
+        @include('pages.inventory.list-of-items.po.modal.confirm')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -97,10 +98,10 @@
                                            class="btn btn-light-primary btn-sm">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
-                                        <button class="btn btn-light-info btn-sm" @click="confirm(item.id)">
+                                        <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#modal-confirm" @click="detail(item.id)">
                                             <i class="bi bi-check-square"></i>
                                         </button>
-
                                     </td>
                                 </tr>
                             </template>
@@ -126,14 +127,19 @@
     <script>
         function listOfItemData() {
             return {
+                buttonLoading: false,
                 modalDetail: new bootstrap.Modal(document.getElementById('modal-detail')),
+                modalConfirm: new bootstrap.Modal(document.getElementById('modal-confirm')),
+                formConfirm: document.getElementById('form-confirm'),
                 isLoading: false,
                 listOfItems: [],
                 detailVal: {},
                 search: '',
+                confirmVal: {},
                 selectedCheckBox: [],
                 async init() {
                     await this.getListOfItem();
+                    await this.getItemCategories();
                 },
                 async getListOfItem() {
                     this.isLoading = true;
@@ -154,6 +160,34 @@
                         console.log(e)
                     }
                 },
+                async getItemCategories() {
+                    $(".item-categories-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Kategori Barang',
+                        ajax: {
+                            url: '/inventory/list-of-items/po/item-categories/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async confirm() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/inventory/list-of-items/po/confirm/${this.detailVal.id}`, new FormData(this.formConfirm))
+                        await showAlert('success', 'Data berhasil disimpan');
+                        await this.modalConfirm.hide();
+                        await this.formConfirm.reset();
+                        await this.init();
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                }
             }
         }
     </script>

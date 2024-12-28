@@ -3,8 +3,8 @@
 @section('content')
     <div x-data="inventoryData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.operational-master-data.inventory-categories.modal.create')
-            @include('pages.operational-master-data.inventory-categories.modal.edit')
+            @include('pages.operational-master-data.item-categories.modal.create')
+            @include('pages.operational-master-data.item-categories.modal.edit')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -74,7 +74,7 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-if="!isLoading && inventoryCategories.data?.length === 0">
+                            <template x-if="!isLoading && itemCategories.data?.length === 0">
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td colspan="3">
@@ -83,7 +83,7 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-for="category in inventoryCategories?.data" :key="category.id">
+                            <template x-for="category in itemCategories?.data" :key="category.id">
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td>
@@ -109,7 +109,7 @@
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4 mt-4">
-                        <template x-for="pagination in inventoryCategories.links">
+                        <template x-for="pagination in itemCategories.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                 <button class="page-link" @click="paginationEndPoint(pagination.url)"
                                         x-html="pagination.label">
@@ -127,7 +127,7 @@
     <script defer>
         function inventoryData() {
             return {
-                inventoryCategories: [],
+                itemCategories: [],
                 isLoading: true,
                 buttonLoading: false,
                 selectedCheckBox: [],
@@ -141,11 +141,11 @@
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
-                    await this.getInventoryCategories();
+                    await this.getItemCategories();
                 },
                 async searchData() {
                     try {
-                        this.inventoryCategories = await axios.get('/operational-master-data/inventory-categories/search', {
+                        this.itemCategories = await axios.get('/operational-master-data/inventory-categories/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -156,7 +156,7 @@
                 async paginationEndPoint(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
-                        this.inventoryCategories = resp.data
+                        this.itemCategories = resp.data
                     }
                 },
                 toggleAllCheckBox() {
@@ -186,7 +186,7 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/operational-master-data/inventory-categories', new FormData(this.formCreate))
+                        await axios.post('/operational-master-data/item-categories', new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
@@ -199,13 +199,13 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/operational-master-data/inventory-categories/${id}`);
+                    const resp = await axios.get(`/operational-master-data/item-categories/${id}`);
                     this.editVal = resp.data;
                 },
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/operational-master-data/inventory-categories/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/operational-master-data/item-categories/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.modalEdit.hide();
                         this.formEdit.reset();
@@ -220,7 +220,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/operational-master-data/inventory-categories/destroy`, new FormData(this.formDelete));
+                            await axios.post(`/operational-master-data/item-categories/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -229,9 +229,9 @@
                         }
                     });
                 },
-                async getInventoryCategories() {
-                    const inventoryCategories = await axios.get('/operational-master-data/inventory-categories/data');
-                    this.inventoryCategories = inventoryCategories.data
+                async getItemCategories() {
+                    const itemCategories = await axios.get('/operational-master-data/item-categories/data');
+                    this.itemCategories = itemCategories.data
                     this.isLoading = false;
                 }
             }

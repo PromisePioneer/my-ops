@@ -55,9 +55,10 @@
                                 <template x-for="(field,index) in boqCommodities" :key="index">
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td class="ps-0 text-center" style='text-align:center; vertical-align:middle'>
-                                            <input type="text" class="form-control form-control-solid mb-2"
-                                                   x-model="field.name" :name="`data[${index}][name]`"
-                                                   placeholder="Nama Barang">
+                                            <select name="" id=""
+                                                    class="form-select form-select-solid central-warehouse-stock">
+                                                <option></option>
+                                            </select>
                                         </td>
                                         <td class="ps-0" style='text-align:center; vertical-align:middle'>
                                             <input type="text" class="form-control form-control-solid" min="1"
@@ -251,12 +252,10 @@
                 boqCommodities: [{
                     name: '',
                     merk: '',
-                    qty: '',
-                    unit_type_id: '',
-                    unit_price: '',
-                    total_price: '',
-                    used_estimation: '',
-                    description: '',
+                    qty: 1,
+                    unit_type_id: null,
+                    unit_price: 0,
+                    total_price: 0,
                 }],
                 projectTimeline: [{
                     projectTimelineName: '',
@@ -271,6 +270,7 @@
                     this.$nextTick(async () => {
                         await this.getUsersData();
                         await this.getUnitTypeData();
+                        await this.getCentralWarehouseStock();
                         $(".date").flatpickr();
                     });
                 },
@@ -320,8 +320,8 @@
                     this.$nextTick(() => {
                         $(".date").flatpickr();
                         this.getUnitTypeData();
+                        this.getCentralWarehouseStock()
                     })
-
                     this.boqCommodities.push({
                         name: '',
                         merk: '',
@@ -361,6 +361,20 @@
                 },
                 calculateTotalAll() {
                     return this.boqCommodities.reduce((total, field) => total + (field.qty * field.unit_price), 0);
+                },
+                async getCentralWarehouseStock() {
+                    $(".central-warehouse-stock").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Barang",
+                        ajax: {
+                            url: '/inventory/boq/get-stock-from-central-warehouse/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
+                    });
                 },
                 formatNumber(curr) {
                     let IDR = new Intl.NumberFormat('en-ID', {

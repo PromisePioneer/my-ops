@@ -18,6 +18,7 @@ use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\BAAController;
+use App\Http\Controllers\CentralWarehouseStockController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
@@ -62,9 +63,10 @@ use App\Http\Controllers\Inventory\ODP\ODPController;
 use App\Http\Controllers\Inventory\ODP\ODPMapController;
 use App\Http\Controllers\Inventory\Pole\PoleController;
 use App\Http\Controllers\Inventory\Pole\PoleMapController;
-use App\Http\Controllers\Inventory\Stock\InventoryCategoryController;
+use App\Http\Controllers\Inventory\Stock\ItemCategoryController;
 use App\Http\Controllers\Inventory\Stock\UnitTypesController;
 use App\Http\Controllers\Inventory\Stock\UsedItemsController;
+use App\Http\Controllers\ItemController;
 use App\Http\Controllers\Master\Finance\AccountController;
 use App\Http\Controllers\Master\Finance\AssetController;
 use App\Http\Controllers\Master\Finance\TaxSettingController;
@@ -315,8 +317,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/', [BranchesController::class, 'store']);
             Route::get('/structure-orgranization/{branch}', [BranchesController::class, 'structureOrgranization']);
             Route::get(
-                '/structure-orgranization/data/{branch}',
-                [BranchesController::class, 'structureOrgranizationData']
+                '/structure-orgranization/data/{branch}', [BranchesController::class, 'structureOrgranizationData']
             );
             Route::get('/show/{branch}', [BranchesController::class, 'show']);
             Route::post('/update/{branch}', [BranchesController::class, 'update']);
@@ -496,6 +497,17 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
     Route::prefix('operational-master-data')->group(function () {
+        Route::prefix('/items')->group(function () {
+            Route::get('/', [ItemController::class, 'index']);
+            Route::get('/data', [ItemController::class, 'data']);
+            Route::get('/search', [ItemController::class, 'search']);
+            Route::post('/', [ItemController::class, 'store']);
+            Route::get('/{item}', [ItemController::class, 'edit']);
+            Route::post('/destroy', [ItemController::class, 'destroy']);
+            Route::post('/{item}', [ItemController::class, 'update']);
+        });
+
+
         Route::prefix('joint-closures-code')->group(function () {
             Route::get('/', [JointClosureCodeController::class, 'index']);
             Route::get('/data', [JointClosureCodeController::class, 'data']);
@@ -519,14 +531,14 @@ Route::group(['middleware' => ['auth']], static function () {
         });
 
 
-        Route::prefix('inventory-categories')->group(function () {
-            Route::get('/', [InventoryCategoryController::class, 'index']);
-            Route::get('/data', [InventoryCategoryController::class, 'data']);
-            Route::get('/search', [InventoryCategoryController::class, 'search']);
-            Route::post('/', [InventoryCategoryController::class, 'store']);
-            Route::get('/{inventoryCategory}', [InventoryCategoryController::class, 'edit']);
-            Route::post('/destroy', [InventoryCategoryController::class, 'destroy']);
-            Route::post('/{inventoryCategory}', [InventoryCategoryController::class, 'update']);
+        Route::prefix('item-categories')->group(function () {
+            Route::get('/', [ItemCategoryController::class, 'index']);
+            Route::get('/data', [ItemCategoryController::class, 'data']);
+            Route::get('/search', [ItemCategoryController::class, 'search']);
+            Route::post('/', [ItemCategoryController::class, 'store']);
+            Route::get('/{itemCategory}', [ItemCategoryController::class, 'edit']);
+            Route::post('/destroy', [ItemCategoryController::class, 'destroy']);
+            Route::post('/{itemCategory}', [ItemCategoryController::class, 'update']);
         });
     });
 
@@ -746,6 +758,15 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/edit/{poListOfItem}', [PoListOfItemController::class, 'edit']);
                 Route::post('/update/{poListOfItem}', [PoListOfItemController::class, 'update']);
                 Route::get('/detail/{poListOfItem}', [PoListOfItemController::class, 'detail']);
+                Route::post('/confirm/{poListOfItem}', [PoListOfItemController::class, 'confirm']);
+                Route::get('/item-categories/data', [PoListOfItemController::class, 'getItemCategories']);
+            });
+
+
+            Route::prefix('central-warehouse-stocks')->group(function () {
+                Route::get('/', [CentralWarehouseStockController::class, 'index']);
+                Route::get('/data', [CentralWarehouseStockController::class, 'data']);
+                Route::get('/barcode/{centralWarehouseStock}', [CentralWarehouseStockController::class, 'generateBarcode']);
             });
         });
 
@@ -798,6 +819,7 @@ Route::group(['middleware' => ['auth']], static function () {
             );
             Route::post('/known-by-director/{boq}', [BoqController::class, 'knownByDirector']);
             Route::post('/known-by-gm/{boq}', [BoqController::class, 'knownByGeneralManager']);
+            Route::get('/get-stock-from-central-warehouse/data', [BoqController::class, 'getAllStockFromCentralWarehouseStock']);
         });
     });
 

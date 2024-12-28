@@ -13,6 +13,19 @@
                     <form id="form" @submit.prevent="save()">
                         <div class="row mb-4">
                             <div class="col-md-6">
+                                <label class="col-form-label required fw-bold fs-6">No. Invoice</label>
+                                <input type="text" class="form-control form-control-solid" name="invoice_number"
+                                       id="invoice_number"
+                                       placeholder="No. Invoice" value="{{ $poListOfItem->invoice_number }}">
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="col-form-label required fw-bold fs-6">No. PO</label>
+                                <input type="text" class="form-control form-control-solid" name="po_number"
+                                       id="po_number" placeholder="No. PO" value="{{ $poListOfItem->po_number }}">
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
                                 <label class="col-form-label required fw-bold fs-6">Nama Barang</label>
                                 <input type="text" class="form-control form-control-solid" name="name" id="name"
                                        placeholder="Nama Barang" value="{{ $poListOfItem->name }}">
@@ -69,13 +82,15 @@
 
                         <div class="d-flex mt-4">
                             <div class="form-check form-check-custom form-check-solid">
-                                <input class="form-check-input" type="checkbox" value="0" name="ppn"
-                                       id="ppn" checked="{{isset($poListOfItem->ppn)  ? 'true' : ''}}"/>
+                                <input class="form-check-input" type="checkbox" name="ppn"
+                                       id="ppn" {{ $poListOfItem->ppn ? 'checked' : ''}}/>
                                 <label class="form-check-label fw-bold" for="flexCheckChecked">
                                     Tambahkan PPN
                                 </label>
                             </div>
                         </div>
+
+                        {{--                        {{ dd($poListOfItem->ppn ? 'checked' : 'hehe') }}--}}
 
                         <div class="float-end d-flex py-6 px-9">
                             <button type="reset" class="btn btn-light btn-active-light-primary me-2 btn-sm">Reset

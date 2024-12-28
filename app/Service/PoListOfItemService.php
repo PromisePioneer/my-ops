@@ -32,7 +32,6 @@ class PoListOfItemService
         $data = $listOfItem->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
-                'branch_id' => $item->branch->name,
                 'sn' => $item->sn,
                 'date' => formatDate($item->date),
                 'name' => $item->name,
@@ -41,6 +40,7 @@ class PoListOfItemService
                 'shipping_cost' => $item->shipping_cost,
                 'supplier' => $item->supplier?->name,
                 'ppn' => $item->ppn,
+                'status' => $item->status,
                 'total_price' => $item->total_price,
                 'travel_letter_receipt' => $item->travel_letter_receipt,
             ];

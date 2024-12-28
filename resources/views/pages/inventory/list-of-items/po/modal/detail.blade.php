@@ -17,11 +17,15 @@
             <div class="modal-body">
                 <div class="row mb-4">
                     <div class="col-lg-6">
-                        <label class="form-label required">Tujuan (Cabang / Pusat)</label>
+                        <label class="form-label required">No. PO</label>
                         <input type="text" disabled class="form-control form-control-solid"
-                               :value="detailVal.branch_name ?? 'Pusat'">
+                               :value="detailVal.po_number">
                     </div>
-                    <div class="col-lg-6"></div>
+                    <div class="col-lg-6">
+                        <label class="form-label required">No. Invoice</label>
+                        <input type="text" disabled class="form-control form-control-solid"
+                               :value="detailVal.invoice_number">
+                    </div>
                 </div>
                 <div class="row mb-4">
                     <div class="col-lg-6">
@@ -58,6 +62,14 @@
                         <input type="text" class="form-control form-control-solid" disabled
                                :value="detailVal.ppn">
                     </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div class="d-flex align-items-center justify-content-end">
+                    <button class="btn btn-light-danger btn-sm" data-bs-dismiss="modal"
+                            aria-label="Close">Tutup
+                    </button>
                 </div>
             </div>
         </div>

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Inventory\BoQ;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApprovedByOperationalManagerRequest;
 use App\Http\Requests\BoqRequest;
 use App\Models\Boq;
 use App\Models\BoqCommodity;
 use App\Models\BoqTimelineProject;
+use App\Models\CentralWarehouseStock;
 use App\Models\UnitType;
 use App\Models\User;
 use App\Service\BoqService;
@@ -17,18 +19,16 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
-class BoqController extends Controller
+#[AllowDynamicProperties] class BoqController extends Controller
 {
 
-    private BoqService $boqService;
-    private UnitType $unitType;
-    private User $user;
 
     public function __construct()
     {
         $this->boqService = new BoqService();
         $this->unitType = new UnitType();
         $this->user = new User();
+        $this->centralWarehouseStock = new CentralWarehouseStock();
     }
 
     public function index(): View
@@ -175,5 +175,11 @@ class BoqController extends Controller
         return response()->json([
             'message' => 'data berhasil dihapus',
         ], 200);
+    }
+
+
+    public function getAllStockFromCentralWarehouseStock(Request $request)
+    {
+        return response()->json($this->centralWarehouseStock->getData($request));
     }
 }

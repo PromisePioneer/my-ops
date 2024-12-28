@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PoListOfItemRequest extends FormRequest
 {
@@ -24,9 +25,8 @@ class PoListOfItemRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
-            'branch_id' => ['required', 'exists:branches,id'],
-            'po_number' => ['required'],
-            'invoice_number' => ['required'],
+            'po_number' => ['required', Rule::unique('po_list_of_items', 'po_number')],
+            'invoice_number' => ['required', Rule::unique('po_list_of_items', 'invoice_number')],
             'name' => ['required', 'string'],
             'date' => ['required', 'date'],
             'unit_price' => ['required'],
@@ -42,6 +42,8 @@ class PoListOfItemRequest extends FormRequest
     {
         return [
             'po_number.required' => 'Nomor PO tidak boleh kosong',
+            'po_number.unique' => 'Nomor PO sudah terdaftar',
+            'invoice_number.unique' => 'Nomor Invoice sudah terdaftar',
             'invoice_number.required' => 'Nomor Invoice tidak boleh kosong',
             'name.required' => 'Nama barang tidak boleh kosong.',
             'date.required' => 'Tanggal Masuk tidak boleh kosong.',
