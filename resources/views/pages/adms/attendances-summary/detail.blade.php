@@ -159,8 +159,8 @@
                 attendancesSummaryRecords: [],
                 id: "{{ $user->id }}",
                 correctionVal: null,
-                // formCorrection: document.getElementById('form-attendance-correction'),
-                // modalCorrection: new bootstrap.Modal(document.getElementById('modal-attendance-correction')),
+                formCorrection: document.getElementById('form-attendance-correction'),
+                modalCorrection: new bootstrap.Modal(document.getElementById('modal-attendance-correction')),
                 async init() {
                     await this.getAttendanceSummaryRecords();
                     await this.getWorkTimeData();
