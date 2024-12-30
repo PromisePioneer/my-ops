@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ReturnItemFromPo extends Model
 {
-    protected $table = 'return_item_from_po';
+    protected $table = 'return_items_from_po';
     protected $fillable = [
         'po_id',
+        'category_id',
         'item_id',
         'qty',
         'reason'
