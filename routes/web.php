@@ -120,7 +120,7 @@ Route::prefix('/iclock')->group(function () {
     Route::post('/cdata', [IclockController::class, 'receiveRecords']);
     Route::get('/cdata', [IclockController::class, 'handshake']);
     Route::get('test', [IclockController::class, 'test']);
-    Route::get('/getrequest', [IclockController::class, 'register']);
+    // Route::get('/getrequest', [IclockController::class, 'register']);
 });
 
 

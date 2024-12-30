@@ -24,12 +24,12 @@ class IclockController extends Controller
 
    public function register(Request $request)
     {
-        $sn = "AEWD233960062";
+       $sn = $request->query('SN');
 
 
-        if (!$sn) {
-            return response("Missing SN parameter", 400);
-        }
+       if (!$sn) {
+           return response("Missing SN parameter", 400);
+       }
 
 
 
@@ -45,11 +45,11 @@ class IclockController extends Controller
 //        );
 
 
-       $startDate = "2024-12-27 06:00:00";
-       $endDate = "2024-12-27 23:00:00";
+       $startDate = "2024-12-28 06:00:00";
+       $endDate = "2024-12-28 23:00:00";
 
        $command = sprintf(
-           "C:%d:DATA QUERY ATTLOG StartTime%s\tEndTime=%s",
+           "C:%d:DATA QUERY ATTLOG StartTime=%s\tEndTime=%s",
            $cmdId,
            $startDate,
            $endDate);
@@ -57,6 +57,8 @@ class IclockController extends Controller
        // Respons ke mesin
         return response($command, 200)
             ->header('Content-Type', 'text/plain');
+
+// return "OK";
     }
 
     public function handshake(Request $request): string
