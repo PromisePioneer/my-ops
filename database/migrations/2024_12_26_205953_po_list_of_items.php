@@ -21,7 +21,7 @@ return new class extends Migration {
             $table->date('date');
             $table->double('unit_price');
             $table->integer('qty');
-            $table->double('shipping_cost');
+            $table->double('shipping_cost')->nullable();
             $table->double('ppn')->nullable();
             $table->double('total_price');
             $table->foreignId('supplier_id')->nullable()

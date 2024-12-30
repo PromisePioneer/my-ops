@@ -7,7 +7,6 @@
         }
     </style>
 
-
     <div x-data="generateListOfItem">
         @include('pages.operational-master-data.items.modal.create')
         @include('pages.operational-master-data.supplier.modal.create')

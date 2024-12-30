@@ -84,6 +84,7 @@ use App\Http\Controllers\Master\Operational\JointClosureCodeController;
 use App\Http\Controllers\Master\Operational\SupplierController;
 use App\Http\Controllers\PoListOfItemController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\StockController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
 use App\Http\Controllers\UserProfile\UserLeaveAndPermissionController;
 use App\Http\Controllers\UserProfile\UserProfileController;
@@ -770,6 +771,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/data', [CentralWarehouseStockController::class, 'data']);
                 Route::get('/barcode/{centralWarehouseStock}', [CentralWarehouseStockController::class, 'generateBarcode']);
             });
+
         });
 
 
@@ -810,6 +812,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/unit-type/selected/{id}', [BoqController::class, 'selectedUnitType']);
             Route::get('/users/data', [BoqController::class, 'getUserData']);
             Route::get('/detail/{boq}', [BoqController::class, 'detail']);
+            Route::get('/check-stocks', [BoqController::class, 'checkStock']);
             Route::get('/get-boq-commodity/{boq}', [BoqController::class, 'getBoqCommodity']);
             Route::get('/get-project-timeline/{boq}', [BoqController::class, 'getProjectTimeline']);
             Route::get('/unit-type/selected/{boq}', [BoqController::class, 'selectedUnitType']);

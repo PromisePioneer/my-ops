@@ -56,8 +56,9 @@
                                 <template x-for="(field,index) in boqCommodities" :key="index">
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td class="ps-0 text-center" style='text-align:center; vertical-align:middle'>
-                                            <select :name="`data[${index}][item_id]`" id="item_id"
-                                                    class="form-select form-select-solid items-select2">
+                                            <select :name="`data[${index}][item_id]`" :id="`item-id-${index}`"
+                                                    class="form-select form-select-solid items-select2"
+                                                    x-model="field.item_id">
                                                 <option></option>
                                             </select>
                                         </td>
@@ -107,6 +108,12 @@
                                                         <i class="bi bi-trash"></i>
                                                     </span>
                                             </button>
+                                            <button type="button" class="btn btn-sm btn-icon btn-active-color-primary"
+                                                    @click="checkStock(index)">
+                                                    <span class="svg-icon svg-icon-3">
+                                                        <i class="bi bi-check"></i>
+                                                    </span>
+                                            </button>
                                         </td>
                                     </tr>
                                 </template>
@@ -121,6 +128,10 @@
                                 <button type="button" class="btn btn-link py-1" @click="add()">Tambah</button>
                             </div>
                         </div>
+
+                        <button class="btn btn-light-primary btn-sm" @click="checkStock()" type="button">
+                            Check Stock
+                        </button>
                         <div class="d-flex align-items-center justify-content-end mb-4">
                             <h1 class="fs-4 ps-0 text-end mx-10">Grand Total</h1>
                             <h1 class="text-end fs-4 text-nowrap">
@@ -383,6 +394,12 @@
                             processResults: (data) => ({results: data}),
                             cache: true
                         }
+                    }).on('change', async (e) => {
+                        await axios.get('/inventory/boq/check-stocks', {
+                            params: {
+                                item_id: e.target.value
+                            },
+                        });
                     });
                 },
                 formatNumber(curr) {

@@ -309,8 +309,13 @@
                             <x-dropdown-menu-item
                                 :active="request()->is('inventory/list-of-items/central-warehouse-stocks')"
                                 href="{{ url('inventory/list-of-items/central-warehouse-stocks') }}">
-                                Daftar Barang (Pusat)
+                                Stok Barang (Pusat)
                             </x-dropdown-menu-item>
+{{--                                <x-dropdown-menu-item--}}
+{{--                                    :active="request()->is('inventory/list-of-items/central-warehouse-stocks')"--}}
+{{--                                    href="{{ url('inventory/list-of-items/central-warehouse-stocks') }}">--}}
+{{--                                    Stok Barang (Cabang)--}}
+{{--                                </x-dropdown-menu-item>--}}
                         @endslot
                     </x-dropdown-menu>
                 @endcanany

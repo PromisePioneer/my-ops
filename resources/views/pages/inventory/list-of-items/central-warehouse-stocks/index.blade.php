@@ -2,6 +2,7 @@
 @section('page-title', 'Master Umum - Data Cabang')
 @section('content')
     <div x-data="warehouseStocksData()">
+        @include('pages.inventory.list-of-items.central-warehouse-stocks.modal.item-distribution')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -15,7 +16,8 @@
                 </div>
 
                 <div class="card-toolbar">
-                    <a target="_top" class="btn btn-sm btn-light-primary">
+                    <a target="_top" class="btn btn-sm btn-light-primary" data-bs-target="#modal-item-distribution"
+                       data-bs-toggle="modal">
                         <i class="bi bi-gear-wide-connected"></i>
                         Salurkan Barang
                     </a>

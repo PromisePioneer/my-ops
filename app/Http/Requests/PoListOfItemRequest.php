@@ -31,7 +31,7 @@ class PoListOfItemRequest extends FormRequest
             'date' => ['required', 'date'],
             'unit_price' => ['required'],
             'qty' => ['required'],
-            'shipping_cost' => ['required'],
+            'shipping_cost' => ['nullable'],
             'ppn' => ['nullable'],
             'supplier_id' => ['required', 'exists:suppliers,id'],
             'travel_letter_receipt' => ['required'],
