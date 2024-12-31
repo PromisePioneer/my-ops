@@ -1085,6 +1085,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [AttendanceSummaryController::class, 'index']);
             Route::get('/data', [AttendanceSummaryController::class, 'data']);
             Route::get('/search', [AttendanceSummaryController::class, 'search']);
+            Route::get('/detail/filter/{user}', [AttendanceSummaryController::class, 'filterByDate']);
             Route::get('/filter-date', [AttendanceSummaryController::class, 'filterByDate']);
             Route::get('/branch/data', [AttendanceSummaryController::class, 'getBranchData']);
             Route::get('/department/data', [AttendanceSummaryController::class, 'getDepartmentData']);
@@ -1093,7 +1094,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/detail/correction/work-time/selected/{workTime}', [AttendanceSummaryController::class, 'selectedData']);
             Route::get('/detail/{user}/{startDate?}/{endDate?}', [AttendanceSummaryController::class, 'detail']);
             Route::get('/detail/data/{user}/{startDate?}/{endDate?}', [AttendanceSummaryController::class, 'detailData']);
-            Route::get('/detail/filter/{user}', [AttendanceSummaryController::class, 'filterByDate']);
             Route::get('/detail/correction/{datePeriod}/{user}', [AttendanceSummaryController::class, 'correction']);
             Route::post(
                 '/detail/correction/save/{user}/{datePeriod?}',
