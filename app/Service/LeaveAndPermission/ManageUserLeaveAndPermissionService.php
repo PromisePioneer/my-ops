@@ -21,7 +21,7 @@ use function App\Helper\formatDate;
 
     public function data(Request $request): LengthAwarePaginator
     {
-        $query = LeaveAndPermission::with('accBy', 'user');
+        $query = LeaveAndPermission::with('accBy', 'user', 'user.userHasArea');
 
         if ($request->user()->hasAnyRole('NOC Supervisor', 'NOC Staff')) {
             $query->whereHas('roles', function ($query) {
@@ -37,11 +37,14 @@ use function App\Helper\formatDate;
 
 
         if ($request->user()->hasAnyRole('Head Engineer', 'Senior Engineer')) {
-            $query->whereHas('userHasArea', function ($query) use ($request) {
+            $query->whereHas('user.userHasArea', function ($query) use ($request) {
                 $query->where('area_id', $request->user()->userHasArea->area_id);
             })->where(function ($query) use ($request) {
-                $query->where('branch_id', $request->user()->branch_id)
-                    ->where('active', 1);
+                $query->whereHas('user.branch', function ($query) use ($request) {
+                    $query->where('branch_id', $request->user()->branch_id);
+                })->whereHas('user', function ($query) use ($request) {
+                    $query->where('active', 1);
+                });
             });
         }
 
@@ -89,8 +92,8 @@ use function App\Helper\formatDate;
             });
         }
 
-        $data = $query->paginate(10);
-        return self::formattedData($data);
+        $query = $query->paginate(10);
+        return self::formattedData($query);
     }
 
 
