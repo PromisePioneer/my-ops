@@ -32,17 +32,17 @@
                     <form id="form-delete" @submit.prevent="destroy()">
                         <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
                         @can('Tambah Data Manajemen Cuti')
-                        <button type="submit" class="btn btn-light-danger btn-sm mt-5"
-                                x-show="selectedCheckBox.length > 0"
-                                x-transition x-cloak>
-                            <i class="ki-duotone ki-trash-square fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                                <span class="path4"></span>
-                            </i>
-                            Hapus
-                        </button>
+                            <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                                    x-show="selectedCheckBox.length > 0"
+                                    x-transition x-cloak>
+                                <i class="ki-duotone ki-trash-square fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                    <span class="path4"></span>
+                                </i>
+                                Hapus
+                            </button>
                         @endcan
                     </form>
                 </div>
@@ -180,6 +180,7 @@
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formCreate: document.getElementById('form-create'),
                 formEdit: document.getElementById('form-edit'),
+                formDelete: document.getElementById('form-delete'),
                 buttonLoading: false,
                 isLoading: false,
                 editVal: '',
