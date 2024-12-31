@@ -3,6 +3,7 @@
 namespace App\Service\Attendances;
 
 use App\Models\AttendancesSummary;
+use App\Models\LeaveAndPermission;
 use App\Models\NationalHoliday;
 use App\Models\User;
 use App\Models\WorkTime;
@@ -33,8 +34,6 @@ class AttendancesSummaryService
             }, 'roles'
         ])->where('active', 1);
 
-        $startDate = $this->financialClosePeriodService->startDate();
-        $endDate = $this->financialClosePeriodService->endDate();
 
 //        $user = $this->query();
 
@@ -113,18 +112,21 @@ class AttendancesSummaryService
     public function formattedData(LengthAwarePaginator $user, $startDate, $endDate): LengthAwarePaginator
     {
         $data = $user->getCollection()->map(function ($user) use ($startDate, $endDate) {
-            $nationalHoliday = NationalHoliday::whereBetween('date', [$startDate, $endDate])->count();
+
+
+            $leaveAndPermission = LeaveAndPermission::where('user_id', $user->id)
+                ->where('leaves_status', 'Cuti')
+                ->whereBetween('start_date', [$startDate, $endDate])
+                ->orWhereBetween('end_date', [$startDate, $endDate])->get();
+
+
+//            dd($leaveAndPermission);
+
 
             $totalMinutesLate = 0;
-//            $periodOfWork = $startDate->diffInDays($endDate) - $startDate->diffInWeeks($endDate) - $nationalHoliday;
-
-
-//            dd($startDate, $endDate);
-//            dd($periodOfWork);
             $totalNotCheckIn = 0;
             $totalNotCheckOut = 0;
             $totalPresent = $user->attendancesSummary->count();
-
 
 
             // dd($startDate, $endDate);
@@ -154,6 +156,7 @@ class AttendancesSummaryService
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
                 'total_present' => $totalPresent,
+                'total_leaves' => $leaveAndPermission->count(),
             ];
         });
 
