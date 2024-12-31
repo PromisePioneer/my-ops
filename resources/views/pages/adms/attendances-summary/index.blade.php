@@ -67,9 +67,10 @@
             <div class="card-body py-3">
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
+                        <table class="table align-middle table-row-dashed table-bordered fs-6 gy-5 table-striped"
+                               id="kt_table_users">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0 text-center">
                                 <th class="min-w-125px">Nama Karyawan</th>
                                 <th class="min-w-125px">Jabatan</th>
                                 <th class="min-w-125px">Terlambat</th>
@@ -101,7 +102,7 @@
                                 </tr>
                             </template>
                             <template x-for="(attendance, index) in attendanceSummary?.data" :key="index">
-                                <tr>
+                                <tr class="text-center">
                                     <td>
                                         <a :href="`/manage-users/users/detail/${attendance.id}`"
                                            x-text="`(${attendance.user_nip}) ${attendance.user_name}`"></a>
