@@ -28,10 +28,11 @@ class AttendanceSummaryDetailService
     }
 
 
-    public function data(Request $request, int $empId, $startDates, $endDates)
+    public function data(Request $request, int $empId, $startDates = null, $endDates = null)
     {
-        $startDate = Carbon::make($startDates) ?? $this->financialClosePeriodService->startDate();
-        $endDate = Carbon::make($endDates) ?? $this->financialClosePeriodService->endDate();
+
+        $startDate = Carbon::make($startDates === "null" ?: null) ?? $this->financialClosePeriodService->startDate();
+        $endDate = Carbon::make($endDates === "null" ?: null) ?? $this->financialClosePeriodService->endDate();
 
         $attendancesData = AttendancesSummary::with('user')
             ->where('employee_id', $empId)
