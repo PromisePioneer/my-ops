@@ -24,14 +24,15 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-4">
                         <label for="name" class="form-label">Tanggal Awal</label>
-                        <input type="date" class="form-control form-control-solid form-control-sm me-3 date"
+                        <input type="date" x-model="startDates"
+                               class="form-control form-control-solid form-control-sm me-3 date"
                                id="start_dates"
                                name="start_date" placeholder="Tanggal awal">
                     </div>
                     <div class="col-lg-4">
                         <label for="name" class="form-label">Tanggal Akhir</label>
                         <input type="date" class="form-control form-control-solid form-control-sm me-3 date"
-                               id="end_dates"
+                               id="end_dates" x-model="endDates"
                                name="end_date" placeholder="Tanggal akhir">
                     </div>
                 </div>
@@ -116,7 +117,7 @@
                                     <td x-text="`${attendance.total_sick}`"></td>
                                     <td x-text="`${attendance.total_permission}`"></td>
                                     <td>
-                                        <a :href="`/adms/attendances-summary/detail/${attendance.id}`"
+                                        <a :href="`/adms/attendances-summary/detail/${attendance.id}/${startDates}/${endDates}`"
                                            class="btn btn-light-primary btn-sm">
                                             <i class="fa-solid fa-circle-info"></i>
                                         </a>
@@ -146,6 +147,8 @@
         $('.date').flatpickr();
         function attendancesSummary() {
             return {
+                startDates: null,
+                endDates: null,
                 buttonLoading: false,
                 isLoading: false,
                 attendanceSummary: null,

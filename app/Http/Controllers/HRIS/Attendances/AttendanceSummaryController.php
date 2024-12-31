@@ -74,18 +74,18 @@ use Illuminate\View\View;
         return response()->json($this->attendanceSummaryDetailService->filterByDate($request, $user));
     }
 
-    public function detail(Request $request, User $user): View
+    public function detail(Request $request, User $user, $startDate = null, $endDate = null): View
     {
         if ($request->user()->hasRole('Branch Manager') && $request->user()->branch_id !== $user->branch_id) {
             abort(403);
         }
-        return view('pages.adms.attendances-summary.detail', compact('user'));
+        return view('pages.adms.attendances-summary.detail', compact('user', 'startDate', 'endDate'));
     }
 
 
-    public function detailData(Request $request, User $user): JsonResponse
+    public function detailData(Request $request, User $user, $startDate = null, $endDate = null): JsonResponse
     {
-        return response()->json($this->attendanceSummaryDetailService->data($request, $user->absent_id));
+        return response()->json($this->attendanceSummaryDetailService->data($request, $user->absent_id, $startDate, $endDate));
     }
 
 

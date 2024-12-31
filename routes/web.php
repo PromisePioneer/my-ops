@@ -1091,8 +1091,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/roles/data', [AttendanceSummaryController::class, 'getRolesData']);
             Route::get('/detail/correction/work-time/data', [AttendanceSummaryController::class, 'getWorkTime']);
             Route::get('/detail/correction/work-time/selected/{workTime}', [AttendanceSummaryController::class, 'selectedData']);
-            Route::get('/detail/{user}', [AttendanceSummaryController::class, 'detail']);
-            Route::get('/detail/data/{user}', [AttendanceSummaryController::class, 'detailData']);
+            Route::get('/detail/{user}/{startDate?}/{endDate?}', [AttendanceSummaryController::class, 'detail']);
+            Route::get('/detail/data/{user}/{startDate?}/{endDate?}', [AttendanceSummaryController::class, 'detailData']);
             Route::get('/detail/filter/{user}', [AttendanceSummaryController::class, 'filterByDate']);
             Route::get('/detail/correction/{datePeriod}/{user}', [AttendanceSummaryController::class, 'correction']);
             Route::post(
