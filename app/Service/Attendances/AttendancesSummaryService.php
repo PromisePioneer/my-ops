@@ -4,11 +4,11 @@ namespace App\Service\Attendances;
 
 use App\Models\AttendancesSummary;
 use App\Models\LeaveAndPermission;
-use App\Models\NationalHoliday;
 use App\Models\User;
 use App\Models\WorkTime;
 use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 
@@ -112,24 +112,13 @@ class AttendancesSummaryService
     public function formattedData(LengthAwarePaginator $user, $startDate, $endDate): LengthAwarePaginator
     {
         $data = $user->getCollection()->map(function ($user) use ($startDate, $endDate) {
-
-
-            $leaveAndPermission = LeaveAndPermission::where('user_id', $user->id)
-                ->where('leaves_status', 'Cuti')
-                ->whereBetween('start_date', [$startDate, $endDate])
-                ->orWhereBetween('end_date', [$startDate, $endDate])->get();
-
-
-//            dd($leaveAndPermission);
-
-
             $totalMinutesLate = 0;
             $totalNotCheckIn = 0;
             $totalNotCheckOut = 0;
             $totalPresent = $user->attendancesSummary->count();
-
-
-            // dd($startDate, $endDate);
+            $totalSick = $this->getSick($user, $startDate, $endDate);
+            $totalLeaves = $this->getLeaves($user, $startDate, $endDate);
+            $totalPermission = $this->getPermission($user, $startDate, $endDate);
 
             foreach ($user->attendancesSummary as $attendance) {
                 if (empty($attendance->clock_in) && $attendance->clock_out) {
@@ -156,13 +145,110 @@ class AttendancesSummaryService
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
                 'total_present' => $totalPresent,
-                'total_leaves' => $leaveAndPermission->count(),
+                'total_leaves' => $totalLeaves,
+                'total_sick' => $totalSick,
+                'total_permission' => $totalPermission,
             ];
         });
 
 
         $user->setCollection($data);
         return $user;
+    }
+
+
+    public function getLeaves($user, $startDate, $endDate): int
+    {
+
+        $leaveAndPermission = LeaveAndPermission::where('user_id', $user->id)
+            ->where('leaves_status', 'Cuti')
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('start_date', [$startDate, $endDate])
+                    ->orWhereBetween('end_date', [$startDate, $endDate]);
+            })->get();
+
+        $leavePeriods = [];
+
+        foreach ($leaveAndPermission as $dates) {
+            $leavePeriods = array_merge(
+                $leavePeriods,
+                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
+            );
+        }
+
+        $leaves = [];
+        foreach ($leavePeriods as $date) {
+            $formattedDate = Carbon::parse($date)->format('Y-m-d');
+            $leaves[$formattedDate] = collect([
+                'leaves_date' => $formattedDate,
+                'status' => 'Sakit',
+            ]);
+        }
+
+        return count($leaves);
+    }
+
+    public function getSick($user, $startDate, $endDate): int
+    {
+
+        $leaveAndPermission = LeaveAndPermission::where('user_id', $user->id)
+            ->where('leaves_status', 'Sakit')
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('start_date', [$startDate, $endDate])
+                    ->orWhereBetween('end_date', [$startDate, $endDate]);
+            })->get();
+
+        $leavePeriods = [];
+
+        foreach ($leaveAndPermission as $dates) {
+            $leavePeriods = array_merge(
+                $leavePeriods,
+                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
+            );
+        }
+
+        $sick = [];
+        foreach ($leavePeriods as $date) {
+            $formattedDate = Carbon::parse($date)->format('Y-m-d');
+            $sick[$formattedDate] = collect([
+                'leaves_date' => $formattedDate,
+                'status' => 'Sakit',
+            ]);
+        }
+
+        return count($sick);
+    }
+
+
+    public function getPermission($user, $startDate, $endDate): int
+    {
+        $leaveAndPermission = LeaveAndPermission::where('user_id', $user->id)
+            ->where('leaves_status', 'Izin')
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('start_date', [$startDate, $endDate])
+                    ->orWhereBetween('end_date', [$startDate, $endDate]);
+            })->get();
+
+        $permissionPeriods = [];
+
+        foreach ($leaveAndPermission as $dates) {
+            $permissionPeriods = array_merge(
+                $permissionPeriods,
+                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
+            );
+        }
+
+        $permissions = [];
+        foreach ($permissionPeriods as $date) {
+            $formattedDate = Carbon::parse($date)->format('Y-m-d');
+            $permissions[$formattedDate] = collect([
+                'leaves_date' => $formattedDate,
+                'status' => 'Sakit',
+            ]);
+        }
+
+        return count($permissions);
+
     }
 
     public function calculateLate($userWorktime, $attendance): float|int

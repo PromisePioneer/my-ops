@@ -76,6 +76,9 @@
                                 <th class="min-w-125px">Total Hadir</th>
                                 <th class="min-w-125px">Tidak CheckIn</th>
                                 <th class="min-w-125px">Tidak Checkout</th>
+                                <th class="min-w-125px">Cuti</th>
+                                <th class="min-w-125px">Izin</th>
+                                <th class="min-w-125px">Sakit</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class=" fw-bold">
@@ -108,6 +111,9 @@
                                     <td x-text="`${attendance.total_present}`"></td>
                                     <td x-text="`${attendance.total_not_check_in}`"></td>
                                     <td x-text="`${attendance.total_not_check_out}`"></td>
+                                    <td x-text="`${attendance.total_leaves}`"></td>
+                                    <td x-text="`${attendance.total_sick}`"></td>
+                                    <td x-text="`${attendance.total_permission}`"></td>
                                     <td>
                                         <a :href="`/adms/attendances-summary/detail/${attendance.id}`"
                                            class="btn btn-light-primary btn-sm">
