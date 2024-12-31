@@ -20,7 +20,7 @@ class LeaveAndPermissionRequest extends FormRequest
     public function __construct()
     {
         parent::__construct();
-        $this->calculateUserLeaves = new CalculateUserLeaves();
+//        $this->calculateUserLeaves = new CalculateUserLeaves();
     }
 
     /**
@@ -43,7 +43,7 @@ class LeaveAndPermissionRequest extends FormRequest
 //        $getDiproses = $this->getDiproses($request);
 //
 //        $getLeavesDaysInThisMonth = $this->calculateLeaveDaysInThisMonth($getStartDate, $getLatestDate);
-        $getDiffDaysBetweenStartDateAndEndDate = $this->calculateDiffDays($request->start_date, $request->end_date);
+//        $getDiffDaysBetweenStartDateAndEndDate = $this->calculateDiffDays($request->start_date, $request->end_date);
 
         return [
             'start_date' => [
