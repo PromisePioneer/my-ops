@@ -9,7 +9,7 @@ use App\Http\Requests\BoqRequest;
 use App\Models\Boq;
 use App\Models\BoqCommodity;
 use App\Models\BoqTimelineProject;
-use App\Models\CentralWarehouseStock;
+use App\Models\CentralWarehouseItem;
 use App\Models\Item;
 use App\Models\UnitType;
 use App\Models\User;
@@ -193,7 +193,7 @@ use Throwable;
 
     public function checkStock(Request $request)
     {
-        $centralWarehouseStock = CentralWarehouseStock::where('item_id', $request->item_id)->first();
+        $centralWarehouseStock = CentralWarehouseItem::where('item_id', $request->item_id)->first();
 
         if ($centralWarehouseStock->qty > 0) {
             return response()->json("Stok tersedia : {$centralWarehouseStock->qty}");

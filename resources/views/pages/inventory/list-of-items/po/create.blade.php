@@ -10,6 +10,7 @@
     <div x-data="generateListOfItem">
         @include('pages.operational-master-data.items.modal.create')
         @include('pages.operational-master-data.supplier.modal.create')
+        @include('pages.general-master-data.unit-types.modal.create')
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
                 <a class="btn btn-info btn-sm mb-6" href="{{ url('inventory/list-of-items/po') }}">Kembali</a>
@@ -67,6 +68,13 @@
                                 <input type="number" class="form-control form-control-solid" name="qty"
                                        id="qty"
                                        placeholder="Kuantitas">
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="col-form-label required fw-bold fs-6">Satuan</label>
+                                <select name="unit_type_id" id="unit_type_id"
+                                        class="form-select form-select-solid unit-type-select2">
+                                    <option></option>
+                                </select>
                             </div>
                         </div>
 
@@ -130,11 +138,14 @@
                 supplierForm: document.getElementById('form-supplier-create'),
                 itemModal: new bootstrap.Modal(document.getElementById('modal-item-create')),
                 itemForm: document.getElementById('form-item-create'),
+                unitTypeModal: new bootstrap.Modal(document.getElementById('modal-unit-type-create')),
+                unitTypeForm: document.getElementById('unit-types-store'),
                 form: document.getElementById('form'),
                 async init() {
                     await this.getSupplierData();
                     await this.getBranchData();
                     await this.getItem();
+                    await this.getUnitType();
                 },
                 async getSupplierData() {
                     $(".supplier-select2").select2({
@@ -199,7 +210,6 @@
                         }
                     });
                 },
-
                 async getItem() {
                     $(".items-select2").select2({
                         allowClear: true,
@@ -219,6 +229,41 @@
                             cache: true
                         }
                     });
+                },
+                getUnitType() {
+                    $(".unit-type-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Satuan",
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-unit-type-create">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
+                        ajax: {
+                            url: '/inventory/list-of-items/po/unit-types/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async saveUnitTypes() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/general-master-data/unit-types/', new FormData(this.unitTypeForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.unitTypeForm.reset();
+                        this.unitTypeModal.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
                 },
                 async saveItem() {
                     this.buttonLoading = true;

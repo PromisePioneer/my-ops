@@ -2,7 +2,7 @@
 @section('page-title', 'Master Umum - Data Cabang')
 @section('content')
     <div x-data="warehouseStocksData()">
-        @include('pages.inventory.list-of-items.central-warehouse-stocks.modal.item-distribution')
+        @include('pages.inventory.list-of-items.central-warehouse-items.modal.item-distribution')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -19,7 +19,7 @@
                     <a target="_top" class="btn btn-sm btn-light-primary" data-bs-target="#modal-item-distribution"
                        data-bs-toggle="modal">
                         <i class="bi bi-gear-wide-connected"></i>
-                        Salurkan Barang
+                        Daftarkan Barang
                     </a>
                 </div>
             </div>
@@ -53,7 +53,6 @@
                                     </div>
                                 </th>
                                 <th class="min-w-125px">PO</th>
-                                <th class="min-w-125px">SN</th>
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Qty</th>
                                 <th class="min-w-125px">Actions</th>
@@ -91,11 +90,12 @@
                                         </div>
                                     </td>
                                     <td x-text="item.po.po_number"></td>
-                                    <td x-text="item.sn"></td>
                                     <td x-text="item.item.name"></td>
                                     <td x-text="item.qty"></td>
                                     <td>
-                                        <a href="">tes</a>
+                                        <a :href="`/inventory/list-of-items/central-warehouse-items/detail/${item.id}`" class="btn btn-sm btn-light-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -133,11 +133,11 @@
                     await this.getCentralWarehouseStock();
                 },
                 async getCentralWarehouseStock() {
-                    const resp = await axios.get('/inventory/list-of-items/central-warehouse-stocks/data');
+                    const resp = await axios.get('/inventory/list-of-items/central-warehouse-items/data');
                     this.warehouseStocks = resp.data;
                 },
                 async openBarcode(id) {
-                    const resp = await axios.get(`/inventory/list-of-items/central-warehouse-stocks/${id}`);
+                    const resp = await axios.get(`/inventory/list-of-items/central-warehouse-items/${id}`);
                 },
             }
         }

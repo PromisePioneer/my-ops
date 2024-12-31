@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Models\CentralWarehouseStock;
+use App\Models\CentralWarehouseItem;
 use App\Models\PoListOfItem;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,7 +14,7 @@ class CentralWareHouseStockService
 
     public function generateSN(POListOfItem $poListOfItem): string
     {
-        $latestPo = CentralWarehouseStock::whereHas('po', function ($query) use ($poListOfItem) {
+        $latestPo = CentralWarehouseItem::whereHas('po', function ($query) use ($poListOfItem) {
             $query->where('supplier_id', $poListOfItem->supplier_id);
         })->latest()->first();
         $poDate = Carbon::parse($poListOfItem->due_date)->format('dmYHis');
@@ -36,7 +36,7 @@ class CentralWareHouseStockService
 
     public function query(): Builder
     {
-        return CentralWareHouseStock::with('po', 'item');
+        return CentralWarehouseItem::with('po', 'item');
     }
 
 

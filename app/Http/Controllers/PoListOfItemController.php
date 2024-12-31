@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use AllowDynamicProperties;
 use App\Http\Requests\PoListOfItemRequest;
 use App\Models\Branch;
-use App\Models\CentralWarehouseStock;
+use App\Models\CentralWarehouseItem;
 use App\Models\Item;
 use App\Models\ItemCategory;
 use App\Models\PoListOfItem;
 use App\Models\ReturnItemFromPo;
 use App\Models\Supplier;
+use App\Models\UnitType;
 use App\Service\CentralWareHouseStockService;
 use App\Service\PoListOfItemService;
 use Illuminate\Http\JsonResponse;
@@ -28,6 +29,7 @@ use function App\Helper\formatDate;
         $this->itemCategory = new ItemCategory();
         $this->centralWareHouseStockService = new CentralWareHouseStockService();
         $this->item = new Item();
+        $this->unitType = new UnitType();
     }
 
     public function index(): View
@@ -76,6 +78,7 @@ use function App\Helper\formatDate;
             'total_price' => $total_price,
             'supplier_id' => $request->supplier_id,
             'travel_letter_receipt' => $request->travel_letter_receipt,
+            'unit_type_id' => $request->unit_type_id
         ]);
 
         return response()->json(['message' => 'Data berhasil disimpan.']);
@@ -140,8 +143,6 @@ use function App\Helper\formatDate;
         $poListOfItem->update([
             'status' => 1
         ]);
-
-
         if ($request->qty_cannot_be_used > 0) {
             ReturnItemFromPo::create([
                 'po_id' => $poListOfItem->id,
@@ -152,14 +153,14 @@ use function App\Helper\formatDate;
             ]);
         }
 
-        CentralWarehouseStock::create([
+        CentralWarehouseItem::create([
             'sn' => $this->centralWareHouseStockService->generateSN($poListOfItem),
             'po_items_id' => $poListOfItem->id,
             'item_id' => $poListOfItem->item_id,
             'qty' => $request->qty_can_be_used,
-            'category_id' => $request->category_id
+            'category_id' => $request->category_id,
+            'unit_type_id' => $poListOfItem->unit_type_id,
         ]);
-
 
         return response()->json(['message' => 'Data berhasil disimpan']);
     }
@@ -184,5 +185,16 @@ use function App\Helper\formatDate;
     public function selectedItem(PoListOfItem $poListOfItem): JsonResponse
     {
         return response()->json($this->item->getSelectedData($poListOfItem->item_id));
+    }
+
+
+    public function getUnitType(Request $request): JsonResponse
+    {
+        return response()->json($this->unitType->getData($request));
+    }
+
+    public function selectedUnitType(PoListOfItem $poListOfItem): JsonResponse
+    {
+        return response()->json($this->unitType->getSelectedData($poListOfItem->id));
     }
 }

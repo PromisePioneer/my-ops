@@ -8,6 +8,7 @@ use App\Http\Requests\User\ManageUserLeaveAndPermissionRequest;
 use App\Http\Requests\UserProfile\LeaveAndPermissionRequest;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
+use App\Service\HelperService\HandleFileUploadService;
 use App\Service\LeaveAndPermission\CalculateUserLeaves;
 use App\Service\LeaveAndPermission\ManageUserLeaveAndPermissionService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -22,6 +23,7 @@ use Illuminate\View\View;
         $this->manageUserLeaveAndPermissionService = new ManageUserLeaveAndPermissionService();
         $this->user = new User();
         $this->calculateUserLeaves = new CalculateUserLeaves();
+        $this->handleFileUploadService = new HandleFileUploadService();
     }
 
     /**
@@ -97,7 +99,11 @@ use Illuminate\View\View;
             'user_id' => $request->user_id,
             'reason' => $request->reason,
             'leaves_status' => $request->leaves_status,
-            'sick_letter' => $request->sick_letter,
+            'sick_letter' => $this->handleFileUploadService->upload(
+                $request,
+                'documents/leaves-and-permissions/sick-letter',
+                'sick_letter'
+            ),
         ]);
 
 

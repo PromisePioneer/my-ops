@@ -9,7 +9,7 @@
                 </div>
             </div>
 
-            <form id="form-edit" @submit.prevent="update(editVal.id)">
+            <form id="form-edit" @submit.prevent="update(editVal?.id)">
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Pilih Karyawan</label>
@@ -21,12 +21,12 @@
                         <label for="name" class="required form-label">Tanggal Mulai</label>
                         <input type="date" id="start_date" name="start_date"
                                class="form-control form-control-solid date"
-                               placeholder="Tanggal Mulai" :value="editVal.start_date"/>
+                               placeholder="Tanggal Mulai" :value="editVal?.start_date"/>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Tanggal Selesai</label>
                         <input type="date" id="end_date" name="end_date" class="form-control form-control-solid date"
-                               placeholder="Tanggal Selesai" :value="editVal.end_date"/>
+                               placeholder="Tanggal Selesai" :value="editVal?.end_date"/>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Sisa Cuti</label>
@@ -52,7 +52,7 @@
                     <div class="mb-10">
                         <label for="name" class="required form-label">Alasan Cuti</label>
                         <textarea type="date" id="reason" name="reason" class="form-control form-control-solid"
-                                  data-kt-autosize="true" placeholder="ALasan Cuti" x-text="editVal.reason"></textarea>
+                                  data-kt-autosize="true" placeholder="ALasan Cuti" x-text="editVal?.reason"></textarea>
                     </div>
                 </div>
 

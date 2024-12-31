@@ -31,6 +31,7 @@
                 <div class="col-12">
                     <form id="form-delete" @submit.prevent="destroy()">
                         <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                        @can('Tambah Data Manajemen Cuti')
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                 x-show="selectedCheckBox.length > 0"
                                 x-transition x-cloak>
@@ -42,6 +43,7 @@
                             </i>
                             Hapus
                         </button>
+                        @endcan
                     </form>
                 </div>
                 <div class="py-5">
@@ -60,6 +62,7 @@
                                 <th class="min-w-125px">Alasan Cuti</th>
                                 <th class="min-w-125px">Status Cuti</th>
                                 <th class="min-w-125px">Status Konfirmasi</th>
+                                <th class="min-w-125px">File Sakit</th>
                                 <th class="min-w-125px">Action</th>
                             </thead>
                             <tbody class=" fw-bold">
@@ -91,7 +94,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                          <a :href="`${Number(viewDetailUserPermission) === 1 ? `/manage-users/users/detail/${leave.user_id}` : '#'}`"
+                                        <a :href="`${Number(viewDetailUserPermission) === 1 ? `/manage-users/users/detail/${leave.user_id}` : '#'}`"
                                            x-text="leave.user_name"></a>
                                     </td>
                                     <td x-text="`${leave.start_date} - ${leave.end_date}`"></td>
@@ -107,6 +110,11 @@
                                         <template x-if="leave.confirmation_status === 'Ditolak'">
                                             <span class="badge bg-danger">Ditolak</span>
                                         </template>
+                                    </td>
+                                    <td>
+                                        <img :src="getImageURL(leave.sick_letter)"
+                                             @click="$dispatch('lightbox', `${getImageURL(leave.sick_letter) ?? null}`)"
+                                             height="100"/>
                                     </td>
                                     <template
                                         x-if="leave.confirmation_status === 'Diterima' || leave.confirmation_status === 'Ditolak'">
@@ -126,9 +134,9 @@
                                         <td>
                                             <template x-if="Number(confirmPermission) === 1">
                                                 <button class="btn btn-info btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-confirm"
+                                                        data-bs-target="#modal-confirm"
                                                         @click="openConfirmModal(leave.id)">
-                                                <i class="bi bi-gear-fill"></i>
+                                                    <i class="bi bi-gear-fill"></i>
                                                 </button>
                                             </template>
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
@@ -174,6 +182,8 @@
                 formEdit: document.getElementById('form-edit'),
                 buttonLoading: false,
                 isLoading: false,
+                editVal: '',
+                sickLetter: false,
                 leaves: [],
                 search: '',
                 selectedCheckBox: [],
@@ -349,6 +359,10 @@
                             await showAlert('error', 'Terjadi kesalahan');
                         }
                     });
+                },
+                getImageURL(imagePath) {
+                    console.log(imagePath)
+                    return imagePath ? "{{  Storage::url('') }}" + imagePath : '';
                 },
             }
         }

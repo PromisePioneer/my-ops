@@ -61,6 +61,8 @@ class LeaveAndPermissionRequest extends FormRequest
             'leaves_status' => ['required'],
             'sick_letter' => [
                 Rule::requiredIf(fn() => $request->leaves_status === 'Sakit'),
+                'mimes:jpg,png,jpeg',
+                'max:2048',
             ],
         ];
     }

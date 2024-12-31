@@ -38,6 +38,7 @@ use function App\Helper\formatDate;
                 'leaves_status' => $item->leaves_status,
                 'reason' => $item->reason,
                 'confirmation_status' => $item->confirmation_status,
+                'sick_letter' => $item->sick_letter
             ];
         });
 

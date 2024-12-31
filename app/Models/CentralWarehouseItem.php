@@ -6,22 +6,27 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 
-class CentralWarehouseStock extends Model
+class CentralWarehouseItem extends Model
 {
-    protected $table = 'central_warehouse_stocks';
+    protected $table = 'central_warehouse_items';
     protected $fillable = [
-        'sn',
         'po_items_id',
         'item_id',
         'category_id',
         'name',
-        'qty'
+        'qty',
+        'unit_type_id'
     ];
 
 
     public function po(): BelongsTo
     {
         return $this->belongsTo(PoListOfItem::class, 'po_items_id');
+    }
+
+    public function unitType(): BelongsTo
+    {
+        return $this->belongsTo(UnitType::class, 'unit_type_id');
     }
 
 

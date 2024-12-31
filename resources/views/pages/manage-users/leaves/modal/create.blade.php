@@ -48,7 +48,7 @@
                         <label for="name" class="required form-label">Surat Ketarangan Dokter</label>
                         <input type="file" id="end_date" :name="`${sickLetter === 'Sakit' ? 'sick_letter' : ''}`"
                                class="form-control form-control-solid"
-                               accept=".jpg,.png,.jpeg,.pdf"/>
+                               accept=".jpg,.png,.jpeg"/>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Alasan Cuti</label>

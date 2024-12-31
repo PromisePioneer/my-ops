@@ -10,9 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('central_warehouse_stocks', function (Blueprint $table) {
+        Schema::create('central_warehouse_items', function (Blueprint $table) {
             $table->id();
-            $table->string('sn')->unique();
             $table->foreignId('po_items_id')->constrained('po_list_of_items')
                 ->cascadeOnDelete()
                 ->cascadeOnDelete();
@@ -22,6 +21,7 @@ return new class extends Migration {
                 ->cascadeOnUpdate();
             $table->string('merk')->nullable();
             $table->integer('qty');
+            $table->foreignId('unit_type_id')->constrained('unit_types');
             $table->timestamps();
         });
     }

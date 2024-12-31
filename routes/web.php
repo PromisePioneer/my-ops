@@ -18,7 +18,7 @@ use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\BAAController;
-use App\Http\Controllers\CentralWarehouseStockController;
+use App\Http\Controllers\CentralWarehouseItemController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
@@ -84,7 +84,6 @@ use App\Http\Controllers\Master\Operational\JointClosureCodeController;
 use App\Http\Controllers\Master\Operational\SupplierController;
 use App\Http\Controllers\PoListOfItemController;
 use App\Http\Controllers\PurchaseOrderController;
-use App\Http\Controllers\StockController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
 use App\Http\Controllers\UserProfile\UserLeaveAndPermissionController;
 use App\Http\Controllers\UserProfile\UserProfileController;
@@ -753,6 +752,8 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/create', [PoListOfItemController::class, 'create']);
                 Route::get('/supplier/data', [PoListOfItemController::class, 'getSupplierData']);
                 Route::get('/supplier/selected/{poListOfItem}', [PoListOfItemController::class, 'selectedSupplier']);
+                Route::get('/unit-types/data', [PoListOfItemController::class, 'getUnitType']);
+                Route::get('/unit-types/selected', [PoListOfItemController::class, 'selectedUnitType']);
                 Route::get('/branch/data', [PoListOfItemController::class, 'getBranchData']);
                 Route::get('/branch/selected/{poListOfItem}', [PoListOfItemController::class, 'selectedBranch']);
                 Route::post('/store', [PoListOfItemController::class, 'store']);
@@ -766,10 +767,10 @@ Route::group(['middleware' => ['auth']], static function () {
             });
 
 
-            Route::prefix('central-warehouse-stocks')->group(function () {
-                Route::get('/', [CentralWarehouseStockController::class, 'index']);
-                Route::get('/data', [CentralWarehouseStockController::class, 'data']);
-                Route::get('/barcode/{centralWarehouseStock}', [CentralWarehouseStockController::class, 'generateBarcode']);
+            Route::prefix('central-warehouse-items')->group(function () {
+                Route::get('/', [CentralWarehouseItemController::class, 'index']);
+                Route::get('/data', [CentralWarehouseItemController::class, 'data']);
+                Route::get('/detail/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'detail']);
             });
 
         });
