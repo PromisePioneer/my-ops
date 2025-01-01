@@ -56,12 +56,12 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                        <button type="button" data-bs-toggle="modal"
-                                data-bs-target="#modal-get-attendances-data"
-                                class="btn btn-primary btn-sm"
-                        >
-                            Import Data Absen
-                        </button>
+{{--                        <button type="button" data-bs-toggle="modal"--}}
+                        {{--                                data-bs-target="#modal-get-attendances-data"--}}
+                        {{--                                class="btn btn-primary btn-sm"--}}
+                        {{--                        >--}}
+                        {{--                            Import Data Absen--}}
+                        {{--                        </button>--}}
                     </div>
                 </div>
             </div>
