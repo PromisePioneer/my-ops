@@ -149,7 +149,6 @@ class IclockService
     {
         $date = Carbon::parse($attendanceData['timestamp']);
 
-        Log::info($attendanceData);
 
         if ($attendanceData['status1'] == 0) {
             $this->processCheckIn($attendanceData, $shift, $date, $date);
@@ -240,8 +239,8 @@ class IclockService
 
     private function processCheckOut(array $attendanceData, $shift, string $date, string $time): void
     {
-        Attendances::create($attendanceData);
         if ($this->isValidTimeCheckOut($time, $shift->clock_in, $shift->clock_out, $shift->time_to_checkout, $shift->end_time_to_checkout)) {
+            Attendances::create($attendanceData);
         }
     }
 
