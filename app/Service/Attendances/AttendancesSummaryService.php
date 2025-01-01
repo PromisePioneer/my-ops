@@ -28,6 +28,8 @@ class AttendancesSummaryService
         $startDate = $this->financialClosePeriodService->startDate();
         $endDate = $this->financialClosePeriodService->endDate();
 
+//        dd($startDate, $endDate);
+
         $data = User::with([
             'attendancesSummary' => function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('date', [$startDate, $endDate]);
