@@ -25,7 +25,7 @@ use Illuminate\View\View;
 
     public function data(): JsonResponse
     {
-        return response()->json($this->centralWarehouseStockService->data());
+        return response()->json($this->centralWarehouseItemService->data());
     }
 
 

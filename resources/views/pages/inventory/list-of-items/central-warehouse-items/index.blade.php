@@ -14,14 +14,6 @@
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
                 </div>
-
-                <div class="card-toolbar">
-                    <a target="_top" class="btn btn-sm btn-light-primary" data-bs-target="#modal-item-distribution"
-                       data-bs-toggle="modal">
-                        <i class="bi bi-gear-wide-connected"></i>
-                        Daftarkan Barang
-                    </a>
-                </div>
             </div>
             <div class="card-body py-3">
                 <div class="col-12">
@@ -54,7 +46,9 @@
                                 </th>
                                 <th class="min-w-125px">PO</th>
                                 <th class="min-w-125px">Nama</th>
-                                <th class="min-w-125px">Qty</th>
+                                <th class="min-w-125px">Qty Barang Tidak Terdaftar</th>
+                                <th class="min-w-125px">Qty Barang Terdaftar</th>
+                                <th class="min-w-125px">Lokasi</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -91,9 +85,13 @@
                                     </td>
                                     <td x-text="item.po.po_number"></td>
                                     <td x-text="item.item.name"></td>
-                                    <td x-text="item.qty"></td>
+                                    <td x-text="`${item.qty} ${item.unit_type.name}`"></td>
+                                    <td x-text="`${item.central_warehouse_stock_count} ${item.unit_type.name}`"></td>
+                                    <td x-text="item.warehouse.name"></td>
+
                                     <td>
-                                        <a :href="`/inventory/list-of-items/central-warehouse-items/detail/${item.id}`" class="btn btn-sm btn-light-primary">
+                                        <a :href="`/inventory/list-of-items/central-warehouse-items/detail/${item.id}`"
+                                           class="btn btn-sm btn-light-primary">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                     </td>

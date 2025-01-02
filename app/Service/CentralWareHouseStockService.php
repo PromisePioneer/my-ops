@@ -5,29 +5,20 @@ namespace App\Service;
 use App\Models\CentralWarehouseItem;
 use App\Models\CentralWarehouseStock;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class CentralWareHouseStockService
 {
 
-    public function generateItemCode(CentralWarehouseItem $centralWarehouseItem): string
+    public function generateCodeWithNumber(CentralWarehouseItem $centralWarehouseItem, $number): string
     {
-        $centralWarehouseLatestStock = CentralWarehouseStock::with('centralWarehouseItem.item', 'centralWarehouseItem.warehouse')
-            ->where('central_warehouse_item_id', $centralWarehouseItem->id)
-            ->latest()
-            ->first();
+        $itemName = $centralWarehouseItem->item->name ?? 'UnknownItem';
+        $warehouseCode = $centralWarehouseItem->warehouse->code ?? 'UnknownWarehouse';
+        $itemSlug = Str::slug($itemName, '');
+        $warehouseSlug = Str::slug($warehouseCode, '');
         $dateIn = Carbon::parse($centralWarehouseItem->date)->format('my');
+        $paddedNumber = str_pad($number + 1, 2, '0', STR_PAD_LEFT);
 
-        if ($centralWarehouseLatestStock) {
-            $convertCodeToArray = explode('.', $centralWarehouseLatestStock->code);
-            $startingNumber = end($convertCodeToArray);
-            $startValue = str_pad((int)$startingNumber + 1, 2, '0', STR_PAD_LEFT);
-
-            return $dateIn . '.' . $centralWarehouseItem->item->name . '.' . $centralWarehouseItem->warehouse->code . '.' . $startValue;
-        }
-
-        $startingNumber = '00';
-        $startValue = str_pad((int)$startingNumber + 1, 2, '0', STR_PAD_LEFT);
-
-        return $dateIn . '.' . $centralWarehouseItem->item->name . '.' . $centralWarehouseItem->warehouse->code . '.' . $startValue;
+        return $dateIn . "." . strtoupper($itemSlug) . "." . strtoupper($warehouseSlug) . "." . $paddedNumber;
     }
 }

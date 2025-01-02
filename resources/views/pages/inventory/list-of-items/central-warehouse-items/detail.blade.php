@@ -6,7 +6,7 @@
         <div class="row">
             <div class="card card-xl-stretch mb-5 mb-xl-8">
                 <div class="card-header border-0 pt-6">
-                    <div class="card-title text-uppercase text-decoration-underline">
+                    <div class="card-title text-uppercase text-decoration-underline fw-bold">
                         Detail barang yang belum diberi SN
                     </div>
                 </div>
@@ -14,27 +14,27 @@
                     <div class="table-responsive">
                         <table class="table w-25">
                             <thead>
-                            <tr class="fw-bold">
+                            <tr class="fw-bold border-bottom border-black">
                                 <th>Tanggal Masuk</th>
                                 <th>:</th>
                                 <th x-text="formatDate(centralWarehouseItem?.po.date)"></th>
                             </tr>
-                            <tr class="fw-bold">
+                            <tr class="fw-bold border-bottom border-black">
                                 <th>Nama Barang</th>
                                 <th>:</th>
                                 <th x-text="centralWarehouseItem?.item.name"></th>
                             </tr>
-                            <tr class="fw-bold">
+                            <tr class="fw-bold border-bottom border-black">
                                 <th>Kuantitas</th>
                                 <th>:</th>
                                 <th x-text="centralWarehouseItem?.qty"></th>
                             </tr>
-                            <tr class="fw-bold">
+                            <tr class="fw-bold border-bottom border-black">
                                 <th>Satuan</th>
                                 <th>:</th>
                                 <th x-text="centralWarehouseItem?.unit_type.name"></th>
                             </tr>
-                            <tr class="fw-bold">
+                            <tr class="fw-bold border-bottom border-black">
                                 <th>Lokasi</th>
                                 <th>:</th>
                                 <th x-text="centralWarehouseItem?.warehouse.name"></th>
@@ -62,15 +62,27 @@
                     <div class="card-toolbar">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                             <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                                <button type="button" class="btn btn-light-primary btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modal-sn-create">
-                                    <i class="ki-duotone ki-message-add fs-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                    </i> Tambah
-                                </button>
+                                <template x-if="centralWarehouseItem.item.need_sn === 0">
+                                    <button type="button" class="btn btn-light-primary btn-sm"
+                                            @click="generateCodeWithoutSN()">
+                                        <i class="ki-duotone ki-message-add fs-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                        </i> Buat Kode Otomatis
+                                    </button>
+                                </template>
+                                <template x-if="centralWarehouseItem.item.need_sn === 1">
+                                    <button type="button" class="btn btn-light-primary btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modal-sn-create">
+                                        <i class="ki-duotone ki-message-add fs-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                        </i> Tambah
+                                    </button>
+                                </template>
                             </div>
                         </div>
                     </div>
@@ -122,7 +134,7 @@
                                     </tr>
                                     </tbody>
                                 </template>
-                                <template x-if="!isLoading && branches.data?.length === 0">
+                                <template x-if="!isLoading && centralWarehouseStocks.data?.length === 0">
                                     <tbody class="fw-bold">
                                     <tr>
                                         <td colspan="9">
@@ -142,7 +154,9 @@
                                                        :id="'checkbox-' + stock.id"/>
                                             </div>
                                         </td>
-                                        <td x-text="stock.sn"></td>
+                                        <template x-if="centralWarehouseItem.item.need_sn === 1">
+                                            <td x-text="stock.sn"></td>
+                                        </template>
                                         <td x-text="stock.code"></td>
                                         <td>
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
@@ -218,6 +232,27 @@
                     this.buttonLoading = true;
                     try {
                         await axios.post(`/inventory/list-of-items/central-warehouse-stocks/generate-sn/${this.id}`, new FormData(this.formCreateSN))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.formCreateSN.reset();
+                        this.modalCreateSN.hide();
+                        await this.init();
+                    } catch (error) {
+                        if (this.centralWarehouseItem.qty === 0) {
+                            toastr.error(error.response.data.message);
+                        } else {
+                            const respError = error.response.data.errors;
+                            Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                        }
+
+
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async generateCodeWithoutSN() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/inventory/list-of-items/central-warehouse-stocks/generate-code-without-sn/${this.id}`, new FormData(this.formCreateSN))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreateSN.reset();
                         this.modalCreateSN.hide();

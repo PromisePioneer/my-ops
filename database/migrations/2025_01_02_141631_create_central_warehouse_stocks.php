@@ -13,9 +13,9 @@ return new class extends Migration {
         Schema::create('central_warehouse_stocks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('central_warehouse_item_id')->constrained('central_warehouse_items');
-            $table->string('sn')->unique();
+            $table->string('sn')->unique()->nullable();
             $table->boolean('status')->default(false);
-            $table->string('code')->unique();
+            $table->string('code');
             $table->timestamps();
         });
     }

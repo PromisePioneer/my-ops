@@ -95,11 +95,14 @@
                                                 data-bs-target="#modal-detail" @click="detail(item.id)">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <a :href="`/inventory/list-of-items/po/edit/${item.id}`"
-                                           class="btn btn-light-primary btn-sm">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
                                         <template x-if="item.status === 0">
+                                            <a :href="`/inventory/list-of-items/po/edit/${item.id}`"
+                                               class="btn btn-light-primary btn-sm">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                        </template>
+                                        <template x-if="item.status === 0">
+
                                             <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modal-confirm" @click="detail(item.id)">
                                                 <i class="bi bi-check-square"></i>
@@ -129,6 +132,7 @@
 @push('script')
     <script>
         $('.date').flatpickr();
+
         function listOfItemData() {
             return {
                 buttonLoading: false,

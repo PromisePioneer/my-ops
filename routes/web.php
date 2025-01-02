@@ -215,7 +215,7 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
         Route::prefix('leaves')->group(function () {
-        Route::post('/destroy', [ManageUserLeavesController::class, 'destroy']);
+            Route::post('/destroy', [ManageUserLeavesController::class, 'destroy']);
             Route::get('/leaves-left', [ManageUserLeavesController::class, 'getTotalLeavesLeft']);
             Route::get('/', [ManageUserLeavesController::class, 'index']);
             Route::get('/data', [ManageUserLeavesController::class, 'data']);
@@ -794,6 +794,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::prefix('central-warehouse-stocks')->group(function () {
                 Route::get('/data/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'data']);
                 Route::post('generate-sn/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'generateSNAndCode']);
+                Route::post('generate-code-without-sn/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'generateCentralWarehouseItemCodeIfSNDoesntExists']);
             });
 
         });

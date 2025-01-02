@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 
 class CentralWarehouseItem extends Model
@@ -58,6 +59,12 @@ class CentralWarehouseItem extends Model
                 'text' => '[' . $item->name . ']' . ' ' . 'Qty :' . $item->qty,
             ];
         })->toArray();
+    }
+
+
+    public function centralWarehouseStock(): HasMany
+    {
+        return $this->hasMany(CentralWarehouseStock::class, 'central_warehouse_item_id');
     }
 
     public function getSelectedData(int $centralWarehouseStockId): array
