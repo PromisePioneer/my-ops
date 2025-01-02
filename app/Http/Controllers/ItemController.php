@@ -2,24 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use AllowDynamicProperties;
 use App\Http\Requests\ItemRequest;
 use App\Models\Item;
+use App\Models\ItemCategory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
-class ItemController extends Controller
+#[AllowDynamicProperties] class ItemController extends Controller
 {
-
     private static int $perPage = 10;
 
-    public function index()
+    public function __construct()
+    {
+        $this->itemCategory = new ItemCategory();
+    }
+
+    public function index(): View
     {
         return view('pages.operational-master-data.items.index');
     }
 
     public function data(): JsonResponse
     {
-        $item = Item::paginate(self::$perPage);
+        $item = Item::with('category')->paginate(self::$perPage);
         return response()->json($item);
     }
 
@@ -35,7 +42,18 @@ class ItemController extends Controller
 
     public function store(ItemRequest $request): JsonResponse
     {
-        Item::create($request->validated());
+        $needSN = false;
+
+        if ($request->need_sn === "on") {
+            $needSN = true;
+        }
+
+
+        Item::create([
+            'name' => $request->name,
+            'category_id' => $request->category_id,
+            'need_sn' => $needSN
+        ]);
         return response()->json([
             'message' => 'Data berhasil disimpan.'
         ]);
@@ -50,7 +68,17 @@ class ItemController extends Controller
 
     public function update(Item $item, ItemRequest $request)
     {
-        $item->update($request->validated());
+        $needSN = false;
+
+        if ($request->need_sn === "on") {
+            $needSN = true;
+        }
+
+        $item->update([
+            'name' => $request->name,
+            'category_id' => $request->category_id,
+            'need_sn' => $needSN
+        ]);
         return response()->json([
             'message' => 'Data berhasil disimpan.'
         ]);
@@ -66,5 +94,17 @@ class ItemController extends Controller
         return response()->json([
             'message' => 'data berhasil dihapus',
         ], 200);
+    }
+
+
+    public function getItemCategories(Request $request): JsonResponse
+    {
+        return response()->json($this->itemCategory->getData($request));
+    }
+
+
+    public function selectedItemCategories(Item $item): JsonResponse
+    {
+        return response()->json($this->itemCategory->getSelectedData($item->category_id));
     }
 }

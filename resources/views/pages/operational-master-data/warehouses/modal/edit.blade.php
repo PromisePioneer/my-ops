@@ -1,8 +1,8 @@
-<div class="modal fade" tabindex="-1" id="modal-item-create">
+<div class="modal fade" tabindex="-1" id="modal-warehouse-edit">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form Master Barang</h5>
+                <h5 class="modal-title">Form Cabang</h5>
                 <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
@@ -14,26 +14,17 @@
                 </div>
             </div>
 
-            <form id="form-item-create" @submit.prevent="saveItem()">
+            <form id="form-warehouse-edit" @submit.prevent="update(editVal.id)">
                 <div class="modal-body">
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Kode</label>
+                        <input type="text" id="code" name="code" class="form-control form-control-solid"
+                               placeholder="Kode" :value="editVal.code"/>
+                    </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama</label>
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama Barang"/>
-                    </div>
-                    <div class="mb-10">
-                        <label for="category_id" class="required form-label">Kategori</label>
-                        <select name="category_id" id="category_id"
-                                class="form-select form-select-solid item-categories-select2"
-                                data-dropdown-parent="#modal-item-create">
-                            <option></option>
-                        </select>
-                    </div>
-                    <div class="form-check form-switch form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox" name="need_sn" id="flexSwitchDefault"/>
-                        <label class="form-check-label" for="flexSwitchDefault">
-                            Wajib Memasukkan Serial Number
-                        </label>
+                               placeholder="Nama Gudang" :value="editVal.name"/>
                     </div>
                 </div>
 

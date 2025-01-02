@@ -128,6 +128,7 @@
 @endsection
 @push('script')
     <script>
+        $('.date').flatpickr();
         function listOfItemData() {
             return {
                 buttonLoading: false,
@@ -144,7 +145,7 @@
                 itemCannotBeUsed: 0,
                 async init() {
                     await this.getListOfItem();
-                    await this.getItemCategories();
+                    await this.getWarehouseData();
                 },
                 async getListOfItem() {
                     this.isLoading = true;
@@ -157,6 +158,20 @@
                         this.isLoading = false;
                     }
                 },
+                async getWarehouseData() {
+                    $(".warehouse-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Lokasi Barang',
+                        ajax: {
+                            url: '/inventory/list-of-items/po/warehouses/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
                 async detail(id) {
                     try {
                         const resp = await axios(`/inventory/list-of-items/po/detail/${id}`);
@@ -165,21 +180,6 @@
                     } catch (e) {
                         console.log(e)
                     }
-                },
-                async getItemCategories() {
-                    $(".item-categories-select2").select2({
-                        escapeMarkup: markup => (markup),
-                        allowClear: true,
-                        placeholder: 'Pilih Kategori Barang',
-                        ajax: {
-                            url: '/inventory/list-of-items/po/item-categories/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
                 },
                 async confirm() {
                     this.buttonLoading = true;

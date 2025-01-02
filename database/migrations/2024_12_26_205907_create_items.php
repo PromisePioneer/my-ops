@@ -13,6 +13,10 @@ return new class extends Migration {
         Schema::create('items', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->foreignId('category_id')->constrained('item_categories')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->boolean('need_sn')->default(false);
             $table->timestamps();
         });
     }

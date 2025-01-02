@@ -21,6 +21,19 @@
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
                                placeholder="Nama Barang" :value="editVal.name"/>
                     </div>
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Kategori</label>
+                        <select name="category_id" id="selectedCategory"
+                                class="form-select form-select-solid item-categories-select2" data-dropdown-parent="#modal-item-edit">
+                            <option></option>
+                        </select>
+                    </div>
+                    <div class="form-check form-switch form-check-custom form-check-solid">
+                        <input class="form-check-input" type="checkbox" :checked="editVal.need_sn === 1" name="need_sn" id="flexSwitchDefault"/>
+                        <label class="form-check-label" for="flexSwitchDefault">
+                            Wajib Memasukkan Serial Number
+                        </label>
+                    </div>
                 </div>
 
                 <div class="modal-footer">

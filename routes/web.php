@@ -19,6 +19,7 @@ use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\BAAController;
 use App\Http\Controllers\CentralWarehouseItemController;
+use App\Http\Controllers\CentralWarehouseStockController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
@@ -90,6 +91,7 @@ use App\Http\Controllers\UserProfile\UserProfileController;
 use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
 use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
+use App\Http\Controllers\WarehouseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -501,10 +503,23 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [ItemController::class, 'index']);
             Route::get('/data', [ItemController::class, 'data']);
             Route::get('/search', [ItemController::class, 'search']);
+            Route::get('/item-categories/data', [ItemController::class, 'getItemCategories']);
+            Route::get('/item-categories/selected/{item}', [ItemController::class, 'selectedItemCategories']);
             Route::post('/', [ItemController::class, 'store']);
             Route::get('/{item}', [ItemController::class, 'edit']);
             Route::post('/destroy', [ItemController::class, 'destroy']);
             Route::post('/{item}', [ItemController::class, 'update']);
+        });
+
+
+        Route::prefix('warehouses')->group(function () {
+            Route::get('/', [WarehouseController::class, 'index']);
+            Route::get('/data', [WarehouseController::class, 'data']);
+            Route::get('/search', [WarehouseController::class, 'search']);
+            Route::post('/', [WarehouseController::class, 'store']);
+            Route::get('/{warehouse}', [WarehouseController::class, 'edit']);
+            Route::post('/destroy', [WarehouseController::class, 'destroy']);
+            Route::post('/{warehouse}', [WarehouseController::class, 'update']);
         });
 
 
@@ -764,6 +779,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/item-categories/data', [PoListOfItemController::class, 'getItemCategories']);
                 Route::get('/items/data', [PoListOfItemController::class, 'getItem']);
                 Route::get('/item/selected/{poListOfItem}', [PoListOfItemController::class, 'selectedItem']);
+                Route::get('/warehouses/data', [PoListOfItemController::class, 'getWarehouse']);
             });
 
 
@@ -771,6 +787,13 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/', [CentralWarehouseItemController::class, 'index']);
                 Route::get('/data', [CentralWarehouseItemController::class, 'data']);
                 Route::get('/detail/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'detail']);
+                Route::get('/detail/data/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'detailData']);
+            });
+
+
+            Route::prefix('central-warehouse-stocks')->group(function () {
+                Route::get('/data/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'data']);
+                Route::post('generate-sn/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'generateSNAndCode']);
             });
 
         });

@@ -1,26 +1,26 @@
-<div class="modal fade" tabindex="-1" id="modal-item-category-create">
+<div class="modal fade" tabindex="-1" id="modal-sn-create">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form Kategori Barang</h5>
+                <h5 class="modal-title">Form Generate Serial Number Dan Kode Barang</h5>
                 <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
-                        <i class="ki-duotone ki-technology-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                        </i>
+                        <i class="fas fa-xmark-circle"></i>
                     </span>
                 </div>
             </div>
 
-            <form id="form-item-category-create" @submit.prevent="saveItemCategory()">
+            <form id="form-sn-create" @submit.prevent="generateCodeAndSN()">
                 <div class="modal-body">
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Nama</label>
-                        <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama"/>
-                    </div>
+                    <template x-if="centralWarehouseItem.item.need_sn === 1">
+                        <div class="mb-10">
+                            <label for="sn" class="required form-label">Serial Number</label>
+                            <input type="text" id="sn" name="sn"
+                                   class="form-control form-control-solid"
+                                   placeholder="Serial Number"/>
+                        </div>
+                    </template>
                 </div>
 
                 <div class="modal-footer">

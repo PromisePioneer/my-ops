@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\ItemCategory;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ItemCategoriesSeeder extends Seeder
@@ -14,11 +13,11 @@ class ItemCategoriesSeeder extends Seeder
     public function run(): void
     {
         ItemCategory::create([
-            'name' => 'GPON'
+            'name' => 'GPON',
         ]);
 
         ItemCategory::create([
-            'name' => 'CORE 24'
+            'name' => 'CORE 24',
         ]);
 
         ItemCategory::create([
@@ -27,6 +26,18 @@ class ItemCategoriesSeeder extends Seeder
 
         ItemCategory::create([
             'name' => 'Sub Duct'
+        ]);
+
+        ItemCategory::create([
+            'name' => 'Kabel'
+        ]);
+
+        ItemCategory::create([
+            'name' => 'Mikrotik'
+        ]);
+
+        ItemCategory::create([
+            'name' => 'CSR'
         ]);
     }
 }

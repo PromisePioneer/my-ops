@@ -12,10 +12,12 @@ use App\Models\PoListOfItem;
 use App\Models\ReturnItemFromPo;
 use App\Models\Supplier;
 use App\Models\UnitType;
+use App\Models\Warehouse;
 use App\Service\CentralWareHouseStockService;
 use App\Service\PoListOfItemService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use function App\Helper\formatDate;
 
@@ -30,6 +32,7 @@ use function App\Helper\formatDate;
         $this->centralWareHouseStockService = new CentralWareHouseStockService();
         $this->item = new Item();
         $this->unitType = new UnitType();
+        $this->warehouse = new Warehouse();
     }
 
     public function index(): View
@@ -140,27 +143,30 @@ use function App\Helper\formatDate;
 
     public function confirm(Request $request, PoListOfItem $poListOfItem): JsonResponse
     {
-        $poListOfItem->update([
-            'status' => 1
-        ]);
-        if ($request->qty_cannot_be_used > 0) {
-            ReturnItemFromPo::create([
-                'po_id' => $poListOfItem->id,
-                'item_id' => $poListOfItem->item_id,
-                'category_id' => $request->category_id,
-                'qty' => $request->qty_cannot_be_used,
-                'reason' => $request->reason
+        DB::transaction(function () use ($request, $poListOfItem) {
+            $poListOfItem->update([
+                'status' => 1
             ]);
-        }
 
-        CentralWarehouseItem::create([
-            'sn' => $this->centralWareHouseStockService->generateSN($poListOfItem),
-            'po_items_id' => $poListOfItem->id,
-            'item_id' => $poListOfItem->item_id,
-            'qty' => $request->qty_can_be_used,
-            'category_id' => $request->category_id,
-            'unit_type_id' => $poListOfItem->unit_type_id,
-        ]);
+            if ($request->qty_cannot_be_used > 0) {
+                ReturnItemFromPo::create([
+                    'po_id' => $poListOfItem->id,
+                    'item_id' => $poListOfItem->item_id,
+                    'qty' => $request->qty_cannot_be_used,
+                    'reason' => $request->reason
+                ]);
+            }
+
+            CentralWarehouseItem::create([
+                'date' => $request->date,
+//                'sn' => $this->centralWareHouseStockService->generateSN($poListOfItem),
+                'po_items_id' => $poListOfItem->id,
+                'warehouse_id' => $request->warehouse_id,
+                'item_id' => $poListOfItem->item_id,
+                'qty' => $request->qty_can_be_used,
+                'unit_type_id' => $poListOfItem->unit_type_id,
+            ]);
+        });
 
         return response()->json(['message' => 'Data berhasil disimpan']);
     }
@@ -196,5 +202,11 @@ use function App\Helper\formatDate;
     public function selectedUnitType(PoListOfItem $poListOfItem): JsonResponse
     {
         return response()->json($this->unitType->getSelectedData($poListOfItem->id));
+    }
+
+
+    public function getWarehouse(Request $request): JsonResponse
+    {
+        return response()->json($this->warehouse->getData($request));
     }
 }

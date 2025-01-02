@@ -1,10 +1,10 @@
 @extends('layouts.template')
-@section('page-title', 'Data Kategori Barang')
+@section('page-title', 'Master Umum - Data Cabang')
 @section('content')
-    <div x-data="inventoryData()">
+    <div x-data="warehouseData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.operational-master-data.item-categories.modal.create')
-            @include('pages.operational-master-data.item-categories.modal.edit')
+            @include('pages.operational-master-data.warehouses.modal.create')
+            @include('pages.operational-master-data.warehouses.modal.edit')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -20,7 +20,7 @@
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
+                                    data-bs-target="#modal-warehouse-create">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="card-body py-3">
-                <div class="col-12 ">
+                <div class="col-12">
                     <form id="form-delete" @submit.prevent="destroy()">
                         <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
@@ -50,21 +50,23 @@
                 </div>
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
+                        <table class="table align-middle fs-6 gy-5" id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                        <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
+                                        <input class="form-check-input" type="checkbox"
+                                               @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
+                                <th class="min-w-125px">Kode</th>
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
                                 <tbody class="fw-bold">
                                 <tr>
-                                    <td colspan="3">
+                                    <td colspan="9">
                                         <div style="text-align: center;">
                                             <div class="spinner-border" role="status">
                                                 <span class="visually-hidden">Loading...</span>
@@ -74,29 +76,30 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-if="!isLoading && itemCategories.data?.length === 0">
+                            <template x-if="!isLoading && warehouses.data?.length === 0">
                                 <tbody class="fw-bold">
                                 <tr>
-                                    <td colspan="3">
+                                    <td colspan="9">
                                         <center>Data Tidak Ditemukan</center>
                                     </td>
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-for="category in itemCategories?.data" :key="category.id">
+                            <template x-for="warehouse in warehouses?.data" :key="warehouse.id">
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="category.id"
-                                                   :id="'checkbox-' + category.id"/>
+                                            <input class="form-check-input" type="checkbox" :value="warehouse.id"
+                                                   :id="'checkbox-' + warehouse.id"/>
                                         </div>
                                     </td>
-                                    <td x-text="category.name"></td>
+                                    <td x-text="warehouse.code"></td>
+                                    <td x-text="warehouse.name"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(category.id)">
+                                                data-bs-target="#modal-warehouse-edit" @click="edit(warehouse.id)">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
@@ -109,7 +112,7 @@
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4 mt-4">
-                        <template x-for="pagination in itemCategories.links">
+                        <template x-for="pagination in warehouses.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                 <button class="page-link" @click="paginationEndPoint(pagination.url)"
                                         x-html="pagination.label">
@@ -125,30 +128,43 @@
 @endsection
 @push('script')
     <script defer>
-        function inventoryData() {
+        function warehouseData() {
             return {
-                itemCategories: [],
-                isLoading: true,
+                warehouses: [],
+                isLoading: false,
                 buttonLoading: false,
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                formCreate: document.getElementById('form-item-category-create'),
-                formEdit: document.getElementById('form-edit'),
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-item-category-create')),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
+                formCreate: document.getElementById('form-warehouse-create'),
+                formEdit: document.getElementById('form-warehouse-edit'),
+                modalCreate: new bootstrap.Modal(document.getElementById('modal-warehouse-create')),
+                modalEdit: new bootstrap.Modal(document.getElementById('modal-warehouse-edit')),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
-                    await this.getItemCategories();
+                    await this.getWarehouseData();
+                },
+                async getWarehouseData() {
+                    this.isLoading = false;
+                    try {
+                        const resp = await axios.get('/operational-master-data/warehouses/data');
+                        this.warehouses = resp.data
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async searchData() {
                     try {
-                        this.itemCategories = await axios.get('/operational-master-data/inventory-categories/search', {
+                        const resp = await axios.get('/general-master-data/branch/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
+
+                        this.warehouses = resp.data;
                     } catch (error) {
                         console.log(error);
                     }
@@ -156,7 +172,7 @@
                 async paginationEndPoint(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
-                        this.itemCategories = resp.data
+                        this.warehouses = resp.data
                     }
                 },
                 toggleAllCheckBox() {
@@ -183,10 +199,10 @@
                         }
                     }
                 },
-                async saveItemCategory() {
+                async saveWarehouse() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/operational-master-data/item-categories', new FormData(this.formCreate))
+                        await axios.post('/operational-master-data/warehouses', new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
@@ -199,13 +215,13 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/operational-master-data/item-categories/${id}`);
+                    const resp = await axios.get(`/operational-master-data/warehouses/${id}`);
                     this.editVal = resp.data;
                 },
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/operational-master-data/item-categories/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/operational-master-data/warehouses/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.modalEdit.hide();
                         this.formEdit.reset();
@@ -220,7 +236,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/operational-master-data/item-categories/destroy`, new FormData(this.formDelete));
+                            await axios.post(`/operational-master-data/warehouses/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -229,11 +245,6 @@
                         }
                     });
                 },
-                async getItemCategories() {
-                    const itemCategories = await axios.get('/operational-master-data/item-categories/data');
-                    this.itemCategories = itemCategories.data
-                    this.isLoading = false;
-                }
             }
         }
     </script>

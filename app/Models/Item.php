@@ -3,14 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 
 class Item extends Model
 {
     protected $table = 'items';
     protected $fillable = [
-        'name'
+        'name',
+        'category_id',
+        'need_sn'
     ];
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Item::class, 'category_id');
+    }
 
 
     public function getData(Request $request): array

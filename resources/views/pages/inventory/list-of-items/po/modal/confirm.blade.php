@@ -18,9 +18,14 @@
                 <div class="modal-body">
                     <div class="row mb-4">
                         <div class="col-lg-6">
-                            <label class="form-label required">Kategori Barang</label>
-                            <select name="category_id" id="category_id"
-                                    class="form-select form-select-solid item-categories-select2"
+                            <label class="form-label required">Tanggal Masuk</label>
+                            <input type="date" class="form-control form-control-solid date" name="date"
+                                   placeholder="Tanggal Masuk">
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="form-label required">Lokasi Barang</label>
+                            <select name="warehouse_id" id="warehouse_id"
+                                    class="form-select form-select-solid warehouse-select2"
                                     data-dropdown-parent="#modal-confirm">
                                 <option></option>
                             </select>

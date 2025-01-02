@@ -16,7 +16,6 @@ return new class extends Migration {
                 ->constrained('po_list_of_items')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-            $table->foreignId('category_id')->constrained('item_categories');
             $table->foreignId('item_id')->constrained('items')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();

@@ -3,47 +3,31 @@
 namespace App\Service;
 
 use App\Models\CentralWarehouseItem;
-use App\Models\PoListOfItem;
+use App\Models\CentralWarehouseStock;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class CentralWareHouseStockService
 {
-    private static int $perPage = 10;
 
-    public function generateSN(POListOfItem $poListOfItem): string
+    public function generateItemCode(CentralWarehouseItem $centralWarehouseItem): string
     {
-        $latestPo = CentralWarehouseItem::whereHas('po', function ($query) use ($poListOfItem) {
-            $query->where('supplier_id', $poListOfItem->supplier_id);
-        })->latest()->first();
-        $poDate = Carbon::parse($poListOfItem->due_date)->format('dmYHis');
+        $centralWarehouseLatestStock = CentralWarehouseStock::with('centralWarehouseItem.item', 'centralWarehouseItem.warehouse')
+            ->where('central_warehouse_item_id', $centralWarehouseItem->id)
+            ->latest()
+            ->first();
+        $dateIn = Carbon::parse($centralWarehouseItem->date)->format('my');
 
-        if ($latestPo) {
-            $convertInvNumberToArray = explode('-', $latestPo->sn);
-            $startingNumber = $convertInvNumberToArray[0];
-            $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
+        if ($centralWarehouseLatestStock) {
+            $convertCodeToArray = explode('.', $centralWarehouseLatestStock->code);
+            $startingNumber = end($convertCodeToArray);
+            $startValue = str_pad((int)$startingNumber + 1, 2, '0', STR_PAD_LEFT);
 
-            return $startValue . '-' . 'PST' . '-' . $poDate;
+            return $dateIn . '.' . $centralWarehouseItem->item->name . '.' . $centralWarehouseItem->warehouse->code . '.' . $startValue;
         }
 
-        $startingNumber = '000';
-        $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
+        $startingNumber = '00';
+        $startValue = str_pad((int)$startingNumber + 1, 2, '0', STR_PAD_LEFT);
 
-        return $startValue . '-' . 'PST' . '-' . $poDate;
+        return $dateIn . '.' . $centralWarehouseItem->item->name . '.' . $centralWarehouseItem->warehouse->code . '.' . $startValue;
     }
-
-
-    public function query(): Builder
-    {
-        return CentralWarehouseItem::with('po', 'item');
-    }
-
-
-    public function data(): LengthAwarePaginator
-    {
-        return $this->query()->paginate(self::$perPage);
-    }
-
-
 }

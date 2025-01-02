@@ -5,6 +5,7 @@
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             @include('pages.operational-master-data.items.modal.create')
             @include('pages.operational-master-data.items.modal.edit')
+            @include('pages.operational-master-data.item-categories.modal.create')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -20,7 +21,7 @@
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
+                                    data-bs-target="#modal-item-create">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
@@ -60,6 +61,8 @@
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Nama</th>
+                                <th class="min-w-125px">Kategori</th>
+                                <th class="min-w-125px">Wajib menggunakan SN</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -95,9 +98,18 @@
                                         </div>
                                     </td>
                                     <td x-text="item.name"></td>
+                                    <td x-text="item.category.name"></td>
+                                    <td>
+                                        <template x-if="item.need_sn === 1">
+                                            <span class="badge bg-success text-white fw-bold text-uppercase">Ya</span>
+                                        </template>
+                                        <template x-if="item.need_sn === 0">
+                                            <span class="badge bg-danger text-white fw-bold text-uppercase">Tidak</span>
+                                        </template>
+                                    </td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(item.id)">
+                                                data-bs-target="#modal-item-edit" @click="edit(item.id)">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
@@ -140,11 +152,14 @@
                 formEdit: document.getElementById('form-item-edit'),
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-item-create')),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-item-edit')),
+                itemCategoryModal: new bootstrap.Modal(document.getElementById('modal-item-category-create')),
+                itemCategoryForm: document.getElementById('form-item-category-create'),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
-                    await this.getBranchData();
+                    await this.getItemsData();
+                    await this.getItemCategories();
                 },
-                async getBranchData() {
+                async getItemsData() {
                     this.isLoading = false;
                     try {
                         const resp = await axios.get('/operational-master-data/items/data');
@@ -212,9 +227,58 @@
                         this.buttonLoading = false;
                     }
                 },
+                async getItemCategories() {
+                    $(".item-categories-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Kategori',
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-item-category-create">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
+                        ajax: {
+                            url: '/operational-master-data/items/item-categories/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async selectedItemCategory() {
+                    const selectedBranch = $('#selectedCategory');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/operational-master-data/items/item-categories/selected/${this.editVal.id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedBranch.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
+                async saveItemCategory() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/operational-master-data/item-categories', new FormData(this.itemCategoryForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.itemCategoryForm.reset();
+                        this.itemCategoryModal.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
                 async edit(id) {
                     const resp = await axios.get(`/operational-master-data/items/${id}`);
                     this.editVal = resp.data;
+                    await this.selectedItemCategory();
                 },
                 async update(id) {
                     this.buttonLoading = true;

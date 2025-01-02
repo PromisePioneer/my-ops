@@ -11,8 +11,9 @@ class CentralWarehouseItem extends Model
     protected $table = 'central_warehouse_items';
     protected $fillable = [
         'po_items_id',
+        'date',
         'item_id',
-        'category_id',
+        'warehouse_id',
         'name',
         'qty',
         'unit_type_id'
@@ -27,6 +28,16 @@ class CentralWarehouseItem extends Model
     public function unitType(): BelongsTo
     {
         return $this->belongsTo(UnitType::class, 'unit_type_id');
+    }
+
+    public function item(): BelongsTo
+    {
+        return $this->belongsTo(Item::class, 'item_id');
+    }
+
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
     }
 
 
@@ -59,8 +70,5 @@ class CentralWarehouseItem extends Model
         ];
     }
 
-    public function item(): BelongsTo
-    {
-        return $this->belongsTo(Item::class, 'item_id');
-    }
+
 }
