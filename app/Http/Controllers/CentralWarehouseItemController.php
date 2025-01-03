@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
 use App\Models\CentralWarehouseItem;
+use App\Models\CentralWarehouseStock;
 use App\Service\CentralWarehouseItemService;
 use App\Service\CentralWareHouseStockService;
 use Illuminate\Http\JsonResponse;
@@ -45,7 +46,14 @@ use Illuminate\View\View;
     }
 
 
+    public function getCentralWarehouseStockDetail(CentralWarehouseItem $centralWarehouseItem): JsonResponse
+    {
 
-
-
+        $centralWarehouseItemWithRelations = $centralWarehouseItem->with('item')->first();
+        $centralWarehouseStock = CentralWarehouseStock::where('central_warehouse_item_id', $centralWarehouseItem->id)->where('status', 1)->paginate(8);
+        return response()->json([
+            'central_warehouse_stock' => $centralWarehouseStock,
+            'central_warehouse_item' => $centralWarehouseItemWithRelations
+        ]);
+    }
 }

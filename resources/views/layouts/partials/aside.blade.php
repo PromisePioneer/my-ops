@@ -239,7 +239,7 @@
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
-                @canany('Lihat Menu Supplier', 'Lihat Menu Kategori Barang', 'Lihat Menu Kode Joint Closure')
+                @canany('Lihat Menu Supplier', 'Lihat Menu Kategori Barang')
                     <x-dropdown-menu :active="request()->segment(1) === 'operational-master-data'">
                         @slot('parentIcon')
                             <i class="ki-duotone ki-element-7 fs-2">

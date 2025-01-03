@@ -788,13 +788,18 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/data', [CentralWarehouseItemController::class, 'data']);
                 Route::get('/detail/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'detail']);
                 Route::get('/detail/data/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'detailData']);
+                Route::get('/get-stocks/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'getCentralWarehouseStockDetail']);
             });
 
 
             Route::prefix('central-warehouse-stocks')->group(function () {
+                Route::post('/destroy', [CentralWarehouseStockController::class, 'destroy']);
+                Route::post('/confirm', [CentralWarehouseStockController::class, 'confirm']);
                 Route::get('/data/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'data']);
                 Route::post('generate-sn/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'generateSNAndCode']);
                 Route::post('generate-code-without-sn/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'generateCentralWarehouseItemCodeIfSNDoesntExists']);
+                Route::get('/edit/{centralWarehouseStock}', [CentralWarehouseStockController::class, 'edit']);
+                Route::post('/update/{centralWarehouseStock}', [CentralWarehouseStockController::class, 'update']);
             });
 
         });

@@ -8,50 +8,27 @@ use App\Models\CentralWarehouseStock;
 use App\Service\CentralWareHouseStockService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Throwable;
 
 #[AllowDynamicProperties] class CentralWarehouseStockController extends Controller
 {
-    private static int $perPage = 10;
 
     public function __construct()
     {
         $this->centralWarehouseStockService = new CentralWareHouseStockService();
     }
 
-
     public function data(CentralWarehouseItem $centralWarehouseItem): JsonResponse
     {
-        $centralWarehouseStock = CentralWarehouseStock::where('central_warehouse_item_id', $centralWarehouseItem->id)->paginate(self::$perPage);
-
-        return response()->json($centralWarehouseStock);
+        return response()->json($this->centralWarehouseStockService->data($centralWarehouseItem));
     }
 
+    /**
+     * @throws Throwable
+     */
     public function generateSNAndCode(CentralWarehouseItem $centralWarehouseItem, Request $request): JsonResponse
     {
-        DB::transaction(function () use ($centralWarehouseItem, $request) {
-
-            if ($centralWarehouseItem->qty <= 0) {
-                return response()->json(['message' => 'Barang yang belum terdaftar sudah habis'], 403);
-            }
-
-
-            $lastStock = CentralWarehouseStock::where('central_warehouse_item_id', $centralWarehouseItem->id)
-                ->lockForUpdate()
-                ->latest()
-                ->first();
-
-            $array = explode('.', $lastStock?->code);
-            $startNumber = $lastStock ? (int)end($array) : 0;
-
-            CentralWarehouseStock::create([
-                'central_warehouse_item_id' => $centralWarehouseItem->id,
-                'sn' => $request->sn,
-                'code' => $this->centralWarehouseStockService->generateCodeWithNumber($centralWarehouseItem, $startNumber),
-            ]);
-
-            $centralWarehouseItem->decrement('qty');
-        });
+        $this->centralWarehouseStockService->generateSNAndCode($centralWarehouseItem, $request);
 
         if ($centralWarehouseItem->qty === 0) {
             return response()->json(['message' => 'Barang yang belum terdaftar sudah habis'], 403);
@@ -61,39 +38,52 @@ use Illuminate\Support\Facades\DB;
     }
 
 
-    public function generateCentralWarehouseItemCodeIfSNDoesntExists(CentralWarehouseItem $centralWarehouseItem, Request $request): JsonResponse
+    /**
+     * @throws Throwable
+     */
+    public function generateCentralWarehouseItemCodeIfSNDoesntExists(CentralWarehouseItem $centralWarehouseItem): JsonResponse
     {
-        return DB::transaction(function () use ($centralWarehouseItem) {
-            if ($centralWarehouseItem->qty <= 0) {
-                return response()->json(['message' => 'Barang yang belum terdaftar sudah habis'], 403);
-            }
+        $this->centralWarehouseStockService->generateCentralWarehouseItemCodeIfSNDoesntExists($centralWarehouseItem);
+        return response()->json(['message' => 'Data berhasil disimpan']);
+    }
 
-            $lastStock = CentralWarehouseStock::where('central_warehouse_item_id', $centralWarehouseItem->id)
-                ->lockForUpdate()
-                ->latest()
-                ->first();
 
-            $array = explode('.', $lastStock?->code);
-            $startNumber = $lastStock ? (int)end($array) : 0;
+    public function edit(CentralWarehouseStock $centralWarehouseStock): JsonResponse
+    {
+        return response()->json($centralWarehouseStock);
+    }
 
-//            dd($startNumber);
 
-            $stocks = [];
-            for ($i = 0; $i < $centralWarehouseItem->qty; $i++) {
-                $startNumber++;
-                $stocks[] = [
-                    'central_warehouse_item_id' => $centralWarehouseItem->id,
-                    'code' => $this->centralWarehouseStockService->generateCodeWithNumber($centralWarehouseItem, $i),
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ];
-            }
+    public function update(Request $request, CentralWarehouseStock $centralWarehouseStock)
+    {
+        $centralWarehouseStock->update([
+            'sn' => $request->sn
+        ]);
 
-            CentralWarehouseStock::insert($stocks);
-//            $centralWarehouseItem->update(['qty' => 0]);
+        return response()->json([
+            'message' => 'data berhasil disimpan',
+        ], 200);
+    }
 
-            return response()->json(['message' => 'Data berhasil disimpan']);
-        });
+
+    public function confirm(Request $request, CentralWarehouseStock $centralWarehouseStock): JsonResponse
+    {
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $centralWarehouseStock->whereIn('id', $explodeID)->update(['status' => 1]);
+
+        return response()->json([
+            'message' => 'data berhasil dihapus',
+        ], 200);
+    }
+
+
+    public function destroy(Request $request, CentralWarehouseStock $centralWarehouseStock): JsonResponse
+    {
+        $this->centralWarehouseStockService->destroy($request, $centralWarehouseStock);
+        return response()->json([
+            'message' => 'data berhasil dihapus',
+        ], 200);
     }
 
 }
