@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('po_list_of_items', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('branch_id')->nullable()->constrained('branches');
             $table->string('po_number')->unique();
             $table->string('invoice_number')->unique();
             $table->foreignId('item_id')

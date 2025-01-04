@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 class Branch extends Model
 {
@@ -22,12 +20,26 @@ class Branch extends Model
         'address',
     ];
 
-
+    //relations
     public function accountTransaction(): HasMany
     {
         return $this->hasMany(AccountTransaction::class, 'branch_id');
     }
 
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id');
+    }
+
+
+    //aggregates
     public function getData(Request $request): array
     {
         $search = $request->input('search');
@@ -58,4 +70,6 @@ class Branch extends Model
             'name' => $branch->name,
         ];
     }
+
+
 }

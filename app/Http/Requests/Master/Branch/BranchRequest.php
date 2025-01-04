@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Master\Branch;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class BranchRequest extends FormRequest
@@ -12,14 +13,13 @@ class BranchRequest extends FormRequest
         return true;
     }
 
-    public function rules(): array
+    public function rules(Request $request): array
     {
         return [
-            'branch_id' => ['nullable'],
             'code' => [
-                'required',
-                Rule::unique('branches', 'code')
-                    ->ignore($this->route('branch')),
+                Rule::requiredIf($request->has('parent_id')),
+//                Rule::unique('branches', 'code')
+//                    ->ignore($this->route('branch')),
             ],
             'name' => [
                 'required',

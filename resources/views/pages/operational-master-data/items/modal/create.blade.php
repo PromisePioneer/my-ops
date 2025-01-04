@@ -1,5 +1,5 @@
 <div class="modal fade" tabindex="-1" id="modal-item-create">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Form Master Barang</h5>
@@ -29,11 +29,13 @@
                             <option></option>
                         </select>
                     </div>
-                    <div class="form-check form-switch form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox" name="need_sn" id="flexSwitchDefault"/>
-                        <label class="form-check-label" for="flexSwitchDefault">
-                            Wajib Memasukkan Serial Number
+                    <div
+                        class="d-flex justify-content-between align-items-center form-check form-switch form-check-custom form-check-solid">
+                        <label class="form-label" for="flexSwitchDefault" style="cursor: pointer">
+                            Serial Number sudah tertera di barang (Klik jika ya).
                         </label>
+                        <input class="form-check-input" type="checkbox" name="need_sn" id="flexSwitchDefault"/>
+
                     </div>
                 </div>
 

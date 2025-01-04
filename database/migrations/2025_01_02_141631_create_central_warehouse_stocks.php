@@ -15,7 +15,6 @@ return new class extends Migration {
             $table->foreignId('central_warehouse_item_id')->constrained('central_warehouse_items');
             $table->string('sn')->unique()->nullable();
             $table->boolean('status')->default(false);
-            $table->string('code');
             $table->timestamps();
         });
     }

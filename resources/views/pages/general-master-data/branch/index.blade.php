@@ -5,6 +5,7 @@
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             @include('pages.general-master-data.branch.modal.create')
             @include('pages.general-master-data.branch.modal.edit')
+            @include('pages.general-master-data.branch.modal.sub-branch-detail')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -52,7 +53,7 @@
                 </div>
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle fs-6 gy-5" id="kt_table_users">
+                        <table class="table align-middle table-row-dashed table-bordered fs-6 gy-5" id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <template x-if="Number(deletePermission) === 1">
@@ -66,6 +67,7 @@
                                 <th class="min-w-125px">Kode</th>
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Alamat</th>
+                                <th class="min-w-125px">Sub Cabang</th>
                                 <template x-if="Number(editPermission) === 1">
                                     <th class="min-w-125px">Actions</th>
                                 </template>
@@ -107,6 +109,20 @@
                                     <td x-text="branch.code"></td>
                                     <td x-text="branch.name"></td>
                                     <td x-text="`${branch.address.substring(0, 30)}...`"></td>
+                                    <td>
+                                        <ul>
+                                            <template x-for="(children, index) in branch.children" :key="index">
+                                                <li>
+                                                    <button class="btn btn-link btn-sm" data-bs-toggle="modal"
+                                                            data-bs-target="#modal-sub-branch-detail"
+                                                            @click="subBranchDetail(children.id)">
+                                                        <i class="bi bi-geo-alt-fill"></i>
+                                                        <span x-text="children.name"></span>
+                                                    </button>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                    </td>
                                     <td>
                                         <template x-if="Number(editPermission) === 1">
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
@@ -153,13 +169,20 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
+                subBranchVal: '',
                 formCreate: document.getElementById('form-create'),
                 formEdit: document.getElementById('form-edit'),
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formDelete: document.getElementById('form-delete'),
+                modalSubBranchDetail: new bootstrap.Modal(document.getElementById('modal-sub-branch-detail')),
+                showFormSubBranchDetail: false,
                 async init() {
                     await this.getBranchData();
+                },
+                async subBranchDetail(id) {
+                    const resp = await axios.get(`/general-master-data/branch/sub-branch/detail/${id}`);
+                    this.subBranchVal = resp.data;
                 },
                 async getBranchData() {
                     this.isLoading = false;
@@ -260,6 +283,9 @@
                         }
                     });
                 },
+                async showFormSubDetail() {
+                    this.showFormSubBranchDetail = !this.showFormSubBranchDetail;
+                }
             }
         }
     </script>

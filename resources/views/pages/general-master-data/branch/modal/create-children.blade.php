@@ -1,8 +1,8 @@
-<div class="modal fade" tabindex="-1" id="modal-item-edit">
+<div class="modal fade" tabindex="-1" id="modal-create-children">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form Master Barang</h5>
+                <h5 class="modal-title">Form Akun</h5>
                 <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
@@ -14,26 +14,23 @@
                 </div>
             </div>
 
-            <form id="form-item-edit" @submit.prevent="update(editVal.id)">
+            <form id="form-create-children" @submit.prevent="saveChild(editVal.id)">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Nama Barang</label>
-                        <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama Barang" :value="editVal.name"/>
+                        <label for="name" class="required form-label">Kode</label>
+                        <input type="text" id="code" name="code" class="form-control form-control-solid"
+                               placeholder="Kode" :value="`${editVal.code + '-'}`"/>
                     </div>
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Kategori</label>
-                        <select name="category_id" id="selectedCategory"
-                                class="form-select form-select-solid item-categories-select2" data-dropdown-parent="#modal-item-edit">
-                            <option></option>
-                        </select>
+                        <label for="name" class="required form-label">Nama</label>
+                        <input type="text" id="name" name="name" class="form-control form-control-solid"
+                               placeholder="Nama akun"/>
                     </div>
-                    <div class="form-check form-switch form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox" style="cursor: pointer"
-                               :checked="editVal.need_sn === 1" name="need_sn" id="flexSwitchDefault"/>
-                        <label class="form-label" for="flexSwitchDefault">
-                            Serial Number sudah tertera di barang (Klik jika ya).
-                        </label>
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Parent Account</label>
+                        <select name="parent_id" class="form-select form-select-solid">
+                            <option :value="editVal.id" x-text="editVal.name"></option>
+                        </select>
                     </div>
                 </div>
 

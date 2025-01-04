@@ -57,6 +57,12 @@ use function App\Helper\formatDate;
     }
 
 
+    public function getBranchData(Request $request): JsonResponse
+    {
+        return response()->json($this->branch->getData($request));
+    }
+
+
     public function getSupplierData(Request $request): JsonResponse
     {
         return response()->json($this->supplier->getData($request));
@@ -70,6 +76,7 @@ use function App\Helper\formatDate;
         $total_price = $request->qty * $request->unit_price;
 
         PoListOfItem::create([
+            'branch_id' => $request->branch_id,
             'po_number' => $request->po_number,
             'invoice_number' => $request->invoice_number,
             'item_id' => $request->item_id,

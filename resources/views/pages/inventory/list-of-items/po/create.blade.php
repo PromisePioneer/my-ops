@@ -21,6 +21,16 @@
                     <form id="form" @submit.prevent="save()">
                         <div class="row mb-4">
                             <div class="col-md-6">
+                                <label class="col-form-label fw-bold fs-6">Cabang</label>
+                                <select name="branch_id" id="branch_id"
+                                        class="form-select form-select-solid branch-select2">
+                                    <option></option>
+                                </select>
+                                <p class="text-danger mt-2">Kosongkan jika barang untuk kantor pusat</p>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
                                 <label class="col-form-label required fw-bold fs-6">No. Invoice</label>
                                 <input type="text" class="form-control form-control-solid" name="invoice_number"
                                        id="invoice_number"
@@ -48,7 +58,7 @@
                         </div>
                         <div class="row mb-4">
                             <div class="col-lg-6">
-                                <label class="col-form-label required fw-bold fs-6">Ongkos Kirim (Kalau ada)</label>
+                                <label class="col-form-label fw-bold fs-6">Ongkos Kirim (Kalau ada)</label>
                                 <input type="number" class="form-control form-control-solid" name="shipping_cost"
                                        id="shipping_cost"
                                        placeholder="Ongkos Kirim">

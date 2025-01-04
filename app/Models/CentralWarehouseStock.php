@@ -12,7 +12,6 @@ class CentralWarehouseStock extends Model
         'central_warehouse_item_id',
         'sn',
         'status',
-        'code',
     ];
 
 

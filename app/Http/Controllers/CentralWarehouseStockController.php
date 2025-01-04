@@ -32,9 +32,9 @@ use Throwable;
     /**
      * @throws Throwable
      */
-    public function generateSNAndCode(CentralWarehouseItem $centralWarehouseItem, Request $request): JsonResponse
+    public function generateSNIfExists(CentralWarehouseItem $centralWarehouseItem, Request $request): JsonResponse
     {
-        $this->centralWarehouseStockService->generateSNAndCode($centralWarehouseItem, $request);
+        $this->centralWarehouseStockService->generateSNIfExists($centralWarehouseItem, $request);
 
         if ($centralWarehouseItem->qty === 0) {
             return response()->json(['message' => 'Barang yang belum terdaftar sudah habis'], 403);
@@ -47,9 +47,9 @@ use Throwable;
     /**
      * @throws Throwable
      */
-    public function generateCentralWarehouseItemCodeIfSNDoesntExists(CentralWarehouseItem $centralWarehouseItem): JsonResponse
+    public function generateSNIfNotExists(CentralWarehouseItem $centralWarehouseItem): JsonResponse
     {
-        $this->centralWarehouseStockService->generateCentralWarehouseItemCodeIfSNDoesntExists($centralWarehouseItem);
+        $this->centralWarehouseStockService->generateSNIfNotExists($centralWarehouseItem);
         return response()->json(['message' => 'Data berhasil disimpan']);
     }
 
@@ -84,6 +84,9 @@ use Throwable;
     }
 
 
+    /**
+     * @throws Throwable
+     */
     public function destroy(Request $request, CentralWarehouseStock $centralWarehouseStock): JsonResponse
     {
         $this->centralWarehouseStockService->destroy($request, $centralWarehouseStock);

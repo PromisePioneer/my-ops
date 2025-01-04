@@ -317,11 +317,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [BranchesController::class, 'data']);
             Route::get('/search', [BranchesController::class, 'search']);
             Route::post('/', [BranchesController::class, 'store']);
-            Route::get('/structure-orgranization/{branch}', [BranchesController::class, 'structureOrgranization']);
-            Route::get(
-                '/structure-orgranization/data/{branch}', [BranchesController::class, 'structureOrgranizationData']
-            );
             Route::get('/show/{branch}', [BranchesController::class, 'show']);
+            Route::get('/sub-branch/detail/{branch}', [BranchesController::class, 'subBranchDetail']);
             Route::post('/update/{branch}', [BranchesController::class, 'update']);
             Route::post('/destroy/', [BranchesController::class, 'destroy']);
         });
@@ -798,8 +795,8 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::post('/destroy', [CentralWarehouseStockController::class, 'destroy']);
                 Route::post('/confirm', [CentralWarehouseStockController::class, 'confirm']);
                 Route::get('/data/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'data']);
-                Route::post('generate-sn/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'generateSNAndCode']);
-                Route::post('generate-code-without-sn/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'generateCentralWarehouseItemCodeIfSNDoesntExists']);
+                Route::post('generate-sn-if-exists/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'generateSNIfExists']);
+                Route::post('generate-sn-if-not-exists/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'generateSNIfNotExists']);
                 Route::get('/edit/{centralWarehouseStock}', [CentralWarehouseStockController::class, 'edit']);
                 Route::post('/update/{centralWarehouseStock}', [CentralWarehouseStockController::class, 'update']);
                 Route::get('/search/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'search']);

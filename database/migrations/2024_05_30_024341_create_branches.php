@@ -11,11 +11,12 @@ class CreateBranches extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('branches', static function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique();
+            $table->foreignId('parent_id')->nullable()->constrained('branches')->cascadeOnDelete();
+            $table->string('code')->nullable()->unique();
             $table->string('name');
             $table->text('address');
             $table->timestamps();

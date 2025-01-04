@@ -12,36 +12,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
-/**
- * @property int $id
- * @property int|null $branch_id
- * @property string $code
- * @property string $name
- * @property float $debit_balance
- * @property float $credit_balance
- * @property float $balance
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Collection<int, AccountTransaction> $accountTransaction
- * @property-read int|null $account_transaction_count
- * @property-read Branch|null $branch
- * @property-read int|null $sub_account_count
- *
- * @method static Builder|Account newModelQuery()
- * @method static Builder|Account newQuery()
- * @method static Builder|Account query()
- * @method static Builder|Account whereBalance($value)
- * @method static Builder|Account whereBranchId($value)
- * @method static Builder|Account whereCode($value)
- * @method static Builder|Account whereCreatedAt($value)
- * @method static Builder|Account whereCreditBalance($value)
- * @method static Builder|Account whereDebitBalance($value)
- * @method static Builder|Account whereId($value)
- * @method static Builder|Account whereName($value)
- * @method static Builder|Account whereUpdatedAt($value)
- *
- * @mixin Eloquent
- */
 class Account extends Model
 {
     use HasFactory;

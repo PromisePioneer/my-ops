@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Master\General;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Branch\BranchRequest;
 use App\Models\Branch;
-use App\Models\User;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -14,7 +13,6 @@ use Illuminate\View\View;
 
 class BranchesController extends Controller
 {
-
     private static int $perPage = 10;
 
     /**
@@ -32,7 +30,7 @@ class BranchesController extends Controller
     public function data(): JsonResponse
     {
         $this->authorize('view', Branch::class);
-        $branches = Branch::select('id', 'code', 'name', 'address')->paginate(10);
+        $branches = Branch::with('children')->whereNull('parent_id')->paginate(10);
 
         return response()->json($branches);
     }
@@ -67,54 +65,6 @@ class BranchesController extends Controller
         ], 200);
     }
 
-    public function structureOrgranization(Branch $branch): View
-    {
-        return view('pages.master.branch.structure-organization', compact('branch'));
-    }
-
-    public function structureOrgranizationData(Branch $branch): JsonResponse
-    {
-        $kacab = User::with('roles')->whereHas('roles', static function ($query) {
-            $query->where('name', 'Kepala Cabang');
-        })->where('branch_id', $branch->id)->first();
-
-        $accountant = User::with('roles')->whereHas('roles', static function ($query) {
-            $query->where('name', 'Accountant');
-        })->where('branch_id', $branch->id)->first();
-
-        $kca = User::with('roles')->whereHas('roles', static function ($query) {
-            $query->where('name', 'KCA');
-        })->where('branch_id', $branch->id)->get();
-
-        $wkca = User::with('roles')->whereHas('roles', static function ($query) {
-            $query->where('name', 'wkca');
-        })->where('branch_id', $branch->id)->get();
-
-        $frontOfficeUser = User::with('roles', 'department')->whereHas('department', function ($query) {
-            $query->where('name', 'Front Office');
-        })->where('branch_id', $branch->id)
-            ->get();
-
-        $backOfficeUser = User::with('roles', 'department')->whereHas('department', function ($query) {
-            $query->where('name', 'Back Office');
-        })->where('branch_id', $branch->id)
-            ->get();
-
-        $fieldWorkerUser = User::with('roles', 'department')->whereHas('department', function ($query) {
-            $query->where('name', 'Pekerja Lapangan');
-        })->where('branch_id', $branch->id)
-            ->get();
-
-        return response()->json([
-            'kacab' => $kacab,
-            'kca' => $kca,
-            'wkca' => $wkca,
-            'frontOfficeUser' => $frontOfficeUser,
-            'backOfficeUser' => $backOfficeUser,
-            'fieldWorkerUser' => $fieldWorkerUser,
-        ]);
-    }
-
     /**
      * @throws AuthorizationException
      */
@@ -125,11 +75,19 @@ class BranchesController extends Controller
         return response()->json($branch);
     }
 
+
+    public function subBranchDetail(Branch $branch): JsonResponse
+    {
+        $subBranch = Branch::with('parent')->where('id', $branch->id)->first();
+        return response()->json($subBranch);
+    }
+
     /**
      * @throws AuthorizationException
      */
     public function update(BranchRequest $request, Branch $branch): JsonResponse
     {
+
         $this->authorize('update', $branch);
         $branch->update($request->validated());
 

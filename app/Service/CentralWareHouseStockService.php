@@ -40,25 +40,16 @@ class CentralWareHouseStockService
     /**
      * @throws Throwable
      */
-    public function generateSNAndCode(CentralWarehouseItem $centralWarehouseItem, Request $request): void
+    public function generateSNIfExists(CentralWarehouseItem $centralWarehouseItem, Request $request): void
     {
         DB::transaction(function () use ($centralWarehouseItem, $request) {
             if ($centralWarehouseItem->qty <= 0) {
                 return response()->json(['message' => 'Barang yang belum terdaftar sudah habis'], 403);
             }
 
-            $lastStock = CentralWarehouseStock::where('central_warehouse_item_id', $centralWarehouseItem->id)
-                ->lockForUpdate()
-                ->latest()
-                ->first();
-
-            $array = explode('.', $lastStock?->code);
-            $startNumber = $lastStock ? (int)end($array) : 0;
-
             CentralWarehouseStock::create([
                 'central_warehouse_item_id' => $centralWarehouseItem->id,
                 'sn' => $request->sn,
-                'code' => $this->generateCodeWithNumber($centralWarehouseItem, $startNumber),
             ]);
             $centralWarehouseItem->decrement('qty');
         });
@@ -67,7 +58,7 @@ class CentralWareHouseStockService
     /**
      * @throws Throwable
      */
-    public function generateCentralWarehouseItemCodeIfSNDoesntExists(CentralWarehouseItem $centralWarehouseItem): void
+    public function generateSNIfNotExists(CentralWarehouseItem $centralWarehouseItem): void
     {
         DB::transaction(function () use ($centralWarehouseItem) {
             if ($centralWarehouseItem->qty <= 0) {
