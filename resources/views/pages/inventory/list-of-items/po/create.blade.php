@@ -146,6 +146,7 @@
                     await this.getBranchData();
                     await this.getItem();
                     await this.getUnitType();
+                    await this.getItemCategories();
                 },
                 async getSupplierData() {
                     $(".supplier-select2").select2({
@@ -159,6 +160,20 @@
                         },
                         ajax: {
                             url: '/inventory/list-of-items/po/supplier/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async getItemCategories() {
+                    $(".item-categories-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Kategori',
+                        ajax: {
+                            url: '/operational-master-data/items/item-categories/data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
