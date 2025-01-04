@@ -90,6 +90,9 @@ class CentralWareHouseStockService
     }
 
 
+    /**
+     * @throws Throwable
+     */
     public function destroy(Request $request, CentralWarehouseStock $centralWarehouseStock): void
     {
         $implodeID = implode(',', $request->get('id'));
@@ -102,6 +105,13 @@ class CentralWareHouseStockService
         });
     }
 
+    public function search(Request $request, CentralWarehouseItem $centralWarehouseItem): LengthAwarePaginator
+    {
 
-
+        $search = $request->input('search');
+        return CentralWarehouseStock::where('central_warehouse_item_id', $centralWarehouseItem->id)
+            ->when(!empty($search), function ($query) use ($search) {
+                $query->where('sn', 'like', '%' . $search . '%')->orWhere('code', 'like', '%' . $search . '%');
+            })->paginate(self::$perPage);
+    }
 }

@@ -317,7 +317,16 @@
                     }
                 },
                 async searchData() {
+                    try {
+                        const resp = await axios.get(`/inventory/list-of-items/central-warehouse-stocks/search/${this.id}`, {
+                            params: {search: this.search},
+                            headers: {'Content-Type': 'application/json'}
+                        });
 
+                        this.centralWarehouseStocks = resp.data;
+                    } catch (error) {
+                        console.log(error);
+                    }
                 },
                 async generateCodeAndSN() {
                     this.buttonLoading = true;

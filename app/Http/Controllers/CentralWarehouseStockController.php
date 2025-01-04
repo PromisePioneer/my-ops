@@ -23,6 +23,12 @@ use Throwable;
         return response()->json($this->centralWarehouseStockService->data($centralWarehouseItem));
     }
 
+
+    public function search(Request $request, CentralWarehouseItem $centralWarehouseItem): JsonResponse
+    {
+        return response()->json($this->centralWarehouseStockService->search($request, $centralWarehouseItem));
+    }
+
     /**
      * @throws Throwable
      */
@@ -54,7 +60,7 @@ use Throwable;
     }
 
 
-    public function update(Request $request, CentralWarehouseStock $centralWarehouseStock)
+    public function update(Request $request, CentralWarehouseStock $centralWarehouseStock): JsonResponse
     {
         $centralWarehouseStock->update([
             'sn' => $request->sn

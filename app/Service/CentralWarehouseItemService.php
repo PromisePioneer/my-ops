@@ -16,6 +16,4 @@ class CentralWarehouseItemService
     {
         return CentralWarehouseItem::with('item', 'warehouse', 'po', 'unitType')->withCount('centralWarehouseStock')->paginate(self::$perPage);
     }
-
-
 }

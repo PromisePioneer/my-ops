@@ -12,7 +12,6 @@ use Illuminate\View\View;
 
 #[AllowDynamicProperties] class CentralWarehouseItemController extends Controller
 {
-
     public function __construct()
     {
         $this->centralWarehouseItemService = new CentralWarehouseItemService();
@@ -55,5 +54,11 @@ use Illuminate\View\View;
             'central_warehouse_stock' => $centralWarehouseStock,
             'central_warehouse_item' => $centralWarehouseItemWithRelations
         ]);
+    }
+
+
+    public function distributeStock(): JsonResponse
+    {
+        return response()->json();
     }
 }
