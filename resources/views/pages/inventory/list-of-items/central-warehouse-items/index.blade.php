@@ -74,6 +74,10 @@
                                            class="btn btn-sm btn-light-primary">
                                             <i class="bi bi-box-arrow-in-right fw-bold"></i>
                                         </a>
+                                        <a :href="`/inventory/list-of-items/central-warehouse-items/detail/${item.id}`"
+                                           class="btn btn-sm btn-light-info">
+                                            <i class="bi bi-gear-wide-connected"></i>
+                                        </a>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -112,6 +116,20 @@
                 async init() {
                     await this.getCentralWarehouseStock();
                 },
+                async searchData() {
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/inventory/list-of-items/central-warehouse-items/search', {
+                            params: {search: this.search},
+                            headers: {'Content-Type': 'application/json'}
+                        });
+                        this.warehouseStocks = resp.data;
+                    } catch (error) {
+                        console.log(error);
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
                 async paginationEndPoint(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
@@ -139,7 +157,6 @@
                     } catch (e) {
                         console.log(e);
                     } finally {
-
                         this.isLoadingStock = false;
                     }
                 }

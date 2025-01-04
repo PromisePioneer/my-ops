@@ -19,7 +19,7 @@
                     <table class="table table-bordered table-row-gray-300 align-middle gs-0 gy-4">
                         <thead>
                         <tr>
-                            <template x-if="stock.centralWarehouseItem.item?.need_sn === 1">
+                            <template x-if="stock.centralWarehouseItem?.item?.need_sn === 1">
                                 <th class="text-center">SN</th>
                             </template>
                             <th class="text-center">Kode</th>
@@ -29,7 +29,7 @@
                         <tbody class="fw-bold">
                         <template x-for="stock in stock?.central_warehouse_stock?.data">
                             <tr>
-                                <template x-if="stock.centralWarehouseItem.item?.need_sn === 1">
+                                <template x-if="stock.centralWarehouseItem?.item?.need_sn === 1">
                                     <td class="text-center" x-text="stock.sn"></td>
                                 </template>
                                 <td class="text-center" x-text="stock.code"></td>

@@ -8,6 +8,7 @@ use App\Models\CentralWarehouseStock;
 use App\Service\CentralWarehouseItemService;
 use App\Service\CentralWareHouseStockService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 #[AllowDynamicProperties] class CentralWarehouseItemController extends Controller
@@ -26,6 +27,12 @@ use Illuminate\View\View;
     public function data(): JsonResponse
     {
         return response()->json($this->centralWarehouseItemService->data());
+    }
+
+
+    public function search(Request $request): JsonResponse
+    {
+        return response()->json($this->centralWarehouseItemService->search($request));
     }
 
 
