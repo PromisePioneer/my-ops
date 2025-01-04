@@ -63,12 +63,20 @@
                                :value="detailVal.ppn">
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <label class="form-label required">Total Harga</label>
+                        <input type="text" class="form-control form-control-solid" disabled
+                               :value="detailVal.total_price">
+                    </div>
+                </div>
             </div>
 
             <div class="modal-footer">
                 <div class="d-flex align-items-center justify-content-end">
                     <button class="btn btn-light-danger btn-sm" data-bs-dismiss="modal"
-                            aria-label="Close">Tutup
+                            aria-label="Close">
+                        Tutup
                     </button>
                 </div>
             </div>
