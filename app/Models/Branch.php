@@ -18,6 +18,7 @@ class Branch extends Model
         'name',
         'code',
         'address',
+        'parent_id',
     ];
 
     //relations

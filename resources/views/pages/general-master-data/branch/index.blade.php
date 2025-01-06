@@ -5,7 +5,8 @@
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             @include('pages.general-master-data.branch.modal.create')
             @include('pages.general-master-data.branch.modal.edit')
-            @include('pages.general-master-data.branch.modal.sub-branch-detail')
+            @include('pages.general-master-data.branch.modal.create-children')
+            @include('pages.general-master-data.branch.modal.children-detail')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -114,8 +115,8 @@
                                             <template x-for="(children, index) in branch.children" :key="index">
                                                 <li>
                                                     <button class="btn btn-link btn-sm" data-bs-toggle="modal"
-                                                            data-bs-target="#modal-sub-branch-detail"
-                                                            @click="subBranchDetail(children.id)">
+                                                            data-bs-target="#modal-children-detail"
+                                                            @click="edit(children.id)">
                                                         <i class="bi bi-geo-alt-fill"></i>
                                                         <span x-text="children.name"></span>
                                                     </button>
@@ -133,6 +134,14 @@
                                                 </i>
                                             </button>
                                         </template>
+                                        <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#modal-create-children"
+                                                @click="edit(branch.id)">
+                                            <i class="ki-duotone ki-add-folder">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </button>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -174,8 +183,11 @@
                 formEdit: document.getElementById('form-edit'),
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
+                modalCreateChildren: new bootstrap.Modal(document.getElementById('modal-create-children')),
                 formDelete: document.getElementById('form-delete'),
-                modalSubBranchDetail: new bootstrap.Modal(document.getElementById('modal-sub-branch-detail')),
+                formCreateChildren: document.getElementById('form-create-children'),
+                modalChildrenDetail: new bootstrap.Modal(document.getElementById('modal-children-detail')),
+                formChildrenDetail: document.getElementById('form-children-detail'),
                 showFormSubBranchDetail: false,
                 async init() {
                     await this.getBranchData();
@@ -271,6 +283,7 @@
                         this.buttonLoading = false;
                     }
                 },
+
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
@@ -283,8 +296,49 @@
                         }
                     });
                 },
-                async showFormSubDetail() {
-                    this.showFormSubBranchDetail = !this.showFormSubBranchDetail;
+                async saveChildren() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/general-master-data/branch/sub-branch/store`,
+                            new FormData(this.formCreateChildren))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.modalCreateChildren.hide();
+                        this.formCreateChildren.reset();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async updateChildren(id) {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/general-master-data/branch/sub-branch/update/${id}`, new FormData(this.formChildrenDetail))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.modalChildrenDetail.hide();
+                        this.formChildrenDetail.reset();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async destroyChildren(id) {
+                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                        try {
+                            await axios.delete(`/general-master-data/branch/sub-branch/destroy/${id}`, new FormData(this.formDelete));
+                            this.modalChildrenDetail.hide();
+                            await showAlert('success', 'Data sukses dihapus');
+                            await this.init();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
                 }
             }
         }

@@ -26,7 +26,13 @@
                                         class="form-select form-select-solid branch-select2">
                                     <option></option>
                                 </select>
-                                <p class="text-danger mt-2">Kosongkan jika barang untuk kantor pusat</p>
+                                <p class="text-danger mt-2">Kosongkan jika barang untuk stok gudang</p>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="col-form-label required fw-bold fs-6">Tanggal</label>
+                                <input type="date" name="date"
+                                       class="form-control form-control-lg form-control-solid date"
+                                       placeholder="Tanggal"/>
                             </div>
                         </div>
                         <div class="row mb-4">
@@ -95,20 +101,14 @@
                                        class="form-control form-control-lg form-control-solid"
                                        placeholder="Resi Surat Jalan" name="travel_letter_receipt"/>
                             </div>
-                            <div class="col-lg-6">
-                                <label class="col-form-label required fw-bold fs-6">Tanggal Masuk</label>
-                                <input type="date" name="date"
-                                       class="form-control form-control-lg form-control-solid date"
-                                       placeholder="Tanggal Masuk"/>
-                            </div>
                         </div>
 
                         <div class="separator py-2"></div>
 
                         <div class="d-flex mt-4">
-                            <div class="form-check form-check-custom form-check-solid">
+                            <div class="form-check form-switch form-check-custom form-check-solid">
                                 <input class="form-check-input" type="checkbox" value="0" name="ppn"
-                                       id="ppn"/>
+                                       id="flexCheckChecked"/>
                                 <label class="form-check-label fw-bold" for="flexCheckChecked">
                                     Tambahkan PPN
                                 </label>

@@ -1,9 +1,9 @@
 @extends('layouts.template')
 @section('page-title', 'Daftarkan Barang')
 @section('content')
-    <div x-data="centralWarehouseItemDetailData()">
-        @include('pages.inventory.list-of-items.central-warehouse-items.modal.create-sn')
-        @include('pages.inventory.list-of-items.central-warehouse-items.modal.edit-item')
+    <div x-data="branchWarehouseItemDetailData()">
+        {{--        @include('pages.inventory.list-of-items.central-warehouse-items.modal.edit-item')--}}
+        @include('pages.inventory.list-of-items.branch-warehouse-items.modal.create-sn')
         <div class="row">
             <div class="col-lg-6">
                 <div class="card card-xl-stretch mb-5 mb-xl-8">
@@ -19,22 +19,22 @@
                                 <tr class="fw-bold ">
                                     <th class="w-25">Tanggal Masuk</th>
                                     <th class="w-10px">:</th>
-                                    <th x-text="formatDate(centralWarehouseItem?.po.date)"></th>
+                                    <th x-text="formatDate(branchWarehouseItem?.po.date)"></th>
                                 </tr>
                                 <tr class="fw-bold">
                                     <th>Nama Barang</th>
                                     <th>:</th>
-                                    <th x-text="centralWarehouseItem?.item.name"></th>
+                                    <th x-text="branchWarehouseItem?.item.name"></th>
                                 </tr>
                                 <tr class="fw-bold">
                                     <th>Kuantitas</th>
                                     <th>:</th>
-                                    <th x-text="`${centralWarehouseItem?.qty} ${centralWarehouseItem?.unit_type.name}`"></th>
+                                    <th x-text="`${branchWarehouseItem?.qty} ${branchWarehouseItem?.unit_type.name}`"></th>
                                 </tr>
                                 <tr class="fw-bold">
-                                    <th>Lokasi Gudang</th>
+                                    <th>Lokasi Cabang</th>
                                     <th>:</th>
-                                    <th x-text="centralWarehouseItem?.warehouse.name"></th>
+                                    <th x-text="branchWarehouseItem?.branch.name"></th>
                                 </tr>
                                 </thead>
                                 <tbody class="fw-bold">
@@ -81,10 +81,10 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-                    <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                    <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                             <template
-                                x-if="centralWarehouseItem?.item?.need_sn === 0 && centralWarehouseItem?.qty !== 0">
+                                x-if="branchWarehouseItem?.item?.need_sn === 0 && branchWarehouseItem?.qty !== 0">
                                 <button type="button" class="btn btn-light-primary btn-sm"
                                         @click="generateCodeWithoutSN()">
                                     <i class="ki-duotone ki-message-add fs-2">
@@ -95,7 +95,7 @@
                                 </button>
                             </template>
                             <template
-                                x-if="centralWarehouseItem?.item?.need_sn === 1 && centralWarehouseItem?.qty !== 0">
+                                x-if="branchWarehouseItem?.item?.need_sn === 1 && branchWarehouseItem?.qty !== 0">
                                 <button type="button" class="btn btn-light-primary btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modal-sn-create">
@@ -147,12 +147,11 @@
                                                @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
-                                <template x-if="centralWarehouseItem?.item?.need_sn === 1">
+                                <template x-if="branchWarehouseItem?.item?.need_sn === 1">
                                     <th class="min-w-125px">SN</th>
                                 </template>
-                                <th class="min-w-125px">Kode Barang</th>
                                 <th class="min-w-125px">Status</th>
-                                <template x-if="centralWarehouseItem?.item?.need_sn === 1">
+                                <template x-if="branchWarehouseItem?.item?.need_sn === 1">
                                     <th class="min-w-125px">Actions</th>
                                 </template>
                             </thead>
@@ -178,8 +177,7 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-for="stock in centralWarehouseStocks?.data"
-                                      :key="stock.id">
+                            <template x-for="stock in centralWarehouseStocks?.data" :key="stock.id">
                                 <tbody class="fw-bold text-center">
                                 <tr>
                                     <td>
@@ -191,10 +189,7 @@
                                             </div>
                                         </template>
                                     </td>
-                                    <template x-if="centralWarehouseItem?.item?.need_sn === 1">
-                                        <td x-text="stock.sn"></td>
-                                    </template>
-                                    <td x-text="stock.code"></td>
+                                    <td x-text="stock.sn"></td>
                                     <template x-if="stock.status === 0">
                                         <td>
                                             <button class="btn btn-sm btn-light-danger">
@@ -213,7 +208,7 @@
                                     </template>
                                     <td>
                                         <template
-                                            x-if="centralWarehouseItem?.item?.need_sn === 1 && stock.status === 0">
+                                            x-if="branchWarehouseItem?.item?.need_sn === 1 && stock.status === 0">
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modal-item-edit" @click="editItem(stock.id)">
                                                 <i class="ki-duotone ki-pencil fs-2">
@@ -249,12 +244,12 @@
 @endsection
 @push('script')
     <script>
-        function centralWarehouseItemDetailData() {
+        function branchWarehouseItemDetailData() {
             return {
                 buttonLoading: false,
                 isLoading: false,
-                id: "{{ $centralWarehouseItem->id }}",
-                centralWarehouseItem: null,
+                id: "{{ $branchWarehouseItem->id }}",
+                branchWarehouseItem: null,
                 centralWarehouseStocks: [],
                 selectedCheckBox: [],
                 selectAll: false,
@@ -264,7 +259,7 @@
                 formCreateSN: document.getElementById('form-sn-create'),
                 formConfirm: document.getElementById('form-confirm'),
                 formDelete: document.getElementById('form-delete'),
-                modalEditItem: new bootstrap.Modal(document.getElementById('modal-item-edit')),
+                // modalEditItem: new bootstrap.Modal(document.getElementById('modal-item-edit')),
                 formEditItem: document.getElementById('form-item-edit'),
                 editVal: '',
                 async init() {
@@ -302,14 +297,14 @@
                     }
                 },
                 async getCentralWarehouseStock() {
-                    const resp = await axios.get(`/inventory/list-of-items/central-warehouse-stocks/data/${this.id}`);
+                    const resp = await axios.get(`/inventory/list-of-items/branch-warehouse-stocks/data/${this.id}`);
                     this.centralWarehouseStocks = resp.data;
                 },
                 async getCentralWarehouseItem() {
                     this.isLoading = true;
                     try {
-                        const resp = await axios.get(`/inventory/list-of-items/central-warehouse-items/detail/data/${this.id}`);
-                        this.centralWarehouseItem = resp.data;
+                        const resp = await axios.get(`/inventory/list-of-items/branch-warehouse-items/detail/data/${this.id}`);
+                        this.branchWarehouseItem = resp.data;
                     } catch (e) {
                         console.log(e)
                     } finally {
@@ -318,7 +313,7 @@
                 },
                 async searchData() {
                     try {
-                        const resp = await axios.get(`/inventory/list-of-items/central-warehouse-stocks/search/${this.id}`, {
+                        const resp = await axios.get(`/inventory/list-of-items/brach-warehouse-stocks/search/${this.id}`, {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -331,20 +326,18 @@
                 async generateCodeAndSN() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/inventory/list-of-items/central-warehouse-stocks/generate-sn/${this.id}`, new FormData(this.formCreateSN))
+                        await axios.post(`/inventory/list-of-items/branch-warehouse-stocks/generate-sn/${this.id}`, new FormData(this.formCreateSN))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreateSN.reset();
                         this.modalCreateSN.hide();
                         await this.init();
                     } catch (error) {
-                        if (this.centralWarehouseItem?.qty === 0) {
+                        if (this.branchWarehouseItem?.qty === 0) {
                             toastr.error(error.response.data.message);
                         } else {
                             const respError = error.response.data.errors;
                             Object.keys(respError).map(err => toastr.error(respError[err][0]))
                         }
-
-
                     } finally {
                         this.buttonLoading = false;
                     }
@@ -352,13 +345,13 @@
                 async generateCodeWithoutSN() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/inventory/list-of-items/central-warehouse-stocks/generate-code-without-sn/${this.id}`, new FormData(this.formCreateSN))
+                        await axios.post(`/inventory/list-of-items/branch-warehouse-stocks/generate-sn-if-not-exists/${this.id}`, new FormData(this.formCreateSN))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreateSN.reset();
                         this.modalCreateSN.hide();
                         await this.init();
                     } catch (error) {
-                        if (this.centralWarehouseItem?.qty === 0) {
+                        if (this.branchWarehouseItem?.qty === 0) {
                             toastr.error(error.response.data.message);
                         } else {
                             const respError = error.response.data.errors;
@@ -369,13 +362,13 @@
                     }
                 },
                 async editItem(id) {
-                    const resp = await axios.get(`/inventory/list-of-items/central-warehouse-stocks/edit/${id}`);
+                    const resp = await axios.get(`/inventory/list-of-items/branch-warehouse-stocks/edit/${id}`);
                     this.editVal = resp.data;
                 },
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/inventory/list-of-items/central-warehouse-stocks/update/${id}`, new FormData(this.formEditItem))
+                        await axios.post(`/inventory/list-of-items/branch-warehouse-stocks/update/${id}`, new FormData(this.formEditItem))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formEditItem.reset();
                         this.modalEditItem.hide();
@@ -390,7 +383,7 @@
                 async confirm() {
                     showConfirmModal("Anda yakin?", "Data tidak bisa dihapus atau diubah jika di konfirmasi.", "Ya, Konfirmasi!", async () => {
                         try {
-                            await axios.post(`/inventory/list-of-items/central-warehouse-stocks/confirm`, new FormData(this.formConfirm));
+                            await axios.post(`/inventory/list-of-items/branch-warehouse-stocks/confirm`, new FormData(this.formConfirm));
                             await showAlert('success', 'Data sukses dikonfirmasi');
                             await this.init();
                         } catch (error) {
@@ -401,7 +394,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/inventory/list-of-items/central-warehouse-stocks/destroy`, new FormData(this.formDelete));
+                            await axios.post(`/inventory/list-of-items/branch-warehouse-stocks/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {

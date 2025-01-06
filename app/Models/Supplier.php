@@ -37,11 +37,11 @@ class Supplier extends Model
 
     public function getSelectedData(int $supplierId): array
     {
-        $contact = self::where('id', $supplierId)->first();
+        $supplier = self::where('id', $supplierId)->first();
 
         return [
-            'id' => $contact->id,
-            'name' => $contact->name,
+            'id' => $supplier->id,
+            'name' => $supplier->name,
         ];
     }
 }

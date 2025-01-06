@@ -15,7 +15,6 @@ class CreateBranches extends Migration
     {
         Schema::create('branches', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('parent_id')->nullable()->constrained('branches')->cascadeOnDelete();
             $table->string('code')->nullable()->unique();
             $table->string('name');
             $table->text('address');

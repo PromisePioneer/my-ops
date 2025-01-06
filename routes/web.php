@@ -18,6 +18,8 @@ use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\BAAController;
+use App\Http\Controllers\BranchWarehouseItemController;
+use App\Http\Controllers\BranchWarehouseStockController;
 use App\Http\Controllers\CentralWarehouseItemController;
 use App\Http\Controllers\CentralWarehouseStockController;
 use App\Http\Controllers\HomeController;
@@ -319,8 +321,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/', [BranchesController::class, 'store']);
             Route::get('/show/{branch}', [BranchesController::class, 'show']);
             Route::get('/sub-branch/detail/{branch}', [BranchesController::class, 'subBranchDetail']);
-            Route::post('/update/{branch}', [BranchesController::class, 'update']);
+            Route::post('/sub-branch/store', [BranchesController::class, 'storeChildren']);
+            Route::post('/sub-branch/update/{branch}', [BranchesController::class, 'updateChildren']);
             Route::post('/destroy/', [BranchesController::class, 'destroy']);
+            Route::delete('/sub-branch/destroy/{branch}', [BranchesController::class, 'destroyChildren']);
         });
 
 
@@ -765,7 +769,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/supplier/data', [PoListOfItemController::class, 'getSupplierData']);
                 Route::get('/supplier/selected/{poListOfItem}', [PoListOfItemController::class, 'selectedSupplier']);
                 Route::get('/unit-types/data', [PoListOfItemController::class, 'getUnitType']);
-                Route::get('/unit-types/selected', [PoListOfItemController::class, 'selectedUnitType']);
+                Route::get('/unit-types/selected/{poListOfItem}', [PoListOfItemController::class, 'selectedUnitType']);
                 Route::get('/branch/data', [PoListOfItemController::class, 'getBranchData']);
                 Route::get('/branch/selected/{poListOfItem}', [PoListOfItemController::class, 'selectedBranch']);
                 Route::post('/store', [PoListOfItemController::class, 'store']);
@@ -800,6 +804,27 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/edit/{centralWarehouseStock}', [CentralWarehouseStockController::class, 'edit']);
                 Route::post('/update/{centralWarehouseStock}', [CentralWarehouseStockController::class, 'update']);
                 Route::get('/search/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'search']);
+            });
+
+
+            Route::prefix('branch-warehouse-items')->group(function () {
+                Route::get('/', [BranchWarehouseItemController::class, 'index']);
+                Route::get('/data', [BranchWarehouseItemController::class, 'data']);
+                Route::get('/search', [BranchWarehouseItemController::class, 'search']);
+                Route::get('/detail/{branchWarehouseItem}', [BranchWarehouseItemController::class, 'detail']);
+                Route::get('/detail/data/{branchWarehouseItem}', [BranchWarehouseItemController::class, 'detailData']);
+            });
+
+
+            Route::prefix('branch-warehouse-stocks')->group(function () {
+                Route::post('/destroy', [BranchWarehouseStockController::class, 'destroy']);
+                Route::post('/confirm', [BranchWarehouseStockController::class, 'confirm']);
+                Route::get('/data/{branchWarehouseItem}', [BranchWarehouseStockController::class, 'data']);
+                Route::post('generate-sn/{branchWarehouseItem}', [BranchWarehouseStockController::class, 'generateSNIfExists']);
+                Route::post('generate-sn-if-not-exists/{branchWarehouseItem}', [BranchWarehouseStockController::class, 'generateSNIfNotExists']);
+                Route::get('/edit/{branchWarehouseStock}', [BranchWarehouseStockController::class, 'edit']);
+                Route::post('/update/{branchWarehouseStock}', [BranchWarehouseStockController::class, 'update']);
+                Route::get('/search/{branchWarehouseItem}', [BranchWarehouseStockController::class, 'search']);
             });
 
         });

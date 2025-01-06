@@ -14,6 +14,22 @@
                     <form id="form" @submit.prevent="save()">
                         <div class="row mb-4">
                             <div class="col-md-6">
+                                <label class="col-form-label required fw-bold fs-6">Cabang</label>
+                                <select name="supplier_id" id="selected-branch"
+                                        class="form-select form-select-solid branch-select2">
+                                    <option></option>
+                                </select>
+                                <span class="text-danger">Kosongkan jika barang untuk stok gudang</span>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="col-form-label required fw-bold fs-6">Tanggal</label>
+                                <input type="date" name="date"
+                                       class="form-control form-control-lg form-control-solid date"
+                                       placeholder="Tanggal" value="{{ $poListOfItem->date }}"/>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
                                 <label class="col-form-label required fw-bold fs-6">No. Invoice</label>
                                 <input type="text" class="form-control form-control-solid" name="invoice_number"
                                        id="invoice_number"
@@ -49,7 +65,7 @@
                             </div>
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">Supplier</label>
-                                <select name="supplier_id" id="selected-po-list-items"
+                                <select name="supplier_id" id="selected-supplier"
                                         class="form-select form-select-solid supplier-select2">
                                     <option></option>
                                 </select>
@@ -63,6 +79,13 @@
                                        id="qty"
                                        placeholder="Kuantitas" value="{{ $poListOfItem->qty }}">
                             </div>
+                            <div class="col-lg-6">
+                                <label class="col-form-label required fw-bold fs-6">Satuan</label>
+                                <select name="unit_type_id" id="selected-unit-type"
+                                        class="form-select form-select-solid unit-type-select2">
+                                    <option></option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="row mb-4">
@@ -73,18 +96,12 @@
                                        placeholder="Resi Surat Jalan" name="travel_letter_receipt"
                                        value="{{ $poListOfItem->travel_letter_receipt }}"/>
                             </div>
-                            <div class="col-lg-6">
-                                <label class="col-form-label required fw-bold fs-6">Tanggal Masuk</label>
-                                <input type="date" name="date"
-                                       class="form-control form-control-lg form-control-solid date"
-                                       placeholder="Tanggal Masuk" value="{{ $poListOfItem->date }}"/>
-                            </div>
                         </div>
 
                         <div class="separator py-2"></div>
 
                         <div class="d-flex mt-4">
-                            <div class="form-check form-check-custom form-check-solid">
+                            <div class="form-check form-switch form-check-custom form-check-solid">
                                 <input class="form-check-input" type="checkbox" name="ppn"
                                        id="ppn" {{ $poListOfItem->ppn ? 'checked' : ''}}/>
                                 <label class="form-check-label fw-bold" for="flexCheckChecked">
@@ -92,8 +109,6 @@
                                 </label>
                             </div>
                         </div>
-
-                        {{--                        {{ dd($poListOfItem->ppn ? 'checked' : 'hehe') }}--}}
 
                         <div class="float-end d-flex py-6 px-9">
                             <button type="reset" class="btn btn-light btn-active-light-primary me-2 btn-sm">Reset
@@ -131,10 +146,14 @@
                 itemForm: document.getElementById('form-item-create'),
                 form: document.getElementById('form'),
                 async init() {
+                    await this.getBranchData();
                     await this.getSupplierData();
                     await this.selectedSupplier();
                     await this.getItem();
                     await this.selectedItem();
+                    await this.selectedBranch();
+                    await this.getUnitType();
+                    await this.selectedUnitType();
                 },
                 async getSupplierData() {
                     $(".supplier-select2").select2({
@@ -171,15 +190,90 @@
                         this.buttonLoading = false;
                     }
                 },
+                async getBranchData() {
+                    $(".branch-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Cabang",
+                        ajax: {
+                            url: '/inventory/list-of-items/po/branch/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                getUnitType() {
+                    $(".unit-type-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Satuan",
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-unit-type-create">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
+                        ajax: {
+                            url: '/inventory/list-of-items/po/unit-types/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async saveUnitTypes() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/general-master-data/unit-types/', new FormData(this.unitTypeForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.unitTypeForm.reset();
+                        this.unitTypeModal.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async selectedBranch() {
+                    const selectedBranch = $('#selected-branch');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/inventory/list-of-items/po/branch/selected/${this.id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedBranch.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
+                async selectedUnitType() {
+                    const selectedUnitType = $('#selected-unit-type');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/inventory/list-of-items/po/unit-types/selected/${this.id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedUnitType.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
                 async selectedSupplier() {
-                    const selectedBranch = $('#selected-po-list-items');
+                    const selectedSupplier = $('#selected-supplier');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
                         url: `/inventory/list-of-items/po/supplier/selected/${this.id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
-                    selectedBranch.append(option).trigger('change').trigger({
+                    selectedSupplier.append(option).trigger('change').trigger({
                         type: 'select2:select',
                         params: {results: response}
                     });

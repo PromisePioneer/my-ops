@@ -23,12 +23,14 @@
                                    placeholder="Tanggal Masuk">
                         </div>
                         <div class="col-lg-6">
-                            <label class="form-label required">Lokasi Barang</label>
-                            <select name="warehouse_id" id="warehouse_id"
+                            <template x-if="detailVal.branch_id === null ">
+                                <label class="form-label required">Tujuan Barang</label>
+                                <select name="warehouse_id" id="warehouse_id"
                                     class="form-select form-select-solid warehouse-select2"
                                     data-dropdown-parent="#modal-confirm">
                                 <option></option>
-                            </select>
+                                </select>
+                            </template>
                         </div>
                     </div>
                     <div class="row mb-4">

@@ -1,9 +1,10 @@
 @extends('layouts.template')
-@section('page-title', 'Inventory Controller - Stok Barang Pusat')
+@section('page-title', 'Inventory Controller - Stok Barang Cabang')
 @section('content')
     <div x-data="warehouseStocksData()">
-        @include('pages.inventory.list-of-items.central-warehouse-items.modal.item-distribution')
-        @include('pages.inventory.list-of-items.central-warehouse-items.modal.detail')
+        {{--        @include('pages.inventory.list-of-items.branch-warehouse-items.modal.item-distribution')--}}
+        {{--        @include('pages.inventory.list-of-items.branch-warehouse-items.modal.detail')--}}
+
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -28,7 +29,7 @@
                                 <th class="min-w-125px">No.PO</th>
                                 <th class="min-w-125px">Barang</th>
                                 <th class="min-w-125px">Belum diberi Kode/SN</th>
-                                <th class="min-w-125px">Sudah diberi Kode/SN</th>
+                                {{--                                <th class="min-w-125px">Sudah diberi Kode/SN</th>--}}
                                 <th class="min-w-125px">Lokasi</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
@@ -60,21 +61,21 @@
                                     <td x-text="startIndex + index++"></td>
                                     <td x-text="item.po.po_number"></td>
                                     <td x-text="item.item.name"></td>
-                                    <td x-text="`${item.qty} ${item.unit_type.name}`"></td>
+                                    <td x-text="`${item.qty} ${item.unit_type?.name}`"></td>
+                                    {{--                                    <td>--}}
+                                    {{--                                        <a href="#" @click="getStock(item.id)" data-bs-toggle="modal"--}}
+                                    {{--                                           data-bs-target="#modal-get-stocks"--}}
+                                    {{--                                           class="btn btn-sm btn-link link-info"--}}
+                                    {{--                                           x-text="`${item.central_warehouse_stock_count} ${item.unit_type.name}`">--}}
+                                    {{--                                        </a>--}}
+                                    {{--                                    </td>--}}
+                                    <td x-text="`${item.branch.name} (${item.branch.code})`"></td>
                                     <td>
-                                        <a href="#" @click="getStock(item.id)" data-bs-toggle="modal"
-                                           data-bs-target="#modal-get-stocks"
-                                           class="btn btn-sm btn-link link-info"
-                                           x-text="`${item.central_warehouse_stock_count} ${item.unit_type.name}`">
-                                        </a>
-                                    </td>
-                                    <td x-text="`${item.warehouse.name} (${item.warehouse.code})`"></td>
-                                    <td>
-                                        <a :href="`/inventory/list-of-items/central-warehouse-items/detail/${item.id}`"
+                                        <a :href="`/inventory/list-of-items/branch-warehouse-items/detail/${item.id}`"
                                            class="btn btn-sm btn-light-primary">
                                             <i class="bi bi-box-arrow-in-right fw-bold"></i>
                                         </a>
-                                        <a :href="`/inventory/list-of-items/central-warehouse-items/detail/${item.id}`"
+                                        <a :href="`/inventory/list-of-items/branch-warehouse-items/detail/${item.id}`"
                                            class="btn btn-sm btn-light-info">
                                             <i class="bi bi-gear-wide-connected"></i>
                                         </a>
@@ -111,7 +112,8 @@
                 isLoadingStock: false,
                 search: '',
                 editVal: '',
-                modalGetStock: new bootstrap.Modal(document.getElementById('modal-get-stocks')),
+                // modalGetStock: new bootstrap.Modal(document.getElementById('modal-get-stocks')),
+
 
                 async init() {
                     await this.getCentralWarehouseStock();
@@ -119,7 +121,7 @@
                 async searchData() {
                     this.isLoading = true;
                     try {
-                        const resp = await axios.get('/inventory/list-of-items/central-warehouse-items/search', {
+                        const resp = await axios.get('/inventory/list-of-items/branch-warehouse-items/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -145,7 +147,7 @@
                     }
                 },
                 async getCentralWarehouseStock() {
-                    const resp = await axios.get('/inventory/list-of-items/central-warehouse-items/data');
+                    const resp = await axios.get('/inventory/list-of-items/branch-warehouse-items/data');
                     this.warehouseStocks = resp.data;
                     this.startIndex = this.warehouseStocks.from;
                 },

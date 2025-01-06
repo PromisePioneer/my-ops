@@ -15,6 +15,15 @@
             </div>
 
             <div class="modal-body">
+                <template x-if="detailVal.branch_id !== null">
+                    <div class="row mb-4">
+                        <div class="col-lg-6">
+                            <label class="form-label required">Cabang</label>
+                            <input type="text" disabled class="form-control form-control-solid"
+                                   :value="detailVal?.branch_name">
+                        </div>
+                    </div>
+                </template>
                 <div class="row mb-4">
                     <div class="col-lg-6">
                         <label class="form-label required">No. PO</label>

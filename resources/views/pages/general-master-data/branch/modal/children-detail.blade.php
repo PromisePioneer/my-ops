@@ -1,8 +1,8 @@
-<div class="modal fade" tabindex="-1" id="modal-create-children">
+<div class="modal fade" tabindex="-1" id="modal-children-detail">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form Sub Cabang</h5>
+                <h5 class="modal-title">Form Cabang</h5>
                 <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
@@ -14,29 +14,31 @@
                 </div>
             </div>
 
-            <form id="form-create-children" @submit.prevent="saveChildren()">
+            <form id="form-children-detail" @submit.prevent="updateChildren(editVal.id)">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Cabang</label>
-                        <input type="hidden" name="parent_id" id="parent_id" :value="editVal.id">
-                        <input type="text" class="form-control form-control-solid"
-                               :value="editVal.name" disabled/>
-                    </div>
-                    <div class="mb-10">
                         <label for="name" class="required form-label">Nama Sub Cabang</label>
-                        <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama Sub Cabang"/>
+                        <input type="text" name="name" id="name" class="form-control form-control-solid"
+                               :value="editVal.name"/>
                     </div>
-
-
                     <div class="mb-10">
                         <label for="name" class="required form-label">Alamat</label>
-                        <textarea class="form-control form-control-solid" name="address" id="address"
-                                  data-kt-autosize="true" placeholder="Alamat"></textarea>
+                        <textarea type="text" class="form-control form-control-solid" name="address" id="address"
+                                  x-text="editVal.address"></textarea>
                     </div>
                 </div>
 
-                <div class="modal-footer">
+
+                <div class="modal-footer d-flex justify-content-between align-items-center">
+                    <button type="button" class="btn btn-light-danger btn-sm" @click="destroyChildren(editVal.id)" :disabled="buttonLoading">
+                        <i class="ki-duotone ki-trash-square fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                            <span class="path4"></span>
+                        </i>
+                        <span x-text="buttonLoading ? 'Loading...' : 'Hapus'"></span>
+                    </button>
                     <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
                         <i class="ki-duotone ki-click fs-2">
                             <span class="path1"></span>

@@ -10,11 +10,21 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('branches_stocks', function (Blueprint $table) {
+        Schema::create('branch_warehouse_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('central_warehouse_stock_id')->constrained('central_warehouse_stocks');
-            $table->foreignId('branch_id')->constrained('branches');
-            $table->string('code')->unique();
+            $table->foreignId('po_item_id')->constrained('po_list_of_items');
+            $table->foreignId('central_warehouse_stock_id')->nullable()
+                ->constrained('central_warehouse_stocks')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+            $table->foreignId('branch_id')->constrained('branches')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('item_id')->constrained('items')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->integer('qty');
+            $table->foreignId('unit_type_id')->constrained('unit_types');
             $table->timestamps();
         });
     }
@@ -24,6 +34,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('branches_warehouse_items');
     }
 };

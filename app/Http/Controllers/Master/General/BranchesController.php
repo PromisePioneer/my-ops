@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Master\General;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BranchChildrenRequest;
 use App\Http\Requests\Master\Branch\BranchRequest;
 use App\Models\Branch;
 use Exception;
@@ -43,7 +44,7 @@ class BranchesController extends Controller
         $this->authorize('view', Branch::class);
 
         $search = $request->input('search');
-        $branchSearch = Branch::when(!empty($search), function ($query) use ($search) {
+        $branchSearch = Branch::with('children')->when(!empty($search), function ($query) use ($search) {
             return $query->where('code', 'like', '%'.$search.'%')
                 ->orWhere('name', 'like', '%'.$search.'%')
                 ->orWhere('address', 'like', '%'.$search.'%');
@@ -51,6 +52,7 @@ class BranchesController extends Controller
 
         return response()->json($branchSearch);
     }
+
 
     /**
      * @throws AuthorizationException
@@ -96,6 +98,27 @@ class BranchesController extends Controller
         ]);
     }
 
+
+    public function storeChildren(BranchChildrenRequest $request, Branch $branch): JsonResponse
+    {
+        Branch::create([
+            'name' => $request->name,
+            'parent_id' => $request->parent_id,
+            'address' => $request->address
+        ]);
+        return response()->json(['message' => 'data berhasil disimpan']);
+    }
+
+
+    public function updateChildren(BranchChildrenRequest $request, Branch $branch): JsonResponse
+    {
+        $branch->update([
+            'name' => $request->name,
+            'address' => $request->address
+        ]);
+        return response()->json(['message' => 'data berhasil disimpan']);
+    }
+
     /**
      * @throws Exception
      */
@@ -109,5 +132,12 @@ class BranchesController extends Controller
         return response()->json([
             'message' => 'data berhasil dihapus',
         ], 200);
+    }
+
+
+    public function destroyChildren(Branch $branch): JsonResponse
+    {
+        $branch->delete();
+        return response()->json(['message' => 'data berhasil dihapus']);
     }
 }

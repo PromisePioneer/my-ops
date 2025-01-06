@@ -10,9 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('central_warehouse_stocks', function (Blueprint $table) {
+        Schema::create('branch_warehouse_stocks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('central_warehouse_item_id')->constrained('central_warehouse_items');
+            $table->foreignId('branch_warehouse_item_id')
+                ->constrained('branch_warehouse_items')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->string('sn')->unique();
             $table->boolean('status')->default(false);
             $table->timestamps();
@@ -24,6 +27,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('central_warehouse_stocks');
+        Schema::dropIfExists('branch_warehouse_stocks');
     }
 };

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use AllowDynamicProperties;
 use App\Http\Requests\PoListOfItemRequest;
 use App\Models\Branch;
+use App\Models\BranchWarehouseItem;
 use App\Models\CentralWarehouseItem;
 use App\Models\Item;
 use App\Models\ItemCategory;
@@ -96,7 +97,7 @@ use function App\Helper\formatDate;
 
     public function selectedSupplier(PoListOfItem $poListOfItem): JsonResponse
     {
-        return response()->json($this->supplier->getSelectedData($poListOfItem->id));
+        return response()->json($this->supplier->getSelectedData($poListOfItem->supplier_id));
     }
 
     public function selectedBranch(PoListOfItem $poListOfItem): JsonResponse
@@ -113,6 +114,8 @@ use function App\Helper\formatDate;
     {
         return response()->json([
             'id' => $poListOfItem->id,
+            'branch_id' => $poListOfItem->branch_id,
+            'branch_name' => $poListOfItem->branch?->name,
             'po_number' => $poListOfItem->po_number,
             'invoice_number' => $poListOfItem->invoice_number,
             'name' => $poListOfItem->item->name,
@@ -164,15 +167,28 @@ use function App\Helper\formatDate;
                 ]);
             }
 
-            CentralWarehouseItem::create([
-                'date' => $request->date,
-//                'sn' => $this->centralWareHouseStockService->generateSN($poListOfItem),
-                'po_items_id' => $poListOfItem->id,
-                'warehouse_id' => $request->warehouse_id,
-                'item_id' => $poListOfItem->item_id,
-                'qty' => $request->qty_can_be_used,
-                'unit_type_id' => $poListOfItem->unit_type_id,
-            ]);
+            if ($request->warehouse_id !== null) {
+                CentralWarehouseItem::create([
+                    'date' => $request->date,
+                    'po_items_id' => $poListOfItem->id,
+                    'warehouse_id' => $request->warehouse_id,
+                    'item_id' => $poListOfItem->item_id,
+                    'qty' => $request->qty_can_be_used,
+                    'unit_type_id' => $poListOfItem->unit_type_id,
+                ]);
+            } else {
+                BranchWarehouseItem::create([
+                    'branch_id' => $poListOfItem->branch_id,
+                    'date' => $request->date,
+                    'po_item_id' => $poListOfItem->id,
+                    'item_id' => $poListOfItem->item_id,
+                    'qty' => $request->qty_can_be_used,
+                    'unit_type_id' => $poListOfItem->unit_type_id,
+                ]);
+            }
+
+
+
         });
 
         return response()->json(['message' => 'Data berhasil disimpan']);

@@ -54,7 +54,6 @@ use Illuminate\View\View;
 
     public function getCentralWarehouseStockDetail(CentralWarehouseItem $centralWarehouseItem): JsonResponse
     {
-
         $centralWarehouseItemWithRelations = $centralWarehouseItem->with('item')->first();
         $centralWarehouseStock = CentralWarehouseStock::where('central_warehouse_item_id', $centralWarehouseItem->id)->where('status', 1)->paginate(8);
         return response()->json([
