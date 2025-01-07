@@ -30,6 +30,12 @@ use Illuminate\View\View;
     }
 
 
+    public function getStockData()
+    {
+        $branchWarehouseItem = BranchWarehouseItem::
+    }
+
+
     public function search(Request $request): JsonResponse
     {
         return response()->json($this->branchWarehouseItemService->search($request));

@@ -61,10 +61,4 @@ use Illuminate\View\View;
             'central_warehouse_item' => $centralWarehouseItemWithRelations
         ]);
     }
-
-
-    public function distributeStock(): JsonResponse
-    {
-        return response()->json();
-    }
 }

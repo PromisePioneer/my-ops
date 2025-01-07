@@ -147,13 +147,9 @@
                                                @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
-                                <template x-if="branchWarehouseItem?.item?.need_sn === 1">
-                                    <th class="min-w-125px">SN</th>
-                                </template>
+                                <th class="min-w-125px">SN</th>
                                 <th class="min-w-125px">Status</th>
-                                <template x-if="branchWarehouseItem?.item?.need_sn === 1">
-                                    <th class="min-w-125px">Actions</th>
-                                </template>
+                                <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
                                 <tbody class="fw-bold">

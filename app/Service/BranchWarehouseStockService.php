@@ -15,7 +15,7 @@ class BranchWarehouseStockService
     private static int $perPage = 10;
 
 
-    public function generateCodeWithNumber(BranchWarehouseItem $branchWarehouseItem, $number)
+    public function generateCodeWithNumber(BranchWarehouseItem $branchWarehouseItem, $number): string
     {
         $itemName = $branchWarehouseItem->item->name ?? 'UnknownItem';
         $warehouseCode = $branchWarehouseItem->branch->code ?? 'UnknownWarehouse';
@@ -59,6 +59,9 @@ class BranchWarehouseStockService
                 return response()->json(['message' => 'Barang yang belum terdaftar sudah habis'], 403);
             }
 
+
+            $chunkSize = 1000;
+
             $stocks = [];
             for ($i = 0; $i < $branchWarehouseItem->qty; $i++) {
                 $stocks[] = [
@@ -67,9 +70,17 @@ class BranchWarehouseStockService
                     'created_at' => now(),
                     'updated_at' => now()
                 ];
+
+                if (count($stocks) >= $chunkSize) {
+                    BranchWarehouseStock::insert($stocks);
+                    $stocks = [];
+                }
             }
 
-            BranchWarehouseStock::insert($stocks);
+
+            if (!empty($stocks)) {
+                BranchWarehouseStock::insert($stocks);
+            }
             $branchWarehouseItem->update(['qty' => 0]);
         });
     }
