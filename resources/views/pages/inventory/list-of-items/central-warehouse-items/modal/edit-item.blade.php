@@ -17,14 +17,9 @@
             <form id="form-item-edit" @submit.prevent="update(editVal.id)">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Kode</label>
-                        <input type="text" class="form-control form-control-solid"
-                               placeholder="Kode" :value="editVal.code" disabled/>
-                    </div>
-                    <div class="mb-10">
-                        <label for="sn" class="required form-label">Serial Number</label>
-                        <input type="text" id="sn" name="sn" class="form-control form-control-solid"
-                               placeholder="Nama Cabang" :value="editVal.sn"/>
+                        <label for="name" class="required form-label">SN</label>
+                        <input type="text" class="form-control form-control-solid" name="sn" id="sn"
+                               placeholder="Serial Number" :value="editVal.sn"/>
                     </div>
                 </div>
 

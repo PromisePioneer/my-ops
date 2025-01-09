@@ -22,7 +22,6 @@ class PoListOfItem extends Model
         'supplier_id',
         'travel_letter_receipt',
         'status',
-        'unit_type_id'
     ];
 
 

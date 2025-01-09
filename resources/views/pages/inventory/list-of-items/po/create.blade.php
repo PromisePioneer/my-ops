@@ -86,16 +86,6 @@
                                        placeholder="Kuantitas">
                             </div>
                             <div class="col-lg-6">
-                                <label class="col-form-label required fw-bold fs-6">Satuan</label>
-                                <select name="unit_type_id" id="unit_type_id"
-                                        class="form-select form-select-solid unit-type-select2">
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row mb-4">
-                            <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">Resi Surat Jalan</label>
                                 <input type="text"
                                        class="form-control form-control-lg form-control-solid"

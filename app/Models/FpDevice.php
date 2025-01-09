@@ -35,7 +35,6 @@ class FpDevice extends Model
         $search = $request->input('search');
 
         return self::with('branch')
-            ->where('ip_address', 'like', '%'.$search.'%')
             ->where('name', 'like', '%'.$search.'%')
             ->where('serial_number', 'like', '%'.$search.'%')
             ->get();

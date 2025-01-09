@@ -23,7 +23,6 @@ return new class extends Migration {
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->integer('qty');
-            $table->foreignId('unit_type_id')->constrained('unit_types');
             $table->timestamps();
         });
     }

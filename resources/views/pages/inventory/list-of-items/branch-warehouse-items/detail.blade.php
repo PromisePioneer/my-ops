@@ -2,7 +2,7 @@
 @section('page-title', 'Daftarkan Barang')
 @section('content')
     <div x-data="branchWarehouseItemDetailData()">
-        {{--        @include('pages.inventory.list-of-items.central-warehouse-items.modal.edit-item')--}}
+        @include('pages.inventory.list-of-items.central-warehouse-items.modal.edit-item')
         @include('pages.inventory.list-of-items.branch-warehouse-items.modal.create-sn')
         <div class="row">
             <div class="col-lg-6">
@@ -29,7 +29,7 @@
                                 <tr class="fw-bold">
                                     <th>Kuantitas</th>
                                     <th>:</th>
-                                    <th x-text="`${branchWarehouseItem?.qty} ${branchWarehouseItem?.unit_type.name}`"></th>
+                                    <th x-text="`${branchWarehouseItem?.qty} ${branchWarehouseItem?.item?.unit_type.name}`"></th>
                                 </tr>
                                 <tr class="fw-bold">
                                     <th>Lokasi Cabang</th>
@@ -220,7 +220,7 @@
                         </table>
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
-                        <a href="{{ url('/inventory/list-of-items/central-warehouse-items') }}"
+                        <a href="{{ url('/inventory/list-of-items/branch-warehouse-items') }}"
                            class="btn btn-light-danger btn-sm">Kembali</a>
                         <ul class="pagination float-end">
                             <template x-for="pagination in centralWarehouseStocks?.links">
@@ -255,7 +255,7 @@
                 formCreateSN: document.getElementById('form-sn-create'),
                 formConfirm: document.getElementById('form-confirm'),
                 formDelete: document.getElementById('form-delete'),
-                // modalEditItem: new bootstrap.Modal(document.getElementById('modal-item-edit')),
+                modalEditItem: new bootstrap.Modal(document.getElementById('modal-item-edit')),
                 formEditItem: document.getElementById('form-item-edit'),
                 editVal: '',
                 async init() {
@@ -401,5 +401,9 @@
                 }
             }
         }
+
+        $('#modal-sn-create').on('shown.bs.modal', function (e) {
+            $('#sn-create').focus();
+        });
     </script>
 @endpush

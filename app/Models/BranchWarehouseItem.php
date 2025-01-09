@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BranchWarehouseItem extends Model
 {
     protected $table = 'branch_warehouse_items';
     protected $fillable = [
+        'date',
         'po_item_id',
         'central_warehouse_stock_id',
         'branch_id',
@@ -41,9 +43,9 @@ class BranchWarehouseItem extends Model
     }
 
 
-    public function unitType(): BelongsTo
+    public function branchWarehouseStock(): HasMany
     {
-        return $this->belongsTo(UnitType::class, 'unit_type_id');
+        return $this->hasMany(BranchWarehouseStock::class, 'branch_warehouse_item_id');
     }
 
 

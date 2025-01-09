@@ -3,7 +3,6 @@
 @section('content')
     <div x-data="warehouseStocksData()">
         @include('pages.inventory.list-of-items.central-warehouse-items.modal.item-distribution')
-        @include('pages.inventory.list-of-items.central-warehouse-items.modal.detail')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -60,12 +59,10 @@
                                     <td x-text="startIndex + index++"></td>
                                     <td x-text="item.po.po_number"></td>
                                     <td x-text="item.item.name"></td>
-                                    <td x-text="`${item.qty} ${item.unit_type.name}`"></td>
+                                    <td x-text="`${item.qty} ${item.item?.unit_type?.name}`"></td>
                                     <td>
-                                        <a href="#" @click="getStock(item.id)" data-bs-toggle="modal"
-                                           data-bs-target="#modal-get-stocks"
-                                           class="btn btn-sm btn-link link-info"
-                                           x-text="`${item.central_warehouse_stock_count} ${item.unit_type.name}`">
+                                        <a href="#" data-bs-toggle="modal"
+                                           x-text="`${item.central_warehouse_stock_count} ${item.item.unit_type.name}`">
                                         </a>
                                     </td>
                                     <td x-text="`${item.warehouse.name} (${item.warehouse.code})`"></td>
@@ -73,10 +70,6 @@
                                         <a :href="`/inventory/list-of-items/central-warehouse-items/detail/${item.id}`"
                                            class="btn btn-sm btn-light-primary">
                                             <i class="bi bi-box-arrow-in-right fw-bold"></i>
-                                        </a>
-                                        <a :href="`/inventory/list-of-items/central-warehouse-items/detail/${item.id}`"
-                                           class="btn btn-sm btn-light-info">
-                                            <i class="bi bi-gear-wide-connected"></i>
                                         </a>
                                     </td>
                                 </tr>
@@ -111,8 +104,6 @@
                 isLoadingStock: false,
                 search: '',
                 editVal: '',
-                modalGetStock: new bootstrap.Modal(document.getElementById('modal-get-stocks')),
-
                 async init() {
                     await this.getCentralWarehouseStock();
                 },

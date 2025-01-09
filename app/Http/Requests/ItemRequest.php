@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ItemRequest extends FormRequest
 {
@@ -24,7 +25,8 @@ class ItemRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
-            'category_id' => ['required', 'string'],
+            'unit_type_id' => ['required', 'string', Rule::exists('unit_types', 'id')],
+            'category_id' => ['required', 'string', Rule::exists('item_categories', 'id')],
         ];
     }
 
@@ -33,6 +35,10 @@ class ItemRequest extends FormRequest
     {
         return [
             'name.required' => 'Nama barang tidak boleh kosong',
+            'unit_type_id.required' => 'Tipe satuan tidak boleh kosong',
+            'category_id.required' => 'Kategori tidak boleh kosong',
+            'category_id.exists' => 'Kategori tidak ditemukan',
+            'unit_type_id.exists' => 'Tipe satuan tidak ditemukan',
         ];
     }
 }

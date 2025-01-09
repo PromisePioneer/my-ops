@@ -22,9 +22,6 @@ return new class extends Migration {
             $table->date('date');
             $table->double('unit_price');
             $table->integer('qty');
-            $table->foreignId('unit_type_id')->constrained('unit_types')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
             $table->double('shipping_cost')->nullable();
             $table->double('ppn')->nullable();
             $table->double('total_price');

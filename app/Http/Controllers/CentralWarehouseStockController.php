@@ -12,7 +12,6 @@ use Throwable;
 
 #[AllowDynamicProperties] class CentralWarehouseStockController extends Controller
 {
-
     public function __construct()
     {
         $this->centralWarehouseStockService = new CentralWareHouseStockService();

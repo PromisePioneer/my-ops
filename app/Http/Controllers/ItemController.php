@@ -6,6 +6,7 @@ use AllowDynamicProperties;
 use App\Http\Requests\ItemRequest;
 use App\Models\Item;
 use App\Models\ItemCategory;
+use App\Models\UnitType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -17,6 +18,7 @@ use Illuminate\View\View;
     public function __construct()
     {
         $this->itemCategory = new ItemCategory();
+        $this->unitType = new UnitType();
     }
 
     public function index(): View
@@ -33,7 +35,7 @@ use Illuminate\View\View;
     public function search(Request $request): JsonResponse
     {
         $search = $request->input('search');
-        $item = Item::when(!$search, function ($query) use ($search) {
+        $item = Item::when(!empty($search), function ($query) use ($search) {
             return $query->where('name', 'like', '%' . $search . '%');
         })->paginate(self::$perPage);
 
@@ -48,10 +50,10 @@ use Illuminate\View\View;
             $needSN = true;
         }
 
-
         Item::create([
             'name' => $request->name,
             'category_id' => $request->category_id,
+            'unit_type_id' => $request->unit_type_id,
             'need_sn' => $needSN
         ]);
         return response()->json([
@@ -66,7 +68,7 @@ use Illuminate\View\View;
     }
 
 
-    public function update(Item $item, ItemRequest $request)
+    public function update(Item $item, ItemRequest $request): JsonResponse
     {
         $needSN = false;
 
@@ -77,6 +79,7 @@ use Illuminate\View\View;
         $item->update([
             'name' => $request->name,
             'category_id' => $request->category_id,
+            'unit_type_id' => $request->unit_type_id,
             'need_sn' => $needSN
         ]);
         return response()->json([
@@ -102,9 +105,22 @@ use Illuminate\View\View;
         return response()->json($this->itemCategory->getData($request));
     }
 
-
     public function selectedItemCategories(Item $item): JsonResponse
     {
         return response()->json($this->itemCategory->getSelectedData($item->category_id));
     }
+
+
+    public function getUnitTypes(Request $request): JsonResponse
+    {
+        return response()->json($this->unitType->getData($request));
+    }
+
+    public function selectedUnitType(Item $item): JsonResponse
+    {
+        return response()->json($this->unitType->getSelectedData($item->unit_type_id));
+    }
+
+
+
 }

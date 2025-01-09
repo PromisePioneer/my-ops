@@ -13,14 +13,12 @@
 
             <form id="form-sn-create" @submit.prevent="generateCodeAndSN()">
                 <div class="modal-body">
-                    <template x-if="branchWarehouseItem?.item.need_sn === 1">
                         <div class="mb-10">
                             <label for="sn" class="required form-label">Serial Number</label>
-                            <input type="text" id="sn" name="sn"
+                            <input type="text" id="sn-create" name="sn"
                                    class="form-control form-control-solid"
-                                   placeholder="Serial Number"/>
+                                   placeholder="Serial Number" onfocus="true"/>
                         </div>
-                    </template>
                 </div>
 
                 <div class="modal-footer">

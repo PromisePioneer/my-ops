@@ -28,6 +28,15 @@
                             <option></option>
                         </select>
                     </div>
+
+                    <div class="mb-10">
+                        <label for="category_id" class="required form-label">Satuan</label>
+                        <select name="unit_type_id" id="selectedUnitType"
+                                class="form-select form-select-solid unit-types-select2"
+                                data-dropdown-parent="#modal-item-edit">
+                            <option></option>
+                        </select>
+                    </div>
                     <div class="form-check form-switch form-check-custom form-check-solid">
                         <input class="form-check-input" type="checkbox" style="cursor: pointer"
                                :checked="editVal.need_sn === 1" name="need_sn" id="flexSwitchDefault"/>

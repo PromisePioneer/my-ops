@@ -29,7 +29,7 @@
                                 <tr class="fw-bold">
                                     <th>Kuantitas</th>
                                     <th>:</th>
-                                    <th x-text="`${centralWarehouseItem?.qty} ${centralWarehouseItem?.unit_type.name}`"></th>
+                                    <th x-text="`${centralWarehouseItem?.qty} ${centralWarehouseItem?.item?.unit_type.name}`"></th>
                                 </tr>
                                 <tr class="fw-bold">
                                     <th>Lokasi Gudang</th>
@@ -188,10 +188,7 @@
                                             </div>
                                         </template>
                                     </td>
-                                    <template x-if="centralWarehouseItem?.item?.need_sn === 1">
                                         <td x-text="stock.sn"></td>
-                                    </template>
-                                    <td x-text="stock.code"></td>
                                     <template x-if="stock.status === 0">
                                         <td>
                                             <button class="btn btn-sm btn-light-danger">

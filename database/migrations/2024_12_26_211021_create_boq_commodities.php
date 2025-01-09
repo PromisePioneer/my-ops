@@ -19,7 +19,6 @@ return new class extends Migration {
                 ->cascadeOnUpdate();
             $table->string('merk')->nullable();
             $table->string('qty');
-            $table->foreignId('unit_type_id')->constrained('unit_types')->cascadeOnUpdate();
             $table->double('unit_price');
             $table->double('total_price');
             $table->date('used_estimation');

@@ -22,16 +22,16 @@
                             <input type="date" class="form-control form-control-solid date" name="date"
                                    placeholder="Tanggal Masuk">
                         </div>
+                        <template x-if="!detailVal.branch_id">
                         <div class="col-lg-6">
-                            <template x-if="detailVal.branch_id === null ">
                                 <label class="form-label required">Tujuan Barang</label>
                                 <select name="warehouse_id" id="warehouse_id"
                                     class="form-select form-select-solid warehouse-select2"
                                     data-dropdown-parent="#modal-confirm">
                                 <option></option>
                                 </select>
-                            </template>
                         </div>
+                            </template>
                     </div>
                     <div class="row mb-4">
                         <div class="col-lg-6">
@@ -78,7 +78,7 @@
                                 <span class="path4"></span>
                                 <span class="path5"></span>
                             </i>
-                            <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
+                            <span x-text="buttonLoading ? 'Loading...' : 'Simpan & Kirim barang'"></span>
                         </button>
                     </div>
                 </div>

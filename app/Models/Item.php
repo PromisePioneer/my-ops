@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 
 class Item extends Model
@@ -12,12 +13,23 @@ class Item extends Model
     protected $fillable = [
         'name',
         'category_id',
+        'unit_type_id',
         'need_sn'
     ];
+
+    public function branchWarehouseItem(): HasMany
+    {
+        return $this->hasMany(BranchWarehouseItem::class, 'item_id');
+    }
 
     public function category(): BelongsTo
     {
         return $this->belongsTo(Item::class, 'category_id');
+    }
+
+    public function unitType(): BelongsTo
+    {
+        return $this->belongsTo(UnitType::class, 'unit_type_id');
     }
 
 

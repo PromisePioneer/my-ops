@@ -80,22 +80,16 @@
                                        placeholder="Kuantitas" value="{{ $poListOfItem->qty }}">
                             </div>
                             <div class="col-lg-6">
-                                <label class="col-form-label required fw-bold fs-6">Satuan</label>
-                                <select name="unit_type_id" id="selected-unit-type"
-                                        class="form-select form-select-solid unit-type-select2">
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row mb-4">
-                            <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">Resi Surat Jalan</label>
                                 <input type="text"
                                        class="form-control form-control-lg form-control-solid"
                                        placeholder="Resi Surat Jalan" name="travel_letter_receipt"
                                        value="{{ $poListOfItem->travel_letter_receipt }}"/>
                             </div>
+                        </div>
+
+                        <div class="row mb-4">
+
                         </div>
 
                         <div class="separator py-2"></div>
@@ -204,41 +198,6 @@
                         }
                     });
                 },
-                getUnitType() {
-                    $(".unit-type-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Satuan",
-                        escapeMarkup: markup => (markup),
-                        language: {
-                            noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-unit-type-create">Tambahkan terlebih dahulu</a>`;
-                            }
-                        },
-                        ajax: {
-                            url: '/inventory/list-of-items/po/unit-types/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async saveUnitTypes() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post('/general-master-data/unit-types/', new FormData(this.unitTypeForm))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.unitTypeForm.reset();
-                        this.unitTypeModal.hide();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
                 async selectedBranch() {
                     const selectedBranch = $('#selected-branch');
                     const response = await $.ajax({
@@ -252,19 +211,7 @@
                         params: {results: response}
                     });
                 },
-                async selectedUnitType() {
-                    const selectedUnitType = $('#selected-unit-type');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/inventory/list-of-items/po/unit-types/selected/${this.id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedUnitType.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
+
                 async selectedSupplier() {
                     const selectedSupplier = $('#selected-supplier');
                     const response = await $.ajax({

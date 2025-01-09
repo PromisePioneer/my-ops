@@ -12,4 +12,10 @@ class BranchWarehouseStock extends Model
         'sn',
         'status'
     ];
+
+
+    public function branchWarehouseItem()
+    {
+        return $this->belongsTo(BranchWarehouseItem::class, 'branch_warehouse_item_id');
+    }
 }

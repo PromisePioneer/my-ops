@@ -6,6 +6,7 @@
             @include('pages.operational-master-data.items.modal.create')
             @include('pages.operational-master-data.items.modal.edit')
             @include('pages.operational-master-data.item-categories.modal.create')
+            @include('pages.general-master-data.unit-types.modal.create')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -154,13 +155,16 @@
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-item-edit')),
                 itemCategoryModal: new bootstrap.Modal(document.getElementById('modal-item-category-create')),
                 itemCategoryForm: document.getElementById('form-item-category-create'),
+                unitTypeModal: new bootstrap.Modal(document.getElementById('modal-unit-type-create')),
+                unitTypeForm: document.getElementById('unit-types-store'),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
                     await this.getItemsData();
                     await this.getItemCategories();
+                    await this.getUnitType();
                 },
                 async getItemsData() {
-                    this.isLoading = false;
+                    this.isLoading = true;
                     try {
                         const resp = await axios.get('/operational-master-data/items/data');
                         this.items = resp.data
@@ -171,6 +175,7 @@
                     }
                 },
                 async searchData() {
+                    this.isLoading = true;
                     try {
                         const resp = await axios.get('/operational-master-data/items/search', {
                             params: {search: this.search},
@@ -180,6 +185,8 @@
                         this.items = resp.data;
                     } catch (error) {
                         console.log(error);
+                    } finally {
+                        this.isLoading = false;
                     }
                 },
                 async paginationEndPoint(url) {
@@ -247,15 +254,43 @@
                         }
                     });
                 },
+                async selectedUnitType() {
+                    const selectedUnitType = $('#selectedUnitType');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/operational-master-data/items/unit-types/selected/${this.editVal.id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedUnitType.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
+                async saveUnitTypes() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/general-master-data/unit-types/', new FormData(this.unitTypeForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.unitTypeForm.reset();
+                        this.unitTypeModal.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
                 async selectedItemCategory() {
-                    const selectedBranch = $('#selectedCategory');
+                    const selectedItemCategory = $('#selectedCategory');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
                         url: `/operational-master-data/items/item-categories/selected/${this.editVal.id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
-                    selectedBranch.append(option).trigger('change').trigger({
+                    selectedItemCategory.append(option).trigger('change').trigger({
                         type: 'select2:select',
                         params: {results: response}
                     });
@@ -275,10 +310,31 @@
                         this.buttonLoading = false;
                     }
                 },
+                async getUnitType() {
+                    $(".unit-types-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Satuan',
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-unit-type-create">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
+                        ajax: {
+                            url: '/operational-master-data/items/unit-types/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
                 async edit(id) {
                     const resp = await axios.get(`/operational-master-data/items/${id}`);
                     this.editVal = resp.data;
                     await this.selectedItemCategory();
+                    await this.selectedUnitType();
                 },
                 async update(id) {
                     this.buttonLoading = true;

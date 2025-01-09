@@ -44,7 +44,7 @@ use Illuminate\View\View;
 
     public function detailData(CentralWarehouseItem $centralWarehouseItem): JsonResponse
     {
-        $items = CentralWarehouseItem::with('item', 'unitType', 'po', 'warehouse')
+        $items = CentralWarehouseItem::with('item', 'po', 'warehouse', 'item.unitType')
             ->where('id', $centralWarehouseItem->id)
             ->first();
 

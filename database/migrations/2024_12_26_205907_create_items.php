@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->foreignId('category_id')->constrained('item_categories')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->foreignId('unit_type_id')->constrained('unit_types');
             $table->boolean('need_sn')->default(false);
             $table->timestamps();
         });

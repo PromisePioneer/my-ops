@@ -29,6 +29,15 @@
                             <option></option>
                         </select>
                     </div>
+
+                    <div class="mb-10">
+                        <label for="category_id" class="required form-label">Satuan</label>
+                        <select name="unit_type_id" id="unit_type_id"
+                                class="form-select form-select-solid unit-types-select2"
+                                data-dropdown-parent="#modal-item-create">
+                            <option></option>
+                        </select>
+                    </div>
                     <div
                         class="d-flex justify-content-between align-items-center form-check form-switch form-check-custom form-check-solid">
                         <label class="form-label" for="flexSwitchDefault" style="cursor: pointer">

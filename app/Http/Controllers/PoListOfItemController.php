@@ -89,7 +89,6 @@ use function App\Helper\formatDate;
             'total_price' => $total_price,
             'supplier_id' => $request->supplier_id,
             'travel_letter_receipt' => $request->travel_letter_receipt,
-            'unit_type_id' => $request->unit_type_id
         ]);
 
         return response()->json(['message' => 'Data berhasil disimpan.']);
@@ -174,7 +173,6 @@ use function App\Helper\formatDate;
                     'warehouse_id' => $request->warehouse_id,
                     'item_id' => $poListOfItem->item_id,
                     'qty' => $request->qty_can_be_used,
-                    'unit_type_id' => $poListOfItem->unit_type_id,
                 ]);
             } else {
                 BranchWarehouseItem::create([
@@ -183,7 +181,6 @@ use function App\Helper\formatDate;
                     'po_item_id' => $poListOfItem->id,
                     'item_id' => $poListOfItem->item_id,
                     'qty' => $request->qty_can_be_used,
-                    'unit_type_id' => $poListOfItem->unit_type_id,
                 ]);
             }
 
@@ -217,15 +214,6 @@ use function App\Helper\formatDate;
     }
 
 
-    public function getUnitType(Request $request): JsonResponse
-    {
-        return response()->json($this->unitType->getData($request));
-    }
-
-    public function selectedUnitType(PoListOfItem $poListOfItem): JsonResponse
-    {
-        return response()->json($this->unitType->getSelectedData($poListOfItem->id));
-    }
 
 
     public function getWarehouse(Request $request): JsonResponse

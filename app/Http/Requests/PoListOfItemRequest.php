@@ -33,7 +33,6 @@ class PoListOfItemRequest extends FormRequest
             'qty' => ['required'],
             'shipping_cost' => ['nullable'],
             'ppn' => ['nullable'],
-            'unit_type_id' => ['required'],
             'supplier_id' => ['required', 'exists:suppliers,id'],
             'travel_letter_receipt' => ['required'],
         ];
@@ -54,7 +53,6 @@ class PoListOfItemRequest extends FormRequest
             'supplier_id.required' => 'Supplier tidak boleh kosong.',
             'supplier_id.exists' => 'Supplier tidak ditemukan.',
             'travel_letter_receipt.required' => 'Resi surat jalan tidak boleh kosong.',
-            'unit_type_id.required' => 'Satuan tidak boleh kosong.',
         ];
     }
 }

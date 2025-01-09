@@ -40,6 +40,22 @@ use Throwable;
         return response()->json(['message' => 'Data berhasil disimpan']);
     }
 
+
+    public function edit(BranchWarehouseStock $branchWarehouseStock): JsonResponse
+    {
+        return response()->json($branchWarehouseStock);
+    }
+
+
+    public function update(Request $request, BranchWarehouseStock $branchWarehouseStock): JsonResponse
+    {
+        $branchWarehouseStock->update([
+            'sn' => $request->sn
+        ]);
+
+        return response()->json(['message' => 'Data berhasil disimpan']);
+    }
+
     public function confirm(BranchWarehouseStock $branchWarehouseStock, Request $request): JsonResponse
     {
         $implodeID = implode(',', $request->get('id'));

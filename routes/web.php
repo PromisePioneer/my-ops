@@ -506,6 +506,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/search', [ItemController::class, 'search']);
             Route::get('/item-categories/data', [ItemController::class, 'getItemCategories']);
             Route::get('/item-categories/selected/{item}', [ItemController::class, 'selectedItemCategories']);
+            Route::get('/unit-types/data', [ItemController::class, 'getUnitTypes']);
+            Route::get('/unit-types/selected/{item}', [ItemController::class, 'selectedUnitType']);
             Route::post('/', [ItemController::class, 'store']);
             Route::get('/{item}', [ItemController::class, 'edit']);
             Route::post('/destroy', [ItemController::class, 'destroy']);
@@ -543,7 +545,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/', [SupplierController::class, 'store']);
             Route::get('/{supplier}', [SupplierController::class, 'edit']);
             Route::post('/destroy', [SupplierController::class, 'destroy']);
-            Route::get('/{supplier}', [SupplierController::class, 'update']);
+            Route::post('/{supplier}', [SupplierController::class, 'update']);
         });
 
 
@@ -768,8 +770,6 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/create', [PoListOfItemController::class, 'create']);
                 Route::get('/supplier/data', [PoListOfItemController::class, 'getSupplierData']);
                 Route::get('/supplier/selected/{poListOfItem}', [PoListOfItemController::class, 'selectedSupplier']);
-                Route::get('/unit-types/data', [PoListOfItemController::class, 'getUnitType']);
-                Route::get('/unit-types/selected/{poListOfItem}', [PoListOfItemController::class, 'selectedUnitType']);
                 Route::get('/branch/data', [PoListOfItemController::class, 'getBranchData']);
                 Route::get('/branch/selected/{poListOfItem}', [PoListOfItemController::class, 'selectedBranch']);
                 Route::post('/store', [PoListOfItemController::class, 'store']);
@@ -799,7 +799,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::post('/destroy', [CentralWarehouseStockController::class, 'destroy']);
                 Route::post('/confirm', [CentralWarehouseStockController::class, 'confirm']);
                 Route::get('/data/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'data']);
-                Route::post('generate-sn-if-exists/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'generateSNIfExists']);
+                Route::post('generate-sn/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'generateSNIfExists']);
                 Route::post('generate-sn-if-not-exists/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'generateSNIfNotExists']);
                 Route::get('/edit/{centralWarehouseStock}', [CentralWarehouseStockController::class, 'edit']);
                 Route::post('/update/{centralWarehouseStock}', [CentralWarehouseStockController::class, 'update']);
@@ -810,9 +810,12 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::prefix('branch-warehouse-items')->group(function () {
                 Route::get('/', [BranchWarehouseItemController::class, 'index']);
                 Route::get('/data', [BranchWarehouseItemController::class, 'data']);
+                Route::get('/stock-data', [BranchWarehouseItemController::class, 'getStockData']);
+                Route::get('/stock-data/detail/{item}', [BranchWarehouseItemController::class, 'getStockDataDetail']);
                 Route::get('/search', [BranchWarehouseItemController::class, 'search']);
                 Route::get('/detail/{branchWarehouseItem}', [BranchWarehouseItemController::class, 'detail']);
                 Route::get('/detail/data/{branchWarehouseItem}', [BranchWarehouseItemController::class, 'detailData']);
+                Route::get('/search-item', [BranchWarehouseItemController::class, 'searchStockData']);
             });
 
 

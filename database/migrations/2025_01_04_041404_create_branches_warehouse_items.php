@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('branch_warehouse_items', function (Blueprint $table) {
             $table->id();
+            $table->date('date');
             $table->foreignId('po_item_id')->constrained('po_list_of_items');
             $table->foreignId('central_warehouse_stock_id')->nullable()
                 ->constrained('central_warehouse_stocks')
@@ -24,7 +25,9 @@ return new class extends Migration {
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->integer('qty');
-            $table->foreignId('unit_type_id')->constrained('unit_types');
+            $table->boolean('status')->default(false);
+            $table->foreignId('accepted_by')->nullable()->constrained('users');
+            $table->string('notes')->nullable();
             $table->timestamps();
         });
     }

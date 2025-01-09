@@ -15,7 +15,7 @@ class CentralWarehouseItemService
 
     public function query(): Builder
     {
-        return CentralWarehouseItem::with('item', 'warehouse', 'po', 'unitType')->withCount('centralWarehouseStock');
+        return CentralWarehouseItem::with('item', 'warehouse', 'po', 'item.unitType')->withCount('centralWarehouseStock');
     }
 
     public function data(): LengthAwarePaginator
