@@ -788,6 +788,8 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/', [CentralWarehouseItemController::class, 'index']);
                 Route::get('/data', [CentralWarehouseItemController::class, 'data']);
                 Route::get('/search', [CentralWarehouseItemController::class, 'search']);
+                Route::get('/stock-data', [CentralWarehouseItemController::class, 'getStockData']);
+                Route::get('/stock-data/detail/{item}', [CentralWarehouseItemController::class, 'getStockDataDetail']);
                 Route::get('/detail/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'detail']);
                 Route::get('/detail/data/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'detailData']);
                 Route::get('/get-stocks/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'getCentralWarehouseStockDetail']);

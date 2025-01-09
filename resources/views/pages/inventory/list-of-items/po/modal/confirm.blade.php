@@ -18,9 +18,9 @@
                 <div class="modal-body">
                     <div class="row mb-4">
                         <div class="col-lg-6">
-                            <label class="form-label required">Tanggal Masuk</label>
+                            <label class="form-label required">Tanggal Kirim</label>
                             <input type="date" class="form-control form-control-solid date" name="date"
-                                   placeholder="Tanggal Masuk">
+                                   placeholder="Tanggal Kirim">
                         </div>
                         <template x-if="!detailVal.branch_id">
                         <div class="col-lg-6">

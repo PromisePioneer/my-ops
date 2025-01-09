@@ -45,16 +45,22 @@ use Illuminate\View\View;
     public function store(ItemRequest $request): JsonResponse
     {
         $needSN = false;
+        $snPerPo = false;
 
         if ($request->need_sn === "on") {
             $needSN = true;
+        }
+
+        if ($request->already_has_sn_on_item === "on") {
+            $snPerPo = true;
         }
 
         Item::create([
             'name' => $request->name,
             'category_id' => $request->category_id,
             'unit_type_id' => $request->unit_type_id,
-            'need_sn' => $needSN
+            'need_sn' => $needSN,
+            'already_has_sn_on_item' => $snPerPo,
         ]);
         return response()->json([
             'message' => 'Data berhasil disimpan.'
@@ -71,16 +77,21 @@ use Illuminate\View\View;
     public function update(Item $item, ItemRequest $request): JsonResponse
     {
         $needSN = false;
+        $snPerPo = false;
 
         if ($request->need_sn === "on") {
             $needSN = true;
+        }
+        if ($request->already_has_sn_on_item === "on") {
+            $snPerPo = true;
         }
 
         $item->update([
             'name' => $request->name,
             'category_id' => $request->category_id,
             'unit_type_id' => $request->unit_type_id,
-            'need_sn' => $needSN
+            'need_sn' => $needSN,
+            'already_has_sn_on_item' => $snPerPo,
         ]);
         return response()->json([
             'message' => 'Data berhasil disimpan.'

@@ -63,7 +63,8 @@
                                 </th>
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Kategori</th>
-                                <th class="min-w-125px">Wajib menggunakan SN</th>
+                                <th class="min-w-125px">SN/Kode Sudah tertera di Barang</th>
+                                <th class="min-w-125px">Tidak Memerlukan SN/Kode</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -99,7 +100,15 @@
                                         </div>
                                     </td>
                                     <td x-text="item.name"></td>
-                                    <td x-text="item.category.name"></td>
+                                    <td x-text="item.category?.name"></td>
+                                    <td>
+                                        <template x-if="item.already_has_sn_on_item === 1">
+                                            <span class="badge bg-success text-white fw-bold text-uppercase">Ya</span>
+                                        </template>
+                                        <template x-if="item.already_has_sn_on_item === 0">
+                                            <span class="badge bg-danger text-white fw-bold text-uppercase">Tidak</span>
+                                        </template>
+                                    </td>
                                     <td>
                                         <template x-if="item.need_sn === 1">
                                             <span class="badge bg-success text-white fw-bold text-uppercase">Ya</span>
@@ -149,6 +158,8 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
+                needSN: false,
+                snPerPO: false,
                 formCreate: document.getElementById('form-item-create'),
                 formEdit: document.getElementById('form-item-edit'),
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-item-create')),

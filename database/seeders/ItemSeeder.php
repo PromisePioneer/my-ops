@@ -16,28 +16,28 @@ class ItemSeeder extends Seeder
     {
         Item::create([
             'name' => 'GPON',
-            'category_id' => ItemCategory::where('name', 'GPON')->first()->id,
+            'category_id' => ItemCategory::where('name', 'ASET')->first()->id,
             'unit_type_id' => UnitType::where('name', 'PCS')->first()->id,
             'need_sn' => true,
         ]);
 
         Item::create([
             'name' => 'Mikrotik',
-            'category_id' => ItemCategory::where('name', 'Mikrotik')->first()->id,
+            'category_id' => ItemCategory::where('name', 'ASET')->first()->id,
             'unit_type_id' => UnitType::where('name', 'PCS')->first()->id,
             'need_sn' => true,
         ]);
 
         Item::create([
             'name' => 'CSR',
-            'category_id' => ItemCategory::where('name', 'CSR')->first()->id,
+            'category_id' => ItemCategory::where('name', 'ASET')->first()->id,
             'unit_type_id' => UnitType::where('name', 'PCS')->first()->id,
             'need_sn' => true,
         ]);
 
         Item::create([
             'name' => 'Kabel',
-            'category_id' => ItemCategory::where('name', 'Kabel')->first()->id,
+            'category_id' => ItemCategory::where('name', 'ASET')->first()->id,
             'unit_type_id' => UnitType::where('name', 'ROLL')->first()->id,
             'need_sn' => false,
         ]);

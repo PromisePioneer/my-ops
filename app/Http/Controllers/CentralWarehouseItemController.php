@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use AllowDynamicProperties;
 use App\Models\CentralWarehouseItem;
 use App\Models\CentralWarehouseStock;
+use App\Models\Item;
 use App\Service\CentralWarehouseItemService;
 use App\Service\CentralWareHouseStockService;
 use Illuminate\Http\JsonResponse;
@@ -38,7 +39,7 @@ use Illuminate\View\View;
 
     public function detail(CentralWarehouseItem $centralWarehouseItem): View
     {
-        return view('pages.inventory.list-of-items.central-warehouse-items.detail', compact('centralWarehouseItem'));
+        return view('pages.inventory.list-of-items.central-warehouse-items.item-distribution.detail', compact('centralWarehouseItem'));
     }
 
 
@@ -60,5 +61,15 @@ use Illuminate\View\View;
             'central_warehouse_stock' => $centralWarehouseStock,
             'central_warehouse_item' => $centralWarehouseItemWithRelations
         ]);
+    }
+
+    public function getStockData(): JsonResponse
+    {
+        return response()->json($this->centralWarehouseItemService->stockData());
+    }
+
+    public function getStockDataDetail(Item $item): JsonResponse
+    {
+        return response()->json($this->centralWarehouseItemService->getStockDataDetail($item));
     }
 }

@@ -38,14 +38,27 @@
                             <option></option>
                         </select>
                     </div>
+                    <template x-if="snPerPO === false">
+                        <div
+                            class="d-flex justify-content-between align-items-center form-check form-switch form-check-custom form-check-solid mb-4">
+                            <label class="form-label" for="needSN" style="cursor: pointer">
+                                Serial Number sudah tertera di barang (Klik jika ya).
+                            </label>
+                            <input class="form-check-input" x-model="needSN" type="checkbox" name="need_sn"
+                                   id="needSN"/>
+
+                        </div>
+                    </template>
+                    <template x-if="needSN === false">
                     <div
                         class="d-flex justify-content-between align-items-center form-check form-switch form-check-custom form-check-solid">
-                        <label class="form-label" for="flexSwitchDefault" style="cursor: pointer">
-                            Serial Number sudah tertera di barang (Klik jika ya).
+                        <label class="form-label" for="snPerPO" style="cursor: pointer">
+                            Tidak perlu Serial Number (Klik jika iya).
                         </label>
-                        <input class="form-check-input" type="checkbox" name="need_sn" id="flexSwitchDefault"/>
-
+                        <input class="form-check-input" x-model="snPerPO" type="checkbox" name="sn_per_po"
+                               id="snPerPO"/>
                     </div>
+                    </template>
                 </div>
 
                 <div class="modal-footer">

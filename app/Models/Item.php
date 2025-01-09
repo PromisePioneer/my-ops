@@ -14,8 +14,15 @@ class Item extends Model
         'name',
         'category_id',
         'unit_type_id',
-        'need_sn'
+        'need_sn',
+        'already_has_sn_on_item',
     ];
+
+
+    public function centralWarehouseItem(): HasMany
+    {
+        return $this->hasMany(CentralWarehouseItem::class, 'item_id');
+    }
 
     public function branchWarehouseItem(): HasMany
     {
@@ -24,7 +31,7 @@ class Item extends Model
 
     public function category(): BelongsTo
     {
-        return $this->belongsTo(Item::class, 'category_id');
+        return $this->belongsTo(ItemCategory::class, 'category_id');
     }
 
     public function unitType(): BelongsTo

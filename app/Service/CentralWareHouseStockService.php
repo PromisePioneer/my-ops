@@ -47,8 +47,9 @@ class CentralWareHouseStockService
                 return response()->json(['message' => 'Barang yang belum terdaftar sudah habis'], 403);
             }
 
-            CentralWarehouseStock::create([
-                'central_warehouse_item_id' => $centralWarehouseItem->id,
+            CentralWarehouseItem::create([
+                'po_item_id' => $centralWarehouseItem->po_item_id,
+                'branch_warehouse_item_id' => $centralWarehouseItem->id,
                 'sn' => $request->sn,
             ]);
             $centralWarehouseItem->decrement('qty');
@@ -65,17 +66,28 @@ class CentralWareHouseStockService
                 return response()->json(['message' => 'Barang yang belum terdaftar sudah habis'], 403);
             }
 
+
+            $chunkSize = 1000;
+
             $stocks = [];
             for ($i = 0; $i < $centralWarehouseItem->qty; $i++) {
                 $stocks[] = [
-                    'central_warehouse_item_id' => $centralWarehouseItem->id,
-                    'code' => $this->generateCodeWithNumber($centralWarehouseItem, $i),
+                    'branch_warehouse_item_id' => $centralWarehouseItem->id,
+                    'sn' => $this->generateCodeWithNumber($centralWarehouseItem, $i),
                     'created_at' => now(),
                     'updated_at' => now()
                 ];
+
+                if (count($stocks) >= $chunkSize) {
+                    CentralWarehouseItem::insert($stocks);
+                    $stocks = [];
+                }
             }
 
-            CentralWarehouseStock::insert($stocks);
+
+            if (!empty($stocks)) {
+                CentralWarehouseItem::insert($stocks);
+            }
             $centralWarehouseItem->update(['qty' => 0]);
         });
     }

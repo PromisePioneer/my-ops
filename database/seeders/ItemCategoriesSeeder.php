@@ -13,31 +13,11 @@ class ItemCategoriesSeeder extends Seeder
     public function run(): void
     {
         ItemCategory::create([
-            'name' => 'GPON',
+            'name' => 'ASET',
         ]);
 
         ItemCategory::create([
-            'name' => 'CORE 24',
-        ]);
-
-        ItemCategory::create([
-            'name' => 'BEGEL'
-        ]);
-
-        ItemCategory::create([
-            'name' => 'Sub Duct'
-        ]);
-
-        ItemCategory::create([
-            'name' => 'Kabel'
-        ]);
-
-        ItemCategory::create([
-            'name' => 'Mikrotik'
-        ]);
-
-        ItemCategory::create([
-            'name' => 'CSR'
+            'name' => 'JUAL',
         ]);
     }
 }

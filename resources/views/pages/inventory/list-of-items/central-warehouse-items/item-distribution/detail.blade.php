@@ -19,12 +19,12 @@
                                 <tr class="fw-bold ">
                                     <th class="w-25">Tanggal Masuk</th>
                                     <th class="w-10px">:</th>
-                                    <th x-text="formatDate(centralWarehouseItem?.po.date)"></th>
+                                    <th x-text="formatDate(centralWarehouseItem?.po?.date)"></th>
                                 </tr>
                                 <tr class="fw-bold">
                                     <th>Nama Barang</th>
                                     <th>:</th>
-                                    <th x-text="centralWarehouseItem?.item.name"></th>
+                                    <th x-text="centralWarehouseItem?.item?.name"></th>
                                 </tr>
                                 <tr class="fw-bold">
                                     <th>Kuantitas</th>

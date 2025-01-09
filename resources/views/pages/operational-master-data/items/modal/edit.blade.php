@@ -37,13 +37,31 @@
                             <option></option>
                         </select>
                     </div>
-                    <div class="form-check form-switch form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox" style="cursor: pointer"
-                               :checked="editVal.need_sn === 1" name="need_sn" id="flexSwitchDefault"/>
-                        <label class="form-label" for="flexSwitchDefault">
-                            Serial Number sudah tertera di barang (Klik jika ya).
-                        </label>
-                    </div>
+                    <template x-if="snPerPO === false">
+                        <div
+                            class="d-flex justify-content-between align-items-center form-check form-switch form-check-custom form-check-solid mb-4">
+                            <label class="form-label" for="needSN" style="cursor: pointer">
+                                Serial Number sudah tertera di barang (Klik jika ya).
+                            </label>
+                            <input class="form-check-input" x-model="needSN"
+                                   :checked="editVal.already_has_sn_on_item === 1"
+                                   type="checkbox"
+                                   name="already_has_sn_on_item"
+                                   id="needSN"/>
+
+                        </div>
+                    </template>
+                    <template x-if="needSN === false">
+                        <div
+                            class="d-flex justify-content-between align-items-center form-check form-switch form-check-custom form-check-solid">
+                            <label class="form-label" for="snPerPO" style="cursor: pointer">
+                                Tidak perlu Serial Number (Klik jika iya).
+                            </label>
+                            <input class="form-check-input" x-model="snPerPO" :checked="editVal.need_sn === 1"
+                                   type="checkbox" name="need_sn"
+                                   id="snPerPO"/>
+                        </div>
+                    </template>
                 </div>
 
                 <div class="modal-footer">
