@@ -58,12 +58,17 @@
                             <td x-text="`${item.qty} ${item.item.unit_type?.name}`"></td>
                             <td x-text="`${item.warehouse.name} (${item.warehouse.code})`"></td>
                             <td>
-                                <template x-if="item.item.need_sn === 0">
+                                <template x-if="item.item.need_sn === 1">
                                     <a :href="`/inventory/list-of-items/central-warehouse-items/detail/${item.id}`"
                                        class="btn btn-sm btn-light-primary">
                                         <i class="bi bi-box-arrow-in-right fw-bold"></i>
                                     </a>
                                 </template>
+                                <a :href="`/inventory/list-of-items/central-warehouse-items/distribute-item/${item.id}`"
+                                   class="btn btn-sm btn-light-primary">
+                                    <i class="bi bi-send"></i>
+                                    Kirim Barang
+                                </a>
                             </td>
                         </tr>
                         </tbody>

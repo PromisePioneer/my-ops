@@ -10,13 +10,16 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('central_warehouse_stocks', function (Blueprint $table) {
+        Schema::create('item_transactions', function (Blueprint $table) {
             $table->id();
+            $table->date('date');
             $table->foreignId('po_id')->constrained('po_list_of_items');
-            $table->foreignId('warehouse_id')->constrained('warehouses');
             $table->foreignId('item_id')->constrained('items');
-            $table->integer('qty')->nullable();
-            $table->string('sn')->unique()->nullable();
+            $table->foreignId('warehouse_id')->nullable()->constrained('warehouses');
+            $table->foreignId('branch_id')->nullable()->constrained('branches');
+            $table->enum('type', ['in', 'out']);
+            $table->integer('qty');
+            $table->string('notes')->nullable();
             $table->boolean('status')->default(false);
             $table->timestamps();
         });
@@ -27,7 +30,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('central_warehouse_stocks');
+        Schema::dropIfExists('item_transactions');
     }
 };

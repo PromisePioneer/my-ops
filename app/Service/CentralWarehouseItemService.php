@@ -17,7 +17,7 @@ class CentralWarehouseItemService
 
     public function query(): Builder
     {
-        return CentralWarehouseItem::with('item', 'warehouse', 'po', 'item.unitType')->withCount('centralWarehouseStock');
+        return CentralWarehouseItem::with('item', 'warehouse', 'po', 'item.unitType');
     }
 
     public function data(): LengthAwarePaginator
@@ -42,7 +42,7 @@ class CentralWarehouseItemService
 
     public function stockData(): LengthAwarePaginator
     {
-        $items = Item::with('centralWarehouseItem.centralWarehouseStock')->paginate(self::$perPage);
+        $items = Item::with('centralWarehouseStock')->paginate(self::$perPage);
 
         return self::formattedStockData($items);
     }
@@ -54,20 +54,9 @@ class CentralWarehouseItemService
             return [
                 'id' => $item->id,
                 'name' => $item->name,
-                'stock' => $item->need_sn === 0 ? $item->centralWarehouseItem->map(function ($item) {
-                    return [
-                        'stock' => $item->centralWarehouseStock->where('status', true)->count('id'),
-                    ];
-                })->reduce(function ($carry, $item) {
-                    return $carry + $item['stock'];
-                }) : $item->centralWarehouseItem->sum('qty'),
-                'sn_non_verified' => $item->centralWarehouseItem->map(function ($item) {
-                    return [
-                        'sn_non_verified' => $item->centralWarehouseStock->where('status', false)->count('id'),
-                    ];
-                })->reduce(function ($carry, $item) {
-                    return $carry + $item['sn_non_verified'];
-                })
+                'stock' => $item->need_sn === 1
+                    ? $item->centralWarehouseStock->where('status', true)->whereNotNull('sn')->count('id')
+                    : $item->centralWarehouseStock->where('status', true)->whereNull('sn')->sum('qty'),
             ];
         });
 
@@ -78,27 +67,26 @@ class CentralWarehouseItemService
 
     public function getStockDataDetail(Item $item)
     {
-        $stockDataDetail = Warehouse::with(['centralWarehouseItem' => function ($query) use ($item) {
+        $stockDataDetail = Warehouse::with(['centralWarehouseStock' => function ($query) use ($item) {
             $query->where('item_id', $item->id);
         }])->paginate(self::$perPage);
 
-        return self::formattedStockDataDetail($stockDataDetail);
+        return self::formattedStockDataDetail($stockDataDetail, $item);
     }
 
 
-    public function formattedStockDataDetail($stockDataDetail)
+    public function formattedStockDataDetail($stockDataDetail, $item)
     {
-        $data = $stockDataDetail->getCollection()->map(function ($item) {
+        $data = $stockDataDetail->getCollection()->map(function ($value) use ($item) {
+
+            $getItem = Item::where('id', $item->id)->first();
+
             return [
-                'id' => $item->id,
-                'name' => $item->name,
-                'stock' => $item->need_sn === 0 ? $item->centraLWarehouseItem->map(function ($item) {
-                    return [
-                        'stock' => $item->centralWarehouseStock->where('status', true)->count('id'),
-                    ];
-                })->reduce(function ($carry, $item) {
-                    return $carry + $item['stock'];
-                }) : $item->centralWarehouseItem->sum('qty'),
+                'id' => $value->id,
+                'name' => $value->name,
+                'stock' => $getItem->need_sn === 1
+                    ? $value->centralWarehouseStock->where('status', true)->whereNotNull('sn')->count('id')
+                    : $value->centralWarehouseStock->where('status', true)->whereNull('sn')->sum('qty'),
             ];
         });
 

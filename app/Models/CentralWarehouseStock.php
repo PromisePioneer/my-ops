@@ -9,15 +9,18 @@ class CentralWarehouseStock extends Model
 {
     protected $table = 'central_warehouse_stocks';
     protected $fillable = [
-        'central_warehouse_item_id',
+        'po_id',
+        'warehouse_id',
+        'item_id',
+        'qty',
         'sn',
         'status',
     ];
 
 
-    public function centralWarehouseItem(): BelongsTo
+    public function warehouse(): BelongsTo
     {
-        return $this->belongsTo(CentralWarehouseItem::class, 'central_warehouse_item_id');
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
     }
 
 

@@ -32,7 +32,7 @@ class CentralWareHouseStockService
 
     public function data(CentralWarehouseItem $centralWarehouseItem): LengthAwarePaginator
     {
-        return CentralWarehouseStock::where('central_warehouse_item_id', $centralWarehouseItem->id)
+        return CentralWarehouseStock::where('po_id', $centralWarehouseItem->po_id)
             ->paginate(self::$perPage);
     }
 
@@ -47,9 +47,10 @@ class CentralWareHouseStockService
                 return response()->json(['message' => 'Barang yang belum terdaftar sudah habis'], 403);
             }
 
-            CentralWarehouseItem::create([
-                'po_item_id' => $centralWarehouseItem->po_item_id,
-                'branch_warehouse_item_id' => $centralWarehouseItem->id,
+            CentralWarehouseStock::create([
+                'po_id' => $centralWarehouseItem->po_id,
+                'warehouse_id' => $centralWarehouseItem->warehouse_id,
+                'item_id' => $centralWarehouseItem->item_id,
                 'sn' => $request->sn,
             ]);
             $centralWarehouseItem->decrement('qty');

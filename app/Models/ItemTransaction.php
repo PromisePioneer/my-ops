@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class ItemTransaction extends Model
+{
+    protected $table = 'item_transactions';
+    protected $fillable = [
+        'date',
+        'po_id',
+        'item_id',
+        'type',
+        'qty',
+        'warehouse_id',
+        'branch_id',
+        'notes',
+        'status'
+    ];
+
+
+    public function po(): BelongsTo
+    {
+        return $this->belongsTo(PoListOfItem::class, 'po_id');
+    }
+
+    public function item(): BelongsTo
+    {
+        return $this->belongsTo(Item::class, 'item_id');
+    }
+
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
+}

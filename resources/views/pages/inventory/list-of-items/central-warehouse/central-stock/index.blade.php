@@ -1,5 +1,5 @@
 <div x-data="centralStockData()">
-    @include('pages.inventory.list-of-items.central-warehouse-items.central-stock.modal.stock-detail')
+    @include('pages.inventory.list-of-items.central-warehouse.central-stock.modal.stock-detail')
     <div class="card-header border-0 pt-6">
         <div class="card-title">
             <div class="d-flex align-items-center position-relative my-1">
@@ -51,11 +51,10 @@
                             <td x-text="`${item.name}`"></td>
                             <td x-text="item.stock"></td>
                             <td>
-
-                                    <button class="btn btn-light-info btn-sm" data-bs-target="#modal-stock-detail"
-                                            data-bs-toggle="modal" @click="getItemStockDetail(item.id)">
-                                        <i class="bi bi-eye-fill"></i>
-                                    </button>
+                                <button class="btn btn-light-info btn-sm" data-bs-target="#modal-stock-detail"
+                                        data-bs-toggle="modal" @click="getItemStockDetail(item.id)">
+                                    <i class="bi bi-eye-fill"></i>
+                                </button>
                             </td>
                         </tr>
                         </tbody>

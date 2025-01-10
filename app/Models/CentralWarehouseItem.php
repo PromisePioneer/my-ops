@@ -11,7 +11,7 @@ class CentralWarehouseItem extends Model
 {
     protected $table = 'central_warehouse_items';
     protected $fillable = [
-        'po_items_id',
+        'po_id',
         'date',
         'item_id',
         'warehouse_id',

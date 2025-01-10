@@ -24,6 +24,11 @@ class Item extends Model
         return $this->hasMany(CentralWarehouseItem::class, 'item_id');
     }
 
+    public function centralWarehouseStock(): HasMany
+    {
+        return $this->hasMany(CentralWarehouseStock::class, 'item_id');
+    }
+
     public function branchWarehouseItem(): HasMany
     {
         return $this->hasMany(BranchWarehouseItem::class, 'item_id');

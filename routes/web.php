@@ -70,6 +70,7 @@ use App\Http\Controllers\Inventory\Stock\ItemCategoryController;
 use App\Http\Controllers\Inventory\Stock\UnitTypesController;
 use App\Http\Controllers\Inventory\Stock\UsedItemsController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\ItemTransactionController;
 use App\Http\Controllers\Master\Finance\AccountController;
 use App\Http\Controllers\Master\Finance\AssetController;
 use App\Http\Controllers\Master\Finance\TaxSettingController;
@@ -783,6 +784,10 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/warehouses/data', [PoListOfItemController::class, 'getWarehouse']);
             });
 
+            Route::prefix('item-transactions')->group(function () {
+                Route::get('/data', [ItemTransactionController::class, 'data']);
+                Route::post('/confirm/{itemTransaction}', [ItemTransactionController::class, 'confirm']);
+            });
 
             Route::prefix('central-warehouse-items')->group(function () {
                 Route::get('/', [CentralWarehouseItemController::class, 'index']);
@@ -793,7 +798,9 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/detail/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'detail']);
                 Route::get('/detail/data/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'detailData']);
                 Route::get('/get-stocks/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'getCentralWarehouseStockDetail']);
-                Route::get('/distribute-stock', [CentralWarehouseItemController::class, 'distributeStock']);
+                Route::get('/distribute-item/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'distributeItem']);
+                Route::get('/warehouses/data', [CentralWarehouseItemController::class, 'getWarehouseData']);
+                Route::get('branches/data', [CentralWarehouseItemController::class, 'getBranchData']);
             });
 
 

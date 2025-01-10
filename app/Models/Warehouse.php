@@ -14,7 +14,10 @@ class Warehouse extends Model
         'code'
     ];
 
-
+    public function centralWarehouseStock(): HasMany
+    {
+        return $this->hasMany(CentralWarehouseStock::class, 'warehouse_id');
+    }
     public function centralWarehouseItem(): HasMany
     {
         return $this->hasMany(CentralWarehouseItem::class, 'warehouse_id');

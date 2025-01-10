@@ -2,7 +2,7 @@
 @section('page-title', 'Daftarkan Barang')
 @section('content')
     <div x-data="branchWarehouseItemDetailData()">
-        @include('pages.inventory.list-of-items.central-warehouse-items.modal.edit-item')
+        @include('pages.inventory.list-of-items.central-warehouse.modal.edit-item')
         @include('pages.inventory.list-of-items.branch-warehouse-items.modal.create-sn')
         <div class="row">
             <div class="col-lg-6">
@@ -51,7 +51,7 @@
                     <div class="d-flex align-items-center mb-2 pt-5">
                         <i class="bi bi-info-circle-fill fs-1 text-info me-4">
                             <span
-                                class="path1"></span><span class="path2"></span>
+                                    class="path1"></span><span class="path2"></span>
                         </i>
                         <h4 class="pt-1 text-dark">Informasi</h4>
                     </div>
@@ -84,7 +84,7 @@
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                             <template
-                                x-if="branchWarehouseItem?.item?.need_sn === 0 && branchWarehouseItem?.qty !== 0">
+                                    x-if="branchWarehouseItem?.item?.need_sn === 0 && branchWarehouseItem?.qty !== 0">
                                 <button type="button" class="btn btn-light-primary btn-sm"
                                         @click="generateCodeWithoutSN()">
                                     <i class="ki-duotone ki-message-add fs-2">
@@ -95,7 +95,7 @@
                                 </button>
                             </template>
                             <template
-                                x-if="branchWarehouseItem?.item?.need_sn === 1 && branchWarehouseItem?.qty !== 0">
+                                    x-if="branchWarehouseItem?.item?.need_sn === 1 && branchWarehouseItem?.qty !== 0">
                                 <button type="button" class="btn btn-light-primary btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modal-sn-create">
@@ -204,7 +204,7 @@
                                     </template>
                                     <td>
                                         <template
-                                            x-if="branchWarehouseItem?.item?.need_sn === 1 && stock.status === 0">
+                                                x-if="branchWarehouseItem?.item?.need_sn === 1 && stock.status === 0">
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modal-item-edit" @click="editItem(stock.id)">
                                                 <i class="ki-duotone ki-pencil fs-2">
