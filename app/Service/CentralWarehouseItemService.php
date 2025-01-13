@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\Models\CentralWarehouseItem;
-use App\Models\Item;
+use App\Models\Goods;
 use App\Models\Warehouse;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -42,7 +42,7 @@ class CentralWarehouseItemService
 
     public function stockData(): LengthAwarePaginator
     {
-        $items = Item::with('centralWarehouseStock')->paginate(self::$perPage);
+        $items = Goods::with('centralWarehouseStock')->paginate(self::$perPage);
 
         return self::formattedStockData($items);
     }
@@ -51,6 +51,7 @@ class CentralWarehouseItemService
     public function formattedStockData($item)
     {
         $data = $item->getCollection()->map(function ($item) {
+
             return [
                 'id' => $item->id,
                 'name' => $item->name,
@@ -65,7 +66,7 @@ class CentralWarehouseItemService
     }
 
 
-    public function getStockDataDetail(Item $item)
+    public function getStockDataDetail(Goods $item)
     {
         $stockDataDetail = Warehouse::with(['centralWarehouseStock' => function ($query) use ($item) {
             $query->where('item_id', $item->id);
@@ -79,7 +80,7 @@ class CentralWarehouseItemService
     {
         $data = $stockDataDetail->getCollection()->map(function ($value) use ($item) {
 
-            $getItem = Item::where('id', $item->id)->first();
+            $getItem = Goods::where('id', $item->id)->first();
 
             return [
                 'id' => $value->id,

@@ -17,17 +17,18 @@ class CentralWarehouseItem extends Model
         'warehouse_id',
         'name',
         'qty',
+        'from_po'
     ];
 
 
     public function po(): BelongsTo
     {
-        return $this->belongsTo(PoListOfItem::class, 'po_items_id');
+        return $this->belongsTo(GoodsPurchaseOrder::class, 'po_items_id');
     }
 
     public function item(): BelongsTo
     {
-        return $this->belongsTo(Item::class, 'item_id');
+        return $this->belongsTo(Goods::class, 'item_id');
     }
 
     public function warehouse(): BelongsTo

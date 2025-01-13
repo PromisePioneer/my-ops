@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Models\CentralWarehouseItem;
 use App\Models\CentralWarehouseStock;
+use App\Models\ItemTransaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -30,9 +31,9 @@ class CentralWareHouseStockService
     }
 
 
-    public function data(CentralWarehouseItem $centralWarehouseItem): LengthAwarePaginator
+    public function data(ItemTransaction $itemTransaction): LengthAwarePaginator
     {
-        return CentralWarehouseStock::where('po_id', $centralWarehouseItem->po_id)
+        return CentralWarehouseStock::where('po_id', $itemTransaction->po_id)->where('warehouse_id', $itemTransaction->warehouse_id)
             ->paginate(self::$perPage);
     }
 
@@ -118,4 +119,5 @@ class CentralWareHouseStockService
                 $query->where('sn', 'like', '%' . $search . '%')->orWhere('code', 'like', '%' . $search . '%');
             })->paginate(self::$perPage);
     }
+
 }

@@ -18,6 +18,12 @@ class CentralWarehouseStock extends Model
     ];
 
 
+    public function po(): BelongsTo
+    {
+        return $this->belongsTo(GoodsPurchaseOrder::class, 'po_id');
+    }
+
+
     public function warehouse(): BelongsTo
     {
         return $this->belongsTo(Warehouse::class, 'warehouse_id');

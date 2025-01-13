@@ -3,11 +3,18 @@
 namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
+use App\Models\Branch;
 use App\Models\CentralWarehouseItem;
 use App\Models\CentralWarehouseStock;
+use App\Models\Goods;
+use App\Models\ItemTransaction;
+use App\Models\Warehouse;
 use App\Service\CentralWareHouseStockService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 use Throwable;
 
 #[AllowDynamicProperties] class CentralWarehouseStockController extends Controller
@@ -15,11 +22,13 @@ use Throwable;
     public function __construct()
     {
         $this->centralWarehouseStockService = new CentralWareHouseStockService();
+        $this->branch = new Branch();
+        $this->warehouse = new Warehouse();
     }
 
-    public function data(CentralWarehouseItem $centralWarehouseItem): JsonResponse
+    public function data(ItemTransaction $itemTransaction): JsonResponse
     {
-        return response()->json($this->centralWarehouseStockService->data($centralWarehouseItem));
+        return response()->json($this->centralWarehouseStockService->data($itemTransaction));
     }
 
 
@@ -93,6 +102,70 @@ use Throwable;
             'message' => 'data berhasil dihapus',
         ], 200);
     }
+
+
+    public function getBranchData(Request $request): JsonResponse
+    {
+        return response()->json($this->branch->getData($request));
+    }
+
+    public function getWarehouseData(Request $request): JsonResponse
+    {
+        return response()->json($this->warehouse->getData($request));
+    }
+
+
+    public function sendItem(Goods $item): View
+    {
+        return view('pages.inventory.list-of-items.central-warehouse.central-stock.send-item', compact('item'));
+    }
+
+    public function getStockWithSN(Goods $item, Request $request): JsonResponse
+    {
+        $warehouseId = $request->input('warehouse_id');
+        $stock = CentralWarehouseStock::with('warehouse', 'po')->whereHas('warehouse', function ($query) use ($warehouseId) {
+            $query->where('warehouse_id', $warehouseId);
+        })->where('item_id', $item->id)->where('status', 1)->whereNull('qty')->paginate(10);
+
+        return response()->json($stock);
+    }
+
+    public function sendItemStore(Request $request, Goods $item)
+    {
+        $implodeID = implode(',', $request->get('selectedStock'));
+        $explodeID = explode(',', $implodeID);
+        $stock = CentralWarehouseStock::with('po')->where('item_id', $item->id)->whereIn('id', $explodeID)->get();
+        foreach ($stock as $item) {
+            DB::transaction(function () use ($stock, $item, $request) {
+                $item->update([
+                    'warehouse_id' => $request->warehouse_id,
+                ]);
+
+                $itemOut = ItemTransaction::create([
+                    'date' => Carbon::now(),
+                    'po_id' => $item->po_id,
+                    'item_id' => $item->item_id,
+                    'warehouse_id' => $item->warehouse_id,
+                    'qty' => $stock->count(),
+                    'type' => 'out',
+                ]);
+
+
+                ItemTransaction::create([
+                    'date' => Carbon::now(),
+                    'po_id' => $itemOut->po_id,
+                    'item_id' => $itemOut->item_id,
+                    'warehouse_id' => $itemOut->warehouse_id,
+                    'qty' => $itemOut->qty,
+                    'type' => 'in',
+                ]);
+            });
+        }
+
+
+    }
+
+
 
 
 }

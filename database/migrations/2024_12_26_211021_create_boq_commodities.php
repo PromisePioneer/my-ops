@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('boq_id')->constrained('boq')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('item_id')
-                ->constrained('items')
+                ->constrained('goods')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->string('merk')->nullable();

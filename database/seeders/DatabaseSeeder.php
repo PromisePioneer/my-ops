@@ -40,7 +40,7 @@ class DatabaseSeeder extends Seeder
             AttendancesSummarySeeder::class,
             ItemCategoriesSeeder::class,
             WarehouseSeeder::class,
-            ItemSeeder::class,
+            GoodsSeeder::class,
             SupplierSeeder::class,
         ]);
     }

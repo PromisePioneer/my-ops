@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
 use App\Models\BranchWarehouseItem;
-use App\Models\Item;
+use App\Models\Goods;
 use App\Service\BranchWarehouseItemService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -59,7 +59,7 @@ use Illuminate\View\View;
     }
 
 
-    public function getStockDataDetail(Item $item): JsonResponse
+    public function getStockDataDetail(Goods $item): JsonResponse
     {
         return response()->json($this->branchWarehouseItemService->getStockDataDetail($item));
     }

@@ -17,18 +17,19 @@ class ItemTransaction extends Model
         'warehouse_id',
         'branch_id',
         'notes',
-        'status'
+        'status',
+        'from_po'
     ];
 
 
     public function po(): BelongsTo
     {
-        return $this->belongsTo(PoListOfItem::class, 'po_id');
+        return $this->belongsTo(GoodsPurchaseOrder::class, 'po_id');
     }
 
     public function item(): BelongsTo
     {
-        return $this->belongsTo(Item::class, 'item_id');
+        return $this->belongsTo(Goods::class, 'item_id');
     }
 
     public function warehouse(): BelongsTo

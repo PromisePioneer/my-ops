@@ -24,8 +24,6 @@ class SupplierRequest extends FormRequest
     {
         return [
             'name' => ['required'],
-            'address' => ['required'],
-            'phone' => ['required'],
         ];
     }
 
@@ -34,8 +32,6 @@ class SupplierRequest extends FormRequest
     {
         return [
             'name.required' => 'Nama tidak boleh kosong.',
-            'address.required' => 'Alamat tidak boleh kosong.',
-            'phone.required' => 'No. Telepon tidak boleh kosong.',
         ];
     }
 }

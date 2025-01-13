@@ -4,7 +4,7 @@ namespace App\Service;
 
 use App\Models\Branch;
 use App\Models\BranchWarehouseItem;
-use App\Models\Item;
+use App\Models\Goods;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -41,7 +41,7 @@ class BranchWarehouseItemService
 
     public function stockData()
     {
-        $items = Item::with('branchWarehouseItem.branchWarehouseStock')->paginate(self::$perPage);
+        $items = Goods::with('branchWarehouseItem.branchWarehouseStock')->paginate(self::$perPage);
 
         return self::formattedStockData($items);
     }
@@ -50,7 +50,7 @@ class BranchWarehouseItemService
     public function searchStockData(Request $request)
     {
         $search = $request->input('search');
-        $items = Item::with('branchWarehouseItem.branchWarehouseStock')->when(!empty($search), function ($query) use ($search) {
+        $items = Goods::with('branchWarehouseItem.branchWarehouseStock')->when(!empty($search), function ($query) use ($search) {
             $query->where('name', 'like', '%' . $search . '%');
         })->paginate(self::$perPage);
 
@@ -80,7 +80,7 @@ class BranchWarehouseItemService
 
 
     public
-    function getStockDataDetail(Item $item)
+    function getStockDataDetail(Goods $item)
     {
         $stockDataDetail = Branch::with(['branchWarehouseItem' => function ($query) use ($item) {
             $query->where('item_id', $item->id);

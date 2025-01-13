@@ -11,7 +11,7 @@ class BranchWarehouseItem extends Model
     protected $table = 'branch_warehouse_items';
     protected $fillable = [
         'date',
-        'po_item_id',
+        'po_id',
         'central_warehouse_stock_id',
         'branch_id',
         'item_id',
@@ -23,7 +23,7 @@ class BranchWarehouseItem extends Model
 
     public function po(): BelongsTo
     {
-        return $this->belongsTo(PoListOfItem::class, 'po_item_id');
+        return $this->belongsTo(GoodsPurchaseOrder::class, 'po_item_id');
     }
 
     public function centralWarehouseStock(): BelongsTo
@@ -39,7 +39,7 @@ class BranchWarehouseItem extends Model
 
     public function item(): BelongsTo
     {
-        return $this->belongsTo(Item::class, 'item_id');
+        return $this->belongsTo(Goods::class, 'item_id');
     }
 
 
