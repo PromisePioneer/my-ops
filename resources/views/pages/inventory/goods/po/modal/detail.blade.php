@@ -15,64 +15,63 @@
             </div>
 
             <div class="modal-body">
-                <template x-if="detailVal.branch_id !== null">
                     <div class="row mb-4">
                         <div class="col-lg-6">
-                            <label class="form-label required">Cabang</label>
+                            <label class="form-label required">Tujuan</label>
                             <input type="text" disabled class="form-control form-control-solid"
-                                   :value="detailVal?.branch_name">
+                                   :value="detailVal?.to">
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="form-label required">No. PO</label>
+                            <input type="text" disabled class="form-control form-control-solid"
+                                   :value="detailVal.po_number">
                         </div>
                     </div>
-                </template>
                 <div class="row mb-4">
-                    <div class="col-lg-6">
-                        <label class="form-label required">No. PO</label>
-                        <input type="text" disabled class="form-control form-control-solid"
-                               :value="detailVal.po_number">
-                    </div>
+
                     <div class="col-lg-6">
                         <label class="form-label required">No. Invoice</label>
                         <input type="text" disabled class="form-control form-control-solid"
                                :value="detailVal.invoice_number">
                     </div>
-                </div>
-                <div class="row mb-4">
                     <div class="col-lg-6">
                         <label class="form-label required">Nama Barang</label>
                         <input type="text" disabled class="form-control form-control-solid"
                                :value="detailVal.name">
                     </div>
+                </div>
+                <div class="row mb-4">
                     <div class="col-lg-6">
                         <label class="form-label required">Tanggal Masuk</label>
                         <input type="text" disabled class="form-control form-control-solid"
                                :value="detailVal.date">
                     </div>
-                </div>
-                <div class="row mb-4">
                     <div class="col-lg-6">
                         <label class="form-label required">Harga Satuan</label>
                         <input type="text" class="form-control form-control-solid" disabled
                                :value="detailVal.unit_price">
                     </div>
+                </div>
+                <div class="row mb-4">
+
                     <div class="col-lg-6">
                         <label class="form-label required">Kuantitas</label>
                         <input type="text" class="form-control form-control-solid" disabled
                                :value="detailVal.qty">
                     </div>
-                </div>
-                <div class="row mb-4">
+
                     <div class="col-lg-6">
                         <label class="form-label required">Ongkos Kirim</label>
                         <input type="text" class="form-control form-control-solid" disabled
                                :value="detailVal.shipping_cost">
                     </div>
+                </div>
+                <div class="row mb-4">
                     <div class="col-lg-6">
                         <label class="form-label required">PPN</label>
                         <input type="text" class="form-control form-control-solid" disabled
                                :value="detailVal.ppn">
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-lg-6">
                         <label class="form-label required">Total Harga</label>
                         <input type="text" class="form-control form-control-solid" disabled

@@ -5,13 +5,9 @@ namespace App\Http\Controllers;
 use AllowDynamicProperties;
 use App\Http\Requests\GoodsPurchaseOrderRequest;
 use App\Models\Branch;
-use App\Models\BranchWarehouseItem;
-use App\Models\CentralWarehouseItem;
 use App\Models\Goods;
 use App\Models\GoodsCategory;
 use App\Models\GoodsPurchaseOrder;
-use App\Models\GoodsTransaction;
-use App\Models\ReturnItemFromPo;
 use App\Models\Supplier;
 use App\Models\UnitType;
 use App\Models\Warehouse;
@@ -19,7 +15,6 @@ use App\Service\CentralWareHouseStockService;
 use App\Service\GoodsPurchaseOrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use function App\Helper\formatDate;
 
@@ -80,7 +75,7 @@ use function App\Helper\formatDate;
     public function store(GoodsPurchaseOrderRequest $request): JsonResponse
     {
 
-        $ppn = $this->goodsPurchaseOrder->getPPN();
+        $ppn = $this->goodsPurchaseOrderService->getPPN();
         $total_price = $request->qty * $request->unit_price;
 
         GoodsPurchaseOrder::create([
@@ -121,8 +116,7 @@ use function App\Helper\formatDate;
     {
         return response()->json([
             'id' => $goodsPurchaseOrder->id,
-            'branch_id' => $goodsPurchaseOrder->branch_id,
-            'branch_name' => $goodsPurchaseOrder->branch?->name,
+            'to' => $goodsPurchaseOrder->branch->name ?? $goodsPurchaseOrder->warehouse->name,
             'po_number' => $goodsPurchaseOrder->po_number,
             'invoice_number' => $goodsPurchaseOrder->invoice_number,
             'name' => $goodsPurchaseOrder->item->name,

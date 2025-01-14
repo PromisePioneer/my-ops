@@ -18,12 +18,9 @@ use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\BAAController;
-use App\Http\Controllers\BranchWarehouseItemController;
-use App\Http\Controllers\BranchWarehouseStockController;
-use App\Http\Controllers\CentralWarehouseItemController;
-use App\Http\Controllers\CentralWarehouseStockController;
 use App\Http\Controllers\GoodsController;
 use App\Http\Controllers\GoodsPurchaseOrderController;
+use App\Http\Controllers\GoodsStockController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
@@ -88,7 +85,6 @@ use App\Http\Controllers\Master\General\SKLController;
 use App\Http\Controllers\Master\Operational\JointClosureCodeController;
 use App\Http\Controllers\Master\Operational\SupplierController;
 use App\Http\Controllers\PurchaseOrderController;
-use App\Http\Controllers\GoodsStockController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
 use App\Http\Controllers\UserProfile\UserLeaveAndPermissionController;
 use App\Http\Controllers\UserProfile\UserProfileController;
@@ -802,6 +798,25 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::prefix('stock')->group(function () {
                 Route::get('/', [GoodsStockController::class, 'index']);
                 Route::get('/data', [GoodsStockController::class, 'data']);
+                Route::get('/search', [GoodsStockController::class, 'goodsSearch']);
+                Route::prefix('detail')->group(function () {
+                    Route::get('/{goods}', [GoodsStockController::class, 'detail']);
+                    Route::get('/po/data/{goods}', [GoodsStockController::class, 'getPO']);
+                    Route::get('/po/search/{goods}', [GoodsStockController::class, 'searchPO']);
+
+                    Route::prefix('/po/generate-sn')->group(function () {
+                        Route::get('/{goodsPurchaseOrder}', [GoodsStockController::class, 'generateSN']);
+                        Route::get('/po-detail/data/{goodsPurchaseOrder}', [GoodsStockController::class, 'PODetail']);
+                        Route::get('/po-detail/get-stock/{goodsPurchaseOrder}', [GoodsStockController::class, 'getGoodsStockBasedOnPO']);
+                        Route::post('/store/{goodsPurchaseOrder}', [GoodsStockController::class, 'createSN']);
+                        Route::get('/edit/{goodsStock}', [GoodsStockController::class, 'edit']);
+                        Route::post('/destroy', [GoodsStockController::class, 'destroy']);
+                        Route::post('/confirm', [GoodsStockController::class, 'confirm']);
+                        Route::post('/update/{goodsStock}', [GoodsStockController::class, 'update']);
+                    });
+                });
+
+
             });
         });
 

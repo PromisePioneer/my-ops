@@ -40,4 +40,9 @@ class GoodsPurchaseOrder extends Model
     {
         return $this->belongsTo(Branch::class, 'branch_id');
     }
+
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
+    }
 }
