@@ -24,6 +24,7 @@ class GoodsPurchaseOrderRequest extends FormRequest
      */
     public function rules(Request $request): array
     {
+
         return [
             'placement' => ['required'],
             'branch_id' => [
@@ -36,8 +37,13 @@ class GoodsPurchaseOrderRequest extends FormRequest
                     return $request->placement === 'Pusat';
                 }), 'exists:branches,id'
             ],
-            'po_number' => ['required', Rule::unique('goods_purchase_order', 'po_number')->ignore($request->route('goodsPurchaseOrder')),],
-            'invoice_number' => ['required', Rule::unique('goods_purchase_order', 'invoice_number')->ignore($request->route('goodsPurchaseOrder'))],
+            'po_number' => ['required',
+                Rule::unique('goods_purchase_order', 'po_number')
+                    ->ignore($this->route('goodsPurchaseOrder')),],
+            'invoice_number' => [
+                'required',
+                Rule::unique('goods_purchase_order', 'invoice_number')
+                    ->ignore($this->route('goodsPurchaseOrder'))],
             'item_id' => ['required', 'string'],
             'date' => ['required', 'date'],
             'unit_price' => ['required'],
@@ -53,8 +59,8 @@ class GoodsPurchaseOrderRequest extends FormRequest
     {
         return [
             'placement.required' => 'Penempatan tidak boleh kosong.',
-//            'branch_id.required_if' => 'Cabang tidak boleh kosong.',
-//            'warehouse_id.required_if' => 'Gudang tidak boleh kosong.',
+            'branch_id.required' => 'Cabang tidak boleh kosong.',
+            'warehouse_id.required' => 'Gudang tidak boleh kosong.',
             'po_number.required' => 'Nomor PO tidak boleh kosong',
             'po_number.unique' => 'Nomor PO sudah terdaftar',
             'invoice_number.unique' => 'Nomor Invoice sudah terdaftar',

@@ -2,11 +2,17 @@
 
 namespace App\Service;
 
+use App\Models\BranchWarehouseItem;
+use App\Models\CentralWarehouseItem;
 use App\Models\GoodsPurchaseOrder;
+use App\Models\GoodsTransaction;
+use App\Models\PurchaseOrderDetail;
+use App\Models\ReturnItemFromPo;
 use App\Models\TaxSetting;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use function App\Helper\formatDate;
 
 class GoodsPurchaseOrderService
@@ -60,4 +66,46 @@ class GoodsPurchaseOrderService
     {
         return TaxSetting::where('name', 'PPN')->first()?->rate;
     }
+
+
+    public function confirm(Request $request, GoodsPurchaseOrder $goodsPurchaseOrder): void
+    {
+        DB::transaction(function () use ($request, $goodsPurchaseOrder) {
+            $goodsPurchaseOrder->update([
+                'status' => 1
+            ]);
+
+            if ($request->qty_cannot_be_used > 0) {
+                ReturnItemFromPo::create([
+                    'po_id' => $goodsPurchaseOrder->id,
+                    'item_id' => $goodsPurchaseOrder->item_id,
+                    'qty' => $request->qty_cannot_be_used,
+                    'reason' => $request->reason
+                ]);
+            }
+
+
+            PurchaseOrderDetail::create([
+                'date' => $request->date,
+                'po_id' => $goodsPurchaseOrder->id,
+                'item_id' => $goodsPurchaseOrder->item_id,
+                'qty' => $request->qty_can_be_used,
+            ]);
+
+            GoodsTransaction::create([
+                'date' => $request->date,
+                'po_id' => $goodsPurchaseOrder->id,
+                'item_id' => $goodsPurchaseOrder->item_id,
+                'branch_id' => $goodsPurchaseOrder->branch_id,
+                'warehouse_id' => $request->warehouse_id,
+                'type' => 'in',
+                'qty' => $request->qty_can_be_used,
+                'from_po' => true,
+            ]);
+
+
+        });
+    }
+
+
 }

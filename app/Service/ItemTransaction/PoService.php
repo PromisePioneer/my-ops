@@ -2,7 +2,7 @@
 
 namespace App\Service\ItemTransaction;
 
-use App\Models\ItemTransaction;
+use App\Models\GoodsTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -13,7 +13,7 @@ class PoService
 
     public function data(): LengthAwarePaginator
     {
-        return ItemTransaction::with('po', 'item', 'item.unitType', 'warehouse')
+        return GoodsTransaction::with('po', 'item', 'item.unitType', 'warehouse')
             ->where('from_po', 1)
             ->paginate(self::$perPage);
 
@@ -35,7 +35,7 @@ class PoService
     {
         $search = $request->input('search');
 
-        return ItemTransaction::with('po', 'item', 'item.unitType', 'warehouse')
+        return GoodsTransaction::with('po', 'item', 'item.unitType', 'warehouse')
             ->where('from_po', 1)
             ->where(function ($query) use ($search) {
                 if (!empty($search)) {

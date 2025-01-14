@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ItemTransaction extends Model
+class GoodsTransaction extends Model
 {
-    protected $table = 'item_transactions';
+    protected $table = 'goods_transaction';
     protected $fillable = [
         'date',
         'po_id',

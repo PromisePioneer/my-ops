@@ -312,9 +312,9 @@
                                 PO Barang
                             </x-dropdown-menu-item>
                             <x-dropdown-menu-item
-                                :active="request()->is('inventory/list-of-items/central-warehouse-items*')"
-                                href="{{ url('inventory/list-of-items/central-warehouse-items') }}">
-                                Stok Barang (Pusat)
+                                :active="request()->is('inventory/goods/stock*')"
+                                href="{{ url('inventory/goods/stock') }}">
+                                Stok Barang
                             </x-dropdown-menu-item>
                             <x-dropdown-menu-item
                                 :active="request()->is('inventory/list-of-items/branch-warehouse-items*')"

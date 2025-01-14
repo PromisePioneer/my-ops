@@ -10,7 +10,7 @@ use App\Models\CentralWarehouseItem;
 use App\Models\Goods;
 use App\Models\GoodsCategory;
 use App\Models\GoodsPurchaseOrder;
-use App\Models\ItemTransaction;
+use App\Models\GoodsTransaction;
 use App\Models\ReturnItemFromPo;
 use App\Models\Supplier;
 use App\Models\UnitType;
@@ -28,7 +28,7 @@ use function App\Helper\formatDate;
     public function __construct()
     {
         $this->supplier = new Supplier();
-        $this->goodsPurchaseOrder = new GoodsPurchaseOrderService();
+        $this->goodsPurchaseOrderService = new GoodsPurchaseOrderService();
         $this->branch = new Branch();
         $this->itemCategory = new GoodsCategory();
         $this->centralWareHouseStockService = new CentralWareHouseStockService();
@@ -44,7 +44,7 @@ use function App\Helper\formatDate;
 
     public function data(): JsonResponse
     {
-        return response()->json($this->goodsPurchaseOrder->data());
+        return response()->json($this->goodsPurchaseOrderService->data());
     }
 
 
@@ -65,7 +65,7 @@ use function App\Helper\formatDate;
     }
 
 
-    public function getWarehouseData(Request $request)
+    public function getWarehouseData(Request $request): JsonResponse
     {
         return response()->json($this->warehouse->getData($request));
     }
@@ -139,7 +139,7 @@ use function App\Helper\formatDate;
 
     public function update(GoodsPurchaseOrderRequest $request, GoodsPurchaseOrder $goodsPurchaseOrder): JsonResponse
     {
-        $ppn = $this->goodsPurchaseOrder->getPPN();
+        $ppn = $this->goodsPurchaseOrderService->getPPN();
         $total_price = $request->qty * $request->unit_price;
 
         $goodsPurchaseOrder->update([
@@ -162,78 +162,22 @@ use function App\Helper\formatDate;
 
     public function confirm(Request $request, GoodsPurchaseOrder $goodsPurchaseOrder): JsonResponse
     {
-        DB::transaction(function () use ($request, $goodsPurchaseOrder) {
-            $goodsPurchaseOrder->update([
-                'status' => 1
-            ]);
-
-            if ($request->qty_cannot_be_used > 0) {
-                ReturnItemFromPo::create([
-                    'po_id' => $goodsPurchaseOrder->id,
-                    'item_id' => $goodsPurchaseOrder->item_id,
-                    'qty' => $request->qty_cannot_be_used,
-                    'reason' => $request->reason
-                ]);
-            }
-
-            if ($request->warehouse_id !== null) {
-                DB::transaction(function () use ($goodsPurchaseOrder, $request) {
-                    CentralWarehouseItem::create([
-                        'date' => $request->date,
-                        'po_id' => $goodsPurchaseOrder->id,
-                        'warehouse_id' => $request->warehouse_id,
-                        'item_id' => $goodsPurchaseOrder->item_id,
-                        'qty' => $request->qty_can_be_used,
-                    ]);
-
-                    ItemTransaction::create([
-                        'date' => $request->date,
-                        'po_id' => $goodsPurchaseOrder->id,
-                        'item_id' => $goodsPurchaseOrder->item_id,
-                        'branch_id' => $goodsPurchaseOrder->branch_id,
-                        'warehouse_id' => $request->warehouse_id,
-                        'type' => 'in',
-                        'qty' => $request->qty_can_be_used,
-                        'from_po' => true,
-                    ]);
-                });
-            } else {
-                BranchWarehouseItem::create([
-                    'branch_id' => $goodsPurchaseOrder->branch_id,
-                    'date' => $request->date,
-                    'po_id' => $goodsPurchaseOrder->id,
-                    'item_id' => $goodsPurchaseOrder->item_id,
-                    'qty' => $request->qty_can_be_used,
-                ]);
-
-
-                ItemTransaction::create([
-                    'date' => $request->date,
-                    'po_id' => $goodsPurchaseOrder->id,
-                    'item_id' => $goodsPurchaseOrder->item_id,
-                    'branch_id' => $goodsPurchaseOrder->branch_id,
-                    'warehouse_id' => $request->warehouse_id,
-                    'type' => 'in',
-                    'qty' => $request->qty_can_be_used,
-                    'from_po' => true,
-                ]);
-            }
-        });
-
+        $this->goodsPurchaseOrderService->confirm($request, $goodsPurchaseOrder);
         return response()->json(['message' => 'Data berhasil disimpan']);
     }
 
 
-    public function destroy()
+    public function destroy(Request $request, GoodsPurchaseOrder $goodsPurchaseOrder): JsonResponse
     {
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $goodsPurchaseOrder->whereIn('id', $explodeID)->delete();
 
+        return response()->json([
+            'message' => 'data berhasil dihapus',
+        ], 200);
     }
 
-
-    public function getItemCategories(Request $request): JsonResponse
-    {
-        return response()->json($this->itemCategory->getData($request));
-    }
 
     public function getItem(Request $request): JsonResponse
     {

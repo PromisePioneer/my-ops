@@ -2,7 +2,7 @@
 
 namespace App\Service\ItemTransaction;
 
-use App\Models\ItemTransaction;
+use App\Models\GoodsTransaction;
 use Illuminate\Pagination\LengthAwarePaginator;
 use function App\Helper\formatDate;
 
@@ -13,7 +13,7 @@ class IncomingItemTransactionService
 
     public function data()
     {
-        $itemTransactions = ItemTransaction::with('item', 'po', 'item.unitType', 'warehouse')
+        $itemTransactions = GoodsTransaction::with('item', 'po', 'item.unitType', 'warehouse')
             ->where('type', 'in')->paginate(self::$perPage);
 
         return self::formattedData($itemTransactions);

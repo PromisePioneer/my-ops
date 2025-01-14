@@ -175,7 +175,6 @@
                     await this.getBranchData();
                     await this.getItem();
                     await this.getUnitType();
-                    await this.selectedBranch();
                     await this.selectedSupplier();
                     await this.selectedGoods();
                     await this.getWarehouses();
@@ -184,12 +183,16 @@
                     if (this.branchId !== '') {
                         this.placement = 'Cabang';
                         document.getElementById("placement").value = "Cabang";
+                        await this.selectedBranch();
+
                     }
 
                     if (this.warehouseId !== '') {
                         this.placement = 'Pusat';
                         document.getElementById("placement").value = "Pusat";
+                        await this.selectedWarehouse();
                     }
+
                 },
                 async getSupplierData() {
                     $(".supplier-select2").select2({
@@ -239,7 +242,6 @@
                     });
                 },
                 async selectedWarehouse() {
-                    if (this.id === '') return
                     const selectedWarehouse = $('#selected-warehouse');
                     const response = await $.ajax({
                         type: 'GET',
@@ -270,7 +272,11 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/inventory/goods/po/store', new FormData(this.form))
+                        if (!this.id) {
+                            await axios.post('/inventory/goods/po/store', new FormData(this.form))
+                        } else {
+                            await axios.post(`/inventory/goods/po/update/${this.id}`, new FormData(this.form))
+                        }
                         await showAlert('success', 'Data berhasil disimpan')
                         window.location.href = '/inventory/goods/po/';
                     } catch (error) {
@@ -296,7 +302,6 @@
                     });
                 },
                 async selectedBranch() {
-                    if (this.id === '') return
                     const selectedBranch = $('#selected-branch');
                     const response = await $.ajax({
                         type: 'GET',
@@ -310,7 +315,6 @@
                     });
                 },
                 async selectedSupplier() {
-                    if (this.id === '') return
                     const selectedSupplier = $('#selected-supplier');
                     const response = await $.ajax({
                         type: 'GET',

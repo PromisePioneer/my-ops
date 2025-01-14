@@ -7,7 +7,7 @@ use App\Models\Branch;
 use App\Models\CentralWarehouseItem;
 use App\Models\CentralWarehouseStock;
 use App\Models\Goods;
-use App\Models\ItemTransaction;
+use App\Models\GoodsTransaction;
 use App\Models\Warehouse;
 use App\Service\CentralWareHouseStockService;
 use Carbon\Carbon;
@@ -26,7 +26,7 @@ use Throwable;
         $this->warehouse = new Warehouse();
     }
 
-    public function data(ItemTransaction $itemTransaction): JsonResponse
+    public function data(GoodsTransaction $itemTransaction): JsonResponse
     {
         return response()->json($this->centralWarehouseStockService->data($itemTransaction));
     }
@@ -141,7 +141,7 @@ use Throwable;
                     'warehouse_id' => $request->warehouse_id,
                 ]);
 
-                $itemOut = ItemTransaction::create([
+                $itemOut = GoodsTransaction::create([
                     'date' => Carbon::now(),
                     'po_id' => $item->po_id,
                     'item_id' => $item->item_id,
@@ -151,7 +151,7 @@ use Throwable;
                 ]);
 
 
-                ItemTransaction::create([
+                GoodsTransaction::create([
                     'date' => Carbon::now(),
                     'po_id' => $itemOut->po_id,
                     'item_id' => $itemOut->item_id,

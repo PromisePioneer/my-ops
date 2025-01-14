@@ -7,7 +7,7 @@ use App\Models\Branch;
 use App\Models\CentralWarehouseItem;
 use App\Models\CentralWarehouseStock;
 use App\Models\Goods;
-use App\Models\ItemTransaction;
+use App\Models\GoodsTransaction;
 use App\Models\Warehouse;
 use App\Service\CentralWarehouseItemService;
 use App\Service\CentralWareHouseStockService;
@@ -27,7 +27,7 @@ use Illuminate\View\View;
 
     public function index(): View
     {
-        return view('pages.inventory.list-of-items.central-warehouse.index');
+        return view('pages.inventory.goods.central-warehouse.index');
     }
 
     public function data(): JsonResponse

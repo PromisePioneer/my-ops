@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use AllowDynamicProperties;
 use App\Models\CentralWarehouseItem;
 use App\Models\CentralWarehouseStock;
-use App\Models\ItemTransaction;
+use App\Models\GoodsTransaction;
 use App\Service\ItemTransaction\IncomingItemTransactionService;
 use App\Service\ItemTransaction\PoService;
 use Illuminate\Http\JsonResponse;
@@ -33,19 +33,19 @@ use Illuminate\View\View;
         return response()->json($this->poService->search($request));
     }
 
-    public function poDetail(ItemTransaction $itemTransaction): View
+    public function poDetail(GoodsTransaction $itemTransaction): View
     {
         $centralWarehouseItem = CentralWarehouseItem::where('po_id', $itemTransaction->po_id)->first();
         return view('pages.inventory.list-of-items.central-warehouse.item-distribution.detail', compact('itemTransaction', 'centralWarehouseItem'));
     }
 
 
-    public function poDetailData(ItemTransaction $itemTransaction): JsonResponse
+    public function poDetailData(GoodsTransaction $itemTransaction): JsonResponse
     {
         $centralWarehouseItem = CentralWarehouseItem::with('item', 'po', 'warehouse', 'item.unitType')
             ->where('po_id', $itemTransaction->po_id)
             ->first();
-        $itemTransaction = ItemTransaction::where('po_id', $itemTransaction->po_id)
+        $itemTransaction = GoodsTransaction::where('po_id', $itemTransaction->po_id)
             ->where('warehouse_id', $itemTransaction->warehouse_id)
             ->with('po', 'item', 'warehouse', 'item.unitType')
             ->first();
@@ -66,14 +66,14 @@ use Illuminate\View\View;
 
     public function outGoingItemData(): JsonResponse
     {
-        $data = ItemTransaction::with('po', 'item', 'item.unitType', 'warehouse')
+        $data = GoodsTransaction::with('po', 'item', 'item.unitType', 'warehouse')
             ->where('from_po', 0)
             ->where('type', 'out')->paginate(self::$perPage);
         return response()->json($data);
     }
 
 
-    public function confirm(ItemTransaction $itemTransaction): JsonResponse
+    public function confirm(GoodsTransaction $itemTransaction): JsonResponse
     {
         DB::transaction(function () use ($itemTransaction) {
             $itemTransaction->update([

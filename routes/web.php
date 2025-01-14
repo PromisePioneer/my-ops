@@ -88,6 +88,7 @@ use App\Http\Controllers\Master\General\SKLController;
 use App\Http\Controllers\Master\Operational\JointClosureCodeController;
 use App\Http\Controllers\Master\Operational\SupplierController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\GoodsStockController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
 use App\Http\Controllers\UserProfile\UserLeaveAndPermissionController;
 use App\Http\Controllers\UserProfile\UserProfileController;
@@ -781,6 +782,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/goods/data', [GoodsPurchaseOrderController::class, 'getItem']);
                 Route::get('/goods/selected/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'selectedItem']);
                 Route::get('/warehouses/data', [GoodsPurchaseOrderController::class, 'getWarehouseData']);
+                Route::post('/destroy', [GoodsPurchaseOrderController::class, 'destroy']);
                 Route::get('/warehouses/selected/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'selectedWarehouse']);
             });
 
@@ -796,59 +798,11 @@ Route::group(['middleware' => ['auth']], static function () {
                 });
             });
 
-            Route::prefix('central-warehouse-items')->group(function () {
-                Route::get('/', [CentralWarehouseItemController::class, 'index']);
-                Route::get('/data', [CentralWarehouseItemController::class, 'data']);
-                Route::get('/search', [CentralWarehouseItemController::class, 'search']);
-                Route::get('/stock-data', [CentralWarehouseItemController::class, 'getStockData']);
-                Route::get('/stock-data/detail/{item}', [CentralWarehouseItemController::class, 'getStockDataDetail']);
-                Route::get('/get-stocks/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'getCentralWarehouseStockDetail']);
-                Route::get('/distribute-item/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'distributeItem']);
-                Route::get('/warehouses/data', [CentralWarehouseItemController::class, 'getWarehouseData']);
-                Route::get('branches/data', [CentralWarehouseItemController::class, 'getBranchData']);
+
+            Route::prefix('stock')->group(function () {
+                Route::get('/', [GoodsStockController::class, 'index']);
+                Route::get('/data', [GoodsStockController::class, 'data']);
             });
-
-
-            Route::prefix('central-warehouse-stocks')->group(function () {
-                Route::post('/destroy', [CentralWarehouseStockController::class, 'destroy']);
-                Route::post('/confirm', [CentralWarehouseStockController::class, 'confirm']);
-                Route::get('/data/{itemTransaction}', [CentralWarehouseStockController::class, 'data']);
-                Route::post('generate-sn/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'generateSNIfExists']);
-                Route::post('generate-sn-if-not-exists/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'generateSNIfNotExists']);
-                Route::get('/edit/{centralWarehouseStock}', [CentralWarehouseStockController::class, 'edit']);
-                Route::post('/update/{centralWarehouseStock}', [CentralWarehouseStockController::class, 'update']);
-                Route::get('/search/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'search']);
-                Route::get('/branches/data', [CentralWarehouseStockController::class, 'getBranchData']);
-                Route::get('/warehouses/data', [CentralWarehouseStockController::class, 'getWarehouseData']);
-                Route::get('/get-stock-with-sn/{item}', [CentralWarehouseStockController::class, 'getStockWithSN']);
-                Route::get('/send-item/{item}', [CentralWarehouseStockController::class, 'sendItem']);
-                Route::post('/send-item/save/{item}', [CentralWarehouseStockController::class, 'sendItemStore']);
-            });
-
-
-            Route::prefix('branch-warehouse-items')->group(function () {
-                Route::get('/', [BranchWarehouseItemController::class, 'index']);
-                Route::get('/data', [BranchWarehouseItemController::class, 'data']);
-                Route::get('/stock-data', [BranchWarehouseItemController::class, 'getStockData']);
-                Route::get('/stock-data/detail/{item}', [BranchWarehouseItemController::class, 'getStockDataDetail']);
-                Route::get('/search', [BranchWarehouseItemController::class, 'search']);
-                Route::get('/detail/{branchWarehouseItem}', [BranchWarehouseItemController::class, 'detail']);
-                Route::get('/detail/data/{branchWarehouseItem}', [BranchWarehouseItemController::class, 'detailData']);
-                Route::get('/search-item', [BranchWarehouseItemController::class, 'searchStockData']);
-            });
-
-
-            Route::prefix('branch-warehouse-stocks')->group(function () {
-                Route::post('/destroy', [BranchWarehouseStockController::class, 'destroy']);
-                Route::post('/confirm', [BranchWarehouseStockController::class, 'confirm']);
-                Route::get('/data/{branchWarehouseItem}', [BranchWarehouseStockController::class, 'data']);
-                Route::post('generate-sn/{branchWarehouseItem}', [BranchWarehouseStockController::class, 'generateSNIfExists']);
-                Route::post('generate-sn-if-not-exists/{branchWarehouseItem}', [BranchWarehouseStockController::class, 'generateSNIfNotExists']);
-                Route::get('/edit/{branchWarehouseStock}', [BranchWarehouseStockController::class, 'edit']);
-                Route::post('/update/{branchWarehouseStock}', [BranchWarehouseStockController::class, 'update']);
-                Route::get('/search/{branchWarehouseItem}', [BranchWarehouseStockController::class, 'search']);
-            });
-
         });
 
 

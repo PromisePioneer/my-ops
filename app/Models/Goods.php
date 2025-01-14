@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 
 class Goods extends Model
@@ -16,6 +17,12 @@ class Goods extends Model
         'need_sn',
         'already_has_sn_on_item',
     ];
+
+
+    public function goodsStock(): HasMany
+    {
+        return $this->hasMany(GoodsStock::class, 'item_id');
+    }
 
     public function unitType(): BelongsTo
     {

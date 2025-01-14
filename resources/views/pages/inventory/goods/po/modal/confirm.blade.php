@@ -22,16 +22,6 @@
                             <input type="date" class="form-control form-control-solid date" name="date"
                                    placeholder="Tanggal Kirim">
                         </div>
-                        <template x-if="!detailVal.branch_id">
-                        <div class="col-lg-6">
-                                <label class="form-label required">Tujuan Barang</label>
-                                <select name="warehouse_id" id="warehouse_id"
-                                    class="form-select form-select-solid warehouse-select2"
-                                    data-dropdown-parent="#modal-confirm">
-                                <option></option>
-                                </select>
-                        </div>
-                            </template>
                     </div>
                     <div class="row mb-4">
                         <div class="col-lg-6">

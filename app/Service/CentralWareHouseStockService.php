@@ -4,7 +4,7 @@ namespace App\Service;
 
 use App\Models\CentralWarehouseItem;
 use App\Models\CentralWarehouseStock;
-use App\Models\ItemTransaction;
+use App\Models\GoodsTransaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -31,7 +31,7 @@ class CentralWareHouseStockService
     }
 
 
-    public function data(ItemTransaction $itemTransaction): LengthAwarePaginator
+    public function data(GoodsTransaction $itemTransaction): LengthAwarePaginator
     {
         return CentralWarehouseStock::where('po_id', $itemTransaction->po_id)->where('warehouse_id', $itemTransaction->warehouse_id)
             ->paginate(self::$perPage);

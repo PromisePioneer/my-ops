@@ -139,6 +139,7 @@
                 modalDetail: new bootstrap.Modal(document.getElementById('modal-detail')),
                 modalConfirm: new bootstrap.Modal(document.getElementById('modal-confirm')),
                 formConfirm: document.getElementById('form-confirm'),
+                formDelete: document.getElementById('form-delete'),
                 isLoading: false,
                 goodsPurchaseOrder: [],
                 detailVal: {},
@@ -163,6 +164,30 @@
                         console.log(e)
                     } finally {
                         this.isLoading = false;
+                    }
+                },
+                toggleAllCheckBox() {
+                    this.selectAll = !this.selectAll;
+                    this.singleChecked = false;
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    this.selectedCheckBox = [];
+                    checkboxes.forEach((checkbox) => {
+                        checkbox.checked = this.selectAll;
+                        if (this.selectAll) {
+                            this.selectedCheckBox.push(checkbox.value);
+                        }
+                    });
+                    this.selectedCheckBox.shift();
+                },
+                selectCheckBox(event) {
+                    const checkboxId = event.target.value;
+                    if (event.target.checked) {
+                        this.selectedCheckBox.push(checkboxId);
+                    } else {
+                        const index = this.selectedCheckBox.indexOf(checkboxId);
+                        if (index !== -1) {
+                            this.selectedCheckBox.splice(index, 1);
+                        }
                     }
                 },
                 async getWarehouseData() {
@@ -204,7 +229,23 @@
                     } finally {
                         this.buttonLoading = false;
                     }
-                }
+                },
+                async destroy() {
+                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                        this.isLoading = true;
+                        try {
+                            await axios.post(`/inventory/goods/po/destroy`, new FormData(this.formDelete));
+                            await showAlert('success', 'Data sukses dihapus');
+                            await this.init();
+                            this.selectedCheckBox = [];
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        } finally {
+                            this.isLoading = false;
+                        }
+                    });
+                },
             }
         }
     </script>
