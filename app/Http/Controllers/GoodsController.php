@@ -45,22 +45,24 @@ use Illuminate\View\View;
     public function store(GoodsRequest $request): JsonResponse
     {
         $needSN = false;
-        $snPerPo = false;
+        $alreadyHasSNOnItem = false;
 
         if ($request->need_sn === "on") {
             $needSN = true;
         }
 
         if ($request->already_has_sn_on_item === "on") {
-            $snPerPo = true;
+            $alreadyHasSNOnItem = true;
         }
+
+//        dd($needSN);
 
         Goods::create([
             'name' => $request->name,
             'category_id' => $request->category_id,
             'unit_type_id' => $request->unit_type_id,
             'need_sn' => $needSN,
-            'already_has_sn_on_item' => $snPerPo,
+            'already_has_sn_on_item' => $alreadyHasSNOnItem,
         ]);
         return response()->json([
             'message' => 'Data berhasil disimpan.'

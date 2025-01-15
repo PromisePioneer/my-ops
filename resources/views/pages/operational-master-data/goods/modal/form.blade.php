@@ -45,8 +45,8 @@
                                 Serial Number sudah tertera di barang (Klik jika ya).
                             </label>
                             <input class="form-check-input" x-model="hasSNOnItem" type="checkbox"
-                                   :checked="editVal.already_has_sn_on_item === 1" name="need_sn"
-                                   id="needSN"/>
+                                   :checked="editVal.already_has_sn_on_item === 1" name="already_has_sn_on_item"
+                                   id="already_has_sn_on_item"/>
                         </div>
                     </template>
                     <template x-if="hasSNOnItem === false">
