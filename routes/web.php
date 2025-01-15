@@ -812,6 +812,7 @@ Route::group(['middleware' => ['auth']], static function () {
                         Route::get('/po-detail/data/{goodsPurchaseOrder}', [GoodsStockController::class, 'PODetail']);
                         Route::get('/po-detail/get-stock/{goodsPurchaseOrder}', [GoodsStockController::class, 'getGoodsStockBasedOnPO']);
                         Route::post('/store/{goodsPurchaseOrder}', [GoodsStockController::class, 'createSN']);
+                        Route::post('auto/store/{goodsPurchaseOrder}', [GoodsStockController::class, 'autoCreateSN']);
                         Route::get('/edit/{goodsStock}', [GoodsStockController::class, 'edit']);
                         Route::post('/destroy', [GoodsStockController::class, 'destroy']);
                         Route::post('/confirm', [GoodsStockController::class, 'confirm']);

@@ -121,7 +121,7 @@ class GoodsPurchaseOrderService
 
             $item = Goods::where('id', $goodsPurchaseOrder->item_id)->first();
 
-            if ($item->need_sn === 0) {
+            if ($item->need_sn === 0 && $item->already_has_sn_on_item === 0) {
                 GoodsStock::create([
                     'po_id' => $goodsPurchaseOrder->id,
                     'warehouse_id' => $goodsPurchaseOrder->warehouse_id,

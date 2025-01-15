@@ -56,12 +56,15 @@ class GoodsStockService
     private static function formattedGoodsData(LengthAwarePaginator $goodsData): LengthAwarePaginator
     {
         $data = $goodsData->getCollection()->map(function ($item) {
+            if ($item->need_sn === 1 || $item->already_has_sn_on_item === 1) {
+                $stock = $item->goodsStock->whereNotNull('sn')->where('status', 1)->count();
+            } else {
+                $stock = $item->goodsStock->whereNull('sn')->where('status', 1)->sum('qty');
+            }
 
             return [
                 'id' => $item->id,
-                'verified_stock' => $item->need_sn === 1
-                    ? $item->goodsStock->whereNotNull('sn')->where('status', 1)->count()
-                    : $item->goodsStock->whereNull('sn')->where('status', 1)->sum('qty'),
+                'verified_stock' => $stock,
                 'unverified_stock' => $item->need_sn === 1
                     ? $item->goodsStock->whereNotNull('sn')->where('status', 0)->count()
                     : $item->goodsStock->whereNull('sn')->where('status', 0)->sum('qty'),

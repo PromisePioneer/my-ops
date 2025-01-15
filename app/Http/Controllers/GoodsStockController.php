@@ -8,8 +8,11 @@ use App\Models\Goods;
 use App\Models\GoodsPurchaseOrder;
 use App\Models\GoodsStock;
 use App\Service\GoodsStockService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 #[AllowDynamicProperties] class GoodsStockController extends Controller
@@ -84,18 +87,73 @@ use Illuminate\View\View;
 
     public function createSN(GoodsPurchaseOrder $goodsPurchaseOrder, GenerateItemSNRequest $request): JsonResponse
     {
-        GoodsStock::create([
-            'po_id' => $goodsPurchaseOrder->id,
-            'warehouse_id' => $goodsPurchaseOrder->warehouse_id,
-            'branch_id' => $goodsPurchaseOrder->branch_id,
-            'item_id' => $goodsPurchaseOrder->item_id,
-            'qty' => $goodsPurchaseOrder->qty,
-            'sn' => $request->sn
-        ]);
+        if ($goodsPurchaseOrder->item->need_sn === 1 && $goodsPurchaseOrder->item->already_has_sn_on_item === 1) {
+            GoodsStock::create([
+                'po_id' => $goodsPurchaseOrder->id,
+                'warehouse_id' => $goodsPurchaseOrder->warehouse_id,
+                'branch_id' => $goodsPurchaseOrder->branch_id,
+                'item_id' => $goodsPurchaseOrder->item_id,
+                'qty' => $goodsPurchaseOrder->qty,
+                'sn' => $request->sn
+            ]);
+        }
 
         return response()->json([
             'message' => 'Data berhasil disimpan.'
         ]);
+    }
+
+
+    public function autoCreateSN(GoodsPurchaseOrder $goodsPurchaseOrder): JsonResponse
+    {
+        if ($goodsPurchaseOrder->item->need_sn === 1 && $goodsPurchaseOrder->item->already_has_sn_on_item === 0) {
+            DB::transaction(function () use ($goodsPurchaseOrder) {
+                if ($goodsPurchaseOrder->qty <= 0) {
+                    return response()->json(['message' => 'Barang yang belum terdaftar sudah habis'], 403);
+                }
+
+                $chunkSize = 1000;
+                $stocks = [];
+                for ($i = 0; $i < $goodsPurchaseOrder->qty; $i++) {
+                    $stocks[] = [
+                        'po_id' => $goodsPurchaseOrder->id,
+                        'warehouse_id' => $goodsPurchaseOrder->warehouse_id,
+                        'branch_id' => $goodsPurchaseOrder->branch_id,
+                        'item_id' => $goodsPurchaseOrder->item_id,
+                        'sn' => $this->generateCodeWithNumber($goodsPurchaseOrder, $i),
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ];
+
+
+                    if (count($stocks) >= $chunkSize) {
+                        GoodsStock::insert($stocks);
+                        $stocks = [];
+                    }
+                }
+                GoodsStock::insert($stocks);
+
+                if (!empty($stocks)) {
+                    GoodsStock::insert($stocks);
+                }
+            });
+        }
+
+        return response()->json([
+            'message' => 'Data berhasil disimpan.'
+        ]);
+    }
+
+
+    public function generateCodeWithNumber(GoodsPurchaseOrder $goodsPurchaseOrder, $number): string
+    {
+        $itemName = $goodsPurchaseOrder->item->name ?? 'UnknownItem';
+        $warehouseCode = $goodsPurchaseOrder->warehouse->code ?? 'UnknownWarehouse';
+        $itemSlug = Str::slug($itemName, '');
+        $warehouseSlug = Str::slug($warehouseCode, '');
+        $dateIn = Carbon::parse($goodsPurchaseOrder->date)->format('my');
+        $paddedNumber = str_pad($number + 1, 2, '0', STR_PAD_LEFT);
+        return $dateIn . "." . strtoupper($itemSlug) . "." . strtoupper($warehouseSlug) . "." . $paddedNumber;
     }
 
 

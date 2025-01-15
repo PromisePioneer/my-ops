@@ -84,18 +84,18 @@
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                             <template
-                                x-if="purchaseOrder?.item?.need_sn === 0 && purchaseOrder?.qty !== 0 && purchaseOrder?.from_po === 1">
+                                x-if="purchaseOrder?.item?.need_sn === 1 && purchaseOrder?.item?.already_has_sn_on_item === 0">
                                 <button type="button" class="btn btn-light-primary btn-sm"
-                                        @click="generateCodeWithoutSN()">
+                                        @click="autoGenerateSN()">
                                     <i class="ki-duotone ki-message-add fs-2">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
                                         <span class="path3"></span>
-                                    </i> Buat Kode Otomatis
+                                    </i> Tambah Kode Otomatis
                                 </button>
                             </template>
                             <template
-                                x-if="purchaseOrder?.item?.need_sn === 1 && purchaseOrder?.qty !== 0">
+                                x-if="purchaseOrder?.item?.already_has_sn_on_item === 1 && purchaseOrder?.item?.need_sn === 1 && purchaseOrder?.qty !== 0">
                                 <button type="button" class="btn btn-light-primary btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modal-sn-create" @click="add()">
@@ -311,23 +311,27 @@
                         this.isLoading = false;
                     }
                 },
-                async generateSN() {
-                    this.buttonLoading = true;
-                    try {
-                        const resp = await axios.post(`/inventory/goods/stock/detail/po/generate-sn/po-detail/generate-sn/${this.id}`, {
-                            selectedCheckBox: this.selectedCheckBox
-                        });
-                        this.goodsStock = resp.data;
-                    } catch (e) {
-                        console.log(e)
-                    } finally {
-                        this.buttonLoading = false;
+                async paginationEndPoint(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
+                        this.goodsStock = resp.data
                     }
+                },
+                async autoGenerateSN() {
+                    showConfirmModal("Anda yakin?", "Data tidak bisa dihapus atau diubah jika di konfirmasi.", "Ya, Konfirmasi!", async () => {
+                        try {
+                            await axios.post(`/inventory/goods/stock/detail/po/generate-sn/auto/store/${this.id}`);
+                            await showAlert('success', 'Data sukses dikonfirmasi');
+                            await this.init();
+                            this.selectedCheckBox = [];
+                        } catch (error) {
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
                 },
                 async save(id = null) {
                     this.buttonLoading = true;
                     try {
-
                         if (!id) {
                             await axios.post(`/inventory/goods/stock/detail/po/generate-sn/store/${this.id}`, new FormData(this.form))
                         } else {

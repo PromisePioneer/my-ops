@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->foreignId('branch_id')->nullable()->constrained('warehouses');
             $table->foreignId('item_id')->constrained('goods');
             $table->integer('qty')->nullable();
-            $table->string('sn')->unique()->nullable();
+            $table->string('sn')->nullable();
             $table->boolean('status')->default(false);
             $table->timestamps();
         });

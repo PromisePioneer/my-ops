@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class GenerateItemSNRequest extends FormRequest
@@ -20,11 +21,11 @@ class GenerateItemSNRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules(Request $request): array
     {
         return [
             'sn' => [
-                'required',
+                Rule::requiredIf($request->sn === null),
                 Rule::unique('goods_stock', 'sn')
                     ->ignore($this->route('goodsStock'))
             ]
