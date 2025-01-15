@@ -242,6 +242,7 @@
                     });
                 },
                 async selectedWarehouse() {
+                    if (this.id === '') return
                     const selectedWarehouse = $('#selected-warehouse');
                     const response = await $.ajax({
                         type: 'GET',
@@ -302,6 +303,7 @@
                     });
                 },
                 async selectedBranch() {
+                    if (this.id === '') return
                     const selectedBranch = $('#selected-branch');
                     const response = await $.ajax({
                         type: 'GET',
@@ -315,6 +317,7 @@
                     });
                 },
                 async selectedSupplier() {
+                    if (this.id === '') return
                     const selectedSupplier = $('#selected-supplier');
                     const response = await $.ajax({
                         type: 'GET',

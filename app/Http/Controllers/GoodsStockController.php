@@ -43,7 +43,7 @@ use Illuminate\View\View;
 
     public function detail(Goods $goods): View
     {
-        return view('pages.inventory.goods.stocks.detail', compact('goods'));
+        return view('pages.inventory.goods.stocks.detail.index', compact('goods'));
     }
 
     public function getPO(Goods $goods): JsonResponse

@@ -78,21 +78,22 @@ use function App\Helper\formatDate;
         $ppn = $this->goodsPurchaseOrderService->getPPN();
         $total_price = $request->qty * $request->unit_price;
 
-        GoodsPurchaseOrder::create([
-            'warehouse_id' => $request->warehouse_id,
-            'branch_id' => $request->branch_id,
-            'po_number' => $request->po_number,
-            'invoice_number' => $request->invoice_number,
-            'item_id' => $request->item_id,
-            'date' => $request->date,
-            'unit_price' => $request->unit_price,
-            'qty' => $request->qty,
-            'shipping_cost' => $request->shipping_cost,
-            'ppn' => $request->ppn === "0" ? $ppn / 100 * $total_price : null,
-            'total_price' => $total_price,
-            'supplier_id' => $request->supplier_id,
-            'travel_letter_receipt' => $request->travel_letter_receipt,
-        ]);
+
+            GoodsPurchaseOrder::create([
+                'warehouse_id' => $request->warehouse_id,
+                'branch_id' => $request->branch_id,
+                'po_number' => $request->po_number,
+                'invoice_number' => $request->invoice_number,
+                'item_id' => $request->item_id,
+                'date' => $request->date,
+                'unit_price' => $request->unit_price,
+                'qty' => $request->qty,
+                'shipping_cost' => $request->shipping_cost,
+                'ppn' => $request->ppn === "0" ? $ppn / 100 * $total_price : null,
+                'total_price' => $total_price,
+                'supplier_id' => $request->supplier_id,
+                'travel_letter_receipt' => $request->travel_letter_receipt,
+            ]);
 
         return response()->json(['message' => 'Data berhasil disimpan.']);
     }

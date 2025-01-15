@@ -4,7 +4,9 @@ namespace App\Service;
 
 use App\Models\BranchWarehouseItem;
 use App\Models\CentralWarehouseItem;
+use App\Models\Goods;
 use App\Models\GoodsPurchaseOrder;
+use App\Models\GoodsStock;
 use App\Models\GoodsTransaction;
 use App\Models\PurchaseOrderDetail;
 use App\Models\ReturnItemFromPo;
@@ -84,6 +86,19 @@ class GoodsPurchaseOrderService
                 ]);
             }
 
+
+            $item = Goods::where('id', $goodsPurchaseOrder->item_id)->first();
+
+            if ($item->need_sn === 0) {
+                GoodsStock::create([
+                    'po_id' => $goodsPurchaseOrder->id,
+                    'warehouse_id' => $goodsPurchaseOrder->warehouse_id,
+                    'branch_id' => $goodsPurchaseOrder->branch_id,
+                    'item_id' => $goodsPurchaseOrder->item_id,
+                    'qty' => $goodsPurchaseOrder->qty,
+                    'status' => true
+                ]);
+            }
 
             PurchaseOrderDetail::create([
                 'date' => $request->date,
