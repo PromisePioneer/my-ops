@@ -1,10 +1,9 @@
 @extends('layouts.template')
-@section('page-title', 'Data Cabang')
+@section('page-title', 'Data Satuan')
 @section('content')
     <div x-data="unitTypesData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.general-master-data.unit-types.modal.create')
-            @include('pages.general-master-data.unit-types.modal.edit')
+            @include('pages.general-master-data.unit-types.modal.form')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -20,7 +19,7 @@
                         @can('Tambah Data Satuan')
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modal-unit-type-create">
+                                    data-bs-target="#modal-unit-type">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
@@ -50,7 +49,7 @@
                 </div>
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5">
+                        <table class="table align-middle table-bordered fs-6 gy-5">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
@@ -61,7 +60,7 @@
                                 </th>
                                 <th class="min-w-125px">Nama Satuan</th>
                                 <template x-if="Number(editPermission) === 1">
-                                <th class="min-w-125px">Actions</th>
+                                    <th class="min-w-125px">Actions</th>
                                 </template>
                             </tr>
                             </thead>
@@ -96,15 +95,15 @@
                                     </td>
                                     <td x-text="unitType.name"></td>
                                     <template x-if="Number(editPermission) === 1">
-                                    <td>
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-unit-type-edit" @click="edit(unitType.id)">
-                                            <i class="ki-duotone ki-pencil fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </button>
-                                    </td>
+                                        <td>
+                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-unit-type" @click="edit(unitType.id)">
+                                                <i class="ki-duotone ki-pencil fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                            </button>
+                                        </td>
                                     </template>
                                 </tr>
                             </template>
@@ -142,16 +141,17 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                formCreate: document.getElementById('unit-types-store'),
-                formEdit: document.getElementById('unit-types-update'),
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-unit-type-create')),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-unit-type-edit')),
+                form: document.getElementById('form-unit-type'),
+                modalForm: new bootstrap.Modal(document.getElementById('modal-unit-type')),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
                     const unitTypes = await axios.get('/general-master-data/unit-types/data');
                     this.unitTypes = unitTypes.data
                     this.startIndex = this.unitTypes.from;
                     this.isLoading = false;
+                },
+                add() {
+                    this.editVal = '';
                 },
                 async searchData() {
                     try {
@@ -197,13 +197,17 @@
                         }
                     }
                 },
-                async saveUnitTypes() {
+                async saveUnitTypes(id = null) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/general-master-data/unit-types/', new FormData(this.formCreate))
+                        if (!id) {
+                            await axios.post('/general-master-data/unit-types/', new FormData(this.form))
+                        } else {
+                            await axios.post(`/general-master-data/unit-types/update/${id}`, new FormData(this.form))
+                        }
                         await showAlert('success', 'Data berhasil disimpan')
-                        this.formCreate.reset();
-                        this.modalCreate.hide();
+                        this.form.reset();
+                        this.modalForm.hide();
                         await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
@@ -216,27 +220,13 @@
                     const resp = await axios.get(`/general-master-data/unit-types/show/${id}`);
                     this.editVal = resp.data;
                 },
-                async update(id) {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post(`/general-master-data/unit-types/update/${id}`, new FormData(this.formEdit))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.modalEdit.hide();
-                        this.formEdit.reset();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]));
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
                             await axios.post(`/general-master-data/unit-types/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
+                            this.selectedCheckBox = [];
                         } catch (error) {
                             console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');

@@ -7,7 +7,7 @@
         }
     </style>
     <div class="d-flex flex-column flex-lg-row" x-data="generateBoQ()">
-        @include('pages.operational-master-data.items.modal.create')
+        @include('pages.operational-master-data.goods.modal.create')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
                 <form id="form" @submit.prevent="generateBoQ()">

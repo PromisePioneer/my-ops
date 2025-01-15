@@ -19,7 +19,7 @@ class WarehouseController extends Controller
 
     public function data(): JsonResponse
     {
-        $warehouses = Warehouse::paginate(10);
+        $warehouses = Warehouse::paginate(self::$perPage);
         return response()->json($warehouses);
     }
 

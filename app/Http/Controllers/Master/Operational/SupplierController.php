@@ -7,14 +7,13 @@ use App\Http\Requests\SupplierRequest;
 use App\Models\Supplier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class SupplierController extends Controller
 {
-
     private static int $perPage = 10;
 
-
-    public function index()
+    public function index(): View
     {
         return view('pages.operational-master-data.supplier.index');
     }
@@ -29,16 +28,10 @@ class SupplierController extends Controller
     public function search(Request $request): JsonResponse
     {
         $search = $request->input('search');
-        $query = Supplier::orderBy('name');
+        $supplier = Supplier::when(!empty($search), function ($query) use ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        })->orderBy('name')->paginate(self::$perPage);
 
-
-        if (!empty($search)) {
-            $query->where('name', 'like', '%'.$search.'%')
-                ->orWhere('address', 'like', '%'.$search.'%')
-                ->orWhere('phone', 'like', '%'.$search.'%');
-        }
-
-        $supplier = $query->paginate(self::$perPage);
         return response()->json($supplier);
     }
 

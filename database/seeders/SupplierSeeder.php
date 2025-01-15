@@ -14,8 +14,6 @@ class SupplierSeeder extends Seeder
     {
         Supplier::create([
             'name' => 'PT. Virtus Technology Indonesia',
-            'address' => 'China',
-            'phone' => "0823739213"
         ]);
     }
 }

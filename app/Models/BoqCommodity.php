@@ -31,7 +31,7 @@ class BoqCommodity extends Model
 
     public function item(): BelongsTo
     {
-        return $this->belongsTo(Item::class, 'item_id');
+        return $this->belongsTo(Goods::class, 'item_id');
     }
 
 

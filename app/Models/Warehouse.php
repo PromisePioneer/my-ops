@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 
 class Warehouse extends Model
@@ -13,6 +14,14 @@ class Warehouse extends Model
         'code'
     ];
 
+    public function centralWarehouseStock(): HasMany
+    {
+        return $this->hasMany(CentralWarehouseStock::class, 'warehouse_id');
+    }
+    public function centralWarehouseItem(): HasMany
+    {
+        return $this->hasMany(CentralWarehouseItem::class, 'warehouse_id');
+    }
 
     public function getData(Request $request): array
     {

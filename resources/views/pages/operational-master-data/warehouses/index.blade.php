@@ -3,8 +3,7 @@
 @section('content')
     <div x-data="warehouseData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.operational-master-data.warehouses.modal.create')
-            @include('pages.operational-master-data.warehouses.modal.edit')
+            @include('pages.operational-master-data.warehouses.modal.form')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -20,7 +19,7 @@
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modal-warehouse-create">
+                                    data-bs-target="#modal-warehouse-form" @click="add()">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
@@ -50,7 +49,7 @@
                 </div>
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle fs-6 gy-5" id="kt_table_users">
+                        <table class="table align-middle fs-6 gy-5 table-bordered">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
@@ -99,7 +98,7 @@
                                     <td x-text="warehouse.name"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-warehouse-edit" @click="edit(warehouse.id)">
+                                                data-bs-target="#modal-warehouse-form" @click="edit(warehouse.id)">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
@@ -138,13 +137,14 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                formCreate: document.getElementById('form-warehouse-create'),
-                formEdit: document.getElementById('form-warehouse-edit'),
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-warehouse-create')),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-warehouse-edit')),
+                form: document.getElementById('form-warehouse'),
+                modalForm: new bootstrap.Modal(document.getElementById('modal-warehouse-form')),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
                     await this.getWarehouseData();
+                },
+                add() {
+                    this.editVal = '';
                 },
                 async getWarehouseData() {
                     this.isLoading = false;
@@ -159,7 +159,7 @@
                 },
                 async searchData() {
                     try {
-                        const resp = await axios.get('/general-master-data/branch/search', {
+                        const resp = await axios.get('/operational-master-data/warehouses/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -199,13 +199,17 @@
                         }
                     }
                 },
-                async saveWarehouse() {
+                async saveWarehouse(id = null) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/operational-master-data/warehouses', new FormData(this.formCreate))
+                        if (!id) {
+                            await axios.post('/operational-master-data/warehouses', new FormData(this.form))
+                        } else {
+                            await axios.post(`/operational-master-data/warehouses/${id}`, new FormData(this.form))
+                        }
                         await showAlert('success', 'Data berhasil disimpan')
-                        this.formCreate.reset();
-                        this.modalCreate.hide();
+                        this.form.reset();
+                        this.modalForm.hide();
                         await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
@@ -218,27 +222,13 @@
                     const resp = await axios.get(`/operational-master-data/warehouses/${id}`);
                     this.editVal = resp.data;
                 },
-                async update(id) {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post(`/operational-master-data/warehouses/${id}`, new FormData(this.formEdit))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.modalEdit.hide();
-                        this.formEdit.reset();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]));
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
                             await axios.post(`/operational-master-data/warehouses/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
+                            this.selectedCheckBox = [];
                         } catch (error) {
                             console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');

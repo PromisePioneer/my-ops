@@ -18,10 +18,9 @@ use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\BAAController;
-use App\Http\Controllers\BranchWarehouseItemController;
-use App\Http\Controllers\BranchWarehouseStockController;
-use App\Http\Controllers\CentralWarehouseItemController;
-use App\Http\Controllers\CentralWarehouseStockController;
+use App\Http\Controllers\GoodsController;
+use App\Http\Controllers\GoodsPurchaseOrderController;
+use App\Http\Controllers\GoodsStockController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
@@ -66,10 +65,10 @@ use App\Http\Controllers\Inventory\ODP\ODPController;
 use App\Http\Controllers\Inventory\ODP\ODPMapController;
 use App\Http\Controllers\Inventory\Pole\PoleController;
 use App\Http\Controllers\Inventory\Pole\PoleMapController;
-use App\Http\Controllers\Inventory\Stock\ItemCategoryController;
-use App\Http\Controllers\Inventory\Stock\UnitTypesController;
+use App\Http\Controllers\Inventory\Stock\GoodsCategoryController;
+use App\Http\Controllers\Inventory\Stock\UnitTypeController;
 use App\Http\Controllers\Inventory\Stock\UsedItemsController;
-use App\Http\Controllers\ItemController;
+use App\Http\Controllers\ItemTransactionController;
 use App\Http\Controllers\Master\Finance\AccountController;
 use App\Http\Controllers\Master\Finance\AssetController;
 use App\Http\Controllers\Master\Finance\TaxSettingController;
@@ -85,7 +84,6 @@ use App\Http\Controllers\Master\General\ServicesCategoryController;
 use App\Http\Controllers\Master\General\SKLController;
 use App\Http\Controllers\Master\Operational\JointClosureCodeController;
 use App\Http\Controllers\Master\Operational\SupplierController;
-use App\Http\Controllers\PoListOfItemController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
 use App\Http\Controllers\UserProfile\UserLeaveAndPermissionController;
@@ -329,13 +327,13 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
         Route::prefix('unit-types')->group(function () {
-            Route::get('/', [UnitTypesController::class, 'index']);
-            Route::get('/data', [UnitTypesController::class, 'data']);
-            Route::get('/search', [UnitTypesController::class, 'search']);
-            Route::post('/', [UnitTypesController::class, 'store']);
-            Route::get('/show/{unitType}', [UnitTypesController::class, 'edit']);
-            Route::post('/destroy', [UnitTypesController::class, 'destroy']);
-            Route::post('/update/{unitType}', [UnitTypesController::class, 'update']);
+            Route::get('/', [UnitTypeController::class, 'index']);
+            Route::get('/data', [UnitTypeController::class, 'data']);
+            Route::get('/search', [UnitTypeController::class, 'search']);
+            Route::post('/', [UnitTypeController::class, 'store']);
+            Route::get('/show/{unitType}', [UnitTypeController::class, 'edit']);
+            Route::post('/destroy', [UnitTypeController::class, 'destroy']);
+            Route::post('/update/{unitType}', [UnitTypeController::class, 'update']);
         });
 
 
@@ -500,18 +498,18 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
     Route::prefix('operational-master-data')->group(function () {
-        Route::prefix('/items')->group(function () {
-            Route::get('/', [ItemController::class, 'index']);
-            Route::get('/data', [ItemController::class, 'data']);
-            Route::get('/search', [ItemController::class, 'search']);
-            Route::get('/item-categories/data', [ItemController::class, 'getItemCategories']);
-            Route::get('/item-categories/selected/{item}', [ItemController::class, 'selectedItemCategories']);
-            Route::get('/unit-types/data', [ItemController::class, 'getUnitTypes']);
-            Route::get('/unit-types/selected/{item}', [ItemController::class, 'selectedUnitType']);
-            Route::post('/', [ItemController::class, 'store']);
-            Route::get('/{item}', [ItemController::class, 'edit']);
-            Route::post('/destroy', [ItemController::class, 'destroy']);
-            Route::post('/{item}', [ItemController::class, 'update']);
+        Route::prefix('/goods')->group(function () {
+            Route::get('/', [GoodsController::class, 'index']);
+            Route::get('/data', [GoodsController::class, 'data']);
+            Route::get('/search', [GoodsController::class, 'search']);
+            Route::get('/goods-category/data', [GoodsController::class, 'getGoodsCategory']);
+            Route::get('/goods-category/selected/{goods}', [GoodsController::class, 'selectedGoodsCategory']);
+            Route::get('/unit-types/data', [GoodsController::class, 'getUnitTypes']);
+            Route::get('/unit-types/selected/{goods}', [GoodsController::class, 'selectedUnitType']);
+            Route::post('/', [GoodsController::class, 'store']);
+            Route::get('/{goods}', [GoodsController::class, 'edit']);
+            Route::post('/destroy', [GoodsController::class, 'destroy']);
+            Route::post('/update/{goods}', [GoodsController::class, 'update']);
         });
 
 
@@ -549,14 +547,14 @@ Route::group(['middleware' => ['auth']], static function () {
         });
 
 
-        Route::prefix('item-categories')->group(function () {
-            Route::get('/', [ItemCategoryController::class, 'index']);
-            Route::get('/data', [ItemCategoryController::class, 'data']);
-            Route::get('/search', [ItemCategoryController::class, 'search']);
-            Route::post('/', [ItemCategoryController::class, 'store']);
-            Route::get('/{itemCategory}', [ItemCategoryController::class, 'edit']);
-            Route::post('/destroy', [ItemCategoryController::class, 'destroy']);
-            Route::post('/{itemCategory}', [ItemCategoryController::class, 'update']);
+        Route::prefix('category-of-goods')->group(function () {
+            Route::get('/', [GoodsCategoryController::class, 'index']);
+            Route::get('/data', [GoodsCategoryController::class, 'data']);
+            Route::get('/search', [GoodsCategoryController::class, 'search']);
+            Route::post('/', [GoodsCategoryController::class, 'store']);
+            Route::get('/{goodsCategory}', [GoodsCategoryController::class, 'edit']);
+            Route::post('/destroy', [GoodsCategoryController::class, 'destroy']);
+            Route::post('/{goodsCategory}', [GoodsCategoryController::class, 'update']);
         });
     });
 
@@ -763,95 +761,68 @@ Route::group(['middleware' => ['auth']], static function () {
 
     Route::prefix('inventory')->group(function () {
 
-        Route::prefix('list-of-items')->group(function () {
+        Route::prefix('goods')->group(function () {
             Route::prefix('po')->group(function () {
-                Route::get('/', [PoListOfItemController::class, 'index']);
-                Route::get('/data', [PoListOfItemController::class, 'data']);
-                Route::get('/create', [PoListOfItemController::class, 'create']);
-                Route::get('/supplier/data', [PoListOfItemController::class, 'getSupplierData']);
-                Route::get('/supplier/selected/{poListOfItem}', [PoListOfItemController::class, 'selectedSupplier']);
-                Route::get('/branch/data', [PoListOfItemController::class, 'getBranchData']);
-                Route::get('/branch/selected/{poListOfItem}', [PoListOfItemController::class, 'selectedBranch']);
-                Route::post('/store', [PoListOfItemController::class, 'store']);
-                Route::get('/edit/{poListOfItem}', [PoListOfItemController::class, 'edit']);
-                Route::post('/update/{poListOfItem}', [PoListOfItemController::class, 'update']);
-                Route::get('/detail/{poListOfItem}', [PoListOfItemController::class, 'detail']);
-                Route::post('/confirm/{poListOfItem}', [PoListOfItemController::class, 'confirm']);
-                Route::get('/item-categories/data', [PoListOfItemController::class, 'getItemCategories']);
-                Route::get('/items/data', [PoListOfItemController::class, 'getItem']);
-                Route::get('/item/selected/{poListOfItem}', [PoListOfItemController::class, 'selectedItem']);
-                Route::get('/warehouses/data', [PoListOfItemController::class, 'getWarehouse']);
+                Route::get('/', [GoodsPurchaseOrderController::class, 'index']);
+                Route::get('/data', [GoodsPurchaseOrderController::class, 'data']);
+                Route::get('/search', [GoodsPurchaseOrderController::class, 'search']);
+                Route::get('/filter', [GoodsPurchaseOrderController::class, 'filter']);
+                Route::get('/create', [GoodsPurchaseOrderController::class, 'create']);
+                Route::get('/supplier/data', [GoodsPurchaseOrderController::class, 'getSupplierData']);
+                Route::get('/supplier/selected/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'selectedSupplier']);
+                Route::get('/branch/data', [GoodsPurchaseOrderController::class, 'getBranchData']);
+                Route::get('/branch/selected/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'selectedBranch']);
+                Route::post('/store', [GoodsPurchaseOrderController::class, 'store']);
+                Route::get('/edit/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'edit']);
+                Route::post('/update/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'update']);
+                Route::get('/detail/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'detail']);
+                Route::post('/confirm/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'confirm']);
+                Route::get('/goods/data', [GoodsPurchaseOrderController::class, 'getItem']);
+                Route::get('/goods/selected/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'selectedItem']);
+                Route::get('/warehouses/data', [GoodsPurchaseOrderController::class, 'getWarehouseData']);
+                Route::post('/destroy', [GoodsPurchaseOrderController::class, 'destroy']);
+                Route::get('/warehouses/selected/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'selectedWarehouse']);
+            });
+
+            Route::prefix('item-transactions')->group(function () {
+                Route::get('/incoming-items-data', [ItemTransactionController::class, 'IncomingItemData']);
+                Route::get('/outgoing-items-data', [ItemTransactionController::class, 'outGoingItemData']);
+                Route::post('/confirm/{itemTransaction}', [ItemTransactionController::class, 'confirm']);
+                Route::prefix('/po-data')->group(function () {
+                    Route::get('/', [ItemTransactionController::class, 'poData']);
+                    Route::get('/search', [ItemTransactionController::class, 'poSearch']);
+                    Route::get('/detail/{itemTransaction}', [ItemTransactionController::class, 'poDetail']);
+                    Route::get('/detail/data/{itemTransaction}', [ItemTransactionController::class, 'poDetailData']);
+                });
             });
 
 
-            Route::prefix('central-warehouse-items')->group(function () {
-                Route::get('/', [CentralWarehouseItemController::class, 'index']);
-                Route::get('/data', [CentralWarehouseItemController::class, 'data']);
-                Route::get('/search', [CentralWarehouseItemController::class, 'search']);
-                Route::get('/detail/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'detail']);
-                Route::get('/detail/data/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'detailData']);
-                Route::get('/get-stocks/{centralWarehouseItem}', [CentralWarehouseItemController::class, 'getCentralWarehouseStockDetail']);
-                Route::get('/distribute-stock', [CentralWarehouseItemController::class, 'distributeStock']);
+            Route::prefix('stock')->group(function () {
+                Route::get('/', [GoodsStockController::class, 'index']);
+                Route::get('/data', [GoodsStockController::class, 'data']);
+                Route::get('/search', [GoodsStockController::class, 'goodsSearch']);
+                Route::get('/filter', [GoodsStockController::class, 'goodsFilter']);
+                Route::prefix('detail')->group(function () {
+                    Route::get('/{goods}', [GoodsStockController::class, 'detail']);
+                    Route::get('/po/data/{goods}', [GoodsStockController::class, 'getPO']);
+                    Route::get('/po/search/{goods}', [GoodsStockController::class, 'searchPO']);
+
+                    Route::prefix('/po/generate-sn')->group(function () {
+                        Route::get('/{goodsPurchaseOrder}', [GoodsStockController::class, 'generateSN']);
+                        Route::get('/po-detail/data/{goodsPurchaseOrder}', [GoodsStockController::class, 'PODetail']);
+                        Route::get('/po-detail/get-stock/{goodsPurchaseOrder}', [GoodsStockController::class, 'getGoodsStockBasedOnPO']);
+                        Route::post('/store/{goodsPurchaseOrder}', [GoodsStockController::class, 'createSN']);
+                        Route::get('/edit/{goodsStock}', [GoodsStockController::class, 'edit']);
+                        Route::post('/destroy', [GoodsStockController::class, 'destroy']);
+                        Route::post('/confirm', [GoodsStockController::class, 'confirm']);
+                        Route::post('/update/{goodsStock}', [GoodsStockController::class, 'update']);
+                    });
+                });
+
+
             });
-
-
-            Route::prefix('central-warehouse-stocks')->group(function () {
-                Route::post('/destroy', [CentralWarehouseStockController::class, 'destroy']);
-                Route::post('/confirm', [CentralWarehouseStockController::class, 'confirm']);
-                Route::get('/data/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'data']);
-                Route::post('generate-sn/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'generateSNIfExists']);
-                Route::post('generate-sn-if-not-exists/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'generateSNIfNotExists']);
-                Route::get('/edit/{centralWarehouseStock}', [CentralWarehouseStockController::class, 'edit']);
-                Route::post('/update/{centralWarehouseStock}', [CentralWarehouseStockController::class, 'update']);
-                Route::get('/search/{centralWarehouseItem}', [CentralWarehouseStockController::class, 'search']);
-            });
-
-
-            Route::prefix('branch-warehouse-items')->group(function () {
-                Route::get('/', [BranchWarehouseItemController::class, 'index']);
-                Route::get('/data', [BranchWarehouseItemController::class, 'data']);
-                Route::get('/stock-data', [BranchWarehouseItemController::class, 'getStockData']);
-                Route::get('/stock-data/detail/{item}', [BranchWarehouseItemController::class, 'getStockDataDetail']);
-                Route::get('/search', [BranchWarehouseItemController::class, 'search']);
-                Route::get('/detail/{branchWarehouseItem}', [BranchWarehouseItemController::class, 'detail']);
-                Route::get('/detail/data/{branchWarehouseItem}', [BranchWarehouseItemController::class, 'detailData']);
-                Route::get('/search-item', [BranchWarehouseItemController::class, 'searchStockData']);
-            });
-
-
-            Route::prefix('branch-warehouse-stocks')->group(function () {
-                Route::post('/destroy', [BranchWarehouseStockController::class, 'destroy']);
-                Route::post('/confirm', [BranchWarehouseStockController::class, 'confirm']);
-                Route::get('/data/{branchWarehouseItem}', [BranchWarehouseStockController::class, 'data']);
-                Route::post('generate-sn/{branchWarehouseItem}', [BranchWarehouseStockController::class, 'generateSNIfExists']);
-                Route::post('generate-sn-if-not-exists/{branchWarehouseItem}', [BranchWarehouseStockController::class, 'generateSNIfNotExists']);
-                Route::get('/edit/{branchWarehouseStock}', [BranchWarehouseStockController::class, 'edit']);
-                Route::post('/update/{branchWarehouseStock}', [BranchWarehouseStockController::class, 'update']);
-                Route::get('/search/{branchWarehouseItem}', [BranchWarehouseStockController::class, 'search']);
-            });
-
         });
 
-
-//        Route::prefix('goods')->group(function () {
-//            Route::get('/unit-types/data', [GoodsController::class, 'getUnitTypesData']);
-//            Route::get('/', [GoodsController::class, 'index']);
-//            Route::get('/data', [GoodsController::class, 'data']);
-//            Route::get('/branch/data', [GoodsController::class, 'branchData']);
-//            Route::get('/filter/branch/data/{branch}', [GoodsController::class, 'filterByBranch']);
-//            Route::get('/search', [GoodsController::class, 'search']);
-//            Route::get('/create', [GoodsController::class, 'create']);
-//            Route::get('/related-accounts/data', [GoodsController::class, 'getRelatedAccounts']);
-//            Route::post('/', [GoodsController::class, 'store']);
-//            Route::get('/edit/{goods}', [GoodsController::class, 'edit']);
-//            Route::get('/get-selected-unit-type/{goods}', [GoodsController::class, 'getSelectedUnitType']);
-//            Route::get('/get-selected-sub-account/{goods}', [GoodsController::class, 'getSelectedSubAccount']);
-//            Route::post('/update/{goods}', [GoodsController::class, 'update']);
-//            Route::post('/confirm/{goods}', [GoodsController::class, 'confirm']);
-//            Route::get('/detail/data/{goods}', [GoodsController::class, 'show']);
-//            Route::get('/used-items-detail/{goods}', [GoodsController::class, 'useItemDetail']);
-//            Route::delete('/{goods}', [GoodsController::class, 'destroy']);
-//        });
 
         Route::prefix('used-items')->group(function () {
             Route::get('/get-used-items/{goods}', [UsedItemsController::class, 'getUsedItems']);
