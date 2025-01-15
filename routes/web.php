@@ -765,6 +765,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::prefix('po')->group(function () {
                 Route::get('/', [GoodsPurchaseOrderController::class, 'index']);
                 Route::get('/data', [GoodsPurchaseOrderController::class, 'data']);
+                Route::get('/search', [GoodsPurchaseOrderController::class, 'search']);
+                Route::get('/filter', [GoodsPurchaseOrderController::class, 'filter']);
                 Route::get('/create', [GoodsPurchaseOrderController::class, 'create']);
                 Route::get('/supplier/data', [GoodsPurchaseOrderController::class, 'getSupplierData']);
                 Route::get('/supplier/selected/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'selectedSupplier']);
@@ -799,6 +801,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/', [GoodsStockController::class, 'index']);
                 Route::get('/data', [GoodsStockController::class, 'data']);
                 Route::get('/search', [GoodsStockController::class, 'goodsSearch']);
+                Route::get('/filter', [GoodsStockController::class, 'goodsFilter']);
                 Route::prefix('detail')->group(function () {
                     Route::get('/{goods}', [GoodsStockController::class, 'detail']);
                     Route::get('/po/data/{goods}', [GoodsStockController::class, 'getPO']);

@@ -2,8 +2,6 @@
 
 namespace App\Service;
 
-use App\Models\BranchWarehouseItem;
-use App\Models\CentralWarehouseItem;
 use App\Models\Goods;
 use App\Models\GoodsPurchaseOrder;
 use App\Models\GoodsStock;
@@ -23,7 +21,7 @@ class GoodsPurchaseOrderService
 
     public function query(): Builder
     {
-        return GoodsPurchaseOrder::with('supplier', 'branch');
+        return GoodsPurchaseOrder::with('supplier', 'branch', 'warehouse');
     }
 
     public function data(): LengthAwarePaginator
@@ -32,13 +30,30 @@ class GoodsPurchaseOrderService
         return self::formattedData($data);
     }
 
-
-    private static function formattedData(LengthAwarePaginator $listOfItem): LengthAwarePaginator
+    public function search(Request $request): LengthAwarePaginator
     {
-        $data = $listOfItem->getCollection()->map(function ($item) {
+        $search = $request->input('search');
+        $data = $this->query()->when(!empty($search), function ($query) use ($search) {
+            $query->where('po_number', 'like', '%' . $search . '%')
+                ->orWhere('invoice_number', 'like', '%' . $search . '%')
+                ->orWhereHas('item', function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                })->orWhere('qty', 'like', '%' . $search . '%');
+        })->paginate(self::$perPage);
+
+
+        return self::formattedData($data);
+    }
+
+
+    private static function formattedData(LengthAwarePaginator $goodsPurchaseOrder): LengthAwarePaginator
+    {
+        $data = $goodsPurchaseOrder->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
-                'sn' => $item->sn,
+                'po_number' => $item->po_number,
+                'invoice_number' => $item->invoice_number,
+                'location' => $item->branch?->name ?? $item->warehouse?->name,
                 'date' => formatDate($item->date),
                 'name' => $item->item->name,
                 'qty' => $item->qty,
@@ -52,17 +67,34 @@ class GoodsPurchaseOrderService
             ];
         });
 
-        $listOfItem->setCollection($data);
-        return $listOfItem;
+        $goodsPurchaseOrder->setCollection($data);
+        return $goodsPurchaseOrder;
     }
 
-    public function search(Request $request)
+
+    public function filter(Request $request): LengthAwarePaginator
     {
+        $branchId = $request->branch_id;
+        $warehouseId = $request->warehouse_id;
+        $month = $request->month;
+        $year = $request->year;
+        $data = $this->query();
+        if ($branchId) {
+            $data->whereHas('branch', function ($query) use ($branchId) {
+                $query->where('id', $branchId);
+            })->whereMonth('date', $month)->whereYear('date', $year);
+        }
 
-        $data = $this->query()->when('');
+        if ($warehouseId) {
+            $data->whereHas('warehouse', function ($query) use ($warehouseId) {
+                $query->where('id', $warehouseId);
+            })->whereMonth('date', $month)->whereYear('date', $year);
+        }
 
 
+        return $data->paginate(self::$perPage);
     }
+
 
     public function getPPN()
     {
@@ -117,8 +149,6 @@ class GoodsPurchaseOrderService
                 'qty' => $request->qty_can_be_used,
                 'from_po' => true,
             ]);
-
-
         });
     }
 

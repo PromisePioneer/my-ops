@@ -30,6 +30,29 @@ class GoodsStockService
     }
 
 
+    public function filter(Request $request): LengthAwarePaginator
+    {
+        $branchId = $request->branch_id;
+        $warehouseId = $request->warehouse_id;
+        $data = Goods::with('goodsStock', 'goodsStock.po');
+
+        if ($branchId) {
+            $data->with('goodsStock', function ($query) use ($branchId) {
+                $query->where('branch_id', $branchId);
+            });
+        }
+
+        if ($warehouseId) {
+            $data->with('goodsStock', function ($query) use ($warehouseId) {
+                $query->where('warehouse_id', $warehouseId);
+            });
+        }
+
+
+        return self::formattedGoodsData($data->paginate(self::$perPage));
+    }
+
+
     private static function formattedGoodsData(LengthAwarePaginator $goodsData): LengthAwarePaginator
     {
         $data = $goodsData->getCollection()->map(function ($item) {

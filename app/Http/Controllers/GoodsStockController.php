@@ -41,6 +41,11 @@ use Illuminate\View\View;
         return response()->json($this->goodsStockService->searchGoodsData($request));
     }
 
+    public function goodsFilter(Request $request): JsonResponse
+    {
+        return response()->json($this->goodsStockService->filter($request));
+    }
+
     public function detail(Goods $goods): View
     {
         return view('pages.inventory.goods.stocks.detail.index', compact('goods'));

@@ -316,11 +316,6 @@
                                 href="{{ url('inventory/goods/stock') }}">
                                 Stok Barang
                             </x-dropdown-menu-item>
-                            <x-dropdown-menu-item
-                                :active="request()->is('inventory/list-of-items/branch-warehouse-items*')"
-                                href="{{ url('inventory/list-of-items/branch-warehouse-items') }}">
-                                Stok Barang (Cabang)
-                            </x-dropdown-menu-item>
                         @endslot
                     </x-dropdown-menu>
                 @endcanany

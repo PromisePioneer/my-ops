@@ -1,8 +1,51 @@
 @extends('layouts.template')
 @section('content')
 
+
+
+
     <div x-data="goodsStockData()">
-        <div class="card card-xl-stretch mb-5 mb-xl-8">
+        <div class="d-flex flex-column flex-xl-row">
+            <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
+                <div class="card card-flush">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2 class="mb-0">Filter</h2>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0">
+                        <div x-model="placement" class="mb-2">
+                            <select class="form-select form-select-solid"
+                                    name="placement" id="placement">
+                                <option value="0" selected>Pilih tujuan barang</option>
+                                <option value="Cabang">Cabang</option>
+                                <option value="Gudang">Gudang</option>
+                            </select>
+                        </div>
+                        <div x-show="placement === 'Cabang'" x-transition x-cloak>
+                            <div>
+                                <select class="form-select form-select-solid branches-select2"
+                                        name="branch_id" id="branch_id">
+                                </select>
+                            </div>
+                        </div>
+                        <div x-show="placement === 'Gudang'" x-transition x-cloak>
+                            <select name="warehouse_id" id="warehouse_id"
+                                    class="form-select form-select-solid warehouses-select2">
+                                <option></option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="card-footer pt-4 text-end">
+                        <button type="button" class="btn btn-light btn-active-primary btn-sm" @click="filter()">
+                            Filter
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-lg-row-fluid ms-lg-10">
+                <div class="card card-flush mb-6 mb-xl-9">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -92,6 +135,7 @@
             </div>
         </div>
     </div>
+        </div>
 
 @endsection
 @push('script')
@@ -100,12 +144,53 @@
             return {
                 goodsStock: [],
                 search: '',
+                placement: null,
                 isLoading: false,
                 startIndex: null,
                 async init() {
-                    const resp = await axios.get('/inventory/goods/stock/data');
-                    this.goodsStock = resp.data;
-                    this.startIndex = resp.data.from;
+                    await this.getGoodsStock();
+                    await this.getWarehouses();
+                    await this.getBranchData();
+                },
+                async getGoodsStock() {
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/inventory/goods/stock/data');
+                        this.goodsStock = resp.data;
+                        this.startIndex = resp.data.from;
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+                async getWarehouses() {
+                    $(".warehouses-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Gudang',
+                        ajax: {
+                            url: '/inventory/goods/po/warehouses/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async getBranchData() {
+                    $(".branches-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Cabang",
+                        ajax: {
+                            url: '/inventory/goods/po/branch/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
                 },
                 async searchData() {
                     this.isLoading = true;
@@ -121,6 +206,25 @@
                         this.isLoading = false;
                     }
                 },
+                async filter() {
+                    this.isLoading = true;
+                    try {
+                        const branch_id = $('#branch_id').val();
+                        const warehouse_id = $('#warehouse_id').val();
+                        const resp = await axios.get('/inventory/goods/stock/filter', {
+                            params: {
+                                branch_id: branch_id,
+                                warehouse_id: warehouse_id,
+                            }
+                        });
+                        this.goodsStock = resp.data;
+
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
+                }
             }
         }
     </script>

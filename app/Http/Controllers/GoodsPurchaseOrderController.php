@@ -11,7 +11,6 @@ use App\Models\GoodsPurchaseOrder;
 use App\Models\Supplier;
 use App\Models\UnitType;
 use App\Models\Warehouse;
-use App\Service\CentralWareHouseStockService;
 use App\Service\GoodsPurchaseOrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -26,7 +25,6 @@ use function App\Helper\formatDate;
         $this->goodsPurchaseOrderService = new GoodsPurchaseOrderService();
         $this->branch = new Branch();
         $this->itemCategory = new GoodsCategory();
-        $this->centralWareHouseStockService = new CentralWareHouseStockService();
         $this->item = new Goods();
         $this->unitType = new UnitType();
         $this->warehouse = new Warehouse();
@@ -43,9 +41,15 @@ use function App\Helper\formatDate;
     }
 
 
-    public function search(): JsonResponse
+    public function filter(Request $request): JsonResponse
     {
-        return response()->json();
+        return response()->json($this->goodsPurchaseOrderService->filter($request));
+    }
+
+
+    public function search(Request $request): JsonResponse
+    {
+        return response()->json($this->goodsPurchaseOrderService->search($request));
     }
 
     public function create(): View
@@ -117,7 +121,7 @@ use function App\Helper\formatDate;
     {
         return response()->json([
             'id' => $goodsPurchaseOrder->id,
-            'to' => $goodsPurchaseOrder->branch->name ?? $goodsPurchaseOrder->warehouse->name,
+            'to' => $goodsPurchaseOrder->branch?->name ?? $goodsPurchaseOrder->warehouse?->name,
             'po_number' => $goodsPurchaseOrder->po_number,
             'invoice_number' => $goodsPurchaseOrder->invoice_number,
             'name' => $goodsPurchaseOrder->item->name,
