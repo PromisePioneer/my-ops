@@ -29,10 +29,10 @@
                                 <tr class="fw-bold">
                                     <th>Qty (Belum diberi kode)</th>
                                     <th>:</th>
-                                    <th x-text="purchaseOrder.qty - goodsStock?.data?.length"></th>
+                                    <th x-text="purchaseOrder.qty - goodsStock?.total"></th>
                                 </tr>
                                 <tr class="fw-bold">
-                                    <th>Lokasi</th>
+                                    <th>Lokasi Awal</th>
                                     <th>:</th>
                                     <th>{{ $goodsPurchaseOrder->branch->name ?? $goodsPurchaseOrder->warehouse->name }}</th>
                                 </tr>
@@ -148,8 +148,10 @@
                                     </div>
                                 </th>
                                 <th class="min-w-125px">SN</th>
+                                <th class="min-w-125px">Dibuat Oleh</th>
                                 <th class="min-w-125px">Status</th>
-                                <template x-if="purchaseOrder?.item?.need_sn === 1">
+                                <template
+                                    x-if="purchaseOrder?.item?.need_sn === 1 && purchaseOrder?.item?.already_has_sn_on_item === 1">
                                     <th class="min-w-125px">Actions</th>
                                 </template>
                             </thead>
@@ -189,6 +191,7 @@
                                         </template>
                                     </td>
                                     <td x-text="stock.sn"></td>
+                                    <td x-text="stock.created_by?.name"></td>
                                     <template x-if="stock.status === 0">
                                         <td>
                                             <button class="btn btn-sm btn-light-danger">
@@ -205,9 +208,10 @@
                                             </button>
                                         </td>
                                     </template>
-                                    <td>
-                                        <template
-                                            x-if="purchaseOrder?.item.need_sn === 1 && stock.status === 0">
+
+                                    <template
+                                        x-if="purchaseOrder?.item.need_sn === 1 && stock.status === 0 && purchaseOrder?.item.already_has_sn_on_item === 1">
+                                        <td>
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modal-sn-create" @click="edit(stock.id)">
                                                 <i class="ki-duotone ki-pencil fs-2">
@@ -215,8 +219,18 @@
                                                     <span class="path2"></span>
                                                 </i>
                                             </button>
+                                        </td>
                                         </template>
-                                    </td>
+                                    <template
+                                        x-if="stock?.status === 1">
+                                        <td>
+                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-sn-create" @click="edit(stock.id)">
+                                                <i class="bi bi-send-fill"></i>
+                                                Kirim Barang
+                                            </button>
+                                        </td>
+                                    </template>
                                 </tr>
                                 </tbody>
                             </template>

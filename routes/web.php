@@ -21,6 +21,7 @@ use App\Http\Controllers\BAAController;
 use App\Http\Controllers\GoodsController;
 use App\Http\Controllers\GoodsPurchaseOrderController;
 use App\Http\Controllers\GoodsStockController;
+use App\Http\Controllers\GoodsTransactionController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
@@ -68,7 +69,6 @@ use App\Http\Controllers\Inventory\Pole\PoleMapController;
 use App\Http\Controllers\Inventory\Stock\GoodsCategoryController;
 use App\Http\Controllers\Inventory\Stock\UnitTypeController;
 use App\Http\Controllers\Inventory\Stock\UsedItemsController;
-use App\Http\Controllers\ItemTransactionController;
 use App\Http\Controllers\Master\Finance\AccountController;
 use App\Http\Controllers\Master\Finance\AssetController;
 use App\Http\Controllers\Master\Finance\TaxSettingController;
@@ -784,16 +784,15 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/warehouses/selected/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'selectedWarehouse']);
             });
 
-            Route::prefix('item-transactions')->group(function () {
-                Route::get('/incoming-items-data', [ItemTransactionController::class, 'IncomingItemData']);
-                Route::get('/outgoing-items-data', [ItemTransactionController::class, 'outGoingItemData']);
-                Route::post('/confirm/{itemTransaction}', [ItemTransactionController::class, 'confirm']);
-                Route::prefix('/po-data')->group(function () {
-                    Route::get('/', [ItemTransactionController::class, 'poData']);
-                    Route::get('/search', [ItemTransactionController::class, 'poSearch']);
-                    Route::get('/detail/{itemTransaction}', [ItemTransactionController::class, 'poDetail']);
-                    Route::get('/detail/data/{itemTransaction}', [ItemTransactionController::class, 'poDetailData']);
-                });
+            Route::prefix('goods-transaction')->group(function () {
+                Route::get('/', [GoodsTransactionController::class, 'index']);
+                Route::get('/data', [GoodsTransactionController::class, 'data']);
+                Route::get('/create', [GoodsTransactionController::class, 'create']);
+                Route::get('/goods/data', [GoodsTransactionController::class, 'getGoodsData']);
+                Route::get('/branches/data', [GoodsTransactionController::class, 'getBranchData']);
+                Route::get('/warehouses/data', [GoodsTransactionController::class, 'getWarehouseData']);
+                Route::get('/stock/data/{goods}', [GoodsTransactionController::class, 'getStock']);
+                Route::get('/stock/selected', [GoodsTransactionController::class, 'selectedStock']);
             });
 
 
@@ -805,6 +804,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::prefix('detail')->group(function () {
                     Route::get('/{goods}', [GoodsStockController::class, 'detail']);
                     Route::get('/po/data/{goods}', [GoodsStockController::class, 'getPO']);
+                    Route::post('/po/confirm-receive/{goodsPurchaseOrder}', [GoodsStockController::class, 'confirmGoodsReceived']);
                     Route::get('/po/search/{goods}', [GoodsStockController::class, 'searchPO']);
 
                     Route::prefix('/po/generate-sn')->group(function () {

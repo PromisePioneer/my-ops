@@ -19,6 +19,8 @@ return new class extends Migration {
             $table->integer('qty')->nullable();
             $table->string('sn')->nullable();
             $table->boolean('status')->default(false);
+            $table->enum('condition', ['Baik', 'Rusak Ringan', 'Rusak Berat'])->nullable();
+            $table->foreignId('created_by')->constrained('users');
             $table->timestamps();
         });
     }
@@ -29,6 +31,6 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('central_warehouse_stocks');
+        Schema::dropIfExists('goods_stock');
     }
 };

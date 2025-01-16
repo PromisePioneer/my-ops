@@ -17,7 +17,10 @@ class GoodsTransaction extends Model
         'warehouse_id',
         'branch_id',
         'notes',
-        'status',
+        'status_send',
+        'status_received',
+        'send_by',
+        'received_by',
         'from_po'
     ];
 

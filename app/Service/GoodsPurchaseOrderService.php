@@ -12,6 +12,7 @@ use App\Models\TaxSetting;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use function App\Helper\formatDate;
 
@@ -61,7 +62,7 @@ class GoodsPurchaseOrderService
                 'shipping_cost' => $item->shipping_cost,
                 'supplier' => $item->supplier?->name,
                 'ppn' => $item->ppn,
-                'status' => $item->status,
+                'status_send' => $item->status_send,
                 'total_price' => $item->total_price,
                 'travel_letter_receipt' => $item->travel_letter_receipt,
             ];
@@ -80,19 +81,19 @@ class GoodsPurchaseOrderService
         $year = $request->year;
         $data = $this->query();
         if ($branchId) {
-            $data->whereHas('branch', function ($query) use ($branchId) {
+            $data = $this->query()->whereHas('branch', function ($query) use ($branchId) {
                 $query->where('id', $branchId);
             })->whereMonth('date', $month)->whereYear('date', $year);
         }
 
         if ($warehouseId) {
-            $data->whereHas('warehouse', function ($query) use ($warehouseId) {
+            $data = $this->query()->whereHas('warehouse', function ($query) use ($warehouseId) {
                 $query->where('id', $warehouseId);
             })->whereMonth('date', $month)->whereYear('date', $year);
         }
 
-
-        return $data->paginate(self::$perPage);
+        $po = $data->paginate(self::$perPage);
+        return self::formattedData($po);
     }
 
 
@@ -106,7 +107,8 @@ class GoodsPurchaseOrderService
     {
         DB::transaction(function () use ($request, $goodsPurchaseOrder) {
             $goodsPurchaseOrder->update([
-                'status' => 1
+                'status_send' => true,
+                'send_by' => Auth::id(),
             ]);
 
             if ($request->qty_cannot_be_used > 0) {
@@ -128,7 +130,7 @@ class GoodsPurchaseOrderService
                     'branch_id' => $goodsPurchaseOrder->branch_id,
                     'item_id' => $goodsPurchaseOrder->item_id,
                     'qty' => $goodsPurchaseOrder->qty,
-                    'status' => true
+
                 ]);
             }
 

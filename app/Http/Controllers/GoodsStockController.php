@@ -11,6 +11,7 @@ use App\Service\GoodsStockService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -80,8 +81,21 @@ use Illuminate\View\View;
 
     public function getGoodsStockBasedOnPO(GoodsPurchaseOrder $goodsPurchaseOrder): JsonResponse
     {
-        $data = GoodsStock::where('po_id', $goodsPurchaseOrder->id)->paginate(self::$perPage);
+        $data = GoodsStock::where('po_id', $goodsPurchaseOrder->id)->with('createdBy')->paginate(self::$perPage);
         return response()->json($data);
+    }
+
+
+    public function confirmGoodsReceived(GoodsPurchaseOrder $goodsPurchaseOrder): JsonResponse
+    {
+        $goodsPurchaseOrder->update([
+            'status_received' => true,
+            'received_by' => Auth::id()
+        ]);
+
+        return response()->json([
+            'message' => 'Data berhasil disimpan.'
+        ]);
     }
 
 
@@ -94,7 +108,8 @@ use Illuminate\View\View;
                 'branch_id' => $goodsPurchaseOrder->branch_id,
                 'item_id' => $goodsPurchaseOrder->item_id,
                 'qty' => $goodsPurchaseOrder->qty,
-                'sn' => $request->sn
+                'sn' => $request->sn,
+                'created_by' => Auth::id(),
             ]);
         }
 
@@ -113,7 +128,6 @@ use Illuminate\View\View;
                 }
 
                 $chunkSize = 1000;
-                $stocks = [];
                 for ($i = 0; $i < $goodsPurchaseOrder->qty; $i++) {
                     $stocks[] = [
                         'po_id' => $goodsPurchaseOrder->id,
@@ -121,6 +135,7 @@ use Illuminate\View\View;
                         'branch_id' => $goodsPurchaseOrder->branch_id,
                         'item_id' => $goodsPurchaseOrder->item_id,
                         'sn' => $this->generateCodeWithNumber($goodsPurchaseOrder, $i),
+                        'created_by' => Auth::id(),
                         'created_at' => now(),
                         'updated_at' => now()
                     ];
@@ -132,10 +147,6 @@ use Illuminate\View\View;
                     }
                 }
                 GoodsStock::insert($stocks);
-
-                if (!empty($stocks)) {
-                    GoodsStock::insert($stocks);
-                }
             });
         }
 

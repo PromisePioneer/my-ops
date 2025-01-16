@@ -45,7 +45,6 @@
                 buttonLoading: false,
                 search: '',
                 editVal: '',
-                // modalGetStock: new bootstrap.Modal(document.getElementById('modal-get-stocks')),
                 async init() {
                     await this.getCentralWarehouseStock();
                 },

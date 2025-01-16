@@ -48,7 +48,9 @@
                             <th class="min-w-125px">Tanggal PO</th>
                             <th class="min-w-125px">PO</th>
                             <th class="min-w-125px">Qty</th>
-                            <th class="min-w-125px">Lokasi</th>
+                            <th class="min-w-125px">Dikirim Oleh</th>
+                            <th class="min-w-125px">Diterima Oleh</th>
+                            <th class="min-w-125px">Dikirim Ke</th>
                             <th class="min-w-125px">Actions</th>
                         </thead>
                         <template x-if="isLoading">
@@ -81,13 +83,23 @@
                                 <td x-text="formatDate(po.date)"></td>
                                 <td x-text="po.po_number"></td>
                                 <td x-text="po.qty"></td>
-                                <td x-text="po.warehouse?.name ?? po.branch?.name"></td>
+                                <td x-text="po.send_by?.name"></td>
+                                <td x-text="po.received_by?.name ?? '-'"></td>
+                                <td x-text="po.warehouse?.name"></td>
                                 <td>
-                                    <a :href="`/inventory/goods/stock/detail/po/generate-sn/${po.id}`"
-                                       class="btn btn-light-primary btn-sm">
-                                        <i class="bi bi-box-arrow-in-right fw-bold"></i>
-                                        Buat SN
-                                    </a>
+                                    <template x-if="po.status_received === 1">
+                                        <a :href="`/inventory/goods/stock/detail/po/generate-sn/${po.id}`"
+                                           class="btn btn-light-primary btn-sm">
+                                            <i class="bi bi-box-arrow-in-right fw-bold"></i>
+                                            Buat SN
+                                        </a>
+                                    </template>
+                                    <template x-if="po.status_received === 0">
+                                        <button class="btn btn-light-primary btn-sm" @click="confirm(po.id)">
+                                            <i class="bi bi-check"></i>
+                                            Terima Barang
+                                        </button>
+                                    </template>
                                 </td>
                             </tr>
                             </tbody>
@@ -113,7 +125,7 @@
 </div>
 
 
-
+@include('components.toast')
 @push('script')
     <script>
         function goodsStockDetail() {
@@ -155,6 +167,18 @@
                     } finally {
                         this.isLoading = false;
                     }
+                },
+                async confirm(id) {
+                    showConfirmModal("Anda yakin?", "Terima Barang ?.", "Ya, Hapus!", async () => {
+                        try {
+                            await axios.post(`/inventory/goods/stock/detail/po/confirm-receive/${id}`, new FormData(this.formDelete));
+                            await showAlert('success', 'Data sukses dihapus');
+                            await this.init();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
                 }
             }
         }

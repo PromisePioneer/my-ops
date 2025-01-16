@@ -30,8 +30,12 @@ return new class extends Migration {
                 ->constrained('suppliers')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->double('length_in_meter')->nullable();
             $table->string('travel_letter_receipt');
-            $table->boolean('status')->default(0);
+            $table->boolean('status_send')->default(0);
+            $table->boolean('status_received')->default(0);
+            $table->foreignId('send_by')->nullable()->constrained('users');
+            $table->foreignId('received_by')->nullable()->constrained('users');
             $table->timestamps();
         });
     }

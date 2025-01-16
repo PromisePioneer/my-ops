@@ -22,7 +22,11 @@ class GoodsPurchaseOrder extends Model
         'total_price',
         'supplier_id',
         'travel_letter_receipt',
-        'status',
+        'status_send',
+        'status_received',
+        'send_by',
+        'send_by',
+        'received_by',
     ];
 
 
@@ -44,5 +48,17 @@ class GoodsPurchaseOrder extends Model
     public function warehouse(): BelongsTo
     {
         return $this->belongsTo(Warehouse::class, 'warehouse_id');
+    }
+
+
+    public function sendBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'send_by');
+    }
+
+
+    public function receivedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'received_by');
     }
 }

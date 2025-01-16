@@ -38,7 +38,6 @@
                             <option></option>
                         </select>
                     </div>
-                    <template x-if="needSN === false">
                         <div
                             class="d-flex justify-content-between align-items-center form-check form-switch form-check-custom form-check-solid mb-4">
                             <label class="form-label" for="needSN" style="cursor: pointer">
@@ -48,18 +47,15 @@
                                    :checked="editVal.already_has_sn_on_item === 1" name="already_has_sn_on_item"
                                    id="already_has_sn_on_item"/>
                         </div>
-                    </template>
-                    <template x-if="hasSNOnItem === false">
                         <div
                             class="d-flex justify-content-between align-items-center form-check form-switch form-check-custom form-check-solid">
                             <label class="form-label" for="snPerPO" style="cursor: pointer">
-                                Tidak perlu Serial Number (Klik jika iya).
+                                Memerlukan Serial Number.
                             </label>
                             <input class="form-check-input" x-model="needSN" type="checkbox"
                                    :checked="editVal.need_sn === 1" name="need_sn"
                                    id="snPerPO"/>
                         </div>
-                    </template>
                 </div>
 
                 <div class="modal-footer">

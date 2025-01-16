@@ -15,13 +15,20 @@ class GoodsStock extends Model
         'item_id',
         'qty',
         'sn',
-        'status'
+        'status',
+        'created_by'
     ];
 
 
     public function po(): BelongsTo
     {
         return $this->belongsTo(GoodsPurchaseOrder::class, 'po_id');
+    }
+
+
+    public function warehouse():BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
     }
 
 
@@ -33,5 +40,10 @@ class GoodsStock extends Model
     public function item(): BelongsTo
     {
         return $this->belongsTo(Goods::class, 'item_id');
+    }
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

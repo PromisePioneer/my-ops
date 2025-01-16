@@ -151,13 +151,13 @@
                                                 data-bs-target="#modal-detail" @click="detail(item.id)">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <template x-if="item.status === 0">
+                                        <template x-if="item.status_send === 0">
                                             <a :href="`/inventory/goods/po/edit/${item.id}`"
                                                class="btn btn-light-primary btn-sm">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
                                         </template>
-                                        <template x-if="item.status === 0">
+                                        <template x-if="item.status_send === 0">
                                             <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modal-confirm" @click="detail(item.id)">
                                                 <i class="bi bi-check-square"></i>
@@ -254,14 +254,6 @@
                         console.log(e)
                     } finally {
 
-                    }
-                },
-                async changePlacement() {
-                    if (this.placement === 'Cabang') {
-                        await this.getBranchData();
-                    }
-                    if (this.placement === 'Pusat') {
-                        await this.getWarehouses();
                     }
                 },
                 async getGoodsPurchaseOrder() {

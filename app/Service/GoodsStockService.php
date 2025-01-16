@@ -79,11 +79,10 @@ class GoodsStockService
 
     public function getPO(Goods $goods): LengthAwarePaginator
     {
-        return GoodsPurchaseOrder::with('warehouse', 'branch')
-            ->where('status', 1)
+        return GoodsPurchaseOrder::with('warehouse', 'branch', 'sendBy', 'receivedBy')
+            ->where('status_send', 1)
             ->where('item_id', $goods->id)
             ->paginate(self::$perPage);
-
     }
 
 
