@@ -205,7 +205,8 @@
                         <div class="separator py-2"></div>
 
                         <div class="float-end d-flex py-6 px-9">
-                            <button type="reset" class="btn btn-light btn-active-light-primary me-2 btn-sm">Reset
+                            <button type="reset" class="btn btn-light btn-active-light-primary me-2 btn-sm">
+                                Reset
                             </button>
                             <button type="submit" class="btn btn-sm btn-light-primary"
                                     :disabled="buttonLoading">
