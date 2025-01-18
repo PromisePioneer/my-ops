@@ -58,28 +58,21 @@
                                 <h1 class="text-center mb-4 text-uppercase text-decoration-underline">Data Stok
                                     Barang</h1>
                             </div>
-                            {{--                            <div class="col-12">--}}
-                            {{--                                <input type="hidden" :name="`selectedStock[]`" :value="selectedCheckBox">--}}
-                            {{--                            </div>--}}
                             <div class="table-responsive">
                                 <table class="table align-middle table-row-dashed table-bordered fs-6 gy-5"
                                        id="kt_table_users">
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0 text-center">
                                         <th class="w-10px pe-2">
-                                            <div
-                                                class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                                <input class="form-check-input" type="checkbox"
-                                                       @click="toggleAllCheckBox()" id="toggleAllCheckBox">
-                                            </div>
                                         </th>
                                         <th>No. PO</th>
                                         <th>SN</th>
+                                        <th>Qty</th>
                                         <th>Lokasi Sekarang</th>
                                     </tr>
                                     </thead>
                                     <template x-if="isLoading">
-                                        <tbody class="fw-bold">
+                                        <tbody class="fw-bold stock">
                                         <tr>
                                             <td colspan="9">
                                                 <div style="text-align: center;">
@@ -100,23 +93,24 @@
                                         </tr>
                                         </tbody>
                                     </template>
+                                    <tbody id="stock-tbody">
                                     <template x-for="stock in stocks.data" :key="stock.id">
-                                        <tbody>
                                         <tr class="text-center">
                                             <td>
                                                 <div class="form-check form-check-sm form-check-custom form-check-solid"
                                                      @click="selectCheckBox($event)">
-                                                    <input :class="`form-check-input checkbox-${stock.id}`"
-                                                           type="checkbox" :value="stock.id"
-                                                           :id="'checkbox-' + stock.id"/>
+                                                    <input class="form-check-input"
+                                                           type="checkbox" :value="stock.id" x-model="checkboxSelected"
+                                                           :id="stock.id" :checked="stocks.data.includes(stock.id)"/>
                                                 </div>
                                             </td>
                                             <td x-text="stock.po.po_number"></td>
-                                            <td x-text="stock.sn"></td>
+                                            <td x-text="stock?.sn ?? '-'"></td>
+                                            <td x-text="stock.qty ?? '1'"></td>
                                             <td x-text="stock.warehouse.name"></td>
                                         </tr>
-                                        </tbody>
                                     </template>
+                                    </tbody>
                                 </table>
                                 <ul class="pagination float-end mb-4 mt-4">
                                     <template x-for="pagination in stocks.links">
@@ -132,6 +126,7 @@
                         </div>
 
 
+                        <input type="hidden" name="selectedStock[]" :value="selectedCheckBox">
                         <div class="row mb-4 mt-10" x-show="selectedStocks.length !== 0" x-transition x-cloak>
                             <div class="text-center">
                                 <h1 class=" mb-4 text-uppercase text-decoration-underline">
@@ -143,13 +138,10 @@
                                        id="kt_table_users">
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0 text-center">
-                                        <th class="w-10px pe-2">
-                                            No
-                                        </th>
                                         <th>No. PO</th>
                                         <th>SN</th>
+                                        <th>QTY</th>
                                         <th>Lokasi Tujuan</th>
-                                        <th>Action</th>
                                     </tr>
                                     </thead>
                                     <template x-if="isLoading">
@@ -178,13 +170,16 @@
                                     <template x-for="(stock, index) in selectedStocks.data" :key="stock.id">
                                         <tbody>
                                         <tr class="text-center">
-                                            <td x-text="startIndex + index++"></td>
                                             <td x-text="stock.po.po_number"></td>
-                                            <td x-text="stock.sn"></td>
-                                            <td x-text="branch ?? warehouse ?? 'Lokasi belum diset'"></td>
+                                            <td x-text="stock?.sn ?? '-'"></td>
                                             <td>
-                                                <button @click="deleteSelectedStock(stock.id)"></button>
+                                                <template x-if="stock.qty !== null">
+                                                    <input type="text" value="qty"
+                                                           class="form-control form-control-sm form-control-solid"
+                                                           x-model="selectedStockQty" :value="stocks.qty">
+                                                </template>
                                             </td>
+                                            <td x-text="branch ?? warehouse ?? 'Lokasi belum diset'"></td>
                                         </tr>
                                         </tbody>
                                     </template>
@@ -236,9 +231,11 @@
                 buttonLoading: false,
                 selectAll: false,
                 singleChecked: false,
+                checkboxSelected: [],
                 stocks: [],
                 selectedCheckBox: [],
                 selectedStocks: [],
+                selectedStockQty: 0,
                 form: document.getElementById('form'),
                 startIndex: null,
                 warehouse: null,
@@ -251,14 +248,8 @@
                 async paginationEndPoint(url) {
                     if (url) {
                         this.selectAll = !this.selectAll;
-                        const resp = await axios.get(`${url}`);
-                        document.getElementById('toggleAllCheckBox').checked = false;
-                        this.stocks = resp.data;
-
-                        await this.selectedStocks.data.forEach((stock) => {
-                            console.log(document.querySelector(`.checkbox-${stock.id}`).checked = true);
-                            // document.getElementById(`checkbox-${stock.id}`).checked = true;
-                        });
+                        const res = await axios.get(`${url}`);
+                        this.stocks = res.data;
                     }
                 },
                 async toggleAllCheckBox() {
@@ -277,7 +268,13 @@
                 async selectCheckBox(event) {
                     const checkboxId = event.target.value;
                     if (event.target.checked) {
-                        this.selectedCheckBox.push(checkboxId);
+                        this.stocks.data.forEach((stock) => {
+                            this.selectedCheckBox.push({
+                                id: checkboxId,
+                                qty: stock?.qty,
+                                sn: stock?.sn,
+                            });
+                        });
                     } else {
                         const index = this.selectedCheckBox.indexOf(checkboxId);
                         if (index !== -1) {
@@ -304,8 +301,10 @@
                         self.warehouse = null;
                     });
                 },
-                async deleteSelectedStock(stockId) {
-
+                deleteSelectedStock(stockId) {
+                    this.selectedStocks.data = this.selectedStocks.data.filter(val => {
+                        return val.id !== stockId
+                    });
                 },
                 async getWarehouseData() {
                     let self = this;
@@ -353,8 +352,7 @@
                     }
                 },
                 async selectedStock() {
-                    console.log(this.branch);
-
+                    // console.log(this.selectedCheckBox);
                     const selected = this.selectedCheckBox.join(",");
                     try {
                         const resp = await axios.get('/inventory/goods/goods-transaction/stock/selected', {
@@ -363,12 +361,15 @@
                             }
                         });
                         this.selectedStocks = resp.data;
-                        this.startIndex = this.selectedStocks.from
+                        this.startIndex = this.selectedStocks.from;
                     } catch (e) {
-                        console.log(e)
+                        console.log(e);
                     } finally {
                         this.isLoading = false;
                     }
+                },
+                async selectedStockQtyWatch() {
+                    this.selectedStockQty = this.selectedStocks.data[0].qty
                 },
                 async paginationEndPointSelectedStock(url) {
                     if (url) {
@@ -385,7 +386,7 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/inventory/list-of-items/central-warehouse-stocks/send-item/save/${this.id}`, new FormData(this.form));
+                        await axios.post(`/inventory/goods/goods-transaction/store`, new FormData(this.form));
                         await this.form.reset();
                         await showAlert('success', 'Data berhasil disimpan');
                     } catch (e) {

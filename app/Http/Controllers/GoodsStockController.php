@@ -7,6 +7,7 @@ use App\Http\Requests\GenerateItemSNRequest;
 use App\Models\Goods;
 use App\Models\GoodsPurchaseOrder;
 use App\Models\GoodsStock;
+use App\Models\GoodsTransaction;
 use App\Service\GoodsStockService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -88,10 +89,18 @@ use Illuminate\View\View;
 
     public function confirmGoodsReceived(GoodsPurchaseOrder $goodsPurchaseOrder): JsonResponse
     {
-        $goodsPurchaseOrder->update([
-            'status_received' => true,
-            'received_by' => Auth::id()
-        ]);
+        DB::transaction(function () use ($goodsPurchaseOrder) {
+
+            $goodsPurchaseOrder->update([
+                'status_received' => true,
+                'received_by' => Auth::id()
+            ]);
+
+            GoodsTransaction::find($goodsPurchaseOrder->id)->update([
+                'status_received' => true,
+                'received_by' => Auth::id()
+            ]);
+        });
 
         return response()->json([
             'message' => 'Data berhasil disimpan.'

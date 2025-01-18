@@ -793,6 +793,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/warehouses/data', [GoodsTransactionController::class, 'getWarehouseData']);
                 Route::get('/stock/data/{goods}', [GoodsTransactionController::class, 'getStock']);
                 Route::get('/stock/selected', [GoodsTransactionController::class, 'selectedStock']);
+                Route::post('/store', [GoodsTransactionController::class, 'store']);
             });
 
 

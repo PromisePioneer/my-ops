@@ -89,12 +89,12 @@
                                     <td x-text="startIndex + index++">
                                     </td>
                                     <td x-text="formatDate(transaction.date)"></td>
-                                    <td x-text="transaction.item.name"></td>
-                                    <td x-text="transaction.from_po === 1 ? 'PO' : transaction.warehouse?.name ?? transaction.branch?.name"></td>
-                                    <td x-text="transaction.from_po === 1 ? transaction.po.warehouse.name ?? transaction.po.branch.name : transaction.warehouse?.name ?? transaction.branch?.name"></td>
+                                    <td x-text="transaction.item_name"></td>
+                                    <td x-text="transaction.from"></td>
+                                    <td x-text="transaction.to"></td>
                                     <td x-text="transaction.from_po === 1 ? transaction.po.qty : transaction.qty"></td>
-                                    <td x-text="transaction.from_po === 1 ? transaction.po.send_by.name : transaction.qty"></td>
-                                    <td x-text="transaction.from_po === 1 ? transaction.po.received_by.name : transaction.qty"></td>
+                                    <td x-text="transaction.sent_by"></td>
+                                    <td x-text="transaction.received_by"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-edit" @click="edit(transaction.id)">

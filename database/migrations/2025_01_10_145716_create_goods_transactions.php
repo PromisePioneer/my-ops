@@ -15,13 +15,41 @@ return new class extends Migration {
             $table->date('date');
             $table->foreignId('po_id')->constrained('goods_purchase_order');
             $table->foreignId('item_id')->constrained('goods');
-            $table->foreignId('warehouse_id')->nullable()->constrained('warehouses');
-            $table->foreignId('branch_id')->nullable()->constrained('branches');
-            $table->enum('type', ['in', 'out']);
+            $table->foreignId('from_warehouse_id')
+                ->nullable()
+                ->constrained('warehouses')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+            $table->foreignId('to_warehouse_id')
+                ->nullable()
+                ->constrained('warehouses')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();;
+            $table->foreignId('from_branch_id')
+                ->nullable()
+                ->constrained('branches')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+            $table->foreignId('to_branch_id')
+                ->nullable()
+                ->constrained('branches')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
             $table->integer('qty');
-            $table->string('notes')->nullable();
-            $table->boolean('status')->default(false);
+            $table->boolean('status_send')->default(false);
+            $table->boolean('status_received')->default(false);
+            $table->foreignId('sent_by')
+                ->nullable()
+                ->constrained('users')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('received_by')
+                ->nullable()
+                ->constrained('users')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->boolean('from_po')->default(false);
+            $table->string('notes')->nullable();
             $table->timestamps();
         });
     }

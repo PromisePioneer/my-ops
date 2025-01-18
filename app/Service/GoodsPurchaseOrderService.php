@@ -130,7 +130,7 @@ class GoodsPurchaseOrderService
                     'branch_id' => $goodsPurchaseOrder->branch_id,
                     'item_id' => $goodsPurchaseOrder->item_id,
                     'qty' => $goodsPurchaseOrder->qty,
-
+                    'status' => true
                 ]);
             }
 
@@ -145,9 +145,9 @@ class GoodsPurchaseOrderService
                 'date' => $request->date,
                 'po_id' => $goodsPurchaseOrder->id,
                 'item_id' => $goodsPurchaseOrder->item_id,
-                'branch_id' => $goodsPurchaseOrder->branch_id,
-                'warehouse_id' => $request->warehouse_id,
-                'type' => 'in',
+                'to_branch_id' => $goodsPurchaseOrder->branch_id,
+                'to_warehouse_id' => $goodsPurchaseOrder->warehouse_id,
+                'sent_by' => Auth::id(),
                 'qty' => $request->qty_can_be_used,
                 'from_po' => true,
             ]);

@@ -8,9 +8,11 @@ use App\Models\Goods;
 use App\Models\GoodsStock;
 use App\Models\GoodsTransaction;
 use App\Models\Warehouse;
+use App\Service\GoodsTransactionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 #[AllowDynamicProperties] class GoodsTransactionController extends Controller
@@ -23,6 +25,7 @@ use Illuminate\View\View;
         $this->goods = new Goods();
         $this->branch = new Branch();
         $this->warehouse = new Warehouse();
+        $this->goodsTransactionService = new GoodsTransactionService();
     }
 
     public function index(): View
@@ -32,9 +35,7 @@ use Illuminate\View\View;
 
     public function data(): JsonResponse
     {
-        $data = GoodsTransaction::with('po', 'item', 'warehouse', 'branch', 'po.branch', 'po.warehouse', 'po.sendBy', 'po.receivedBy')
-            ->orderBy('id', 'desc')->paginate(self::$perPage);
-        return response()->json($data);
+        return response()->json($this->goodsTransactionService->data());
     }
 
     public function create(): View
@@ -79,6 +80,27 @@ use Illuminate\View\View;
         $explodeID = explode(",", $request->selected_stock);
         $data = GoodsStock::with('po','warehouse', 'branch')->whereIn('id', $explodeID)->paginate(5);
         return response()->json($data);
+    }
+
+
+    public function store(Request $request): JsonResponse
+    {
+        DB::transaction(function () use ($request) {
+            GoodsTransaction::create([
+                'branch_id' => $request->branch_id,
+                'warehouse_id' => $request->warehouse_id,
+                'from_warehouse_id' => Auth::user()->branch_id === null ? $request->warehouse_id : null,
+                'from_branch_id' => Auth::user()->branch_id !== null ? $request->branch_id : null,
+                'to_warehouse_id' => $request->warehouse_id,
+                'to_branch_id' => $request->branch_id,
+                'qty' => $request->qty,
+                'po_id' => $request->po_id,
+            ]);
+        });
+
+        return response()->json([
+            'message' => 'Data berhasil disimpan'
+        ]);
     }
 
 

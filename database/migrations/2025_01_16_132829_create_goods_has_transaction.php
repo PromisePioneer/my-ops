@@ -12,8 +12,13 @@ return new class extends Migration {
     {
         Schema::create('goods_has_transaction', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('goods_transaction_id')->constrained('goods_transaction');
-            $table->foreignId('item_id')->constrained('goods');
+            $table->foreignId('goods_transaction_id')
+                ->constrained('goods_transaction')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('item_id')->constrained('goods')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->timestamps();
         });
     }

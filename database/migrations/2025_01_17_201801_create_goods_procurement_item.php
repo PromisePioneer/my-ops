@@ -10,15 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('goods_stock', function (Blueprint $table) {
+        Schema::create('goods_request_item', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('po_id')->constrained('goods_purchase_order');
-            $table->foreignId('warehouse_id')->nullable()->constrained('warehouses');
-            $table->foreignId('branch_id')->nullable()->constrained('warehouses');
+            $table->foreignId('goods_request_id')->constrained('goods_request');
             $table->foreignId('item_id')->constrained('goods');
-            $table->integer('qty')->nullable();
-            $table->string('sn')->nullable();
-            $table->boolean('status')->default(false);
+            $table->integer('required_qty');
+            $table->integer('qty_requested');
+            $table->text('notes');
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('goods_stock');
+        Schema::dropIfExists('goods_procurement_item');
     }
 };

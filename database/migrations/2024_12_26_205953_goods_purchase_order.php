@@ -32,8 +32,8 @@ return new class extends Migration {
                 ->cascadeOnUpdate();
             $table->double('length_in_meter')->nullable();
             $table->string('travel_letter_receipt');
-            $table->boolean('status_send')->default(0);
-            $table->boolean('status_received')->default(0);
+            $table->boolean('status_send')->default(false);
+            $table->boolean('status_received')->default(false);
             $table->foreignId('send_by')->nullable()->constrained('users');
             $table->foreignId('received_by')->nullable()->constrained('users');
             $table->timestamps();

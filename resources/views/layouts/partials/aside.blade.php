@@ -321,6 +321,11 @@
                                     href="{{ url('inventory/goods/goods-transaction') }}">
                                 Transaksi
                             </x-dropdown-menu-item>
+                                <x-dropdown-menu-item
+                                    :active="request()->is('inventory/goods/goods-transaction*')"
+                                    href="{{ url('inventory/goods/goods-transaction') }}">
+                                    Permintaan Barang
+                                </x-dropdown-menu-item>
                         @endslot
                     </x-dropdown-menu>
                 @endcanany

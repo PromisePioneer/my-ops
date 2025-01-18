@@ -12,18 +12,39 @@ class GoodsTransaction extends Model
         'date',
         'po_id',
         'item_id',
-        'type',
+        'from_warehouse_id',
+        'to_warehouse_id',
+        'from_branch_id',
         'qty',
-        'warehouse_id',
-        'branch_id',
-        'notes',
         'status_send',
         'status_received',
-        'send_by',
+        'sent_by',
         'received_by',
-        'from_po'
+        'from_po',
+        'notes',
     ];
 
+
+    public function fromWarehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'from_warehouse_id');
+    }
+
+    public function toWarehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'to_warehouse_id');
+    }
+
+
+    public function fromBranch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'from_branch_id');
+    }
+
+    public function toBranch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'to_branch_id');
+    }
 
     public function po(): BelongsTo
     {
@@ -43,5 +64,15 @@ class GoodsTransaction extends Model
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+    public function sentBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'sent_by');
+    }
+
+    public function receivedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'received_by');
     }
 }
