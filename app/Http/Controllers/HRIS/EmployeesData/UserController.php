@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\HRIS\EmployeesData;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\UserRequest;
 use App\Imports\UserImport;
@@ -18,15 +19,10 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 
-class UserController extends Controller
+#[AllowDynamicProperties] class UserController extends Controller
 {
     public int $perPage = 10;
-    private Branch $branch;
-    private User $user;
-    private Department $department;
-    private Attendances $attendances;
-    private UserService $userService;
-    private Company $company;
+
 
     public function __construct()
     {
