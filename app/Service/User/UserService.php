@@ -35,9 +35,9 @@ class UserService
         $search = $request->input('search');
         $query = User::with('branch', 'roles', 'company');
         if (!empty($search)) {
-            $query->where('name', 'like', '%'.$search.'%')
-                ->orWhere('email', 'like', '%'.$search.'%')
-                ->orWhere('nip', 'like', '%'.$search.'%');
+            $query->where('name', 'like', '%' . $search . '%')
+                ->orWhere('email', 'like', '%' . $search . '%')
+                ->orWhere('nip', 'like', '%' . $search . '%');
         }
 
         $data = $query->paginate(self::$perPage);
@@ -82,7 +82,7 @@ class UserService
         $branch = $this->branch->getSelectedData($request->branch_id);
         $date = Carbon::parse($request->join_date)->format('d-m-y');
         $branchCode = $branch['code'] ?? '100';
-        return str_replace('-', '', $branchCode.$date.$request->absent_id);
+        return str_replace('-', '', $branchCode . $date . $request->absent_id);
     }
 
     public function update(UserRequest $request, User $user): void
@@ -106,19 +106,17 @@ class UserService
         return $randomAbsentId;
     }
 
-    public function isUserHasRoleBranchManager(Request $request, Collection $roles): void
+    public function isUserHasRoleBranchManager(Collection $roles): Collection|\Illuminate\Support\Collection
     {
-        if ($request->user()->hasRole('Branch Manager')) {
-            $roles = $roles->filter(function ($role) {
-                return in_array($role->name, [
-                    'Finance & Accounting Staff',
-                    'Stocker Staff',
-                    'Customer Service Staff',
-                    'Head Engineer',
-                    'Senior Engineer',
-                ]);
-            });
-        }
+        return $roles->filter(function ($role) {
+            return in_array($role->name, [
+                'Finance & Accounting Staff',
+                'Stocker Staff',
+                'Customer Service Staff',
+                'Head Engineer',
+                'Senior Engineer',
+            ]);
+        });
     }
 
     public function filter(Request $request): LengthAwarePaginator
@@ -148,7 +146,7 @@ class UserService
             && $request->month
             && $request->year
         ) {
-            $users->whereDate('join_date', Carbon::parse('01-'.$request->month.'-'.$request->year));
+            $users->whereDate('join_date', Carbon::parse('01-' . $request->month . '-' . $request->year));
         }
 
         $data = $users->paginate(self::$perPage);

@@ -18,6 +18,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
+use function Pest\Laravel\json;
 
 #[AllowDynamicProperties] class UserController extends Controller
 {
@@ -77,7 +78,10 @@ use Maatwebsite\Excel\Facades\Excel;
     {
         $this->authorize('create', User::class);
         $roles = Role::all();
-        $this->userService->isUserHasRoleBranchManager($request, $roles);
+
+        if ($request->user()->hasRole('Branch Manager')) {
+            return response()->json($this->userService->isUserHasRoleBranchManager($roles));
+        }
         return response()->json($roles);
     }
 
