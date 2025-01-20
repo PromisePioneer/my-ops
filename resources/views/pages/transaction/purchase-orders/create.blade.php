@@ -12,7 +12,7 @@
     <div>
         <div class="d-flex flex-column flex-lg-row" x-data="generatePO">
             @include('pages.general-master-data.contact.modal.create')
-            @include('pages.general-master-data.unit-types.modal.create')
+            @include('pages.general-master-data.unit-types.modal.form')
             <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
                 <div class="card p-10">
                     <form id="form" @submit.prevent="generatePO()">
@@ -194,7 +194,7 @@
                 buttonLoading: false,
                 contactModal: new bootstrap.Modal(document.getElementById('contact-create')),
                 contactForm: document.getElementById('contactFormCreate'),
-                unitTypeModal: new bootstrap.Modal(document.getElementById('modal-unit-type-create')),
+                unitTypeModal: new bootstrap.Modal(document.getElementById('modal-unit-type')),
                 unitTypeForm: document.getElementById('unit-types-store'),
                 form: document.getElementById('form'),
                 poItem: [{

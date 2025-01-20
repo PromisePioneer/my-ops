@@ -10,7 +10,7 @@
     <div class="d-flex flex-column flex-lg-row" x-data="generateFAB">
         @include('pages.general-master-data.contact.modal.create')
         @include('pages.general-master-data.skl.modal.create')
-        @include('pages.general-master-data.unit-types.modal.create')
+        @include('pages.general-master-data.unit-types.modal.form')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
                 <form id="form" @submit.prevent="generateFAB()">
@@ -209,7 +209,7 @@
             return {
                 form: document.getElementById('form'),
                 unitTypeForm: document.getElementById('unit-types-store'),
-                unitTypeModal: new bootstrap.Modal(document.getElementById('modal-unit-type-create')),
+                unitTypeModal: new bootstrap.Modal(document.getElementById('modal-unit-type')),
                 contactForm: document.getElementById('contactFormCreate'),
                 contactModal: new bootstrap.Modal(document.getElementById('contact-create')),
                 sklModal: new bootstrap.Modal(document.getElementById('modal-skl-create')),
