@@ -564,33 +564,33 @@
                 @canany('Lihat Menu Payroll')
                     <x-menu-sections>Manajemen Karyawan</x-menu-sections>
                 @endcanany
-{{--                @can('Lihat Menu Payroll')--}}
-                {{--                    <x-dropdown-menu :active="request()->is('payroll/*')">--}}
-                {{--                        @slot('parentIcon')--}}
-                {{--                            <i class="ki-duotone ki-profile-user fs-2">--}}
-                {{--                                <span class="path1"></span>--}}
-                {{--                                <span class="path2"></span>--}}
-                {{--                                <span class="path3"></span>--}}
-                {{--                                <span class="path4"></span>--}}
-                {{--                            </i>--}}
-                {{--                        @endslot--}}
-                {{--                        @slot('menuTitle')--}}
-                {{--                            Payroll--}}
-                {{--                        @endslot--}}
-                {{--                        @slot('menuItem')--}}
-                {{--                            <x-dropdown-menu-item--}}
-                {{--                                    :active="request()->is('payroll/setting*')"--}}
-                {{--                                    href="{{ url('payroll/setting') }}">--}}
-                {{--                                Pengaturan--}}
-                {{--                            </x-dropdown-menu-item>--}}
-                {{--                            --}}{{--                        <x-dropdown-menu-item--}}
-                {{--                            --}}{{--                            :active="request()->segment(2) === 'generate'"--}}
-                {{--                            --}}{{--                            href="{{ url('payroll/generate') }}">--}}
-                {{--                            --}}{{--                            Generate Payroll--}}
-                {{--                            --}}{{--                        </x-dropdown-menu-item>--}}
-                {{--                        @endslot--}}
-                {{--                    </x-dropdown-menu>--}}
-                {{--                @endcan--}}
+                @can('Lihat Menu Payroll')
+                    <x-dropdown-menu :active="request()->is('payroll/*')">
+                        @slot('parentIcon')
+                            <i class="ki-duotone ki-profile-user fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
+                        @endslot
+                        @slot('menuTitle')
+                            Payroll
+                        @endslot
+                        @slot('menuItem')
+                            <x-dropdown-menu-item
+                                    :active="request()->is('payroll/setting*')"
+                                    href="{{ url('payroll/setting') }}">
+                                Pengaturan
+                            </x-dropdown-menu-item>
+                            {{--                        <x-dropdown-menu-item--}}
+                            {{--                            :active="request()->segment(2) === 'generate'"--}}
+                            {{--                            href="{{ url('payroll/generate') }}">--}}
+                            {{--                            Generate Payroll--}}
+                            {{--                        </x-dropdown-menu-item>--}}
+                        @endslot
+                    </x-dropdown-menu>
+                @endcan
                 @canany(['Lihat Menu Data Karyawan', 'Lihat Menu Manajemen Cuti', 'Lihat Menu Permission', 'Lihat Menu Manajemen Cuti', 'Lihat Menu SP', 'Lihat Menu Kontrak Karyawan', 'Lihat Menu SK'])
                     <x-dropdown-menu :active="request()->segment(1) === 'manage-users'">
                         @slot('parentIcon')
