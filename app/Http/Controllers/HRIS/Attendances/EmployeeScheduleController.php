@@ -49,7 +49,7 @@ use Illuminate\View\View;
 
     public function getSchedules($date, $absentId): JsonResponse
     {
-        $employeeSchedules = EmployeeSchedule::whereDate('date', $date)->where('employee_id', $absentId)->first();
+        $employeeSchedules = EmployeeSchedule::whereDate('start_date', $date)->where('employee_id', $absentId)->first();
         return response()->json($employeeSchedules);
     }
 

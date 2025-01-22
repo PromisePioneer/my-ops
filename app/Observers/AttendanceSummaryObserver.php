@@ -27,6 +27,7 @@ class AttendanceSummaryObserver
         // Fetch WorkTime based on user role and shift timing
         $workTime = $this->getWorkTime($attendances, $user, $timestamp);
 
+        dd($workTime);
 
         if (!$workTime) {
             Log::warning('No matching WorkTime found for timestamp: ' . $timestamp);
