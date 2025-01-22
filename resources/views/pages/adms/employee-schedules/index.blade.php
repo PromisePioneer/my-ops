@@ -107,7 +107,7 @@
                                                     <a href="#" data-bs-toggle="modal"
                                                        data-bs-target="#modal-create"
                                                        :class="`${dates.schedules_date?.status === 'L' ? 'text-black' : dates.schedules_date?.status === 'H' ? 'text-black' : 'text-black'}`"
-                                                       @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.date ??  dates.period_date )"
+                                                       @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.start_date ??  dates.start_date )"
                                                        x-text="`${dates?.work_time_schedules} ${dates.schedules_date?.status === 'L' ? 'Libur' : dates.schedules_date?.status === 'H' ? 'Hadir' : ''}`  ?? '-'"></a>
                                                 </div>
                                             </td>

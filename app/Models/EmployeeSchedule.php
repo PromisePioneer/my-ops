@@ -11,7 +11,9 @@ class EmployeeSchedule extends Model
     protected $fillable = [
         'work_time_id',
         'employee_id',
-        'date',
+        'is_cross_midnight_shift',
+        'start_date',
+        'end_date',
         'status'
     ];
 

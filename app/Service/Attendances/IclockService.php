@@ -173,6 +173,7 @@ class IclockService
         $shiftEnd = Carbon::parse($dateTime->format('Y-m-d') . ' ' . $endTime);
 
 
+
         if ($endTime < $startTime) {
             $shiftEnd->addDay();
         }
@@ -198,7 +199,8 @@ class IclockService
             $shiftStart->subHours();
         }
 
-//        dd($shiftStart);
+        dd($dateTime->between($checkInStartTime, $checkInEndTime) &&
+            $dateTime->between($shiftStart, $shiftEnd));
 
         // Validate if the time falls within check-in window and shift duration
         return $dateTime->between($checkInStartTime, $checkInEndTime) &&

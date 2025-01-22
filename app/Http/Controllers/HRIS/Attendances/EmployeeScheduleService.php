@@ -145,7 +145,7 @@ class EmployeeScheduleService
                 $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff', 'After Sales Customer Service']);
             })->where(function ($query) use ($request) {
                 $query->whereNull('branch_id')->orWhereIn('branch_id', [1])
-                    ->where('active', 1);;
+                    ->where('active', 1);
             });
         }
 
@@ -275,10 +275,10 @@ class EmployeeScheduleService
 
         $data = $userData->getCollection()->map(function ($item) use ($startDate, $endDate, $period) {
             $allSchedules = EmployeeSchedule::with('workTime')
-                ->whereBetween('date', [$startDate, $endDate])
+                ->whereBetween('start_date', [$startDate, $endDate])
                 ->where('employee_id', $item->absent_id)
                 ->get()
-                ->keyBy('date');
+                ->keyBy('start_date');
 
             $dates = [];
             foreach ($period as $date) {

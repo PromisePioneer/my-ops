@@ -17,9 +17,16 @@
             <form id="form-create" @submit.prevent="save()">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Tanggal</label>
+                        <label for="name" class="required form-label">Tanggal Awal Clock In</label>
                         <input type="date" id="date" name="date" class="form-control form-control-solid date"
-                               placeholder="Tanggal" :value="schedulesValue?.date"/>
+                               placeholder="Tanggal" :value="schedulesValue?.start_date"/>
+                    </div>
+
+
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Tanggal Akhir Clock In</label>
+                        <input type="date" id="date" name="date" class="form-control form-control-solid date"
+                               placeholder="Tanggal" :value="schedulesValue?.end_date"/>
                     </div>
 
 
