@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="contact-create">
+<div class="modal fade" tabindex="-1" id="contact-modal">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -15,34 +15,34 @@
             </div>
 
             <div class="modal-body">
-                <form id="contactFormCreate" @submit.prevent="saveContact()">
+                <form id="contact-form" @submit.prevent="saveContact(editVal.id ?? null)">
                     <div class="row g-9 fv-row mb-8">
                         <div class="col-md-6">
                             <label class="d-flex align-items-center fs-6 fw-bold mb-2">
                                 <span class="required">Nama PIC</span>
                             </label>
                             <input type="text" class="form-control form-control-solid" placeholder="Nama Lengkap"
-                                   name="pic_name"/>
+                                   name="pic_name" :value="editVal?.pic_name ?? ''"/>
                         </div>
                         <div class="col-md-6">
                             <label class="d-flex align-items-center fs-6 fw-bold mb-2">
                                 <span class="required">Jabatan</span>
                             </label>
                             <input type="text" class="form-control form-control-solid" placeholder="Jabatan"
-                                   name="pic_position"/>
+                                   name="pic_position" :value="editVal?.pic_position ?? ''"/>
                         </div>
                     </div>
                     <div class="row g-9 mb-8">
                         <div class="col-md-6 fv-row">
                             <label class="required fs-6 fw-bold mb-2">Nama Perusahaan</label>
                             <input type="text" class="form-control form-control-solid" placeholder="Nama Perusahaan"
-                                   name="company_name"/>
+                                   name="company_name" :value="editVal?.company_name ?? ''"/>
                         </div>
 
                         <div class="col-md-6 fv-row">
                             <label class="fs-6 fw-bold mb-2 required">Kode Perusahaan</label>
                             <input type="text" class="form-control form-control-solid" placeholder="Kode perusahaan"
-                                   name="company_code"/>
+                                   name="company_code" :value="editVal?.company_code ?? ''"/>
                         </div>
                     </div>
 
@@ -50,12 +50,12 @@
                         <div class="col-md-6 fv-row">
                             <label class="fs-6 fw-bold mb-2">No. Telepon</label>
                             <input type="number" class="form-control form-control-solid" placeholder="No. Telepon"
-                                   name="phone_number"/>
+                                   name="phone_number" :value="editVal?.phone_number ?? ''"/>
                         </div>
                         <div class="col-md-6 fv-row">
                             <label class="fs-6 fw-bold mb-2">Email</label>
                             <input type="text" class="form-control form-control-solid" placeholder="Email"
-                                   name="email"/>
+                                   name="email" :value="editVal?.email ?? ''"/>
                         </div>
                     </div>
                     <div class="row mb-4">
@@ -65,9 +65,9 @@
                             </label>
                             <select name="identity_type" class="form-select form-select-solid"
                                     data-placeholder="Select an option">
-                                <option value="ktp">KTP</option>
-                                <option value="sim">SIM</option>
-                                <option value="passport">PASSPORT</option>
+                                <option value="ktp" :selected="editVal.identity_type === 'ktp'">KTP</option>
+                                <option value="sim" :selected="editVal.identity_type === 'ktp'">SIM</option>
+                                <option value="passport" :selected="editVal.identity_type === 'ktp'">PASSPORT</option>
                             </select>
                         </div>
                         <div class="col-md-10">
@@ -75,7 +75,7 @@
                                 <span>No. Identitas</span>
                             </label>
                             <input type="text" class="form-control form-control-solid" placeholder="No. Identitas"
-                                   name="identity_number"/>
+                                   name="identity_number" :value="editVal?.identity_number ?? ''"/>
                         </div>
                     </div>
                     <div class="row mb-4">
@@ -83,14 +83,15 @@
                             <label class="d-flex align-items-center fs-6 fw-bold mb-2">
                                 <span>FAX</span>
                             </label>
-                            <input type="text" class="form-control form-control-solid" placeholder="FAX" name="fax"/>
+                            <input type="text" class="form-control form-control-solid" placeholder="FAX" name="fax"
+                                   :value="editVal?.fax ?? ''"/>
                         </div>
                         <div class="col-md-6">
                             <label class="d-flex align-items-center fs-6 fw-bold mb-2">
                                 <span>NPWP</span>
                             </label>
                             <input type="text" class="form-control form-control-solid" placeholder="NPWP"
-                                   name="npwp"/>
+                                   name="npwp" :value="editVal?.npwp ?? ''"/>
                         </div>
                     </div>
                     <div class="row mb-4">
@@ -99,7 +100,7 @@
                                 <span>Alamat</span>
                             </label>
                             <textarea name="complete_address" class="form-control form-control-solid" id=""
-                                      data-kt-autosize="true"></textarea>
+                                      data-kt-autosize="true" x-text="editVal?.complete_address ?? ''"></textarea>
                         </div>
                     </div>
                     <div class="row mb-10">
@@ -108,7 +109,7 @@
                                 <span>Info Lainnya</span>
                             </label>
                             <textarea name="other_info" class="form-control form-control-solid" id=""
-                                      data-kt-autosize="true"></textarea>
+                                      data-kt-autosize="true" x-text="editVal?.other_info ?? ''"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">

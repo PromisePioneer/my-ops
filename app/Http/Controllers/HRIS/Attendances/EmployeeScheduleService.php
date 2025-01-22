@@ -289,7 +289,6 @@ class EmployeeScheduleService
                 ];
             }
 
-
             return [
                 'id' => $item->id,
                 'name' => $item->name,
@@ -309,6 +308,12 @@ class EmployeeScheduleService
 
         $userData->setCollection($data);
         return $userData;
+    }
+
+
+    public function leavesData()
+    {
+
     }
 
 

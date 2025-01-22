@@ -3,8 +3,7 @@
 @section('content')
 
     <div x-data="contactData()">
-        @include('pages.general-master-data.contact.modal.create')
-        @include('pages.general-master-data.contact.modal.edit')
+        @include('pages.general-master-data.contact.modal.form')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -21,7 +20,7 @@
                         <template x-if="Number(createPermission) === 1">
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#contact-create">
+                                    data-bs-target="#contact-modal">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
@@ -34,7 +33,7 @@
             </div>
             <div class="card-body py-3">
                 <div class="py-5">
-                    <form id="deleteForm" @submit.prevent="destroy()">
+                    <form id="form-delete" @submit.prevent="destroy()">
                         <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                 x-show="selectedCheckBox.length > 0"
@@ -99,13 +98,13 @@
                                                    :id="'checkbox-' + contact.id" :disabled="Number(deletePermission) !== 1"/>
                                         </div>
                                     </td>
-                                    <td x-text="contact.pic_name"></td>
-                                    <td x-text="`${contact.company_code} - ${contact.company_name}`"></td>
+                                    <td x-text="contact.pic"></td>
+                                    <td x-text="contact.company_name"></td>
                                     <td x-text="contact.phone_number"></td>
                                     <template x-if="Number(editPermission) === 1">
                                         <td>
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#contact-edit" @click="edit(contact.id)">
+                                                    data-bs-target="#contact-modal" @click="edit(contact.id)">
                                                 <i class="ki-duotone ki-pencil fs-2">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
@@ -148,11 +147,9 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                formCreate: document.getElementById('contactFormCreate'),
-                modalCreate: new bootstrap.Modal(document.getElementById('contact-create')),
-                formEdit: document.getElementById('contactFormEdit'),
-                modalEdit: new bootstrap.Modal(document.getElementById('contact-edit')),
-                deleteForm: document.getElementById('deleteForm'),
+                form: document.getElementById('contact-form'),
+                modal: new bootstrap.Modal(document.getElementById('contact-modal')),
+                formDelete: document.getElementById('form-delete'),
                 async init() {
                     await this.contactData();
                     await this.filterByBranch();
@@ -199,13 +196,17 @@
                         }
                     }
                 },
-                async saveContact() {
+                async saveContact(id = null) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/general-master-data/contact`, new FormData(this.formCreate))
+                        if (!id) {
+                            await axios.post(`/general-master-data/contact`, new FormData(this.form))
+                        } else {
+                            await axios.post(`general-master-data/contact/update/${id}`, new FormData(this.form))
+                        }
                         await showAlert('success', 'Data berhasil disimpan')
-                        this.formCreate.reset();
-                        this.modalCreate.hide();
+                        this.form.reset();
+                        this.modal.hide();
                         await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
@@ -218,27 +219,13 @@
                     const resp = await axios.get(`/general-master-data/contact/edit/${id}`);
                     this.editVal = resp.data;
                 },
-                async update(id) {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post(`/general-master-data/contact/update/${id}`, new FormData(this.formEdit))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.formEdit.reset();
-                        this.modalEdit.hide();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
-                    } finally {
-                        this.buttonLoading = false
-                    }
-                },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/general-master-data/contact/destroy`, new FormData(this.deleteForm));
+                            await axios.post(`/general-master-data/contact/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
+                            this.selectedCheckBox = [];
                         } catch (error) {
                             console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');

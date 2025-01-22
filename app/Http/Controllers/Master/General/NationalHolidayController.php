@@ -10,6 +10,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class NationalHolidayController extends Controller
@@ -20,6 +21,7 @@ class NationalHolidayController extends Controller
     {
         $this->nationalHoliday = new NationalHoliday();
     }
+
 
     /**
      * @throws AuthorizationException
@@ -41,6 +43,18 @@ class NationalHolidayController extends Controller
         return response()->json($nationalHoliday);
     }
 
+
+    public function search(Request $request): JsonResponse
+    {
+        $search = $request->input('search');
+        $data = NationalHoliday::orderBy('date', 'asc')
+            ->when(!empty($search), function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->paginate(10);
+
+        return response()->json($data);
+    }
 
     /**
      * @throws AuthorizationException

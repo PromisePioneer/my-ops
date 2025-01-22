@@ -268,13 +268,7 @@
                 async selectCheckBox(event) {
                     const checkboxId = event.target.value;
                     if (event.target.checked) {
-                        this.stocks.data.forEach((stock) => {
-                            this.selectedCheckBox.push({
-                                id: checkboxId,
-                                qty: stock?.qty,
-                                sn: stock?.sn,
-                            });
-                        });
+                        this.selectedCheckBox.push(checkboxId);
                     } else {
                         const index = this.selectedCheckBox.indexOf(checkboxId);
                         if (index !== -1) {

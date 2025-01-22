@@ -2,18 +2,25 @@
 
 namespace App\Http\Controllers\Master\General;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Contact\ContactRequest;
 use App\Models\Contact;
+use App\Service\GeneralMasterData\ContactService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-class ContactController extends Controller
+#[AllowDynamicProperties] class ContactController extends Controller
 {
     private static int $perPage = 10;
 
+
+    public function __construct()
+    {
+        $this->contactService = new ContactService();
+    }
     /**
      * @throws AuthorizationException
      */
@@ -27,11 +34,10 @@ class ContactController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function data(Request $request): JsonResponse
+    public function data(): JsonResponse
     {
         $this->authorize('view', Contact::class);
-        $contact = Contact::paginate(self::$perPage);
-        return response()->json($contact);
+        return response()->json($this->contactService->data());
     }
 
     /**
@@ -40,22 +46,8 @@ class ContactController extends Controller
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', Contact::class);
-        $search = $request->input('search');
-        $contact = Contact::when(!empty($search), function ($query) use ($search) {
-            $query->where('full_name', 'like', '%' . $search . '%')
-                ->orWhere('company_name', 'like', '%' . $search . '%')
-                ->orWhere('company_code', 'like', '%' . $search . '%')
-                ->orWhere('email', 'like', '%' . $search . '%')
-                ->orWhere('phone_number', 'like', '%' . $search . '%')
-                ->orWhere('identity_type', 'like', '%' . $search . '%')
-                ->orWhere('identity_number', 'like', '%' . $search . '%')
-                ->orWhere('fax', 'like', '%' . $search . '%')
-                ->orWhere('npwp', 'like', '%' . $search . '%')
-                ->orWhere('complete_address', 'like', '%' . $search . '%')
-                ->orWhere('other_info', 'like', '%' . $search . '%');
-        })->paginate(self::$perPage);
 
-        return response()->json($contact);
+        return response()->json($this->contactService->search($request));
     }
 
     /**

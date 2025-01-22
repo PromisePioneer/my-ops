@@ -93,8 +93,19 @@
                 isLoading: false,
                 nationalHolidays: [],
                 startIndex: null,
+                search: '',
                 async init() {
                     await this.getHolidayData();
+                },
+                async searchData() {
+                    const resp = await axios.get('/adms/national-holiday/search',
+                        {
+                            params: {
+                                search: this.search,
+                                'content-type': 'application/json'
+                            },
+                        });
+                    this.nationalHolidays = resp.data;
                 },
                 async getHolidayData() {
                     const resp = await axios.get('/adms/national-holiday/data');

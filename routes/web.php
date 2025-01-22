@@ -356,8 +356,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('filter/branch/data/{branch}', [ContactController::class, 'filterByBranch']);
             Route::post('/', [ContactController::class, 'store']);
             Route::get('/edit/{contact}', [ContactController::class, 'edit']);
-            Route::post('/update/{contact}', [ContactController::class, 'update']);
             Route::post('/destroy', [ContactController::class, 'destroy']);
+            Route::post('/update/{contact}', [ContactController::class, 'update']);
         });
         //product
         Route::prefix('product')->group(function () {
@@ -1082,6 +1082,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [NationalHolidayController::class, 'index']);
             Route::get('/data', [NationalHolidayController::class, 'data']);
             Route::post('/', [NationalHolidayController::class, 'generateHoliday']);
+            Route::get('/search', [NationalHolidayController::class, 'search']);
         });
         Route::prefix('/fp-devices')->group(function () {
             Route::get('/', [FpDevicesController::class, 'index']);
