@@ -5,8 +5,9 @@ namespace App\Http\Controllers\HRIS\Attendances;
 use App\Http\Controllers\Controller;
 use App\Models\FingerLog;
 use App\Service\Attendances\IclockService;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class IclockController extends Controller
@@ -24,41 +25,47 @@ class IclockController extends Controller
 
    public function register(Request $request)
     {
-       $sn = $request->query('SN');
+        $sn = $request->query('SN');
 
+        // Validate SN parameter
+        if (!$sn) {
+            return response("Missing SN parameter", 400)
+                ->header('Content-Type', 'text/plain');
+        }
 
-       if (!$sn) {
-           return response("Missing SN parameter", 400);
-       }
+        // Check if this command was recently processed for the same SN
+        $cacheKey = "attendance_query_{$sn}";
+        if (Cache::has($cacheKey)) {
+            // If cached, return acknowledgment to prevent repeated processing
+            return response("OK", 200)
+                ->header('Content-Type', 'text/plain');
+        }
 
+        // Log received SN for debugging
+        Log::info('Received SN: ' . $sn);
 
-
+        // Set command parameters
         $cmdId = 1;
-        // Logika untuk menentukan perintah berdasarkan SN atau kondisi lainnya
-//        $command = sprintf(
-//            "C:%d:ENROLL_FP PIN=%d\tFID=%d\tRETRY=%d\tOVERWRITE=%d",
-//            $cmdId, // CmdId
-//            $userId, // UserId
-//            1, // Fingerprint ID
-//            2, // Retry count
-//            0 // Overwrite existing
-//        );
+        $startDate = date("Y-m-d\TH:i:s", strtotime("2024-12-28 06:00:00"));
+        $endDate = date("Y-m-d\TH:i:s", strtotime("2025-01-23 23:00:00"));
 
+        // Create the command
+        $command = sprintf(
+            "C:%d:DATA QUERY ATTLOG StartTime=%s\tEndTime=%s",
+            $cmdId,
+            $startDate,
+            $endDate
+        );
 
-       $startDate = "2024-12-28 06:00:00";
-       $endDate = "2024-12-28 23:00:00";
+        // Log the generated command for debugging
+        Log::info('Generated Command: ' . $command);
 
-       $command = sprintf(
-           "C:%d:DATA QUERY ATTLOG StartTime=%s\tEndTime=%s",
-           $cmdId,
-           $startDate,
-           $endDate);
+        // Cache this request to prevent repeated execution for 1 minute
+        Cache::put($cacheKey, true, now()->addMinutes(1));
 
-       // Respons ke mesin
+        // Return the command to the machine
         return response($command, 200)
             ->header('Content-Type', 'text/plain');
-
-// return "OK";
     }
 
     public function handshake(Request $request): string
