@@ -97,7 +97,9 @@ class UserService
         $data['password'] = Hash::make('password');
         $data['nip'] = $this->formattedNip($request);
         $user->update($data);
-        $user->syncRoles($request->role);
+        if ($request->user()->hasRole('Super Admin')) {
+            $user->syncRoles($request->role);
+        }
     }
 
 
