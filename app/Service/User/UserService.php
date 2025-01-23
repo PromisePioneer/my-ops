@@ -119,6 +119,7 @@ class UserService
                 'Customer Service Staff',
                 'Head Engineer',
                 'Senior Engineer',
+                'Engineer'
             ]);
         });
     }
