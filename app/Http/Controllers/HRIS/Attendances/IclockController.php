@@ -35,6 +35,8 @@ class IclockController extends Controller
 
         // Check if this command was recently processed for the same SN
         $cacheKey = "attendance_query_{$sn}";
+
+        dd(Cache::has($cacheKey));
         if (Cache::has($cacheKey)) {
             // If cached, return acknowledgment to prevent repeated processing
             return response("OK", 200)
