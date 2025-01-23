@@ -24,14 +24,24 @@
                                readonly/>
                     </div>
 
-                    <div class="mb-10">
+
+                    <div class="d-flex justify-content-between align-items-center form-check form-switch form-check-custom form-check-solid mb-10">
+                        <label class="form-label" for="snPerPO" style="cursor: pointer">
+                            Akumulasi Hari
+                        </label>
+                        <input class="form-check-input" x-model="isDayCount" type="checkbox" name="need_sn"
+                               id="snPerPO"/>
+                    </div>
+
+                    <div class="mb-10" x-show="isDayCount" x-transition x-cloak>
                         <label for="name" class="required form-label">Akumulasi Hari</label>
 
-                        <div class="d-flex align-items-center justify-content-center">
-                            <button type="button" class="btn btn-light-primary btn-sm" @click="subDay()">-</button>
-                            <input type="number" class="form-control form-control-solid" name="day_count"
+                        <div class="d-flex align-items-center justify-content-between">
+                            <button type="button" class="btn btn-light-primary btn-sm me-3" @click="subDay()">-</button>
+                            <input type="text" x-model="dayCount" class="form-control form-control-solid"
+                                   :name="`${isDayCount ? 'day_count' : ''}`"
                                    :value="dayCount" readonly>
-                            <button type="button" class="btn btn-light-primary btn-sm" @click="addDay()">+</button>
+                            <button type="button" class="btn btn-light-primary btn-sm ms-3" @click="addDay()">+</button>
                         </div>
                     </div>
 

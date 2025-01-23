@@ -148,7 +148,8 @@
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 formCreate: document.getElementById('form-create'),
                 isCrossMidnightShift: false,
-                dayCount: 0,
+                dayCount: 1,
+                isDayCount: false,
                 async init() {
                     await this.getEmployeeSchedules();
                     await this.getWorkTimeData();
@@ -279,10 +280,9 @@
                                 }
                             });
                             this.employeeSchedules = resp.data
-
+                            this.dayCount = 1;
                         })
                         await showAlert('success', 'Data berhasil disimpan')
-                        this.formCreate.reset();
                         this.modalCreate.hide();
                     } catch (error) {
                         const respError = error.response.data.errors;
