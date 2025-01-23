@@ -61,7 +61,7 @@ class IclockController extends Controller
         Log::info('Generated Command: ' . $command);
 
         // Cache this request to prevent repeated execution for 1 minute
-        Cache::put($cacheKey, true, now()->addMinutes(1));
+        Cache::put($cacheKey, true, now()->addMinutes(5));
 
         // Return the command to the machine
         return response($command, 200)
