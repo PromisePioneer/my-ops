@@ -35,11 +35,11 @@ class IclockController extends Controller
 
         // Check if this command was recently processed for the same SN
         $cacheKey = "attendance_query_{$sn}";
-        if (Cache::has($cacheKey)) {
-            // If cached, return acknowledgment to prevent repeated processing
-            return response("OK", 200)
-                ->header('Content-Type', 'text/plain');
-        }
+//        if (Cache::has($cacheKey)) {
+//            // If cached, return acknowledgment to prevent repeated processing
+//            return response("OK", 200)
+//                ->header('Content-Type', 'text/plain');
+//        }
 
         // Log received SN for debugging
         Log::info('Received SN: ' . $sn);
