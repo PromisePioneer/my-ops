@@ -14,7 +14,6 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('work_time_id')->constrained('work_time');
             $table->integer('employee_id');
-            $table->boolean('is_cross_midnight_shift')->default(false);
             $table->date('start_date');
             $table->date('end_date');
             $table->enum('status', ['H', 'L'])->default('H');

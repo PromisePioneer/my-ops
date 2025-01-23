@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\EmployeeSchedule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -25,9 +24,8 @@ class EmployeeScheduleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'date' => ['required', 'date'],
+            'start_date' => ['required', 'date'],
             'work_time_id' => ['required'],
-            // 'employee_id' => ['required', 'exists:users,absent_id'],
             'status' => ['required', Rule::in('H', 'L')],
         ];
     }

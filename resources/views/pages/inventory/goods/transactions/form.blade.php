@@ -12,7 +12,6 @@
             </div>
             <div class="card-body py-3">
                 <form id="form" @submit.prevent="save()">
-                    @csrf
                     <div class="card-body">
                         <div class="row mb-4">
                             <div class="col-md-6" x-model="placement">
@@ -26,11 +25,13 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="col-form-label required fw-bold fs-6">Barang</label>
-                                <select name="item_id" id="item_id" class="form-select form-select-solid goods-select2">
+                                <select name="item_id" id="item_id"
+                                        class="form-select form-select-solid goods-bundle-select2">
                                     <option></option>
                                 </select>
                             </div>
                         </div>
+
 
 
                         <div class="row mb-4">
@@ -125,8 +126,6 @@
                             </div>
                         </div>
 
-
-                        <input type="hidden" name="selectedStock[]" :value="selectedCheckBox">
                         <div class="row mb-4 mt-10" x-show="selectedStocks.length !== 0" x-transition x-cloak>
                             <div class="text-center">
                                 <h1 class=" mb-4 text-uppercase text-decoration-underline">
@@ -139,6 +138,7 @@
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0 text-center">
                                         <th>No. PO</th>
+                                        <th>Nama Barang</th>
                                         <th>SN</th>
                                         <th>QTY</th>
                                         <th>Lokasi Tujuan</th>
@@ -158,7 +158,7 @@
                                         </tbody>
                                     </template>
                                     <template
-                                        x-if="!isLoading && selectedStocks.data?.length === 0 || selectedStocks.data === null">
+                                        x-if="!isLoading && selectedStocks.length === 0 || selectedStocks.data === null">
                                         <tbody class="fw-bold">
                                         <tr>
                                             <td colspan="9">
@@ -167,16 +167,23 @@
                                         </tr>
                                         </tbody>
                                     </template>
-                                    <template x-for="(stock, index) in selectedStocks.data" :key="stock.id">
+                                    <template x-for="(stock, index) in selectedStocks" :key="index">
                                         <tbody>
                                         <tr class="text-center">
-                                            <td x-text="stock.po.po_number"></td>
+                                            <td>
+                                                <input type="hidden" :name="`data[${index}][id]`" :value="stock.id">
+                                                <span x-text="stock.po"></span>
+                                            </td>
+                                            <td>
+                                                <input type="hidden" :name="`data[${index}][item_id]`"
+                                                       :value="stock.item_id">
+                                                <span x-text="stock.item_name"></span>
+                                            </td>
                                             <td x-text="stock?.sn ?? '-'"></td>
                                             <td>
-                                                <template x-if="stock.qty !== null">
-                                                    <input type="text" value="qty"
-                                                           class="form-control form-control-sm form-control-solid"
-                                                           x-model="selectedStockQty" :value="stocks.qty">
+                                                <template x-if="stock?.qty !== null">
+                                                    <input type="text" class="form-control form-control-solid"
+                                                           :name="`data[${index}][qty]`" value="0">
                                                 </template>
                                             </td>
                                             <td x-text="branch ?? warehouse ?? 'Lokasi belum diset'"></td>
@@ -234,6 +241,7 @@
                 checkboxSelected: [],
                 stocks: [],
                 selectedCheckBox: [],
+                selectedStocksPreview: [],
                 selectedStocks: [],
                 selectedStockQty: 0,
                 form: document.getElementById('form'),
@@ -252,27 +260,16 @@
                         this.stocks = res.data;
                     }
                 },
-                async toggleAllCheckBox() {
-                    this.selectAll = !this.selectAll;
-                    this.singleChecked = false;
-                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                    checkboxes.forEach((checkbox) => {
-                        checkbox.checked = this.selectAll;
-                        if (this.selectAll) {
-                            this.selectedCheckBox.push(checkbox.value);
-                        }
-                    });
-                    this.selectedCheckBox.shift();
-                    await this.selectedStock();
-                },
                 async selectCheckBox(event) {
                     const checkboxId = event.target.value;
                     if (event.target.checked) {
                         this.selectedCheckBox.push(checkboxId);
                     } else {
                         const index = this.selectedCheckBox.indexOf(checkboxId);
+                        const slice = this.selectedStocks.indexOf()
                         if (index !== -1) {
                             this.selectedCheckBox.splice(index, 1);
+                            this.selectedStocks.splice(index, 1);
                         }
                     }
                     await this.selectedStock();
@@ -295,11 +292,6 @@
                         self.warehouse = null;
                     });
                 },
-                deleteSelectedStock(stockId) {
-                    this.selectedStocks.data = this.selectedStocks.data.filter(val => {
-                        return val.id !== stockId
-                    });
-                },
                 async getWarehouseData() {
                     let self = this;
                     $(".warehouses-select2").select2({
@@ -319,7 +311,7 @@
                     });
                 },
                 async getGoodsData() {
-                    $(".goods-select2").select2({
+                    $(".goods-bundle-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Barang",
                         ajax: {
@@ -346,7 +338,6 @@
                     }
                 },
                 async selectedStock() {
-                    // console.log(this.selectedCheckBox);
                     const selected = this.selectedCheckBox.join(",");
                     try {
                         const resp = await axios.get('/inventory/goods/goods-transaction/stock/selected', {
@@ -354,17 +345,30 @@
                                 selected_stock: selected
                             }
                         });
-                        this.selectedStocks = resp.data;
-                        this.startIndex = this.selectedStocks.from;
+                        this.selectedStocksPreview = resp.data;
+                        this.startIndex = this.selectedStocksPreview.from;
+
+
+                        this.selectedStocksPreview.data.map((item) => {
+                            this.selectedStocks = [...this.selectedStocks, {
+                                id: item.id,
+                                item_id: item.item_id,
+                                item_name: item.item.name,
+                                sn: item.sn ?? null,
+                                qty: item.qty === null ? null : '',
+                                warehouse_id: item.warehouse_id,
+                                po: item.po.po_number,
+                                po_id: item.po_id,
+                            }];
+                        });
+                        console.log(this.selectedStocks);
                     } catch (e) {
                         console.log(e);
                     } finally {
                         this.isLoading = false;
                     }
                 },
-                async selectedStockQtyWatch() {
-                    this.selectedStockQty = this.selectedStocks.data[0].qty
-                },
+
                 async paginationEndPointSelectedStock(url) {
                     if (url) {
                         const selected = this.selectedCheckBox.join(",");

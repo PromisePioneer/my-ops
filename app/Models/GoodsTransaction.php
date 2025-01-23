@@ -10,12 +10,10 @@ class GoodsTransaction extends Model
     protected $table = 'goods_transaction';
     protected $fillable = [
         'date',
-        'po_id',
-        'item_id',
         'from_warehouse_id',
         'to_warehouse_id',
         'from_branch_id',
-        'qty',
+        'to_branch_id',
         'status_send',
         'status_received',
         'sent_by',
@@ -46,24 +44,9 @@ class GoodsTransaction extends Model
         return $this->belongsTo(Branch::class, 'to_branch_id');
     }
 
-    public function po(): BelongsTo
-    {
-        return $this->belongsTo(GoodsPurchaseOrder::class, 'po_id');
-    }
-
     public function item(): BelongsTo
     {
         return $this->belongsTo(Goods::class, 'item_id');
-    }
-
-    public function warehouse(): BelongsTo
-    {
-        return $this->belongsTo(Warehouse::class, 'warehouse_id');
-    }
-
-    public function branch(): BelongsTo
-    {
-        return $this->belongsTo(Branch::class, 'branch_id');
     }
 
     public function sentBy(): BelongsTo

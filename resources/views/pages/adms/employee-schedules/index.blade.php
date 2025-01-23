@@ -107,7 +107,7 @@
                                                     <a href="#" data-bs-toggle="modal"
                                                        data-bs-target="#modal-create"
                                                        :class="`${dates.schedules_date?.status === 'L' ? 'text-black' : dates.schedules_date?.status === 'H' ? 'text-black' : 'text-black'}`"
-                                                       @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.start_date ??  dates.start_date )"
+                                                       @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.period_dates ??  dates.period_date )"
                                                        x-text="`${dates?.work_time_schedules} ${dates.schedules_date?.status === 'L' ? 'Libur' : dates.schedules_date?.status === 'H' ? 'Hadir' : ''}`  ?? '-'"></a>
                                                 </div>
                                             </td>
@@ -147,6 +147,8 @@
                 schedulesValue: null,
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 formCreate: document.getElementById('form-create'),
+                isCrossMidnightShift: false,
+                dayCount: 0,
                 async init() {
                     await this.getEmployeeSchedules();
                     await this.getWorkTimeData();
@@ -225,6 +227,16 @@
                     await this.getWorkTimeData();
                     await this.selectedWorkTime();
                 },
+                addDay() {
+                    if (this.dayCount >= 0) {
+                        this.dayCount++;
+                    }
+                },
+                subDay() {
+                    if (this.dayCount > 0) {
+                        this.dayCount--;
+                    }
+                },
                 async getWorkTimeData() {
                     $(`.work-time-select2`).select2({
                         placeholder: "Pilih Jam Kerja",
@@ -240,6 +252,7 @@
                     })
                 },
                 async selectedWorkTime() {
+                    if (!this.schedulesValue.id) return;
                     const selectedWorkTime = $('#selectedWorkTime');
                     const response = await $.ajax({
                         type: 'GET',
@@ -266,6 +279,7 @@
                                 }
                             });
                             this.employeeSchedules = resp.data
+
                         })
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();

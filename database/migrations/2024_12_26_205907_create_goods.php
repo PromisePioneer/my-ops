@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->foreignId('unit_type_id')->constrained('unit_types');
             $table->boolean('already_has_sn_on_item')->default(false);
             $table->boolean('need_sn')->default(false);
+            $table->enum('type', ['single', 'bundle']);
             $table->timestamps();
         });
     }

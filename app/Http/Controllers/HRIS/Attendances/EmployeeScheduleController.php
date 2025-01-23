@@ -4,9 +4,11 @@ namespace App\Http\Controllers\HRIS\Attendances;
 
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EmployeeScheduleRequest;
 use App\Models\EmployeeSchedule;
 use App\Models\WorkTime;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -61,17 +63,58 @@ use Illuminate\View\View;
         return response()->json($this->employeeScheduleService->filterByDate($request, $startDate, $endDate));
     }
 
-    public function saveSchedules(Request $request): JsonResponse
+    public function saveSchedules(EmployeeScheduleRequest $request): JsonResponse
     {
         DB::transaction(function () use ($request) {
+
+            $selectedWorkTime = WorkTime::find($request->work_time_id);
+
+            if ($selectedWorkTime->name === 'Malam' || $selectedWorkTime->name === 'Sore' || $selectedWorkTime->name === 'KU Malam') {
+                $endDate = Carbon::parse($request->start_date)->addDays();
+            } else {
+                $endDate = Carbon::parse($request->start_date);
+            }
+
+            if ($request->day_count > 0) {
+                $this->saveBatchSchedule($request, $selectedWorkTime);
+            } else {
+                EmployeeSchedule::updateOrCreate([
+                    'employee_id' => $request->employee_id,
+                    'start_date' => $request->start_date,
+                    'end_date' => $endDate,
+                ], [
+                    'work_time_id' => $request->work_time_id,
+                    'status' => $request->status,
+                ]);
+            }
+        });
+
+        return response()->json(['message' => 'Data berhasil disimpan.']);
+    }
+
+
+    public function saveBatchSchedule(EmployeeScheduleRequest $request, $selectedWorkTime): void
+    {
+
+        $date = Carbon::parse($request->start_date);
+        $dayCount = Carbon::make($request->start_date)->copy()->addDays((int)$request->day_count);
+        $periods = CarbonPeriod::create($date, $dayCount);
+
+        foreach ($periods as $period) {
+            if ($selectedWorkTime->name === 'Malam' || $selectedWorkTime->name === 'Sore' || $selectedWorkTime->name === 'KU Malam') {
+                $endDate = Carbon::parse($period->format('Y-m-d'))->addDays();
+            } else {
+                $endDate = Carbon::parse($period->format('Y-m-d'));
+            }
+
             EmployeeSchedule::updateOrCreate([
                 'employee_id' => $request->employee_id,
-                'date' => $request->date,
+                'start_date' => $period->format('Y-m-d'),
+                'end_date' => $endDate->format('Y-m-d'),
             ], [
                 'work_time_id' => $request->work_time_id,
                 'status' => $request->status,
             ]);
-        });
-        return response()->json(['message' => 'Data berhasil disimpan.']);
+        }
     }
 }

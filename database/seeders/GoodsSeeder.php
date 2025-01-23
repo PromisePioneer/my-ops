@@ -20,6 +20,7 @@ class GoodsSeeder extends Seeder
             'unit_type_id' => UnitType::where('name', 'PCS')->first()->id,
             'need_sn' => true,
             'already_has_sn_on_item' => true,
+            'type' => 'single',
         ]);
 
         Goods::create([
@@ -28,6 +29,7 @@ class GoodsSeeder extends Seeder
             'unit_type_id' => UnitType::where('name', 'PCS')->first()->id,
             'need_sn' => true,
             'already_has_sn_on_item' => true,
+            'type' => 'single',
 
         ]);
 
@@ -37,6 +39,7 @@ class GoodsSeeder extends Seeder
             'unit_type_id' => UnitType::where('name', 'PCS')->first()->id,
             'need_sn' => true,
             'already_has_sn_on_item' => true,
+            'type' => 'single',
 
         ]);
 
@@ -45,6 +48,7 @@ class GoodsSeeder extends Seeder
             'category_id' => GoodsCategory::where('name', 'ASET')->first()->id,
             'unit_type_id' => UnitType::where('name', 'ROLL')->first()->id,
             'need_sn' => false,
+            'type' => 'bundle',
         ]);
     }
 }

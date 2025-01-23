@@ -17,16 +17,22 @@
             <form id="form-create" @submit.prevent="save()">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Tanggal Awal Clock In</label>
-                        <input type="date" id="date" name="date" class="form-control form-control-solid date"
-                               placeholder="Tanggal" :value="schedulesValue?.start_date"/>
+                        <label for="name" class="required form-label">Tanggal</label>
+                        <input type="date" id="start_date" name="start_date"
+                               class="form-control form-control-solid date"
+                               placeholder="Tanggal" :value="schedulesValue?.date ?? schedulesValue?.start_date"
+                               readonly/>
                     </div>
 
-
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Tanggal Akhir Clock In</label>
-                        <input type="date" id="date" name="date" class="form-control form-control-solid date"
-                               placeholder="Tanggal" :value="schedulesValue?.end_date"/>
+                        <label for="name" class="required form-label">Akumulasi Hari</label>
+
+                        <div class="d-flex align-items-center justify-content-center">
+                            <button type="button" @click="subDay()">-</button>
+                            <input type="number" class="form-control form-control-solid" name="day_count"
+                                   :value="dayCount" readonly>
+                            <button type="button" @click="addDay()">+</button>
+                        </div>
                     </div>
 
 

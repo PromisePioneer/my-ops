@@ -110,15 +110,15 @@ use Illuminate\View\View;
 
     public function createSN(GoodsPurchaseOrder $goodsPurchaseOrder, GenerateItemSNRequest $request): JsonResponse
     {
-        if ($goodsPurchaseOrder->item->need_sn === 1 && $goodsPurchaseOrder->item->already_has_sn_on_item === 1) {
+        if ($goodsPurchaseOrder->item->need_sn === 1
+            &&
+            $goodsPurchaseOrder->item->already_has_sn_on_item === 1) {
             GoodsStock::create([
                 'po_id' => $goodsPurchaseOrder->id,
                 'warehouse_id' => $goodsPurchaseOrder->warehouse_id,
                 'branch_id' => $goodsPurchaseOrder->branch_id,
                 'item_id' => $goodsPurchaseOrder->item_id,
-                'qty' => $goodsPurchaseOrder->qty,
                 'sn' => $request->sn,
-                'created_by' => Auth::id(),
             ]);
         }
 

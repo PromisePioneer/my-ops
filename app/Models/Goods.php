@@ -53,6 +53,44 @@ class Goods extends Model
         })->toArray();
     }
 
+
+    public function getSingleGoods(Request $request)
+    {
+        $search = $request->input('search');
+        $query = self::where('type', 'single')->orderby('name', 'asc');
+        if ($search !== '') {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                ->where('name', 'like', '%' . $request->search . '%');
+        }
+        $contact = $query->get(['id', 'name']);
+
+        return $contact->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->name,
+            ];
+        })->toArray();
+    }
+
+
+    public function getBundleGoods(Request $request)
+    {
+        $search = $request->input('search');
+        $query = self::where('type', 'bundle')->orderby('name', 'asc');
+        if ($search !== '') {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                ->where('name', 'like', '%' . $request->search . '%');
+        }
+        $contact = $query->get(['id', 'name']);
+
+        return $contact->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->name,
+            ];
+        })->toArray();
+    }
+
     public function getSelectedData(int $itemId): array
     {
         $contact = self::where('id', $itemId)->first();

@@ -4,7 +4,10 @@ namespace App\Service;
 
 use App\Models\GoodsTransaction;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class GoodsTransactionService
 {
@@ -43,5 +46,21 @@ class GoodsTransactionService
 
         $goodsTransaction->setCollection($data);
         return $goodsTransaction;
+    }
+
+
+    public function store(Request $request): void
+    {
+        DB::transaction(function () use($request) {
+            GoodsTransaction::create([
+                'date' => $request->date,
+                'from_warehouse_id' => Auth::user()->branch_id === null ? $request->warehouse_id : null,
+                'from_branch_id' => Auth::user()->branch_id !== null ? $request->branch_id : null,
+                'to_warehouse_id' => $request->warehouse_id,
+                'to_branch_id' => $request->branch_id,
+                'qty' => $request->qty,
+                'po_id' => $request->po_id,
+            ]);
+        });
     }
 }

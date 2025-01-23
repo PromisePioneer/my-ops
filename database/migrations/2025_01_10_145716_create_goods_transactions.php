@@ -13,8 +13,6 @@ return new class extends Migration {
         Schema::create('goods_transaction', function (Blueprint $table) {
             $table->id();
             $table->date('date');
-            $table->foreignId('po_id')->constrained('goods_purchase_order');
-            $table->foreignId('item_id')->constrained('goods');
             $table->foreignId('from_warehouse_id')
                 ->nullable()
                 ->constrained('warehouses')
@@ -35,7 +33,6 @@ return new class extends Migration {
                 ->constrained('branches')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-            $table->integer('qty');
             $table->boolean('status_send')->default(false);
             $table->boolean('status_received')->default(false);
             $table->foreignId('sent_by')
