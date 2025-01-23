@@ -83,7 +83,7 @@ class UserService
 
     public function formattedNip(UserRequest $request): array|string
     {
-        $branch = $this->branch->getSelectedData($request->branch_id);
+        $branch = $this->branch->getSelectedData($request->user()->branch_id);
         $date = Carbon::parse($request->join_date)->format('d-m-y');
         $branchCode = $branch['code'] ?? '100';
         return str_replace('-', '', $branchCode . $date . $request->absent_id);
