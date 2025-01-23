@@ -45,10 +45,10 @@ class SPController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
-        //        $this->authorize('view', SP::class);
-        return response()->json($this->spService->data());
+        $this->authorize('view', SP::class);
+        return response()->json($this->spService->data($request));
     }
 
     /**
@@ -56,7 +56,7 @@ class SPController extends Controller
      */
     public function search(Request $request): JsonResponse
     {
-        //        $this->authorize('view', SP::class);
+        $this->authorize('view', SP::class);
         return response()->json($this->spService->search($request));
     }
 
@@ -65,11 +65,16 @@ class SPController extends Controller
      */
     public function getUserData(Request $request): JsonResponse
     {
+        $this->authorize('create', SP::class);
         return response()->json($this->spService->getEmployeeData($request));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getSPPIC(Request $request): JsonResponse
     {
+        $this->authorize('create', SP::class);
         return response()->json($this->spService->getSPPic($request));
     }
 
@@ -118,7 +123,7 @@ class SPController extends Controller
      */
     public function create(): View
     {
-        //        $this->authorize('create', SP::class);
+        $this->authorize('create', SP::class);
         return view('pages.manage-users.sp.create');
     }
 
@@ -155,12 +160,13 @@ class SPController extends Controller
      */
     public function selectedUserdata(SP $sp): JsonResponse
     {
-        //        $this->authorize('update', SP::class);
+        $this->authorize('update', SP::class);
         return response()->json($this->user->getSelectedData($sp->user_id));
     }
 
     public function selectedPunishedBy(Sp $sp): JsonResponse
     {
+        $this->authorize('update', SP::class);
         return response()->json($this->user->getSelectedData($sp->punished_by));
     }
 
@@ -169,12 +175,13 @@ class SPController extends Controller
      */
     public function edit(SP $sp): View
     {
-        //        $this->authorize('update', SP::class);
+        $this->authorize('update', SP::class);
         return view('pages.manage-users.sp.edit', compact('sp'));
     }
 
     public function getListOfReason(SP $sp): JsonResponse
     {
+        $this->authorize('update', SP::class);
         $listOfReason = json_decode($sp->list_of_reason);
         return response()->json($listOfReason);
     }
@@ -184,7 +191,7 @@ class SPController extends Controller
      */
     public function destroy(SP $sp): JsonResponse
     {
-        //        $this->authorize('update', SP::class);
+        $this->authorize('delete', SP::class);
         $sp->delete();
 
         return response()->json($sp);

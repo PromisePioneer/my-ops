@@ -37,14 +37,16 @@ class SpService
         return $startValue.'/MY-SP/'.$spMonth.'/'.$spYear;
     }
 
-    public function query(): Builder
+    public function query(Request $request): Builder
     {
-        return SP::with('createdBy', 'user', 'branch');
+        return SP::with('createdBy', 'user', 'branch')->when($request->user()->hasRole('Branch Manager'), function ($query) use ($request) {
+            $query->where('branch_id', $query->user()->branch_id);
+        });
     }
 
-    public function data(): LengthAwarePaginator
+    public function data(Request $request): LengthAwarePaginator
     {
-        $data = $this->query()->paginate(self::$perPage);
+        $data = $this->query($request)->paginate(self::$perPage);
         return self::formattedData($data);
     }
 
@@ -145,13 +147,7 @@ class SpService
 
         if ($request->user()->hasRole('Branch Manager')) {
             $query->whereNot('id', $request->user()->id)
-                ->where('branch_id', $request->user()->branch_id)
-                ->role([
-                    'Head Engineer',
-                    'Senior Engineer',
-                    'Finance & Accounting Staff',
-                    'Stocker Staff',
-                ]);
+                ->where('branch_id', $request->user()->branch_id);
         }
 
         if ($request->user()->hasRole('Operational Manager', 'Super Admin')) {

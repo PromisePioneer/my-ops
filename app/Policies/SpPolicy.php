@@ -16,24 +16,20 @@ class SpPolicy
 
     public function view(User $user): bool
     {
-        return $user->can('Lihat Surat Peringatan');
+        return $user->can('Lihat Menu SP');
     }
 
 
     public function create(User $user): bool
     {
-        return $user->can('Tambah Surat Peringatan');
+        return $user->can('Tambah Data SP');
     }
 
 
     public function update(User $user, SP $sp): bool
     {
-        if ($user->can('Update semua Surat Peringatan')) {
+        if ($user->can('Edit Data SP')) {
             return true;
-        }
-
-        if ($user->can('Update Surat Peringatan Sendiri')) {
-            return $user->id === $sp->user_id;
         }
 
         return false;
@@ -42,7 +38,7 @@ class SpPolicy
 
     public function delete(User $user, SP $sp): bool
     {
-        return $user->can('Hapus Surat Peringatan');
+        return $user->can('Hapus Data SP');
     }
 
 }
