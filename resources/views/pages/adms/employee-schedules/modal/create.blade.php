@@ -28,10 +28,10 @@
                         <label for="name" class="required form-label">Akumulasi Hari</label>
 
                         <div class="d-flex align-items-center justify-content-center">
-                            <button type="button" @click="subDay()">-</button>
+                            <button type="button" class="btn btn-light-primary btn-sm" @click="subDay()">-</button>
                             <input type="number" class="form-control form-control-solid" name="day_count"
                                    :value="dayCount" readonly>
-                            <button type="button" @click="addDay()">+</button>
+                            <button type="button" class="btn btn-light-primary btn-sm" @click="addDay()">+</button>
                         </div>
                     </div>
 
