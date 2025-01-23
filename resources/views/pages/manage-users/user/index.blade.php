@@ -22,12 +22,14 @@
                             <div class="card-body pt-0">
                                 <div class="d-flex flex-column text-gray-600">
                                     <div class="d-flex align-items-center py-2">
+                                    @can('Filter Data Karyawan Berdasarkan Cabang')
                                         <select class="form-select form-select-solid branch-select2"
                                                 name="branch_id" id="branch_id">
                                         </select>
+                                        @endcan
                                     </div>
                                     <div class="d-flex align-items-center py-2">
-                                        @can('Filter Data Karyawan Berdasarkan Cabang')
+                                        @can('Filter Data Karyawan Berdasarkan Perusahaan')
                                             <select name="company_id" id="company_id"
                                                     class="form-select form-select-solid companies-select2">
                                                 <option></option>
@@ -134,7 +136,7 @@
                         </div>
                         <div id="kt_roles_view_table_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                             <div class="table-responsive">
-                                <table class="table align-middle table-row-dashed fs-6 gy-5 mb-0 dataTable no-footer"
+                                <table class="table align-middle table-bordered fs-6 "
                                        id="kt_roles_view_table">
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
@@ -180,7 +182,7 @@
                                         </tr>
                                     </template>
                                     <template x-for="user in users.data" :key="user.id">
-                                        <tr>
+                                        <tr :class="`${user.active === 1 ? '' : 'bg-light-danger'}`">
                                             <td>
                                                 <div class="form-check form-check-sm form-check-custom form-check-solid"
                                                      @click="selectCheckBox($event)">
@@ -465,7 +467,7 @@
                     showConfirmModal("Anda yakin?", "Ganti Status Aktif?", "Ya, Ganti!", async () => {
                         try {
                             await axios.post(`/manage-users/users/change-status/${id}`);
-                            await showAlert('success', 'Data sukses dihapus');
+                            await showAlert('success', 'Data sukses diaktifkan');
                             await this.init();
                         } catch (error) {
                             await showAlert('error', 'Terjadi kesalahan');

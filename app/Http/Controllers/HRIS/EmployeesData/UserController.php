@@ -47,10 +47,10 @@ use function Pest\Laravel\json;
     /**
      * @throws AuthorizationException
      */
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
         $this->authorize('view', User::class);
-        return response()->json($this->userService->data());
+        return response()->json($this->userService->data($request));
     }
 
     /**

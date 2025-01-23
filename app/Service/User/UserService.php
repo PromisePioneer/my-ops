@@ -23,9 +23,11 @@ class UserService
     }
 
 
-    public function data(): LengthAwarePaginator
+    public function data(Request $request): LengthAwarePaginator
     {
-        $data = User::with('branch', 'roles', 'company')->paginate(self::$perPage);
+        $data = User::with('branch', 'roles', 'company')->when($request->user()->hasRole('Branch Manager'), function ($query) use ($request) {
+            $query->where('branch_id', $request->user()->branch_id);
+        })->paginate(self::$perPage);
         return self::formattedData($data);
     }
 
@@ -33,7 +35,9 @@ class UserService
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $query = User::with('branch', 'roles', 'company');
+        $query = User::with('branch', 'roles', 'company')->when($request->user()->hasRole('Branch Manager'), function ($query) use ($request) {
+            $query->where('branch_id', $request->user()->branch_id);
+        });
         if (!empty($search)) {
             $query->where('name', 'like', '%' . $search . '%')
                 ->orWhere('email', 'like', '%' . $search . '%')
@@ -69,8 +73,8 @@ class UserService
     public function store(UserRequest $request): void
     {
         $data = $request->validated();
-        $data['placement'] = $request->branch_id ? 'Cabang' : 'Pusat';
-        $data['branch_id'] = $request->branch_id;
+        $data['placement'] = $request->user()->branch_id ? 'Cabang' : 'Pusat';
+        $data['branch_id'] = $request->user()->branch_id ? $request->user()->branch_id : $request->branch_id;
         $data['password'] = Hash::make('password');
         $data['nip'] = $this->formattedNip($request);
         $user = User::create($data);
@@ -88,8 +92,8 @@ class UserService
     public function update(UserRequest $request, User $user): void
     {
         $data = $request->validated();
-        $data['placement'] = $request->branch_id ? 'Cabang' : 'Pusat';
-        $data['branch_id'] = $request->branch_id;
+        $data['placement'] = $request->user()->branch_id ? 'Cabang' : 'Pusat';
+        $data['branch_id'] = $request->user()->branch_id ? $request->user()->branch_id : $request->branch_id;
         $data['password'] = Hash::make('password');
         $data['nip'] = $this->formattedNip($request);
         $user->update($data);
@@ -121,8 +125,7 @@ class UserService
 
     public function filter(Request $request): LengthAwarePaginator
     {
-        $users = User::with('branch', 'roles', 'company')
-            ->where('active', $request->active ?? true);
+        $users = User::with('branch', 'roles', 'company');
 
         if ($request->user()->can('Filter Data Karyawan Berdasarkan Cabang') && $request->branch_id) {
             $users->where('branch_id', $request->branch_id);
@@ -149,7 +152,9 @@ class UserService
             $users->whereDate('join_date', Carbon::parse('01-' . $request->month . '-' . $request->year));
         }
 
-        $data = $users->paginate(self::$perPage);
+        $data = $users->when($request->user()->hasRole('Branch Manager'), function ($query) use ($request) {
+            $query->where('branch_id', $request->user()->branch_id);
+        })->paginate(self::$perPage);
         return self::formattedData($data);
     }
 }

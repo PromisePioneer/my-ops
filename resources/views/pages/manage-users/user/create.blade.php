@@ -10,24 +10,26 @@
                 <form id="form" @submit.prevent="save()">
                     @csrf
                     <div class="card-body">
-                        <div class="row mb-4">
-                            <div class="col-md-6" x-model="placement">
-                                <label class="col-form-label required fw-bold fs-6">Penempatan</label>
-                                <select name="placement" id="selectedPlacement"
-                                        class="form-select form-select-solid user-placement-select2">
-                                    <option value="0" selected>Pilih</option>
-                                    <option value="Cabang">Cabang</option>
-                                    <option value="Pusat">Pusat</option>
-                                </select>
+                        @if(!Auth::user()->branch_id)
+                            <div class="row mb-4">
+                                <div class="col-md-6" x-model="placement">
+                                    <label class="col-form-label required fw-bold fs-6">Penempatan</label>
+                                    <select name="placement" id="selectedPlacement"
+                                            class="form-select form-select-solid user-placement-select2">
+                                        <option value="0" selected>Pilih</option>
+                                        <option value="Cabang">Cabang</option>
+                                        <option value="Pusat">Pusat</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-6" x-show="placement === 'Cabang'" x-transition x-cloak>
+                                    <label class="col-form-label required fw-bold fs-6">Cabang</label>
+                                    <select :name="`${placement === 'Cabang' ? 'branch_id' : ''}`"
+                                            class="form-select form-select-solid branchSelect2">
+                                        <option value="0">Pilih Cabang</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="col-lg-6" x-show="placement === 'Cabang'" x-transition x-cloak>
-                                <label class="col-form-label required fw-bold fs-6">Cabang</label>
-                                <select :name="`${placement === 'Cabang' ? 'branch_id' : ''}`"
-                                        class="form-select form-select-solid branchSelect2">
-                                    <option value="0">Pilih Cabang</option>
-                                </select>
-                            </div>
-                        </div>
+                        @endif
                         <div class="row mb-4">
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">ID Absen</label>
@@ -105,7 +107,7 @@
                 </form>
 
 
-{{--                <form id="form-absent-id" @submit.prevent="remoteEnroll()">--}}
+                {{--                <form id="form-absent-id" @submit.prevent="remoteEnroll()">--}}
                 {{--                    <input type="hidden" name="absent_id" value="12345">--}}
                 {{--                    <button type="submit">Daftarkan Absen ID</button>--}}
                 {{--                </form>--}}

@@ -18,7 +18,7 @@ class UserPolicy
 
     public function update(User $user): bool
     {
-        return $user->can('Update Data Karyawan');
+        return $user->can('Edit Data Karyawan');
     }
 
     public function delete(User $user): bool

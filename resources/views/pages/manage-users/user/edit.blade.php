@@ -10,6 +10,7 @@
                 <form id="form" @submit.prevent="save()">
                     @csrf
                     <div class="card-body">
+                        @if(!Auth::user()->branch_id)
                         <div class="row mb-4">
                             <div class="col-md-6" x-model="users.placement">
                                 <label class="col-form-label required fw-bold fs-6">Penempatan</label>
@@ -29,6 +30,7 @@
                                 </select>
                             </div>
                         </div>
+                        @endif
                         <div class="row mb-4">
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">ID Absen</label>
