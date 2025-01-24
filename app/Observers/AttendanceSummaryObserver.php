@@ -17,7 +17,6 @@ class AttendanceSummaryObserver
         $timestamp = Carbon::parse($attendances->timestamp);
 
 
-
         // // Fetch user and role
         $user = User::where('absent_id', $attendances->employee_id)->first();
         if (!$user) {
@@ -38,37 +37,11 @@ class AttendanceSummaryObserver
         // Find or create AttendancesSummary
         $attendancesSummary = $this->findOrCreateSummary($attendances, $workTime, $timestamp);
 
-
-        $shiftDate = $this->getShiftDate($timestamp, $workTime, $attendances);
-
-
-        $startDateEmpSchedule = $shiftDate ? Carbon::make($shiftDate)->format('Y-m-d') : null;
-        $clockInStart =  Carbon::parse($startDateEmpSchedule . ' ' . $workTime->clock_in)->addDays();
-
-
-            $checkInTimeStampIfMalam = null;
-            $checkOutTimeStampIfMalam = null;
-
-        if($workTime?->name === 'Malam' && $timestamp->copy()->addDays()->greaterThan($clockInStart)){
-                        $checkInTimeStampIfMalam = $timestamp->copy()->addDays();
-        }else{
-            $checkInTimeStampIfMalam = $timestamp;
-        }
-                    
-
         // Update clock-in or clock-out
         if ($attendances->status1 === 0 && !$attendancesSummary->clock_in) {
-            if($workTime->name ==="Malam"){
-
-                Log::info('checkin malam');    
-                }
-            $attendancesSummary->clock_in = $checkInTimeStampIfMalam ?? $timestamp;
+            $attendancesSummary->clock_in = $timestamp;
         } elseif ($attendances->status1 === 1 && !$attendancesSummary->clock_out) {
-            if($workTime->name ==="Malam"){
 
-            Log::info('checkout malam');    
-            }
-                
             $attendancesSummary->clock_out = $timestamp;
         }
 
@@ -86,7 +59,7 @@ class AttendanceSummaryObserver
             ? WorkTime::find(2)
             : EmployeeSchedule::with('workTime')
                 ->where('employee_id', $attendances->employee_id)
-                ->whereDate('start_date', $queryDate)->first()?->workTime;
+                ->whereDate('start_date', $queryDate)->orWhereDate('end_date', $queryDate)->first()?->workTime;
 
 
         return $workTime ?: WorkTime::find(1); // Default WorkTime
@@ -123,11 +96,14 @@ class AttendanceSummaryObserver
     private function getShiftDate(Carbon $timestamp, WorkTime $workTime, $attendances): Carbon
     {
         $date = EmployeeSchedule::where('work_time_id', $workTime->id)
-            ->where('employee_id', $attendances->employee_id)
-            ->whereDate('start_date', $timestamp)->first()?->start_date ?? $timestamp;
+            ->where('employee_id', $attendances->employee_id)->whereDate('start_date', $timestamp)->orWhereDate('end_date', $timestamp);
 
 
-        return Carbon::parse($date);
+        $dates = $date->first()?->start_date ?? $timestamp;
+
+//        dd($date->first());
+
+        return Carbon::parse($dates);
     }
 
 }

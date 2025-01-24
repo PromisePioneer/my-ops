@@ -126,9 +126,7 @@ class IclockService
             ->where('employee_id', $employeeId)->whereDate('start_date', $dateTime)->orWhereDate('end_date', $dateTime);
 
 
-
         $userShift = $userShift->first();
-
 
 
         if (!$userShift) {
@@ -142,8 +140,6 @@ class IclockService
     private function processAttendanceRecord(array $attendanceData, $shift): void
     {
         $date = Carbon::parse($attendanceData['timestamp']);
-
-
 
 
         if ($attendanceData['status1'] == 0) {
@@ -160,8 +156,8 @@ class IclockService
         if ($shift->workTime) {
             $startDateEmpSchedule = $shift->start_date ? Carbon::make($shift->start_date)->format('Y-m-d') : null;
             $endDateEmpSchedule = $shift->end_date ? Carbon::make($shift->end_date)->format('Y-m-d') : null;
-            $shiftTimeToCheckIn =  Carbon::parse($startDateEmpSchedule . ' ' . $shift->workTime?->time_to_checkin);
-            $shiftEndTimeToCheckIn =  Carbon::parse($endDateEmpSchedule . ' ' . $shift->workTime->end_time_to_checkin);
+            $shiftTimeToCheckIn = Carbon::parse($startDateEmpSchedule . ' ' . $shift->workTime?->time_to_checkin);
+            $shiftEndTimeToCheckIn = Carbon::parse($endDateEmpSchedule . ' ' . $shift->workTime->end_time_to_checkin);
         }
 
 
@@ -181,9 +177,9 @@ class IclockService
         $checkInStart = Carbon::make($checkInStart);
         $checkInEnd = Carbon::make($checkInEnd);
 
+
         return $date->greaterThanOrEqualTo($checkInStart) && $date->lessThanOrEqualTo($checkInEnd);
     }
-
 
 
     private function processCheckOut(array $attendanceData, $shift, string $date, string $time): void
@@ -191,9 +187,9 @@ class IclockService
 
         if ($shift->workTime) {
             $startDateEmpSchedule = $shift->start_date ? Carbon::make($shift->start_date)->format('Y-m-d') : null;
-            $endDateEmpSchedule = $shift->end_date ?  Carbon::make($shift->end_date)->format('Y-m-d') : null;
-            $shiftTimeToCheckOut =  Carbon::make($endDateEmpSchedule . ' ' . $shift->workTime?->time_to_checkout);
-            $shiftEndTimeToCheckOut =  Carbon::make($endDateEmpSchedule . ' ' . $shift->workTime?->end_time_to_checkout);
+            $endDateEmpSchedule = $shift->end_date ? Carbon::make($shift->end_date)->format('Y-m-d') : null;
+            $shiftTimeToCheckOut = Carbon::make($endDateEmpSchedule . ' ' . $shift->workTime?->time_to_checkout);
+            $shiftEndTimeToCheckOut = Carbon::make($endDateEmpSchedule . ' ' . $shift->workTime?->end_time_to_checkout);
         }
 
 
@@ -203,7 +199,7 @@ class IclockService
     }
 
 
-    private function isValidTimeCheckOut($date, string $checkOutStart, string $checkOutEnd, $shiftName ): bool
+    private function isValidTimeCheckOut($date, string $checkOutStart, string $checkOutEnd, $shiftName): bool
     {
         if ($shiftName === 'Pagi' || $shiftName === 'Lapangan') {
             $actualCheckOutTime = Carbon::parse($date)->toTimeString();
