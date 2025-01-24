@@ -144,6 +144,8 @@ class IclockService
         $date = Carbon::parse($attendanceData['timestamp']);
 
 
+
+
         if ($attendanceData['status1'] == 0) {
             $this->processCheckIn($attendanceData, $shift, $date, $date);
         } elseif ($attendanceData['status1'] == 1) {
@@ -156,10 +158,10 @@ class IclockService
     {
 
         if ($shift->workTime) {
-            $startDateEmpSchedule = Carbon::make($shift->start_date)->format('Y-m-d');
-            $endDateEmpSchedule = Carbon::make($shift->end_date)->format('Y-m-d');
-            $shiftTimeToCheckIn = Carbon::parse($startDateEmpSchedule . ' ' . $shift->workTime->time_to_checkin);
-            $shiftEndTimeToCheckIn = Carbon::parse($endDateEmpSchedule . ' ' . $shift->workTime->end_time_to_checkin);
+            $startDateEmpSchedule = $shift->start_date ? Carbon::make($shift->start_date)->format('Y-m-d') : null;
+            $endDateEmpSchedule = $shift->end_date ? Carbon::make($shift->end_date)->format('Y-m-d') : null;
+            $shiftTimeToCheckIn =  Carbon::parse($startDateEmpSchedule . ' ' . $shift->workTime?->time_to_checkin);
+            $shiftEndTimeToCheckIn =  Carbon::parse($endDateEmpSchedule . ' ' . $shift->workTime->end_time_to_checkin);
         }
 
 
@@ -168,7 +170,7 @@ class IclockService
         }
     }
 
-    private function isValidTimeToCheckIn($date, string $checkInStart, string $checkInEnd, $shiftName = null): bool
+    private function isValidTimeToCheckIn($date, string $checkInStart, string $checkInEnd, $shiftName): bool
     {
 
         if ($shiftName === 'Pagi' || $shiftName === 'Lapangan') {
@@ -183,35 +185,39 @@ class IclockService
     }
 
 
-    private function isValidTimeCheckOut($date, string $checkOutStart, string $checkOutEnd, $shiftName = null): bool
-    {
-        if ($shiftName === 'Pagi' || $shiftName === 'Lapangan') {
-            $actualCheckOutTime = Carbon::parse($date)->toTimeString();
-
-            return $actualCheckOutTime >= $checkOutStart && $actualCheckOutTime <= $checkOutEnd;
-        }
-        $date = Carbon::parse($date);
-        $checkOutStart = Carbon::make($checkOutStart);
-        $checkOutEnd = Carbon::make($checkOutEnd);
-
-
-        return $date->greaterThanOrEqualTo($checkOutStart) && $date->lessThanOrEqualTo($checkOutEnd);
-    }
-
 
     private function processCheckOut(array $attendanceData, $shift, string $date, string $time): void
     {
+
         if ($shift->workTime) {
-            $startDateEmpSchedule = Carbon::make($shift->start_date)->format('Y-m-d');
-            $endDateEmpSchedule = Carbon::make($shift->end_date)->format('Y-m-d');
-            $shiftTimeToCheckOut = Carbon::parse($endDateEmpSchedule . ' ' . $shift->workTime->time_to_checkout);
-            $shiftEndTimeToCheckOut = Carbon::parse($endDateEmpSchedule . ' ' . $shift->workTime->end_time_to_checkout);
+            $startDateEmpSchedule = $shift->start_date ? Carbon::make($shift->start_date)->format('Y-m-d') : null;
+            $endDateEmpSchedule = $shift->end_date ?  Carbon::make($shift->end_date)->format('Y-m-d') : null;
+            $shiftTimeToCheckOut =  Carbon::make($endDateEmpSchedule . ' ' . $shift->workTime?->time_to_checkout);
+            $shiftEndTimeToCheckOut =  Carbon::make($endDateEmpSchedule . ' ' . $shift->workTime?->end_time_to_checkout);
         }
 
 
         if ($this->isValidTimeCheckOut($time, $shiftTimeToCheckOut ?? $shift->time_to_checkout, $shiftEndTimeToCheckOut ?? $shift->end_time_to_checkout, $shift?->name)) {
             Attendances::create($attendanceData);
         }
+    }
+
+
+    private function isValidTimeCheckOut($date, string $checkOutStart, string $checkOutEnd, $shiftName ): bool
+    {
+        if ($shiftName === 'Pagi' || $shiftName === 'Lapangan') {
+            $actualCheckOutTime = Carbon::parse($date)->toTimeString();
+
+            return $actualCheckOutTime >= $checkOutStart && $actualCheckOutTime <= $checkOutEnd;
+        }
+
+
+        $date = Carbon::parse($date);
+        $checkOutStart = Carbon::make($checkOutStart);
+        $checkOutEnd = Carbon::make($checkOutEnd);
+
+
+        return $date->greaterThanOrEqualTo($checkOutStart) && $date->lessThanOrEqualTo($checkOutEnd);
     }
 
     private function logError(Exception $exception): void

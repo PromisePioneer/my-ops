@@ -21,7 +21,7 @@ class AttendanceSummaryObserver
         // // Fetch user and role
         $user = User::where('absent_id', $attendances->employee_id)->first();
         if (!$user) {
-            Log::warning("No user found for employee_id: {$attendances->employee_id}");
+            // Log::warning("No user found for employee_id: {$attendances->employee_id}");
             return;
         }
 
@@ -30,7 +30,7 @@ class AttendanceSummaryObserver
 
 
         if (!$workTime) {
-            Log::warning('No matching WorkTime found for timestamp: ' . $timestamp);
+            // Log::warning('No matching WorkTime found for timestamp: ' . $timestamp);
             return;
         }
 
@@ -38,10 +38,34 @@ class AttendanceSummaryObserver
         // Find or create AttendancesSummary
         $attendancesSummary = $this->findOrCreateSummary($attendances, $workTime, $timestamp);
 
+
+        $shiftDate = $this->getShiftDate($timestamp, $workTime, $attendances);
+
+
+        $startDateEmpSchedule = $shiftDate ? Carbon::make($shiftDate)->format('Y-m-d') : null;
+        $clockInStart =  Carbon::parse($startDateEmpSchedule . ' ' . $workTime->clock_in)->addDays();
+
+
+            $checkInTimeStampIfMalam = null;
+            $checkOutTimeStampIfMalam = null;
+
+        if($workTime?->name === 'Malam' && $timestamp->copy()->addDays()->greaterThan($clockInStart)){
+                        $checkInTimeStampIfMalam = $timestamp->copy()->addDays();
+        }
+                    
+
         // Update clock-in or clock-out
         if ($attendances->status1 === 0 && !$attendancesSummary->clock_in) {
-            $attendancesSummary->clock_in = $this->adjustClockIn($attendances, $workTime, $timestamp) ?? $timestamp;
+            $attendancesSummary->clock_in = $checkInTimeStampIfMalam ?? $timestamp;
         } elseif ($attendances->status1 === 1 && !$attendancesSummary->clock_out) {
+            if($workTime->name ==="Malam"){
+
+                Log::info($clockInStart);
+                Log::info($attendances->employee_id);
+                Log::info($clockInStart);
+                Log::info($timestamp->copy()->addDays());
+            }
+                
             $attendancesSummary->clock_out = $timestamp;
         }
 
@@ -59,8 +83,7 @@ class AttendanceSummaryObserver
             ? WorkTime::find(2)
             : EmployeeSchedule::with('workTime')
                 ->where('employee_id', $attendances->employee_id)
-                ->whereDate('start_date', $queryDate)->orWhereDate('end_date', $queryDate)
-                ->first()?->workTime;
+                ->whereDate('start_date', $queryDate)->first()?->workTime;
 
 
         return $workTime ?: WorkTime::find(1); // Default WorkTime
@@ -68,7 +91,7 @@ class AttendanceSummaryObserver
 
     private function findOrCreateSummary(Attendances $attendances, WorkTime $workTime, Carbon $timestamp): AttendancesSummary
     {
-        $queryDate = $this->getShiftDate($timestamp, $workTime);
+        $queryDate = $this->getShiftDate($timestamp, $workTime, $attendances);
 
 
         $summary = AttendancesSummary::where('employee_id', $attendances->employee_id)
@@ -94,11 +117,11 @@ class AttendanceSummaryObserver
     }
 
 
-    private function getShiftDate(Carbon $timestamp, WorkTime $workTime): Carbon
+    private function getShiftDate(Carbon $timestamp, WorkTime $workTime, $attendances): Carbon
     {
         $date = EmployeeSchedule::where('work_time_id', $workTime->id)
-            ->whereDate('start_date', $timestamp)
-            ->orWhereDate('end_date', $timestamp)->first()?->start_date ?? $timestamp;
+            ->where('employee_id', $attendances->employee_id)
+            ->whereDate('start_date', $timestamp)->first()?->start_date ?? $timestamp;
 
 
         return Carbon::parse($date);
