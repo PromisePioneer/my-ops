@@ -51,19 +51,22 @@ class AttendanceSummaryObserver
 
         if($workTime?->name === 'Malam' && $timestamp->copy()->addDays()->greaterThan($clockInStart)){
                         $checkInTimeStampIfMalam = $timestamp->copy()->addDays();
+        }else{
+            $checkInTimeStampIfMalam = $timestamp;
         }
                     
 
         // Update clock-in or clock-out
         if ($attendances->status1 === 0 && !$attendancesSummary->clock_in) {
+            if($workTime->name ==="Malam"){
+
+                Log::info('checkin malam');    
+                }
             $attendancesSummary->clock_in = $checkInTimeStampIfMalam ?? $timestamp;
         } elseif ($attendances->status1 === 1 && !$attendancesSummary->clock_out) {
             if($workTime->name ==="Malam"){
 
-                Log::info($clockInStart);
-                Log::info($attendances->employee_id);
-                Log::info($clockInStart);
-                Log::info($timestamp->copy()->addDays());
+            Log::info('checkout malam');    
             }
                 
             $attendancesSummary->clock_out = $timestamp;
