@@ -216,6 +216,7 @@ class PermissionSeeder extends Seeder
         $permissions = [
             'Lihat Menu SP',
             'Tambah Data SP',
+            'Filter Data SP Berdasarkan Cabang',
             'Edit Data SP',
             'Hapus Data SP',
         ];

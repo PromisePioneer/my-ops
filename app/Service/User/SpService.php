@@ -9,6 +9,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use function App\Helper\convertToRoman;
 
 class SpService
@@ -34,6 +35,16 @@ class SpService
 
 
         return $startValue.'/MY-SP/'.$spMonth.'/'.$spYear;
+    }
+
+
+    public function query(): \Illuminate\Database\Eloquent\Builder
+    {
+        return SP::with('createdBy', 'user', 'branch')->where(function ($query) {
+            if (Auth::user()->hasRole('Branch Manager')) {
+                $query->where('branch_id', Auth::user()->branch_id);
+            }
+        });
     }
 
 
@@ -67,6 +78,38 @@ class SpService
         })->orWhere('sp_number', 'like', '%' . $search . '%')
             ->paginate(self::$perPage);
 
+        return self::formattedData($sp);
+    }
+
+
+    public function filter(Request $request, $branchId, $year, $month)
+    {
+        $data = $this->query();
+
+        if ($branchId && $year && $month) {
+            $data->where('branch_id', $branchId)
+                ->whereYear('start_date', $year)
+                ->whereMonth('start_date', $month);
+        }
+
+        if ($branchId && Auth::user()->branch_id === null) {
+            $data->where('branch_id', $branchId);
+        }
+
+        if ($year && $month) {
+            $data->whereMonth('start_date', $month)
+                ->whereYear('start_date', $year);
+        }
+
+        if ($year && !$month) {
+            $data->whereYear('start_date', $year);
+        }
+
+        if ($month && !$year) {
+            $data->whereMonth('start_date', $month);
+        }
+
+        $sp = $data->paginate(self::$perPage);
         return self::formattedData($sp);
     }
 
@@ -109,8 +152,6 @@ class SpService
     {
 
         $punishedBy = User::where('id', $request->punished_by)->first();
-
-
         $sp->update([
             'date' => $request->date,
             'branch_id' => $punishedBy->branch_id,

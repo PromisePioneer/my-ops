@@ -233,8 +233,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [SPController::class, 'index']);
             Route::get('/data', [SpController::class, 'data']);
             Route::get('/search', [SpController::class, 'search']);
+            Route::get('/filter', [SPController::class, 'filter']);
             Route::get('/users/data', [SpController::class, 'getUserData']);
             Route::get('/sp-pic/data', [SPController::class, 'getSPPIC']);
+            Route::get('/branch/data', [SpController::class, 'getBranchData']);
             Route::get('/create', [SpController::class, 'create']);
             Route::post('/', [SpController::class, 'store']);
             Route::get('/punished-by/selected/{sp}', [SpController::class, 'selectedPunishedBy']);

@@ -3,49 +3,91 @@
 @section('content')
     <div x-data="spData()">
         <div class="d-flex flex-column flex-xl-row">
-            <div class="flex-column flex-lg-row-auto w-100 w-lg-400px mb-10" x-show="spDetailCard !== null" x-transition
+            <div class="flex-column flex-lg-row-auto w-100 w-lg-400px mb-10" x-show="spDetailCard" x-transition
                  x-cloak>
                 <div class="card card-flush">
                     <div class="card-header">
                         <div class="card-title">
-                            <h2 class="mb-0" x-text="spDetailCard?.sp_number"></h2>
+                            <h2 class="mb-0" x-text="spDetails?.sp_number"></h2>
                         </div>
                     </div>
                     <div class="card-body pt-0">
                         <div class="d-flex flex-column text-gray-600">
                             <div class="d-flex align-items-center py-2">
                                 <span class="fw-bold text-gray-600">Cabang: &nbsp;</span>
-                                <span x-text="spDetailCard?.branch?.name ?? 'Pusat'"></span>
+                                <span x-text="spDetails?.branch?.name ?? 'Pusat'"></span>
                             </div>
                             <div class="d-flex align-items-center py-2">
                                 <span class="fw-bold text-gray-600">NAMA: &nbsp;</span>
-                                <span x-text="spDetailCard?.user_id"></span>
+                                <span x-text="spDetails?.user_id"></span>
                             </div>
                             <div class="d-flex align-items-center py-2">
                                 <span class="fw-bold text-gray-600">TIPE SP : &nbsp;</span>
-                                <span class="badge bg-danger" x-text="spDetailCard?.sp_type"></span>
+                                <span class="badge bg-danger" x-text="spDetails?.sp_type"></span>
                             </div>
                             <div class="d-flex align-items-center py-2">
                                 <span class="fw-bold text-gray-600">Tanggal Berlaku : &nbsp;</span>
-                                <span x-text="spDetailCard?.date"></span>
+                                <span x-text="spDetails?.date"></span>
                             </div>
                             <div class="d-flex align-items-center py-2">
                                 <span class="fw-bold text-gray-600">Diberi Sanksi Oleh : &nbsp;</span>
-                                <span x-text="spDetailCard?.punished_by"></span>
+                                <span x-text="spDetails?.punished_by"></span>
                             </div>
                             <div class="d-flex align-items-center py-2">
                                 <span class="fw-bold text-gray-600">Dibuat Oleh : &nbsp;</span>
-                                <span x-text="spDetailCard?.created_by"></span>
+                                <span x-text="spDetails?.created_by"></span>
                             </div>
                             <div class="d-flex align-items-center py-2">
                                 <span class="fw-bold text-gray-600">File : &nbsp;</span>
-                                <a :href="`/manage-users/sp/export-pdf/${spDetailCard?.id}`"
+                                <a :href="`/manage-users/sp/export-pdf/${spDetails?.id}`"
                                    class="btn btn-danger btn-sm">
                                     <i class="bi bi-file-pdf-fill"></i>
                                 </a>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10" x-show="!spDetailCard" x-transition>
+                <div class="card card-flush">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h3 class="mb-0">Filter Data</h3>
+                        </div>
+                    </div>
+                    <form id="form-filter" @submit.prevent="filter()">
+                        <div class="card-body pt-0">
+                            <div class="d-flex flex-column text-gray-600">
+                                @can('Filter Data SP Berdasarkan Cabang')
+                                    <div class="d-flex align-items-center py-2">
+                                        <select class="form-select form-select-solid branch-select2"
+                                                name="branch_id" id="branch_id">
+                                        </select>
+                                    </div>
+                                @endcan
+                                <div class="d-flex align-items-center py-2">
+                                    <input type="number" name="year" id="year"
+                                           class="form-control form-control-solid"
+                                           placeholder="Filter Berdasarkan Tahun">
+                                </div>
+                                <div class="d-flex align-items-center py-2">
+                                    <select class="form-select form-select-solid"
+                                            name="month" id="month" data-control="select2"
+                                            data-placeholder="Pilih Bulan">
+                                        <option></option>
+                                        <template x-for="month in months" :key="index">
+                                            <option :value="month.number" x-text="month.name"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer pt-4 text-end">
+                            <button type="submit" class="btn btn-light btn-active-primary btn-sm">
+                                Filter
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
             <div class="flex-lg-row-fluid ms-lg-10">
@@ -132,7 +174,7 @@
                                     <template x-for="sp in spList.data" :key="sp.id">
                                         <tbody class="fw-bold">
                                         <tr @click="spDetail(sp.id)" style="cursor: pointer"
-                                            :class="{'table-active': spDetailCard?.id === sp.id}">
+                                            :class="{'table-active': spDetails?.id === sp.id}">
                                             <td x-text="sp.sp_number"></td>
                                             <td x-text="sp.branch_name ?? 'Pusat'"></td>
                                             <td x-text="sp.user_id"></td>
@@ -169,7 +211,7 @@
             </div>
         </div>
     </div>
-        @include('components.toast')
+    @include('components.toast')
 @endsection
 @push('script')
     <script>
@@ -180,9 +222,13 @@
                 startIndex: null,
                 selected: null,
                 search: '',
-                spDetailCard: null,
+                spDetailCard: false,
+                spDetails: null,
+                months: [],
                 async init() {
                     await this.getSpData();
+                    await this.getBranchData();
+                    this.getMonth();
                 },
                 async searchData() {
                     this.isLoading = true;
@@ -217,9 +263,60 @@
                         this.startIndex = this.spList.from
                     }
                 },
+                async getBranchData() {
+                    $(".branch-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Cabang",
+                        ajax: {
+                            url: '/manage-users/sp/branch/data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                getMonth() {
+                    this.months.push(
+                        {name: "Januari", number: '01'},
+                        {name: "Februari", number: '02'},
+                        {name: "Maret", number: '3'},
+                        {name: "April", number: '04'},
+                        {name: "Mei", number: '05'},
+                        {name: "Juni", number: '06'},
+                        {name: "Juli", number: '07'},
+                        {name: "Agustus", number: '08'},
+                        {name: "September", number: '09'},
+                        {name: "Oktober", number: '10'},
+                        {name: "November", number: '11'},
+                        {name: "Desember", number: '12'},
+                    )
+                },
+                async filter() {
+                    const branchId = $(".branch-select2").val();
+                    const year = document.getElementById('year')?.value ?? '';
+                    const month = document.getElementById('month')?.value ?? '';
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/manage-users/sp/filter', {
+                            params: {
+                                month: month,
+                                year: year,
+                                branch_id: branchId
+                            }
+                        });
+                        this.spList = resp.data;
+                    } catch (e) {
+                        console.log(e);
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
                 async spDetail(id) {
+                    this.spDetailCard = !this.spDetailCard;
                     const resp = await axios.get(`/manage-users/sp/show/${id}`);
-                    this.spDetailCard = resp.data
+                    this.spDetails = resp.data
                 },
                 async destroy(id) {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {

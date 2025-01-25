@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\HRIS\Correspondence;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SPRequest;
+use App\Models\Branch;
 use App\Models\SP;
 use App\Models\User;
 use App\Service\User\SpService;
@@ -17,20 +19,16 @@ use Illuminate\View\View;
 use Spatie\Browsershot\Browsershot;
 use Throwable;
 
-class SPController extends Controller
+#[AllowDynamicProperties] class SPController extends Controller
 {
     public readonly int $perPage;
 
-    private SP $sp;
-
-    private User $user;
-
-    private SpService $spService;
 
     public function __construct()
     {
         $this->spService = new SPService();
         $this->user = new User();
+        $this->branch = new Branch();
     }
 
     /**
@@ -67,6 +65,22 @@ class SPController extends Controller
     {
         $this->authorize('create', SP::class);
         return response()->json($this->spService->getEmployeeData($request));
+    }
+
+
+    public function getBranchData(Request $request): JsonResponse
+    {
+        return response()->json($this->branch->getData($request));
+    }
+
+
+    public function filter(Request $request)
+    {
+        $branchId = $request->branch_id;
+        $year = $request->year;
+        $month = $request->month;
+
+        return response()->json($this->spService->filter($request, $branchId, $year, $month));
     }
 
     /**
