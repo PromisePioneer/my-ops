@@ -51,18 +51,16 @@ class AttendanceSummaryObserver
     private function getWorkTime(Attendances $attendances, User $user, Carbon $timestamp): ?WorkTime
     {
 
-        $isEngineer = $user->hasRole('Engineer');
-        $queryDate = $timestamp->copy();
+        $isEngineer = $user->hasRole('Engineer') ? WorkTime::find(2) : null;
 
 
-        $workTime = $isEngineer
-            ? WorkTime::find(2)
-            : EmployeeSchedule::with('workTime')
-                ->where('employee_id', $attendances->employee_id)
-                ->whereDate('start_date', $queryDate)->orWhereDate('end_date', $queryDate)->first()?->workTime;
+
+        $checkSchedule = EmployeeSchedule::with('workTime')
+        ->where('employee_id', $attendances->employee_id)
+        ->whereDate('start_date', $timestamp)->first()?->workTime;
 
 
-        return $workTime ?: WorkTime::find(1); // Default WorkTime
+        return $checkSchedule ?? $isEngineer ?? WorkTime::find(1);
     }
 
     private function findOrCreateSummary(Attendances $attendances, WorkTime $workTime, Carbon $timestamp): AttendancesSummary
@@ -71,7 +69,7 @@ class AttendanceSummaryObserver
 
 
         $summary = AttendancesSummary::where('employee_id', $attendances->employee_id)
-            ->where('work_time_id', $workTime?->workTime?->id ?? $workTime->id)->whereDate('date', $queryDate);
+            ->where('work_time_id', $workTime->id)->whereDate('date', $queryDate);
 
 
         $summary = $summary->first();
