@@ -57,7 +57,11 @@ class SpService
     {
         $search = $request->input('search');
 
-        $sp = $this->query()->whereHas('user', function ($query) use ($search) {
+        $sp = SP::with('createdBy', 'user', 'branch')
+            ->when($request->user()->hasRole('Branch Manager'), function ($query) use ($request) {
+                $query->where('branch_id', $request->user()->branch_id);
+            })
+            ->whereHas('user', function ($query) use ($search) {
             $query->where('name', 'like', '%' . $search . '%');
             $query->orWhere('nip', 'like', '%' . $search . '%');
         })->orWhere('sp_number', 'like', '%' . $search . '%')
