@@ -7,7 +7,6 @@ use App\Http\Requests\SPRequest;
 use App\Models\SP;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use function App\Helper\convertToRoman;
@@ -37,17 +36,21 @@ class SpService
         return $startValue.'/MY-SP/'.$spMonth.'/'.$spYear;
     }
 
-    public function query(Request $request): Builder
-    {
-        return SP::with('createdBy', 'user', 'branch')->when($request->user()->hasRole('Branch Manager'), function ($query) use ($request) {
-            $query->where('branch_id', $query->user()->branch_id);
-        });
-    }
 
     public function data(Request $request): LengthAwarePaginator
     {
-        $data = $this->query($request)->paginate(self::$perPage);
-        return self::formattedData($data);
+        $data = SP::with('createdBy', 'user', 'branch');
+
+
+        if ($request->user()->hasRole('Branch Manager')) {
+            $data->whereHas('branch', function ($query) use ($request) {
+                $query->where('branch_id', $request->user()->branch_id);
+            });
+        }
+
+
+        $sp = $data->paginate(self::$perPage);
+        return self::formattedData($sp);
     }
 
     public function search(Request $request): LengthAwarePaginator
@@ -100,9 +103,11 @@ class SpService
 
     public function update(SPRequest $request, SP $sp): void
     {
+
+        $punishedBy = User::where('id', $request->punished_by)->first();
         $sp->update([
             'date' => $request->date,
-            'branch_id' => $request->user()->branch_id,
+            'branch_id' => $punishedBy->branch_id,
             'user_id' => $request->user_id,
             'sp_number' => $this->generateSpNumber($request),
             'sp_type' => $request->sp_type,

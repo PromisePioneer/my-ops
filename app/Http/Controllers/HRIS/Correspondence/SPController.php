@@ -89,12 +89,15 @@ class SPController extends Controller
             ->where('end_date', '>', Carbon::now())
             ->first();
 
+
+        $punishedBy = User::where('id', $request->punished_by)->first();
+
         $endData = Carbon::parse($request->start_date)->addMonths(6);
-        DB::transaction(function () use ($request, $currentSP, $endData) {
+        DB::transaction(function () use ($request, $currentSP, $endData, $punishedBy) {
             $sp = SP::create([
                 'start_date' => $request->start_date,
                 'end_date' => $endData,
-                'branch_id' => $request->user()->branch_id,
+                'branch_id' => $punishedBy->branch_id,
                 'user_id' => $request->user_id,
                 'sp_number' => $this->spService->generateSpNumber($request),
                 'sp_type' => $request->sp_type,
