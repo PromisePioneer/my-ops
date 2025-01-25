@@ -223,7 +223,9 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/', [ManageUserLeavesController::class, 'store']);
             Route::post('/{leaveAndPermission}', [ManageUserLeavesController::class, 'changeStatus']);
             Route::get('/users/data', [ManageUserLeavesController::class, 'getUserData']);
+            Route::get('/branch/data', [ManageUserLeavesController::class, 'getBranchData']);
             Route::get('/users/selected/{leaveAndPermission}', [ManageUserLeavesController::class, 'selectedUserData']);
+            Route::get('/filter', [ManageUserLeavesController::class, 'filter']);
             Route::post('/', [ManageUserLeavesController::class, 'store']);
             Route::get('/edit/{leaveAndPermission}', [ManageUserLeavesController::class, 'edit']);
             Route::post('/update/{leaveAndPermission}', [ManageUserLeavesController::class, 'update']);
