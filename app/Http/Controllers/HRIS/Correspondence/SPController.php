@@ -92,6 +92,7 @@ class SPController extends Controller
 
         $punishedBy = User::where('id', $request->punished_by)->first();
 
+
         $endData = Carbon::parse($request->start_date)->addMonths(6);
         DB::transaction(function () use ($request, $currentSP, $endData, $punishedBy) {
             $sp = SP::create([

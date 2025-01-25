@@ -134,7 +134,7 @@
                                         <tr @click="spDetail(sp.id)" style="cursor: pointer"
                                             :class="{'table-active': spDetailCard?.id === sp.id}">
                                             <td x-text="sp.sp_number"></td>
-                                            <td x-text="sp.branch?.name ?? 'Pusat'"></td>
+                                            <td x-text="sp.branch_name ?? 'Pusat'"></td>
                                             <td x-text="sp.user_id"></td>
                                             <td>
                                             <span x-text="sp.expired  ? 'Masih Berlaku' : 'Sudah Habis'"

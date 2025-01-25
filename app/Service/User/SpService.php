@@ -105,6 +105,8 @@ class SpService
     {
 
         $punishedBy = User::where('id', $request->punished_by)->first();
+
+
         $sp->update([
             'date' => $request->date,
             'branch_id' => $punishedBy->branch_id,
