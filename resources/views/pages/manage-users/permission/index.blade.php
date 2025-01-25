@@ -3,8 +3,7 @@
 @section('content')
     <div x-data="permissionsData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.manage-users.permission.modal.create')
-            @include('pages.manage-users.permission.modal.edit')
+            @include('pages.manage-users.permission.form')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -20,7 +19,7 @@
                         @can('Tambah Data Permission')
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
+                                    data-bs-target="#modal-permission">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
@@ -103,7 +102,7 @@
                                 <td class="text-center">
                                     <template x-if="Number(editPermission) === 1">
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(permission.id)">
+                                                data-bs-target="#modal-permission" @click="edit(permission.id)">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
@@ -147,12 +146,9 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                formCreate: document.getElementById('form-create'),
-                formEdit: document.getElementById('form-edit'),
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
+                form: document.getElementById('form-permission'),
+                modalForm: new bootstrap.Modal(document.getElementById('modal-permission')),
                 formDelete: document.getElementById('form-delete'),
-
                 async init() {
                     const permission = await axios.get('/manage-users/permissions/data');
                     this.permissions = permission.data
@@ -202,13 +198,17 @@
                         }
                     }
                 },
-                async save() {
+                async save(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/manage-users/permissions', new FormData(this.formCreate))
+                        if (!id) {
+                            await axios.post('/manage-users/permissions', new FormData(this.form))
+                        } else {
+                            await axios.post(`/manage-users/permissions/update/${id}`, new FormData(this.form))
+                        }
                         await showAlert('success', 'Data sukses disimpan')
-                        this.formCreate.reset();
-                        this.formCreate.hide();
+                        this.form.reset();
+                        this.modalForm.hide();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
@@ -219,21 +219,6 @@
                 async edit(id) {
                     const resp = await axios.get(`/manage-users/permissions/show/${id}`);
                     this.editVal = resp.data;
-                },
-                async update(id) {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post(`/manage-users/permissions/update/${id}`, new FormData(this.formEdit))
-                        await showAlert('success', 'Data berhasil disimpan');
-                        this.formEdit.reset();
-                        this.modalEdit.hide();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
-                    } finally {
-                        this.buttonLoading = false;
-                    }
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {

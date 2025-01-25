@@ -209,8 +209,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/search', [PermissionController::class, 'search']);
             Route::post('/', [PermissionController::class, 'store']);
             Route::get('/show/{permission}', [PermissionController::class, 'show']);
+            Route::post('/destroy', [PermissionController::class, 'destroy']);
             Route::post('/update/{permission}', [PermissionController::class, 'update']);
-            Route::delete('/destroy', [PermissionController::class, 'destroy']);
         });
 
 
