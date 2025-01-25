@@ -105,7 +105,7 @@
                                             <td x-text="sk.date"></td>
                                             <td>
                                                 <a :href="`/manage-users/sk/export-pdf/${sk.id}`"
-                                                   class="btn btn-danger btn-sm">
+                                                   class="btn btn-danger btn-sm" target="_blank">
                                                     <i class="bi bi-file-pdf-fill"></i>
                                                 </a>
                                             </td>

@@ -40,7 +40,7 @@
                             <div class="d-flex align-items-center py-2">
                                 <span class="fw-bold text-gray-600">File : &nbsp;</span>
                                 <a :href="`/manage-users/sp/export-pdf/${spDetails?.id}`"
-                                   class="btn btn-danger btn-sm">
+                                   class="btn btn-danger btn-sm" target="_blank">
                                     <i class="bi bi-file-pdf-fill"></i>
                                 </a>
                             </div>
