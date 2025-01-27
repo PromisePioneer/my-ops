@@ -242,13 +242,24 @@
                             await showAlert('success', 'Data berhasil disimpan')
                             this.formCorrection.reset();
                             this.modalCorrection.hide();
-                            const resp = await axios.get(`/adms/attendances-summary/detail/filter/${this.id}`, {
-                                params: {
-                                    start_date: startDate,
-                                    end_date: endDate,
-                                }
-                            });
-                            this.attendancesSummaryRecords = resp.data;
+                            if (!startDate || !endDate) {
+                                const resp = await axios.get(`/adms/attendances-summary/detail/filter/${this.id}`, {
+                                    params: {
+                                        start_date: startDate,
+                                        end_date: endDate,
+                                    }
+                                });
+                                this.attendancesSummaryRecords = resp.data;
+                                const resp = await axios.get(`/adms/attendances-summary/detail/filter/${this.id}`, {
+                                    params: {
+                                        start_date: startDate,
+                                        end_date: endDate,
+                                    }
+                                });
+                                this.attendancesSummaryRecords = resp.data;
+                            } else {
+                                await this.init();
+                            }
                         });
                     } catch (error) {
                         const respError = error.response.data.errors;
