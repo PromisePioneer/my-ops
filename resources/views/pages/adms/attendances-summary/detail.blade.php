@@ -242,7 +242,7 @@
                             await showAlert('success', 'Data berhasil disimpan')
                             this.formCorrection.reset();
                             this.modalCorrection.hide();
-                            if (!startDate === '' || !endDate === '') {
+                            if (startDate === '' || endDate === '') {
                                 const resp = await axios.get(`/adms/attendances-summary/detail/filter/${this.id}`, {
                                     params: {
                                         start_date: startDate,
