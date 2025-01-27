@@ -237,12 +237,14 @@
                     this.buttonLoading = true;
                     const startDate = document.getElementById('start_date')?.value ?? null;
                     const endDate = document.getElementById('end_date')?.value ?? null;
+
+                    console.log(startDate);
                     try {
                         await axios.post(`/adms/attendances-summary/detail/correction/save/${this.id}/${datePeriod}`, new FormData(this.formCorrection)).then(async res => {
                             await showAlert('success', 'Data berhasil disimpan')
                             this.formCorrection.reset();
                             this.modalCorrection.hide();
-                            if (startDate === '' || endDate === '') {
+                            if (startDate !== '' && endDate !== '') {
                                 const resp = await axios.get(`/adms/attendances-summary/detail/filter/${this.id}`, {
                                     params: {
                                         start_date: startDate,
