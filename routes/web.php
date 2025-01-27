@@ -1114,6 +1114,7 @@ Route::group(['middleware' => ['auth']], static function () {
 
         Route::prefix('/attendances-summary')->group(function () {
             Route::get('/', [AttendanceSummaryController::class, 'index']);
+            Route::get('/detail/correction/work-time/data', [AttendanceSummaryController::class, 'getWorkTime']);
             Route::get('/detail/correction/{datePeriod}/{user}', [AttendanceSummaryController::class, 'correction']);
             Route::get('/data', [AttendanceSummaryController::class, 'data']);
             Route::get('/search', [AttendanceSummaryController::class, 'search']);
@@ -1122,7 +1123,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/branch/data', [AttendanceSummaryController::class, 'getBranchData']);
             Route::get('/department/data', [AttendanceSummaryController::class, 'getDepartmentData']);
             Route::get('/roles/data', [AttendanceSummaryController::class, 'getRolesData']);
-            Route::get('/detail/correction/work-time/data', [AttendanceSummaryController::class, 'getWorkTime']);
             Route::get('/detail/correction/work-time/selected/{workTime}', [AttendanceSummaryController::class, 'selectedData']);
             Route::get('/detail/{user}/{startDate?}/{endDate?}', [AttendanceSummaryController::class, 'detail']);
             Route::get('/detail/data/{user}/{startDate?}/{endDate?}', [AttendanceSummaryController::class, 'detailData']);
