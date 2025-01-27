@@ -195,19 +195,17 @@
                 <tr>
                     <th style="text-align: center; padding: 8px 8px 0 8px;">
                         <p style="font-size: 12px; margin: 0; text-decoration: underline">
-                            {{ $operationalManager?->name }}
+                            {{ $director?->name }}
                         </p>
                     </th>
                 </tr>
                 <tr style="padding: 0">
                     <th style="text-align: center; padding: 8px;">
-                        <p style="font-size: 12px; margin: 0;">{{ $operationalManager?->roles[0]?->name }}</p>
+                        <p style="font-size: 12px; margin: 0;">{{ $director?->roles[0]?->name }}</p>
                     </th>
                 </tr>
             </table>
         </div>
-
-
     </div>
 </main>
 

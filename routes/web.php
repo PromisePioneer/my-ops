@@ -209,8 +209,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/search', [PermissionController::class, 'search']);
             Route::post('/', [PermissionController::class, 'store']);
             Route::get('/show/{permission}', [PermissionController::class, 'show']);
+            Route::post('/destroy', [PermissionController::class, 'destroy']);
             Route::post('/update/{permission}', [PermissionController::class, 'update']);
-            Route::delete('/destroy', [PermissionController::class, 'destroy']);
         });
 
 
@@ -223,7 +223,9 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/', [ManageUserLeavesController::class, 'store']);
             Route::post('/{leaveAndPermission}', [ManageUserLeavesController::class, 'changeStatus']);
             Route::get('/users/data', [ManageUserLeavesController::class, 'getUserData']);
+            Route::get('/branch/data', [ManageUserLeavesController::class, 'getBranchData']);
             Route::get('/users/selected/{leaveAndPermission}', [ManageUserLeavesController::class, 'selectedUserData']);
+            Route::get('/filter', [ManageUserLeavesController::class, 'filter']);
             Route::post('/', [ManageUserLeavesController::class, 'store']);
             Route::get('/edit/{leaveAndPermission}', [ManageUserLeavesController::class, 'edit']);
             Route::post('/update/{leaveAndPermission}', [ManageUserLeavesController::class, 'update']);
@@ -233,8 +235,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [SPController::class, 'index']);
             Route::get('/data', [SpController::class, 'data']);
             Route::get('/search', [SpController::class, 'search']);
+            Route::get('/filter', [SPController::class, 'filter']);
             Route::get('/users/data', [SpController::class, 'getUserData']);
             Route::get('/sp-pic/data', [SPController::class, 'getSPPIC']);
+            Route::get('/branch/data', [SpController::class, 'getBranchData']);
             Route::get('/create', [SpController::class, 'create']);
             Route::post('/', [SpController::class, 'store']);
             Route::get('/punished-by/selected/{sp}', [SpController::class, 'selectedPunishedBy']);

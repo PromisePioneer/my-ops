@@ -39,4 +39,5 @@ class LeaveAndPermissionPolicy
     {
         return $user->can('Konfirmasi Data Manajemen Cuti');
     }
+
 }

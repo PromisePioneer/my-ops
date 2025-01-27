@@ -216,6 +216,7 @@ class PermissionSeeder extends Seeder
         $permissions = [
             'Lihat Menu SP',
             'Tambah Data SP',
+            'Filter Data SP Berdasarkan Cabang',
             'Edit Data SP',
             'Hapus Data SP',
         ];
@@ -229,6 +230,7 @@ class PermissionSeeder extends Seeder
     {
         $permissions = [
             'Lihat Menu Manajemen Cuti',
+            'Filter Data Manajemen Cuti Berdasarkan Cabang',
             'Tambah Data Manajemen Cuti',
             'Edit Data Manajemen Cuti',
             'Hapus Data Manajemen Cuti',

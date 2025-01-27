@@ -1,4 +1,4 @@
-﻿<div class="modal fade" tabindex="-1" id="modal-create">
+<div class="modal fade" tabindex="-1" id="modal-permission">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,12 +11,12 @@
                 </div>
             </div>
 
-            <form id="form-create" @submit.prevent="save()">
+            <form id="form-permission" @submit.prevent="save(editVal.id ?? null)">
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama Permission</label>
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama"/>
+                               placeholder="Nama" :value="editVal.name"/>
                     </div>
                 </div>
 

@@ -47,19 +47,19 @@ class IclockController extends Controller
         // Set command parameters
         $cmdId = 1;
         $startDate = date("Y-m-d\TH:i:s", strtotime("2024-12-28 06:00:00"));
-        $endDate = date("Y-m-d\TH:i:s", strtotime("2025-01-24 23:00:00"));
+        $endDate = date("Y-m-d\TH:i:s", strtotime("2025-01-25 23:00:00"));
 
 
 
-        // // Create the command
-        // $command = sprintf(
-        //     "C:%d:DATA QUERY ATTLOG StartTime=%s\tEndTime=%s",
-        //     $cmdId,
-        //     $startDate,
-        //     $endDate
-        // );
+        // Create the command
+        $command = sprintf(
+            "C:%d:DATA QUERY ATTLOG StartTime=%s\tEndTime=%s",
+            $cmdId,
+            $startDate,
+            $endDate
+        );
 
-        $command = sprintf("C:%d:LOG",  $cmdId);
+        // $command = sprintf("C:%d:LOG",  $cmdId);
 
 
 

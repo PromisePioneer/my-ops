@@ -6,6 +6,7 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\ManageUserLeaveAndPermissionRequest;
 use App\Http\Requests\UserProfile\LeaveAndPermissionRequest;
+use App\Models\Branch;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
 use App\Service\HelperService\HandleFileUploadService;
@@ -24,6 +25,7 @@ use Illuminate\View\View;
         $this->user = new User();
         $this->calculateUserLeaves = new CalculateUserLeaves();
         $this->handleFileUploadService = new HandleFileUploadService();
+        $this->branch = new Branch();
     }
 
     /**
@@ -39,6 +41,21 @@ use Illuminate\View\View;
     public function getUserData(Request $request): JsonResponse
     {
         return response()->json($this->manageUserLeaveAndPermissionService->getUserData($request));
+    }
+
+
+    public function filter(Request $request): JsonResponse
+    {
+        $branchId = $request->branch_id;
+        $year = $request->year;
+        $month = $request->month;
+        return response()->json($this->manageUserLeaveAndPermissionService
+            ->filter($request, $branchId, $year, $month));
+    }
+
+    public function getBranchData(Request $request): JsonResponse
+    {
+        return response()->json($this->branch->getData($request));
     }
 
     public function selectedUserData(Request $request, LeaveAndPermission $leaveAndPermission): JsonResponse

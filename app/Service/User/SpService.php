@@ -7,9 +7,9 @@ use App\Http\Requests\SPRequest;
 use App\Models\SP;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use function App\Helper\convertToRoman;
 
 class SpService
@@ -37,29 +37,79 @@ class SpService
         return $startValue.'/MY-SP/'.$spMonth.'/'.$spYear;
     }
 
-    public function query(Request $request): Builder
+
+    public function query(): \Illuminate\Database\Eloquent\Builder
     {
-        return SP::with('createdBy', 'user', 'branch')->when($request->user()->hasRole('Branch Manager'), function ($query) use ($request) {
-            $query->where('branch_id', $query->user()->branch_id);
+        return SP::with('createdBy', 'user', 'branch')->where(function ($query) {
+            if (Auth::user()->hasRole('Branch Manager')) {
+                $query->where('branch_id', Auth::user()->branch_id);
+            }
         });
     }
 
+
     public function data(Request $request): LengthAwarePaginator
     {
-        $data = $this->query($request)->paginate(self::$perPage);
-        return self::formattedData($data);
+        $data = SP::with('createdBy', 'user', 'branch');
+
+
+        if ($request->user()->hasRole('Branch Manager')) {
+            $data->whereHas('branch', function ($query) use ($request) {
+                $query->where('branch_id', $request->user()->branch_id);
+            });
+        }
+
+
+        $sp = $data->paginate(self::$perPage);
+        return self::formattedData($sp);
     }
 
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
 
-        $sp = $this->query()->whereHas('user', function ($query) use ($search) {
+        $sp = SP::with('createdBy', 'user', 'branch')
+            ->when($request->user()->hasRole('Branch Manager'), function ($query) use ($request) {
+                $query->where('branch_id', $request->user()->branch_id);
+            })
+            ->whereHas('user', function ($query) use ($search) {
             $query->where('name', 'like', '%' . $search . '%');
             $query->orWhere('nip', 'like', '%' . $search . '%');
         })->orWhere('sp_number', 'like', '%' . $search . '%')
             ->paginate(self::$perPage);
 
+        return self::formattedData($sp);
+    }
+
+
+    public function filter(Request $request, $branchId, $year, $month)
+    {
+        $data = $this->query();
+
+        if ($branchId && $year && $month) {
+            $data->where('branch_id', $branchId)
+                ->whereYear('start_date', $year)
+                ->whereMonth('start_date', $month);
+        }
+
+        if ($branchId && Auth::user()->branch_id === null) {
+            $data->where('branch_id', $branchId);
+        }
+
+        if ($year && $month) {
+            $data->whereMonth('start_date', $month)
+                ->whereYear('start_date', $year);
+        }
+
+        if ($year && !$month) {
+            $data->whereYear('start_date', $year);
+        }
+
+        if ($month && !$year) {
+            $data->whereMonth('start_date', $month);
+        }
+
+        $sp = $data->paginate(self::$perPage);
         return self::formattedData($sp);
     }
 
@@ -100,9 +150,11 @@ class SpService
 
     public function update(SPRequest $request, SP $sp): void
     {
+
+        $punishedBy = User::where('id', $request->punished_by)->first();
         $sp->update([
             'date' => $request->date,
-            'branch_id' => $request->user()->branch_id,
+            'branch_id' => $punishedBy->branch_id,
             'user_id' => $request->user_id,
             'sp_number' => $this->generateSpNumber($request),
             'sp_type' => $request->sp_type,

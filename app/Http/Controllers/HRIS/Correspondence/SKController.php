@@ -104,10 +104,10 @@ class SKController extends Controller
 
     public function exportToPDF(SK $sk): Response
     {
-        $operationalManager = User::role('Operational Manager')->first();
+        $director = User::role('Director')->first();
 
         $view = view('pages.manage-users.sk.sk-pdf',
-            compact('operationalManager', 'sk'));
+            compact('director', 'sk'));
 
 
         $pdf = Browsershot::html($view)

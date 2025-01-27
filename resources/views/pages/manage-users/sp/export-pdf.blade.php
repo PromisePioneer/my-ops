@@ -258,7 +258,7 @@
                         <th style="text-align: center; padding: 8px;">
                             <p style="font-size: 12px; margin: 0;">
                                 <img
-                                    src="data:image/svg+xml;base64, {!! base64_encode(QrCode::format('png')->size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                    src="data:image/png;base64, {!! base64_encode(QrCode::format('png')->size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
                                     width="100px" height="70px">
                             </p>
                         </th>
@@ -292,7 +292,7 @@
                         <th style="text-align: center; padding: 8px;">
                             <p style="font-size: 12px; margin: 0;">
                                 <img
-                                    src="data:image/svg+xml;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                    src="data:image/png;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
                                     width="100px" height="70px">
                             </p>
                         </th>
@@ -324,7 +324,7 @@
                         <th style="text-align: center; padding: 8px;">
                             <p style="font-size: 12px; margin: 0;">
                                 <img
-                                    src="data:image/svg+xml;base64, {!! base64_encode(QrCode::size(10)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                    src="data:image/png;base64, {!! base64_encode(QrCode::size(10)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
                                     width="100px" height="70px">
                             </p>
                         </th>
