@@ -52,14 +52,16 @@ class IclockService
 
     public function recieveRecords(Request $request): string
     {
-        $content['url'] = json_encode($request->all());
-        $content['data'] = $request->getContent();
-        FingerLog::create($content);
-
-
-        $processedCount = 0;
         try {
-            DB::transaction(function () use ($processedCount, $request) {
+
+            DB::transaction(function () use ($request) {
+
+                $content['url'] = json_encode($request->all());
+                $content['data'] = $request->getContent();
+                FingerLog::create($content);
+                $processedCount = 0;
+
+
                 $inputLines = preg_split('/\r\n|\r|\n/', $request->getContent());
 
                 if ($request->input('table') == 'OPERLOG') {
@@ -80,8 +82,6 @@ class IclockService
 
                 return 'OK: ' . $processedCount;
             });
-
-            return 'OK: ' . $processedCount;
         } catch (Throwable $e) {
             // Log and report any errors
             Log::info($e);
