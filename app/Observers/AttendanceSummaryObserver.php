@@ -12,13 +12,16 @@ use Illuminate\Support\Facades\Log;
 
 class AttendanceSummaryObserver
 {
+
     public function created(Attendances $attendances): void
     {
+        \Log::info('Attendance created event triggered', ['attendance' => $attendances]);
         $timestamp = Carbon::parse($attendances->timestamp);
 
 
         // // Fetch user and role
         $user = User::where('absent_id', $attendances->employee_id)->first();
+        Log::info($user->name);
         if (!$user) {
             // Log::warning("No user found for employee_id: {$attendances->employee_id}");
             return;
@@ -54,10 +57,9 @@ class AttendanceSummaryObserver
         $isEngineer = $user->hasRole(['Engineer', 'Senior Engineer']) ? WorkTime::find(2) : null;
 
 
-
         $checkSchedule = EmployeeSchedule::with('workTime')
-        ->where('employee_id', $attendances->employee_id)
-        ->whereDate('start_date', $timestamp)->first()?->workTime;
+            ->where('employee_id', $attendances->employee_id)
+            ->whereDate('start_date', $timestamp)->first()?->workTime;
 
 
         return $checkSchedule ?? $isEngineer ?? WorkTime::find(1);

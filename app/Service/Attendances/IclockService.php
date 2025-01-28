@@ -53,13 +53,11 @@ class IclockService
     public function recieveRecords(Request $request): string
     {
         try {
-
-            DB::transaction(function () use ($request) {
-
+            $processedCount = 0;
+            DB::transaction(function () use ($processedCount,$request) {
                 $content['url'] = json_encode($request->all());
                 $content['data'] = $request->getContent();
                 FingerLog::create($content);
-                $processedCount = 0;
 
 
                 $inputLines = preg_split('/\r\n|\r|\n/', $request->getContent());
@@ -79,9 +77,9 @@ class IclockService
                     $this->processAttendanceRecord($attendanceData, $shift);
                     $processedCount++;
                 }
-
                 return 'OK: ' . $processedCount;
             });
+            return 'OK: ' . $processedCount;
         } catch (Throwable $e) {
             // Log and report any errors
             Log::info($e);
