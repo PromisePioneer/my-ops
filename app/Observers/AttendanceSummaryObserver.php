@@ -71,7 +71,7 @@ class AttendanceSummaryObserver
 
 
         $summary = AttendancesSummary::where('employee_id', $attendances->employee_id)
-            ->where('work_time_id', $workTime->id)->whereDate('date', $queryDate);
+            ->where('work_time_id', $workTime->id)->whereDate('date', $queryDate->format('Y-m-d'));
 
 
         $summary = $summary->first();
@@ -96,12 +96,18 @@ class AttendanceSummaryObserver
     private function getShiftDate(Carbon $timestamp, WorkTime $workTime, $attendances): Carbon
     {
         $date = EmployeeSchedule::where('work_time_id', $workTime->id)
-            ->where('employee_id', $attendances->employee_id)->whereDate('start_date', $timestamp)->orWhereDate('end_date', $timestamp);
+            ->where('employee_id', $attendances->employee_id);
 
 
-        $dates = $date->first()?->start_date ?? $timestamp;
+            if($workTime->name === 'Pagi' || $workTime->name === 'Lapangan'){
+                $date = $date->whereDate('start_date', $timestamp);
+                $dates = $date->first()?->start_date ?? $timestamp;
+            }
 
-//        dd($date->first());
+            if($workTime->name === 'Malam' || $workTime->name === 'Sore' ){
+                $date = $date->whereDate('start_date', $timestamp->copy()->subDays());
+                $dates = $date->first()?->start_date ?? $timestamp;
+            }
 
         return Carbon::parse($dates);
     }
