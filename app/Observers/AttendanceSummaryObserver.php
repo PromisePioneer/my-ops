@@ -51,7 +51,7 @@ class AttendanceSummaryObserver
     private function getWorkTime(Attendances $attendances, User $user, Carbon $timestamp): ?WorkTime
     {
 
-        $isEngineer = $user->hasRole('Engineer') ? WorkTime::find(2) : null;
+        $isEngineer = $user->hasRole(['Engineer', 'Senior Engineer']) ? WorkTime::find(2) : null;
 
 
 

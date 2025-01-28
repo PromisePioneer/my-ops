@@ -9,7 +9,7 @@ class FinancialClosePeriodService
 {
     public function startDate(): Carbon
     {
-        $year = Carbon::now()->month == 1 ? Carbon::now()->subYear()->year : Carbon::now()->year;
+        $year =  Carbon::now()->year;
         $month = Carbon::now()->subMonthNoOverflow()->month;
 
 

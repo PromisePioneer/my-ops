@@ -161,6 +161,9 @@ class IclockService
         }
 
 
+        Log::info($attendanceData);
+
+
         if ($this->isValidTimeToCheckIn($date, $shiftTimeToCheckIn ?? $shift->time_to_checkin, $shiftEndTimeToCheckIn ?? $shift->end_time_to_checkin, $shift?->name)) {
             Attendances::create($attendanceData);
         }
@@ -185,6 +188,8 @@ class IclockService
     private function processCheckOut(array $attendanceData, $shift, string $date, string $time): void
     {
 
+
+        Log::info($attendanceData);
         if ($shift->workTime) {
             $startDateEmpSchedule = $shift->start_date ? Carbon::make($shift->start_date)->format('Y-m-d') : null;
             $endDateEmpSchedule = $shift->end_date ? Carbon::make($shift->end_date)->format('Y-m-d') : null;

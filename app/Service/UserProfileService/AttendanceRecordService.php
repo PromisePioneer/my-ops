@@ -29,7 +29,7 @@ use Illuminate\Http\Request;
 
 
         $employeeSchedule = EmployeeSchedule::where('employee_id', $user?->absent_id ?? $request->user()->absent_id)
-            ->whereBetween('date', [$startDate, $endDate])->orderBy('date', 'asc')->get()->keyBy('date');
+            ->whereBetween('start_date', [$startDate, $endDate])->orderBy('start_date', 'asc')->get()->keyBy('start_date');
 
 
         $attendancesData = AttendancesSummary::with('user')
@@ -95,14 +95,18 @@ use Illuminate\Http\Request;
         if (!empty($userWorktime)) {
             $expectedCheckIn = Carbon::parse($item['attendancesDate'])
                     ->format('Y-m-d') . ' ' . $userWorktime->clock_in;
-            $actualCheckIn = Carbon::parse($item['attendancesDate'])
-                    ->format('Y-m-d') . ' ' . $item['attendanceData']?->clock_in;
+            $actualCheckIn = Carbon::parse($item['attendanceData']?->clock_in);
+
+
 
             $parseExpectedCheckIn = Carbon::parse($expectedCheckIn);
             $parseActualCheckIn = Carbon::parse($actualCheckIn);
 
+
+
+
             if ($parseActualCheckIn->greaterThan($parseExpectedCheckIn)) {
-                return Carbon::parse($expectedCheckIn)->diffInMinutes(Carbon::parse($actualCheckIn)) . ' Menit';
+                return (int) $parseExpectedCheckIn->diffInMinutes($parseActualCheckIn) . ' Menit';
             }
         }
 

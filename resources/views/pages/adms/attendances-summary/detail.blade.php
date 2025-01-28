@@ -86,56 +86,46 @@
                                 </template>
                                 <template x-for="(attendance, index) in attendancesSummaryRecords" :key="index">
                                     <tbody class="fw-bolder">
-                                    <template x-if="attendance.leaves?.status === 'Cuti'">
-                                        <tr class="bg-success text-center">
-                                            <td x-text="formatDate(attendance.date_period)"></td>
-                                            <td colspan="5">CUTI</td>
-                                        </tr>
-                                    </template>
-                                    <template x-if="attendance.permission?.status === 'Izin'">
-                                        <tr class="bg-danger text-white text-center">
-                                            <td x-text="formatDate(attendance.date_period)"></td>
-                                            <td colspan="5">IZIN</td>
-                                        </tr>
-                                    </template>
-                                    <template x-if="attendance?.sick?.status === 'Sakit'">
-                                        <tr class="bg-primary text-center">
-                                            <td class="text-center"
-                                                x-text="formatDate(attendance.date_period)"></td>
-                                            <td colspan="5" class=" border border-3">SAKIT</td>
-                                        </tr>
-                                    </template>
-                                    <template x-if="attendance.schedule === 'L'">
-                                        <tr class="bg-warning text-center">
-                                            <td class="text-center  border border-3"
-                                                x-text="formatDate(attendance.date_period)"></td>
-                                            <td colspan="5" class=" border border-3">LIBUR</td>
-                                        </tr>
-                                    </template>
-                                    <template
-                                        x-if="attendance.schedule === null && attendance.leaves === null && attendance.sick === null && attendance.permission === null || attendance.schedule === 'H'">
-                                        <tr>
-                                            <td class="text-center"
-                                                x-text="formatDate(attendance.date_period)"></td>
-                                            <td class="text-center" x-text="attendance.clock_in"></td>
-                                            <td class="text-center" x-text="attendance.clock_out"></td>
-                                            <td class="text-center" x-text="attendance.late"></td>
-                                            <td class="text-center" x-text="attendance.work_time"></td>
-                                            <td class="text-center">
-                                                <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                        data-bs-target="#modal-attendance-correction"
-                                                        @click="correction(attendance.date_period)">
-                                                    <i class="ki-duotone ki-setting-3">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                        <span class="path3"></span>
-                                                        <span class="path4"></span>
-                                                        <span class="path5"></span>
-                                                    </i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </template>
+                                        <template x-if="attendance.leaves?.status === 'Cuti'">
+                                            <tr class="bg-success text-center">
+                                                <td x-text="formatDate(attendance.date_period)"></td>
+                                                <td colspan="5">CUTI</td>
+                                            </tr>
+                                        </template>
+                                        <template x-if="attendance.permission?.status === 'Izin'">
+                                            <tr class="bg-danger text-white text-center">
+                                                <td x-text="formatDate(attendance.date_period)"></td>
+                                                <td colspan="5">IZIN</td>
+                                            </tr>
+                                        </template>
+                                        <template x-if="attendance?.sick?.status === 'Sakit'">
+                                            <tr class="bg-primary text-center">
+                                                <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
+                                                <td colspan="5">SAKIT</td>
+                                            </tr>
+                                        </template>
+                                        <template x-if="attendance.schedule === 'L'">
+                                            <tr class="bg-warning text-center">
+                                                <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
+                                                <td colspan="5">LIBUR</td>
+                                            </tr>
+                                        </template>
+                                        <template x-if="attendance.schedule === 'H' && !attendance.leaves && !attendance.sick && !attendance.permission || attendance.schedule === null">
+                                            <tr>
+                                                <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
+                                                <td class="text-center" x-text="attendance.clock_in"></td>
+                                                <td class="text-center" x-text="attendance.clock_out"></td>
+                                                <td class="text-center" x-text="attendance.late"></td>
+                                                <td class="text-center" x-text="attendance.work_time"></td>
+                                                <td class="text-center">
+                                                    <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                            data-bs-target="#modal-attendance-correction"
+                                                            @click="correction(attendance.date_period)">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </template>
                                     </tbody>
                                 </template>
                             </table>
@@ -167,10 +157,9 @@
                     await this.getAttendanceSummaryRecords();
                     await this.getWorkTimeData();
                 },
-
                 async getAttendanceSummaryRecords() {
                     const resp = await axios.get(`/adms/attendances-summary/detail/data/${this.id}/${this.startDates}/${this.endDates}`);
-                    this.attendancesSummaryRecords = resp.data
+                    this.attendancesSummaryRecords = resp.data;
                 },
                 async filter() {
                     const startDate = document.getElementById('start_date')?.value ?? null;
@@ -197,14 +186,12 @@
                 },
                 formatDate(val) {
                     const date = new Date(val);
-
-                    const options = {
+                    return date.toLocaleDateString("id", {
                         weekday: "short",
                         year: "numeric",
                         month: "2-digit",
                         day: "numeric",
-                    };
-                    return date.toLocaleDateString("id", options)
+                    });
                 },
                 async selectedWorkTime() {
                     const selectedWorkTime = $('#selectedWorkTime');
@@ -238,10 +225,9 @@
                     const startDate = document.getElementById('start_date')?.value ?? null;
                     const endDate = document.getElementById('end_date')?.value ?? null;
 
-                    console.log(startDate);
                     try {
                         await axios.post(`/adms/attendances-summary/detail/correction/save/${this.id}/${datePeriod}`, new FormData(this.formCorrection)).then(async res => {
-                            await showAlert('success', 'Data berhasil disimpan')
+                            await showAlert('success', 'Data berhasil disimpan');
                             this.formCorrection.reset();
                             this.modalCorrection.hide();
                             if (startDate !== '' && endDate !== '') {
@@ -258,12 +244,12 @@
                         });
                     } catch (error) {
                         const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]));
                     } finally {
                         this.buttonLoading = false;
                     }
                 },
-            }
+            };
         }
     </script>
 @endpush

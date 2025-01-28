@@ -22,7 +22,7 @@ use function App\Helper\formatDate;
 
     public function query(): Builder
     {
-        return LeaveAndPermission::with('accBy', 'user', 'user.userHasArea');
+        return LeaveAndPermission::with('accBy', 'user', 'user.userHasArea', 'user.branch');
     }
 
 
@@ -205,7 +205,7 @@ use function App\Helper\formatDate;
 
 
         if ($request->user()->hasRole('Branch Manager')) {
-            return $query->whereHas('branch', function ($query) use ($request) {
+            return $query->whereHas('user.branch', function ($query) use ($request) {
                 $query->where('branch_id', $request->user()->branch_id);
             });
         }

@@ -76,7 +76,7 @@ class AttendanceSummaryDetailService
     {
         return $attendanceSummary->map(function ($item) use ($empId) {
             $userWorktime = WorkTime::where('id', $item['attendanceData']?->work_time_id)->first()
-                ?? WorkTime::find(1);
+                ?? '-';
 
 
             return [

@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Jmrashed\Zkteco\Lib\ZKTeco;
 
 class HomeController extends Controller
 {
@@ -51,6 +52,6 @@ class HomeController extends Controller
 
     public function index(): View
     {
-        return view('home');
+       return view('home');
     }
 }
