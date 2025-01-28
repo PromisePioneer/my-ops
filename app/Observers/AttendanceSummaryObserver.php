@@ -57,18 +57,43 @@ class AttendanceSummaryObserver
         $isEngineer = $user->hasRole(['Engineer', 'Senior Engineer']) ? WorkTime::find(2) : null;
 
 
-        $checkSchedule = EmployeeSchedule::with('workTime')
-            ->where('employee_id', $attendances->employee_id)
-            ->whereDate('start_date', $timestamp)->first()?->workTime;
+        $startOfTime = $timestamp->copy()->startOfDay();
+        $endOfTime = $timestamp->copy()->endOfDay();
 
+        $userShift = null;
 
-        return $checkSchedule ?? $isEngineer ?? WorkTime::find(1);
+        // If the given timestamp is later than the start of the day, check `end_date`
+        if ($timestamp->greaterThan($startOfTime)) {
+            if ($timestamp->between(Carbon::parse($timestamp->copy()->format('Y-m-d') . '23:00:00'), Carbon::parse($timestamp->copy()->format('Y-m-d') . '23:59:59'))) {
+                $userShift = EmployeeSchedule::with('workTime')
+                    ->where('employee_id', $attendances->employee_id)
+                    ->whereDate('start_date', $timestamp)
+                    ->first()?->workTime;
+            }
+
+            if ($timestamp->between(Carbon::parse($timestamp->copy()->format('Y-m-d') . '00:00:00'), Carbon::parse($timestamp->copy()->format('Y-m-d') . '02:00:00'))) {
+                $userShift = EmployeeSchedule::with('workTime')
+                    ->where('employee_id', $attendances->employee_id)
+                    ->whereDate('end_date', $timestamp)
+                    ->first()?->workTime;
+            }
+
+        }
+
+        // If the timestamp is at or before the start of the day, check `start_date`
+        if (!$userShift) { // Prevents unnecessary queries if shift was already found
+            $userShift = EmployeeSchedule::with('workTime')
+                ->where('employee_id', $attendances->employee_id)
+                ->whereDate('start_date', $timestamp)
+                ->first()?->workTime;
+        }
+
+        return $userShift ?? $isEngineer ?? WorkTime::find(1);
     }
 
     private function findOrCreateSummary(Attendances $attendances, WorkTime $workTime, Carbon $timestamp): AttendancesSummary
     {
         $queryDate = $this->getShiftDate($timestamp, $workTime, $attendances);
-
 
         $summary = AttendancesSummary::where('employee_id', $attendances->employee_id)
             ->where('work_time_id', $workTime->id)->whereDate('date', $queryDate->format('Y-m-d'));
@@ -93,23 +118,32 @@ class AttendanceSummaryObserver
     }
 
 
-    private function getShiftDate(Carbon $timestamp, WorkTime $workTime, $attendances): Carbon
+    private function getShiftDate(Carbon $timestamp, WorkTime $workTime, $attendances): Carbon|null
     {
+//        dd(in_array($workTime->name, ['Pagi', 'Lapangan']));
         $date = EmployeeSchedule::where('work_time_id', $workTime->id)
             ->where('employee_id', $attendances->employee_id);
 
 
-            if($workTime->name === 'Pagi' || $workTime->name === 'Lapangan'){
-                $date = $date->whereDate('start_date', $timestamp);
-                $dates = $date->first()?->start_date ?? $timestamp;
-            }
+        $schedule = $date->first();
 
-            if($workTime->name === 'Malam' || $workTime->name === 'Sore' ){
+        if ($workTime->name === 'Pagi' || $workTime->name === 'Lapangan') {
+            $date = $date->whereDate('start_date', $timestamp);
+            return Carbon::parse($date->first()?->start_date ?? $timestamp);
+        }
+
+
+        if ($workTime->name === 'Malam' || $workTime->name === 'Sore') {
+            $checkIn = Carbon::parse($schedule->end_date . ' ' . $workTime->clock_in);
+            if ($attendances->status1 === 0 && $timestamp->greaterThan($checkIn)) {
                 $date = $date->whereDate('start_date', $timestamp->copy()->subDays());
-                $dates = $date->first()?->start_date ?? $timestamp;
+                return Carbon::parse($date->first()?->start_date ?? $timestamp);
             }
 
-        return Carbon::parse($dates);
+            return Carbon::parse($date->first()?->start_date ?? $timestamp);
+        }
+//        dd($dates);
+        return null;
     }
 
 }

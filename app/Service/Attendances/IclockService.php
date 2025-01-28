@@ -3,6 +3,7 @@
 namespace App\Service\Attendances;
 
 use App\Models\Attendances;
+use App\Models\AttendancesSummary;
 use App\Models\DeviceLog;
 use App\Models\EmployeeSchedule;
 use App\Models\FingerLog;
@@ -54,7 +55,7 @@ class IclockService
     {
         try {
             $processedCount = 0;
-            DB::transaction(function () use ($processedCount,$request) {
+            DB::transaction(function () use ($processedCount, $request) {
                 $content['url'] = json_encode($request->all());
                 $content['data'] = $request->getContent();
                 FingerLog::create($content);
@@ -120,19 +121,45 @@ class IclockService
     {
         $dateTime = Carbon::parse($date);
 
-        $userShift = EmployeeSchedule::with('workTime')
-            ->where('employee_id', $employeeId)->whereDate('start_date', $dateTime)->orWhereDate('end_date', $dateTime);
+        $startOfTime = $dateTime->copy()->startOfDay();
+        $endOfTime = $dateTime->copy()->endOfDay();
 
 
-        $userShift = $userShift->first();
+        $userShift = null;
+        // If the given timestamp is later than the start of the day, check `end_date`
 
+        if ($dateTime->greaterThan($startOfTime)) {
 
-        if (!$userShift) {
-            return WorkTime::find(1);
+            // malam
+            if ($dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '23:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '23:59:59'))) {
+//                dd('test');
+                $userShift = EmployeeSchedule::with('workTime')
+                    ->where('employee_id', $employeeId)
+                    ->whereDate('start_date', $dateTime)
+                    ->first();
+            }
+
+            if ($dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '00:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '02:00:00'))) {
+                $userShift = EmployeeSchedule::with('workTime')
+                    ->where('employee_id', $employeeId)
+                    ->whereDate('end_date', $dateTime)
+                    ->first();
+            }
+
         }
 
 
-        return $userShift;
+        // If the timestamp is at or before the start of the day, check `start_date`
+        if (!$userShift) { // Prevents unnecessary queries if shift was already found
+            $userShift = EmployeeSchedule::with('workTime')
+                ->where('employee_id', $employeeId)
+                ->whereDate('start_date', $dateTime)
+                ->first();
+        }
+
+
+        // Return the found shift or a default WorkTime
+        return $userShift ?? WorkTime::find(1);
     }
 
     private function processAttendanceRecord(array $attendanceData, $shift): void
@@ -150,6 +177,8 @@ class IclockService
 
     private function processCheckIn(array $attendanceData, $shift, string $date): void
     {
+//        dd($date);
+
 
         if ($shift->workTime) {
             $startDateEmpSchedule = $shift->start_date ? Carbon::make($shift->start_date)->format('Y-m-d') : null;
@@ -162,6 +191,8 @@ class IclockService
         Log::info($attendanceData);
 
 
+
+
         if ($this->isValidTimeToCheckIn($date, $shiftTimeToCheckIn ?? $shift->time_to_checkin, $shiftEndTimeToCheckIn ?? $shift->end_time_to_checkin, $shift?->name)) {
             Attendances::create($attendanceData);
         }
@@ -169,6 +200,7 @@ class IclockService
 
     private function isValidTimeToCheckIn($date, string $checkInStart, string $checkInEnd, $shiftName): bool
     {
+
 
         if ($shiftName === 'Pagi' || $shiftName === 'Lapangan') {
             $actualCheckInTime = Carbon::parse($date)->toTimeString();
