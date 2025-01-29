@@ -45,9 +45,9 @@ class IclockController extends Controller
 
 
         $command = sprintf(
-            "C:%d:DATA QUERY ATTLOG PIN=%s StartTime=%s\tEndTime=%s",
+            "C:%d:DATA QUERY ATTLOG PIN=%d StartTime=%s\tEndTime=%s",
             $cmdId,
-            '5',
+            5,
             $startDate,
             $endDate
         );
