@@ -8,6 +8,6 @@ class AttendanceRecordPolicy
 {
     public function view(User $user): bool
     {
-        return $user->can('Lihat Riwayat Absensi');
+        return $user->can('Lihat Menu Riwayat Absensi');
     }
 }

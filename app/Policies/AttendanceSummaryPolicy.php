@@ -15,15 +15,4 @@ class AttendanceSummaryPolicy
     }
 
 
-    public function viewAnyData(User $user): bool
-    {
-        return $user->can('Lihat Semua Data Riwayat Absensi');
-    }
-
-
-    public function viewOnlyBranchData(User $user): bool
-    {
-        return $user->can('Lihat Data Riwayat Absensi Cabang Sendiri');
-    }
-
 }
