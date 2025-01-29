@@ -74,6 +74,14 @@ class LeaveAndPermission extends Model
         return self::with('accBy', 'user');
     }
 
+
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+
     public function searchDataBasedOnUserId(Request $request): Collection|array
     {
         $search = $request->input('search');
@@ -86,10 +94,6 @@ class LeaveAndPermission extends Model
             ->get();
     }
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
 
 
     //eloquent

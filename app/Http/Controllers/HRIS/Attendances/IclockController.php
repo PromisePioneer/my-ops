@@ -33,25 +33,15 @@ class IclockController extends Controller
                 ->header('Content-Type', 'text/plain');
         }
 
-        // Check if this command was recently processed for the same SN
-        // $cacheKey = "attendance_query_{$sn}";
-//        if (Cache::has($cacheKey)) {
-//            // If cached, return acknowledgment to prevent repeated processing
-//            return response("OK", 200)
-//                ->header('Content-Type', 'text/plain');
-//        }
 
-        // Log received SN for debugging
         Log::info('Received SN: ' . $sn);
 
-        // Set command parameters
         $cmdId = 1;
-        $startDate = date("Y-m-d\TH:i:s", strtotime("2024-12-28 06:00:00"));
-        $endDate = date("Y-m-d\TH:i:s", strtotime("2025-01-25 23:00:00"));
+        $startDate = date("Y-m-d\TH:i:s", strtotime("2025-01-27 00:10:00"));
+        $endDate = date("Y-m-d\TH:i:s", strtotime("2025-01-29 03:00:00"));
 
 
 
-        // Create the command
         $command = sprintf(
             "C:%d:DATA QUERY ATTLOG StartTime=%s\tEndTime=%s",
             $cmdId,
@@ -59,14 +49,10 @@ class IclockController extends Controller
             $endDate
         );
 
-        // $command = sprintf("C:%d:LOG",  $cmdId);
 
 
 
-        // Cache this request to prevent repeated execution for 1 minute
-        // Cache::put($cacheKey, true, now()->addMinutes(5));
-
-        // Return the command to the machine
+    
         return response($command, 200)
             ->header('Content-Type', 'text/plain');
     }

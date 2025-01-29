@@ -15,36 +15,28 @@ class AttendanceSummaryObserver
 
     public function created(Attendances $attendances): void
     {
-        \Log::info('Attendance created event triggered', ['attendance' => $attendances]);
         $timestamp = Carbon::parse($attendances->timestamp);
 
 
-        // // Fetch user and role
-        $user = User::where('absent_id', $attendances->employee_id)->first();
-        Log::info($user->name);
+        $user = User::where('absent_id', $attendances->employee_id)->first() ?? null;
         if (!$user) {
-            // Log::warning("No user found for employee_id: {$attendances->employee_id}");
             return;
         }
 
-        // Fetch WorkTime based on user role and shift timing
         $workTime = $this->getWorkTime($attendances, $user, $timestamp);
 
 
         if (!$workTime) {
-            // Log::warning('No matching WorkTime found for timestamp: ' . $timestamp);
             return;
         }
 
 
-        // Find or create AttendancesSummary
         $attendancesSummary = $this->findOrCreateSummary($attendances, $workTime, $timestamp);
 
         // Update clock-in or clock-out
         if ($attendances->status1 === 0 && !$attendancesSummary->clock_in) {
             $attendancesSummary->clock_in = $timestamp;
         } elseif ($attendances->status1 === 1 && !$attendancesSummary->clock_out) {
-
             $attendancesSummary->clock_out = $timestamp;
         }
 
@@ -62,8 +54,6 @@ class AttendanceSummaryObserver
 
         $userShift = null;
 
-        // If the given timestamp is later than the start of the day, check `end_date`
-        if ($timestamp->greaterThan($startOfTime)) {
             if ($timestamp->between(Carbon::parse($timestamp->copy()->format('Y-m-d') . '23:00:00'), Carbon::parse($timestamp->copy()->format('Y-m-d') . '23:59:59'))) {
                 $userShift = EmployeeSchedule::with('workTime')
                     ->where('employee_id', $attendances->employee_id)
@@ -78,10 +68,18 @@ class AttendanceSummaryObserver
                     ->first()?->workTime;
             }
 
-        }
 
-        // If the timestamp is at or before the start of the day, check `start_date`
-        if (!$userShift) { // Prevents unnecessary queries if shift was already found
+            if ($attendances->status1 === 1 && $timestamp->between(Carbon::parse($timestamp->copy()->format('Y-m-d') . '09:00:00'), Carbon::parse($timestamp->copy()->format('Y-m-d') . '12:00:00'))){
+                $userShift = EmployeeSchedule::with('workTime')
+                ->where('employee_id', $attendances->employee_id)
+                ->whereDate('end_date', $timestamp->format('Y-m-d'))
+                ->first()?->workTime;
+
+                
+            }
+
+
+        if (!$userShift) { 
             $userShift = EmployeeSchedule::with('workTime')
                 ->where('employee_id', $attendances->employee_id)
                 ->whereDate('start_date', $timestamp)
@@ -96,10 +94,11 @@ class AttendanceSummaryObserver
         $queryDate = $this->getShiftDate($timestamp, $workTime, $attendances);
 
         $summary = AttendancesSummary::where('employee_id', $attendances->employee_id)
-            ->where('work_time_id', $workTime->id)->whereDate('date', $queryDate->format('Y-m-d'));
+            ->where('work_time_id', $workTime->id)->whereDate('date', $queryDate->format('Y-m-d'))->first();
 
 
-        $summary = $summary->first();
+
+
 
         if (!$summary) {
             $summary = new AttendancesSummary([
@@ -120,30 +119,52 @@ class AttendanceSummaryObserver
 
     private function getShiftDate(Carbon $timestamp, WorkTime $workTime, $attendances): Carbon|null
     {
-//        dd(in_array($workTime->name, ['Pagi', 'Lapangan']));
         $date = EmployeeSchedule::where('work_time_id', $workTime->id)
             ->where('employee_id', $attendances->employee_id);
 
 
-        $schedule = $date->first();
-
-        if ($workTime->name === 'Pagi' || $workTime->name === 'Lapangan') {
-            $date = $date->whereDate('start_date', $timestamp);
-            return Carbon::parse($date->first()?->start_date ?? $timestamp);
-        }
+            // Log::info($date);
 
 
-        if ($workTime->name === 'Malam' || $workTime->name === 'Sore') {
-            $checkIn = Carbon::parse($schedule->end_date . ' ' . $workTime->clock_in);
-            if ($attendances->status1 === 0 && $timestamp->greaterThan($checkIn)) {
-                $date = $date->whereDate('start_date', $timestamp->copy()->subDays());
-                return Carbon::parse($date->first()?->start_date ?? $timestamp);
+            $startOfTime = $timestamp->copy()->startOfDay();
+            $endOfTime = $timestamp->copy()->endOfDay();
+
+            $userShift = null;
+
+                if ($timestamp->between(Carbon::parse($timestamp->copy()->format('Y-m-d') . '23:00:00'), Carbon::parse($timestamp->copy()->format('Y-m-d') . '23:59:59'))) {
+                    $userShift = EmployeeSchedule::with('workTime')
+                        ->where('employee_id', $attendances->employee_id)
+                        ->whereDate('start_date', $timestamp->format('Y-m-d'))
+                        ->first()?->start_date;
+                }
+
+                if ($timestamp->between(Carbon::parse($timestamp->copy()->format('Y-m-d') . '00:00:00'), Carbon::parse($timestamp->copy()->format('Y-m-d') . '02:00:00'))) {
+                    $userShift = EmployeeSchedule::with('workTime')
+                        ->where('employee_id', $attendances->employee_id)
+                        ->whereDate('end_date', $timestamp->format('Y-m-d'))
+                        ->first()?->start_date;
+                }
+
+
+                if ($attendances->status1 === 1 && $timestamp->between(Carbon::parse($timestamp->copy()->format('Y-m-d') . '09:00:00'), Carbon::parse($timestamp->copy()->format('Y-m-d') . '12:00:00'))){
+                    $userShift = EmployeeSchedule::with('workTime')
+                    ->where('employee_id', $attendances->employee_id)
+                    ->whereDate('end_date', $timestamp->format('Y-m-d'))
+                    ->first()?->start_date;
+
+                    
+                }
+
+
+            if (!$userShift) { 
+                $userShift = EmployeeSchedule::with('workTime')
+                    ->where('employee_id', $attendances->employee_id)
+                    ->whereDate('start_date', $timestamp->format('Y-m-d'))
+                    ->first()?->start_date;
             }
 
-            return Carbon::parse($date->first()?->start_date ?? $timestamp);
-        }
-//        dd($dates);
-        return null;
+
+        return Carbon::parse($userShift ?? $timestamp);
     }
 
 }

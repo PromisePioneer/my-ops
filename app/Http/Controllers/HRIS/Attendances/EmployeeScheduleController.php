@@ -60,6 +60,7 @@ use Illuminate\View\View;
         $startDate = Carbon::parse($request->start_date);
         $endDate = Carbon::parse($request->end_date);
 
+
         return response()->json($this->employeeScheduleService->filterByDate($request, $startDate, $endDate));
     }
 

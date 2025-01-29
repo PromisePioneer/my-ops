@@ -5,6 +5,7 @@ namespace App\Http\Controllers\HRIS\Attendances;
 use App\Models\EmployeeSchedule;
 use App\Models\User;
 use App\Service\HelperService\FinancialClosePeriodService;
+use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -114,8 +115,8 @@ class EmployeeScheduleService
     public function search(Request $request)
     {
         $search = $request->input('search');
-        $startDate = $this->financialClosePeriodService->startDate();
-        $endDate = $this->financialClosePeriodService->endDate();
+        $startDate =$request->start_date ? Carbon::parse($request->start_date) : $this->financialClosePeriodService->startDate();
+        $endDate = $request->end_date ? Carbon::parse($request->end_date) :  $this->financialClosePeriodService->endDate();
 
         $user = $this->query();
 
@@ -196,13 +197,12 @@ class EmployeeScheduleService
 
     public function filterByDate($request, $startDate, $endDate)
     {
-
         $user = $this->query();
 
         if ($request->user()->hasAnyRole('NOC Supervisor', 'NOC Staff')) {
             $user->whereHas('roles', function ($query) {
                 $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
-            })->whereNull('branch_id');
+            });
         }
 
         if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner')) {

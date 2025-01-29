@@ -230,7 +230,7 @@ class AttendanceSummaryDetailService
 
 
         $employeeSchedule = EmployeeSchedule::where('employee_id', $user->absent_id)
-            ->whereBetween('date', [$startDate, $endDate])->orderBy('date', 'asc')->get()->keyBy('date');
+            ->whereBetween('start_date', [$startDate, $endDate])->orderBy('start_date', 'asc')->get()->keyBy('start_date');
 
         $user = User::where('absent_id', $user->absent_id)->first();
         $period = CarbonPeriod::create($startDate, $endDate);

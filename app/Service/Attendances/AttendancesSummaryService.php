@@ -47,7 +47,7 @@ class AttendancesSummaryService
             });
         }
 
-        if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner')) {
+        if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner', 'Legal & Corporate Commissioner')) {
             $data->paginate(self::$perPage);
         }
 

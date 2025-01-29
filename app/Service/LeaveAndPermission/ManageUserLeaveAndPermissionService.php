@@ -5,6 +5,7 @@ namespace App\Service\LeaveAndPermission;
 use AllowDynamicProperties;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
+use Auth;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -29,7 +30,7 @@ use function App\Helper\formatDate;
     public function data(Request $request): LengthAwarePaginator
     {
         $query = $this->query();
-        $permissions = $this->permissions($request, $query);
+        $permissions = $this->permissionsData($request, $query);
         $query = $permissions->paginate(10);
         return self::formattedData($query);
     }
@@ -38,7 +39,7 @@ use function App\Helper\formatDate;
     public function filter(Request $request, ?int $branchId, ?int $year, ?int $month): LengthAwarePaginator
     {
         $query = $this->query();
-        if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner')) {
+        if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner', 'Legal & Corporate Commissioner')) {
             if ($branchId && $year && $month) {
                 $query->whereHas('user.branch', function ($query) use ($branchId) {
                     $query->where('branch_id', $branchId);
@@ -103,7 +104,7 @@ use function App\Helper\formatDate;
         $query = $this->query();
 
         if (!empty($search)) {
-            $query->WhereHas('user', function ($query) use ($request, $search) {
+            $query->whereHas('user', function ($query) use ($request, $search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })->orWhere('start_date', 'like', '%' . $search . '%')
                 ->orWhere('reason', 'like', '%' . $search . '%')
@@ -113,7 +114,9 @@ use function App\Helper\formatDate;
         }
 
 
-        $query = $this->permissions($request, $query);
+        $query = $this->permissionsData($request, $query);
+
+        dd($query);
 
         $data = $query->paginate(10);
         return self::formattedData($data);
@@ -123,9 +126,10 @@ use function App\Helper\formatDate;
     public function getUserData(Request $request)
     {
         $search = $request->search;
-        $query = User::where('active', '=', 1)
+        $query = User::with('userHasArea', 'branch', 'roles')->where('active', '=', 1)
             ->orderBy('name')
             ->select('id', 'name', 'nip');
+
 
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
@@ -134,9 +138,10 @@ use function App\Helper\formatDate;
             });
         }
 
-        $query = $this->permissions($request, $query);
+        $query = $this->permissionsUserData($request, $query);
 
         $users = $query->get();
+
 
         return $users->map(function ($item) {
             return [
@@ -147,9 +152,90 @@ use function App\Helper\formatDate;
     }
 
 
-    public function permissions(Request $request, Builder $query): Builder
+
+    public function permissionsUserData($request, $query){
+
+        if ($request->user()->hasAnyRole(['NOC Supervisor', 'NOC Staff'])) {
+            return $query->whereHas('roles', function ($query) {
+                $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
+            })->where(function ($query) {
+                $query->whereNull('branch_id')->orWhere('branch_id', 1);
+            });
+        }
+
+        if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner')) {
+            return $query;
+        }
+
+
+        if ($request->user()->hasAnyRole(['Head Engineer', 'Senior Engineer'])) {
+
+            return $query->whereHas('userHasArea', function ($query) use ($request) {
+                $query->where('area_id', $request->user()->userHasArea->area_id);
+            })->where(function ($query) use ($request) {
+                $query->whereHas('branch', function ($query) use ($request) {
+                    $query->where('branch_id', $request->user()->branch_id);
+                })->where('active', 1);
+            });
+        }
+
+        if ($request->user()->hasAnyRole('Customer Service Leader')) {
+            return $query->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff', 'After Sales Customer Service']);
+            })->where(function ($query) use ($request) {
+                $query->whereNull('branch_id')->orWhereIn('branch_id', [1])
+                    ->where('active', 1);
+            });
+        }
+
+
+        if ($request->user()->hasAnyRole('Finance & Accounting Supervisor')) {
+            return $query->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff', 'Stocker Staff', 'Inventory Controller Supervisor']);
+            })->where(function ($query) use ($request) {
+                $query->whereHas('branch', function ($query) use ($request) {
+                    $query->whereNull('branch_id')->orWhereIn('branch_id', [1])->where('active', 1);
+                });
+            });
+        }
+
+
+        if ($request->user()->hasAnyRole('Head Of Electrical Engineer')) {
+            return $query->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer']);
+            })->whereHas('branch', function ($query) use ($request) {
+                $query->whereNull('branch_id');
+            });
+        }
+
+
+        if ($request->user()->hasRole('Branch Manager')) {
+            return $query->whereHas('branch', function ($query) use ($request) {
+                $query->where('branch_id', $request->user()->branch_id);
+            });
+        }
+
+
+        if ($request->user()->hasRole('KU Head Engineer')) {
+            return $query->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['KU Head Engineer', 'KU Engineer']);
+            });
+        }
+
+
+        if ($request->user()->hasRole('Quality Controller Supervisor')) {
+            return $query->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Quality Controller Supervisor', 'Quality Control Staff']);
+            });
+        }
+
+        return $query;
+    }
+
+
+    public function permissionsData(Request $request, Builder $query): Builder
     {
-        if ($request->user()->hasAnyRole('NOC Supervisor', 'NOC Staff')) {
+        if ($request->user()->hasAnyRole(['NOC Supervisor', 'NOC Staff'])) {
             return $query->whereHas('user.roles', function ($query) {
                 $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
             })->where(function ($query) {
@@ -162,7 +248,8 @@ use function App\Helper\formatDate;
         }
 
 
-        if ($request->user()->hasAnyRole('Head Engineer', 'Senior Engineer')) {
+        if ($request->user()->hasAnyRole(['Head Engineer', 'Senior Engineer'])) {
+
             return $query->whereHas('user.userHasArea', function ($query) use ($request) {
                 $query->where('area_id', $request->user()->userHasArea->area_id);
             })->where(function ($query) use ($request) {
