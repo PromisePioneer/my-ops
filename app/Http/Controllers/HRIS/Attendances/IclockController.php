@@ -40,12 +40,12 @@ class IclockController extends Controller
         Log::info('Received SN: ' . $sn);
 
         $cmdId = 1;
-        $startDate = date("Y-m-d\TH:i:s", strtotime("2024-04-27 00:10:00"));
+        $startDate = date("Y-m-d\TH:i:s", strtotime("2024-11-27 00:10:00"));
         $endDate = date("Y-m-d\TH:i:s", strtotime("2024-04-29 03:00:00"));
 
 
         $command = sprintf(
-            "C:%d:DATA QUERY ATTLOG PIN=%d StartTime=%s\tEndTime=%s",
+            "C:%d:DATA QUERY ATTLOG PIN=%d\tStartTime=%s\tEndTime=%s",
             $cmdId,
             5,
             $startDate,
