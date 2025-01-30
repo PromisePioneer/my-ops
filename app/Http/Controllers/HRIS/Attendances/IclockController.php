@@ -26,35 +26,37 @@ class IclockController extends Controller
     }
 
 
-    public function getRequest(Request $request): Application|Response|ResponseFactory
+    public function getRequest(Request $request): string
     {
-        $sn = $request->query('SN');
+        // $sn = $request->query('SN');
 
-        // Validate SN parameter
-        if (!$sn) {
-            return response("Missing SN parameter", 400)
-                ->header('Content-Type', 'text/plain');
-        }
-
-
-        Log::info('Received SN: ' . $sn);
-
-        $cmdId = 1;
-        $startDate = date("Y-m-d\TH:i:s", strtotime("2024-11-27 00:10:00"));
-        $endDate = date("Y-m-d\TH:i:s", strtotime("2024-04-29 03:00:00"));
+        // // Validate SN parameter
+        // if (!$sn) {
+        //     return response("Missing SN parameter", 400)
+        //         ->header('Content-Type', 'text/plain');
+        // }
 
 
-        $command = sprintf(
-            "C:%d:DATA QUERY ATTLOG PIN=%d\tStartTime=%s\tEndTime=%s",
-            $cmdId,
-            5,
-            $startDate,
-            $endDate
-        );
+        // Log::info('Received SN: ' . $sn);
+
+        // $cmdId = 1;
+        // $startDate = date("Y-m-d\TH:i:s", strtotime("2024-11-27 00:10:00"));
+        // $endDate = date("Y-m-d\TH:i:s", strtotime("2024-04-29 03:00:00"));
 
 
-        return response($command, 200)
-            ->header('Content-Type', 'text/plain');
+        // $command = sprintf(
+        //     "C:%d:DATA QUERY ATTLOG PIN=%d\tStartTime=%s\tEndTime=%s",
+        //     $cmdId,
+        //     5,
+        //     $startDate,
+        //     $endDate
+        // );
+
+
+        // return response($command, 200)
+        //     ->header('Content-Type', 'text/plain');
+
+        return "OK";
     }
 
     public function handshake(Request $request): string
