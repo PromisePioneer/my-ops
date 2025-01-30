@@ -133,6 +133,8 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
+                formCreate: document.getElementById('form-create'),
+                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 formEdit: document.getElementById('form-edit'),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 deleteForm: document.getElementById('deleteForm'),
