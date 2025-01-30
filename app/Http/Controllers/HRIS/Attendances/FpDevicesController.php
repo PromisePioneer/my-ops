@@ -12,15 +12,12 @@ use Illuminate\View\View;
 
 class FpDevicesController extends Controller
 {
-    public readonly int $perPage;
 
     private FpDevice $FpDevices;
-
     private Branch $branch;
-
+    private static int $perPage = 10;
     public function __construct()
     {
-        $this->perPage = 10;
         $this->FpDevices = new FpDevice();
         $this->branch = new Branch();
     }
@@ -32,12 +29,20 @@ class FpDevicesController extends Controller
 
     public function data(): JsonResponse
     {
-        return response()->json($this->FpDevices->getDataWithPagination($this->perPage));
+        return response()->json(FpDevice::with('branch')->paginate(self::$perPage));
     }
 
     public function search(Request $request): JsonResponse
     {
-        return response()->json($this->FpDevices->searchData($request));
+        $search = $request->input('search');
+
+        $data = FpDevice::with('branch')
+            ->when(!empty($search), function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->where('serial_number', 'like', '%' . $search . '%');
+            })
+            ->paginate(self::$perPage);
+        return response()->json($data);
     }
 
     public function getBranchData(Request $request): JsonResponse

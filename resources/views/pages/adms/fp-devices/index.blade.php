@@ -175,10 +175,12 @@
                 },
                 async searchData() {
                     try {
-                        this.devices = await axios.get('/adms/fp-devices/search', {
+                        const resp = await axios.get('/adms/fp-devices/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
+
+                        this.devices = resp.data;
                     } catch (error) {
                         console.log(error);
                     }

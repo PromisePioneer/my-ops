@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
@@ -23,21 +21,6 @@ class FpDevice extends Model
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
-    }
-
-    public function getDataWithPagination(int $perPage): LengthAwarePaginator
-    {
-        return self::with('branch')->paginate($perPage);
-    }
-
-    public function searchData(Request $request): Collection|array
-    {
-        $search = $request->input('search');
-
-        return self::with('branch')
-            ->where('name', 'like', '%'.$search.'%')
-            ->where('serial_number', 'like', '%'.$search.'%')
-            ->get();
     }
 
 
