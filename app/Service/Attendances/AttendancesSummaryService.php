@@ -287,15 +287,20 @@ class AttendancesSummaryService
             'attendancesSummary' => function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('date', [$startDate, $endDate]);
             }
-        ])->when(!empty($branchId), function ($query) use ($roleId) {
-            $query->where(function ($query) use ($roleId) {
+        ])->where('active', 1);
+
+
+        if(!empty($branchId)){
+            $data->where(function ($query) use ($branchId) {
                 $query->where('branch_id', $branchId ?? null);
             });
-        })->when(!empty($roleId), function ($query) use ($roleId) {
-            $query->whereHas('roles', function ($query) use ($roleId) {
-                $query->where('id', $roleId);
-            });
-        })->where('active', 1);
+        }
+
+        if(!empty($roleId)){ 
+                $data->whereHas('roles', function ($query) use ($roleId) {
+                    $query->where('id', $roleId);
+                });
+        }
 
         $attendanceSummary = $data->paginate(self::$perPage)->onEachSide(1);
         return self::formattedData($attendanceSummary, $startDate, $endDate);
