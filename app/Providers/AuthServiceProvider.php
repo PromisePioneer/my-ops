@@ -31,6 +31,7 @@ use App\Policies\AccountPolicy;
 use App\Policies\AreaPolicy;
 use App\Policies\AssetPolicy;
 use App\Policies\AttendanceRecordPolicy;
+use App\Policies\AttendanceSummaryPolicy;
 use App\Policies\BoqPolicy;
 use App\Policies\BranchPolicy;
 use App\Policies\BroadbandPacketPolicy;
@@ -80,7 +81,7 @@ class AuthServiceProvider extends ServiceProvider
         User::class => UserPolicy::class,
         Permission::class => PermissionPolicy::class,
         LeaveAndPermission::class => LeaveAndPermissionPolicy::class,
-        AttendancesSummary::class => AttendanceRecordPolicy::class,
+        AttendancesSummary::class => AttendanceSummaryPolicy::class,
         Boq::class => BoqPolicy::class,
         AccountTransaction::class => InitialBalancePolicy::class,
         Company::class => CompanyPolicy::class,

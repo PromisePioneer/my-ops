@@ -115,8 +115,10 @@ class PermissionSeeder extends Seeder
     public function attendancesSummary(): void
     {
         $permissions = [
-            'Lihat Menu Riyawat Absensi',
-            'Lihat Detail Riyawat Absensi',
+            'Lihat Menu Riwayat Absensi',
+            'Lihat Detail Riwayat Absensi',
+            'Ubah Data Riwayat Absensi',
+            'Filter Data Berdasarkan Cabang'
         ];
 
         foreach ($permissions as $permission) {
