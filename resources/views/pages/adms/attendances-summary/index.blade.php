@@ -9,11 +9,13 @@
             <div class="card-body">
                 <div class="row mb-4 justify-content-center">
                     <div class="col-lg-4">
-                        <label for="name" class="form-label">Cabang</label>
-                        <select class="form-select form-select-solid form-select-sm branch-select2" name="branch_id"
-                                id="branch_id">
-                            <option></option>
-                        </select>
+                        @can('Filter Data Riwayat Absensi Berdasarkan Cabang')
+                            <label for="name" class="form-label">Cabang</label>
+                            <select class="form-select form-select-solid form-select-sm branch-select2" name="branch_id"
+                                    id="branch_id">
+                                <option></option>
+                            </select>
+                        @endcan
                     </div>
                     <div class="col-lg-4">
                         <label for="name" class="form-label">Jabatan</label>

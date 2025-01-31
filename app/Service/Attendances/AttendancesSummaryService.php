@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AttendancesSummaryService
 {
@@ -292,7 +293,7 @@ class AttendancesSummaryService
         ])->where('active', 1);
 
 
-        if(!empty($branchId)){
+        if (!empty($branchId) && Auth::user()->can('Filter Data Riwayat Absensi Berdasarkan Cabang')) {
             $data->where(function ($query) use ($branchId) {
                 $query->where('branch_id', $branchId ?? null);
             });

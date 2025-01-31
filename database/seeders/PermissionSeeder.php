@@ -118,7 +118,7 @@ class PermissionSeeder extends Seeder
             'Lihat Menu Riwayat Absensi',
             'Lihat Detail Riwayat Absensi',
             'Ubah Data Riwayat Absensi',
-            'Filter Data Berdasarkan Cabang'
+            'Filter Data Riwayat Absensi Berdasarkan Cabang'
         ];
 
         foreach ($permissions as $permission) {
