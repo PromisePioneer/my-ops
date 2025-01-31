@@ -92,7 +92,7 @@ use Illuminate\Http\Request;
 
     private static function calculateLate($item, $userWorktime = null): null|string
     {
-        if (!empty($userWorktime)) {
+        if (!empty($userWorktime) && !empty($item['attendanceData']?->clock_in)) {
             $expectedCheckIn = Carbon::parse($item['attendancesDate'])
                     ->format('Y-m-d') . ' ' . $userWorktime->clock_in;
             $actualCheckIn = Carbon::parse($item['attendanceData']?->clock_in);
@@ -106,7 +106,7 @@ use Illuminate\Http\Request;
 
 
             if ($parseActualCheckIn->greaterThan($parseExpectedCheckIn)) {
-                return (int) $parseExpectedCheckIn->diffInMinutes($parseActualCheckIn) . ' Menit';
+                return (int) $parseExpectedCheckIn->diffInMinutes($actualCheckIn) . ' Menit';
             }
         }
 
@@ -121,7 +121,7 @@ use Illuminate\Http\Request;
 
 
         $employeeSchedule = EmployeeSchedule::where('employee_id', $user?->absent_id ?? $request->user()->absent_id)
-            ->whereBetween('date', [$startDate, $endDate])->orderBy('date', 'asc')->get()->keyBy('date');
+            ->whereBetween('start_date', [$startDate, $endDate])->orderBy('start_date', 'asc')->get()->keyBy('start_date');
 
 
         $attendancesData = AttendancesSummary::with('user')

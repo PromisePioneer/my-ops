@@ -296,7 +296,7 @@ class AttendancesSummaryService
             });
         }
 
-        if(!empty($roleId)){ 
+        if(!empty($roleId)){
                 $data->whereHas('roles', function ($query) use ($roleId) {
                     $query->where('id', $roleId);
                 });
