@@ -28,10 +28,16 @@ use Illuminate\View\View;
     /**
      * @throws AuthorizationException
      */
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
         $this->authorize('view', Area::class);
-        $area = Area::with('branch')->withCount('areaHasUser')->paginate(10);
+        $area = Area::with('branch')->withCount('areaHasUser')->where(function($query) use($request) {
+            if($request->user()->hasRole('Head Engineer')){
+                $query->whereHas('areaHasUser.user', function ($query) use($request) {
+                    $query->where('user_id', $request->user()->id);
+                });
+            }
+         })->paginate(10);
         return response()->json($area);
     }
 
