@@ -253,6 +253,8 @@ class AttendancesSummaryService
 
     }
 
+
+
     public function calculateLate($userWorktime, $attendance): float|int
     {
         $totalMinutesLate = 0;

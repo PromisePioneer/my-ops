@@ -46,7 +46,7 @@ class AttendanceSummaryObserver
     private function getWorkTime(Attendances $attendances, User $user, Carbon $timestamp): ?WorkTime
     {
 
-        $isEngineer = $user->hasRole(['Engineer', 'Senior Engineer']) ? WorkTime::find(2) : null;
+        $isEngineer = $user->hasRole(['Engineer', 'Senior Engineer', 'KU Engineer', 'Quality Control Staff']) ? WorkTime::find(2) : null;
 
 
         $startOfTime = $timestamp->copy()->startOfDay();
@@ -75,11 +75,11 @@ class AttendanceSummaryObserver
                 ->whereDate('end_date', $timestamp->format('Y-m-d'))
                 ->first()?->workTime;
 
-                
+
             }
 
 
-        if (!$userShift) { 
+        if (!$userShift) {
             $userShift = EmployeeSchedule::with('workTime')
                 ->where('employee_id', $attendances->employee_id)
                 ->whereDate('start_date', $timestamp)
@@ -152,11 +152,11 @@ class AttendanceSummaryObserver
                     ->whereDate('end_date', $timestamp->format('Y-m-d'))
                     ->first()?->start_date;
 
-                    
+
                 }
 
 
-            if (!$userShift) { 
+            if (!$userShift) {
                 $userShift = EmployeeSchedule::with('workTime')
                     ->where('employee_id', $attendances->employee_id)
                     ->whereDate('start_date', $timestamp->format('Y-m-d'))
