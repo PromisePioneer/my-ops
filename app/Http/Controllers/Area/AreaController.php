@@ -128,6 +128,4 @@ use Illuminate\View\View;
         $this->authorize('viewDetail', $area);
         return view('pages.general-master-data.area.detail.index', compact('area'));
     }
-
-
 }
