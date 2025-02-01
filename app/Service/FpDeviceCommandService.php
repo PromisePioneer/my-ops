@@ -69,7 +69,7 @@ class FpDeviceCommandService
             $data['command'] = sprintf(
                 'C:%d:DATA QUERY ATTLOG SN=%s PIN=%d\tStartTime=%s\tEndTime=%s',
                 $this->generateCommandId(),
-                FpDevice::where('id', $data['device_id'])->first()->serial_number,
+                FpDevice::where('id', $data['device_id'])->first()->sn,
                 $userId,
                 date("Y-m-d\TH:i:s", strtotime($data['start_date'])),
                 date("Y-m-d\TH:i:s", strtotime($data['end_date'])),
