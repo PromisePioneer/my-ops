@@ -2,18 +2,15 @@
 
 namespace App\Http\Controllers\HRIS\Attendances;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Models\FingerLog;
 use App\Service\Attendances\IclockService;
-use Illuminate\Contracts\Routing\ResponseFactory;
-use Illuminate\Foundation\Application;
+use App\Service\FpDeviceCommandService;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class IclockController extends Controller
+#[AllowDynamicProperties] class IclockController extends Controller
 {
     private IclockService $iclockService;
 
@@ -23,40 +20,13 @@ class IclockController extends Controller
     public function __construct()
     {
         $this->iclockService = new IclockService();
+        $this->FpDeviceCommandService = new FpDeviceCommandService();
     }
 
 
     public function getRequest(Request $request): string
     {
-        // $sn = $request->query('SN');
-
-        // // Validate SN parameter
-        // if (!$sn) {
-        //     return response("Missing SN parameter", 400)
-        //         ->header('Content-Type', 'text/plain');
-        // }
-
-
-        // Log::info('Received SN: ' . $sn);
-
-        // $cmdId = 1;
-        // $startDate = date("Y-m-d\TH:i:s", strtotime("2024-11-27 00:10:00"));
-        // $endDate = date("Y-m-d\TH:i:s", strtotime("2024-04-29 03:00:00"));
-
-
-        // $command = sprintf(
-        //     "C:%d:DATA QUERY ATTLOG PIN=%d\tStartTime=%s\tEndTime=%s",
-        //     $cmdId,
-        //     5,
-        //     $startDate,
-        //     $endDate
-        // );
-
-
-        // return response($command, 200)
-        //     ->header('Content-Type', 'text/plain');
-
-        return "OK";
+        return $this->FpDeviceCommandService->queryAttendanceLog();
     }
 
     public function handshake(Request $request): string

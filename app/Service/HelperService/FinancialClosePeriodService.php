@@ -11,8 +11,6 @@ class FinancialClosePeriodService
     {
         $year =  Carbon::now()->year;
         $month = Carbon::now()->subMonthNoOverflow()->month;
-
-
         $date = CutOffPayrollSetting::first()->attendance_period_start;
         $dateNow = (int)Carbon::now()->format('d');
 
@@ -20,7 +18,6 @@ class FinancialClosePeriodService
             $month = Carbon::now()->month;
             return Carbon::parse($year . '-' . $month . '-' . $date);
         }
-
         return Carbon::parse($year . '-' . $month . '-' . $date);
     }
 

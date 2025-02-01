@@ -1,8 +1,9 @@
 @extends('layouts.template')
-@section('page-title', 'Detail Riwayat Absensi')
+@section('page-title', 'Detail Riwayat Absensi'. ' [' . $user->nip . '] '. $user->name)
 @section('content')
     <div x-data="attendancesSummaryDetail()">
         @include('pages.adms.attendances-summary.modal.correction')
+        @include('pages.adms.attendances-summary.modal.query-data')
         <div class="d-flex flex-column flex-xl-row">
             <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
                 <div class="card card-flush">
@@ -38,14 +39,23 @@
                 <div class="card card-flush mb-6 mb-xl-9">
                     <div class="card-header pt-5 mb-4">
                         <div class="card-title">
-                            <a href="{{ url('adms/attendances-summary/') }}"
-                               class="btn btn-light btn-light-danger btn-sm mx-1">
-                                <i class="bi bi-backspace"></i>
-                                Kembali
-                            </a>
+                            <button class="btn btn-light-info btn-sm" @click="init()">
+                                <i class="bi bi-arrow-clockwise"></i>
+                                Reload
+                            </button>
                         </div>
                         <div class="card-toolbar">
-                            <h6>({{ $user->nip }}) {{ $user->name }}</h6>
+                            <div class="d-flex align-items-center gap-2">
+                                <template x-if="runningCommands.length > 0">
+                                    <button class="btn btn-light-danger btn-sm" @click="deactivateRunningCommands()">
+                                        Non-Aktifkan Tarik Data
+                                    </button>
+                                </template>
+
+                                <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#modal-attendance-query-data">Tarik Data Absen
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body pt-0">
@@ -134,6 +144,11 @@
                                     </tbody>
                                 </template>
                             </table>
+                            <a href="{{ url('adms/attendances-summary/') }}"
+                               class="btn btn-light btn-light-danger btn-sm mx-1">
+                                <i class="bi bi-backspace"></i>
+                                Kembali
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -150,6 +165,8 @@
         function attendancesSummaryDetail() {
             return {
                 correctionPermission: "{{ $user->can('Koreksi Data Riwayat Absensi') }}",
+                modalQueryData: new bootstrap.Modal(document.getElementById('modal-attendance-query-data')),
+                formQueryData: document.getElementById('form-attendance-query-data'),
                 buttonLoading: false,
                 isLoading: false,
                 attendancesSummaryRecords: [],
@@ -157,11 +174,14 @@
                 endDates: "{{ $endDate }}",
                 id: "{{ $user->id }}",
                 correctionVal: null,
+                runningCommands: [],
                 formCorrection: document.getElementById('form-attendance-correction'),
                 modalCorrection: new bootstrap.Modal(document.getElementById('modal-attendance-correction')),
                 async init() {
                     await this.getAttendanceSummaryRecords();
                     await this.getWorkTimeData();
+                    await this.getFpDeviceData();
+                    await this.getRunningCommands();
                 },
                 async getAttendanceSummaryRecords() {
                     const resp = await axios.get(`/adms/attendances-summary/detail/data/${this.id}/${this.startDates}/${this.endDates}`);
@@ -184,6 +204,22 @@
                     } finally {
                         this.isLoading = false;
                     }
+                },
+                async getRunningCommands() {
+                    const resp = await axios.get(`/adms/attendances-summary/detail/running-commands/${this.id}`);
+                    this.runningCommands = resp.data;
+                },
+                async deactivateRunningCommands() {
+                    showConfirmModal("Anda yakin?", "Tarik data akan dihentikan.", "Ya, Hentikan!", async () => {
+                        try {
+                            await axios.post(`/adms/attendances-summary/detail/deactivate-active-commands/${this.id}`, new FormData(this.formDelete));
+                            await showAlert('success', 'Tarik Data Sukses Dihentikan');
+                            await this.init();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
                 },
                 async correction(datePeriod) {
                     const resp = await axios.get(`/adms/attendances-summary/detail/correction/${datePeriod}/${this.id}`);
@@ -226,6 +262,35 @@
                         }
                     });
                 },
+                async getFpDeviceData() {
+                    $(".devices-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Mesin",
+                        ajax: {
+                            url: '/adms/attendances-summary/detail/get-fp-devices',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async saveCommand() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/adms/attendances-summary/detail/query-data/${this.id}`, new FormData(this.formQueryData));
+                        await showAlert('success', 'Data berhasil disimpan');
+                        this.formQueryData.reset();
+                        this.modalQueryData.hide();
+                        this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
                 async saveCorrection(datePeriod) {
                     this.buttonLoading = true;
                     const startDate = document.getElementById('start_date')?.value ?? null;
@@ -237,7 +302,8 @@
                             this.formCorrection.reset();
                             this.modalCorrection.hide();
                             if (startDate !== '' && endDate !== '') {
-                                const resp = await axios.get(`/adms/attendances-summary/detail/filter/${this.id}`, {
+                                const resp = await axios.get(`/adms/attendances-summary/detail/filter/${this.id}`,
+                                    {
                                     params: {
                                         start_date: startDate,
                                         end_date: endDate,

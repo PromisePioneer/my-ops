@@ -10,11 +10,13 @@ use App\Models\AttendancesSummary;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\FpDevice;
+use App\Models\FPDeviceCommand;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\WorkTime;
 use App\Service\Attendances\AttendancesSummaryService;
 use App\Service\Attendances\AttendanceSummaryDetailService;
+use App\Service\FpDeviceCommandService;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -32,7 +34,9 @@ use Illuminate\View\View;
         $this->branch = new Branch();
         $this->role = new Role();
         $this->fpDevice = new FpDevice();
+        $this->FpDeviceCommandService = new FpDeviceCommandService();
     }
+
 
     /**
      * @throws AuthorizationException
@@ -158,10 +162,37 @@ use Illuminate\View\View;
     }
 
 
-
     public function getFpDevice(Request $request): JsonResponse
     {
         return response()->json($this->fpDevice->getData($request));
+    }
+
+
+    public function queryData(User $user, Request $request): JsonResponse
+    {
+        return response()->json($this->FpDeviceCommandService->storeCommands($request, $user->absent_id));
+    }
+
+
+    public function getFPDeviceData(Request $request): JsonResponse
+    {
+        return response()->json($this->FpDeviceCommandService->getFpDeviceData($request));
+    }
+
+
+    public function getRunningCommands(User $user): JsonResponse
+    {
+        $commands = FPDeviceCommand::where('user_id', $user->absent_id)->where('status', 1)->get();
+        return response()->json($commands);
+    }
+
+
+    public function deactivateActiveCommands(User $user): JsonResponse
+    {
+        FPDeviceCommand::where('user_id', $user->absent_id)->update(['status' => 0]);
+        return response()->json([
+            'message' => 'Command berhasil dimatikan',
+        ]);
     }
 
 }

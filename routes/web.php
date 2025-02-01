@@ -91,6 +91,7 @@ use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
 use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
 use App\Http\Controllers\WarehouseController;
+use App\Models\FPDeviceCommand;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -1086,6 +1087,12 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/branch/selected/{fpDevice}', [FpDevicesController::class, 'selectedBranchData']);
             Route::post('/destroy', [FpDevicesController::class, 'destroy']);
             Route::post('/{fpDevice}', [FpDevicesController::class, 'update']);
+
+
+            Route::prefix('command-id')->group(function () {
+                Route::get('/', [FPDeviceCommand::class, 'index']);
+                Route::get('/data', [FPDeviceCommand::class, 'data']);
+            });
         });
 
         Route::prefix('/work-time')->group(function () {
@@ -1112,18 +1119,21 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/search', [AttendanceSummaryController::class, 'search']);
             Route::get('/detail/filter/{user}', [AttendanceSummaryController::class, 'filterByDate']);
             Route::get('/filter-date', [AttendanceSummaryController::class, 'filterByDate']);
-            Route::get('/branch/data', [AttendanceSummaryController::class, 'getBranchData']);
+            Route:: get('/branch/data', [AttendanceSummaryController::class, 'getBranchData']);
             Route::get('/department/data', [AttendanceSummaryController::class, 'getDepartmentData']);
             Route::get('/roles/data', [AttendanceSummaryController::class, 'getRolesData']);
             Route::get('/detail/correction/work-time/selected/{workTime}', [AttendanceSummaryController::class, 'selectedData']);
+            Route::get('/detail/running-commands/{user}', [AttendanceSummaryController::class, 'getRunningCommands']);
+            Route::post('/detail/deactivate-active-commands/{user}', [AttendanceSummaryController::class, 'deactivateActiveCommands']);
+            Route::get('/detail/get-fp-devices', [AttendanceSummaryController::class, 'getFPDeviceData']);
             Route::get('/detail/{user}/{startDate?}/{endDate?}', [AttendanceSummaryController::class, 'detail']);
             Route::get('/detail/data/{user}/{startDate?}/{endDate?}', [AttendanceSummaryController::class, 'detailData']);
 
+            Route::post('detail/query-data/{user}', [AttendanceSummaryController::class, 'queryData']);
             Route::post(
                 '/detail/correction/save/{user}/{datePeriod?}',
                 [AttendanceSummaryController::class, 'saveCorrection']);
             Route::get('/filter', [AttendanceSummaryController::class, 'filter']);
-            Route::get('/get-fp-devices', [AttendanceSummaryController::class, 'getFpDevice']);
         });
 
         Route::prefix('/employee-schedules')->group(function () {

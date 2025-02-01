@@ -236,6 +236,8 @@
                 },
                 async getBranchData() {
                     $(".branch-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Cabang",
                         ajax: {
                             url: '/adms/fp-devices/branch/data',
                             dataType: "json",

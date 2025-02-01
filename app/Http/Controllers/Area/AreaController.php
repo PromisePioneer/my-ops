@@ -37,6 +37,10 @@ use Illuminate\View\View;
                     $query->where('user_id', $request->user()->id);
                 });
             }
+
+            if ($request->user()->hasRole('Branch Manager')) {
+                $query->where('branch_id', $request->user()->branch_id);
+            }
          })->paginate(10);
         return response()->json($area);
     }
