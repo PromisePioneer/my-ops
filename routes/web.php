@@ -86,7 +86,6 @@ use App\Http\Controllers\Master\Operational\JointClosureCodeController;
 use App\Http\Controllers\Master\Operational\SupplierController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
-use App\Http\Controllers\UserProfile\UserLeaveAndPermissionController;
 use App\Http\Controllers\UserProfile\UserProfileController;
 use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
 use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
@@ -677,17 +676,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/job-information/data', [UserProfileController::class, 'jobInformation']);
             Route::get('/sp', [UserProfileController::class, 'spPage']);
             Route::get('/sp/data', [UserProfileController::class, 'spData']);
-
-            Route::prefix('leaves-and-permission')->group(function () {
-                Route::get('/', [UserLeaveAndPermissionController::class, 'index']);
-                Route::get('/data', [UserLeaveAndPermissionController::class, 'data']);
-                Route::get('/search', [UserLeaveAndPermissionController::class, 'search']);
-                Route::get('/create', [UserLeaveAndPermissionController::class, 'create']);
-                Route::post('/', [UserLeaveAndPermissionController::class, 'store']);
-                Route::get('/{leaveAndPermission}', [UserLeaveAndPermissionController::class, 'edit']);
-                Route::post('/{leaveAndPermission}', [UserLeaveAndPermissionController::class, 'update']);
-                Route::delete('/{leaveAndPermission}', [UserLeaveAndPermissionController::class, 'destroy']);
-            });
 
 
             Route::prefix('attendance-records')->group(function () {

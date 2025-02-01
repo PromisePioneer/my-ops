@@ -68,6 +68,11 @@
                                     <option></option>
                                 </select>
                             </div>
+                            <div class="col-lg-6">
+                                <label class="col-form-label required fw-bold fs-6">Password</label>
+                                <input type="password" name="password" class="form-control form-control-solid"
+                                       id="password" placeholder="password">
+                            </div>
                         </div>
 
                         <div class="form-group row mb-6">

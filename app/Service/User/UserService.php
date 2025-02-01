@@ -75,7 +75,7 @@ class UserService
         $data = $request->validated();
         $data['placement'] = $request->user()->branch_id ? 'Cabang' : 'Pusat';
         $data['branch_id'] = $request->user()->branch_id ? $request->user()->branch_id : $request->branch_id;
-        $data['password'] = Hash::make('password');
+        $data['password'] = Hash::make($request->password);
         $data['nip'] = $this->formattedNip($request);
         $user = User::create($data);
         $user->syncRoles($request->role);
@@ -91,10 +91,11 @@ class UserService
 
     public function update(UserRequest $request, User $user): void
     {
+
         $data = $request->validated();
         $data['placement'] = $request->user()->branch_id ? 'Cabang' : 'Pusat';
         $data['branch_id'] = $request->user()->branch_id ? $request->user()->branch_id : $request->branch_id;
-        $data['password'] = Hash::make('password');
+        $data['password'] = empty($request->password) ? $user->password : Hash::make($request->password);;
         $data['nip'] = $this->formattedNip($request);
         $user->update($data);
         if ($request->user()->hasRole('Super Admin')) {

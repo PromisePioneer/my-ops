@@ -47,6 +47,8 @@ class UserRequest extends FormRequest
                 'integer',
                 Rule::exists('roles', 'id'),
             ],
+            'password' => [
+            ]
 
         ];
     }

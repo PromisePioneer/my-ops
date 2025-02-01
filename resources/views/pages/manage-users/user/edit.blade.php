@@ -11,25 +11,25 @@
                     @csrf
                     <div class="card-body">
                         @if(!Auth::user()->branch_id)
-                        <div class="row mb-4">
-                            <div class="col-md-6" x-model="users.placement">
-                                <label class="col-form-label required fw-bold fs-6">Penempatan</label>
-                                <select name="placement" id="selectedPlacement"
-                                        class="form-select form-select-solid user-placement-select2">
-                                    <option value="0" selected>Pilih</option>
-                                    <option value="Cabang" :selected="users?.placement === 'Cabang'">Cabang</option>
-                                    <option value="Pusat" :selected="users?.placement === 'Pusat'">Pusat</option>
-                                </select>
+                            <div class="row mb-4">
+                                <div class="col-md-6" x-model="users.placement">
+                                    <label class="col-form-label required fw-bold fs-6">Penempatan</label>
+                                    <select name="placement" id="selectedPlacement"
+                                            class="form-select form-select-solid user-placement-select2">
+                                        <option value="0" selected>Pilih</option>
+                                        <option value="Cabang" :selected="users?.placement === 'Cabang'">Cabang</option>
+                                        <option value="Pusat" :selected="users?.placement === 'Pusat'">Pusat</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-6" x-show="users?.placement === 'Cabang'" x-transition x-cloak>
+                                    <label class="col-form-label required fw-bold fs-6">Cabang</label>
+                                    <select :name="`${users?.placement === 'Cabang' ? 'branch_id' : ''}`"
+                                            id="selectedBranch"
+                                            class="form-select form-select-solid branchSelect2">
+                                        <option value="0">Pilih Cabang</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="col-lg-6" x-show="users?.placement === 'Cabang'" x-transition x-cloak>
-                                <label class="col-form-label required fw-bold fs-6">Cabang</label>
-                                <select :name="`${users?.placement === 'Cabang' ? 'branch_id' : ''}`"
-                                        id="selectedBranch"
-                                        class="form-select form-select-solid branchSelect2">
-                                    <option value="0">Pilih Cabang</option>
-                                </select>
-                            </div>
-                        </div>
                         @endif
                         <div class="row mb-4">
                             <div class="col-lg-6">
@@ -69,6 +69,11 @@
                                         class="form-select form-select-solid companies-select2">
                                     <option></option>
                                 </select>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="col-form-label required fw-bold fs-6">Password</label>
+                                <input type="password" name="password" class="form-control form-control-solid"
+                                       id="password" placeholder="password">
                             </div>
                         </div>
 

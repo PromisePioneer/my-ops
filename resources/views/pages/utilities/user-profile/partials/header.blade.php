@@ -63,10 +63,6 @@
                        href="{{ url('utility/user-profile/notification-detail') }}">Aktifitas</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-active-primary me-6 {{ Request::segment(3) === 'leaves-and-permission' ? 'active' : '' }}"
-                       href="{{ url('utility/user-profile/leaves-and-permission') }}">Cuti</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link text-active-primary me-6 {{ Request::segment(3) === 'sp' ? 'active' : '' }}"
                        href="{{ url('utility/user-profile/sp') }}">Surat Peringatan</a>
                 </li>
