@@ -44,11 +44,11 @@ class EmployeeScheduleService
                 $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
             })->where(function ($query) {
                 $query->whereNull('branch_id')->orWhere('branch_id', 1);
-            });
+            })->where('active', 1);
         }
 
         if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner')) {
-            $user->paginate(self::$perPage);
+            $user->where('active', 1)->paginate(self::$perPage);
         }
 
 
@@ -66,7 +66,7 @@ class EmployeeScheduleService
                 $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff', 'After Sales Customer Service']);
             })->where(function ($query) use ($request) {
                 $query->whereNull('branch_id')->orWhereIn('branch_id', [1])
-                    ->where('active', 1);;
+                    ->where('active', 1);
             });
         }
 
@@ -83,19 +83,19 @@ class EmployeeScheduleService
         if ($request->user()->hasAnyRole('Head Of Electrical Engineer')) {
             $user->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer']);
-            })->whereNull('branch_id');
+            })->whereNull('branch_id')->where('active', 1);
         }
 
 
         if ($request->user()->hasRole('Branch Manager')) {
-            $user->where('branch_id', $request->user()->branch_id)->paginate(self::$perPage);
+            $user->where('branch_id', $request->user()->branch_id->where('active', 1))->paginate(self::$perPage);
         }
 
 
         if ($request->user()->hasRole('KU Head Engineer')) {
             $user->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['KU Head Engineer', 'KU Engineer']);
-            });
+            })->where('active', 1);
         }
 
 
@@ -118,7 +118,7 @@ class EmployeeScheduleService
         $startDate =$request->start_date ? Carbon::parse($request->start_date) : $this->financialClosePeriodService->startDate();
         $endDate = $request->end_date ? Carbon::parse($request->end_date) :  $this->financialClosePeriodService->endDate();
 
-        $user = $this->query();
+        $user = $this->query()->where('active', 1);
 
 
         if ($request->user()->hasAnyRole('NOC Supervisor', 'NOC Staff')) {
@@ -206,7 +206,7 @@ class EmployeeScheduleService
         }
 
         if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner')) {
-            $user->paginate(self::$perPage);
+            $user->where('active', 1)->paginate(self::$perPage);
         }
 
 
@@ -224,7 +224,7 @@ class EmployeeScheduleService
                 $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff', 'After Sales Customer Service']);
             })->where(function ($query) use ($request) {
                 $query->whereNull('branch_id')->orWhereIn('branch_id', [1])
-                    ->where('active', 1);;
+                    ->where('active', 1);
             })->paginate(self::$perPage);
         }
 
