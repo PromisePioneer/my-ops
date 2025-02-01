@@ -81,8 +81,8 @@
                                 <th class="min-w-125px">Tidak CheckIn</th>
                                 <th class="min-w-125px">Tidak Checkout</th>
                                 <th class="min-w-125px">Cuti</th>
-                                <th class="min-w-125px">Izin</th>
                                 <th class="min-w-125px">Sakit</th>
+                                <th class="min-w-125px">Izin</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class=" fw-bold">

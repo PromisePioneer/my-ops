@@ -100,16 +100,18 @@ use Illuminate\Http\Request;
 
 
             $parseExpectedCheckIn = Carbon::parse($expectedCheckIn);
-            $parseActualCheckIn = Carbon::parse($actualCheckIn);
 
 
+            $newExpectedCheckIn = null;
+            if ($userWorktime->name === "Malam") {
+                $newExpectedCheckIn = $parseExpectedCheckIn->copy()->addDays();
+            }
 
-
-            if ($parseActualCheckIn->greaterThan($parseExpectedCheckIn)) {
-                return (int) $parseExpectedCheckIn->diffInMinutes($actualCheckIn) . ' Menit';
+            if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
+                $lateness = $newExpectedCheckIn ? $newExpectedCheckIn->diffInMinutes($actualCheckIn) : $parseExpectedCheckIn->diffInMinutes($actualCheckIn);
+                return (int)$lateness . " menit";
             }
         }
-
         return null;
     }
 
