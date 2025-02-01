@@ -21,6 +21,6 @@ class FPDeviceCommand extends Model
 
     public function device(): BelongsTo
     {
-        return $this->belongsTo(FPDevice::class, 'device_id');
+        return $this->belongsTo(FpDevice::class, 'device_id');
     }
 }
