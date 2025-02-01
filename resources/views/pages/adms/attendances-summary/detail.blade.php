@@ -59,7 +59,9 @@
                                     <th class="text-center">Clock Out</th>
                                     <th class="text-center">Terlambat</th>
                                     <th class="text-center">Jam Kerja</th>
-                                    <th class="text-center">Action</th>
+                                    <template x-if="Number(correctionPermission) === 1">
+                                        <th class="text-center">Action</th>
+                                    </template>
                                 </tr>
                                 </thead>
                                 <template x-if="isLoading">
@@ -86,37 +88,39 @@
                                 </template>
                                 <template x-for="(attendance, index) in attendancesSummaryRecords" :key="index">
                                     <tbody class="fw-bolder">
-                                        <template x-if="attendance.leaves?.status === 'Cuti'">
-                                            <tr class="bg-success text-center">
-                                                <td x-text="formatDate(attendance.date_period)"></td>
-                                                <td colspan="5">CUTI</td>
-                                            </tr>
-                                        </template>
-                                        <template x-if="attendance.permission?.status === 'Izin'">
-                                            <tr class="bg-danger text-white text-center">
-                                                <td x-text="formatDate(attendance.date_period)"></td>
-                                                <td colspan="5">IZIN</td>
-                                            </tr>
-                                        </template>
-                                        <template x-if="attendance?.sick?.status === 'Sakit'">
-                                            <tr class="bg-primary text-center">
-                                                <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
-                                                <td colspan="5">SAKIT</td>
-                                            </tr>
-                                        </template>
-                                        <template x-if="attendance.schedule === 'L'">
-                                            <tr class="bg-warning text-center">
-                                                <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
-                                                <td colspan="5">LIBUR</td>
-                                            </tr>
-                                        </template>
-                                        <template x-if="attendance.schedule === 'H' && !attendance.leaves && !attendance.sick && !attendance.permission || attendance.schedule === null">
-                                            <tr>
-                                                <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
-                                                <td class="text-center" x-text="attendance.clock_in"></td>
-                                                <td class="text-center" x-text="attendance.clock_out"></td>
-                                                <td class="text-center" x-text="attendance.late"></td>
-                                                <td class="text-center" x-text="attendance.work_time"></td>
+                                    <template x-if="attendance.leaves?.status === 'Cuti'">
+                                        <tr class="bg-success text-center">
+                                            <td x-text="formatDate(attendance.date_period)"></td>
+                                            <td colspan="5">CUTI</td>
+                                        </tr>
+                                    </template>
+                                    <template x-if="attendance.permission?.status === 'Izin'">
+                                        <tr class="bg-danger text-white text-center">
+                                            <td x-text="formatDate(attendance.date_period)"></td>
+                                            <td colspan="5">IZIN</td>
+                                        </tr>
+                                    </template>
+                                    <template x-if="attendance?.sick?.status === 'Sakit'">
+                                        <tr class="bg-primary text-center">
+                                            <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
+                                            <td colspan="5">SAKIT</td>
+                                        </tr>
+                                    </template>
+                                    <template x-if="attendance.schedule === 'L'">
+                                        <tr class="bg-warning text-center">
+                                            <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
+                                            <td colspan="5">LIBUR</td>
+                                        </tr>
+                                    </template>
+                                    <template
+                                        x-if="attendance.schedule === 'H' && !attendance.leaves && !attendance.sick && !attendance.permission || attendance.schedule === null">
+                                        <tr>
+                                            <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
+                                            <td class="text-center" x-text="attendance.clock_in"></td>
+                                            <td class="text-center" x-text="attendance.clock_out"></td>
+                                            <td class="text-center" x-text="attendance.late"></td>
+                                            <td class="text-center" x-text="attendance.work_time"></td>
+                                            <template x-if="Number(correctionPermission) === 1">
                                                 <td class="text-center">
                                                     <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                             data-bs-target="#modal-attendance-correction"
@@ -124,8 +128,9 @@
                                                         <i class="bi bi-pencil"></i>
                                                     </button>
                                                 </td>
-                                            </tr>
-                                        </template>
+                                            </template>
+                                        </tr>
+                                    </template>
                                     </tbody>
                                 </template>
                             </table>
@@ -144,6 +149,7 @@
 
         function attendancesSummaryDetail() {
             return {
+                correctionPermission: "{{ $user->can('Koreksi Data Riwayat Absensi') }}",
                 buttonLoading: false,
                 isLoading: false,
                 attendancesSummaryRecords: [],
