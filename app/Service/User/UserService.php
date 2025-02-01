@@ -26,7 +26,8 @@ class UserService
     public function data(Request $request): LengthAwarePaginator
     {
         $data = User::with('branch', 'roles', 'company')->when($request->user()->hasRole('Branch Manager'), function ($query) use ($request) {
-            $query->where('branch_id', $request->user()->branch_id);
+            $query->where('branch_id', $request->user()->branch_id)
+                ->where('id', '!=', $request->user()->id);
         })->paginate(self::$perPage);
         return self::formattedData($data);
     }
