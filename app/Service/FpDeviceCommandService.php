@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Models\FpDevice;
 use App\Models\FPDeviceCommand;
+use App\Models\User;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
@@ -46,19 +47,20 @@ class FpDeviceCommandService
     /**
      * @throws \Exception
      */
-    public function storeCommands(Request $request, $userId = null)
+    public function storeCommands(Request $request, ?User $user)
     {
         $data = $request->all();
 
         $data['start_date'] = $request->start_date;
         $data['end_date'] = $request->end_date;
-        $data['user_id'] = $userId;
+        $data['user_id'] = $user->id;
         $data['command_id'] = $this->generateCommandId();
         $data['status'] = 1;
         $data['device_id'] = $request->device_id;
 
 
-        $runningCommands = FPDeviceCommand::where('user_id', $userId)->where('status', true)->first();
+        $userData = User::where('user_id', $user->absent_id)->first();
+        $runningCommands = FPDeviceCommand::where('user_id', $user->id)->where('status', true)->first();
 
 
         if (!empty($runningCommands)) {
@@ -71,7 +73,7 @@ class FpDeviceCommandService
                 'C:%d:DATA QUERY ATTLOG SN=%s PIN=%d\tStartTime=%s\tEndTime=%s',
                 $this->generateCommandId(),
                 FpDevice::where('id', $request->device_id)->first()->serial_number,
-                $userId,
+                $user->absent_id,
                 date("Y-m-d\TH:i:s", strtotime($data['start_date'])),
                 date("Y-m-d\TH:i:s", strtotime($data['end_date'])),
             );
@@ -80,7 +82,7 @@ class FpDeviceCommandService
         if ($request->type === 'Tarik Data Absen Dari Mesin') {
             $data['command'] = sprintf(
                 'C:%d:DATA QUERY ATTLOG \tStartTime=%s\tEndTime=%s',
-                $userId,
+                $this->generateCommandId(),
                 date("Y-m-d\TH:i:s", strtotime($data['start_date'])),
                 date("Y-m-d\TH:i:s", strtotime($data['end_date'])),
             );

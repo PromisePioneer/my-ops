@@ -170,7 +170,7 @@ use Illuminate\View\View;
 
     public function queryData(User $user, Request $request): JsonResponse
     {
-        return response()->json($this->FpDeviceCommandService->storeCommands($request, $user->absent_id));
+        return response()->json($this->FpDeviceCommandService->storeCommands($request, $user));
     }
 
 
