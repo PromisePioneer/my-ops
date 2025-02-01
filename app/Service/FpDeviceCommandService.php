@@ -48,6 +48,7 @@ class FpDeviceCommandService
      */
     public function storeCommands(Request $request, $userId = null)
     {
+        $data = $request->all();
         $data['start_date'] = $request->start_date;
         $data['end_date'] = $request->end_date;
         $data['user_id'] = $userId;
@@ -68,7 +69,7 @@ class FpDeviceCommandService
             $data['command'] = sprintf(
                 'C:%d:DATA QUERY ATTLOG SN=%s PIN=%d\tStartTime=%s\tEndTime=%s',
                 $this->generateCommandId(),
-                $data['device_id'],
+                FpDevice::where('id', $data['device_id'])->first()->serial_number,
                 $userId,
                 date("Y-m-d\TH:i:s", strtotime($data['start_date'])),
                 date("Y-m-d\TH:i:s", strtotime($data['end_date'])),
