@@ -182,7 +182,7 @@ use Illuminate\View\View;
 
     public function getRunningCommands(User $user): JsonResponse
     {
-        $commands = FPDeviceCommand::where('user_id', $user->absent_id)->where('status', 1)->get();
+        $commands = FPDeviceCommand::where('user_id', $user->id)->where('status', 1)->get();
         return response()->json($commands);
     }
 
