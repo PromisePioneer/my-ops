@@ -49,6 +49,7 @@ class FpDeviceCommandService
     public function storeCommands(Request $request, $userId = null)
     {
         $data = $request->all();
+
         $data['start_date'] = $request->start_date;
         $data['end_date'] = $request->end_date;
         $data['user_id'] = $userId;

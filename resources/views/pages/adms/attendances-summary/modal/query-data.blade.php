@@ -17,7 +17,7 @@
             <form id="form-attendance-query-data" @submit.prevent="saveCommand()">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Device id</label>
+                        <label for="name" class="required form-label">Mesin Absensi</label>
                         <select name="device_id" id="device-id" class="form-select form-select-solid devices-select2">
                             <option></option>
                         </select>
