@@ -58,8 +58,6 @@ class FpDeviceCommandService
         $data['status'] = 1;
         $data['device_id'] = $request->device_id;
 
-
-        $userData = User::where('id', $user->absent_id)->first();
         $runningCommands = FPDeviceCommand::where('user_id', $user->id)->where('status', true)->first();
 
 
