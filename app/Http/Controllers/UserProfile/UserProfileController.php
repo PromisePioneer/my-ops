@@ -60,7 +60,7 @@ class UserProfileController extends Controller
     public function updateProfilePic(UserProfileRequest $request, User $user): JsonResponse
     {
         $user->update([
-            'profile_pic' => $this->handleFileUpload->upload($request, 'profile_pic', $user->profile_pic),
+            'profile_pic' => $this->handleFileUpload->upload($request, 'profile_pic', 'profile_pic', $user?->profile_pic),
         ]);
 
         return response()->json(['message' => 'foto profile telah di update']);
