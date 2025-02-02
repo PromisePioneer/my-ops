@@ -66,7 +66,10 @@ use Illuminate\View\View;
     public function store(AreaRequest $request): JsonResponse
     {
         $this->authorize('create', Area::class);
-        Area::create($request->validated());
+        Area::create([
+            'name' => $request->name,
+            'branch_id' => $request->user()->branch_id ? $request->user()->branch_id : $request->branch_id
+        ]);
         return response()->json(['message' => 'Data berhasil ditambahkan.']);
     }
 
@@ -83,7 +86,10 @@ use Illuminate\View\View;
     public function update(AreaRequest $request, Area $area): JsonResponse
     {
         $this->authorize('update', $area);
-        $area->update($request->validated());
+        $area->update([
+            'name' => $request->name,
+            'branch_id' => $request->user()->branch_id ? $request->user()->branch_id : $request->branch_id
+        ]);
         return response()->json(['message' => 'Data berhasil diubah.']);
     }
 

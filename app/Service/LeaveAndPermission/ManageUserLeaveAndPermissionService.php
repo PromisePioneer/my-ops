@@ -5,7 +5,6 @@ namespace App\Service\LeaveAndPermission;
 use AllowDynamicProperties;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
-use Auth;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -115,8 +114,6 @@ use function App\Helper\formatDate;
 
 
         $query = $this->permissionsData($request, $query);
-
-        dd($query);
 
         $data = $query->paginate(10);
         return self::formattedData($data);

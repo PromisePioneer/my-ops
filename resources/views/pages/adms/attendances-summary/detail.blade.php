@@ -44,19 +44,6 @@
                                 Reload
                             </button>
                         </div>
-                        <div class="card-toolbar">
-                            <div class="d-flex align-items-center gap-2">
-                                <template x-if="runningCommands.length > 0">
-                                    <button class="btn btn-light-danger btn-sm" @click="deactivateRunningCommands()">
-                                        Non-Aktifkan Tarik Data
-                                    </button>
-                                </template>
-
-                                <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#modal-attendance-query-data">Tarik Data Absen
-                                </button>
-                            </div>
-                        </div>
                     </div>
                     <div class="card-body pt-0">
                         <div class="table-responsive">
