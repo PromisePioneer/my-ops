@@ -68,9 +68,8 @@ class FpDeviceCommandService
 
         if ($request->type === 'Tarik Data Absen Dari Mesin Per Karyawan') {
             $data['command'] = sprintf(
-                'C:%d:DATA QUERY ATTLOG SN=%s PIN=%d\tStartTime=%s\tEndTime=%s',
+                'C:%d:DATA QUERY ATTLOG PIN=%d\tStartTime=%s\tEndTime=%s',
                 $this->generateCommandId(),
-                FpDevice::where('id', $request->device_id)->first()->serial_number,
                 $user->absent_id,
                 date("Y-m-d\TH:i:s", strtotime($data['start_date'])),
                 date("Y-m-d\TH:i:s", strtotime($data['end_date'])),
