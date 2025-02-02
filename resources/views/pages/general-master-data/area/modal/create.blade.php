@@ -16,18 +16,13 @@
 
             <form id="form-create" @submit.prevent="save()">
                 <div class="modal-body">
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Cabang</label>
-                        <select name="branch_id" id="branch_id" class="form-select form-select-solid branch-select2"
-                                data-dropdown-parent="#modal-create">
-                            <option></option>
-                        </select>
-                    </div>
+                    @if(Auth::user()->branch_id === null)
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama</label>
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
                                placeholder="Nama Area"/>
                     </div>
+                    @endif
                 </div>
 
                 <div class="modal-footer">
