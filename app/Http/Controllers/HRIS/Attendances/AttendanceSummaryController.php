@@ -187,9 +187,13 @@ use Illuminate\View\View;
     }
 
 
-    public function deactivateActiveCommands(User $user): JsonResponse
+    public function deactivateRunningCommand(User $user): JsonResponse
     {
-        FPDeviceCommand::where('user_id', $user->absent_id)->update(['status' => 0]);
+        \DB::transaction(function () use ($user) {
+            FPDeviceCommand::where('user_id', $user->id)->update([
+                'status' => 0,
+            ]);
+        });
         return response()->json([
             'message' => 'Command berhasil dimatikan',
         ]);

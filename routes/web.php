@@ -1124,7 +1124,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/roles/data', [AttendanceSummaryController::class, 'getRolesData']);
             Route::get('/detail/correction/work-time/selected/{workTime}', [AttendanceSummaryController::class, 'selectedData']);
             Route::get('/detail/running-commands/{user}', [AttendanceSummaryController::class, 'getRunningCommands']);
-            Route::post('/detail/deactivate-active-commands/{user}', [AttendanceSummaryController::class, 'deactivateActiveCommands']);
+            Route::get('/detail/deactivate-active-commands/{user}', [AttendanceSummaryController::class, 'deactivateRunningCommand']);
             Route::get('/detail/get-fp-devices', [AttendanceSummaryController::class, 'getFPDeviceData']);
             Route::get('/detail/{user}/{startDate?}/{endDate?}', [AttendanceSummaryController::class, 'detail']);
             Route::get('/detail/data/{user}/{startDate?}/{endDate?}', [AttendanceSummaryController::class, 'detailData']);

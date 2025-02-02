@@ -212,7 +212,7 @@
                 async deactivateRunningCommands() {
                     showConfirmModal("Anda yakin?", "Tarik data akan dihentikan.", "Ya, Hentikan!", async () => {
                         try {
-                            await axios.post(`/adms/attendances-summary/detail/deactivate-active-commands/${this.id}`, new FormData(this.formDelete));
+                            await axios.get(`/adms/attendances-summary/detail/deactivate-active-commands/${this.id}`);
                             await showAlert('success', 'Tarik Data Sukses Dihentikan');
                             await this.init();
                         } catch (error) {
@@ -277,8 +277,15 @@
                     });
                 },
                 async saveCommand() {
+                    const deviceSN = $('#device-id').text();
+                    const getSN = deviceSN.split('-')[0].trim();
                     this.buttonLoading = true;
                     try {
+                        await axios.get('/iclock/getrequest', {
+                            params: {
+                                SN: getSN
+                            }
+                        })
                         await axios.post(`/adms/attendances-summary/detail/query-data/${this.id}`, new FormData(this.formQueryData));
                         await showAlert('success', 'Data berhasil disimpan');
                         this.formQueryData.reset();
