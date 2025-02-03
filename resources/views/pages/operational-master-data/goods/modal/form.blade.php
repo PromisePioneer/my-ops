@@ -40,7 +40,7 @@
                     </div>
                         <div
                             class="d-flex justify-content-between align-items-center form-check form-switch form-check-custom form-check-solid mb-4">
-                            <label class="form-label" for="needSN" style="cursor: pointer">
+                            <label class="form-label" for="already_has_sn_on_item" style="cursor: pointer">
                                 Serial Number sudah tertera di barang (Klik jika ya).
                             </label>
                             <input class="form-check-input" x-model="hasSNOnItem" type="checkbox"
@@ -48,7 +48,7 @@
                                    id="already_has_sn_on_item"/>
                         </div>
                         <div
-                            class="d-flex justify-content-between align-items-center form-check form-switch form-check-custom form-check-solid">
+                            class="d-flex justify-content-between align-items-center form-check form-switch form-check-custom form-check-solid mb-10">
                             <label class="form-label" for="snPerPO" style="cursor: pointer">
                                 Memerlukan Serial Number.
                             </label>

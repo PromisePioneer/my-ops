@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Attendances;
 use App\Observers\AttendanceSummaryObserver;
+use App\Observers\GoodsStockObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

@@ -30,12 +30,12 @@ class GoodsPurchaseOrderRequest extends FormRequest
             'branch_id' => [
                 Rule::requiredIf(function () use ($request) {
                     return $request->placement === 'Cabang';
-                }), 'exists:branches,id'
+                })
             ],
             'warehouse_id' => [
                 Rule::requiredIf(function () use ($request) {
                     return $request->placement === 'Pusat';
-                }), 'exists:branches,id'
+                })
             ],
             'po_number' => ['required',
                 Rule::unique('goods_purchase_order', 'po_number')

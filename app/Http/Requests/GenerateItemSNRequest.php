@@ -24,10 +24,9 @@ class GenerateItemSNRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
-            'sn' => [
+            'serial_number' => [
                 Rule::requiredIf($request->sn === null),
-                Rule::unique('goods_stock', 'sn')
-                    ->ignore($this->route('goodsStock'))
+                Rule::unique('stock_has_sn', 'serial_number')
             ]
         ];
     }
@@ -35,8 +34,8 @@ class GenerateItemSNRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'sn.required' => 'Serial Number / Kode tidak boleh kosong',
-            'sn.unique' => 'Serial Number / Kode sudah terdaftar'
+            'serial_number.required' => 'Serial Number / Kode tidak boleh kosong',
+            'serial_number.unique' => 'Serial Number / Kode sudah terdaftar'
         ];
     }
 }

@@ -7,7 +7,9 @@ use App\Http\Requests\GenerateItemSNRequest;
 use App\Models\Goods;
 use App\Models\GoodsPurchaseOrder;
 use App\Models\GoodsStock;
+use App\Models\GoodsStockDetail;
 use App\Models\GoodsTransaction;
+use App\Models\StockHasSN;
 use App\Service\GoodsStockService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -82,7 +84,9 @@ use Illuminate\View\View;
 
     public function getGoodsStockBasedOnPO(GoodsPurchaseOrder $goodsPurchaseOrder): JsonResponse
     {
-        $data = GoodsStock::where('po_id', $goodsPurchaseOrder->id)->with('createdBy')->paginate(self::$perPage);
+        $data = StockHasSN::with(['goodsStock.po' => function ($query) use ($goodsPurchaseOrder) {
+            $query->where('po_id', $goodsPurchaseOrder->id);
+        }])->paginate(self::$perPage);
         return response()->json($data);
     }
 
@@ -90,7 +94,6 @@ use Illuminate\View\View;
     public function confirmGoodsReceived(GoodsPurchaseOrder $goodsPurchaseOrder): JsonResponse
     {
         DB::transaction(function () use ($goodsPurchaseOrder) {
-
             $goodsPurchaseOrder->update([
                 'status_received' => true,
                 'received_by' => Auth::id()
@@ -113,12 +116,15 @@ use Illuminate\View\View;
         if ($goodsPurchaseOrder->item->need_sn === 1
             &&
             $goodsPurchaseOrder->item->already_has_sn_on_item === 1) {
-            GoodsStock::create([
-                'po_id' => $goodsPurchaseOrder->id,
-                'warehouse_id' => $goodsPurchaseOrder->warehouse_id,
-                'branch_id' => $goodsPurchaseOrder->branch_id,
-                'item_id' => $goodsPurchaseOrder->item_id,
-                'sn' => $request->sn,
+            $goodsStockDetail = GoodsStockDetail::where('po_id', $goodsPurchaseOrder->id)->first();
+            $currentSN = StockHasSN::where('goods_stock_id', $goodsStockDetail->stock_id)->count();
+            $goodsStock = GoodsStock::find($goodsStockDetail->stock_id);
+            if ($currentSN >= $goodsStock->qty) {
+                return response()->json(['message' => 'Barang yang belum terdaftar sudah habis'], 422);
+            }
+            StockHasSN::create([
+                'goods_stock_id' => $goodsStockDetail->stock_id,
+                'serial_number' => $request->serial_number,
             ]);
         }
 

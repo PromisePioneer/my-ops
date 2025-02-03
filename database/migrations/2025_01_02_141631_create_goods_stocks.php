@@ -12,13 +12,20 @@ return new class extends Migration {
     {
         Schema::create('goods_stock', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('po_id')->constrained('goods_purchase_order');
-            $table->foreignId('warehouse_id')->nullable()->constrained('warehouses');
-            $table->foreignId('branch_id')->nullable()->constrained('warehouses');
-            $table->foreignId('item_id')->constrained('goods');
-            $table->integer('qty')->nullable();
-            $table->string('sn')->nullable();
-            $table->boolean('status')->default(false);
+            $table->foreignId('warehouse_id')
+                ->nullable()
+                ->constrained('warehouses')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('branch_id')
+                ->nullable()
+                ->constrained('branches')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+            $table->foreignId('item_id')->constrained('goods')
+                ->cascadeOnDelete()
+                ->cascadeOnDelete();
+            $table->integer('qty');
             $table->timestamps();
         });
     }

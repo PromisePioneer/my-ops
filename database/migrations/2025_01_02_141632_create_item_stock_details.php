@@ -10,15 +10,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('goods', function (Blueprint $table) {
+        Schema::create('goods_stock_detail', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->foreignId('category_id')->constrained('category_of_goods')
+            $table->foreignId('po_id')->constrained('goods_purchase_order');
+            $table->foreignId('stock_id')->constrained('goods_stock');
+            $table->foreignId('item_id')->constrained('goods')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignId('unit_type_id')->constrained('unit_types');
-            $table->boolean('already_has_sn_on_item')->default(false);
-            $table->boolean('need_sn')->default(false);
+            $table->string('item_code')->nullable();
             $table->timestamps();
         });
     }
@@ -28,7 +27,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('items');
+        Schema::dropIfExists('item_stock_details');
     }
 };

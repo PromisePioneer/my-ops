@@ -15,7 +15,7 @@
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="sn" class="required form-label">Serial Number</label>
-                        <input type="text" id="sn-create" name="sn"
+                        <input type="text" id="sn-create" name="serial_number"
                                class="form-control form-control-solid"
                                placeholder="Serial Number" onfocus="true" :value="editVal?.sn"/>
                     </div>

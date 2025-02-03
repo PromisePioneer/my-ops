@@ -9,7 +9,7 @@
                 <div class="card card-xl-stretch mb-5 mb-xl-8">
                     <div class="card-header border-0 pt-6">
                         <div class="card-title text-uppercase text-decoration-underline fw-bold">
-                            Informasi Barang
+                            Informasi PO
                         </div>
                     </div>
                     <div class="card-body py-0">
@@ -29,7 +29,7 @@
                                 <tr class="fw-bold">
                                     <th>Qty (Belum diberi kode)</th>
                                     <th>:</th>
-                                    <th x-text="purchaseOrder.qty - goodsStock?.total"></th>
+                                    <th x-text="purchaseOrder.qty"></th>
                                 </tr>
                                 <tr class="fw-bold">
                                     <th>Lokasi Awal</th>
@@ -126,15 +126,6 @@
                             Hapus
                         </button>
                     </form>
-                    <form id="form-confirm" @submit.prevent="confirm()">
-                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
-                        <button type="submit" class="btn btn-light-info btn-sm mt-5"
-                                x-show="selectedCheckBox.length > 0"
-                                x-transition x-cloak>
-                            <i class="bi bi-check-circle-fill"></i>
-                            Konfirmasi
-                        </button>
-                    </form>
                 </div>
                 <div class="py-5">
                     <div class="table-responsive">
@@ -148,8 +139,6 @@
                                     </div>
                                 </th>
                                 <th class="min-w-125px">SN</th>
-                                <th class="min-w-125px">Dibuat Oleh</th>
-                                <th class="min-w-125px">Status</th>
                                 <template
                                     x-if="purchaseOrder?.item?.need_sn === 1 && purchaseOrder?.item?.already_has_sn_on_item === 1">
                                     <th class="min-w-125px">Actions</th>
@@ -182,35 +171,15 @@
                                 <tbody class="fw-bold text-center">
                                 <tr>
                                     <td>
-                                        <template x-if="stock.status === 0">
-                                            <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                                 @click="selectCheckBox($event)">
-                                                <input class="form-check-input" type="checkbox" :value="stock.id"
-                                                       :id="'checkbox-' + stock.id"/>
-                                            </div>
-                                        </template>
+                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                             @click="selectCheckBox($event)">
+                                            <input class="form-check-input" type="checkbox" :value="stock.id"
+                                                   :id="'checkbox-' + stock.id"/>
+                                        </div>
                                     </td>
-                                    <td x-text="stock.sn"></td>
-                                    <td x-text="stock.created_by?.name"></td>
-                                    <template x-if="stock.status === 0">
-                                        <td>
-                                            <button class="btn btn-sm btn-light-danger">
-                                                <i class="bi bi-x-square-fill"></i>
-                                                Pending
-                                            </button>
-                                        </td>
-                                    </template>
-                                    <template x-if="stock.status === 1">
-                                        <td>
-                                            <button class="btn btn-sm btn-light-success">
-                                                <i class="bi bi-check-circle-fill"></i>
-                                                Terverifikasi
-                                            </button>
-                                        </td>
-                                    </template>
-
+                                    <td x-text="stock.serial_number"></td>
                                     <template
-                                        x-if="purchaseOrder?.item.need_sn === 1 && stock.status === 0 && purchaseOrder?.item.already_has_sn_on_item === 1">
+                                        x-if="purchaseOrder?.item?.need_sn === 1 && purchaseOrder?.item?.already_has_sn_on_item === 1">
                                         <td>
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modal-sn-create" @click="edit(stock.id)">
@@ -220,7 +189,7 @@
                                                 </i>
                                             </button>
                                         </td>
-                                        </template>
+                                    </template>
                                     <template
                                         x-if="stock?.status === 1">
                                         <td>
@@ -237,7 +206,7 @@
                         </table>
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
-                        <a href="{{ url('/inventory/goods/stock/detail', $goodsPurchaseOrder->id) }}"
+                        <a href="{{ url('/inventory/goods/stock/detail', $goodsPurchaseOrder->item_id) }}"
                            class="btn btn-light-danger btn-sm">Kembali</a>
                         <ul class="pagination float-end">
                             <template x-for="pagination in goodsStock?.links">
@@ -270,7 +239,6 @@
                 form: document.getElementById('form-sn-create'),
                 modalSN: new bootstrap.Modal(document.getElementById('modal-sn-create')),
                 formDelete: document.getElementById('form-delete'),
-                formConfirm: document.getElementById('form-confirm'),
                 async init() {
                     await this.getPurchaseOrder();
                     await this.getStockData();
@@ -357,6 +325,12 @@
                         await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
+
+                        if (error.response.data.message) {
+                            toastr.error(error.response.data.message);
+                            return;
+                        }
+
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
                     } finally {
                         this.buttonLoading = false;
@@ -365,18 +339,6 @@
                 async edit(id) {
                     const resp = await axios.get(`/inventory/goods/stock/detail/po/generate-sn/edit/${id}`);
                     this.editVal = resp.data;
-                },
-                async confirm() {
-                    showConfirmModal("Anda yakin?", "Data tidak bisa dihapus atau diubah jika di konfirmasi.", "Ya, Konfirmasi!", async () => {
-                        try {
-                            await axios.post(`/inventory/goods/stock/detail/po/generate-sn/confirm/`, new FormData(this.formConfirm));
-                            await showAlert('success', 'Data sukses dikonfirmasi');
-                            await this.init();
-                            this.selectedCheckBox = [];
-                        } catch (error) {
-                            await showAlert('error', 'Terjadi kesalahan');
-                        }
-                    });
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {

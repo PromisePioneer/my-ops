@@ -2,9 +2,9 @@
 
 namespace App\Service;
 
-use App\Models\Goods;
 use App\Models\GoodsPurchaseOrder;
 use App\Models\GoodsStock;
+use App\Models\GoodsStockDetail;
 use App\Models\GoodsTransaction;
 use App\Models\PurchaseOrderDetail;
 use App\Models\ReturnItemFromPo;
@@ -120,19 +120,36 @@ class GoodsPurchaseOrderService
                 ]);
             }
 
+            $goodsStocks = GoodsStock::orderBy('id', 'desc')
+                ->where(function ($query) use ($goodsPurchaseOrder) {
+                    if (!empty($goodsPurchaseOrder->branch_id)) {
+                        $query->where('warehouse_id', $goodsPurchaseOrder->warehouse_id)
+                            ->where('item_id', $goodsPurchaseOrder->item_id);
+                    }
 
-            $item = Goods::where('id', $goodsPurchaseOrder->item_id)->first();
+                    if (!empty($goodsPurchaseOrder->warehouse_id)) {
+                        $query->where('branch_id', $goodsPurchaseOrder->branch_id)
+                            ->where('item_id', $goodsPurchaseOrder->item_id);
+                    }
+                })->first();
 
-            if ($item->need_sn === 0 && $item->already_has_sn_on_item === 0) {
-                GoodsStock::create([
-                    'po_id' => $goodsPurchaseOrder->id,
-                    'warehouse_id' => $goodsPurchaseOrder->warehouse_id,
-                    'branch_id' => $goodsPurchaseOrder->branch_id,
-                    'item_id' => $goodsPurchaseOrder->item_id,
-                    'qty' => $goodsPurchaseOrder->qty,
-                    'status' => true
-                ]);
-            }
+
+            $goodsStock = GoodsStock::updateOrCreate([
+                'warehouse_id' => $goodsPurchaseOrder->warehouse_id,
+                'branch_id' => $goodsPurchaseOrder->branch_id,
+                'item_id' => $goodsPurchaseOrder->item_id,
+
+            ], [
+                'qty' => $goodsStocks ? $goodsStocks->qty += $request->qty_can_be_used : $request->qty_can_be_used
+            ]);
+
+            GoodsStockDetail::create([
+                'po_id' => $goodsPurchaseOrder->id,
+                'stock_id' => $goodsStock->id,
+                'item_id' => $goodsPurchaseOrder->item_id,
+            ]);
+
+
 
             PurchaseOrderDetail::create([
                 'date' => $request->date,

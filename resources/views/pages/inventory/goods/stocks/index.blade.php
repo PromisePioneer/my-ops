@@ -70,14 +70,6 @@
                                 <th class="min-w-125px">
                                     <div class="d-flex align-items-center justify-content-center">
                                         <span class="me-1">Total Stok</span>
-                                        <span
-                                            class="badge bg-success text-white fw-bold text-uppercase">(Verified)</span>
-                                    </div>
-                                </th>
-                                <th class="min-w-125px">
-                                    <div class="d-flex align-items-center justify-content-center">
-                                        <span class="me-1">Total Stok</span>
-                                        <span class="badge bg-danger text-white text-uppercase">(Unverified)</span>
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Actions</th>
@@ -109,8 +101,7 @@
                                 <tr>
                                     <td x-text="startIndex + index++"></td>
                                     <td x-text="item.name"></td>
-                                    <td x-text="item.verified_stock"></td>
-                                    <td x-text="item.unverified_stock"></td>
+                                    <td x-text="item.total_stock"></td>
                                     <td>
                                         <a :href="`/inventory/goods/stock/detail/${item.id}`"
                                            class="btn btn-light-primary btn-sm">

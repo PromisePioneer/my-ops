@@ -13,7 +13,7 @@ class GoodsStockService
 
     public function goodsData(): LengthAwarePaginator
     {
-        $goods = Goods::with('goodsStock')->paginate(self::$perPage);
+        $goods = Goods::with('goodsStock', 'unitType')->paginate(self::$perPage);
         return self::formattedGoodsData($goods);
     }
 
@@ -24,8 +24,7 @@ class GoodsStockService
         $goods = Goods::with('goodsStock')
             ->when(!empty($search), function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%');
-            })
-            ->paginate(self::$perPage);
+            })->paginate(self::$perPage);
         return self::formattedGoodsData($goods);
     }
 
@@ -56,18 +55,9 @@ class GoodsStockService
     private static function formattedGoodsData(LengthAwarePaginator $goodsData): LengthAwarePaginator
     {
         $data = $goodsData->getCollection()->map(function ($item) {
-            if ($item->need_sn === 1 || $item->already_has_sn_on_item === 1) {
-                $stock = $item->goodsStock->whereNotNull('sn')->where('status', 1)->count();
-            } else {
-                $stock = $item->goodsStock->whereNull('sn')->where('status', 1)->sum('qty');
-            }
-
             return [
                 'id' => $item->id,
-                'verified_stock' => $stock,
-                'unverified_stock' => $item->need_sn === 1
-                    ? $item->goodsStock->whereNotNull('sn')->where('status', 0)->count()
-                    : $item->goodsStock->whereNull('sn')->where('status', 0)->sum('qty'),
+                'total_stock' => "{$item->goodsStock->sum('qty')} {$item->unitType->name}",
                 'name' => $item->name
             ];
         });

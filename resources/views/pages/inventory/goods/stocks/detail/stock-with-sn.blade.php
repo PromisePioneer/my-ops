@@ -85,7 +85,7 @@
                                 <td x-text="po.qty"></td>
                                 <td x-text="po.send_by?.name"></td>
                                 <td x-text="po.received_by?.name ?? '-'"></td>
-                                <td x-text="po.warehouse?.name"></td>
+                                <td x-text="po.warehouse?.name ?? po.branch?.name"></td>
                                 <td>
                                     <template x-if="po.status_received === 1">
                                         <a :href="`/inventory/goods/stock/detail/po/generate-sn/${po.id}`"
