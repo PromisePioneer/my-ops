@@ -16,13 +16,11 @@
 
             <form id="form-create" @submit.prevent="save()">
                 <div class="modal-body">
-                    @if(Auth::user()->branch_id === null)
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama</label>
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
                                placeholder="Nama Area"/>
                     </div>
-                    @endif
                 </div>
 
                 <div class="modal-footer">

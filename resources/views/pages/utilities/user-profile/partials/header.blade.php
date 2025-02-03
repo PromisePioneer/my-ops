@@ -4,7 +4,9 @@
             <div class="me-7 mb-4">
                 <div class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative">
                     @if(isset(Auth::user()->profile_pic) && Auth::user()->profile_pic)
-                        <img src="{{ Storage::url(Auth::user()->profile_pic) }}" alt="image"/>
+                        <img :src="getImageURL(userProfile ?? null)"
+                             @click="$dispatch('lightbox', `${getImageURL(userProfile) ?? null}`)"
+                             alt="Foto Karyawan" class="w-100"/>
                     @else
                         <img src="{{ asset('assets/media/avatars/blank.png') }}" alt="image"/>
                     @endif

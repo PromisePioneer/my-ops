@@ -2,8 +2,8 @@
 @section('page-title', 'User Profile')
 @section('content')
 
-    @include('pages.utilities.user-profile.partials.header')
     <div x-data="usersData()">
+        @include('pages.utilities.user-profile.partials.header')
         <div class="card mb-5 mb-xl-10" id="kt_profile_details_view">
             <div class="card-header cursor-pointer">
                 <div class="card-title m-0">
@@ -46,6 +46,7 @@
             return {
                 identityInformation: {},
                 jobInformation: {},
+                userProfile: "{{ \Illuminate\Support\Facades\Auth::user()->profile_pic }}",
                 async init() {
                     await this.getIdentityInformationData();
                     await this.getJobInformationData();
