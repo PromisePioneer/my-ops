@@ -2,6 +2,33 @@
 @section('page-title', 'Data Paket Broadband')
 @section('content')
     <div x-data="branchesData()">
+        <div class="d-flex flex-column flex-xl-row">
+            <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
+                <div class="card card-flush">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2 class="mb-0">Filter</h2>
+                        </div>
+                    </div>
+                    <form id="form-filter" @submit.prevent="filter()">
+                        <div class="card-body pt-0">
+                            <div class="d-flex flex-column text-gray-600">
+                                <div class="d-flex align-items-center py-2">
+                                    <select class="form-select form-select-solid branches-select2"
+                                            name="branch_id_filter" id="branch_id_filter">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer pt-4 text-end">
+                            <button type="submit" class="btn btn-light btn-active-primary btn-sm">
+                                Filter
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="flex-lg-row-fluid ms-lg-10">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             @include('pages.general-master-data.broadband-packets.form')
             <div class="card-header border-0 pt-6">
@@ -136,6 +163,7 @@
             </div>
         </div>
     </div>
+        </div>
     @include('components.toast')
 @endsection
 @push('script')

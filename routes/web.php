@@ -419,6 +419,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [BroadbandPacketController::class, 'index']);
             Route::get('/data', [BroadbandPacketController::class, 'data']);
             Route::get('/branches/data', [BroadbandPacketController::class, 'branchData']);
+            Route::get('/filter', [BroadbandPacketController::class, 'filter']);
             Route::get('/search', [BroadbandPacketController::class, 'search']);
             Route::post('/', [BroadbandPacketController::class, 'store']);
             Route::get('/{broadbandPacket}', [BroadbandPacketController::class, 'edit']);

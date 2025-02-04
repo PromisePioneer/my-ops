@@ -15,25 +15,40 @@ use Illuminate\Pagination\LengthAwarePaginator;
     {
         $this->broadbandPacket = new BroadbandPacket();
     }
-
     public function data(Request $request): LengthAwarePaginator
     {
-        $data = $this->broadbandPacket->with('branch')
-            ->paginate(self::$perPage);
+        $data = BroadbandPacket::with('branch')->paginate(self::$perPage);
 
         return self::formattedData($data);
     }
 
     public function search(Request $request): LengthAwarePaginator
     {
+        $branchId = $request->branch_id;
         $search = $request->input('search');
-        $searchQuery = $this->broadbandPacket->with('branch')->when(!empty(!empty($search)), function ($query) use ($search) {
-            $query->where('name', 'like', '%' . $search . '%')->orWhereHas('branch', function ($query) use ($search) {
+        $searchQuery = $this->broadbandPacket->with('branch')
+            ->whereHas('branch', function ($query) use ($branchId) {
+                $query->where('id', $branchId);
+            })
+            ->when(!empty($search), function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhereHas('branch', function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })->orWhere('capacity', 'like', '%' . $search . '%');
         })->paginate(self::$perPage);
 
         return self::formattedData($searchQuery);
+    }
+
+    public function filter(Request $request): LengthAwarePaginator
+    {
+        $branchId = $request->branch_id;
+        $filterQuery = $this->broadbandPacket->with('branch')
+            ->whereHas('branch', function ($query) use ($branchId) {
+                $query->where('id', $branchId);
+            })->paginate(self::$perPage);
+
+        return self::formattedData($filterQuery);
     }
 
     public function formattedData(LengthAwarePaginator $broadbandPacket): LengthAwarePaginator
