@@ -43,10 +43,14 @@ use Illuminate\Pagination\LengthAwarePaginator;
     public function filter(Request $request): LengthAwarePaginator
     {
         $branchId = $request->branch_id;
+
         $filterQuery = $this->broadbandPacket->with('branch')
-            ->whereHas('branch', function ($query) use ($branchId) {
-                $query->where('id', $branchId);
-            })->paginate(self::$perPage);
+            ->when(!empty($branchId), function ($query) use ($branchId) {
+                $query->whereHas('branch', function ($query) use ($branchId) {
+                    $query->where('id', $branchId);
+                });
+            })
+            ->paginate(self::$perPage);
 
         return self::formattedData($filterQuery);
     }
