@@ -85,7 +85,7 @@
                                 </tbody>
                             </template>
                             <template x-for="area in usersArea?.data" :key="area.id">
-                                <tbody class="fw-bold">
+                                <tbody class="fw-bold text-center">
                                 <tr>
                                     <td>
                                         <template x-if="Number(destroyPermission) === 1">

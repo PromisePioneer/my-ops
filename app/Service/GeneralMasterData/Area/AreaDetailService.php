@@ -44,7 +44,7 @@ class AreaDetailService
         $data = $userHasAreaQuery->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
-                'user_name' => "{$item->user->nip} {$item->user->name}",
+                'user_name' => "({$item->user->nip}) {$item->user->name}",
                 'role_name' => $item->user->roles->pluck('name')->implode(', '),
             ];
         });
