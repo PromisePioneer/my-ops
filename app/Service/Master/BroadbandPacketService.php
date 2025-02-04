@@ -2,14 +2,14 @@
 
 namespace App\Service\Master;
 
+use AllowDynamicProperties;
 use App\Models\BroadbandPacket;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class BroadbandPacketService
+#[AllowDynamicProperties] class BroadbandPacketService
 {
     private static int $perPage = 10;
-    private BroadbandPacket $broadbandPacket;
 
     public function __construct()
     {
@@ -19,10 +19,21 @@ class BroadbandPacketService
     public function data(Request $request): LengthAwarePaginator
     {
         $data = $this->broadbandPacket->with('branch')
-            ->where('branch_id', $request->user()->branch_id)
             ->paginate(self::$perPage);
 
         return self::formattedData($data);
+    }
+
+    public function search(Request $request): LengthAwarePaginator
+    {
+        $search = $request->input('search');
+        $searchQuery = $this->broadbandPacket->with('branch')->when(!empty(!empty($search)), function ($query) use ($search) {
+            $query->where('name', 'like', '%' . $search . '%')->orWhereHas('branch', function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })->orWhere('capacity', 'like', '%' . $search . '%');
+        })->paginate(self::$perPage);
+
+        return self::formattedData($searchQuery);
     }
 
     public function formattedData(LengthAwarePaginator $broadbandPacket): LengthAwarePaginator
@@ -30,6 +41,7 @@ class BroadbandPacketService
         $data = $broadbandPacket->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
+                'branch_name' => $item->branch?->name,
                 'name' => $item->name,
                 'capacity' => $item->capacity,
                 'price' => number_format($item->price, 2),
