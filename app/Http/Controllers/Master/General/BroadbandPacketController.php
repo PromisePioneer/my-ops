@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Master\General;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BroadbandPacketRequest;
+use App\Models\Branch;
 use App\Models\BroadbandPacket;
 use App\Service\Master\BroadbandPacketService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -11,14 +13,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-class BroadbandPacketController extends Controller
+#[AllowDynamicProperties] class BroadbandPacketController extends Controller
 {
-
-    private BroadbandPacket $broadbandPacket;
-    private BroadbandPacketService $broadbandPacketService;
-
     public function __construct()
     {
+        $this->branch = new Branch();
         $this->broadbandPacket = new BroadbandPacket();
         $this->broadbandPacketService = new BroadbandPacketService();
     }
@@ -29,26 +28,7 @@ class BroadbandPacketController extends Controller
     public function index(): View
     {
         $this->authorize('view', BroadbandPacket::class);
-        return view('pages.general-master-data.broadband-packet.index');
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function search(Request $request): JsonResponse
-    {
-        $this->authorize('view', BroadbandPacket::class);
-        $search = $request->input('search');
-        $query = $this->broadbandPacket->data($request);
-
-        if (!empty($search)) {
-            $query->where('name', 'like', '%'.$search.'%')->orWhereHas('branch', function ($query) use ($search) {
-                $query->where('name', 'like', '%'.$search.'%');
-            })->orWhere('capacity', 'like', '%'.$search.'%');
-        }
-
-        $data = $query->paginate(10);
-        return response()->json($data);
+        return view('pages.general-master-data.broadband-packets.index');
     }
 
     /**
@@ -59,6 +39,20 @@ class BroadbandPacketController extends Controller
         $this->authorize('view', BroadbandPacket::class);
         return response()->json($this->broadbandPacketService->data($request));
     }
+    /**
+     * @throws AuthorizationException
+     */
+    public function search(Request $request): JsonResponse
+    {
+        $this->authorize('view', BroadbandPacket::class);
+        return response()->json($this->broadbandPacketService->search($request));
+    }
+
+
+    public function branchData(Request $request): JsonResponse
+    {
+        return response()->json($this->branch->getData($request));
+    }
 
     /**
      * @throws AuthorizationException
@@ -67,7 +61,6 @@ class BroadbandPacketController extends Controller
     {
         $this->authorize('create', BroadbandPacket::class);
         $data = $request->validated();
-        $data['branch_id'] = $request->user()->branch_id;
         BroadbandPacket::create($data);
         return response()->json([
             'message' => 'data berhasil disimpan',
@@ -85,6 +78,12 @@ class BroadbandPacketController extends Controller
     }
 
 
+    public function selectedBranch(BroadbandPacket $broadbandPacket)
+    {
+        return response()->json($this->branch->getSelectedData($broadbandPacket->branch_id));
+    }
+
+
     /**
      * @throws AuthorizationException
      */
@@ -92,7 +91,6 @@ class BroadbandPacketController extends Controller
     {
         $this->authorize('update', $broadbandPacket);
         $data = $request->validated();
-        $data['branch_id'] = $request->user()->branch_id;
         $broadbandPacket->update($data);
         return response()->json([
             'message' => 'data berhasil disimpan',

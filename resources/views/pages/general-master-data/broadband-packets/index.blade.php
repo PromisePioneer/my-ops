@@ -3,8 +3,7 @@
 @section('content')
     <div x-data="branchesData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.general-master-data.broadband-packet.modal.create')
-            @include('pages.general-master-data.broadband-packet.modal.edit')
+            @include('pages.general-master-data.broadband-packets.form')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -21,7 +20,7 @@
                             @can('Tambah Data Paket Broadband')
                                 <button type="button" class="btn btn-light-primary btn-sm"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#modal-create">
+                                        data-bs-target="#modal-broadband-packet">
                                     <i class="ki-duotone ki-message-add fs-2">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
@@ -53,9 +52,9 @@
                 </div>
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
+                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-bordered">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0 text-center">
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()"
@@ -93,7 +92,7 @@
                                 </tbody>
                             </template>
                             <template x-for="broadbandPacket in broadbandPackets?.data" :key="broadbandPacket.id">
-                                <tbody class="fw-bold">
+                                <tbody class="fw-bold text-center">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -103,14 +102,15 @@
                                                    :disabled="Number(deletePermission) !== 1"/>
                                         </div>
                                     </td>
-                                    <td x-text="broadbandPackets.branch?.name ?? 'Pusat'"></td>
+                                    <td x-text="broadbandPacket.branch_name"></td>
                                     <td x-text="broadbandPacket.name"></td>
                                     <td x-text="`${broadbandPacket.capacity} / Mbps`"></td>
                                     <td x-text="broadbandPacket.price"></td>
                                     <td>
                                         <template x-if="Number(editPermission) === 1">
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-edit" @click="edit(broadbandPacket.id)">
+                                                    data-bs-target="#modal-broadband-packet"
+                                                    @click="edit(broadbandPacket.id)">
                                                 <i class="ki-duotone ki-pencil fs-2">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
@@ -126,7 +126,7 @@
                     <ul class="pagination float-end mb-4 mt-4">
                         <template x-for="pagination in broadbandPackets.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                <button class="page-link" @click="paginate(pagination.url)"
                                         x-html="pagination.label">
                                 </button>
                             </li>
@@ -139,131 +139,5 @@
     @include('components.toast')
 @endsection
 @push('script')
-    <script defer>
-        function branchesData() {
-            return {
-                editPermission: "{{ request()->user()->can('Edit Data Paket Broadband') }}",
-                deletePermission: "{{ request()->user()->can('Hapus Data Paket Broadband') }}",
-                broadbandPackets: [],
-                isLoading: false,
-                buttonLoading: false,
-                startIndex: null,
-                selectedCheckBox: [],
-                selectAll: false,
-                singleChecked: false,
-                search: '',
-                editVal: '',
-                formCreate: document.getElementById('form-create'),
-                formEdit: document.getElementById('form-edit'),
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
-                deleteForm: document.getElementById('deleteForm'),
-                async init() {
-                    await this.getBroadbandPacketData();
-                },
-                async getBroadbandPacketData() {
-                    this.isLoading = true;
-                    try {
-                        const resp = await axios.get('/general-master-data/broadband-packet/data');
-                        this.broadbandPackets = resp.data
-                        this.startIndex = this.broadbandPackets.from;
-                    } catch (e) {
-                        console.log(e)
-                    } finally {
-                        this.isLoading = false;
-
-                    }
-                },
-                async searchData() {
-                    try {
-                        this.broadbandPackets = await axios.get('/general-master-data/broadband-packet/search', {
-                            params: {search: this.search},
-                            headers: {'Content-Type': 'application/json'}
-                        });
-                    } catch (error) {
-                        console.log(error);
-                    }
-                },
-                async paginationEndPoint(url) {
-                    if (url) {
-                        const resp = await axios.get(`${url}`);
-                        this.startIndex = resp.data.from
-                        this.broadbandPackets = resp.data
-                    }
-                },
-                toggleAllCheckBox() {
-                    if (Number(this.deletePermission) === 1) {
-                        this.selectAll = !this.selectAll;
-                        this.singleChecked = false;
-                        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                        this.selectedCheckBox = [];
-                        checkboxes.forEach((checkbox) => {
-                            checkbox.checked = this.selectAll;
-                            if (this.selectAll) {
-                                this.selectedCheckBox.push(checkbox.value);
-                            }
-                        });
-                        this.selectedCheckBox.shift();
-                    }
-                },
-                selectCheckBox(event) {
-                    const checkboxId = event.target.value;
-                    if (event.target.checked) {
-                        this.selectedCheckBox.push(checkboxId);
-                    } else {
-                        const index = this.selectedCheckBox.indexOf(checkboxId);
-                        if (index !== -1) {
-                            this.selectedCheckBox.splice(index, 1);
-                        }
-                    }
-                },
-                async save() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post('/general-master-data/broadband-packet', new FormData(this.formCreate))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.formCreate.reset();
-                        this.modalCreate.hide();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
-                async edit(id) {
-                    const resp = await axios.get(`/general-master-data/broadband-packet/${id}`);
-                    this.editVal = resp.data;
-                },
-                async update(id) {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post(`/general-master-data/broadband-packet/${id}`, new FormData(this.formEdit))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.modalEdit.hide();
-                        this.formEdit.reset();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]));
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
-                async destroy() {
-                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
-                        try {
-                            await axios.post(`/general-master-data/broadband-packet/destroy`, new FormData(this.deleteForm));
-                            await showAlert('success', 'Data sukses dihapus');
-                            await this.init();
-                        } catch (error) {
-                            console.error(error);
-                            await showAlert('error', 'Terjadi kesalahan');
-                        }
-                    });
-                },
-            }
-        }
-    </script>
+    @include('pages.general-master-data.broadband-packets.script')
 @endpush

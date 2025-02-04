@@ -415,12 +415,14 @@ Route::group(['middleware' => ['auth']], static function () {
 
         });
 
-        Route::prefix('broadband-packet')->group(function () {
+        Route::prefix('broadband-packets')->group(function () {
             Route::get('/', [BroadbandPacketController::class, 'index']);
             Route::get('/data', [BroadbandPacketController::class, 'data']);
+            Route::get('/branches/data', [BroadbandPacketController::class, 'branchData']);
             Route::get('/search', [BroadbandPacketController::class, 'search']);
             Route::post('/', [BroadbandPacketController::class, 'store']);
             Route::get('/{broadbandPacket}', [BroadbandPacketController::class, 'edit']);
+            Route::get('/branch/selected/{broadbandPacket}', [BroadbandPacketController::class, 'selectedBranch']);
             Route::post('/destroy', [BroadbandPacketController::class, 'destroy']);
             Route::post('/{broadbandPacket}', [BroadbandPacketController::class, 'update']);
         });
