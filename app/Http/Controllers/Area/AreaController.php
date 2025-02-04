@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AreaRequest;
 use App\Models\Area;
 use App\Models\Branch;
+use App\Service\GeneralMasterData\Area\AreaService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,10 +15,10 @@ use Illuminate\View\View;
 
 #[AllowDynamicProperties] class AreaController extends Controller
 {
-
     public function __construct()
     {
         $this->branch = new Branch();
+        $this->areaService = new AreaService();
     }
 
     public function index(): View
@@ -31,18 +32,7 @@ use Illuminate\View\View;
     public function data(Request $request): JsonResponse
     {
         $this->authorize('view', Area::class);
-        $area = Area::with('branch')->withCount('areaHasUser')->where(function($query) use($request) {
-            if($request->user()->hasRole('Head Engineer')){
-                $query->whereHas('areaHasUser.user', function ($query) use($request) {
-                    $query->where('user_id', $request->user()->id);
-                });
-            }
-
-            if ($request->user()->hasRole('Branch Manager')) {
-                $query->where('branch_id', $request->user()->branch_id);
-            }
-         })->paginate(10);
-        return response()->json($area);
+        return response()->json($this->areaService->data($request));
     }
 
     /**
@@ -51,29 +41,30 @@ use Illuminate\View\View;
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', Area::class);
-        $search = $request->input('search');
-        $area = Area::with('branch')->when(!empty($search), function ($query) use ($search) {
-            $query->where('name', 'like', '%' . $search . '%')
-                ->orWhereHas('branch', function ($query) use ($search) {
-                    $query->where('name', 'like', '%' . $search . '%');
-                });
-        })->paginate(10);
-
-        return response()->json($area);
+        return response()->json($this->areaService->search($request));
     }
 
 
+    public function filter(Request $request): JsonResponse
+    {
+        return response()->json($this->areaService->filter($request));
+    }
+
+
+    /**
+     * @throws AuthorizationException
+     */
     public function store(AreaRequest $request): JsonResponse
     {
         $this->authorize('create', Area::class);
-        Area::create([
-            'name' => $request->name,
-            'branch_id' => $request->user()->branch_id ? $request->user()->branch_id : $request->branch_id
-        ]);
+        $this->areaService->store($request);
         return response()->json(['message' => 'Data berhasil ditambahkan.']);
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function edit(Area $area): JsonResponse
     {
         $this->authorize('update', $area);
@@ -86,10 +77,7 @@ use Illuminate\View\View;
     public function update(AreaRequest $request, Area $area): JsonResponse
     {
         $this->authorize('update', $area);
-        $area->update([
-            'name' => $request->name,
-            'branch_id' => $request->user()->branch_id ? $request->user()->branch_id : $request->branch_id
-        ]);
+        $this->areaService->update($request, $area);
         return response()->json(['message' => 'Data berhasil diubah.']);
     }
 

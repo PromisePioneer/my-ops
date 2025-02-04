@@ -676,7 +676,10 @@ class PermissionSeeder extends Seeder
             'Tambah Data Area',
             'Edit Data Area',
             'Hapus Data Area',
+            'Filter Data Area Berdasarkan Cabang',
             'Lihat Detail Data Area',
+            'Tambah Detail Data Area',
+            'Hapus Detail Data Area',
         ];
 
         foreach ($permissions as $permission) {
