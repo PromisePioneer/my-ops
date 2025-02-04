@@ -15,6 +15,7 @@
             form: document.getElementById('form-broadband-packet'),
             modalForm: new bootstrap.Modal(document.getElementById('modal-broadband-packet')),
             deleteForm: document.getElementById('deleteForm'),
+            formFilter: document.getElementById('form-filter'),
             async init() {
                 await this.getBroadbandPacketData();
                 await this.getBranchData();
@@ -47,9 +48,13 @@
                 });
             },
             async searchData() {
+                const branchId = $('#branch_id_filter').val()
                 try {
                     const resp = await axios.get('/general-master-data/broadband-packets/search', {
-                        params: {search: this.search},
+                        params: {
+                            branch_id: branchId,
+                            search: this.search
+                        },
                         headers: {'Content-Type': 'application/json'}
                     });
                     this.broadbandPackets = resp.data;
@@ -57,10 +62,30 @@
                     console.log(error);
                 }
             },
+            async filter() {
+                try {
+                    const branchId = $('#branch_id_filter').val()
+                    const resp = await axios.get('/general-master-data/broadband-packets/filter', {
+                        params: {
+                            branch_id: branchId
+                        }
+                    })
+                    this.broadbandPackets = resp.data;
+                } catch (e) {
+                    console.log(e)
+                } finally {
+                    this.isLoading = false;
+                }
+
+            },
             async paginate(url) {
+                const branchId = $('#branch_id_filter').val()
                 if (url) {
-                    const resp = await axios.get(`${url}`);
-                    this.startIndex = resp.data.from
+                    const resp = await axios.get(`${url}`, {
+                        params: {
+                            branch_id: branchId
+                        }
+                    });
                     this.broadbandPackets = resp.data
                 }
             },

@@ -28,6 +28,12 @@ class Branch extends Model
     }
 
 
+    public function branchHasBroadbandPacket(): HasMany
+    {
+        return $this->hasMany(BranchHasBroadbandPacket::class, 'branch_id');
+    }
+
+
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');

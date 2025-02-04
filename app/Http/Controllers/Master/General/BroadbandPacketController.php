@@ -49,6 +49,12 @@ use Illuminate\View\View;
     }
 
 
+    public function filter(Request $request): JsonResponse
+    {
+        return response()->json($this->broadbandPacketService->filter($request));
+    }
+
+
     public function branchData(Request $request): JsonResponse
     {
         return response()->json($this->branch->getData($request));
