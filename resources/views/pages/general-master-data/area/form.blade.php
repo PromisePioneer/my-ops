@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="modal-edit">
+<div class="modal fade" tabindex="-1" id="modal-area">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -14,20 +14,20 @@
                 </div>
             </div>
 
-            <form id="form-edit" @submit.prevent="update(editVal.id)">
+            <form id="form-area" @submit.prevent="save(editVal?.id ?? null)">
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Cabang</label>
                         <select name="branch_id" id="selected-branch"
-                                data-dropdown-parent="#modal-edit"
-                                class="form-select form-select-solid branch-select2">
+                                data-dropdown-parent="#modal-area"
+                                class="form-select form-select-solid branches-select2">
                             <option></option>
                         </select>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama</label>
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama Area" :value="editVal.name"/>
+                               placeholder="Nama Area" :value="editVal?.name"/>
                     </div>
                 </div>
 

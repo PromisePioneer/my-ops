@@ -1,7 +1,7 @@
 @extends('layouts.template')
 @section('content')
     <div x-data="userHasArea()">
-        @include('pages.general-master-data.area.detail.modal.create')
+        @include('pages.general-master-data.area.detail.form')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -16,15 +16,17 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            <button type="button" class="btn btn-light-primary btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
-                                <i class="ki-duotone ki-message-add fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                </i> Tambah
-                            </button>
+                            <template x-if="Number(createPermission) === 1">
+                                <button type="button" class="btn btn-light-primary btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-detail-area">
+                                    <i class="ki-duotone ki-message-add fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i> Tambah
+                                </button>
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -48,9 +50,9 @@
                 </div>
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle fs-6 gy-5" id="kt_table_users">
+                        <table class="table table-bordered align-middle fs-6 gy-5" id="kt_table_users">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input" type="checkbox"
@@ -74,7 +76,7 @@
                                 </tbody>
                             </template>
                             <template x-if="!isLoading && usersArea.data?.length === 0">
-                                <tbody class="fw-bold">
+                                <tbody class="fw-bold text-center">
                                 <tr>
                                     <td colspan="9">
                                         <center>Data Tidak Ditemukan</center>
@@ -86,14 +88,16 @@
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td>
-                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                             @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="area.id"
-                                                   :id="'checkbox-' + area.id"/>
-                                        </div>
+                                        <template x-if="Number(destroyPermission) === 1">
+                                            <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                                 @click="selectCheckBox($event)">
+                                                <input class="form-check-input" type="checkbox" :value="area.id"
+                                                       :id="'checkbox-' + area.id"/>
+                                            </div>
+                                        </template>
                                     </td>
-                                    <td x-text="area.user.name"></td>
-                                    <td x-text="area.user.roles[0]?.name ?? '-'"></td>
+                                    <td x-text="area.user_name"></td>
+                                    <td x-text="area.role_name ?? '-'"></td>
                                 </tr>
                                 </tbody>
                             </template>
@@ -104,7 +108,7 @@
                         <ul class="pagination float-end mb-4 mt-4">
                             <template x-for="pagination in usersArea.links">
                                 <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                    <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                    <button class="page-link" @click="paginate(pagination.url)"
                                             x-html="pagination.label">
                                     </button>
                                 </li>
@@ -121,6 +125,8 @@
     <script>
         function userHasArea() {
             return {
+                createPermission: "{{ request()->user()->can('Tambah Detail Data Area') }}",
+                destroyPermission: "{{ request()->user()->can('Hapus Detail Data Area') }}",
                 buttonLoading: false,
                 isLoading: false,
                 id: "{{ $area->id }}",
@@ -129,14 +135,15 @@
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                formCreate: document.getElementById('form-create'),
+                modalForm: new bootstrap.Modal(document.getElementById('modal-detail-area')),
+                form: document.getElementById('form-detail-area'),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
                     await this.getAssociatedUsers();
                     await this.getUserData();
                 },
                 async searchData() {
+                    this.isLoading = true;
                     try {
                         const resp = await axios.get(`/general-master-data/area-detail/search/${this.id}`, {
                             params: {search: this.search},
@@ -145,6 +152,8 @@
                         this.usersArea = resp.data;
                     } catch (error) {
                         console.log(error);
+                    } finally {
+                        this.isLoading = false;
                     }
                 },
                 async getAssociatedUsers() {
@@ -196,7 +205,7 @@
                         }
                     });
                 },
-                async paginationEndPoint(url) {
+                async paginate(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
                         this.usersArea = resp.data
@@ -205,10 +214,10 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/general-master-data/area-detail/${this.id}`, new FormData(this.formCreate))
+                        await axios.post(`/general-master-data/area-detail/${this.id}`, new FormData(this.form))
                         await showAlert('success', 'Data berhasil disimpan')
-                        this.formCreate.reset();
-                        this.modalCreate.hide();
+                        this.form.reset();
+                        this.modalForm.hide();
                         await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;

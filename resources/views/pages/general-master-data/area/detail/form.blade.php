@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="modal-create">
+<div class="modal fade" tabindex="-1" id="modal-detail-area">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -14,12 +14,12 @@
                 </div>
             </div>
 
-            <form id="form-create" @submit.prevent="save()">
+            <form id="form-detail-area" @submit.prevent="save()">
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">KCA / WKCA / TEKNISI</label>
                         <select name="user_id" id="user_id" class="form-select form-select-solid users-select2"
-                                data-dropdown-parent="#modal-create">
+                                data-dropdown-parent="#modal-detail-area">
                             <option></option>
                         </select>
                     </div>

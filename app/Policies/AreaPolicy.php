@@ -43,4 +43,15 @@ class AreaPolicy
         return $user->can('Lihat Detail Data Area');
     }
 
+    public function createDetail(User $user): bool
+    {
+        return $user->can('Tambah Detail Data Area');
+    }
+
+
+    public function destroyDetail(User $user): bool
+    {
+        return $user->can('Hapus Detail Data Area');
+    }
+
 }

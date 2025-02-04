@@ -298,6 +298,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [AreaController::class, 'index']);
             Route::get('/data', [AreaController::class, 'data']);
             Route::get('/search', [AreaController::class, 'search']);
+            Route::get('/filter', [AreaController::class, 'filter']);
             Route::post('/', [AreaController::class, 'store']);
             Route::get('/branch/data', [AreaController::class, 'getBranchData']);
             Route::get('/branch/selected/{area}', [AreaController::class, 'selectedBranch']);
