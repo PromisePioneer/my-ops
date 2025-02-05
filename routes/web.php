@@ -15,6 +15,7 @@ use App\Http\Controllers\Accounting\Transaction\FabController;
 use App\Http\Controllers\Accounting\Transaction\InitialBalanceController;
 use App\Http\Controllers\Accounting\Transaction\InvoiceController;
 use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
+use App\Http\Controllers\AppDocController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\BAAController;
@@ -129,6 +130,7 @@ Route::group(['middleware' => ['auth']], static function () {
     //dashboard
     Route::get('home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/summary', [HomeController::class, 'summary']);
+
 
     Route::prefix('/manage-users')->group(function () {
         Route::prefix('users')->group(function () {
