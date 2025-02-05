@@ -14,8 +14,6 @@ use Illuminate\View\View;
 
 #[AllowDynamicProperties] class ContactController extends Controller
 {
-    private static int $perPage = 10;
-
 
     public function __construct()
     {

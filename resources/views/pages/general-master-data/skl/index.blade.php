@@ -3,8 +3,7 @@
 @section('content')
     <div x-data="sklData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.general-master-data.skl.modal.create')
-            @include('pages.general-master-data.skl.modal.edit')
+            @include('pages.general-master-data.skl.form')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -21,7 +20,7 @@
                             @can('Tambah Data SKL')
                                 <button type="button" class="btn btn-light-primary btn-sm"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#modal-skl-create">
+                                        data-bs-target="#modal-skl">
                                     <i class="ki-duotone ki-message-add fs-2">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
@@ -52,9 +51,9 @@
                 </div>
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
+                        <table class="table table-bordered align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input" type="checkbox"
@@ -63,11 +62,11 @@
                                 </th>
                                 <th class="min-w-125px">Nama</th>
                                 <template x-if="Number(editPermission) === 1">
-                                <th class="min-w-125px">Actions</th>
+                                    <th class="min-w-125px">Actions</th>
                                 </template>
                             </thead>
                             <template x-if="isLoading">
-                                <tbody class="fw-bold">
+                                <tbody class="fw-bold ">
                                 <tr>
                                     <td colspan="9">
                                         <div style="text-align: center;">
@@ -89,7 +88,7 @@
                                 </tbody>
                             </template>
                             <template x-for="service in skl?.data" :key="service.id">
-                                <tbody class="fw-bold">
+                                <tbody class="fw-bold text-center">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -101,15 +100,15 @@
                                     </td>
                                     <td x-text="service.name"></td>
                                     <template x-if="Number(editPermission) === 1">
-                                    <td>
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(service.id)">
-                                            <i class="ki-duotone ki-pencil fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </button>
-                                    </td>
+                                        <td>
+                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-skl" @click="edit(service.id)">
+                                                <i class="ki-duotone ki-pencil fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                            </button>
+                                        </td>
                                     </template>
                                 </tr>
                                 </tbody>
@@ -132,130 +131,5 @@
     @include('components.toast')
 @endsection
 @push('script')
-    <script defer>
-        function sklData() {
-            return {
-                createPermission: "{{ request()->user()->can('Tambah Data SKL') }}",
-                editPermission: "{{ request()->user()->can('Edit Data SKL') }}",
-                deletePermission: "{{ request()->user()->can('Hapus Data SKL') }}",
-                skl: [],
-                isLoading: false,
-                buttonLoading: false,
-                selectedCheckBox: [],
-                selectAll: false,
-                singleChecked: false,
-                search: '',
-                editVal: '',
-                formCreate: document.getElementById('form-skl-create'),
-                formEdit: document.getElementById('form-edit'),
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-skl-create')),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
-                formDelete: document.getElementById('form-delete'),
-                async init() {
-                    await this.getSklData();
-                },
-                async getSklData() {
-                    this.isLoading = false;
-                    try {
-                        const resp = await axios.get('/general-master-data/skl/data');
-                        this.skl = resp.data
-                    } catch (e) {
-                        console.log(e)
-                    } finally {
-                        this.isLoading = false;
-                    }
-                },
-                async searchData() {
-                    try {
-                        const resp = await axios.get('/general-master-data/skl/search', {
-                            params: {search: this.search},
-                            headers: {'Content-Type': 'application/json'}
-                        });
-                        this.skl = resp.data;
-                    } catch (error) {
-                        console.log(error);
-                    }
-                },
-                async paginationEndPoint(url) {
-                    if (url) {
-                        const resp = await axios.get(`${url}`);
-                        this.skl = resp.data
-                    }
-                },
-                toggleAllCheckBox() {
-                    if (Number(this.deletePermission) === 1) {
-                        this.selectAll = !this.selectAll;
-                        this.singleChecked = false;
-                        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                        this.selectedCheckBox = [];
-                        checkboxes.forEach((checkbox) => {
-                            checkbox.checked = this.selectAll;
-                            if (this.selectAll) {
-                                this.selectedCheckBox.push(checkbox.value);
-                            }
-                        });
-                        this.selectedCheckBox.shift();
-                    }
-                },
-                selectCheckBox(event) {
-                    const checkboxId = event.target.value;
-                    if (event.target.checked) {
-                        this.selectedCheckBox.push(checkboxId);
-                    } else {
-                        const index = this.selectedCheckBox.indexOf(checkboxId);
-                        if (index !== -1) {
-                            this.selectedCheckBox.splice(index, 1);
-                        }
-                    }
-                },
-                async edit(id) {
-                    const resp = await axios.get(`/general-master-data/skl/${id}`);
-                    console.log(resp);
-                    this.editVal = resp.data;
-                },
-                async update(id) {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post(`/general-master-data/skl/${id}`, new FormData(this.formEdit))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.modalEdit.hide();
-                        this.formEdit.reset();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]));
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
-                async destroy() {
-                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
-                        try {
-                            await axios.post(`/general-master-data/skl/destroy`, new FormData(this.formDelete));
-                            await showAlert('success', 'Data sukses dihapus');
-                            await this.init();
-                        } catch (error) {
-                            console.error(error);
-                            await showAlert('error', 'Terjadi kesalahan');
-                        }
-                    });
-                },
-                async saveSKL() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post('/general-master-data/skl', new FormData(this.formCreate))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.formCreate.reset();
-                        this.modalCreate.hide();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                }
-            }
-        }
-    </script>
+    @include('pages.general-master-data.skl.script')
 @endpush

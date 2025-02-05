@@ -3,8 +3,7 @@
 @section('content')
     <div x-data="departmentsData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.general-master-data.department.modal.create')
-            @include('pages.general-master-data.department.modal.edit')
+            @include('pages.general-master-data.department.form')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -20,7 +19,7 @@
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
+                                    data-bs-target="#modal-department">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
@@ -101,7 +100,7 @@
                                     <td>
                                         <template x-if="Number(editPermission) === 1">
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-edit" @click="edit(department.id)">
+                                                    data-bs-target="#modal-department" @click="edit(department.id)">
                                                 <i class="ki-duotone ki-pencil fs-2">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
@@ -143,10 +142,8 @@
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                formCreate: document.getElementById('form-create'),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
-                formEdit: document.getElementById('form-edit'),
+                modalForm: new bootstrap.Modal(document.getElementById('form-department')),
+                form: document.getElementById('form-department'),
                 deleteForm: document.getElementById('form-delete'),
                 async init() {
                     await this.getDepartmentData();
@@ -197,13 +194,17 @@
                         this.departments = resp.data
                     }
                 },
-                async save() {
+                async save(id = null) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/general-master-data/department/', new FormData(this.formCreate));
+                        if (!id) {
+                            await axios.post('/general-master-data/department/', new FormData(this.form));
+                        } else {
+                            await axios.post(`/general-master-data/department/${id}`, new FormData(this.form));
+                        }
                         await showAlert('success', 'Data berhasil disimpan');
-                        this.modalCreate.hide();
-                        this.formCreate.reset();
+                        this.modalForm.hide();
+                        this.form.reset();
                         await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
@@ -215,21 +216,6 @@
                 async edit(id) {
                     const resp = await axios.get(`/general-master-data/department/${id}`);
                     this.editVal = resp.data;
-                },
-                async update(id) {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post(`/general-master-data/department/${id}`, new FormData(this.formEdit));
-                        await showAlert('success', 'Data berhasil disimpan');
-                        this.modalEdit.hide();
-                        this.formEdit.reset();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
-                    } finally {
-                        this.buttonLoading = false;
-                    }
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {

@@ -36,4 +36,14 @@ class ServiceCategory extends Model
             ];
         })->toArray();
     }
+
+
+    public function selectedData($serviceCategoryId): array
+    {
+        $query = self::orderby('name', 'asc')->where('id', $serviceCategoryId)->first();
+        return [
+            'id' => $query->id,
+            'name' => $query->name
+        ];
+    }
 }

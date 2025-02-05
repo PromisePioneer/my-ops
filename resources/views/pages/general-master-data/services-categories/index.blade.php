@@ -3,8 +3,7 @@
 @section('content')
 
     <div x-data="servicesCategoriesData()">
-        @include('pages.general-master-data.services-categories.modal.create')
-        @include('pages.general-master-data.services-categories.modal.edit')
+        @include('pages.general-master-data.services-categories.form')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -21,7 +20,7 @@
                         @can('Lihat Data Kategori Layanan')
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modal-service-categories-create">
+                                    data-bs-target="#modal-service-category">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
@@ -52,9 +51,9 @@
                 </div>
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_categorys">
+                        <table class="table align-middle table-bordered fs-6 gy-5">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3"
                                          @click="toggleAllCheckBox()" :disabled="Number(deletePermission) !== 1">
@@ -89,7 +88,7 @@
                                 </tbody>
                             </template>
                             <template x-for="(category,index) in categories?.data" :key="category.id">
-                                <tbody class="fw-bold">
+                                <tbody class="fw-bold text-center">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -103,7 +102,8 @@
                                     <td>
                                         <template x-if="Number(editPermission) === 1">
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-edit" @click="edit(category.id)">
+                                                    data-bs-target="#modal-service-category"
+                                                    @click="edit(category.id)">
                                                 <i class="ki-duotone ki-pencil fs-2">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
@@ -132,123 +132,5 @@
     @include('components.toast')
 @endsection
 @push('script')
-    <script>
-        function servicesCategoriesData() {
-            return {
-                createPermission: "{{ request()->user()->can('Tambah Data Kategori Layanan') }}",
-                editPermission: "{{ request()->user()->can('Edit Data Kategori Layanan') }}",
-                deletePermission: "{{ request()->user()->can('Hapus Data Kategori Layanan') }}",
-                categories: [],
-                buttonLoading: false,
-                isLoading: true,
-                search: '',
-                selectAll: false,
-                selectedCheckBox: [],
-                singleChecked: false,
-                editVal: '',
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-service-categories-create')),
-                formCreate: document.getElementById('form-services-categories-create'),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
-                formEdit: document.getElementById('form-edit'),
-                deleteForm: document.getElementById('deleteForm'),
-                async init() {
-                    const categories = await axios.get('/general-master-data/service-categories/data');
-                    this.categories = categories.data;
-                    this.startIndex = this.categories.from;
-                    this.isLoading = false;
-                },
-                async searchData() {
-                    const resp = await axios.get('/general-master-data/service-categories/search', {
-                        params: {
-                            search: this.search
-                        },
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                    });
-
-                    this.categories = resp.data;
-                },
-                async paginationEndPoint(url) {
-                    if (url) {
-                        const resp = await axios.get(`${url}`);
-                        this.startIndex = resp.data.from
-                        this.categories = resp.data
-                    }
-                },
-                toggleAllCheckBox() {
-                    if (Number(this.deletePermission) === 1) {
-                    this.selectAll = !this.selectAll;
-                        this.singleChecked = false;
-
-                        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                        this.selectedCheckBox = [];
-                        checkboxes.forEach((checkbox) => {
-                            checkbox.checked = this.selectAll;
-                            if (this.selectAll) {
-                                this.selectedCheckBox.push(checkbox.value);
-                            }
-                        });
-                    }
-                },
-                selectCheckBox(event) {
-                    const checkboxId = event.target.value;
-                    if (event.target.checked) {
-                        this.selectedCheckBox.push(checkboxId);
-                    } else {
-                        const index = this.selectedCheckBox.indexOf(checkboxId);
-                        if (index !== -1) {
-                            this.selectedCheckBox.splice(index, 1);
-                        }
-                    }
-                },
-                async saveServiceCategories() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post('/general-master-data/service-categories/', new FormData(this.formCreate))
-                        await showAlert('success', 'Data berhasil disimpan');
-                        await this.init();
-                        await this.formCreate.reset();
-                        await this.modalCreate.hide();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false
-                    }
-                },
-                async edit(id) {
-                    const resp = await axios.get(`/general-master-data/service-categories/show/${id}`);
-                    this.editVal = resp.data;
-                },
-                async update(id) {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post(`/general-master-data/service-categories/update/${id}`, new FormData(this.formEdit))
-                        await showAlert('success', 'Data berhasil diubah');
-                        this.formEdit.reset();
-                        this.modalEdit.hide();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
-                async destroy() {
-                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
-                        try {
-                            await axios.post(`/general-master-data/service-categories/destroy`, new FormData(this.deleteForm));
-                            await showAlert('success', 'Data sukses dihapus');
-                            await this.init();
-                        } catch (error) {
-                            console.error(error);
-                            await showAlert('error', 'Terjadi kesalahan');
-                        }
-                    });
-                },
-            }
-        }
-    </script>
+    @include('pages.general-master-data.services-categories.script')
 @endpush

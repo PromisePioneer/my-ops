@@ -36,6 +36,9 @@ use Throwable;
         return view('pages.general-master-data.role.index');
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function rolesData(): JsonResponse
     {
         $this->authorize('view', Role::class);
@@ -43,26 +46,49 @@ use Throwable;
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', Role::class);
         return response()->json($this->roleService->searchRole($request));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function create(): View
     {
         $this->authorize('create', Role::class);
-        $permissions = Permission::get(['id', 'name']);
-        return view('pages.general-master-data.role.create', compact('permissions'));
+        return view('pages.general-master-data.role.create');
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getDepartments(Request $request): JsonResponse
     {
         $this->authorize('create', Role::class);
         return response()->json($this->departments->getData($request));
     }
 
+    public function getPermissions(): JsonResponse
+    {
+        return response()->json(Permission::all());
+    }
+
+    public function searchPermission(Request $request): JsonResponse
+    {
+        $permission = Permission::where('name', 'like', '%' . $request->search . '%')->get();
+        return response()->json($permission);
+    }
+
+    /**
+     * @throws Throwable
+     * @throws AuthorizationException
+     */
     public function store(RoleRequest $request): JsonResponse
     {
         $this->authorize('create', Role::class);
@@ -81,6 +107,9 @@ use Throwable;
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getSelectedDepartment(Role $role): JsonResponse
     {
         $this->authorize('update', $role);
@@ -88,20 +117,24 @@ use Throwable;
         return response()->json($this->departments->getSelectedData($data->department->first()->id));
     }
 
+    public function getSelectedPermission(Role $role): JsonResponse
+    {
+        return response()->json($role->permissions()->pluck('name')->toArray());
+    }
 
+
+    /**
+     * @throws AuthorizationException
+     */
     public function edit(Role $role): View
     {
         $this->authorize('update', $role);
-        $permissions = Permission::all();
-        $roleHasPermissions = $role->permissions()->pluck('name')->toArray();
-        return view('pages.general-master-data.role.edit', compact('role', 'permissions', 'roleHasPermissions'));
+        return view('pages.general-master-data.role.edit', compact('role'));
     }
 
     /**
      * @throws Throwable
      */
-
-
     public function show(Role $role): JsonResponse
     {
         $this->authorize('update', $role);
@@ -114,17 +147,8 @@ use Throwable;
 
     /**
      * @throws AuthorizationException
+     * @throws Throwable
      */
-    public function associatedUsers(Role $role): JsonResponse
-    {
-        $this->authorize('update', $role);
-        $users = $this->roleService->associatedUsers($role->id);
-        return response()->json([
-            'data' => $users,
-            'total_user' => $users->count(),
-        ]);
-    }
-
     public function update(Role $role, RoleRequest $request): JsonResponse
     {
         $this->authorize('update', $role);

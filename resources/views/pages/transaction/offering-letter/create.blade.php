@@ -9,7 +9,7 @@
     </style>
     <div class="d-flex flex-column flex-lg-row" x-data="generateOfferingLetter">
         @include('pages.general-master-data.contact.modal.create')
-        @include('pages.general-master-data.unit-types.modal.form')
+        @include('pages.general-master-data.unit-types.form')
         @include('pages.general-master-data.skl.modal.create')
         @include('pages.general-master-data.services-categories.modal.create')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">

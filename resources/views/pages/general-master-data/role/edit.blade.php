@@ -35,37 +35,44 @@
                                 </div>
                             </div>
                             <div class="fv-row">
-                                <label class="fs-5 fw-bolder form-label mb-10">Hak Akses Menu</label>
-                                <div class="form-check mb-4">
-                                    <label
-                                        class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
-                                        <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
-                                        <span
-                                            class="form-check-label text-capitalize fw-bold">
-                                                        Pilih Semua
-                                        </span>
-                                    </label>
+                                <div class="d-flex align-items-center justify-content-between mb-10">
+                                    <label class="fs-5 fw-bolder form-label">Hak Akses Menu</label>
+                                    <input type="text" name="search" x-model="search"
+                                           @input.debounce="searchPermissionData()"
+                                           class="form-control form-control-solid w-250px"
+                                           placeholder="Search...">
+
                                 </div>
                                 <div class="row justify-content-center align-items-center">
-                                    @foreach($permissions as $permission)
+                                    <template x-if="permissions.length === 0">
+                                        <div class="col-md-12">
+                                            <div class="fv-row">
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div class="fv-help-block text-center fw-bold">
+                                                        Data tidak ditemukan
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template x-for="(permission, index) in permissions" :key="index">
                                         <div class="col-md-6">
                                             <div class="form-check mb-4">
                                                 <label
                                                     class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
                                                     <input class="form-check-input" type="checkbox"
-                                                           value="{{ $permission->name }}"
-                                                           {{ in_array($permission->name, $roleHasPermissions) ? 'checked' : '' }}
+                                                           :value="permission.name"
+                                                           :checked="selectedPermissions.includes(permission.name)"
                                                            name="permission[]"
                                                            multiple
                                                     >
                                                     <span class="form-check-label text-capitalize text-gray-600 fw-bold"
-                                                    >
-                                                        {{ $permission->name }}
+                                                          x-text="permission.name">
                                                     </span>
                                                 </label>
                                             </div>
                                         </div>
-                                    @endforeach
+                                    </template>
                                 </div>
                             </div>
                         </div>
@@ -100,12 +107,41 @@
                 id: "{{ $role->id }}",
                 buttonLoading: false,
                 selectedCheckBox: [],
+                permissions: [],
+                selectedPermissions: [],
                 selectAll: false,
                 singleChecked: false,
                 form: document.getElementById('form'),
+                search: '',
                 async init() {
                     await this.getDepartmentData();
+                    await this.selectedPermission();
                     await this.selectedDepartment();
+                    await this.getPermissionsData();
+                },
+                async searchPermissionData() {
+                    const resp = await axios.get('/general-master-data/roles/permissions/search', {
+                        params: {
+                            search: this.search
+                        }
+                    });
+                    this.permissions = resp.data;
+                },
+                async getPermissionsData() {
+                    try {
+                        const resp = await axios.get('/general-master-data/roles/permissions/data');
+                        this.permissions = resp.data;
+                    } catch (e) {
+                        console.log(e);
+                    }
+                },
+                async selectedPermission() {
+                    try {
+                        const resp = await axios.get(`/general-master-data/roles/permissions/data/selected/${this.id}`);
+                        this.selectedPermissions = resp.data;
+                    } catch (e) {
+                        console.log(e);
+                    }
                 },
                 async save() {
                     this.buttonLoading = true

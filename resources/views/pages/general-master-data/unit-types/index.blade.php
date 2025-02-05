@@ -3,7 +3,7 @@
 @section('content')
     <div x-data="unitTypesData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.general-master-data.unit-types.modal.form')
+            @include('pages.general-master-data.unit-types.form')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">

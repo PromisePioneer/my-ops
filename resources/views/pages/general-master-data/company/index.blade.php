@@ -3,8 +3,7 @@
 @section('content')
     <div x-data="companyData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.general-master-data.company.modal.create')
-            @include('pages.general-master-data.company.modal.edit')
+            @include('pages.general-master-data.company.form')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -20,7 +19,7 @@
                         @can('Tambah Data Perusahaan')
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
+                                    data-bs-target="#modal-company">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
@@ -50,9 +49,9 @@
                 </div>
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
+                        <table class="table align-middle table-bordered fs-6 gy-5">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()"
@@ -86,7 +85,7 @@
                                 </tbody>
                             </template>
                             <template x-for="company in companies?.data" :key="company.id">
-                                <tbody class="fw-bold">
+                                <tbody class="fw-bold text-center">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -101,7 +100,7 @@
                                     <td>
                                         <template x-if="Number(editPermission) === 1">
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-edit" @click="edit(company.id)">
+                                                    data-bs-target="#modal-company" @click="edit(company.id)">
                                                 <i class="ki-duotone ki-pencil fs-2">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
@@ -143,10 +142,8 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                formCreate: document.getElementById('form-create'),
-                formEdit: document.getElementById('form-edit'),
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
+                form: document.getElementById('form-company'),
+                modalForm: new bootstrap.Modal(document.getElementById('modal-company')),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
                     await this.getCompany();
@@ -199,13 +196,17 @@
                         }
                     }
                 },
-                async save() {
+                async save(id = null) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/general-master-data/companies', new FormData(this.formCreate))
+                        if (!id) {
+                            await axios.post('/general-master-data/companies', new FormData(this.form))
+                        } else {
+                            await axios.post(`/general-master-data/companies/update/${id}`, new FormData(this.form))
+                        }
                         await showAlert('success', 'Data berhasil disimpan')
-                        this.formCreate.reset();
-                        this.modalCreate.hide();
+                        this.form.reset();
+                        this.modalForm.hide();
                         await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
@@ -217,21 +218,6 @@
                 async edit(id) {
                     const resp = await axios.get(`/general-master-data/companies/${id}`);
                     this.editVal = resp.data;
-                },
-                async update(id) {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post(`/general-master-data/companies/update/${id}`, new FormData(this.formEdit))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.modalEdit.hide();
-                        this.formEdit.reset();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]));
-                    } finally {
-                        this.buttonLoading = false;
-                    }
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {

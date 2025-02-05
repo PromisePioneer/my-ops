@@ -4,7 +4,10 @@
     <div x-data="generateRole()">
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
-                <a class="btn btn-light-info btn-sm mb-6" href="{{ url('general-master-data/roles/') }}">Kembali</a>
+                <a class="btn btn-light-danger btn-sm mb-6" href="{{ url('general-master-data/roles/') }}">
+                    <i class="bi bi-backspace"></i>
+                    Kembali
+                </a>
             </div>
             <div class="card-body py-3">
                 <form id="form" @submit.prevent="save()">
@@ -35,43 +38,59 @@
                                 </div>
                             </div>
                             <div class="fv-row">
-                                <label class="fs-5 fw-bolder form-label mb-10">Hak Akses Menu</label>
-                                <div class="form-check mb-4">
+                                <div class="d-flex align-items-center justify-content-between mb-10">
+                                    <label class="fs-5 fw-bolder form-label">Hak Akses Menu</label>
+                                    <input type="text" name="search" x-model="search"
+                                           @input.debounce="searchPermissionData()"
+                                           class="form-control form-control-solid w-250px"
+                                           placeholder="Search...">
+
+                                </div>
+                                <div class="form-check mb-4 border-top">
                                     <label
-                                        class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                        class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 pt-4">
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                         <span
                                             class="form-check-label text-capitalize fw-bold">
-                                                        Pilih Semua
+                                            Pilih Semua
                                         </span>
                                     </label>
                                 </div>
                                 <div class="row justify-content-center align-items-center">
-                                    @foreach($permissions as $permission)
+                                    <template x-if="permissions.length === 0">
+                                        <div class="col-md-12">
+                                            <div class="fv-row">
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div class="fv-help-block text-center fw-bold">
+                                                        Data tidak ditemukan
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template x-for="permission in permissions" :key="permission.id">
                                         <div class="col-md-6">
                                             <div class="form-check mb-4">
                                                 <label
                                                     class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
                                                     <input class="form-check-input" type="checkbox"
-                                                           value="{{ $permission->name }}"
+                                                           :value="permission.name"
                                                            name="permission[]"
                                                            multiple
                                                     >
-                                                    <span class="form-check-label text-capitalize text-gray-600 fw-bold"
-                                                    >
-                                                        {{ $permission->name }}
+                                                    <span class="form-check-label text-capitalize  fw-bold"
+                                                          x-text="permission.name">
                                                     </span>
                                                 </label>
                                             </div>
                                         </div>
-                                    @endforeach
+                                    </template>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="separator py-2"></div>
-
                     <div class="float-end d-flex py-6 px-9">
                         <button type="reset" class="btn btn-light btn-active-light-primary me-2 btn-sm">Reset</button>
                         <button type="submit" class="btn btn-sm btn-light-primary"
@@ -101,8 +120,28 @@
                 selectAll: false,
                 singleChecked: false,
                 form: document.getElementById('form'),
+                permissions: [],
+                search: '',
                 async init() {
                     await this.getDepartmentData();
+                    await this.getPermissionsData();
+                },
+                async getPermissionsData() {
+                    try {
+                        const resp = await axios.get('/general-master-data/roles/permissions/data');
+                        this.permissions = resp.data
+                    } catch (e) {
+                        console.log(e);
+                    }
+                },
+                async searchPermissionData() {
+                    const resp = await axios.get('/general-master-data/roles/permissions/search', {
+                        params: {
+                            search: this.search
+                        }
+                    });
+
+                    this.permissions = resp.data
                 },
                 async save() {
                     this.buttonLoading = true

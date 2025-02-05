@@ -3,7 +3,7 @@
 @section('content')
 
     <div x-data="contactData()">
-        @include('pages.general-master-data.contact.modal.form')
+        @include('pages.general-master-data.contact.form')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -48,9 +48,9 @@
                         </button>
                     </form>
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
+                        <table class="table table-bordered align-middle table-row-dashed fs-6 gy-5">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0 text-center">
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3"
                                          @click="toggleAllCheckBox()">
@@ -67,7 +67,7 @@
                                 </template>
                             </thead>
                             <template x-if="isLoading">
-                                <tbody class=" fw-bold">
+                                <tbody class=" fw-bold text-center">
                                 <tr>
                                     <td colspan="9">
                                         <div style="text-align: center;">
@@ -95,7 +95,8 @@
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
                                             <input class="form-check-input" type="checkbox" :value="contact.id"
-                                                   :id="'checkbox-' + contact.id" :disabled="Number(deletePermission) !== 1"/>
+                                                   :id="'checkbox-' + contact.id"
+                                                   :disabled="Number(deletePermission) !== 1"/>
                                         </div>
                                     </td>
                                     <td x-text="contact.pic"></td>
@@ -120,7 +121,7 @@
                     <ul class="pagination float-end mb-4 mt-4">
                         <template x-for="pagination in contacts.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                <button class="page-link" @click="paginate(pagination.url)"
                                         x-html="pagination.label">
                                 </button>
                             </li>
@@ -140,7 +141,7 @@
                 editPermission: "{{  request()->user()->can('Edit Data Kontak')  }}",
                 deletePermission: "{{ request()->user()->can('Hapus Data Kontak') }}",
                 contacts: [],
-                isLoading: true,
+                isLoading: false,
                 buttonLoading: false,
                 selectAll: false,
                 selectedCheckBox: [],
@@ -164,7 +165,7 @@
                         console.error('Error fetching data:', error);
                     }
                 },
-                async paginationEndPoint(url) {
+                async paginate(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
                         this.startIndex = resp.data.from
@@ -173,16 +174,16 @@
                 },
                 toggleAllCheckBox() {
                     if (Number(this.deletePermission) === 1) {
-                    this.selectAll = !this.selectAll;
-                    this.singleChecked = false;
-                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                    this.selectedCheckBox = [];
-                    checkboxes.forEach((checkbox) => {
-                        checkbox.checked = this.selectAll;
-                        if (this.selectAll) {
-                            this.selectedCheckBox.push(checkbox.value);
-                        }
-                    });
+                        this.selectAll = !this.selectAll;
+                        this.singleChecked = false;
+                        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                        this.selectedCheckBox = [];
+                        checkboxes.forEach((checkbox) => {
+                            checkbox.checked = this.selectAll;
+                            if (this.selectAll) {
+                                this.selectedCheckBox.push(checkbox.value);
+                            }
+                        });
                     }
                 },
                 selectCheckBox(event) {
@@ -253,9 +254,15 @@
                     });
                 },
                 async contactData() {
-                    const resp = await axios.get('/general-master-data/contact/data')
-                    this.contacts = resp.data
-                    this.isLoading = false;
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/general-master-data/contact/data')
+                        this.contacts = resp.data
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
                 }
             }
         }

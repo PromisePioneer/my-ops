@@ -10,7 +10,7 @@
     <div class="d-flex flex-column flex-lg-row" x-data="generateFAB">
         @include('pages.general-master-data.contact.modal.create')
         @include('pages.general-master-data.skl.modal.create')
-        @include('pages.general-master-data.unit-types.modal.form')
+        @include('pages.general-master-data.unit-types.form')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
                 <form id="form" @submit.prevent="generateFAB()">
@@ -69,10 +69,10 @@
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td class="pe-7" style='text-align:center; vertical-align:middle'>
                                             <select
-                                                :class="`form-select form-select-solid service-categories-select2-${index}`"
-                                                :name="`fabServices[${index}][service_category_id]`"
-                                                :id="`selectedServices-${index}`"
-                                                x-model="field.service_category_id">
+                                                    :class="`form-select form-select-solid service-categories-select2-${index}`"
+                                                    :name="`fabServices[${index}][service_category_id]`"
+                                                    :id="`selectedServices-${index}`"
+                                                    x-model="field.service_category_id">
                                                 <option></option>
                                             </select>
                                         </td>

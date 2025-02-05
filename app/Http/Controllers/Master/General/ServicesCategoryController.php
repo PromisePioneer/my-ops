@@ -8,9 +8,7 @@ use App\Models\ServiceCategory;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
-use RuntimeException;
 
 class ServicesCategoryController extends Controller
 {
@@ -92,26 +90,15 @@ class ServicesCategoryController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function destroy(Request $request): JsonResponse
+    public function destroy(Request $request, ServiceCategory $serviceCategory): JsonResponse
     {
-        $this->authorize('delete', ServiceCategory::class);
-        $cabangId = $request->only('data');
+        $this->authorize('delete', $serviceCategory);
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $serviceCategory->whereIn('id', $explodeID)->delete();
 
-        $convertToString = implode(',', $cabangId['data']);
-        $integerIDs = array_map('intval', explode(',', $convertToString));
-
-        foreach ($integerIDs as $id) {
-            $users = DB::table('users')->whereIn('id', $integerIDs)->get();
-            foreach ($users as $user) {
-                if ($user->id === $id) {
-                    throw new RuntimeException('Tidak dapat menghapus branch yang memiliki user');
-                }
-            }
-        }
-        $services = ServiceCategory::whereIn('id', $integerIDs)->delete();
         return response()->json([
-            'message' => 'data berhasil di hapus',
-            'data' => $services,
-        ]);
+            'message' => 'data berhasil dihapus',
+        ], 200);
     }
 }

@@ -1,8 +1,8 @@
-<div class="modal fade" tabindex="-1" id="modal-skl-create">
+<div class="modal fade" tabindex="-1" id="modal-service-category">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form Syarat Ketentuan Layanan</h5>
+                <h5 class="modal-title">Form Kategori Layanan</h5>
                 <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
@@ -14,12 +14,13 @@
                 </div>
             </div>
 
-            <form id="form-skl-create" @submit.prevent="saveSKL()">
+            <form id="form-service-category"
+                  @submit.prevent="saveServiceCategory(editVal?.id)">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Syarat & Ketentuan Layananan</label>
-                        <textarea name="name" id="name" data-kt-autosize="true"
-                                  class="form-control form-control-solid"></textarea>
+                        <label for="name" class="required form-label">Nama Layanan</label>
+                        <input type="text" id="name" name="name" class="form-control form-control-solid"
+                               placeholder="Nama Layanan" :value="editVal?.name"/>
                     </div>
                 </div>
 

@@ -402,8 +402,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [RoleController::class, 'index']);
             Route::get('/data', [RoleController::class, 'rolesData']);
             Route::get('/departments/data', [RoleController::class, 'getDepartments']);
-            Route::get('/permissions/data', [RoleController::class, 'getPermission']);
+            Route::get('/permissions/data', [RoleController::class, 'getPermissions']);
+            Route::get('/permissions/search', [RoleController::class, 'searchPermission']);
             Route::get('/departments/data/selected/{role}', [RoleController::class, 'getSelectedDepartment']);
+            Route::get('/permissions/data/selected/{role}', [RoleController::class, 'getSelectedPermission']);
             Route::get('/create', [RoleController::class, 'create']);
             Route::get('/search', [RoleController::class, 'search']);
             Route::post('/', [RoleController::class, 'store']);
@@ -411,9 +413,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/show/{role}', [RoleController::class, 'show']);
             Route::post('/update/{role}', [RoleController::class, 'update']);
             Route::delete('/{role}', [RoleController::class, 'destroy']);
-            Route::get('/detail/{role}', [RoleController::class, 'detail']);
-            Route::get('/detail/associated-users/{role}', [RoleController::class, 'associatedUsers']);
-
         });
 
         Route::prefix('broadband-packets')->group(function () {
