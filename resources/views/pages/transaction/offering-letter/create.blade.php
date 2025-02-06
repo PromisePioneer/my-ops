@@ -8,10 +8,10 @@
         }
     </style>
     <div class="d-flex flex-column flex-lg-row" x-data="generateOfferingLetter">
-        @include('pages.general-master-data.contact.modal.create')
+        @include('pages.general-master-data.contact.form')
         @include('pages.general-master-data.unit-types.form')
-        @include('pages.general-master-data.skl.modal.create')
-        @include('pages.general-master-data.services-categories.modal.create')
+        @include('pages.general-master-data.skl.form')
+        @include('pages.general-master-data.services-categories.form')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
                 <form id="form" @submit.prevent="save()">
@@ -76,9 +76,11 @@
                                 <template x-for="(field,index) in offeringLetterProductService" :key="index">
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td class="pe-7" style='text-align:center; vertical-align:middle'>
-                                            <select :class="`form-select form-select-solid service-categories-select2`"
+                                            <select
+                                                :class="`form-select form-select-solid service-categories-select2-${index}`"
                                                     :name="`data[${index}][service_category_id]`"
-                                                    x-model="field.service_category_id">
+                                                x-model="field.service_category_id"
+                                                :id="`selectedServices-${index}`">
                                                 <option></option>
                                             </select>
                                         </td>
@@ -88,8 +90,9 @@
                                                    placeholder="Kapasitas" value="0" @change="calculateTotal(index)"/>
                                         </td>
                                         <td style='text-align:center; vertical-align:middle' class="w-20">
-                                            <select :class="`form-select form-select-solid unit-types-select2`"
+                                            <select :class="`form-select form-select-solid unit-types-select2-${index}`"
                                                     :name="`data[${index}][unit_type_id]`"
+                                                    :id="`selectedUnitType-${index}`"
                                                     x-model="field.unit_type_id">
                                                 <option></option>
                                             </select>
@@ -212,9 +215,10 @@
 
         function generateOfferingLetter() {
             return {
-                modalServiceCategories: new bootstrap.Modal(document.getElementById('modal-service-categories-create')),
-                formServiceCategories: document.getElementById('form-services-categories-create'),
+                modalServiceCategories: new bootstrap.Modal(document.getElementById('modal-service-category')),
+                formServiceCategories: document.getElementById('form-service-category'),
                 buttonLoading: false,
+                editVal: '',
                 offeringLetterProductService: [{
                     service_category_id: '',
                     unit_type_id: '',
@@ -226,18 +230,20 @@
                     skl_id: '',
                 }],
                 form: document.getElementById('form'),
-                contactForm: document.getElementById('contactFormCreate'),
-                contactModal: new bootstrap.Modal(document.getElementById('contact-create')),
-                unitTypeForm: document.getElementById('unit-types-store'),
+                contactForm: document.getElementById('contact-form'),
+                contactModal: new bootstrap.Modal(document.getElementById('contact-modal')),
+                unitTypeForm: document.getElementById('form-unit-type'),
                 unitTypeModal: new bootstrap.Modal(document.getElementById('modal-unit-type')),
-                sklModal: new bootstrap.Modal(document.getElementById('modal-skl-create')),
-                sklForm: document.getElementById('form-skl-create'),
+                sklModal: new bootstrap.Modal(document.getElementById('modal-skl')),
+                sklForm: document.getElementById('form-skl'),
                 async init() {
                     await this.getContactData();
-                    await this.getServicesCategories();
                     await this.getUserData();
-                    await this.getUnitTypeData();
                     await this.getSKL();
+                    this.offeringLetterProductService.forEach((field, index) => {
+                        this.getServicesCategories(field, index);
+                        this.getUnitTypeData(field, index);
+                    });
                 },
                 async saveServiceCategories() {
                     this.buttonLoading = true;
@@ -284,8 +290,11 @@
                 },
                 async addOfferingLetterProductService() {
                     this.$nextTick(() => {
-                        this.getServicesCategories();
-                        this.getUnitTypeData();
+                        this.offeringLetterProductService.forEach((field, index) => {
+                            this.getServicesCategories(field, index);
+                            this.getUnitTypeData(field, index);
+                        })
+
 
                     })
                     this.offeringLetterProductService.push({
@@ -321,9 +330,13 @@
 
                     return IDR.format(curr);
                 },
-                removeOfferingLetterProductService(index) {
+                async removeOfferingLetterProductService(index) {
                     if (this.offeringLetterProductService.length > 1) {
                         this.offeringLetterProductService.splice(index, 1);
+                        this.offeringLetterProductService.forEach((field, index) => {
+                            this.selectedServiceCategories(field, index);
+                            this.selectedUnitType(field, index);
+                        });
                     }
                 },
                 removeOfferingLettersServiceDescription(index) {
@@ -331,14 +344,14 @@
                         this.offeringLettersServiceDescription.splice(index, 1);
                     }
                 },
-                async getServicesCategories() {
-                    $(".service-categories-select2").select2({
+                async getServicesCategories(field, index) {
+                    $(`.service-categories-select2-${index}`).select2({
                         placeholder: "Pilih kategori layanan",
                         allowClear: true,
                         escapeMarkup: markup => (markup),
                         language: {
                             noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-service-categories-create">Tambahkan terlebih dahulu</a>`;
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-service-category">Tambahkan terlebih dahulu</a>`;
                             }
                         },
                         ajax: {
@@ -349,6 +362,40 @@
                             processResults: data => ({results: data}),
                             cache: true
                         }
+                    }).on('select2:select', function (e) {
+                        field.service_category_id = e.params.data.id;
+                    });
+                },
+                async selectedServiceCategories(field, index) {
+                    if (field.service_category_id === '') return;
+                    const selectedServices = $(`#selectedServices-${index}`);
+                    $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/general-master-data/service-categories/show/${field.service_category_id}`,
+                    }).then(function (response) {
+                        const option = new Option(response.name, response.id, true, true);
+                        selectedServices.append(option).trigger('change');
+                        selectedServices.trigger({
+                            type: 'select2:select',
+                            params: {results: response}
+                        });
+                    });
+                },
+                async selectedUnitType(field, index) {
+                    if (field.unit_type_id === '') return;
+                    const selectedUnitType = $(`#selectedUnitType-${index}`);
+                    $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/general-master-data/unit-types/show/${field.unit_type_id}`,
+                    }).then(function (response) {
+                        const option = new Option(response.name, response.id, true, true);
+                        selectedUnitType.append(option).trigger('change');
+                        selectedUnitType.trigger({
+                            type: 'select2:select',
+                            params: {results: response}
+                        });
                     });
                 },
                 async getSKL() {
@@ -358,7 +405,7 @@
                         escapeMarkup: markup => (markup),
                         language: {
                             noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-skl-create"">Tambahkan terlebih dahulu</a>`;
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-skl"">Tambahkan terlebih dahulu</a>`;
                             }
                         },
                         ajax: {
@@ -378,7 +425,7 @@
                         escapeMarkup: markup => (markup),
                         language: {
                             noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#contact-create">Tambahkan terlebih dahulu</a>`;
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#contact-modal">Tambahkan terlebih dahulu</a>`;
                             }
                         },
                         ajax: {
@@ -391,14 +438,14 @@
                         }
                     });
                 },
-                async getUnitTypeData() {
-                    $(".unit-types-select2").select2({
+                async getUnitTypeData(field, index) {
+                    $(`.unit-types-select2-${index}`).select2({
                         placeholder: "Pilih Satuan.",
                         allowClear: true,
                         escapeMarkup: markup => (markup),
                         language: {
                             noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-unit-type-create"">Tambahkan terlebih dahulu</a>`;
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-unit-type">Tambahkan terlebih dahulu</a>`;
                             }
                         },
                         ajax: {
@@ -409,6 +456,8 @@
                             processResults: data => ({results: data}),
                             cache: true
                         }
+                    }).on('select2:select', function (e) {
+                        field.unit_type_id = e.params.data.id;
                     });
                 },
                 async saveUnitTypes() {
@@ -439,6 +488,21 @@
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
                     } finally {
                         this.buttonLoading = false;
+                    }
+                },
+                async saveServiceCategory() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/general-master-data/service-categories/', new FormData(this.formServiceCategories))
+                        await showAlert('success', 'Data berhasil disimpan');
+                        await this.init();
+                        await this.formServiceCategories.reset();
+                        await this.modalServiceCategories.hide();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false
                     }
                 },
                 async getUserData() {

@@ -14,9 +14,9 @@
         </style>
     @endpush
     <div class="d-flex flex-column flex-lg-row" x-data="generateOfferingLetter">
-        @include('pages.general-master-data.contact.modal.create')
+        @include('pages.general-master-data.contact.form')
         @include('pages.general-master-data.unit-types.form')
-        @include('pages.general-master-data.skl.modal.create')
+        @include('pages.general-master-data.skl.form')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-5">
                 <form id="form" @submit.prevent="save()">
@@ -98,7 +98,7 @@
                                                    placeholder="Kapasitas" value="0"/>
                                         </td>
                                         <td style='text-align:center; vertical-align:middle' class="w-20">
-                                            <select :class="`form-select form-select-solid unit-types-select2`"
+                                            <select :class="`form-select form-select-solid unit-types-select2-${index}`"
                                                     :name="`data[${index}][unit_type_id]`"
                                                     :id="`selectedUnitType-${index}`"
                                                     x-model="field.unit_type_id">
@@ -227,24 +227,27 @@
                 offeringLettersServiceDescription: [],
                 offeringLetterProducts: [],
                 form: document.getElementById('form'),
-                contactForm: document.getElementById('contactFormCreate'),
-                contactModal: new bootstrap.Modal(document.getElementById('contact-create')),
-                unitTypeForm: document.getElementById('unit-types-store'),
+                contactForm: document.getElementById('contact-form'),
+                contactModal: new bootstrap.Modal(document.getElementById('contact-modal')),
+                unitTypeForm: document.getElementById('form-unit-type'),
                 unitTypeModal: new bootstrap.Modal(document.getElementById('modal-unit-type')),
-                sklModal: new bootstrap.Modal(document.getElementById('modal-skl-create')),
-                sklForm: document.getElementById('form-skl-create'),
+                sklModal: new bootstrap.Modal(document.getElementById('modal-skl')),
+                sklForm: document.getElementById('form-skl'),
+                editVal: '',
                 async init() {
-                    await this.getContactData();
-                    this.$nextTick(() => {
-                        this.getServicesCategories();
-                    })
-                    await this.getSelectedOfferingLetterProductService();
-                    await this.getSelectedOfferingLettersServiceDescription();
                     await this.getSelectedContact();
                     await this.getSelectedUser();
                     await this.getUserData();
-                    await this.getUnitTypeData();
                     await this.getSKL();
+                    this.$nextTick(() => {
+                        this.offeringLetterProductService.forEach((field, index) => {
+                            this.getServicesCategories(field, index);
+                            this.getUnitTypeData(field, index);
+                        });
+                    })
+                    await this.getSelectedOfferingLetterProductService();
+                    await this.getSelectedOfferingLettersServiceDescription();
+
                 },
                 async getSelectedOfferingLetterProductService() {
                     const resp = await axios.get(`/income-transactions/offering-letters/get-selected-products/${this.id}`);
@@ -272,12 +275,12 @@
                         });
                     });
                 },
-                async selectedUnitTypes(resp, index) {
+                async selectedUnitTypes(field, index) {
                     const selectedUnitType = $(`#selectedUnitType-${index}`);
                     $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/general-master-data/unit-types/${resp.unit_type_id}`,
+                        url: `/general-master-data/unit-types/show/${field.unit_type_id}`,
                     }).then(function (response) {
                         const option = new Option(response.name, response.id, true, true);
                         selectedUnitType.append(option).trigger('change');
@@ -285,7 +288,7 @@
                             type: 'select2:select',
                             params: {results: response}
                         });
-                        resp.unit_type_id = response.id;
+                        field.unit_type_id = response.id;
                     });
                 },
                 async selectedServiceCategories(resp, index) {
@@ -355,8 +358,8 @@
                         }
                     });
                 },
-                async getUnitTypeData() {
-                    $(".unit-types-select2").select2({
+                async getUnitTypeData(field, index) {
+                    $(`.unit-types-select2-${index}`).select2({
                         placeholder: "Pilih Satuan.",
                         allowClear: true,
                         escapeMarkup: markup => (markup),
@@ -373,6 +376,8 @@
                             processResults: data => ({results: data}),
                             cache: true
                         }
+                    }).on('select2:select', function (e) {
+                        field.unit_type_id = e.params.data.id;
                     });
                 },
                 async getUserData() {
