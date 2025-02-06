@@ -85,11 +85,12 @@
                                 <template x-for="(field,index) in offeringLetterProductService" :key="index">
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td class="pe-7" style='text-align:center; vertical-align:middle'>
-                                            <select :class="`form-select form-select-solid service-categories-select2`"
+                                            <select
+                                                :class="`form-select form-select-solid service-categories-select2`"
                                                     :name="`data[${index}][service_category_id]`"
                                                     :id="`selectedServices-${index}`"
                                                     x-model="field.service_category_id">
-                                                <option value="0">Pilih Layanan</option>
+                                                <option></option>
                                             </select>
                                         </td>
                                         <td style='text-align:center; vertical-align:middle' class="w-50">
@@ -98,7 +99,7 @@
                                                    placeholder="Kapasitas" value="0"/>
                                         </td>
                                         <td style='text-align:center; vertical-align:middle' class="w-20">
-                                            <select :class="`form-select form-select-solid unit-types-select2-${index}`"
+                                            <select :class="`form-select form-select-solid unit-types-select2`"
                                                     :name="`data[${index}][unit_type_id]`"
                                                     :id="`selectedUnitType-${index}`"
                                                     x-model="field.unit_type_id">
@@ -235,16 +236,12 @@
                 sklForm: document.getElementById('form-skl'),
                 editVal: '',
                 async init() {
+
                     await this.getSelectedContact();
                     await this.getSelectedUser();
                     await this.getUserData();
                     await this.getSKL();
-                    this.$nextTick(() => {
-                        this.offeringLetterProductService.forEach((field, index) => {
-                            this.getServicesCategories(field, index);
-                            this.getUnitTypeData(field, index);
-                        });
-                    })
+                    await this.getContactData();
                     await this.getSelectedOfferingLetterProductService();
                     await this.getSelectedOfferingLettersServiceDescription();
 
@@ -261,6 +258,8 @@
                         this.$nextTick(() => {
                             this.selectedServiceCategories(resp, index);
                             this.selectedUnitTypes(resp, index);
+                            this.getServicesCategories();
+                            this.getUnitTypeData();
                         });
                     });
                 },
@@ -345,7 +344,7 @@
                         escapeMarkup: markup => (markup),
                         language: {
                             noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-skl-create"">Tambahkan terlebih dahulu</a>`;
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-skl">Tambahkan terlebih dahulu</a>`;
                             }
                         },
                         ajax: {
@@ -358,8 +357,8 @@
                         }
                     });
                 },
-                async getUnitTypeData(field, index) {
-                    $(`.unit-types-select2-${index}`).select2({
+                async getUnitTypeData() {
+                    $(`.unit-types-select2`).select2({
                         placeholder: "Pilih Satuan.",
                         allowClear: true,
                         escapeMarkup: markup => (markup),
@@ -483,11 +482,9 @@
                     if (this.offeringLetterProductService.length > 1) {
                         this.offeringLetterProductService.splice(index, 1);
                         this.offeringLetterProductService.forEach((resp, index) => {
-                            this.$nextTick(() => {
                                 this.selectedServiceCategories(resp, index);
                                 this.selectedUnitTypes(resp, index);
-                            })
-                        })
+                        });
                     }
                 },
                 removeOfferingLettersServiceDescription(index) {
@@ -501,20 +498,24 @@
                         })
                     }
                 },
-                async getServicesCategories() {
-                    $(".service-categories-select2").select2({
+                async getServicesCategories(index) {
+                    $(`.service-categories-select2`).select2({
+                        allowClear: true,
+                        placeholder: "Pilih Kategori Layanan",
                         ajax: {
                             url: '/income-transactions/offering-letters/service-categories/data',
-                            dataType: "json",
+                            dataType: "JSON",
                             type: "GET",
                             data: params => ({search: params.term}),
                             processResults: data => ({results: data}),
-                            cache: true
+                            cache: true,
                         }
                     });
                 },
                 async getContactData() {
                     $(".contact-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Calon Pelanggan",
                         escapeMarkup: markup => (markup),
                         language: {
                             noResults: () => {
