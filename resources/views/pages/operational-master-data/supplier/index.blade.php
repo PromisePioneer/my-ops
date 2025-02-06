@@ -3,7 +3,7 @@
 @section('content')
     <div x-data="supplierData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.operational-master-data.supplier.modal.form')
+            @include('pages.operational-master-data.supplier.form')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -19,7 +19,7 @@
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                             <button type="button" class="btn btn-light-primary btn-sm" @click="add()"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modal-form-supplier">
+                                    data-bs-target="#modal-supplier">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
@@ -95,7 +95,7 @@
                                     <td x-text="supplier.name"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-form-supplier" @click="edit(supplier.id)">
+                                                data-bs-target="#modal-supplier" @click="edit(supplier.id)">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
@@ -135,7 +135,7 @@
                 search: '',
                 editVal: '',
                 modalOpen: false,
-                modalForm: new bootstrap.Modal(document.getElementById('form-supplier')),
+                modalForm: new bootstrap.Modal(document.getElementById('modal-supplier')),
                 form: document.getElementById('form-supplier'),
                 formDelete: document.getElementById('form-delete'),
                 async init() {

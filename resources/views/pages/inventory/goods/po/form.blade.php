@@ -9,7 +9,7 @@
 
     <div x-data="generatePO">
         @include('pages.operational-master-data.goods.modal.form')
-        @include('pages.operational-master-data.supplier.modal.form')
+        @include('pages.operational-master-data.supplier.form')
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
                 <a class="btn btn-info btn-sm mb-6" href="{{ url('inventory/goods/po') }}">Kembali</a>
@@ -120,7 +120,7 @@
                             <div class="form-check form-switch form-check-custom form-check-solid">
                                 <input class="form-check-input" type="checkbox" value="0" name="ppn"
                                        id="flexCheckChecked"
-                                    {{ isset($goodsPurchaseOrder) ? $goodsPurchaseOrder->ppn === 1 ? 'checked' : '' : '' }}
+                                        {{ isset($goodsPurchaseOrder) ? $goodsPurchaseOrder->ppn === 1 ? 'checked' : '' : '' }}
                                 />
                                 <label class="form-check-label fw-bold" for="flexCheckChecked">
                                     Tambahkan PPN
