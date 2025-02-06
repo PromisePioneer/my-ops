@@ -12,18 +12,18 @@
                     <div class="card-body">
                         @if(!Auth::user()->branch_id)
                             <div class="row mb-4">
-                                <div class="col-md-6" x-model="users.placement">
+                                <div class="col-md-6" x-model="placement">
                                     <label class="col-form-label required fw-bold fs-6">Penempatan</label>
                                     <select name="placement" id="selectedPlacement"
                                             class="form-select form-select-solid user-placement-select2">
                                         <option value="0" selected>Pilih</option>
-                                        <option value="Cabang" :selected="users?.placement === 'Cabang'">Cabang</option>
-                                        <option value="Pusat" :selected="users?.placement === 'Pusat'">Pusat</option>
+                                        <option value="Cabang" :selected="placement === 'Cabang'">Cabang</option>
+                                        <option value="Pusat" :selected="placement === 'Pusat'">Pusat</option>
                                     </select>
                                 </div>
-                                <div class="col-lg-6" x-show="users?.placement === 'Cabang'" x-transition x-cloak>
+                                <div class="col-lg-6" x-show="placement === 'Cabang'" x-transition x-cloak>
                                     <label class="col-form-label required fw-bold fs-6">Cabang</label>
-                                    <select :name="`${users?.placement === 'Cabang' ? 'branch_id' : ''}`"
+                                    <select :name="`${placement === 'Cabang' ? 'branch_id' : ''}`"
                                             id="selectedBranch"
                                             class="form-select form-select-solid branchSelect2">
                                         <option value="0">Pilih Cabang</option>
@@ -125,7 +125,7 @@
                 users: null,
                 id: "{{ $user->id }}",
                 form: document.getElementById('form'),
-                placement: "{{ $user->placement === 'Pusat' }}",
+                placement: "{{ $user->placement }}",
                 async init() {
                     await this.getUserData();
                     await this.getRoleData();
