@@ -10,7 +10,7 @@
                 <form id="form" @submit.prevent="save()">
                     @csrf
                     <div class="card-body">
-                        @if(Auth::user()->hasRole('Branch Manager'))
+                        @if(!Auth::user()->hasRole('Branch Manager'))
                             <div class="row mb-4">
                                 <div class="col-md-6" x-model="placement">
                                     <label class="col-form-label required fw-bold fs-6">Penempatan</label>
