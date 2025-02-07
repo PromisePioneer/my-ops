@@ -8,7 +8,7 @@
     </style>
 
     <div class="d-flex flex-column flex-lg-row" x-data="generateInvoice">
-        @include('pages.general-master-data.contact.modal.create')
+        @include('pages.general-master-data.contact.form')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
                 <form id="form" @submit.prevent="generateInvoice()">
@@ -30,9 +30,8 @@
                             <div class="col-lg-6">
                                 <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">Pelanggan</label>
                                 <div class="mb-5">
-                                    <select name="contact_id" class="form-select form-select-solid contactSearch"
-                                            data-placeholder="Select an option">
-                                        <option selected>Pilih Pelanggan</option>
+                                    <select name="contact_id" class="form-select form-select-solid contact-select2">
+                                        <option></option>
                                     </select>
                                 </div>
                             </div>
@@ -41,9 +40,8 @@
                                     <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">Kategori
                                         Layanan</label>
                                     <div class="col-lg-11 fv-row">
-                                        <select name="account_id" class="form-select form-select-solid account-select2"
-                                                data-placeholder="Select an option">
-                                            <option selected>Pilih Kategori (Sesuai Dengan Layanan)</option>
+                                        <select name="account_id" class="form-select form-select-solid account-select2">
+                                            <option></option>
                                         </select>
                                     </div>
                                 </div>
@@ -166,8 +164,8 @@
             return {
                 buttonLoading: false,
                 form: document.getElementById('form'),
-                contactForm: document.getElementById('contactFormCreate'),
-                contactModal: new bootstrap.Modal(document.getElementById('contact-create')),
+                contactForm: document.getElementById('contact-form'),
+                contactModal: new bootstrap.Modal(document.getElementById('contact-modal')),
                 fields: [{
                     description: '',
                     qty: '',
@@ -180,6 +178,8 @@
                 },
                 async getAccountData() {
                     $(".account-select2").select2({
+                        placeholder: "Pilih Akun",
+                        allowClear: true,
                         ajax: {
                             url: '/income-transactions/invoice/account/data',
                             dataType: "json",
@@ -191,7 +191,9 @@
                     });
                 },
                 async getContactData() {
-                    $(".contactSearch").select2({
+                    $(".contact-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Kontak",
                         escapeMarkup: function (markup) {
                             return markup;
                         },

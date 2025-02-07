@@ -245,7 +245,7 @@
 
 
     <p class="text-justify ms-5 mb-2 fs-8">
-        Pada hari ini {{ formatDate($baa->date) }} yang bertanda tangan dibawah ini:
+        Pada hari ini <b>{{ formatDate($baa->date) }}</b> yang bertanda tangan dibawah ini:
     </p>
 
     <div style="padding-left: 2rem; padding-right: 15rem" class="mb-2 fs-9">

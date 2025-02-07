@@ -1,7 +1,6 @@
 @extends('layouts.template')
 @section('page-title', 'Pendapatan - Buat PO')
 @section('content')
-
     @push('styles')
         <style>
             .modal-open .select2-container--bootstrap5 .select2-dropdown {
@@ -9,9 +8,8 @@
             }
         </style>
     @endpush
-    <div>
         <div class="d-flex flex-column flex-lg-row" x-data="generatePO">
-            @include('pages.general-master-data.contact.modal.create')
+            @include('pages.general-master-data.contact.form')
             @include('pages.general-master-data.unit-types.form')
             <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
                 <div class="card p-10">
@@ -181,7 +179,6 @@
             </div>
         </div>
         @include('components.toast')
-    </div>
 @endsection
 
 @push('script')
@@ -192,8 +189,8 @@
         function generatePO() {
             return {
                 buttonLoading: false,
-                contactModal: new bootstrap.Modal(document.getElementById('contact-create')),
-                contactForm: document.getElementById('contactFormCreate'),
+                contactModal: new bootstrap.Modal(document.getElementById('contact-modal')),
+                contactForm: document.getElementById('contact-form'),
                 unitTypeModal: new bootstrap.Modal(document.getElementById('modal-unit-type')),
                 unitTypeForm: document.getElementById('unit-types-store'),
                 form: document.getElementById('form'),

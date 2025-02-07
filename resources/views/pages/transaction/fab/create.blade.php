@@ -8,8 +8,8 @@
     </style>
 
     <div class="d-flex flex-column flex-lg-row" x-data="generateFAB">
-        @include('pages.general-master-data.contact.modal.create')
-        @include('pages.general-master-data.skl.modal.create')
+        @include('pages.general-master-data.contact.form')
+        @include('pages.general-master-data.skl.form')
         @include('pages.general-master-data.unit-types.form')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
@@ -54,7 +54,7 @@
                         </div>
                         <div class="separator my-10"></div>
                         <div class="table-responsive mb-20">
-                            <table class="table g-5 gs-0 mb-0 fw-bolder text-gray-700" data-kt-element="items">
+                            <table class="table g-5 gs-0 mb-0 fw-bolder text-gray-700 table-bordered" data-kt-element="items">
                                 <thead>
                                 <tr class="border-bottom fs-7 fw-bolder text-gray-700 text-uppercase">
                                     <th class="min-w-300px w-475px required">Jenis Layanan</th>
@@ -69,10 +69,10 @@
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td class="pe-7" style='text-align:center; vertical-align:middle'>
                                             <select
-                                                    :class="`form-select form-select-solid service-categories-select2-${index}`"
-                                                    :name="`fabServices[${index}][service_category_id]`"
-                                                    :id="`selectedServices-${index}`"
-                                                    x-model="field.service_category_id">
+                                                :class="`form-select form-select-solid service-categories-select2-${index}`"
+                                                :name="`fabServices[${index}][service_category_id]`"
+                                                :id="`selectedServices-${index}`"
+                                                x-model="field.service_category_id">
                                                 <option></option>
                                             </select>
                                         </td>
@@ -204,16 +204,15 @@
 @push('script')
     <script>
         $('#date').flatpickr();
-
         function generateFAB() {
             return {
                 form: document.getElementById('form'),
-                unitTypeForm: document.getElementById('unit-types-store'),
+                unitTypeForm: document.getElementById('unit-types-form'),
                 unitTypeModal: new bootstrap.Modal(document.getElementById('modal-unit-type')),
-                contactForm: document.getElementById('contactFormCreate'),
-                contactModal: new bootstrap.Modal(document.getElementById('contact-create')),
-                sklModal: new bootstrap.Modal(document.getElementById('modal-skl-create')),
-                sklForm: document.getElementById('form-skl-create'),
+                contactForm: document.getElementById('contact-modal'),
+                contactModal: new bootstrap.Modal(document.getElementById('contact-form')),
+                sklModal: new bootstrap.Modal(document.getElementById('modal-skl')),
+                sklForm: document.getElementById('form-skl'),
                 contactHasOfferingLetter: null,
                 buttonLoading: false,
                 fabServices: [{
@@ -230,8 +229,6 @@
                     await this.getPOData();
                     await this.getSKL();
                     await this.getUserData();
-
-
                     this.fabServices.forEach((resp, index) => {
                         this.getUnitType(resp, index);
                         this.getServicesCategories(resp, index);

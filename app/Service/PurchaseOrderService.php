@@ -54,15 +54,8 @@ class PurchaseOrderService
     {
         $search = $request->input('search');
         $data = PurchaseOrder::with('contact')
-            ->when(!empty($search), function ($query, $search) {
-                $query->where('subject', 'like', '%' . $search . '%')
-                    ->orWhere('po_number', 'like', '%' . $search . '%')
-                    ->orWhereHas('contact', function ($query) use ($search) {
-                        $query->where('pic_name', 'like', '%' . $search . '%')
-                            ->orWhere('company_name', 'like', '%' . $search . '%');
-                    })->orWhereHas('picName', function ($query) use ($search) {
-                        $query->where('name', 'like', '%' . $search . '%');
-                    });
+            ->when(!empty($search), function ($query) use ($search) {
+                $query->where('po_number', 'like', '%' . $search . '%');
             })->paginate(self::$perPage);
 
         return self::formattedData($data);

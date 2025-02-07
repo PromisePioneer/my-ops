@@ -11,7 +11,7 @@
     @endpush
     <div>
         <div class="d-flex flex-column flex-lg-row" x-data="generatePO">
-            @include('pages.general-master-data.contact.modal.create')
+            @include('pages.general-master-data.contact.form')
             @include('pages.general-master-data.unit-types.form')
             <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
                 <div class="card p-10">
@@ -196,10 +196,10 @@
             return {
                 id: "{{ $purchaseOrder->id }}",
                 buttonLoading: false,
-                contactModal: new bootstrap.Modal(document.getElementById('contact-create')),
-                contactForm: document.getElementById('contactFormCreate'),
+                contactModal: new bootstrap.Modal(document.getElementById('contact-modal')),
+                contactForm: document.getElementById('contact-form'),
                 unitTypeModal: new bootstrap.Modal(document.getElementById('modal-unit-type')),
-                unitTypeForm: document.getElementById('unit-types-store'),
+                unitTypeForm: document.getElementById('form-unit-types'),
                 form: document.getElementById('form'),
                 poItem: [],
                 contactHasOfferingLetter: null,
@@ -297,7 +297,7 @@
                         escapeMarkup: markup => (markup),
                         language: {
                             noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#contact-create">Tambahkan terlebih dahulu</a>`;
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#contact-modal">Tambahkan terlebih dahulu</a>`;
                             }
                         },
                         ajax: {

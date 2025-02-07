@@ -9,7 +9,7 @@
                         <span class="svg-icon svg-icon-1 position-absolute ms-6">
                            <i class="bi bi-search"></i>
                         </span>
-                        <input type="text" name="search" x-model="search" @input.debounce="searchData"
+                        <input type="text" name="search" x-model="search" @input.debounce="searchData()"
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
                 </div>
@@ -31,9 +31,9 @@
             <div class="card-body py-3">
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_products">
+                        <table class="table align-middle table-bordered fs-6 gy-5" id="kt_table_products">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th>No</th>
                                 <th class="min-w-125px">Nomor</th>
                                 <th class="min-w-125px">Tanggal</th>
@@ -61,7 +61,7 @@
                                 </tr>
                             </template>
                             <template x-for="(fab, index) in subcriptions?.data" :key="fab.id">
-                                <tr>
+                                <tr class="text-center">
                                     <td x-text="startIndex + index++">
                                     </td>
                                     <td>
@@ -111,11 +111,9 @@
                 viewDetailPermission: "{{ request()->user()->can('Lihat Detail Data Fab') }}",
                 subcriptions: [],
                 startIndex: null,
-                isLoading: true,
                 search: '',
                 async init() {
                     await this.getFABData();
-                    this.isLoading = false;
                 },
                 async searchData() {
                     this.isLoading = true;
@@ -138,9 +136,16 @@
                     }
                 },
                 async getFABData() {
-                    const fab = await axios.get('/income-transactions/fab/data');
-                    this.subcriptions = fab.data;
-                    this.startIndex = this.subcriptions.from;
+                    this.isLoading = true;
+                    try {
+                        const fab = await axios.get('/income-transactions/fab/data');
+                        this.subcriptions = fab.data;
+                        this.startIndex = this.subcriptions.from;
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 formatDate(val) {
                     if (val) {

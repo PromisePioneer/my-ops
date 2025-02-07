@@ -6,12 +6,8 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{{ $sp->sp_number }}</title>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <title>{{ $baa->baa_number }}</title>
 </head>
-
 <style>
     *, *::before, *::after {
         box-sizing: border-box;
@@ -54,8 +50,108 @@
     }
 
     .wrapper {
-        margin-top: 150px !important;
+        margin-top: 150px;
         position: relative;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .mb-4 {
+        margin-bottom: 1.5rem;
+    }
+
+    .text-justify {
+        text-align: justify;
+    }
+
+    .text-decoration-underline {
+        text-decoration: underline !important
+    }
+
+    .fs-5 {
+        font-size: 1.15rem !important
+    }
+
+    .ms-4 {
+        margin-left: 1rem !important
+    }
+
+    .fs-9 {
+        font-size: .75rem !important
+    }
+
+    .mb-2 {
+        margin-bottom: .5rem !important
+    }
+
+    .text-start {
+        text-align: left !important;
+    }
+
+    .w-3px {
+        width: 3px !important
+    }
+
+    .text-start {
+        text-align: left !important
+    }
+
+    .mb-5 {
+        margin-bottom: 3rem !important
+    }
+
+
+    .custom-bordered, .custom-bordered th .custom-bordered tr, .custom-bordered td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+
+    .align-items-center {
+        align-items: center !important;
+    }
+
+    .justify-content-center {
+        justify-content: center !important
+    }
+
+    .d-flex {
+        display: flex !important;
+    }
+
+    .align-items-center {
+        align-items: center !important;
+    }
+
+    .justify-content-center {
+        justify-content: center !important
+    }
+
+    .justify-content-around {
+        justify-content: space-around !important;
+    }
+
+    .mb-20 {
+        margin-bottom: 5rem !important
+    }
+
+    .w-50 {
+        width: 50% !important
+    }
+
+    .py-4 {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important
+    }
+
+    .px-2 {
+        padding-left: .5rem !important;
+        padding-right: .5rem !important
+    }
+
+    .ms-15 {
+        margin-left: 3.75rem !important
     }
 </style>
 <body>
@@ -73,7 +169,7 @@
 
 
 <main class="wrapper">
-    <div class="text-center mb-4">
+    <div class="ms-4 text-center mb-4">
         <h2 class="text-uppercase text-decoration-underline fs-5">SURAT PERINTAH KERJA</h2>
         <p class="fs-5">Nomor : {{ $spk->spk_number }}</p>
     </div>
@@ -108,7 +204,7 @@
     </p>
 
 
-    <p class="text-justify mb-5 fs-9">
+    <p class="text-justify mb-2 fs-9">
         Berdasarkan surat perintah kerja Nomor {{ $spk->spk_number }} tanggal {{ formatDate($spk->date) }}, bersama ini
         <br>
         memerintahkan:
@@ -137,11 +233,11 @@
     </p>
 
 
-    <div style="padding-left: 5rem; padding-right: 5rem" class="mb-4">
-        <table class="table custom-bordered table-bordered fs-9 ">
+    <div style="padding-left: 5rem; padding-right: 5rem" class="ms-15 mb-4">
+        <table class="table custom-bordered fs-9">
             <thead>
             <tr>
-                <th class="text-center w-50 py-4 ">Deskripsi</th>
+                <th class="text-center w-50 py-4">Deskripsi</th>
                 <th class="text-center py-4">Data</th>
             </tr>
             </thead>
@@ -159,7 +255,7 @@
     </div>
 
 
-    <p class="text-justify lh-lg  mb-20 fs-9">
+    <p class="text-justify lh-lg mb-20 fs-9">
         Demikian Surat Perintah Kerja ini dibuat dengan sebenar-benarnya untuk dapat dipergunakan sebagaimana mestinya.
     </p>
 

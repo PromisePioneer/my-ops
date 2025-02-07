@@ -9,7 +9,7 @@
         </style>
     @endpush
     <div class="d-flex flex-column flex-lg-row" x-data="generateBAST()">
-        @include('pages.general-master-data.contact.modal.create')
+        @include('pages.general-master-data.contact.form')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card">
                 <div class="card-body p-12">
@@ -77,8 +77,8 @@
                     total_price: '',
                 }],
                 form: document.getElementById('form'),
-                contactForm: document.getElementById('contactFormCreate'),
-                contactModal: new bootstrap.Modal(document.getElementById('contact-create')),
+                contactForm: document.getElementById('contact-form'),
+                contactModal: new bootstrap.Modal(document.getElementById('contact-modal')),
                 async init() {
                     await this.getBAAData();
                 },

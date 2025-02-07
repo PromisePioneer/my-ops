@@ -48,9 +48,9 @@
             <div class="card-body py-3">
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_products">
+                        <table class="table align-middle table-bordered fs-6 gy-5">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     No
                                 </th>
@@ -81,7 +81,7 @@
                                 </tr>
                             </template>
                             <template x-for="(po, index) in purchaseOrders?.data" :key="po.id">
-                                <tr>
+                                <tr class="fw-bold text-center">
                                     <td x-text="startIndex + index++">
                                     </td>
                                     <td>

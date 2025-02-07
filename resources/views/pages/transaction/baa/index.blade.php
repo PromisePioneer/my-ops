@@ -31,9 +31,9 @@
             <div class="card-body py-3">
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_products">
+                        <table class="table align-middle table-bordered fs-6 gy-5" id="kt_table_products">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     No
                                 </th>
@@ -61,7 +61,7 @@
                                 </tr>
                             </template>
                             <template x-for="(activation, index) in baa?.data" :key="activation.id">
-                                <tr>
+                                <tr class="text-center">
                                     <td x-text="startIndex + index++"></td>
                                     <td>
                                         <a :href="`/income-transactions/baa/detail/${activation.id}`"

@@ -8,7 +8,7 @@
     </style>
 
     <div class="d-flex flex-column flex-lg-row" x-data="generateInvoice">
-        @include('pages.general-master-data.contact.modal.create')
+        @include('pages.general-master-data.contact.form')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
                 <form id="form" @submit.prevent="generateInvoice()">
@@ -176,8 +176,8 @@
                 id: "{{ $invoice->id  }}",
                 buttonLoading: false,
                 form: document.getElementById('form'),
-                contactForm: document.getElementById('contactFormCreate'),
-                contactModal: new bootstrap.Modal(document.getElementById('contact-create')),
+                contactForm: document.getElementById('contact-form'),
+                contactModal: new bootstrap.Modal(document.getElementById('contact-modal')),
                 fields: [],
                 async init() {
                     await this.getAccountData();
@@ -195,7 +195,6 @@
                     }).then(function (response) {
                         const option = new Option(response.name, response.id, true, true);
                         selectedContact.append(option).trigger('change');
-
                         selectedContact.trigger({
                             type: 'select2:select',
                             params: {
@@ -235,6 +234,8 @@
                 },
                 async getAccountData() {
                     $(".akunSearch").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Akun",
                         ajax: {
                             url: '/income-transactions/invoice/account/data',
                             dataType: "JSON",
@@ -248,6 +249,8 @@
 
                 async getContactData() {
                     $(".contactSearch").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Kontak",
                         escapeMarkup: function (markup) {
                             return markup;
                         },

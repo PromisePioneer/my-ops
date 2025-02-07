@@ -78,17 +78,12 @@ class OfferingLetterService
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $offeringLetter = OfferingLetter::where('offering_number', 'like', '%' . $search . '%')
+        $offeringLetter = OfferingLetter::with('contact')
+            ->where('offering_number', 'like', '%' . $search . '%')
             ->orWhereHas('contact', function ($query) use ($request, $search) {
-                $query->where('full_name', 'like', '%' . $search . '%');
+                $query->where('pic_name', 'like', '%' . $search . '%');
                 $query->orWhere('company_name', 'like', '%' . $search . '%');
             })
-            ->orWhere('date', 'like', '%' . $search . '%')
-            ->orWhere('attachment', 'like', '%' . $search . '%')
-            ->orWhere('foreword', 'like', '%' . $search . '%')
-            ->orWhere('notes', 'like', '%' . $search . '%')
-            ->orWhere('marketing_agent_name', 'like', '%' . $search . '%')
-            ->orWhere('marketing_agent_contact', 'like', '%' . $search . '%')
             ->paginate(self::$perPage);
 
         return self::formatOfferingLettersData($offeringLetter);
