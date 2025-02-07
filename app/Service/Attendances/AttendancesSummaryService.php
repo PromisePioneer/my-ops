@@ -148,16 +148,16 @@ class AttendancesSummaryService
 
 
             foreach ($getPeriod as $period) {
-                if (empty($period['attendanceData'])) {
-                    $totalAbsent++;
+                if ($period['attendancesDate'] != Carbon::now()->format('Y-m-d')) {
+                    if (empty($period['attendanceData'])) {
+                        $totalAbsent++;
+                    }
                 }
             }
 
             foreach ($user->attendancesSummary as $attendance) {
-                if ($attendance->date != Carbon::now()->format('Y-m-d')) {
-                    if (empty($attendance->clock_in) && $attendance->clock_out) {
-                        $totalNotCheckIn++;
-                    }
+                if (empty($attendance->clock_in) && $attendance->clock_out) {
+                    $totalNotCheckIn++;
                 }
 
                 if ($attendance->date != Carbon::now()->format('Y-m-d')) {
