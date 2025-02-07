@@ -154,8 +154,10 @@ class AttendancesSummaryService
             }
 
             foreach ($user->attendancesSummary as $attendance) {
-                if (empty($attendance->clock_in) && $attendance->clock_out) {
-                    $totalNotCheckIn++;
+                if ($attendance->date != Carbon::now()->format('Y-m-d')) {
+                    if (empty($attendance->clock_in) && $attendance->clock_out) {
+                        $totalNotCheckIn++;
+                    }
                 }
 
                 if ($attendance->date != Carbon::now()->format('Y-m-d')) {
