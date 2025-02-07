@@ -3,6 +3,7 @@
 namespace App\Service\Attendances;
 
 use App\Models\AttendancesSummary;
+use App\Models\EmployeeSchedule;
 use App\Models\LeaveAndPermission;
 use App\Models\NationalHoliday;
 use App\Models\User;
@@ -120,12 +121,17 @@ class AttendancesSummaryService
             ->keyBy('date');
 
 
+        $employeeSchedule = EmployeeSchedule::where('employee_id', $user->absent_id)
+            ->whereBetween('start_date', [$startDate, $endDate])->orderBy('start_date', 'asc')->get()->keyBy('start_date');
+
+
         $dates = [];
         foreach ($period as $date) {
             $formattedDate = $date->format('Y-m-d');
             $dates[$formattedDate] = collect([
                 'attendancesDate' => $formattedDate,
                 'attendanceData' => $attendancesData->get($formattedDate),
+                'employeeSchedule' => $employeeSchedule->get($formattedDate),
             ]);
         }
 
@@ -149,7 +155,7 @@ class AttendancesSummaryService
 
             foreach ($getPeriod as $period) {
                 if ($period['attendancesDate'] != Carbon::now()->format('Y-m-d')) {
-                    if (empty($period['attendanceData'])) {
+                    if (empty($period['attendanceData']) || $period['employeeSchedule']->status !== 'L') {
                         $totalAbsent++;
                     }
                 }
