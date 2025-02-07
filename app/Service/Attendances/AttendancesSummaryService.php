@@ -155,7 +155,7 @@ class AttendancesSummaryService
 
             foreach ($getPeriod as $period) {
                 if ($period['attendancesDate'] != Carbon::now()->format('Y-m-d')) {
-                    if (empty($period['attendanceData']) || $period['employeeSchedule']->status !== 'L') {
+                    if (empty($period['attendanceData']) || $period['employeeSchedule']?->status !== 'L') {
                         $totalAbsent++;
                     }
                 }
