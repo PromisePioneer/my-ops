@@ -4,6 +4,7 @@ namespace App\Service\Attendances;
 
 use App\Models\AttendancesSummary;
 use App\Models\LeaveAndPermission;
+use App\Models\NationalHoliday;
 use App\Models\User;
 use App\Models\WorkTime;
 use App\Service\HelperService\FinancialClosePeriodService;
@@ -29,16 +30,11 @@ class AttendancesSummaryService
         $startDate = $this->financialClosePeriodService->startDate();
         $endDate = $this->financialClosePeriodService->endDate();
 
-//        dd($startDate, $endDate);
-
         $data = User::with([
             'attendancesSummary' => function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('date', [$startDate, $endDate]);
             }, 'roles'
         ])->where('active', 1);
-
-
-//        $user = $this->query();
 
         if ($request->user()->hasAnyRole('NOC Supervisor', 'NOC Staff')) {
             $data->whereHas('roles', function ($query) {
@@ -112,16 +108,50 @@ class AttendancesSummaryService
     }
 
 
+    public function getPeriod($startDate, $endDate, $user)
+    {
+        $period = CarbonPeriod::create($startDate, $endDate);
+
+        $attendancesData = AttendancesSummary::with('user')
+            ->where('employee_id', $user->absent_id)
+            ->whereBetween('date', [$startDate, $endDate])
+            ->orderBy('date', 'asc')
+            ->get()
+            ->keyBy('date');
+
+
+        $dates = [];
+        foreach ($period as $date) {
+            $formattedDate = $date->format('Y-m-d');
+            $dates[$formattedDate] = collect([
+                'attendancesDate' => $formattedDate,
+                'attendanceData' => $attendancesData->get($formattedDate),
+            ]);
+        }
+
+        return $dates;
+    }
+
+
     public function formattedData(LengthAwarePaginator $user, $startDate, $endDate): LengthAwarePaginator
     {
         $data = $user->getCollection()->map(function ($user) use ($startDate, $endDate) {
             $totalMinutesLate = 0;
             $totalNotCheckIn = 0;
             $totalNotCheckOut = 0;
+            $getPeriod = $this->getPeriod($startDate, $endDate, $user);
             $totalPresent = $user->attendancesSummary->count();
             $totalSick = $this->getSick($user, $startDate, $endDate);
             $totalLeaves = $this->getLeaves($user, $startDate, $endDate);
             $totalPermission = $this->getPermission($user, $startDate, $endDate);
+            $totalAbsent = 0;
+
+
+            foreach ($getPeriod as $period) {
+                if (empty($period['attendanceData'])) {
+                    $totalAbsent++;
+                }
+            }
 
             foreach ($user->attendancesSummary as $attendance) {
                 if (empty($attendance->clock_in) && $attendance->clock_out) {
@@ -151,12 +181,24 @@ class AttendancesSummaryService
                 'total_leaves' => $totalLeaves,
                 'total_sick' => $totalSick,
                 'total_permission' => $totalPermission,
+                'total_absent' => $totalAbsent
             ];
         });
 
 
         $user->setCollection($data);
         return $user;
+    }
+
+
+    public function getHoliday($user, $startDate, $endDate)
+    {
+        $holiday = NationalHoliday::where(function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('date', [$startDate, $endDate]);
+        })->get();
+
+
+        dd($holiday);
     }
 
 

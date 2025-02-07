@@ -110,7 +110,7 @@
                                         </tr>
                                     </template>
                                     <template
-                                        x-if="attendance.schedule === 'H' && !attendance.leaves && !attendance.sick && !attendance.permission || attendance.schedule === null">
+                                            x-if="attendance.schedule === 'H' && !attendance.leaves && !attendance.sick && !attendance.permission || attendance.schedule === null">
                                         <tr>
                                             <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
                                             <td class="text-center" x-text="attendance.clock_in"></td>
@@ -151,7 +151,7 @@
 
         function attendancesSummaryDetail() {
             return {
-                correctionPermission: "{{ $user->can('Koreksi Data Riwayat Absensi') }}",
+                correctionPermission: "{{ request()->user()->can('Koreksi Data Riwayat Absensi') }}",
                 modalQueryData: new bootstrap.Modal(document.getElementById('modal-attendance-query-data')),
                 formQueryData: document.getElementById('form-attendance-query-data'),
                 buttonLoading: false,

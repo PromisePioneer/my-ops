@@ -45,7 +45,6 @@ class AttendanceSummaryDetailService
             ->whereBetween('start_date', [$startDate, $endDate])->orderBy('start_date', 'asc')->get()->keyBy('start_date');
 
 
-
         $user = User::where('absent_id', $empId)->first();
         $period = CarbonPeriod::create($startDate, $endDate);
         $getLeaves = $this->getLeaves($user, $startDate, $endDate);
