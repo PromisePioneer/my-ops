@@ -32,7 +32,7 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
     {
         $data = FpDevice::with('branch')
             ->when($request->user()->hasRole('Branch Manager'), function ($query) use ($request) {
-                $query->where('id', $request->user()->branch_id);
+                $query->where('branch_id', $request->user()->branch_id);
             })
             ->paginate(self::$perPage);
         return response()->json($data);
