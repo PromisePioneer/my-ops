@@ -25,6 +25,7 @@ class FpDeviceRequest extends FormRequest
         return [
             'branch_id' => ['required', 'exists:branches,id'],
             'name' => ['required', 'string'],
+            'ip_address' => ['required', 'string'],
             'serial_number' => ['required', 'string'],
         ];
     }

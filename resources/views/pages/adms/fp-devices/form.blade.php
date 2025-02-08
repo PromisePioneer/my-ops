@@ -26,7 +26,7 @@
                     </div>
                     <div class="mb-10">
                         <label for="serial_number" class="required form-label">Serial Number</label>
-                        <input type="text" id="serial_number" name="serial_number"
+                        <input type="text" id="ip_address" name="ip_address"
                                class="form-control form-control-solid"
                                placeholder="Nama" :value="editVal?.ip_address"/>
                     </div>
