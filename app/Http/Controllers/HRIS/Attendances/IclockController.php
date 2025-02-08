@@ -28,7 +28,7 @@ use Throwable;
 
     public function getAttendanceViaPushSDK()
     {
-        $zk = new LaravelZkteco('203.153.22.224', '4370');
+        $zk = new LaravelZkteco('103.102.248.163', '4370');
         $zk->connect();
         dd($zk->getAttendance());
         $zk->disconnect();

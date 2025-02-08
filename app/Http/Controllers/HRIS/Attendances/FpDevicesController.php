@@ -5,7 +5,7 @@ namespace App\Http\Controllers\HRIS\Attendances;
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ADMS\FpDeviceRequest;
-use App\Models\Attendances;
+use App\Jobs\ProcessAttendance;
 use App\Models\Branch;
 use App\Models\FpDevice;
 use Carbon\Carbon;
@@ -113,26 +113,20 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
     {
         $zk = new ZKTeco($fpDevice->ip_address, 4370);
         $connected = $zk->connect();
-        $startDate = Carbon::parse($request->start_date);
-        $endDate = Carbon::parse($request->end_date);
-
+        $startDate = Carbon::parse($request->startDate);
+        $endDate = Carbon::parse($request->endDate);
 
         if ($connected) {
             $attendanceLog = $zk->getAttendance();
-            foreach ($attendanceLog as $record) {
-                $recordDate = Carbon::parse($record['timestamp']);
-                if ($recordDate->between($startDate, $endDate)) {
-                    Attendances::create([
-                        'sn' => $fpDevice->serial_number,
-                        'table' => '999',
-                        'stamp' => 'ATTLOG',
-                        'employee_id' => $record['id'],
-                        'timestamp' => $record['timestamp'],
-                        'status1' => $record['type'],
-                    ]);
-                }
+
+            $chunks = array_chunk($attendanceLog, 100); // Process 100 records per job
+            foreach ($chunks as $chunk) {
+                ProcessAttendance::dispatch($fpDevice, $startDate, $endDate, $chunk);
             }
         }
+        return response()->json([
+            'message' => 'Attendance processing has been queued and will be processed in the background.',
+        ]);
 
     }
 }
