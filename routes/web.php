@@ -92,7 +92,6 @@ use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
 use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
 use App\Http\Controllers\WarehouseController;
-use App\Models\FPDeviceCommand;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -123,7 +122,9 @@ Route::prefix('/iclock')->group(function () {
     Route::get('/cdata', [IclockController::class, 'handshake']);
     Route::get('test', [IclockController::class, 'test']);
     Route::get('/getrequest', [IclockController::class, 'getRequest']);
+    Route::get('/get-attendance-via-push-sdk', [IclockController::class, 'getAttendanceViaPushSDK']);
 });
+
 
 
 Route::group(['middleware' => ['auth']], static function () {
@@ -1093,11 +1094,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/destroy', [FpDevicesController::class, 'destroy']);
             Route::post('/{fpDevice}', [FpDevicesController::class, 'update']);
 
-
-            Route::prefix('command-id')->group(function () {
-                Route::get('/', [FPDeviceCommand::class, 'index']);
-                Route::get('/data', [FPDeviceCommand::class, 'data']);
-            });
+            Route::post('/test-connection/{fpDevice}', [FpDevicesController::class, 'testConnection']);
+            Route::post('/attendance-log/{fpDevice}', [FpDevicesController::class, 'getAttendances']);
         });
 
         Route::prefix('/work-time')->group(function () {

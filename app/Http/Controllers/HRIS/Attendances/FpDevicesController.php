@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\HRIS\Attendances;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ADMS\FpDeviceRequest;
+use App\Models\Attendances;
 use App\Models\Branch;
 use App\Models\FpDevice;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Jmrashed\Zkteco\Lib\ZKTeco;
 
-class FpDevicesController extends Controller
+#[AllowDynamicProperties] class FpDevicesController extends Controller
 {
-
-    private FpDevice $FpDevices;
-    private Branch $branch;
     private static int $perPage = 10;
     public function __construct()
     {
@@ -27,9 +28,14 @@ class FpDevicesController extends Controller
         return view('pages.adms.fp-devices.index');
     }
 
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
-        return response()->json(FpDevice::with('branch')->paginate(self::$perPage));
+        $data = FpDevice::with('branch')
+            ->when($request->hasRole('Branch Manager'), function ($query) use ($request) {
+                $query->where('id', $request->user()->branch_id);
+            })
+            ->paginate(self::$perPage);
+        return response()->json($data);
     }
 
     public function search(Request $request): JsonResponse
@@ -87,5 +93,46 @@ class FpDevicesController extends Controller
         return response()->json([
             'message' => 'data berhasil dihapus',
         ], 200);
+    }
+
+
+    public function testConnection(FpDevice $fpDevice): JsonResponse
+    {
+        ini_set("max_execution_time", 1);
+        $zk = new ZKTeco($fpDevice->ip_address, 4370);
+        $connected = $zk->connect();
+        if ($connected) {
+            return response()->json(['message' => 'Koneksi Sukses']);
+        } else {
+            return response()->json(['message' => 'Koneksi Gagal'], 500);
+        }
+    }
+
+
+    public function getAttendances(Request $request, FpDevice $fpDevice)
+    {
+        $zk = new ZKTeco($fpDevice->ip_address, 4370);
+        $connected = $zk->connect();
+        $startDate = Carbon::parse($request->start_date);
+        $endDate = Carbon::parse($request->end_date);
+
+
+        if ($connected) {
+            $attendanceLog = $zk->getAttendance();
+            foreach ($attendanceLog as $record) {
+                $recordDate = Carbon::parse($record['timestamp']);
+                if ($recordDate->between($startDate, $endDate)) {
+                    Attendances::create([
+                        'sn' => $fpDevice->serial_number,
+                        'table' => '999',
+                        'stamp' => 'ATTLOG',
+                        'employee_id' => $record['id'],
+                        'timestamp' => $record['timestamp'],
+                        'status1' => $record['type'],
+                    ]);
+                }
+            }
+        }
+
     }
 }

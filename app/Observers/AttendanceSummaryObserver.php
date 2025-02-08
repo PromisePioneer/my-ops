@@ -16,11 +16,6 @@ class AttendanceSummaryObserver
     {
         $timestamp = Carbon::parse($attendances->timestamp);
         $user = User::where('absent_id', $attendances->employee_id)->first() ?? null;
-        $employeeSchedule = EmployeeSchedule::where('employee_id', $attendances->employee_id)->whereDate('start_date', $timestamp->format('Y-m-d'))->first();
-//
-//        if ($employeeSchedule->status === 'L') {
-//            return;
-//        }
 
         if (!$user) {
             return;

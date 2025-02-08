@@ -3,8 +3,8 @@
 @section('content')
     <div x-data="fpDevicesData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.adms.fp-devices.modal.create')
-            @include('pages.adms.fp-devices.modal.edit')
+            @include('pages.adms.fp-devices.form')
+            @include('pages.adms.fp-devices.query-attlog')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -21,7 +21,7 @@
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <button type="button" class="btn btn-light-primary btn-sm"
                                 data-bs-toggle="modal"
-                                data-bs-target="#modal-create">
+                                data-bs-target="#modal-fp-device">
                             <i class="ki-duotone ki-message-add fs-2">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
@@ -58,6 +58,7 @@
                                 </th>
                                 <th class="min-w-125px text-center">Cabang</th>
                                 <th class="min-w-125px text-center">Nama Mesin</th>
+                                <th class="min-w-125px text-center">IP Address</th>
                                 <th class="min-w-125px text-center">Serial Number</th>
                                 <th class="min-w-125px text-center">Terakhir Handshake</th>
                                 <th class="min-w-125px text-center">Actions</th>
@@ -92,12 +93,26 @@
                                     </td>
                                     <td class="text-center" x-text="device.branch?.name ?? 'Belum Diset'"></td>
                                     <td class="text-center" x-text="device.name"></td>
+                                    <td class="text-center" x-text="device.ip_address"></td>
                                     <td class="text-center" x-text="device.serial_number"></td>
                                     <td class="text-center" x-text="device.online ?? '-'"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(device.id)">
+                                                data-bs-target="#modal-fp-device" @click="edit(device.id)">
                                             <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-light-info btn-sm"
+                                                @click="testConnection(device.id)"
+                                        >
+                                            Tes Koneksi
+                                        </button>
+
+                                        <button class="btn btn-light-danger btn-sm"
+                                                data-bs-target="#modal-query-attlog"
+                                                data-bs-toggle="modal"
+                                                @click="edit(device.id)"
+                                        >
+                                            Tarik data
                                         </button>
                                     </td>
                                 </tr>
@@ -122,6 +137,7 @@
 @endsection
 @push('script')
     <script defer>
+        $('.date').flatpickr();
         function fpDevicesData() {
             return {
                 devices: [],
@@ -133,11 +149,11 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                formCreate: document.getElementById('form-create'),
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                formEdit: document.getElementById('form-edit'),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
+                form: document.getElementById('form-fp-device'),
+                modalForm: new bootstrap.Modal(document.getElementById('modal-fp-device')),
                 deleteForm: document.getElementById('deleteForm'),
+                formQueryAttLog: document.getElementById('form-query-attlog'),
+                modalQueryAttLog: new bootstrap.Modal(document.getElementById('modal-query-attlog')),
                 async init() {
                     const resp = await axios.get('/adms/fp-devices/data');
                     this.devices = resp.data
@@ -187,13 +203,17 @@
                         console.log(error);
                     }
                 },
-                async save() {
+                async save(id = null) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/adms/fp-devices/', new FormData(this.formCreate))
+                        if (!id) {
+                            await axios.post('/adms/fp-devices/', new FormData(this.form))
+                        } else {
+                            await axios.post(`/adms/fp-devices/${id}`, new FormData(this.form))
+                        }
                         await showAlert('success', 'Data berhasil disimpan')
-                        this.formCreate.reset();
-                        this.modalCreate.hide();
+                        this.form.reset();
+                        this.modalForm.hide();
                         await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
@@ -210,7 +230,6 @@
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/adms/fp-devices/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.modalEdit.hide();
                         this.formEdit.reset();
@@ -233,6 +252,34 @@
                             await showAlert('error', 'Terjadi kesalahan');
                         }
                     });
+                },
+                async testConnection(id) {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/adms/fp-devices/test-connection/${id}`);
+                        await showAlert('success', 'Koneksi ke mesin sukses');
+                        await this.init();
+                    } catch (error) {
+                        console.error(error);
+                        await showAlert('error', 'Koneksi Gagal');
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async queryAttLog(id) {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/adms/fp-devices/attendance-log/${id}`, new FormData(this.formQueryAttLog));
+                        await showAlert('success', 'Koneksi ke mesin sukses');
+                        this.formQueryAttLog.reset();
+                        this.modalQueryAttLog.hide();
+                        await this.init();
+                    } catch (error) {
+                        console.error(error);
+                        await showAlert('error', 'Koneksi Gagal');
+                    } finally {
+                        this.buttonLoading = false;
+                    }
                 },
                 async getBranchData() {
                     $(".branch-select2").select2({

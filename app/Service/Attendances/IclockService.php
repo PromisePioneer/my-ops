@@ -3,22 +3,24 @@
 namespace App\Service\Attendances;
 
 use App\Models\Attendances;
-use App\Models\AttendancesSummary;
 use App\Models\DeviceLog;
 use App\Models\EmployeeSchedule;
 use App\Models\FingerLog;
 use App\Models\FpDevice;
-use App\Models\User;
 use App\Models\WorkTime;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Jmrashed\Zkteco\Lib\ZKTeco;
 use Throwable;
 
 class IclockService
 {
+
+
+
     public function handshake(Request $request): string
     {
         $data = [
@@ -148,7 +150,7 @@ class IclockService
             }
 
         }
-        
+
 
         if ($status1 === 1 && $dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '09:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '12:00:00'))){
             $userShift = EmployeeSchedule::with('workTime')
@@ -156,7 +158,7 @@ class IclockService
             ->whereDate('end_date', $dateTime->format('Y-m-d'))
             ->first();
 
-            
+
         }
 
 
