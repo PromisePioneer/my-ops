@@ -78,6 +78,7 @@
                                 <th class="min-w-125px">Jabatan</th>
                                 <th class="min-w-125px">Terlambat</th>
                                 <th class="min-w-125px">Total Hadir</th>
+                                <th class="min-w-125px">Tidak Hadir</th>
                                 <th class="min-w-125px">Tidak CheckIn</th>
                                 <th class="min-w-125px">Tidak Checkout</th>
                                 <th class="min-w-125px">Cuti</th>
@@ -113,6 +114,7 @@
                                     <td x-text="`${attendance.role}`"></td>
                                     <td x-text="`${attendance.total_minutes_late} Menit`"></td>
                                     <td x-text="`${attendance.total_present}`"></td>
+                                    <td x-text="`${attendance.total_absent}`"></td>
                                     <td x-text="`${attendance.total_not_check_in}`"></td>
                                     <td x-text="`${attendance.total_not_check_out}`"></td>
                                     <td x-text="`${attendance.total_leaves}`"></td>
