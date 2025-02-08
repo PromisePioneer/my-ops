@@ -23,7 +23,6 @@ class FpDevice extends Model
         return $this->belongsTo(Branch::class, 'branch_id');
     }
 
-
     public function getData(Request $request): array
     {
         $search = $request->input('search');

@@ -161,6 +161,8 @@ class PermissionSeeder extends Seeder
             'Lihat Menu Mesin Absen',
             'Tambah Menu Mesin Absen',
             'Edit Menu Mesin Absen',
+            'Tarik Data Mesin Absen',
+            'Tes Koneksi Mesin Absen',
             'Hapus Menu Mesin Absen',
         ];
 

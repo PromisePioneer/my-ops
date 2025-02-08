@@ -19,6 +19,7 @@
             <div class="card-body py-3">
                 <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                        @can('Tambah Menu Mesin Absen')
                         <button type="button" class="btn btn-light-primary btn-sm"
                                 data-bs-toggle="modal"
                                 data-bs-target="#modal-fp-device">
@@ -28,6 +29,7 @@
                                 <span class="path3"></span>
                             </i> Tambah
                         </button>
+                        @endcan
                     </div>
                 </div>
                 <div class="py-5">
@@ -97,16 +99,21 @@
                                     <td class="text-center" x-text="device.serial_number"></td>
                                     <td class="text-center" x-text="device.online ?? '-'"></td>
                                     <td>
+                                        <template x-if="Number(editPermission) === 1">
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-fp-device" @click="edit(device.id)">
                                             <i class="bi bi-pencil"></i>
                                         </button>
+                                        </template>
+                                        <template x-if="Number(testConnectionPermission) === 1">
                                         <button class="btn btn-light-info btn-sm"
                                                 @click="testConnection(device.id)"
                                         >
                                             Tes Koneksi
                                         </button>
+                                        </template>
 
+                                        <template x-if="Number(queryDataPermission) === 1">
                                         <button class="btn btn-light-danger btn-sm"
                                                 data-bs-target="#modal-query-attlog"
                                                 data-bs-toggle="modal"
@@ -114,6 +121,7 @@
                                         >
                                             Tarik data
                                         </button>
+                                        </template>
                                     </td>
                                 </tr>
                             </template>
@@ -138,8 +146,14 @@
 @push('script')
     <script defer>
         $('.date').flatpickr();
+
         function fpDevicesData() {
             return {
+                createPermission: "{{ request()->user()->can('Tambah Menu Mesin Absen') }}",
+                editPermission: "{{ request()->user()->can('Edit Menu Mesin Absen') }}",
+                testConnectionPermission: "{{ request()->user()->can('Tes Koneksi Mesin Absen') }}",
+                deletePermission: "{{ request()->user()->can('Hapus Menu Mesin Absen') }}",
+                queryDataPermission: "{{ request()->user()->can('Tarik Data Mesin Absen') }}",
                 devices: [],
                 isLoading: true,
                 buttonLoading: false,
@@ -197,7 +211,6 @@
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
-
                         this.devices = resp.data;
                     } catch (error) {
                         console.log(error);
