@@ -329,6 +329,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/sub-branch/detail/{branch}', [BranchesController::class, 'subBranchDetail']);
             Route::post('/sub-branch/store', [BranchesController::class, 'storeChildren']);
             Route::post('/sub-branch/update/{branch}', [BranchesController::class, 'updateChildren']);
+            Route::post('update/{branch}', [BranchesController::class, 'update']);
             Route::post('/destroy/', [BranchesController::class, 'destroy']);
             Route::delete('/sub-branch/destroy/{branch}', [BranchesController::class, 'destroyChildren']);
         });

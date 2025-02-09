@@ -11,6 +11,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Spatie\Activitylog\Models\Activity;
 
 class BranchesController extends Controller
 {
@@ -21,6 +22,7 @@ class BranchesController extends Controller
      */
     public function index(): View
     {
+        dd(Activity::all());
         $this->authorize('view', Branch::class);
         return view('pages.general-master-data.branch.index');
     }
@@ -61,6 +63,12 @@ class BranchesController extends Controller
     {
         $this->authorize('create', Branch::class);
         Branch::create($request->validated());
+
+        $activity = Activity::all()->last();
+
+        $activity->description = 'test'; //returns 'created'
+        $activity->subject; //returns the instance of NewsItem that was created
+        $activity->changes; //returns ['attributes' => ['name' => 'original name', 'text' => 'Lorum']];
 
         return response()->json([
             'message' => 'data berhasil disimpan',

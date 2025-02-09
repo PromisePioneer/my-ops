@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use Haruncpi\LaravelUserActivity\Traits\Loggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Branch extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $table = 'branches';
 
@@ -20,6 +23,7 @@ class Branch extends Model
         'address',
         'parent_id',
     ];
+
 
     //relations
     public function accountTransaction(): HasMany
@@ -85,4 +89,10 @@ class Branch extends Model
     }
 
 
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable();
+        // Chain fluent methods for configuration options
+    }
 }
