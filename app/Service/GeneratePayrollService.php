@@ -47,7 +47,7 @@ use Illuminate\Database\Eloquent\Collection;
                 'branch' => $user->branch?->name,
                 'fixed_salary' => 'Rp.' . number_format((float)$user->jobInformation?->fixed_salary),
                 'emp_status' => $user->jobInformation?->contract_status ?? 'N/A',
-                'company' => $user->company->name,
+                'company' => $user->company?->name,
                 'overtime_allowance' => 'Rp.' . number_format($overtimeAllowance),
                 'meal_allowance' => 'Rp.' . number_format($mealAllowance),
                 'position_allowance' => 'Rp.' . number_format((float)$positionAllowance),
