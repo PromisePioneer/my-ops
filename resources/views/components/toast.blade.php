@@ -19,13 +19,12 @@
 
     });
 
-    // Ensure Toast is defined before calling showAlert
-    async function showAlert(type, title) {
-        if (Toast) { // Check if Toast is defined
-            console.log('Toast is available, firing alert...');
+    async function showAlert(type, title, timer = 1000) {
+        if (Toast) {
             await Toast.fire({
                 title: title,
                 icon: type,
+                timer: timer,
             });
         } else {
             console.error('Toast is not defined.');

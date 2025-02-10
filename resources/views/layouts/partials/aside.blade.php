@@ -583,11 +583,11 @@
                                 href="{{ url('payroll/setting') }}">
                                 Pengaturan
                             </x-dropdown-menu-item>
-                            {{--                        <x-dropdown-menu-item--}}
-                            {{--                            :active="request()->segment(2) === 'generate'"--}}
-                            {{--                            href="{{ url('payroll/generate') }}">--}}
-                            {{--                            Generate Payroll--}}
-                            {{--                        </x-dropdown-menu-item>--}}
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'generate'"
+                                    href="{{ url('payroll/generate') }}">
+                                    Generate Payroll
+                                </x-dropdown-menu-item>
                         @endslot
                     </x-dropdown-menu>
                 @endcan

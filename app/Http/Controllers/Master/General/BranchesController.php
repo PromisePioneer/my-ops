@@ -22,7 +22,6 @@ class BranchesController extends Controller
      */
     public function index(): View
     {
-        dd(Activity::all());
         $this->authorize('view', Branch::class);
         return view('pages.general-master-data.branch.index');
     }
@@ -66,9 +65,9 @@ class BranchesController extends Controller
 
         $activity = Activity::all()->last();
 
-        $activity->description = 'test'; //returns 'created'
-        $activity->subject; //returns the instance of NewsItem that was created
-        $activity->changes; //returns ['attributes' => ['name' => 'original name', 'text' => 'Lorum']];
+        $activity->description;
+        $activity->subject;
+        $activity->changes;
 
         return response()->json([
             'message' => 'data berhasil disimpan',

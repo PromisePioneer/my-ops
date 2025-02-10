@@ -5,10 +5,9 @@ namespace App\Http\Controllers\HRIS\Attendances;
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ADMS\FpDeviceRequest;
-use App\Jobs\ProcessAttendance;
+use App\Jobs\AttendanceJob;
 use App\Models\Branch;
 use App\Models\FpDevice;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -44,10 +43,13 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
 
         $data = FpDevice::with('branch')
             ->when(!empty($search), function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                    ->where('serial_number', 'like', '%' . $search . '%');
-            })
-            ->paginate(self::$perPage);
+                $query->whereHas('branch', function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                })->orWhere('name', 'like', '%' . $search . '%')
+                    ->orWhere('serial_number', 'like', '%' . $search . '%')
+                    ->orWhere('ip_address', 'like', '%' . $search . '%');
+            })->paginate(self::$perPage);
+
         return response()->json($data);
     }
 
@@ -109,24 +111,32 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
     }
 
 
-    public function getAttendances(Request $request, FpDevice $fpDevice)
+    public function getAttendances(Request $request, FpDevice $fpDevice): JsonResponse
     {
+
         $zk = new ZKTeco($fpDevice->ip_address, 4370);
         $connected = $zk->connect();
-        $startDate = Carbon::parse($request->startDate);
-        $endDate = Carbon::parse($request->endDate);
-
         if ($connected) {
-            $attendanceLog = $zk->getAttendance();
-
-            $chunks = array_chunk($attendanceLog, 100); // Process 100 records per job
-            foreach ($chunks as $chunk) {
-                ProcessAttendance::dispatch($fpDevice, $startDate, $endDate, $chunk);
-            }
+            AttendanceJob::dispatch($fpDevice, $request->start_date, $request->end_date);
+        } else {
+            return response()->json([
+                'message' => 'Koneksi Gagal',
+            ], 500);
         }
         return response()->json([
             'message' => 'Attendance processing has been queued and will be processed in the background.',
         ]);
+    }
 
+
+    public function restartDevice(FpDevice $fpDevice): JsonResponse
+    {
+        $zk = new ZKTeco($fpDevice->ip_address, 4370);
+        $connected = $zk->connect();
+        if (!$connected) {
+            return response()->json(['message' => 'Koneksi ke mesin gagal'], 500);
+        }
+        $zk->restart();
+        return response()->json(['message' => 'Mesin berhasil direstart.']);
     }
 }

@@ -15,7 +15,6 @@ use App\Http\Controllers\Accounting\Transaction\FabController;
 use App\Http\Controllers\Accounting\Transaction\InitialBalanceController;
 use App\Http\Controllers\Accounting\Transaction\InvoiceController;
 use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
-use App\Http\Controllers\AppDocController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\BAAController;
@@ -1097,6 +1096,8 @@ Route::group(['middleware' => ['auth']], static function () {
 
             Route::post('/test-connection/{fpDevice}', [FpDevicesController::class, 'testConnection']);
             Route::post('/attendance-log/{fpDevice}', [FpDevicesController::class, 'getAttendances']);
+
+            Route::get('/restart-device/{fpDevice}', [FpDevicesController::class, 'restartDevice']);
         });
 
         Route::prefix('/work-time')->group(function () {
@@ -1331,7 +1332,9 @@ Route::group(['middleware' => ['auth']], static function () {
 
     Route::prefix('payroll/generate')->group(function () {
         Route::get('/', [GeneratePayrollController::class, 'index']);
-        Route::post('/', [GeneratePayrollController::class, 'generatePayroll']);
+        Route::get('/attendances-data', [GeneratePayrollController::class, 'data']);
+        Route::get('/attendance-summary', [GeneratePayrollController::class, 'getAttendancesSummary']);
+        Route::get('/user-job-info', [GeneratePayrollController::class, 'getUserJobInformation']);
     });
 
 

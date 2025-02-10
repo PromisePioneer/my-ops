@@ -106,20 +106,21 @@
                                         </button>
                                         </template>
                                         <template x-if="Number(testConnectionPermission) === 1">
-                                        <button class="btn btn-light-info btn-sm"
+                                            <button class="btn btn-light-info btn-sm" data-bs-toggle="tooltip"
+                                                    data-bs-placement="top" title="Test Koneksi Mesin"
                                                 @click="testConnection(device.id)"
                                         >
-                                            Tes Koneksi
+                                                <i class="bi bi-ethernet"></i>
                                         </button>
                                         </template>
 
                                         <template x-if="Number(queryDataPermission) === 1">
                                         <button class="btn btn-light-danger btn-sm"
-                                                data-bs-target="#modal-query-attlog"
-                                                data-bs-toggle="modal"
-                                                @click="edit(device.id)"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-placement="top" title="Tarik Data"
+                                                @click="showDeviceInfo(device.id)"
                                         >
-                                            Tarik data
+                                            <i class="bi bi-cloud-arrow-down-fill"></i>
                                         </button>
                                         </template>
                                     </td>
@@ -181,6 +182,12 @@
                         this.devices = resp.data
                     }
                 },
+                async showDeviceInfo(id) {
+                    const resp = await axios.get(`/adms/fp-devices/${id}`);
+                    this.editVal = resp.data;
+                    await this.selectedBranch();
+                    this.modalQueryAttLog.show();
+                },
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
                     this.singleChecked = false;
@@ -240,20 +247,6 @@
                     this.editVal = resp.data;
                     await this.selectedBranch();
                 },
-                async update(id) {
-                    this.buttonLoading = true;
-                    try {
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.modalEdit.hide();
-                        this.formEdit.reset();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]));
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
@@ -283,7 +276,7 @@
                     this.buttonLoading = true;
                     try {
                         await axios.post(`/adms/fp-devices/attendance-log/${id}`, new FormData(this.formQueryAttLog));
-                        await showAlert('success', 'Koneksi ke mesin sukses');
+                        await showAlert('success', 'Data Kehadiran telah di masukkan kedalam antrian dan akan berjalan di latar belakang.', 10000);
                         this.formQueryAttLog.reset();
                         this.modalQueryAttLog.hide();
                         await this.init();

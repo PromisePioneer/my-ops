@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\HRIS\Payroll;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Payroll\GeneratePayrollRequest;
 use App\Models\Attendances;
@@ -9,20 +10,20 @@ use App\Models\GeneratePayroll;
 use App\Models\PayrollSchedule;
 use App\Models\User;
 use App\Service\Attendances\AttendancesSummaryService;
+use App\Service\GeneratePayrollService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-class GeneratePayrollController extends Controller
+#[AllowDynamicProperties] class GeneratePayrollController extends Controller
 {
-
-    private Attendances $attendance;
-    private AttendancesSummaryService $attendanceSummaryService;
 
     public function __construct()
     {
         $this->attendance = new Attendances();
         $this->attendanceSummaryService = new AttendancesSummaryService();
+        $this->generatePayrollService = new GeneratePayrollService();
     }
 
     public function index(): View
@@ -63,5 +64,16 @@ class GeneratePayrollController extends Controller
         return response()->json([
             'message' => 'data berhasil disimpan',
         ]);
+    }
+
+    public function getAttendancesSummary(Request $request): JsonResponse
+    {
+        return response()->json($this->attendanceSummaryService->data($request));
+    }
+
+
+    public function getUserJobInformation(): JsonResponse
+    {
+        return response()->json($this->generatePayrollService->getUserJobInformation());
     }
 }
