@@ -8,7 +8,6 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Jmrashed\Zkteco\Lib\ZKTeco;
 
 class HomeController extends Controller
 {
@@ -37,15 +36,10 @@ class HomeController extends Controller
 
 //        if ($request->user()->hasAnyRole($roleAllowed)) {
         $totalEmp = User::withoutRole('Super Admin')->where('active', true)->count();
-        $totalBranch = Branch::count();
+        $totalBranch = Branch::whereNull('parent_id')->count();
         return response()->json([
             'totalEmp' => $totalEmp,
             'totalBranch' => $totalBranch,
-        ]);
-//        }
-
-        return response()->json([
-            'status' => 'error',
         ]);
     }
 
