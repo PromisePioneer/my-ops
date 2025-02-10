@@ -1,0 +1,163 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class MenuSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        DB::table('menus')->insert(
+            [
+                [
+                    'id' => 1,
+                    'parent_id' => 1,
+                    'name' => 'Home',
+                    'link' => 'home',
+                    'description' => 'Home',
+                    'icon' => 'fa fa-home',
+                    'level' => NULL,
+                    'no_urut' => 1,
+                    'class_active' => '1',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ],
+                [
+                    'id' => 2,
+                    'parent_id' => 2,
+                    'name' => 'Utility',
+                    'link' => 'utility',
+                    'description' => 'Utility',
+                    'icon' => 'fa fa-cog',
+                    'level' => NULL,
+                    'no_urut' => 2,
+                    'class_active' => '2',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ],
+                [
+                    'id' => 3,
+                    'parent_id' => 2,
+                    'name' => 'Menu Management',
+                    'link' => 'utility/menu-management',
+                    'description' => 'Utility - Menu Management',
+                    'icon' => NULL,
+                    'level' => NULL,
+                    'no_urut' => 1,
+                    'class_active' => '2,3',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ],
+                [
+                    'id' => 4,
+                    'parent_id' => 2,
+                    'name' => 'User Management',
+                    'link' => 'utility/user',
+                    'description' => 'Utility - User Management',
+                    'icon' => NULL,
+                    'level' => NULL,
+                    'no_urut' => 2,
+                    'class_active' => '2,4',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ],
+                [
+                    'id' => 5,
+                    'parent_id' => 2,
+                    'name' => 'Role Management',
+                    'link' => 'utility/role',
+                    'description' => 'Utility - Role Management',
+                    'icon' => NULL,
+                    'level' => NULL,
+                    'no_urut' => 3,
+                    'class_active' => '2,5',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ],
+                [
+                    'id' => 6,
+                    'parent_id' => 2,
+                    'name' => 'Permission',
+                    'link' => 'utility/permission',
+                    'description' => 'Utility - Permission',
+                    'icon' => NULL,
+                    'level' => NULL,
+                    'no_urut' => 4,
+                    'class_active' => '2,6',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ],
+                [
+                    'id' => 7,
+                    'parent_id' => 7,
+                    'name' => 'Setting App',
+                    'link' => 'settapp',
+                    'description' => 'Setting App',
+                    'icon' => 'fa fa-cogs',
+                    'level' => NULL,
+                    'no_urut' => 3,
+                    'class_active' => '7',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ],
+                [
+                    'id' => 8,
+                    'parent_id' => 7,
+                    'name' => 'Setting Data',
+                    'link' => 'settapp/setting',
+                    'description' => 'Setting App - Setting Data',
+                    'icon' => NULL,
+                    'level' => NULL,
+                    'no_urut' => 1,
+                    'class_active' => '7,8',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ],
+                [
+                    'id' => 9,
+                    'parent_id' => 7,
+                    'name' => 'Change Configuration',
+                    'link' => 'settapp/change',
+                    'description' => 'Setting App - Change Configuration',
+                    'icon' => NULL,
+                    'level' => NULL,
+                    'no_urut' => 2,
+                    'class_active' => '7,9',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ],
+                [
+                    'id' => 10,
+                    'parent_id' => 9,
+                    'name' => 'My Application',
+                    'link' => 'settapp/change/myapp',
+                    'description' => 'Setting App - Change Configuration - My Application',
+                    'icon' => NULL,
+                    'level' => NULL,
+                    'no_urut' => 1,
+                    'class_active' => '7,9,10',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ],
+                [
+                    'id' => 11,
+                    'parent_id' => 9,
+                    'name' => 'Logo And Background',
+                    'link' => 'settapp/change/logo',
+                    'description' => 'Setting App - Change Configuration - Logo And Background',
+                    'icon' => NULL,
+                    'level' => NULL,
+                    'no_urut' => 2,
+                    'class_active' => '7,9,11',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ],
+            ]
+        );
+    }
+}
