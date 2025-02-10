@@ -6,7 +6,7 @@ use AllowDynamicProperties;
 use App\Models\User;
 use App\Service\Attendances\AttendancesSummaryService;
 use App\Service\HelperService\FinancialClosePeriodService;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 #[AllowDynamicProperties] class GeneratePayrollService
 {
@@ -20,14 +20,14 @@ use Illuminate\Database\Eloquent\Collection;
     }
 
 
-    public function getUserJobInformation()
+    public function getUserJobInformation(): Collection
     {
         $user = User::with('jobInformation', 'roles', 'branch', 'company', 'overtimeAllowance', 'mealAllowance', 'transportationAllowance')->get();
         return self::userJobInformationFormattedData($user);
     }
 
 
-    public function userJobInformationFormattedData(Collection $data): \Illuminate\Support\Collection
+    public function userJobInformationFormattedData(Collection $data): Collection
     {
         $startDate = $this->financialClosePeriodService->startDate()->format('Y-m-d');
         $endDate = $this->financialClosePeriodService->endDate()->format('Y-m-d');
