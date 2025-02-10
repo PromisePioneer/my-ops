@@ -13,8 +13,8 @@ return new class extends Migration {
         Schema::create('generate_payroll', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->string('period');
             $table->date('payment_schedule');
+            $table->string('period');
             $table->double('basic_salary');
             $table->double('allowances');
             $table->boolean('published')->default(false);

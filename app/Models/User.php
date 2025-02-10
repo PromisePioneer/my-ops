@@ -77,11 +77,6 @@ class User extends Authenticatable
         return $this->hasOne(Education::class);
     }
 
-    public function userHasWorkTime(): hasOne
-    {
-        return $this->hasOne(UserWorkTime::class, 'user_id');
-    }
-
 
     public function attendance(): HasMany
     {
@@ -92,6 +87,21 @@ class User extends Authenticatable
     public function attendancesSummary(): HasMany
     {
         return $this->hasMany(AttendancesSummary::class, 'employee_id', 'absent_id');
+    }
+
+    public function overtimeAllowance()
+    {
+        return $this->hasMany(UserHasOvertime::class, 'user_id');
+    }
+
+    public function mealAllowance(): HasMany
+    {
+        return $this->hasMany(UserHasMealAllowance::class, 'user_id');
+    }
+
+    public function transportationAllowance(): HasMany
+    {
+        return $this->hasMany(UserHasTransportationAllowance::class, 'user_id');
     }
 
 

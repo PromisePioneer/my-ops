@@ -16,7 +16,6 @@ class CreateUserJobsInformations extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->double('fixed_salary')->nullable();
             $table->double('position_allowance')->nullable();
-            $table->double('meal_allowance')->nullable();
             $table->enum('contract_status', [
                 'Tetap', 'Kontrak', 'Vendor', 'Training', 'Magang', 'Freelance', 'Non Karyawan',
             ]);

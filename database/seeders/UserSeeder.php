@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Branch;
+use App\Models\JobInformation;
 use App\Models\User;
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
@@ -98,19 +99,26 @@ class UserSeeder extends Seeder
         ]);
 
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 500; $i++) {
             $kca = User::factory()->create([
-                'absent_id' => fake()->unique()->randomDigit(),
+                'absent_id' => mt_rand(1000, 9999),
                 'join_date' => $faker->date(),
                 'name' => fake()->unique()->name,
-                'email' => fake()->unique()->email . '@mayatama.net',
+                'email' => fake()->unique()->email,
                 'password' => Hash::make('12345678'),
                 'branch_id' => 3,
-                'company_id' => 1,
+                'company_id' => 2,
                 'placement' => 'Cabang',
             ]);
 
             $kca->assignRole('Head Engineer');
+
+
+            JobInformation::create([
+                'user_id' => $kca->id,
+                'fixed_salary' => 3000000,
+                'contract_status' => 'Kontrak',
+            ]);
         }
 
 
