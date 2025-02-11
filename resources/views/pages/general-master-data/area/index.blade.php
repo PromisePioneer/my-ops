@@ -150,7 +150,7 @@
                             <ul class="pagination float-end mb-4 mt-4">
                                 <template x-for="pagination in areas.links">
                                     <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                        <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                        <button class="page-link" @click="paginate(pagination.url)"
                                                 x-html="pagination.label">
                                         </button>
                                     </li>

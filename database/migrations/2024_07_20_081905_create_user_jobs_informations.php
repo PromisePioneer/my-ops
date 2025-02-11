@@ -16,8 +16,25 @@ class CreateUserJobsInformations extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->double('fixed_salary')->nullable();
             $table->double('position_allowance')->nullable();
-            $table->enum('contract_status', [
-                'Tetap', 'Kontrak', 'Vendor', 'Training', 'Magang', 'Freelance', 'Non Karyawan',
+            $table->enum('week_holiday',
+                [
+                    'Senin',
+                    'Selasa',
+                    'Rabu',
+                    'Kamis',
+                    'Jumat',
+                    'Sabtu',
+                    'Minggu',
+                ])->default('minggu');
+            $table->enum('contract_status',
+                [
+                    'Tetap',
+                    'Kontrak',
+                    'Vendor',
+                    'Training',
+                    'Magang',
+                    'Freelance',
+                    'Non Karyawan',
             ]);
             $table->string('bank_account_number')->nullable();
             $table->enum('bpjs_kes', ['ya', 'tidak'])->default('tidak')->nullable();
