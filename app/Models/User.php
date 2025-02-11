@@ -104,6 +104,22 @@ class User extends Authenticatable
         return $this->hasMany(UserHasTransportationAllowance::class, 'user_id');
     }
 
+    public function SLADeduction(): HasMany
+    {
+        return $this->hasMany(SLADeduction::class, 'kca_id');
+    }
+
+    public function ninePastFifteenDeduction(): HasMany
+    {
+        return $this->hasMany(NinePastFiveTeenLateDeduction::class, 'technician_id');
+    }
+
+
+    public function additionalDeduction(): HasMany
+    {
+        return $this->hasMany(AdditionalDeduction::class, 'user_id');
+    }
+
 
     public function contract(): HasOne
     {

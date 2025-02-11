@@ -1,4 +1,3 @@
-
 <?php
 
 namespace App\Http\Controllers\HRIS\Payroll\PayrollComponent\Deductions;

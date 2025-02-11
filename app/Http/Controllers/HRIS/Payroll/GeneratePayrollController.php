@@ -76,4 +76,5 @@ use Illuminate\View\View;
     {
         return response()->json($this->generatePayrollService->getUserJobInformation());
     }
+
 }

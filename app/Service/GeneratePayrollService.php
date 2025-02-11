@@ -22,7 +22,7 @@ use Illuminate\Support\Collection;
 
     public function getUserJobInformation(): Collection
     {
-        $user = User::with('jobInformation', 'roles', 'branch', 'company', 'overtimeAllowance', 'mealAllowance', 'transportationAllowance')->get();
+        $user = User::with('jobInformation', 'roles', 'branch', 'company', 'overtimeAllowance', 'mealAllowance', 'transportationAllowance', 'SLADeduction', 'ninePastFifteenDeduction')->get();
         return self::userJobInformationFormattedData($user);
     }
 
@@ -39,6 +39,10 @@ use Illuminate\Support\Collection;
             $positionAllowance = $user->jobInformation?->position_allowance;
             $transportationAllowance = $this->transportationAllowance($user, $startDate, $endDate);
             $totalAllowance = $overtimeAllowance + $mealAllowance + $positionAllowance + $transportationAllowance;
+            $slaDeduction = $this->slaDeduction($user, $startDate, $endDate);
+            $ninePastFifteenDeduction = $this->ninePastFifteenDeduction($user, $startDate, $endDate);
+            $additionalDeduction = $this->additionalDeduction($user, $startDate, $endDate);
+            $totalDeduction = $slaDeduction + $ninePastFifteenDeduction + $additionalDeduction;
 
             return [
                 'id' => $user->id,
@@ -52,11 +56,13 @@ use Illuminate\Support\Collection;
                 'meal_allowance' => 'Rp.' . number_format($mealAllowance),
                 'position_allowance' => 'Rp.' . number_format((float)$positionAllowance),
                 'transportation_allowance' => 'Rp.' . number_format($transportationAllowance),
-                'total_allowance' => 'Rp.' . number_format($totalAllowance)
+                'sla_deduction' => 'Rp.' . number_format($slaDeduction),
+                'nine_past_fifteen_deduction' => 'Rp.' . number_format($ninePastFifteenDeduction),
+                'additional_deduction' => 'Rp.' . number_format($additionalDeduction),
+                'total_allowance' => 'Rp.' . number_format($totalAllowance),
+                'total_deduction' => 'Rp.' . number_format($totalDeduction),
             ];
         });
-
-//        $data->setCollection($user);
         return $user;
     }
 
@@ -82,5 +88,22 @@ use Illuminate\Support\Collection;
         return $user->transportationAllowance
             ->whereBetween('date', [$startDate, $endDate])
             ->sum('amount');
+    }
+
+
+    public function slaDeduction(User $user, $startDate, $endDate): int|float
+    {
+        return $user->SLADeduction->whereBetween('date', [$startDate, $endDate])->sum('total_deduction_amount');
+    }
+
+    public function ninePastFifteenDeduction(User $user, $startDate, $endDate)
+    {
+        return $user->ninePastFifteenDeduction->whereBetween('date', [$startDate, $endDate])->sum('total_deduction_amount');
+    }
+
+
+    public function additionalDeduction(User $user, $startDate, $endDate)
+    {
+        return $user->additionalDeduction->whereBetween('date', [$startDate, $endDate])->sum('amount');
     }
 }

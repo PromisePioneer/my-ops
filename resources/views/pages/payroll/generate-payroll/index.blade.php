@@ -16,7 +16,8 @@
             <form action="" id="generate-payroll" @submit.prevent="saveSetup()">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed table-bordered fs-6 gy-5" id="kt_table_users">
+                        <table class="table align-middle table-row-dashed table-bordered border-black fs-6 gy-5"
+                               id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-100px text-center">Nama</th>
@@ -57,10 +58,10 @@
                                                 <span x-text="user.name"></span>
                                             </a>
                                             <span class="badge badge-info fw-bolder fs-8 mb-2"
-                                                  x-text="`Status Jabatan : ${user.roles ?? ''}`">
+                                                  x-text="`Jabatan : ${user.roles ?? 'N/A'}`">
                                                     </span>
                                             <span class="badge badge-info fw-bolder mb-2 fs-8"
-                                                  x-text="`Status Karyawan : ${user.emp_status ?? '-'}`">
+                                                  x-text="`Status Karyawan : ${user.emp_status ?? 'N/A'}`">
                                                     </span>
                                             <span class="badge badge-info fw-bolder fs-8"
                                                   x-text="`Perusahaan : ${user.company ?? '-'}`">
@@ -69,67 +70,50 @@
                                         </div>
                                     </td>
                                     <td class="text-center" x-text="user.fixed_salary"></td>
-                                    <td class="text-center">
-                                        <div class="d-flex align-items-center flex-column">
-                                            <table class="table">
-                                                <tr class="d-flex align-items-center justify-content-around">
-                                                    <td class="fw-bolder mb-2">
-                                                        Lembur
-                                                    </td>
-                                                    <td class="fw-bolder mb-2">
-                                                        :
-                                                    </td>
-                                                    <td class="fw-bolder mb-2"
-                                                        x-text="`${user.overtime_allowance ?? 'N/A'}`">
-                                                    </td>
-                                                </tr>
-                                                <tr class="d-flex align-items-center justify-content-around">
-                                                    <td class="fw-bolder mb-2">
-                                                        Makan
-                                                    </td>
-                                                    <td class="fw-bolder mb-2">
-                                                        :
-                                                    </td>
-                                                    <td class="fw-bolder mb-2"
-                                                        x-text="user.meal_allowance ?? 'N/A'">
-                                                    </td>
-                                                </tr>
-                                                <tr class="d-flex align-items-center justify-content-around">
-                                                    <td class="fw-bolder mb-2">
-                                                        Jabatan
-                                                    </td>
-                                                    <td class="fw-bolder mb-2">
-                                                        :
-                                                    </td>
-                                                    <td class="fw-bolder mb-2"
-                                                        x-text="user.position_allowance ?? 'N/A'">
-                                                    </td>
-                                                </tr>
-                                                <tr class="d-flex align-items-center justify-content-around">
-                                                    <td class="fw-bolder mb-2">
-                                                        Transport
-                                                    </td>
-                                                    <td class="fw-bolder mb-2">
-                                                        :
-                                                    </td>
-                                                    <td class="fw-bolder mb-2"
-                                                        x-text="user.transportation_allowance ?? 'N/A'">
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                            <table class="table">
-                                                <tr class="d-flex align-items-center justify-content-around border-top">
-                                                    <td class="fw-bolder mb-2">
-                                                        Total
-                                                    </td>
-                                                    <td class="fw-bolder mb-2">
-                                                        :
-                                                    </td>
-                                                    <td class="fw-bolder mb-2">
-                                                        <span x-text="user.total_allowance"></span>
-                                                    </td>
-                                                </tr>
-                                            </table>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span>Jabatan</span>
+                                                <span x-text="user.position_allowance"></span>
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span>Makan</span>
+                                                <span x-text="user.meal_allowance"></span>
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span>Lembur</span>
+                                                <span x-text="user.overtime_allowance"></span>
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span>Transportasi</span>
+                                                <span x-text="user.transportation_allowance"></span>
+                                            </div>
+                                            <hr>
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span>Total Tunjangan</span>
+                                                <span x-text="user.total_allowance"></span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span>SLA</span>
+                                                <span x-text="user.sla_deduction"></span>
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span>9.15</span>
+                                                <span x-text="user.nine_past_fifteen_deduction"></span>
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-between mb-10">
+                                                <span>Lainnya</span>
+                                                <span x-text="user.additional_deduction"></span>
+                                            </div>
+                                            <hr>
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span>Total Denda</span>
+                                                <span x-text="user.total_deduction"></span>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
