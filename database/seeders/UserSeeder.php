@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Branch;
-use App\Models\JobInformation;
 use App\Models\User;
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
@@ -19,8 +17,6 @@ class UserSeeder extends Seeder
     {
         $faker = Faker::create('id_ID');
 
-        $branch = Branch::where('id', 1)->first();
-
         User::factory()->create([
             'absent_id' => 999,
             'nip' => 112,
@@ -34,7 +30,7 @@ class UserSeeder extends Seeder
         ]);
 
 
-        $director = User::factory()->create([
+        User::factory()->create([
             'absent_id' => 1,
             'nip' => 1,
             'join_date' => $faker->date(),
@@ -47,7 +43,7 @@ class UserSeeder extends Seeder
         ]);
 
 
-        $operationalManager = User::factory()->create([
+        User::factory()->create([
             'absent_id' => 2,
             'nip' => 2,
             'join_date' => $faker->date(),
@@ -60,7 +56,7 @@ class UserSeeder extends Seeder
         ]);
 
 
-        $branchManager = User::factory()->create([
+        User::factory()->create([
             'absent_id' => 3,
             'nip' => 3,
             'join_date' => $faker->date(),
@@ -73,7 +69,7 @@ class UserSeeder extends Seeder
         ]);
 
 
-        $financeManager = User::factory()->create([
+        User::factory()->create([
             'absent_id' => 4,
             'nip' => 4,
             'join_date' => $faker->date(),
@@ -86,7 +82,7 @@ class UserSeeder extends Seeder
         ]);
 
 
-        $generalManager = User::factory()->create([
+        User::factory()->create([
             'absent_id' => 5,
             'nip' => 5,
             'join_date' => $faker->date(),
@@ -99,7 +95,7 @@ class UserSeeder extends Seeder
         ]);
 
 
-        for ($i = 0; $i < 500; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             $kca = User::factory()->create([
                 'absent_id' => mt_rand(1000, 9999),
                 'join_date' => $faker->date(),
@@ -111,20 +107,11 @@ class UserSeeder extends Seeder
                 'placement' => 'Cabang',
             ]);
 
-            $kca->assignRole('Head Engineer');
-
-
-            JobInformation::create([
-                'user_id' => $kca->id,
-                'fixed_salary' => 3000000,
-                'contract_status' => 'Kontrak',
-            ]);
+            $kca->assignRole('Vendor');
         }
-
 
         $superAdminRole = Role::create(['name' => 'Super Admin']);
         $superAdmin = User::where('name', 'Super Admin')->first();
         $superAdmin->assignRole($superAdminRole);
-
     }
 }

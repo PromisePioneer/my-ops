@@ -17,6 +17,7 @@
             async init() {
                 await this.getBranchData();
                 await this.getArea();
+                await this.getDepartment();
             },
             async getArea() {
                 const resp = await axios.get('/general-master-data/area/data')
@@ -88,6 +89,34 @@
                 this.editVal = resp.data;
                 await this.getBranchData();
                 await this.selectedBranch();
+                await this.selectedDepartment();
+            },
+            async getDepartment() {
+                $(".departments-select2").select2({
+                    placeholder: 'Pilih Departemen',
+                    allowClear: true,
+                    ajax: {
+                        url: '/general-master-data/area/department/data',
+                        dataType: "json",
+                        type: "GET",
+                        data: params => ({search: params.term}),
+                        processResults: data => ({results: data}),
+                        cache: true
+                    }
+                });
+            },
+            async selectedDepartment() {
+                const selectedDepartment = $('#selected-department');
+                const response = await $.ajax({
+                    type: 'GET',
+                    dataType: "JSON",
+                    url: `/general-master-data/area/department/selected/${this.editVal.id}`,
+                });
+                const option = new Option(response.name, response.id, true, true);
+                selectedDepartment.append(option).trigger('change').trigger({
+                    type: 'select2:select',
+                    params: {results: response}
+                });
             },
             async getBranchData() {
                 $(".branches-select2").select2({

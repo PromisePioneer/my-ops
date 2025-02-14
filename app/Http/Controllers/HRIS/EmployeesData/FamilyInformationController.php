@@ -19,10 +19,11 @@ class FamilyInformationController extends Controller
 
     public function getRelatedFamilyInformation(User $user): JsonResponse
     {
-        $family = $this->familyInformation->getRelatedUserFamilyInformation($user->id);
+        $family = FamilyInformation::with('user')
+            ->where('user_id', $user->id)->first();
 
         return response()->json([
-            'partner_name' => $this->familyInformation->getRelatedUserFamilyInformation($user->id),
+            'partner_name' => $family,
             'child' => json_decode($family?->child),
         ]);
     }

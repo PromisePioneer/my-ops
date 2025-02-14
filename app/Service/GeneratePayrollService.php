@@ -22,7 +22,9 @@ use Illuminate\Support\Collection;
 
     public function getUserJobInformation(): Collection
     {
-        $user = User::with('jobInformation', 'roles', 'branch', 'company', 'overtimeAllowance', 'mealAllowance', 'transportationAllowance', 'SLADeduction', 'ninePastFifteenDeduction')->get();
+        $user = User::with('jobInformation', 'roles', 'branch', 'company', 'overtimeAllowance', 'mealAllowance', 'transportationAllowance', 'SLADeduction', 'ninePastFifteenDeduction')->whereHas('roles', function ($query) {
+            $query->whereNotIn('name', ['Vendor']);
+        })->get();
         return self::userJobInformationFormattedData($user);
     }
 
@@ -33,7 +35,7 @@ use Illuminate\Support\Collection;
         $endDate = $this->financialClosePeriodService->endDate()->format('Y-m-d');
 
 
-        $user = $data->map(function ($user) use ($startDate, $endDate) {
+        return $data->map(function ($user) use ($startDate, $endDate) {
             $overtimeAllowance = $this->overtimeAllowance($user, $startDate, $endDate);
             $mealAllowance = $this->mealAllowance($user, $startDate, $endDate);
             $positionAllowance = $user->jobInformation?->position_allowance;
@@ -63,7 +65,6 @@ use Illuminate\Support\Collection;
                 'total_deduction' => 'Rp.' . number_format($totalDeduction),
             ];
         });
-        return $user;
     }
 
 

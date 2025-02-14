@@ -19,7 +19,9 @@ class HealthInformationController extends Controller
 
     public function getRelatedUserHealthInformation(User $user): JsonResponse
     {
-        $health = $this->healthInformation->getRelatedUserHealthInformation($user->id);
+        $health = HealthInformation::with('user')
+            ->where('user_id', $user->id)
+            ->first();
 
         return response()->json([
             'disease' => json_decode($health?->disease),

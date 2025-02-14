@@ -29,7 +29,7 @@ use Illuminate\View\View;
     public function index(): View
     {
         $payrollSchedule = PayrollSchedule::first();
-        return view('pages.payroll.generate-payroll.index', compact('payrollSchedule'));
+        return view('pages.payroll.generate-payroll.employee.index', compact('payrollSchedule'));
     }
 
 

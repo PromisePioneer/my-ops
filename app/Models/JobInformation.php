@@ -22,6 +22,7 @@ class JobInformation extends Model
         'no_kpj',
         'bpjs_ket',
         'no_kis',
+        'week_holiday'
     ];
 
     public function user(): BelongsTo

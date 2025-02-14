@@ -14,8 +14,8 @@ return new class extends Migration {
             $table->id();
             $table->integer('attendance_period_start')->default(28);
             $table->integer('attendance_period_end')->default(28);
-            $table->integer('payroll_period_start')->default(28);
-            $table->integer('payroll_period_end')->default(28);
+            $table->integer('emp_payroll_period_start')->default(28);
+            $table->integer('emp_payroll_period_end')->default(28);
             $table->timestamps();
         });
     }

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Haruncpi\LaravelUserActivity\Traits\Loggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,12 +31,6 @@ class Branch extends Model
     }
 
 
-    public function branchHasBroadbandPacket(): HasMany
-    {
-        return $this->hasMany(BranchHasBroadbandPacket::class, 'branch_id');
-    }
-
-
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
@@ -54,7 +47,7 @@ class Branch extends Model
     public function getData(Request $request): array
     {
         $search = $request->input('search');
-        $query = self::when(!empty($search), function ($query) use ($search) {
+        $query = self::whereNull('parent_id')->when(!empty($search), function ($query) use ($search) {
             $query->where('name', 'like', '%'.$search.'%');
         })->orderby('name')->select('id', 'name', 'code')->get();
 
@@ -80,12 +73,6 @@ class Branch extends Model
             'code' => $branch->code,
             'name' => $branch->name,
         ];
-    }
-
-
-    public function branchWarehouseItem(): HasMany
-    {
-        return $this->hasMany(BranchWarehouseItem::class, 'branch_id');
     }
 
 

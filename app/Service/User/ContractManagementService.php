@@ -6,8 +6,8 @@ use App\Models\ContractManagement;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-
 use function App\Helper\convertToRoman;
 
 class ContractManagementService
@@ -24,7 +24,9 @@ class ContractManagementService
 
     public function paginatedData(): LengthAwarePaginator
     {
-        $contractManagement = $this->contractManagement->getContractManagement()->paginate(self::$perPage);
+        $contractManagement = User::with('contract', 'jobInformation')->whereHas('jobInformation', function (Builder $query) {
+            $query->where('contract_status', 'Kontrak');
+        })->paginate(self::$perPage);
         self::formattedData($contractManagement);
         return $contractManagement;
     }

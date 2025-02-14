@@ -29,11 +29,11 @@ class EducationCertificateController extends Controller
 
     public function getEducationCertificate(Request $request): JsonResponse
     {
-        return response()->json(
-            $this->educationCertificate->getRelatedUserEducationCertificate(
-                $request->user()->id
-            )
-        );
+        $edu = EducationCertificate::with('user')
+            ->where('user_id', $request->user()->id)
+            ->get();
+
+        return response()->json($edu);
     }
 
     public function store(EducationCertificateRequest $request, User $user): JsonResponse

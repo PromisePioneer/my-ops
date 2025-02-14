@@ -56,5 +56,11 @@ class DepartmentSeeder extends Seeder
             'code' => '108',
             'name' => 'Area',
         ]);
+
+
+        Department::create([
+            'code' => '109',
+            'name' => 'Vendor',
+        ]);
     }
 }

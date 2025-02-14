@@ -19,7 +19,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
     public function data(Request $request): LengthAwarePaginator
     {
-        $areaQuery = Area::with('branch')->withCount('areaHasUser')
+        $areaQuery = Area::with('branch', 'department')->withCount('areaHasUser')
             ->where(function ($query) use ($request) {
                 if ($request->user()->hasRole('Head Engineer')) {
                     $query->whereHas('areaHasUser.user', function ($query) use ($request) {
@@ -69,6 +69,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
             return [
                 'id' => $item->id,
                 'branch_name' => $item->branch->name,
+                'department_name' => $item->department->name,
                 'area_name' => $item->name,
                 'total_user' => $item->areaHasUser->count(),
             ];

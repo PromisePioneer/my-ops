@@ -2,27 +2,27 @@
 
 namespace App\Http\Controllers\HRIS\Payroll\PayrollComponent\Deductions;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdditionalDeductionRequest;
 use App\Models\AdditionalDeduction;
 use App\Models\User;
+use App\Service\AdditionalDeductionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
-class AdditionalDeductionController extends Controller
+#[AllowDynamicProperties] class AdditionalDeductionController extends Controller
 {
-
-    private User $user;
-    private AdditionalDeduction $additionalDeduction;
-
     public function __construct()
     {
         $this->user = new User();
         $this->additionalDeduction = new AdditionalDeduction();
+        $this->additionalDeductionService = new AdditionalDeductionService();
     }
 
 
-    public function index()
+    public function index(): View
     {
         return view('pages.payroll.deduction.additional-deduction.index');
     }
@@ -30,12 +30,15 @@ class AdditionalDeductionController extends Controller
 
     public function data(): JsonResponse
     {
-        return response()->json($this->additionalDeduction->data());
+        return response()->json($this->additionalDeductionService->data());
     }
 
 
-    public function search()
+    public function search(Request $request): JsonResponse
     {
+        $search = $request->input('search');
+
+        return response()->json($this->additionalDeductionService->search($search));
     }
 
 

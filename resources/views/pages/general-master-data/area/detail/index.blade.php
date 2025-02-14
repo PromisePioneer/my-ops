@@ -2,6 +2,7 @@
 @section('content')
     <div x-data="userHasArea()">
         @include('pages.general-master-data.area.detail.form')
+        @include('pages.general-master-data.area.detail.holiday')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -61,6 +62,7 @@
                                 </th>
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Role</th>
+                                <th class="min-w-125px">Hari Libur</th>
                             </thead>
                             <template x-if="isLoading">
                                 <tbody class="fw-bold">
@@ -98,6 +100,20 @@
                                     </td>
                                     <td x-text="area.user_name"></td>
                                     <td x-text="area.role_name ?? '-'"></td>
+                                    <td>
+                                        <template x-if="!area.week_holiday">
+                                            <button class="btn btn-light-info btn-sm"
+                                                    data-bs-target="#modal-pick-holiday" data-bs-toggle="modal"
+                                                    @click="show(id)"
+                                            >
+                                                Pilih Hari Libur
+                                            </button>
+                                        </template>
+
+                                        <template x-if="area.week_holiday">
+                                            <span x-text="area.week_holiday"></span>
+                                        </template>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </template>
@@ -127,6 +143,8 @@
             return {
                 createPermission: "{{ request()->user()->can('Tambah Detail Data Area') }}",
                 destroyPermission: "{{ request()->user()->can('Hapus Detail Data Area') }}",
+                holidayModal: new bootstrap.Modal(document.getElementById('modal-pick-holiday')),
+                holidayForm: document.getElementById('form-pick-holiday'),
                 buttonLoading: false,
                 isLoading: false,
                 id: "{{ $area->id }}",
@@ -138,9 +156,20 @@
                 modalForm: new bootstrap.Modal(document.getElementById('modal-detail-area')),
                 form: document.getElementById('form-detail-area'),
                 formDelete: document.getElementById('form-delete'),
+                days: [],
+                editVal: '',
                 async init() {
                     await this.getAssociatedUsers();
                     await this.getUserData();
+                    this.days.push(
+                        {value: 'Sunday', label: 'Minggu'},
+                        {value: 'Monday', label: 'Senin'},
+                        {value: 'Tuesday', label: 'Selasa'},
+                        {value: 'Wednesday', label: 'Rabu'},
+                        {value: 'Thursday', label: 'Kamis'},
+                        {value: 'Friday', label: "Jum'at"},
+                        {value: 'Saturday', label: 'Sabtu'},
+                    )
                 },
                 async searchData() {
                     this.isLoading = true;
@@ -211,6 +240,10 @@
                         this.usersArea = resp.data
                     }
                 },
+                async show(id) {
+                    const resp = await axios.get(`/general-master-data/area-detail/show/${id}`);
+                    this.editVal = resp.data;
+                },
                 async save() {
                     this.buttonLoading = true;
                     try {
@@ -238,6 +271,19 @@
                         }
                     });
                 },
+                async pickHoliday(id) {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/general-master-data/area-detail/save-week-holiday/${id}`, new FormData(this.holidayForm));
+                        await showAlert('success', 'Data berhasil disimpan');
+                        await this.holidayModal.hide();
+                        await this.holidayForm.reset();
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                }
             }
         }
     </script>

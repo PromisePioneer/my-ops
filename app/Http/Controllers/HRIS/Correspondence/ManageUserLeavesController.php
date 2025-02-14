@@ -150,7 +150,6 @@ use Illuminate\View\View;
 
     public function destroy(Request $request, LeaveAndPermission $leaveAndPermission): JsonResponse
     {
-//        $this->authorize('delete', $leaveAndPermission);
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
         $leaveAndPermission->whereIn('id', $explodeID)->delete();

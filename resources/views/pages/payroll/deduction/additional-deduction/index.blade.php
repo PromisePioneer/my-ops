@@ -1,10 +1,9 @@
 @extends('layouts.template')
-@section('page-title', 'Denda SLA')
+@section('page-title', 'Denda Lainnya')
 @section('content')
     <div x-data="additionalDeduction()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.payroll.deduction.additional-deduction.modal.create')
-            @include('pages.payroll.deduction.additional-deduction.modal.edit')
+            @include('pages.payroll.deduction.additional-deduction.form')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -20,7 +19,7 @@
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
+                                    data-bs-target="#modal-additional-deduction">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
@@ -106,7 +105,8 @@
                                     </td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(additionalDeduction.id)">
+                                                data-bs-target="#modal-additional-deduction"
+                                                @click="edit(additionalDeduction.id)">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
@@ -152,11 +152,8 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                startIndex: null,
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
-                formCreate: document.getElementById('form-create'),
-                formEdit: document.getElementById('form-edit'),
+                form: document.getElementById('form-additional-deduction'),
+                modalForm: new bootstrap.Modal('#modal-additional-deduction'),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
                     await this.getSlaDeductionData();
@@ -199,17 +196,20 @@
                 async paginationEndPoint(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
-                        this.startIndex = resp.data.from
                         this.additionalDeductions = resp.data
                     }
                 },
-                async save() {
+                async save(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/payroll/setting/deduction/additional-deduction/', new FormData(this.formCreate))
+                        if (!id) {
+                            await axios.post('/payroll/setting/deduction/additional-deduction/', new FormData(this.form))
+                        } else {
+                            await axios.post(`/payroll/setting/deduction/additional-deduction/${id}`, new FormData(this.form))
+                        }
                         await showAlert('success', 'Data berhasil disimpan')
-                        this.formCreate.reset();
-                        this.modalCreate.hide();
+                        this.form.reset();
+                        this.modalForm.hide();
                         await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
@@ -221,22 +221,7 @@
                 async edit(id) {
                     const resp = await axios.get(`/payroll/setting/deduction/additional-deduction/${id}`)
                     this.editVal = resp.data;
-                    await this.selectedRole();
-                },
-                async update(id) {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post(`/payroll/setting/deduction/additional-deduction/${id}`, new FormData(this.formEdit))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.formEdit.reset();
-                        this.modalEdit.hide();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
+                    await this.selectedUser();
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
@@ -244,6 +229,7 @@
                             await axios.post('/payroll/setting/deduction/additional-deduction/destroy', new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
+                            this.selectedCheckBox = [];
                         } catch (error) {
                             console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');
@@ -253,11 +239,10 @@
                 async getSlaDeductionData() {
                     const resp = await axios.get('/payroll/setting/deduction/additional-deduction/data');
                     this.additionalDeductions = resp.data
-                    this.startIndex = this.additionalDeductions.from
                 },
                 async getUserData() {
                     $(".users-select2").select2({
-                        placeholder: "Pilih Jabatan",
+                        placeholder: "Pilih Karyawan",
                         ajax: {
                             url: '/payroll/setting/deduction/additional-deduction/user/data',
                             dataType: "json",
@@ -268,8 +253,8 @@
                         }
                     });
                 },
-                async selectedRole() {
-                    const selectedUser = $('#selectedUser');
+                async selectedUser() {
+                    const selectedUser = $('#selected-user');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",

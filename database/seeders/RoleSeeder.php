@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 
@@ -73,10 +72,10 @@ class RoleSeeder extends Seeder
 
         //Programmer
         Role::create(['name' => 'Programmer']);
-        Role::create(['name' => 'Testing Role']);
 
 
-
+        //Vendor/ Freelance
+        Role::create(['name' => 'Vendor']);
 
 
 //        $director = User::where('name', ['Director'])->first();

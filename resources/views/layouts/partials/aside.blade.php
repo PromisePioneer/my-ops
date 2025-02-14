@@ -282,6 +282,12 @@
                                 href="{{ url('operational-master-data/warehouses') }}">
                                 Daftar Gudang Barang
                             </x-dropdown-menu-item>
+
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'psb'"
+                                    href="{{ url('operational-master-data/psb') }}">
+                                    Data Pemasangan
+                                </x-dropdown-menu-item>
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
@@ -584,9 +590,14 @@
                                 Pengaturan
                             </x-dropdown-menu-item>
                                 <x-dropdown-menu-item
-                                    :active="request()->segment(2) === 'generate'"
-                                    href="{{ url('payroll/generate') }}">
-                                    Generate Payroll
+                                    :active="request()->segment(3) === 'employee'"
+                                    href="{{ url('payroll/generate-payroll/employee') }}">
+                                    Karyawan
+                                </x-dropdown-menu-item>
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(3) === 'vendor'"
+                                    href="{{ url('payroll/generate-payroll/vendor') }}">
+                                    Vendor
                                 </x-dropdown-menu-item>
                         @endslot
                     </x-dropdown-menu>

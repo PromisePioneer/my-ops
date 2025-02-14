@@ -178,7 +178,8 @@
                                             </template>
                                             <template x-if="leave.confirmation_status === 'Diproses'">
                                                 <td>
-                                                    <template x-if="Number(confirmPermission) === 1">
+                                                    <template
+                                                        x-if="Number(confirmPermission) === 1 && userSessionId !== leave.user_id">
                                                         <button class="btn btn-info btn-sm" data-bs-toggle="modal"
                                                                 data-bs-target="#modal-confirm"
                                                                 @click="openConfirmModal(leave.id)">
@@ -224,6 +225,7 @@
             return {
                 viewDetailUserPermission: "{{ request()->user( )->can('Lihat Detail Data Karyawan') }}",
                 confirmPermission: "{{request()->user()->can('Konfirmasi Data Manajemen Cuti')}}",
+                userSessionId: "{{ Auth::id() }}",
                 modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
                 modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
                 formCreate: document.getElementById('form-create'),

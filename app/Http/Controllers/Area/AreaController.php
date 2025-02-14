@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AreaRequest;
 use App\Models\Area;
 use App\Models\Branch;
+use App\Models\Department;
 use App\Service\GeneralMasterData\Area\AreaService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -19,6 +20,7 @@ use Illuminate\View\View;
     {
         $this->branch = new Branch();
         $this->areaService = new AreaService();
+        $this->department = new Department();
     }
 
     public function index(): View
@@ -33,6 +35,28 @@ use Illuminate\View\View;
     {
         $this->authorize('view', Area::class);
         return response()->json($this->areaService->data($request));
+    }
+
+
+    public function departmentData(Request $request)
+    {
+        $search = $request->input('search');
+        $department = Department::orderby('name', 'asc')->whereIn('name', ['Vendor', 'Area'])->when(!empty($search), function ($query) use ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        });
+
+        return $department->get()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->name,
+            ];
+        })->toArray();
+    }
+
+
+    public function selectedDepartment(Area $area): JsonResponse
+    {
+        return response()->json($this->department->getSelectedData($area->department_id));
     }
 
     /**
@@ -80,6 +104,7 @@ use Illuminate\View\View;
         $this->areaService->update($request, $area);
         return response()->json(['message' => 'Data berhasil diubah.']);
     }
+
 
 
     /**

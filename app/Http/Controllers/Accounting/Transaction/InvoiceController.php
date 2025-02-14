@@ -67,7 +67,9 @@ class InvoiceController extends Controller
 
     public function filterByBranch(Branch $branch): JsonResponse
     {
-        return response()->json($this->invoice->filterDataBasedOnBranch($branch->id, $this->perPage));
+        $invoice = Invoice::with('contact', 'user')->where('branch_id', $branch->id)->paginate(10);
+
+        return response()->json($invoice);
     }
 
     public function create(): View
@@ -118,7 +120,8 @@ class InvoiceController extends Controller
 
     public function getSelectedInvoiceProductServices(Invoice $invoice): JsonResponse
     {
-        return response()->json($this->invoiceProductServices->getSelectedInvoiceProductServices($invoice));
+        $invoice = InvoiceProductService::where('invoice_id', $invoice->id)->get();
+        return response()->json($invoice);
     }
 
     /**

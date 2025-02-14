@@ -14,7 +14,7 @@ class CutOffPayrollSetting extends Model
     protected $fillable = [
         'attendance_period_start',
         'attendance_period_end',
-        'payroll_period_start',
-        'payroll_period_end',
+        'emp_payroll_period_start',
+        'emp_payroll_period_end',
     ];
 }

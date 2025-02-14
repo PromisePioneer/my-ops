@@ -24,6 +24,7 @@ class AreaRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
+            'department_id' => ['required', Rule::exists('branches', 'id')],
             'branch_id' => [Rule::requiredIf($request->user()->branch_id === null), Rule::exists('branches', 'id')],
             'name' => ['required', 'string'],
         ];

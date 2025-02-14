@@ -23,7 +23,8 @@ class IdentityInformationController extends Controller
 
     public function index(User $user): JsonResponse
     {
-        return response()->json($this->identityInformation->getRelatedUserIdentityInformation($user->id));
+        $identity = IdentityInformation::where('user_id', $user->id)->first();
+        return response()->json($identity);
     }
 
     public function update(IdentityInformationRequest $request, User $user): JsonResponse

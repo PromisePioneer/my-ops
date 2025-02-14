@@ -16,6 +16,15 @@
 
             <form id="form-area" @submit.prevent="save(editVal?.id ?? null)">
                 <div class="modal-body">
+
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Department</label>
+                        <select name="department_id" id="selected-department"
+                                data-dropdown-parent="#modal-area"
+                                class="form-select form-select-solid  departments-select2">
+                            <option></option>
+                        </select>
+                    </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Cabang</label>
                         <select name="branch_id" id="selected-branch"

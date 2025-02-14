@@ -14,7 +14,7 @@ class AreaDetailService
 
     public function data(Area $area): LengthAwarePaginator
     {
-        $userHasAreaQuery = UserHasArea::with('user', 'user.roles')
+        $userHasAreaQuery = UserHasArea::with('user', 'user.roles', 'user.jobInformation')
             ->whereHas('area', function ($query) use ($area) {
                 $query->where('area_id', $area->id);
             })->paginate(self::$perPage);
@@ -46,6 +46,7 @@ class AreaDetailService
                 'id' => $item->id,
                 'user_name' => "({$item->user->nip}) {$item->user->name}",
                 'role_name' => $item->user->roles->pluck('name')->implode(', '),
+                'week_holiday' => $item->jobInformation?->week_holiday,
             ];
         });
 
@@ -59,7 +60,7 @@ class AreaDetailService
         $search = $request->search;
         $query = User::with('roles')->whereDoesntHave('userHasArea')
             ->whereHas('roles', function ($query) use ($area) {
-                $query->whereIn('name', ['Head Engineer', 'Engineer', 'Senior Engineer']);
+                $query->whereIn('name', ['Head Engineer', 'Engineer', 'Senior Engineer', 'Vendor']);
             })
             ->where('branch_id', $area->branch_id)
             ->where('active', 1)

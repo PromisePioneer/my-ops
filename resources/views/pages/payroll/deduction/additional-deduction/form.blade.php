@@ -1,8 +1,8 @@
-<div class="modal fade" tabindex="-1" id="modal-edit">
+<div class="modal fade" tabindex="-1" id="modal-additional-deduction">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form Denda SLA</h5>
+                <h5 class="modal-title">Form Denda Lainnya</h5>
                 <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
@@ -14,19 +14,19 @@
                 </div>
             </div>
 
-            <form id="form-edit" @submit.prevent="update(editVal.id)">
+            <form id="form-additional-deduction" @submit.prevent="save(editVal?.id)">
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Tanggal</label>
                         <input type="date" id="date" name="date" class="form-control form-control-solid date"
-                               placeholder="Pilih Tanggal" :value="editVal.date"/>
+                               placeholder="Pilih Tanggal" :value="editVal?.date ?? ''"/>
                     </div>
 
 
                     <div class="mb-10">
                         <label for="name" class="required form-label">Karyawan</label>
-                        <select name="user_id" id="selectedUser" class="form-control form-control-solid users-select2"
-                                data-dropdown-parent="#modal-edit">
+                        <select name="user_id" id="selected-user" class="form-select form-select-solid users-select2"
+                                data-dropdown-parent="#modal-additional-deduction">
                             <option></option>
                         </select>
                     </div>

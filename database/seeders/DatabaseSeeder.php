@@ -42,6 +42,8 @@ class DatabaseSeeder extends Seeder
             WarehouseSeeder::class,
             GoodsSeeder::class,
             SupplierSeeder::class,
+            AreaSeeder::class,
+            PSBSeeder::class,
         ]);
     }
 }

@@ -19,7 +19,8 @@ class JobExperiencesController extends Controller
 
     public function getRelatedUserJobExperience(User $user): JsonResponse
     {
-        return response()->json($this->jobExperience->getRelatedJobExperiences($user->id));
+        $relatedJobExp = JobExperience::with('user')->where('user_id', $user->id)->get();
+        return response()->json($relatedJobExp);
     }
 
     public function store(JobExperienceRequest $request, User $user): JsonResponse

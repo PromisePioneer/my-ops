@@ -6,6 +6,8 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserHasAreaRequest;
 use App\Models\Area;
+use App\Models\JobInformation;
+use App\Models\User;
 use App\Models\UserHasArea;
 use App\Service\GeneralMasterData\Area\AreaDetailService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -54,7 +56,9 @@ use Illuminate\Http\Request;
     public function assignUser(UserHasAreaRequest $request, Area $area): JsonResponse
     {
         $this->authorize('createDetail', $area);
-        UserHasArea::updateOrCreate(['user_id' => $request->user_id], ['area_id' => $area->id]);
+        UserHasArea::updateOrCreate(
+            ['user_id' => $request->user_id],
+            ['area_id' => $area->id]);
         return response()->json(['message' => 'Data berhasil disimpan / diubah.']);
     }
 
@@ -72,5 +76,20 @@ use Illuminate\Http\Request;
         return response()->json([
             'message' => 'data berhasil dihapus',
         ], 200);
+    }
+
+    public function saveDay(User $user, Request $request)
+    {
+        JobInformation::where('user_id', $user->id)
+            ->update(['week_holiday' => $request->week_holiday]);
+        return response()->json([
+            'message' => 'data berhasil disimpan',
+        ]);
+    }
+
+
+    public function show(UserHasArea $userHasArea): JsonResponse
+    {
+        return response()->json($userHasArea);
     }
 }

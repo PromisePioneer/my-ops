@@ -84,12 +84,14 @@ use App\Http\Controllers\Master\General\ServicesCategoryController;
 use App\Http\Controllers\Master\General\SKLController;
 use App\Http\Controllers\Master\Operational\JointClosureCodeController;
 use App\Http\Controllers\Master\Operational\SupplierController;
+use App\Http\Controllers\PSBController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
 use App\Http\Controllers\UserProfile\UserProfileController;
 use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
 use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
+use App\Http\Controllers\VendorPayrollController;
 use App\Http\Controllers\WarehouseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -304,6 +306,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/', [AreaController::class, 'store']);
             Route::get('/branch/data', [AreaController::class, 'getBranchData']);
             Route::get('/branch/selected/{area}', [AreaController::class, 'selectedBranch']);
+            Route::get('/department/data', [AreaController::class, 'departmentData']);
+            Route::get('/department/selected/{area}', [AreaController::class, 'selectedDepartment']);
             Route::post('/destroy', [AreaController::class, 'destroy']);
             Route::get('/{area}', [AreaController::class, 'edit']);
             Route::post('/{area}', [AreaController::class, 'update']);
@@ -317,6 +321,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/{area}', [AreaDetailController::class, 'assignUser']);
             Route::get('/search/{area}', [AreaDetailController::class, 'search']);
             Route::get('users/selected/{area}', [AreaDetailController::class, 'selectedUser']);
+            Route::get('/show/{area}', [AreaDetailController::class, 'show']);
+            Route::get('/save-week-holiday/{user}', [AreaDetailController::class, 'saveDay']);
         });
 
         Route::prefix('branch')->group(function () {
@@ -565,6 +571,18 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/{goodsCategory}', [GoodsCategoryController::class, 'edit']);
             Route::post('/destroy', [GoodsCategoryController::class, 'destroy']);
             Route::post('/{goodsCategory}', [GoodsCategoryController::class, 'update']);
+        });
+
+
+        Route::prefix('psb')->group(function () {
+            Route::get('/', [PSBController::class, 'index']);
+            Route::get('/data', [PSBController::class, 'data']);
+            Route::get('/area/data', [PSBController::class, 'getAreaData']);
+            Route::get('/search', [PSBController::class, 'search']);
+            Route::post('/', [PSBController::class, 'store']);
+            Route::get('/{psb}', [PSBController::class, 'edit']);
+            Route::post('/{psb}', [PSBController::class, 'update']);
+            Route::post('/destroy', [PSBController::class, 'destroy']);
         });
     });
 
@@ -1330,11 +1348,19 @@ Route::group(['middleware' => ['auth']], static function () {
     });
 
 
-    Route::prefix('payroll/generate')->group(function () {
-        Route::get('/', [GeneratePayrollController::class, 'index']);
-        Route::get('/attendances-data', [GeneratePayrollController::class, 'data']);
-        Route::get('/attendance-summary', [GeneratePayrollController::class, 'getAttendancesSummary']);
-        Route::get('/user-job-info', [GeneratePayrollController::class, 'getUserJobInformation']);
+    Route::prefix('payroll/generate-payroll')->group(function () {
+        Route::prefix('/employee')->group(function () {
+            Route::get('/', [GeneratePayrollController::class, 'index']);
+            Route::get('/attendances-data', [GeneratePayrollController::class, 'data']);
+            Route::get('/attendance-summary', [GeneratePayrollController::class, 'getAttendancesSummary']);
+            Route::get('/user-job-info', [GeneratePayrollController::class, 'getUserJobInformation']);
+        });
+
+        Route::prefix('/vendor')->group(function () {
+            Route::get('/', [VendorPayrollController::class, 'index']);
+            Route::get('/data', [VendorPayrollController::class, 'data']);
+            Route::get('/psb-data', [VendorPayrollController::class, 'psbData']);
+        });
     });
 
 

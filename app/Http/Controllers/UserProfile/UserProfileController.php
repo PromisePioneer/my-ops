@@ -69,7 +69,8 @@ class UserProfileController extends Controller
 
     public function identityInformation(Request $request): JsonResponse
     {
-        return response()->json($this->identityInformation->getRelatedUserIdentityInformation($request->user()->id));
+        $identityInformation = IdentityInformation::where('user_id', $request->user()->id)->first();
+        return response()->json($identityInformation);
     }
 
 

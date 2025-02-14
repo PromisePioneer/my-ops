@@ -90,6 +90,7 @@
                                                        :disabled="Number(deletePermission) !== 1">
                                             </div>
                                         </th>
+                                        <th class="min-w-125px">Departemen</th>
                                         <th class="min-w-125px">Nama Area</th>
                                         <th class="min-w-125px">Total Karyawan</th>
                                         <th class="min-w-125px">Actions</th>
@@ -100,7 +101,7 @@
                                             <td colspan="9">
                                                 <div style="text-align: center;">
                                                     <div class="spinner-border" role="status">
-                                                        <span class="visually-hidden">Loading...</span>
+                                                        <span class="visually-hidden"></span>
                                                     </div>
                                                 </div>
                                             </td>
@@ -128,6 +129,7 @@
                                                     />
                                                 </div>
                                             </td>
+                                            <td x-text="area.department_name"></td>
                                             <td>
                                                 <a :href="`/general-master-data/area/detail/${area.id}`"
                                                    x-text="area.area_name" class="text-uppercase"></a>
