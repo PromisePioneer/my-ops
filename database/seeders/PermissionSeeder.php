@@ -104,14 +104,6 @@ class PermissionSeeder extends Seeder
         $this->attendancesSummary();
     }
 
-
-    public function policyMenu()
-    {
-        $permissions = [
-            ''
-        ];
-    }
-
     public function attendancesSummary(): void
     {
         $permissions = [
@@ -127,12 +119,11 @@ class PermissionSeeder extends Seeder
         }
     }
 
+
     public function employeeSchedule(): void
     {
         $permissions = [
-            'Lihat Menu Jadwal Libur Karyawan',
-            'Tambah / Ubah Data Jadwal Libur Karyawan',
-            'Filter Jadwal Libur Karyawan',
+            'Lihat Menu Pemasangan',
         ];
 
         foreach ($permissions as $permission) {

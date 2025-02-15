@@ -29,6 +29,12 @@ use Illuminate\Pagination\LengthAwarePaginator;
                 if ($request->user()->hasRole('Branch Manager')) {
                     $query->where('branch_id', $request->user()->branch_id);
                 }
+
+                if ($request->user()->hasRole('Project Controller & Vendor Supervisor')) {
+                    $query->whereHas('department', function ($query) use ($request) {
+                        $query->where('name', 'Vendor');
+                    });
+                }
             })->paginate(self::$perPage);
 
         return self::formattedData($areaQuery);

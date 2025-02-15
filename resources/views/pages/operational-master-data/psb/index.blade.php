@@ -17,15 +17,17 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            <button type="button" class="btn btn-light-primary btn-sm" @click="add()"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-psb">
-                                <i class="ki-duotone ki-message-add fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                </i> Tambah
-                            </button>
+                            @can('Tambah Data PSB')
+                                <button type="button" class="btn btn-light-primary btn-sm" @click="add()"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-psb">
+                                    <i class="ki-duotone ki-message-add fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i> Tambah
+                                </button>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -64,7 +66,9 @@
                                 <th class="min-w-125px">Jumlah Penarik</th>
                                 <th class="min-w-125px">Nama Pelanggan</th>
                                 <th class="min-w-125px">Area</th>
-                                <th class="min-w-125px">Actions</th>
+                                <template x-if="Number(editPermission) === 1">
+                                    <th class="min-w-125px">Actions</th>
+                                </template>
                             </thead>
                             <template x-if="isLoading">
                                 <tbody class="fw-bold">
@@ -116,13 +120,15 @@
                                     <td x-text="psb.customer_name"></td>
                                     <td x-text="`${psb.area.name} - ${psb.area.branch.name}`"></td>
                                     <td>
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-psb" @click="edit(psb.id)">
-                                            <i class="ki-duotone ki-pencil fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </button>
+                                        <template x-if="(editPermission) === 1">
+                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-psb" @click="edit(psb.id)">
+                                                <i class="ki-duotone ki-pencil fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                            </button>
+                                        </template>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -150,6 +156,9 @@
 
         function psbData() {
             return {
+                createPermission: "{{ request()->user()->can('Tambah Data PSB') }}",
+                editPermission: "{{ request()->user()->can('Ubah Data PSB') }}",
+                deletePermission: "{{ request()->user()->can('Hapus Data PSB') }}",
                 psb: [],
                 buttonLoading: false,
                 isLoading: false,

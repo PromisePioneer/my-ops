@@ -19,6 +19,7 @@ use App\Models\LeaveAndPermission;
 use App\Models\NationalHoliday;
 use App\Models\OfferingLetter;
 use App\Models\Product;
+use App\Models\PSB;
 use App\Models\PurchaseOrder;
 use App\Models\ServiceCategory;
 use App\Models\SKL;
@@ -45,6 +46,7 @@ use App\Policies\NationalHolidayPolicy;
 use App\Policies\OfferingLetterPolicy;
 use App\Policies\PermissionPolicy;
 use App\Policies\ProductPolicy;
+use App\Policies\PSBPolicy;
 use App\Policies\PurchaseOrderPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\ServiceCategoriesPolicy;
@@ -94,6 +96,7 @@ class AuthServiceProvider extends ServiceProvider
         Area::class => AreaPolicy::class,
         TaxSetting::class => TaxSettingPolicy::class,
         Asset::class => AssetPolicy::class,
+        PSB::class => PSBPolicy::class
     ];
 
     /**

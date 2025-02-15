@@ -104,7 +104,7 @@
                 @canany(['Lihat Menu Cabang', 'Lihat Menu Kontak', 'Lihat Menu SKL',
                  'Lihat Menu Produk', 'Lihat Menu Kategori Layanan', 'Lihat Menu Departemen',
                  'Lihat Menu Jabatan', 'Lihat Menu Paket Broadband', 'Lihat Menu Data Perusahaan',
-                  'Lihat Menu Area', 'Lihat Menu Satuan'
+                  'Lihat Menu Area', 'Lihat Menu Satuan', 'Lihat Menu Area'
                   ])
                     <x-dropdown-menu :active="request()->segment(1) === 'general-master-data'">
                         @slot('parentIcon')
@@ -187,11 +187,13 @@
                                     Data Perusahaan
                                 </x-dropdown-menu-item>
                             @endcan
-                            <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'area'"
-                                href="{{ url('general-master-data/area') }}">
-                                Area
-                            </x-dropdown-menu-item>
+                            @can('Lihat Menu Area')
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'area'"
+                                    href="{{ url('general-master-data/area') }}">
+                                    Area
+                                </x-dropdown-menu-item>
+                            @endcan
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
@@ -283,11 +285,11 @@
                                 Daftar Gudang Barang
                             </x-dropdown-menu-item>
 
-                                <x-dropdown-menu-item
-                                    :active="request()->segment(2) === 'psb'"
-                                    href="{{ url('operational-master-data/psb') }}">
-                                    Data Pemasangan
-                                </x-dropdown-menu-item>
+                            <x-dropdown-menu-item
+                                :active="request()->segment(2) === 'psb'"
+                                href="{{ url('operational-master-data/psb') }}">
+                                Data Pemasangan
+                            </x-dropdown-menu-item>
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
@@ -589,16 +591,16 @@
                                 href="{{ url('payroll/setting') }}">
                                 Pengaturan
                             </x-dropdown-menu-item>
-                                <x-dropdown-menu-item
-                                    :active="request()->segment(3) === 'employee'"
-                                    href="{{ url('payroll/generate-payroll/employee') }}">
-                                    Karyawan
-                                </x-dropdown-menu-item>
-                                <x-dropdown-menu-item
-                                    :active="request()->segment(3) === 'vendor'"
-                                    href="{{ url('payroll/generate-payroll/vendor') }}">
-                                    Vendor
-                                </x-dropdown-menu-item>
+                            <x-dropdown-menu-item
+                                :active="request()->segment(3) === 'employee'"
+                                href="{{ url('payroll/generate-payroll/employee') }}">
+                                Karyawan
+                            </x-dropdown-menu-item>
+                            <x-dropdown-menu-item
+                                :active="request()->segment(3) === 'vendor'"
+                                href="{{ url('payroll/generate-payroll/vendor') }}">
+                                Vendor
+                            </x-dropdown-menu-item>
                         @endslot
                     </x-dropdown-menu>
                 @endcan
