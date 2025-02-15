@@ -68,8 +68,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
         $data = $areaQuery->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
-                'branch_name' => $item->branch->name,
-                'department_name' => $item->department->name,
+                'branch_name' => $item->branch?->name,
+                'department_name' => $item->department?->name,
                 'area_name' => $item->name,
                 'total_user' => $item->areaHasUser->count(),
             ];
