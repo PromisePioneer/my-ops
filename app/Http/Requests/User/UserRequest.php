@@ -27,7 +27,6 @@ class UserRequest extends FormRequest
                 Rule::requiredIf($request->user()->placement === 'Cabang'),
             ],
             'absent_id' => [
-                'required',
                 'max:3',
                 Rule::unique('users', 'absent_id')->ignore($request->route('user')),
             ],
