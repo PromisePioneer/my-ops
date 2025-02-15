@@ -37,7 +37,7 @@ use Illuminate\Support\Collection;
                 ->groupBy('date')
                 ->count();
             $areaCount = $item->areaHasUser->count();
-            $totalSalary = 95000 / $areaCount;
+            $totalSalary = $areaCount > 0 ? 95000 / $areaCount : 0;
 
             return [
                 'id' => $item->id,
