@@ -289,7 +289,7 @@
                             <x-dropdown-menu-item
                                     :active="request()->segment(2) === 'psb'"
                                     href="{{ url('operational-master-data/psb') }}">
-                                Data Pemasangan
+                                Data Penarikan
                             </x-dropdown-menu-item>
                         @endslot
                     </x-dropdown-menu>
