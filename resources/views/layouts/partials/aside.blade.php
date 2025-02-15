@@ -261,11 +261,11 @@
                                     Supplier
                                 </x-dropdown-menu-item>
                             @endcan
-                            <x-dropdown-menu-item
-                                    :active="request()->segment(2) === 'goods'"
-                                    href="{{ url('operational-master-data/goods') }}">
-                                Master Barang
-                            </x-dropdown-menu-item>
+{{--                            <x-dropdown-menu-item--}}
+{{--                                    :active="request()->segment(2) === 'goods'"--}}
+{{--                                    href="{{ url('operational-master-data/goods') }}">--}}
+{{--                                Master Barang--}}
+{{--                            </x-dropdown-menu-item>--}}
                             @can('Lihat Menu Kategori Barang')
                                 <x-dropdown-menu-item
                                         :active="request()->segment(2) === 'category-of-goods'"
@@ -280,11 +280,11 @@
                                     Kode Joint Closure
                                 </x-dropdown-menu-item>
                             @endcan
-                            <x-dropdown-menu-item
-                                    :active="request()->segment(2) === 'warehouses'"
-                                    href="{{ url('operational-master-data/warehouses') }}">
-                                Daftar Gudang Barang
-                            </x-dropdown-menu-item>
+{{--                            <x-dropdown-menu-item--}}
+                                {{--                                    :active="request()->segment(2) === 'warehouses'"--}}
+                                {{--                                    href="{{ url('operational-master-data/warehouses') }}">--}}
+                                {{--                                Daftar Gudang Barang--}}
+                                {{--                            </x-dropdown-menu-item>--}}
 
                             <x-dropdown-menu-item
                                     :active="request()->segment(2) === 'psb'"
