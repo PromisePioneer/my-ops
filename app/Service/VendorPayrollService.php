@@ -34,7 +34,6 @@ use Illuminate\Support\Collection;
         return $data->map(function ($item) use($startDate, $endDate) {
             $psb = PSB::where('area_id', $item->id)
                 ->whereBetween('date', [$startDate, $endDate])
-                ->groupBy('date')
                 ->count();
             $areaCount = $item->areaHasUser->count();
             $totalSalary = $areaCount > 0 ? 95000 / $areaCount : 0;
