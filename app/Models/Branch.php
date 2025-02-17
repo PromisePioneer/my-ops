@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
+use Laravel\Scout\Searchable;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Branch extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory, LogsActivity, Searchable;
 
     protected $table = 'branches';
 
@@ -28,6 +29,15 @@ class Branch extends Model
     public function accountTransaction(): HasMany
     {
         return $this->hasMany(AccountTransaction::class, 'branch_id');
+    }
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'code' => $this->code,
+        ];
     }
 
 

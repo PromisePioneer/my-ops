@@ -45,11 +45,7 @@ class BranchesController extends Controller
         $this->authorize('view', Branch::class);
 
         $search = $request->input('search');
-        $branchSearch = Branch::with('children')->when(!empty($search), function ($query) use ($search) {
-            return $query->where('code', 'like', '%'.$search.'%')
-                ->orWhere('name', 'like', '%'.$search.'%')
-                ->orWhere('address', 'like', '%'.$search.'%');
-        })->paginate(self::$perPage);
+        $branchSearch = Branch::search($search)->paginate(self::$perPage);
 
         return response()->json($branchSearch);
     }

@@ -18,7 +18,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
-use function Pest\Laravel\json;
 
 #[AllowDynamicProperties] class UserController extends Controller
 {
@@ -212,7 +211,10 @@ use function Pest\Laravel\json;
     public function changeStatusActive(User $user): JsonResponse
     {
         $this->authorize('setActive', User::class);
-        $user->active = !$user->active;
+        $user->update([
+            'active' => !$user->active,
+        ]);
+        $user->absent_id = $user->active === false ? null : $user->absent_id;
         $user->save();
 
         return response()->json(['message' => 'data sukses diupdate!']);
