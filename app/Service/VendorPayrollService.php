@@ -33,7 +33,7 @@ use Illuminate\Support\Collection;
         $endDate = $this->financialClosePeriodService->vendorPayrollPeriodEndDate();
         return $data->map(function ($item) use($startDate, $endDate) {
             $psb = PSB::where('area_id', $item->id)
-                ->whereBetween('date', [$startDate, $endDate])
+                ->whereBetween('active_date', [$startDate, $endDate])
                 ->count();
             $areaCount = $item->areaHasUser->count();
             $totalSalary = $areaCount > 0 ? 95000 / $areaCount : 0;
