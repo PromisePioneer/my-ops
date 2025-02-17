@@ -46,7 +46,7 @@ class BranchesController extends Controller
 
         $search = $request->input('search');
         $branchSearch = Branch::search($search)->query(function ($query) {
-            $query->with('children')->where('parent_id', null);
+            $query->with('children')->where('parent_id', null)->orderBy('code');
         })->paginate(self::$perPage);
 
         return response()->json($branchSearch);
