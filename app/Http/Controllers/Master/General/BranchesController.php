@@ -32,7 +32,7 @@ class BranchesController extends Controller
     public function data(): JsonResponse
     {
         $this->authorize('view', Branch::class);
-        $branches = Branch::with('children')->whereNull('parent_id')->paginate(10);
+        $branches = Branch::with('children')->whereNull('parent_id')->orderBy('code')->paginate(10);
 
         return response()->json($branches);
     }
