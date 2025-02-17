@@ -45,7 +45,9 @@ class BranchesController extends Controller
         $this->authorize('view', Branch::class);
 
         $search = $request->input('search');
-        $branchSearch = Branch::search($search)->paginate(self::$perPage);
+        $branchSearch = Branch::search($search)->query(function ($query) {
+            $query->with('children')->where('parent_id', null);
+        })->paginate(self::$perPage);
 
         return response()->json($branchSearch);
     }
