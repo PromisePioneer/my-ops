@@ -41,9 +41,7 @@ class DepartmentController extends Controller
     {
         $this->authorize('view', Department::class);
         $search = $request->input('search');
-        $departments = Department::where('code', 'like', '%'.$search.'%')
-            ->orWhere('name', 'like', '%'.$search.'%')
-            ->get();
+        $departments = Department::search($search)->paginate(self::$perPage);
 
         return response()->json($departments);
     }

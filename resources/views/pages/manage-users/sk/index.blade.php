@@ -1,15 +1,14 @@
 @extends('layouts.template')
 @section('content')
     <div x-data="skData()">
-        @include('pages.manage-users.sk.modal.create')
-        @include('pages.manage-users.sk.modal.edit')
+        @include('pages.manage-users.sk.form')
         <div class="d-flex flex-column flex-xl-row">
             <div class="flex-lg-row-fluid ms-lg-10">
                 <div class="card card-flush mb-6 mb-xl-9">
                     <div class="card-header pt-5">
                         <div class="card-title">
                             <button data-bs-toggle="modal"
-                                    data-bs-target="#modal-create" @click="add()"
+                                    data-bs-target="#modal-sk" @click="add()"
                                     class="btn btn-light btn-active-primary btn-sm mx-1">
                                 <i class="bi bi-plus-circle-fill"></i> Tambah
                             </button>
@@ -24,8 +23,9 @@
                                                                       width="8.15546" height="2" rx="1"
                                                                       transform="rotate(45 17.0365 15.1223)"
                                                                       fill="black"></rect>
-																<path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
-                                                                      fill="black"></path>
+																<path
+                                                                    d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
+                                                                    fill="black"></path>
 															</svg>
 														</span>
                                 <input type="text" class="form-control form-control-solid w-250px ps-15"
@@ -96,7 +96,7 @@
                                         <tr>
                                             <td x-text="sk.sk_number"></td>
                                             <td>
-                                                <a :href="`/manage-users/users/detail/${user.id}`"
+                                                <a :href="`/manage-users/users/detail/${sk.user_id}`"
                                                    class="text-gray-800 text-hover-primary mb-1">
                                                     <span x-text="sk.user_name"></span>
                                                 </a>
@@ -110,8 +110,8 @@
                                                 </a>
                                             </td>
                                             <td class="text-end">
-                                                <button data-bs-toggle="modal"
-                                                        data-bs-target="#modal-edit" @click="edit(sk.id)"
+                                                <button data-bs-toggle="modal" data-bs-target="#modal-sk"
+                                                        @click="edit(sk.id)"
                                                         class="btn btn-light btn-active-primary btn-sm mx-1">
                                                     <i class="bi bi-pencil"></i>
                                                 </button>
@@ -148,10 +148,8 @@
                 buttonLoading: false,
                 search: '',
                 editVal: '',
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                formCreate: document.getElementById('form-create'),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
-                formEdit: document.getElementById('form-edit'),
+                modalForm: new bootstrap.Modal(document.getElementById('modal-sk')),
+                form: document.getElementById('form-sk'),
                 async init() {
                     await this.getSkData();
                 },
@@ -172,7 +170,7 @@
                 async add() {
                     await this.getUserData();
                     await this.getRolesData();
-                    await this.getBranchData();
+                    await this.getMainBranches();
                 },
                 async paginationEndPoint(url) {
                     const resp = await axios.get(`${url}`);
@@ -199,7 +197,7 @@
                     this.editVal = resp.data;
                     await this.getUserData();
                     await this.getRolesData();
-                    await this.getBranchData();
+                    await this.getMainBranches();
                     await this.selectedRole();
                     await this.selectedUser();
                     await this.selectedBranch();
@@ -244,10 +242,10 @@
                     });
                 },
 
-                async getBranchData() {
-                    $(".branch-select2").select2({
+                async getMainBranches() {
+                    $(".main-branches-select2").select2({
                         ajax: {
-                            url: '/manage-users/sk/branch/data',
+                            url: '/select2/main-branches-data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),
@@ -296,11 +294,11 @@
                     });
                 },
                 async selectedBranch() {
-                    const selectedBranch = $('#selectedBranch');
+                    const selectedBranch = $('#selected-branch');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/manage-users/sk/selected-branch/${this.editVal.id}`,
+                        url: `/select2/selected-branch/${this.editVal.branch_id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedBranch.append(option).trigger('change').trigger({

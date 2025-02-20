@@ -414,24 +414,6 @@
                         this.isLoading = false;
                     }
                 },
-                selectedDepartment() {
-                    const selectedDepartment = $('#selectedDepartment');
-                    $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/manage-users/users/job-information/department/selected/${this.userId}`,
-                    }).then(function (response) {
-                        const option = new Option(response.name, response.id, true, true);
-                        selectedDepartment.append(option).trigger('change');
-
-                        selectedDepartment.trigger({
-                            type: 'select2:select',
-                            params: {
-                                results: response
-                            }
-                        });
-                    });
-                },
                 getImageURL(imagePath) {
                     if (imagePath === null) {
                         const placeholders = 'assets/media/placeholders/ktp.png'

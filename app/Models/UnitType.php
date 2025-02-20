@@ -4,20 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Laravel\Scout\Searchable;
 
 class UnitType extends Model
 {
+    use Searchable;
     protected $table = 'unit_types';
-
     protected $fillable = [
         'name',
     ];
 
-    //eloquent
-    public function getDataWithPagination(int $perPage): LengthAwarePaginator
+
+    public function toSearchableArray(): array
     {
-        return self::orderBy('name')->paginate($perPage);
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+        ];
     }
 
     public function getData(Request $request): array

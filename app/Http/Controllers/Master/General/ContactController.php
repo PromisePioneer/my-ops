@@ -6,7 +6,7 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Contact\ContactRequest;
 use App\Models\Contact;
-use App\Service\GeneralMasterData\ContactService;
+use App\Service\Master\General\ContactService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

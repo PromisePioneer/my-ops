@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\Request;
+use Laravel\Scout\Searchable;
 
 class Contact extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $table = 'contacts';
 
@@ -27,6 +28,15 @@ class Contact extends Model
         'complete_address',
         'other_info',
     ];
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'pic_name' => $this->pic_name,
+            'company_name' => $this->company_name,
+        ];
+    }
 
 
     public function offeringLetter(): HasOne

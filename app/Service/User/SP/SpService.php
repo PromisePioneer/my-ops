@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Service\User;
+namespace App\Service\User\SP;
 
+use AllowDynamicProperties;
 use App\Http\Requests\ADMS\AttendancesSummaryAssignSPRequest;
 use App\Http\Requests\SPRequest;
 use App\Models\SP;
@@ -9,12 +10,16 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
 use function App\Helper\convertToRoman;
 
-class SpService
+#[AllowDynamicProperties] class SpService
 {
     private static int $perPage = 10;
+    public function __construct()
+    {
+        $this->SpRepository = new SPRepository();
+    }
+
     public function generateSpNumber(SPRequest|AttendancesSummaryAssignSPRequest $request): string
     {
         $sp = SP::latest()->first();
@@ -32,111 +37,45 @@ class SpService
         $startingNumber = '001';
         $startValue = str_pad((int)$startingNumber, 3, '0', STR_PAD_LEFT);
 
-
-
         return $startValue.'/MY-SP/'.$spMonth.'/'.$spYear;
-    }
-
-
-    public function query(): \Illuminate\Database\Eloquent\Builder
-    {
-        return SP::with('createdBy', 'user', 'branch')->where(function ($query) {
-            if (Auth::user()->hasRole('Branch Manager')) {
-                $query->where('branch_id', Auth::user()->branch_id);
-            }
-        });
     }
 
 
     public function data(Request $request): LengthAwarePaginator
     {
-        $data = SP::with('createdBy', 'user', 'branch');
-
-
-        if ($request->user()->hasRole('Branch Manager')) {
-            $data->whereHas('branch', function ($query) use ($request) {
-                $query->where('branch_id', $request->user()->branch_id);
-            });
-        }
-
-
-        $sp = $data->paginate(self::$perPage);
-        return self::formattedData($sp);
+        $query = SPACLFilter::apply($this->SpRepository->mainQuery(), $request)->paginate(self::$perPage);
+        return self::formattedData($query);
     }
 
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
 
-        $sp = SP::with('createdBy', 'user', 'branch')
-            ->when($request->user()->hasRole('Branch Manager'), function ($query) use ($request) {
-                $query->where('branch_id', $request->user()->branch_id);
-            })
-            ->whereHas('user', function ($query) use ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
-            $query->orWhere('nip', 'like', '%' . $search . '%');
-        })->orWhere('sp_number', 'like', '%' . $search . '%')
-            ->paginate(self::$perPage);
+        $sp = SP::search($search)->query(function ($query) use ($request) {
+            $data = $query->join('users', 'users.id', '=', 'sp.user_id');
+            SPACLFilter::apply($data, $request);
+        })->paginate(self::$perPage);
 
         return self::formattedData($sp);
     }
 
 
-    public function filter(Request $request, $branchId, $year, $month)
+    public function filter(Request $request): LengthAwarePaginator
     {
-        $data = $this->query();
-
-        if ($branchId && $year && $month) {
-            $data->where('branch_id', $branchId)
-                ->whereYear('start_date', $year)
-                ->whereMonth('start_date', $month);
-        }
-
-        if ($branchId && Auth::user()->branch_id === null) {
-            $data->where('branch_id', $branchId);
-        }
-
-        if ($year && $month) {
-            $data->whereMonth('start_date', $month)
-                ->whereYear('start_date', $year);
-        }
-
-        if ($year && !$month) {
-            $data->whereYear('start_date', $year);
-        }
-
-        if ($month && !$year) {
-            $data->whereMonth('start_date', $month);
-        }
-
-        $sp = $data->paginate(self::$perPage);
+        $sp = SPQueryFilter::apply($this->SpRepository->mainQuery(), $request)->paginate(self::$perPage);
         return self::formattedData($sp);
     }
 
     private static function formattedData(LengthAwarePaginator $sp): LengthAwarePaginator
     {
         $formattedData = $sp->getCollection()->map(function ($item) {
-            $isExpired = false;
-
-            $spActive = $item->where('expired_if_has_new_sp', 0)->get();
-
-            foreach ($spActive as $active) {
-                if ($active?->id === $item->id) {
-                    $isExpired = true;
-                }
-
-                if ($active?->id === $item->id && $item->end_date < Carbon::now()) {
-                    $isExpired = false;
-                }
-            }
-
             return [
                 'id' => $item->id,
                 'branch_name' => $item->branch->name ?? null,
                 'user_id' => "({$item->user->nip}) {$item->user->name}",
                 'sp_number' => $item->sp_number,
                 'date' => Carbon::parse($item->start_date)->format('d/m/Y') . ' - ' . Carbon::parse($item->end_date)->format('d/m/Y'),
-                'expired' => $isExpired,
+                'expired' => Carbon::parse($item->end_date)->greaterThan(Carbon::now()),
                 'sp_type' => $item->sp_type,
                 'punished_by' => $item->punishedBy?->name,
                 'created_by' => $item->createdBy->name,
@@ -147,10 +86,8 @@ class SpService
         return $sp;
     }
 
-
     public function update(SPRequest $request, SP $sp): void
     {
-
         $punishedBy = User::where('id', $request->punished_by)->first();
         $sp->update([
             'date' => $request->date,

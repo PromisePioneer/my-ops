@@ -37,7 +37,8 @@ use Illuminate\View\View;
     public function data(): JsonResponse
     {
         $this->authorize('view', UnitType::class);
-        return response()->json($this->unitType->getDataWithPagination(self::$perPage));
+        $unitTypes = UnitType::orderBy('name')->paginate(self::$perPage);
+        return response()->json($unitTypes);
     }
 
 
@@ -48,10 +49,11 @@ use Illuminate\View\View;
     {
         $this->authorize('view', UnitType::class);
         $search = $request->input('search');
-        $unitType = UnitType::when(!empty($search), function ($query) use ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
+        $unitTypes = UnitType::search($search)->query(function ($query) {
+            $query->orderBy('name');
         })->paginate(self::$perPage);
-        return response()->json($unitType);
+
+        return response()->json($unitTypes);
     }
 
 

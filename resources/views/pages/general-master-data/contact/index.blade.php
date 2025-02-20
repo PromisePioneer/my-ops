@@ -11,7 +11,7 @@
                         <span class="svg-icon svg-icon-1 position-absolute ms-6">
                            <i class="bi bi-search"></i>
                         </span>
-                        <input type="text" name="search" x-model="search" @input.debounce="searchData"
+                        <input type="text" name="search" x-model="search" @input.debounce="searchData()"
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
                 </div>
@@ -157,10 +157,11 @@
                 },
                 async searchData() {
                     try {
-                        this.contacts = await axios.get('/general-master-data/contact/search', {
+                        const resp = await axios.get('/general-master-data/contact/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
+                        this.contacts = resp.data;
                     } catch (error) {
                         console.error('Error fetching data:', error);
                     }

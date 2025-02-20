@@ -2,24 +2,31 @@
 
 namespace App\Http\Controllers\Master\General;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BranchChildrenRequest;
 use App\Http\Requests\Master\Branch\BranchRequest;
 use App\Models\Branch;
+use App\Service\Master\General\Branch\BranchService;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Spatie\Activitylog\Models\Activity;
 
-class BranchesController extends Controller
+#[AllowDynamicProperties] class BranchController extends Controller
 {
     private static int $perPage = 10;
 
     /**
      * @throws AuthorizationException
      */
+
+    public function __construct()
+    {
+        $this->branchService = new BranchService();
+    }
+
     public function index(): View
     {
         $this->authorize('view', Branch::class);
@@ -32,9 +39,7 @@ class BranchesController extends Controller
     public function data(): JsonResponse
     {
         $this->authorize('view', Branch::class);
-        $branches = Branch::with('children')->whereNull('parent_id')->orderBy('code')->paginate(10);
-
-        return response()->json($branches);
+        return response()->json($this->branchService->data());
     }
 
     /**
@@ -43,13 +48,7 @@ class BranchesController extends Controller
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', Branch::class);
-
-        $search = $request->input('search');
-        $branchSearch = Branch::search($search)->query(function ($query) {
-            $query->with('children')->where('parent_id', null)->orderBy('code');
-        })->paginate(self::$perPage);
-
-        return response()->json($branchSearch);
+        return response()->json($this->branchService->search($request));
     }
 
 
@@ -60,13 +59,6 @@ class BranchesController extends Controller
     {
         $this->authorize('create', Branch::class);
         Branch::create($request->validated());
-
-        $activity = Activity::all()->last();
-
-        $activity->description;
-        $activity->subject;
-        $activity->changes;
-
         return response()->json([
             'message' => 'data berhasil disimpan',
         ], 200);
@@ -104,23 +96,18 @@ class BranchesController extends Controller
     }
 
 
-    public function storeChildren(BranchChildrenRequest $request, Branch $branch): JsonResponse
+    public function storeChildren(BranchChildrenRequest $request): JsonResponse
     {
-        Branch::create([
-            'name' => $request->name,
-            'parent_id' => $request->parent_id,
-            'address' => $request->address
-        ]);
+        $data = $request->validated();
+        $data['parent_id'] = $request->parent_id;
+        Branch::create($data);
         return response()->json(['message' => 'data berhasil disimpan']);
     }
 
 
     public function updateChildren(BranchChildrenRequest $request, Branch $branch): JsonResponse
     {
-        $branch->update([
-            'name' => $request->name,
-            'address' => $request->address
-        ]);
+        $branch->update($request->validated());
         return response()->json(['message' => 'data berhasil disimpan']);
     }
 
@@ -144,5 +131,16 @@ class BranchesController extends Controller
     {
         $branch->delete();
         return response()->json(['message' => 'data berhasil dihapus']);
+    }
+
+
+    public function getMainBranches(Request $request, BranchService $branchService): JsonResponse
+    {
+        return response()->json($branchService->getMainBranches($request));
+    }
+
+    public function selectedBranch(Branch $branch): JsonResponse
+    {
+        return response()->json($this->branchService->selectedBranch($branch?->id));
     }
 }

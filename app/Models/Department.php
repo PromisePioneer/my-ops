@@ -2,17 +2,15 @@
 
 namespace App\Models;
 
-use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
+use Laravel\Scout\Searchable;
 
 class Department extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $table = 'departments';
 
@@ -21,6 +19,13 @@ class Department extends Model
         'name',
     ];
 
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->code,
+            'name' => $this->name
+        ];
+    }
 
     public function departments(): HasMany
     {

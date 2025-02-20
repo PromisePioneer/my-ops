@@ -2,24 +2,21 @@
 
 namespace App\Http\Controllers\HRIS\EmployeesData;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\JobInformationRequest;
 use App\Models\Department;
 use App\Models\JobInformation;
 use App\Models\User;
-use App\Service\User\JobInformationService;
+use App\Service\User\JobInformation\JobInformationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 
-class JobInformationController extends Controller
+#[AllowDynamicProperties] class JobInformationController extends Controller
 {
-    private JobInformationService $jobInformationService;
-    private Department $department;
-    private JobInformation $jobInformation;
-
     public function __construct()
     {
         $this->department = new Department();
@@ -29,7 +26,19 @@ class JobInformationController extends Controller
 
     public function index(User $user): JsonResponse
     {
-        return response()->json($this->jobInformation->getRelatedUserJobInformation($user->id));
+        $jobInformation = JobInformation::where('user_id', $user->id)->first();
+
+        return response()->json([
+            'fixed_salary' => "Rp." . number_format($jobInformation->fixed_salary),
+            'position_allowance' => $jobInformation->position_allowance,
+            'week_holiday' => $jobInformation->week_holiday,
+            'contract_status' => $jobInformation->contract_status,
+            'bank_account_number' => $jobInformation->bank_account_number,
+            'bpjs_kes' => $jobInformation->bpjs_kes,
+            'no_kpj' => $jobInformation->no_kpj,
+            'bpjs_ket' => $jobInformation->bpjs_ket,
+            'no_kis' => $jobInformation->no_kis,
+        ]);
     }
 
     public function update(JobInformationRequest $request, User $user): JsonResponse
@@ -48,12 +57,6 @@ class JobInformationController extends Controller
         return view('pages.manage-users.user.partials.job-information.view-file', compact('user'));
     }
 
-    public function getSelectedDepartment(User $user): JsonResponse
-    {
-        $users = $user->whereHas('jobInformation')->first();
-
-        return response()->json($this->department->getSelectedData($users->jobInformation?->department_id));
-    }
 
     public function contractFile(Request $request, User $user): Response
     {

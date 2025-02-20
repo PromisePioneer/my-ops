@@ -14,7 +14,7 @@
                         <div class="card-body pt-0">
                             <div class="d-flex flex-column text-gray-600">
                                 <div class="d-flex align-items-center py-2">
-                                    <select class="form-select form-select-solid branch-select2"
+                                    <select class="form-select form-select-solid main-branches-select2"
                                             name="branch_id" id="branch_id">
                                     </select>
                                 </div>
@@ -130,17 +130,17 @@
                                                 </a>
                                             </td>
                                             <td x-text="contract.contract_date"></td>
-                                            <template x-if="contract.expired === true">
+                                            <template x-if="contract.expired === false">
                                                 <td>
                                                     <span class="badge bg-danger">Sudah Habis</span>
                                                 </td>
                                             </template>
-                                            <template x-if="contract.expired === false">
+                                            <template x-if="contract.expired === true">
                                                 <td>
                                                     <span class="badge bg-success">Masih Berlaku</span>
                                                 </td>
                                             </template>
-                                            <template x-if="contract.expired === false">
+                                            <template x-if="contract.expired === true">
                                                 <td>
                                                     <a :href="`/manage-users/contract-management/contract-pdf/${contract.id}`"
                                                        class="btn btn-active-danger btn-light-danger btn-sm">
@@ -148,7 +148,7 @@
                                                     </a>
                                                 </td>
                                             </template>
-                                            <template x-if="contract.expired === true">
+                                            <template x-if="contract.expired === false">
                                                 <td>
                                                     <button disabled
                                                             class="btn btn-active-danger btn-light-danger btn-sm">
@@ -156,15 +156,15 @@
                                                     </button>
                                                 </td>
                                             </template>
-                                            <template x-if="contract.expired === true">
+                                            <template x-if="contract.expired === false">
                                                 <td class="text-end">
                                                     <button class="btn btn-light btn-active-info btn-sm"
-                                                            @click="extendContract(contract.id)">
+                                                            @click="extendContract(contract.user_id)">
                                                         Extend
                                                     </button>
                                                 </td>
                                             </template>
-                                            <template x-if="contract.expired === false">
+                                            <template x-if="contract.expired === true">
                                                 <td class="text-end">
                                                     <button class="btn btn-light btn-active-info btn-sm" disabled>
                                                         Extend
@@ -209,7 +209,7 @@
                 formEdit: document.getElementById('form-edit'),
                 async init() {
                     await this.getContractData();
-                    await this.getBranchData();
+                    await this.getMainBranches();
                     await this.getMonth();
                 },
                 async searchData() {
@@ -230,7 +230,7 @@
                 async filter() {
                     const year = document.getElementById('year')?.value ?? '';
                     const month = document.getElementById('month')?.value ?? '';
-                    const branch_id = $(".branch-select2")?.val();
+                    const branch_id = $(".main-branches-select2")?.val();
                     this.isLoading = true;
                     try {
                         const resp = await axios.get('/manage-users/contract-management/filter', {
@@ -297,12 +297,12 @@
                         }
                     });
                 },
-                async getBranchData() {
-                    $(".branch-select2").select2({
+                async getMainBranches() {
+                    $(".main-branches-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Cabang",
                         ajax: {
-                            url: '/manage-users/contract-management/branch/data',
+                            url: '/select2/main-branches-data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),

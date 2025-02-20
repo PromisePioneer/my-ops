@@ -9,7 +9,7 @@ use App\Models\Area;
 use App\Models\JobInformation;
 use App\Models\User;
 use App\Models\UserHasArea;
-use App\Service\GeneralMasterData\Area\AreaDetailService;
+use App\Service\Master\General\Area\AreaDetailService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

@@ -60,7 +60,7 @@
                             <div class="d-flex flex-column text-gray-600">
                                 @can('Filter Data SP Berdasarkan Cabang')
                                     <div class="d-flex align-items-center py-2">
-                                        <select class="form-select form-select-solid branch-select2"
+                                        <select class="form-select form-select-solid main-branches-select2"
                                                 name="branch_id" id="branch_id">
                                         </select>
                                     </div>
@@ -121,8 +121,8 @@
                     <div class="card-body pt-0">
                         <div id="kt_roles_view_table_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                             <div class="table-responsive">
-                                <table class="table align-middle table-row-dashed fs-6 gy-5 mb-0 dataTable no-footer"
-                                       id="kt_roles_view_table">
+                                <table
+                                    class="table align-middle table-row-dashed fs-6 gy-5 mb-0 dataTable no-footer table-bordered">
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                         <th class="min-w-50px sorting" tabindex="0" aria-controls="kt_roles_view_table"
@@ -227,7 +227,7 @@
                 months: [],
                 async init() {
                     await this.getSpData();
-                    await this.getBranchData();
+                    await this.getMainBranches();
                     this.getMonth();
                 },
                 async searchData() {
@@ -263,12 +263,12 @@
                         this.startIndex = this.spList.from
                     }
                 },
-                async getBranchData() {
-                    $(".branch-select2").select2({
+                async getMainBranches() {
+                    $(".main-branches-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Cabang",
                         ajax: {
-                            url: '/manage-users/sp/branch/data',
+                            url: '/select2/main-branches-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -294,7 +294,7 @@
                     )
                 },
                 async filter() {
-                    const branchId = $(".branch-select2").val();
+                    const branchId = $(".main-branches-select2").val();
                     const year = document.getElementById('year')?.value ?? '';
                     const month = document.getElementById('month')?.value ?? '';
                     this.isLoading = true;

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\HRIS\Correspondence;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\SKRequest;
 use App\Models\Branch;
 use App\Models\Role;
 use App\Models\SK;
 use App\Models\User;
-use App\Service\User\SKService;
+use App\Service\User\SK\SKService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -16,13 +17,8 @@ use Illuminate\View\View;
 use Spatie\Browsershot\Browsershot;
 use Throwable;
 
-class SKController extends Controller
+#[AllowDynamicProperties] class SKController extends Controller
 {
-
-    private SKService $SKService;
-    private User $user;
-    private Role $role;
-    private Branch $branch;
 
     public function __construct()
     {
@@ -57,11 +53,6 @@ class SKController extends Controller
     public function getRoleData(Request $request): JsonResponse
     {
         return response()->json($this->role->getData($request));
-    }
-
-    public function getBranchData(Request $request): JsonResponse
-    {
-        return response()->json($this->branch->getData($request));
     }
 
     /**

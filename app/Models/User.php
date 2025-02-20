@@ -12,15 +12,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Scout\Searchable;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens;
-    use HasFactory;
-    use HasRoles;
-    use Notifiable;
-
+    use HasApiTokens, HasFactory, HasRoles, Notifiable, Searchable;
     protected $fillable = [
         'branch_id',
         'absent_id',
@@ -47,9 +44,28 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+
+    public function leaves(): HasMany
+    {
+        return $this->hasMany(LeaveAndPermission::class, 'user_id');
+    }
+
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+
+    public function toSearchableArray(): array
+    {
+        $this->loadMissing('branch');
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'nip' => $this->nip,
+            'absent_id' => $this->absent_id,
+            'active' => $this->active
+        ];
     }
 
     public function userHasArea(): HasOne

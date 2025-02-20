@@ -22,7 +22,7 @@ class JobInformationRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
-            'fixed_salary' => ['required'],
+            'fixed_salary' => ['required', 'min:1'],
             'position_allowance' => ['nullable'],
             'contract_status' => [
                 'required',

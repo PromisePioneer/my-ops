@@ -72,7 +72,7 @@ use App\Http\Controllers\Inventory\Stock\UsedItemsController;
 use App\Http\Controllers\Master\Finance\AccountController;
 use App\Http\Controllers\Master\Finance\AssetController;
 use App\Http\Controllers\Master\Finance\TaxSettingController;
-use App\Http\Controllers\Master\General\BranchesController;
+use App\Http\Controllers\Master\General\BranchController;
 use App\Http\Controllers\Master\General\BroadbandPacketController;
 use App\Http\Controllers\Master\General\CompanyController;
 use App\Http\Controllers\Master\General\ContactController;
@@ -148,7 +148,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/', [UserController::class, 'store']);
             Route::post('/destroy', [UserController::class, 'destroy']);
             Route::get('/edit/{user}', [UserController::class, 'edit']);
-            Route::get('/get-selected-branch/{user}', [UserController::class, 'getSelectedBranch']);
             Route::get('/show/{user}', [UserController::class, 'show']);
             Route::post('/import', [UserController::class, 'import']);
             Route::get('/detail/{user}', [UserController::class, 'detail']);
@@ -157,7 +156,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/update/{user}', [UserController::class, 'update']);
             Route::post('/change-status/{user}', [UserController::class, 'changeStatusActive']);
             Route::get('/filter', [UserController::class, 'filter']);
-            Route::get('companies/data', [UserController::class, 'getCompaniesData']);
             Route::get('companies/selected/{user}', [UserController::class, 'getSelectedCompany']);
         });
 
@@ -261,7 +259,6 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('contract-management')->group(function () {
             Route::get('/', [ContractManagementController::class, 'index']);
             Route::get('/data', [ContractManagementController::class, 'data']);
-            Route::get('/branch/data', [ContractManagementController::class, 'getBranchData']);
             Route::get('/filter', [ContractManagementController::class, 'filter']);
             Route::get('/search', [ContractManagementController::class, 'search']);
             Route::post('/store', [ContractManagementController::class, 'store']);
@@ -326,17 +323,17 @@ Route::group(['middleware' => ['auth']], static function () {
         });
 
         Route::prefix('branch')->group(function () {
-            Route::get('/', [BranchesController::class, 'index']);
-            Route::get('/data', [BranchesController::class, 'data']);
-            Route::get('/search', [BranchesController::class, 'search']);
-            Route::post('/', [BranchesController::class, 'store']);
-            Route::get('/show/{branch}', [BranchesController::class, 'show']);
-            Route::get('/sub-branch/detail/{branch}', [BranchesController::class, 'subBranchDetail']);
-            Route::post('/sub-branch/store', [BranchesController::class, 'storeChildren']);
-            Route::post('/sub-branch/update/{branch}', [BranchesController::class, 'updateChildren']);
-            Route::post('update/{branch}', [BranchesController::class, 'update']);
-            Route::post('/destroy/', [BranchesController::class, 'destroy']);
-            Route::delete('/sub-branch/destroy/{branch}', [BranchesController::class, 'destroyChildren']);
+            Route::get('/', [BranchController::class, 'index']);
+            Route::get('/data', [BranchController::class, 'data']);
+            Route::get('/search', [BranchController::class, 'search']);
+            Route::post('/', [BranchController::class, 'store']);
+            Route::get('/show/{branch}', [BranchController::class, 'show']);
+            Route::get('/sub-branch/detail/{branch}', [BranchController::class, 'subBranchDetail']);
+            Route::post('/sub-branch/store', [BranchController::class, 'storeChildren']);
+            Route::post('/sub-branch/update/{branch}', [BranchController::class, 'updateChildren']);
+            Route::post('update/{branch}', [BranchController::class, 'update']);
+            Route::post('/destroy/', [BranchController::class, 'destroy']);
+            Route::delete('/sub-branch/destroy/{branch}', [BranchController::class, 'destroyChildren']);
         });
 
 
@@ -1367,6 +1364,14 @@ Route::group(['middleware' => ['auth']], static function () {
     Route::prefix('payroll/payroll-history')->group(function () {
         Route::get('/', [PayrollHistoryController::class, 'index']);
         Route::get('/data', [PayrollHistoryController::class, 'data']);
+    });
+
+
+    Route::prefix('select2')->group(function () {
+        Route::get('/main-branches-data', [BranchController::class, 'getMainBranches']);
+        Route::get('/selected-branch/{branch}', [BranchController::class, 'selectedBranch']);
+        Route::get('/companies-data', [CompanyController::class, 'getCompanies']);
+        Route::get('/selected-company/{company}', [CompanyController::class, 'selectedCompany']);
     });
 });
 

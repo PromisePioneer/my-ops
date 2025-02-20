@@ -23,7 +23,7 @@
                                 <div class="d-flex flex-column text-gray-600">
                                     <div class="d-flex align-items-center py-2">
                                     @can('Filter Data Karyawan Berdasarkan Cabang')
-                                        <select class="form-select form-select-solid branch-select2"
+                                            <select class="form-select form-select-solid main-branches-select2"
                                                 name="branch_id" id="branch_id">
                                         </select>
                                         @endcan
@@ -88,7 +88,7 @@
                                 </a>
                             @endcan
                             @can('Import Data Karyawan')
-                                <button class="btn btn-light btn-active-info btn-sm" data-bs-toggle="modal"
+                                    <button class="btn btn-light btn-active-info btn-sm mx-1" data-bs-toggle="modal"
                                         data-bs-target="#modal-import">
                                <span class="svg-icon">
                                     <i class="bi bi-upload fs-5"></i>
@@ -96,6 +96,12 @@
                                     Import
                                 </button>
                             @endcan
+                                <button class="btn btn-light btn-active-info btn-sm" @click="reload()">
+                               <span class="svg-icon">
+                                     <i class="bi bi-arrow-clockwise"></i>
+                               </span>
+                                    Reload
+                                </button>
                         </div>
                         <div class="card-toolbar">
                             <div class="d-flex align-items-center position-relative my-1"
@@ -281,11 +287,13 @@
                 formImport: document.getElementById('form-import'),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
-                    await this.getCompany();
+                    await this.getCompanies();
+                    await this.getMainBranches();
                     await this.getUserData();
-                    await this.filterByBranch();
                     await this.getMonth();
-                    await this.getBranchData();
+                },
+                async reload() {
+                    await this.init()
                 },
                 getMonth() {
                     this.months.push(
@@ -303,12 +311,12 @@
                         {name: "Desember", number: '12'},
                     )
                 },
-                async getCompany() {
+                async getCompanies() {
                     $(".companies-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Perusahaan",
                         ajax: {
-                            url: '/manage-users/users/companies/data',
+                            url: '/select2/companies-data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),
@@ -346,7 +354,6 @@
                     try {
                         const users = await axios.get('/manage-users/users/data');
                         this.users = users.data;
-                        this.startIndex = this.users.from;
                     } catch (e) {
                         console.log(e);
                     } finally {
@@ -356,7 +363,7 @@
                 async filter() {
                     const year = document.getElementById('year')?.value ?? '';
                     const month = document.getElementById('month')?.value ?? '';
-                    const branch_id = $(".branch-select2")?.val();
+                    const branch_id = $(".main-branches-select2")?.val();
                     const company_id = $(".companies-select2")?.val();
                     const active = document.getElementById('active')?.value;
                     this.isLoading = true;
@@ -415,36 +422,18 @@
                         }
                     });
                 },
-                async getBranchData() {
-                    $(".branch-select2").select2({
+                async getMainBranches() {
+                    $(".main-branches-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Cabang",
                         ajax: {
-                            url: '/manage-users/users/branch/data',
+                            url: '/select2/main-branches-data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),
                             processResults: (data) => ({results: data}),
                             cache: true,
                         },
-                    });
-                },
-                async filterByBranch() {
-                    const self = this;
-                    $(".filter-branch-select2").select2({
-                        ajax: {
-                            url: '/manage-users/users/branch/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true
-                        }
-                    });
-                    $(".filter-branch-select2").on('change', async function (e) {
-                        const selectedBranch = $(this).select2('data')[0];
-                        const response = await axios.get(`/manage-users/users/filter/branch/data/${selectedBranch.id}`);
-                        self.users = response.data;
                     });
                 },
                 async importData() {

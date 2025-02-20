@@ -44,8 +44,7 @@ class UserRequest extends FormRequest
             ],
             'roles.*' => [
                 'required',
-                'integer',
-                Rule::exists('roles', 'id'),
+                Rule::exists('roles', 'name'),
             ],
         ];
     }

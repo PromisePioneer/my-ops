@@ -151,10 +151,11 @@
                 async searchData() {
                     this.isLoading = true;
                     try {
-                        this.departments = await axios.get('/general-master-data/department/search', {
+                        const resp = await axios.get('/general-master-data/department/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
+                        this.departments = resp.data;
                     } catch (error) {
                         console.log(error);
                     } finally {

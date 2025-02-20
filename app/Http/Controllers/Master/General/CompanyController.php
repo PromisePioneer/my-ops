@@ -2,19 +2,26 @@
 
 namespace App\Http\Controllers\Master\General;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
+use App\Service\Master\General\Company\CompanyRepository;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-class CompanyController extends Controller
+#[AllowDynamicProperties] class CompanyController extends Controller
 {
 
     private static int $perPage = 10;
 
+    public function __construct()
+    {
+        $this->companyRepository = new CompanyRepository();
+
+    }
     /**
      * @throws AuthorizationException
      */
@@ -98,5 +105,26 @@ class CompanyController extends Controller
         return response()->json([
             'message' => 'data berhasil dihapus',
         ], 200);
+    }
+
+
+    public function getCompanies()
+    {
+        $companies = $this->companyRepository->getCompanies()->get();
+        return $companies->map(function ($company) {
+            return [
+                'id' => $company->id,
+                'text' => $company->name
+            ];
+        });
+    }
+
+    public function selectedCompany(Company $company): array
+    {
+        $company = $this->companyRepository->selectedCompany($company->id);
+        return [
+            'id' => $company->id,
+            'name' => $company->name
+        ];
     }
 }
