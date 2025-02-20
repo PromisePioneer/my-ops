@@ -5,16 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Laravel\Scout\Searchable;
 
 class Company extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $table = 'companies';
     protected $fillable = [
         'code',
         'name',
     ];
+
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'code' => $this->code,
+        ];
+    }
 
 
     public function getData(Request $request): array

@@ -1,15 +1,16 @@
 ﻿@extends('layouts.template')
-@section('page-title', 'Ubah User')
+@section('page-title', 'Tambah User')
 @section('content')
-    <div x-data="updateUser">
+    <div x-data="generateUser()">
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
-                <a class="btn btn-info btn-sm mb-6" href="{{ url('/manage-users/users/') }}">Kembali</a>
+                <a class="btn btn-info btn-sm mb-6" href="{{ url('manage-users/users/') }}">Kembali</a>
             </div>
             <div class="card-body py-3">
                 <form id="form" @submit.prevent="save()">
                     @csrf
                     <div class="card-body">
+                        @if(!Auth::user()->branch_id)
                             <div class="row mb-4">
                                 <div class="col-md-6" x-model="userPlacement">
                                     <label class="col-form-label required fw-bold fs-6">Penempatan</label>
@@ -23,24 +24,26 @@
                                 <div class="col-lg-6" x-show="userPlacement === 'Cabang'" x-transition x-cloak>
                                     <label class="col-form-label required fw-bold fs-6">Cabang</label>
                                     <select :name="`${userPlacement === 'Cabang' ? 'branch_id' : ''}`"
-                                            id="selectedBranch"
-                                            class="form-select form-select-solid branchSelect2">
-                                        <option value="0">Pilih Cabang</option>
+                                            id="selected-branch"
+                                            class="form-select form-select-solid main-branches-select2">
+                                        <option></option>
                                     </select>
                                 </div>
                             </div>
+                        @endif
                         <div class="row mb-4">
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">ID Absen</label>
-                                <input type="text" name="absent_id"
-                                       class="form-control form-control-lg form-control-solid"
-                                       placeholder="Nama" value="{{ $user->absent_id }}"/>
+                                <input type="number" class="form-control form-control-solid" name="absent_id"
+                                       id="absent_id" minlength="3" maxlength="3"
+                                       placeholder="ID Absen"
+                                       value="{{ $user->absent_id ?? $randomAbsentId }}">
                             </div>
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">Nama</label>
                                 <input type="text" name="name"
                                        class="form-control form-control-lg form-control-solid"
-                                       placeholder="Nama" value="{{ $user->name }}"/>
+                                       placeholder="Nama" value="{{ $user->name ?? '' }}"/>
                             </div>
                         </div>
 
@@ -49,21 +52,20 @@
                                 <label class="col-form-label required fw-bold fs-6">Email</label>
                                 <input type="text" name="email"
                                        class="form-control form-control-lg form-control-solid"
-                                       placeholder="email" value="{{ $user->email }}"/>
+                                       placeholder="email" value="{{ $user->email ?? '' }}"/>
                             </div>
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">Tanggal Masuk</label>
                                 <input type="date" name="join_date"
-                                       class="form-control form-control-lg form-control-solid"
-                                       value="{{ $user->join_date }}"/>
+                                       class="form-control form-control-lg form-control-solid date"
+                                       placeholder="Tanggal Masuk" value="{{ $user->join_date ?? '' }}"/>
                             </div>
                         </div>
-
 
                         <div class="row mb-4">
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">Perusahaan</label>
-                                <select name="company_id" id="selectedCompany"
+                                <select name="company_id" id="selected-company"
                                         class="form-select form-select-solid companies-select2">
                                     <option></option>
                                 </select>
@@ -82,8 +84,9 @@
                                     <template x-for="role in roles" :key="role.id">
                                         <div class="col-md-4 mt-2">
                                             <input class="form-check-input" type="radio"
-                                                   :checked="users?.roles[0].id === role.id" :value="role.name" multiple
-                                                   name="role[]"/>
+                                                   :checked="users?.roles[0]?.id === role?.id" :value="role.name"
+                                                   multiple
+                                                   name="roles[]"/>
                                             <label class="form-check-label" for="flexCheckChecked">
                                                 <span x-text="role.name"></span>
                                             </label>
@@ -93,7 +96,9 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="separator py-2"></div>
+
                     <div class="float-end d-flex py-6 px-9">
                         <button type="reset" class="btn btn-light btn-active-light-primary me-2 btn-sm">Reset</button>
                         <button type="submit" class="btn btn-sm btn-light-primary"
@@ -115,29 +120,37 @@
     @include('components.toast')
 @endsection
 @push('script')
-    <script>
-        function updateUser() {
+    <script defer>
+        $('.date').flatpickr();
+
+        function generateUser() {
             return {
                 buttonLoading: false,
                 roles: null,
                 users: null,
-                id: "{{ $user->id }}",
+                id: "{{ $user->id ?? null }}",
+                companyId: '{{ $user->company_id ?? null }}',
                 form: document.getElementById('form'),
-                userPlacement: "{{ $user->placement }}",
+                userPlacement: "{{ $user->placement ?? null }}",
+                branchId: "{{ $user->branch_id ?? null }}",
                 async init() {
-                    await this.getUserData();
-                    await this.getRoleData();
-                    await this.getBranchData();
+                    await this.getMainBranches();
                     await this.selectedBranch();
                     await this.getCompany();
                     await this.selectedCompany();
+                    await this.getRoleData();
+                    await this.getUserData();
                 },
                 async save() {
-                    this.buttonLoading = true;
+                    this.buttonLoading = true
                     try {
-                        await axios.post(`/manage-users/users/update/${this.id}`, new FormData(this.form))
-                        await showAlert('success', 'Data sukses disimpan').then(() => {
-                            window.location.href = '/manage-users/users/';
+                        if (!this.id) {
+                            await axios.post("{{ url('/manage-users/users') }}", new FormData(this.form))
+                        } else {
+                            await axios.post(`/manage-users/users/update/${this.id}`, new FormData(this.form))
+                        }
+                        await showAlert('success', 'Data berhasil disimpan').then(() => {
+                            window.location.href = '/manage-users/users';
                         });
                     } catch (error) {
                         const respError = error.response.data.errors;
@@ -146,33 +159,28 @@
                         this.buttonLoading = false;
                     }
                 },
-                async getUserData() {
-                    const users = await axios.get(`/manage-users/users/show/${this.id}`);
-                    this.users = users.data;
-                },
-                async getRoleData() {
-                    const roles = await axios.get('/manage-users/users/roles/data');
-                    this.roles = roles.data;
-                },
-                async selectedBranch() {
-                    const selectedBranch = $('#selectedBranch');
-                    const response = await axios.get(`/manage-users/users/get-selected-branch/${this.id}`);
-                    const option = new Option(response.data.name, response.data.id, true, true);
-                    selectedBranch.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response.data}
-                    });
-                },
-                async getBranchData() {
-                    $(".branchSelect2").select2({
+                async getMainBranches() {
+                    $(".main-branches-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Cabang',
                         ajax: {
-                            url: '/manage-users/users/branch/data',
+                            url: '/select2/main-branches-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
                             processResults: data => ({results: data}),
                             cache: true
                         }
+                    });
+                },
+                async selectedBranch() {
+                    if (!this.branchId) return;
+                    const selectedBranch = $('#selected-branch');
+                    const response = await axios.get(`/select2/selected-branch/${this.branchId}`);
+                    const option = new Option(response.data.name, response.data.id, true, true);
+                    selectedBranch.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response.data}
                     });
                 },
                 async getCompany() {
@@ -190,13 +198,22 @@
                     });
                 },
                 async selectedCompany() {
-                    const selectedCompany = $('#selectedCompany');
-                    const response = await axios.get(`/manage-users/users/companies/selected/${this.id}`);
+                    if (!this.companyId) return;
+                    const selectedCompany = $('#selected-company');
+                    const response = await axios.get(`/select2/selected-company/${this.companyId}`);
                     const option = new Option(response.data.name, response.data.id, true, true);
                     selectedCompany.append(option).trigger('change').trigger({
                         type: 'select2:select',
                         params: {results: response.data}
                     });
+                },
+                async getRoleData() {
+                    const resp = await axios.get('/manage-users/users/roles/data');
+                    this.roles = resp.data;
+                },
+                async getUserData() {
+                    const users = await axios.get(`/manage-users/users/show/${this.id}`);
+                    this.users = users.data;
                 },
             }
         }

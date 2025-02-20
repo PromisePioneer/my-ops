@@ -185,7 +185,7 @@
             <p style="font-size: 11px; text-align: justify;  text-justify: inter-word; margin-top: 11px ">
                 Dalam hal ini bertindak atas nama PT. Mayatama Solusindo yang berkedudukan di Jl. Sultan Hasanuddin No.
                 8A,
-                Kecamatan Dumai Kota, Kel. Rimba Sekampung, Kota Dumai Provinsi Riau dan selanjutnya disebut<b>PIHAK
+                Kecamatan Dumai Kota, Kel. Rimba Sekampung, Kota Dumai Provinsi Riau dan selanjutnya disebut <b>PIHAK
                     PERTAMA</b>.
             </p>
 
@@ -283,25 +283,23 @@
                             <tr>
                                 <td style="width: 10%; padding: 5px;">Tempat Penerimaan</td>
                                 <td style="width: 1%; padding: 5px;">:</td>
-                                <td style="width: 20%; padding: 5px;">YOGA</td>
+                                <td style="width: 20%; padding: 5px;">{{ $contract->user?->branch?->name ? 'Kantor Cabang ' . $contract->user?->branch?->name : 'Kantor Pusat' }}</td>
                             </tr>
                             <tr>
                                 <td style="width: 10%; padding: 5px;">Lokasi kerja / Proyek</td>
                                 <td style="width: 1%; padding: 5px;">:</td>
-                                <td style="width: 20%; padding: 5px;">19 Maret 1999</td>
+                                <td style="width: 20%; padding: 5px;">{{ $contract->user?->branch?->name ? 'Kantor Cabang ' . $contract->user?->branch?->name : 'Kantor Pusat' }}</td>
                             </tr>
                             <tr>
                                 <td style="width: 10%; padding: 5px;">Direktorat / Divisi / Dept.</td>
                                 <td style="width: 1%; padding: 5px;">:</td>
-                                <td style="width: 20%; padding: 5px;">
-                                    S1
-                                </td>
+                                <td style="width: 20%; padding: 5px;">{{ $contract->user->roles[0]?->department[0]->name ?? '-'}}</td>
                             </tr>
                             <tr>
                                 <td style="width: 10%; padding: 5px;">Management Jabatan / Pekerjaan</td>
                                 <td style="width: 1%; padding: 5px;">:</td>
                                 <td style="width: 20%; padding: 5px;">
-                                    Islam
+                                    {{ $contract->user->roles[0]?->name ?? '-' }}
                                 </td>
                             </tr>
                             </tbody>

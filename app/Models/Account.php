@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
+use Laravel\Scout\Searchable;
 
 class Account extends Model
 {
     use HasFactory;
+    use Searchable;
 
     protected $table = 'accounts';
 
@@ -25,6 +27,16 @@ class Account extends Model
     protected $with = [
         'parent',
     ];
+
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'code' => $this->code,
+            'id' => $this->id,
+            'name' => $this->name,
+        ];
+    }
 
 
     public function parent(): BelongsTo

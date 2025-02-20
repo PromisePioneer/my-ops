@@ -21,11 +21,11 @@
                     </tr>
                     <tr>
                         <td>Tunjangan Jabatan</td>
-                        <td x-text="`Rp. ${jobInformation.position_allowance ?? ''}`"></td>
+                        <td x-text="jobInformation.position_allowance ?? ''"></td>
                     </tr>
                     <tr>
                         <td>Tunjangan Makan</td>
-                        <td x-text="`Rp. ${jobInformation.meal_allowance ?? ''}`"></td>
+                        <td x-text="jobInformation.meal_allowance ?? ''"></td>
                     </tr>
                     <tr>
                         <td>Status Kontrak</td>

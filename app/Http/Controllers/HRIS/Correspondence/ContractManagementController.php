@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\HRIS\Correspondence;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use App\Models\ContractManagement;
 use App\Models\User;
-use App\Service\User\ContractManagementService;
+use App\Service\User\ContractManagement\ContractManagementService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,12 +15,8 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Spatie\Browsershot\Browsershot;
 
-class ContractManagementController extends Controller
+#[AllowDynamicProperties] class ContractManagementController extends Controller
 {
-
-    private static int $perPage = 10;
-    private ContractManagementService $contractManagementService;
-    private Branch $branch;
 
     public function __construct()
     {
@@ -34,16 +31,18 @@ class ContractManagementController extends Controller
 
     public function data(): JsonResponse
     {
-        return response()->json($this->contractManagementService->paginatedData());
+        return response()
+            ->json($this->contractManagementService->data());
     }
 
 
     public function extendContract(User $user): JsonResponse
     {
         $date = Carbon::now();
-        ContractManagement::create([
+        ContractManagement::updateOrCreate([
+            'user_id' => User::find($user->id)->id,
+        ], [
             'contract_number' => $this->contractManagementService->generateContractNumber($date, $user),
-            'user_id' => $user->id,
             'start_date' => $date->format('Y-m-d'),
             'end_date' => Carbon::parse($date)->addYear(1)->format('Y-m-d'),
         ]);
@@ -76,12 +75,7 @@ class ContractManagementController extends Controller
     }
 
 
-    public function getBranchData(Request $request): JsonResponse
-    {
-        return response()->json($this->branch->getData($request));
-    }
-
-    public function filter(Request $request)
+    public function filter(Request $request): JsonResponse
     {
         return response()->json($this->contractManagementService->filter($request));
     }

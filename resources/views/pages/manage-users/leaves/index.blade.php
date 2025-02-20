@@ -18,7 +18,7 @@
                             <div class="d-flex flex-column text-gray-600">
                                 <div class="d-flex align-items-center py-2">
                                     @can('Filter Data Manajemen Cuti Berdasarkan Cabang')
-                                        <select class="form-select form-select-solid branch-select2"
+                                        <select class="form-select form-select-solid main-branches-select2"
                                                 name="branch_id" id="branch_id">
                                         </select>
                                     @endcan
@@ -270,11 +270,11 @@
                     )
                 },
                 async getBranchData() {
-                    $(".branch-select2").select2({
+                    $(".main-branches-select2").select2({
                         allowClear: true,
                         placeholder: 'Pilih Cabang',
                         ajax: {
-                            url: '/manage-users/leaves/branch/data',
+                            url: '/select2/main-branches-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),

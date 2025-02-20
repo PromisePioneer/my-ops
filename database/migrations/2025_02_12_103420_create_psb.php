@@ -15,8 +15,9 @@ return new class extends Migration {
             $table->date('date');
             $table->date('registration_date');
             $table->date('active_date');
-            $table->string('customer_name');
+            $table->json('technician');
             $table->string('phone_number');
+            $table->string('last_pay');
             $table->string('address');
             $table->foreignId('area_id')
                 ->constrained('areas')

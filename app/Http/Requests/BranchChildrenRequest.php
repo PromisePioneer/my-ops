@@ -32,7 +32,6 @@ class BranchChildrenRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'parent_id.required' => 'Cabang utama tidak boleh kosong',
             'name.required' => 'Nama Sub Cabang tidak boleh kosong',
             'address.required' => 'Alamat Sub Cabang tidak boleh kosong',
         ];

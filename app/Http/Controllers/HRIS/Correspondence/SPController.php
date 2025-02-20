@@ -8,7 +8,7 @@ use App\Http\Requests\SPRequest;
 use App\Models\Branch;
 use App\Models\SP;
 use App\Models\User;
-use App\Service\User\SpService;
+use App\Service\User\SP\SpService;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -22,8 +22,6 @@ use Throwable;
 #[AllowDynamicProperties] class SPController extends Controller
 {
     public readonly int $perPage;
-
-
     public function __construct()
     {
         $this->spService = new SPService();
@@ -66,13 +64,6 @@ use Throwable;
         $this->authorize('create', SP::class);
         return response()->json($this->spService->getEmployeeData($request));
     }
-
-
-    public function getBranchData(Request $request): JsonResponse
-    {
-        return response()->json($this->branch->getData($request));
-    }
-
 
     public function filter(Request $request)
     {

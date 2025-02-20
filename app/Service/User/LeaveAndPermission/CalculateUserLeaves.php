@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\LeaveAndPermission;
+namespace App\Service\User\LeaveAndPermission;
 
 use App\Models\LeaveAndPermission;
 use App\Models\User;

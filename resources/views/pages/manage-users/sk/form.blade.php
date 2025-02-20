@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="modal-create">
+<div class="modal fade" tabindex="-1" id="modal-sk">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -9,13 +9,14 @@
                 </div>
             </div>
 
-            <form id="form-create" @submit.prevent="save()">
+            <form id="form-sk" @submit.prevent="save()">
                 <div class="modal-body">
                     <div class="row mb-4">
                         <div class="col-lg-6">
                             <label for="user_id" class="required form-label">Pilih Karyawan</label>
-                            <select name="user_id" id="user_id" class="form-select form-select-solid users-select2"
-                                    data-dropdown-parent="#modal-create">
+                            <select name="user_id" id="selected-user"
+                                    class="form-select form-select-solid users-select2"
+                                    data-dropdown-parent="#modal-sk">
                                 <option>Pilih</option>
                             </select>
                         </div>
@@ -32,13 +33,14 @@
                     <div class="row mb-4">
                         <div class="col-lg-6">
                             <label for="user_id" class="required form-label">Tanggal</label>
-                            <input type="date" name="date" id="date" class="form-control form-control-solid">
+                            <input type="date" name="date" id="date" class="form-control form-control-solid"
+                                   :value="editVal?.date">
                         </div>
                         <div class="col-lg-6">
                             <label for="user_id" class="required form-label">Cabang</label>
-                            <select name="branch_id" id="branch_id"
-                                    class="form-select form-select-solid branch-select2"
-                                    data-dropdown-parent="#modal-create">
+                            <select name="branch_id" id="selected-branch"
+                                    class="form-select form-select-solid main-branches-select2"
+                                    data-dropdown-parent="#modal-sk">
                                 <option>Pilih Cabang</option>
                             </select>
                         </div>
@@ -48,7 +50,7 @@
                             <label for="user_id" class="required form-label">Jabatan Baru</label>
                             <select name="role_id" id="role_id"
                                     class="form-select form-select-solid roles-select2"
-                                    data-dropdown-parent="#modal-create">
+                                    data-dropdown-parent="#modal-sk">
                                 <option>Pilih Jabatan</option>
                             </select>
                         </div>

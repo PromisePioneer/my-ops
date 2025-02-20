@@ -61,13 +61,13 @@
                             <label for="fixed_salary" class="required form-label">Gaji Pokok</label>
                             <input type="number" id="fixed_salary" name="fixed_salary"
                                    class="form-control form-control-solid"
-                                   placeholder="Gaji Pokok" :value="jobInformation.fixed_salary ?? 0"/>
+                                   placeholder="Gaji Pokok" :value="jobInformation.fixed_salary ?? ''"/>
                         </div>
                         <div class="col-md-6">
                             <label for="position_allowance" class="required form-label">Tunjangan Jabatan</label>
                             <input type="number" id="position_allowance" name="position_allowance"
                                    class="form-control form-control-solid"
-                                   placeholder="Tunjangan Jabatan" :value="jobInformation.position_allowance ?? 0"/>
+                                   placeholder="Tunjangan Jabatan" :value="jobInformation.position_allowance ?? ''"/>
                         </div>
                     </div>
                     <div class="row mb-7">
@@ -75,7 +75,7 @@
                             <label for="meal_allowance" class="required form-label">Tunjangan Makan</label>
                             <input type="number" id="meal_allowance" name="meal_allowance"
                                    class="form-control form-control-solid"
-                                   placeholder="Tunjangan Jabatan" :value="jobInformation.meal_allowance ?? 0"/>
+                                   placeholder="Tunjangan Jabatan" :value="jobInformation.meal_allowance ?? ''"/>
                         </div>
                     </div>
                     <div class="row mb-7">

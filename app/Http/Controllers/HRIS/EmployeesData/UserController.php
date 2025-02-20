@@ -12,7 +12,7 @@ use App\Models\Company;
 use App\Models\Department;
 use App\Models\Role;
 use App\Models\User;
-use App\Service\User\UserService;
+use App\Service\User\User\UserService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -46,29 +46,24 @@ use Maatwebsite\Excel\Facades\Excel;
     /**
      * @throws AuthorizationException
      */
-    public function data(Request $request): JsonResponse
+    public function data(User $user, Request $request): JsonResponse
     {
         $this->authorize('view', User::class);
-        return response()->json($this->userService->data($request));
+        return response()->json($this->userService->data($user, $request));
     }
 
     /**
      * @throws AuthorizationException
      */
-    public function search(Request $request): JsonResponse
+    public function search(User $user, Request $request): JsonResponse
     {
         $this->authorize('view', User::class);
-        return response()->json($this->userService->search($request));
+        return response()->json($this->userService->search($user, $request));
     }
 
     /**
      * @throws AuthorizationException
      */
-    public function branchData(Request $request): JsonResponse
-    {
-        $this->authorize('view', User::class);
-        return response()->json($this->branch->getData($request));
-    }
 
     /**
      * @throws AuthorizationException
@@ -93,6 +88,13 @@ use Maatwebsite\Excel\Facades\Excel;
         return response()->json($this->userService->filter($request));
     }
 
+    public function create(): View
+    {
+        $this->authorize('create', User::class);
+        $randomAbsentId = $this->userService->randomAbsentId();
+
+        return view('pages.manage-users.user.form', compact('randomAbsentId'));
+    }
     /**
      * @throws AuthorizationException
      */
@@ -106,23 +108,14 @@ use Maatwebsite\Excel\Facades\Excel;
     /**
      * @throws AuthorizationException
      */
-    public function create(): View
-    {
-        $this->authorize('create', User::class);
-        $randomAbsentId = $this->userService->randomAbsentId();
-
-        return view('pages.manage-users.user.create', compact('randomAbsentId'));
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
     public function edit(User $user): View
     {
         $this->authorize('update', $user);
         $roles = Role::pluck('name', 'name')->all();
         $userRole = $user->roles->pluck('name', 'name')->all();
-        return view('pages.manage-users.user.edit', compact('user', 'userRole', 'roles'));
+        $randomAbsentId = $this->userService->randomAbsentId();
+
+        return view('pages.manage-users.user.form', compact('randomAbsentId', 'user', 'userRole', 'roles'));
     }
 
     /**
@@ -135,29 +128,7 @@ use Maatwebsite\Excel\Facades\Excel;
         $explodeID = explode(',', $implodeID);
         $user->whereIn('id', $explodeID)->delete();
 
-        return response()->json([
-            'message' => 'data berhasil dihapus',
-        ], 200);
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function getSelectedBranch(User $user): JsonResponse
-    {
-        $this->authorize('update', User::class);
-        $branch = $this->branch->getSelectedData($user->branch_id);
-        return response()->json($branch);
-    }
-
-    public function getCompaniesData(Request $request): JsonResponse
-    {
-        return response()->json($this->company->getData($request));
-    }
-
-    public function getSelectedCompany(User $user): JsonResponse
-    {
-        return response()->json($this->company->getSelectedData($user->company_id));
+        return response()->json(['message' => 'data berhasil dihapus']);
     }
 
     /**
@@ -179,9 +150,7 @@ use Maatwebsite\Excel\Facades\Excel;
     {
         $this->authorize('update', User::class);
         $this->userService->update($request, $user);
-        return response()->json([
-            'message' => 'data sukses diupdate!',
-        ]);
+        return response()->json(['message' => 'data sukses diupdate!']);
     }
 
     public function getDepartmentData(Request $request): JsonResponse
@@ -211,9 +180,7 @@ use Maatwebsite\Excel\Facades\Excel;
     public function changeStatusActive(User $user): JsonResponse
     {
         $this->authorize('setActive', User::class);
-        $user->update([
-            'active' => !$user->active,
-        ]);
+        $user->update(['active' => !$user->active]);
         $user->absent_id = $user->active === false ? null : $user->absent_id;
         $user->save();
 
