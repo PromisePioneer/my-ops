@@ -136,7 +136,7 @@
                 async init() {
                     await this.getMainBranches();
                     await this.selectedBranch();
-                    await this.getCompany();
+                    await this.getCompanies();
                     await this.selectedCompany();
                     await this.getRoleData();
                     await this.getUserData();
@@ -183,12 +183,12 @@
                         params: {results: response.data}
                     });
                 },
-                async getCompany() {
+                async getCompanies() {
                     $(".companies-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Perusahaan",
                         ajax: {
-                            url: '/manage-users/users/companies/data',
+                            url: '/select2/companies-data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),

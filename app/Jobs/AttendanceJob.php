@@ -21,6 +21,7 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
     protected FpDevice $fpDevice;
     protected $startDate;
     protected $endDate;
+    public $timeout = 120;
 
     /**
      * Create a new job instance.

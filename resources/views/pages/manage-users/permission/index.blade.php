@@ -10,7 +10,7 @@
                         <span class="svg-icon svg-icon-1 position-absolute ms-6">
                            <i class="bi bi-search"></i>
                         </span>
-                        <input type="text" name="search" x-model="search" @input.debounce="searchData"
+                        <input type="text" name="search" x-model="search" @input.debounce="searchData()"
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                     </form>
                 </div>
                 <div class="py-5">
-                    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
+                    <table class="table align-middle table-bordered fs-6 gy-5" id="kt_table_users">
                         <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                             <th class="w-10px pe-2">
@@ -66,8 +66,8 @@
                                            :disabled="Number(deletePermission) !== 1">
                                 </div>
                             </th>
-                            <th class="min-w-125px text-center">Nama</th>
-                            <th class="min-w-125px text-center">Actions</th>
+                            <th class="w-50 text-center">Nama</th>
+                            <th class="w-50 text-center">Actions</th>
                         </thead>
                         <tbody class="fw-bold">
                         <template x-if="isLoading">
