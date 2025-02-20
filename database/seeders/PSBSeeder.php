@@ -18,10 +18,11 @@ class PSBSeeder extends Seeder
                 'date' => Carbon::now()->format('Y-m-d'),
                 'registration_date' => Carbon::now()->format('Y-m-d'),
                 'active_date' => Carbon::now()->format('Y-m-d'),
-                'customer_name' => fake()->name,
                 'phone_number' => fake()->phoneNumber,
                 'address' => fake()->address,
                 'area_id' => 1,
+                'technician' => json_encode('vdr-dumai-2'),
+                'last_pay' => Carbon::now()->format('Y-m-d'),
                 'pic' => 1,
             ]);
         }

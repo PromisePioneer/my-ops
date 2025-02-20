@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\GeneralMasterData\Area;
+namespace App\Service\Master\General\Area;
 
 use App\Models\Area;
 use App\Models\User;

@@ -29,7 +29,7 @@ class SKLController extends Controller
     public function data(): JsonResponse
     {
         $this->authorize('view', SKL::class);
-        $data = SKL::orderByDesc('id')->paginate(self::$perPage);
+        $data = SKL::orderBy('name')->paginate(self::$perPage);
         return response()->json($data);
     }
 
@@ -40,8 +40,8 @@ class SKLController extends Controller
     {
         $this->authorize('view', SKL::class);
         $search = $request->input('search');
-        $data = SKL::when(!empty($search), function ($query) use ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
+        $data = SKL::search($search)->query(function ($query) {
+            $query->orderBy('name');
         })->paginate(self::$perPage);
         return response()->json($data);
     }

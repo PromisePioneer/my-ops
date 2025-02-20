@@ -53,23 +53,6 @@ class Branch extends Model
     }
 
 
-    //aggregates
-    public function getData(Request $request): array
-    {
-        $search = $request->input('search');
-        $query = self::whereNull('parent_id')->when(!empty($search), function ($query) use ($search) {
-            $query->where('name', 'like', '%'.$search.'%');
-        })->orderby('name')->select('id', 'name', 'code')->get();
-
-        return $query->map(function ($c) {
-            return [
-                'id' => $c->id,
-                'text' => $c->name,
-            ];
-        })->toArray();
-    }
-
-
     public function getSelectedData(?int $branchId = null): ?array
     {
         $branch = self::where('id', $branchId)->first();

@@ -12,7 +12,6 @@ return new class () extends Migration {
     {
         Schema::create('sp', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('branch_id')->nullable()->constrained('branches');
             $table->foreignId('user_id')->constrained('users');
             $table->string('sp_number');
             $table->date('start_date');

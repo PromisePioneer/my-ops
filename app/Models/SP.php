@@ -6,12 +6,12 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Laravel\Scout\Searchable;
 
 class SP extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $table = 'sp';
 
@@ -85,32 +85,12 @@ class SP extends Model
         $sp->setCollection($formattedData);
     }
 
-    public function searchDataWithPagination(
-        Request $request,
-        int $perPage
-    ): LengthAwarePaginator {
-        $search = $request->input('search');
 
-        $sp = self::whereHas('user', function ($query) use ($search) {
-            $query->where('name', 'like', '%'.$search.'%');
-            $query->orWhere('nip', 'like', '%'.$search.'%');
-        })->orWhere('sp_number', 'like', '%'.$search.'%')->paginate($this->perPage);
-
-        self::formattedData($sp);
-
-        return $sp;
-    }
-
-    public function getSPBasedOnUserId(int $userId): LengthAwarePaginator
+    public function toSearchableArray(): array
     {
-        $sp = self::with('createdBy', 'user')
-            ->where('end_date', '>', Carbon::now())
-            ->where('expired_if_has_new_sp', 0)
-            ->where('user_id', $userId)->paginate($this->perPage);
-
-        self::formattedData($sp);
-
-        return $sp;
+        return [
+            'users.name' => '',
+        ];
     }
 
 }

@@ -2,13 +2,8 @@
 
 namespace App\Http\Requests\UserProfile;
 
-use App\Models\LeaveAndPermission;
-use App\Service\LeaveAndPermission\CalculateUserLeaves;
-use Carbon\Carbon;
-use Closure;
+use App\Service\User\LeaveAndPermission\CalculateUserLeaves;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;

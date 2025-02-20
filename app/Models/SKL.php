@@ -4,14 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Laravel\Scout\Searchable;
 
 class SKL extends Model
 {
+    use Searchable;
     protected $table = 'skl';
     protected $fillable = [
         'name'
     ];
 
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+        ];
+    }
 
     public function getData(Request $request): array
     {

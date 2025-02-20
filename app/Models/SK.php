@@ -56,6 +56,4 @@ class SK extends Model
     {
         return self::with('user', 'oldBranch', 'newBranch', 'oldRole', 'newRole');
     }
-
-
 }

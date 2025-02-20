@@ -4,16 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Laravel\Scout\Searchable;
 
 class ServiceCategory extends Model
 {
+    use Searchable;
     protected $table = 'services_categories';
-
     protected $fillable = [
         'name',
         'unit_price',
         'capacity',
     ];
+
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'name' => $this->name,
+        ];
+    }
 
     //eloquent
     public function getData(Request $request): array

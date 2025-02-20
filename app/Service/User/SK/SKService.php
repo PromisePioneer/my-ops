@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\User;
+namespace App\Service\User\SK;
 
 use App\Http\Requests\User\SKRequest;
 use App\Models\Role;
@@ -25,9 +25,9 @@ class SKService
         $this->sk = new SK();
     }
 
-    public function data()
+    public function data(): LengthAwarePaginator
     {
-        $sk = $this->sk->getData()->paginate(10);
+        $sk = $this->sk->getData()->paginate(self::$perPage);
         return self::formattedData($sk);
     }
 
