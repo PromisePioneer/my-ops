@@ -162,7 +162,7 @@
                                                 <button class="btn btn-light-danger btn-sm mb-4"
                                                         data-bs-toggle="tooltip"
                                                         data-bs-placement="top" title="Tarik Data"
-                                                        @click="getUsers(device.id)"
+                                                        @click="queryAttLog(device.id)"
                                                 >
                                                     <i class="bi bi-info-circle-fill"></i>
                                                     Ambil Data
