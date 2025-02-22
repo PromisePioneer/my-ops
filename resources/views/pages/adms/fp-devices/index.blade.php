@@ -132,7 +132,7 @@
                                             <td class="text-center" x-text="device.ip_address"></td>
                                             <td class="text-center">
                                         <span
-                                            :class="!device.online ? 'badge bg-danger text-white' : 'badge bg-success text-white'"
+                                            :class="device.online === 'Offline' ? 'badge bg-danger text-white' : 'badge bg-success text-white'"
                                             x-text="device.online"></span>
                                             </td>
                                             <td class="text-center ">
