@@ -8,6 +8,7 @@ use App\Http\Requests\ADMS\FpDeviceRequest;
 use App\Jobs\AttendanceJob;
 use App\Models\Branch;
 use App\Models\FpDevice;
+use App\Service\FpDevice\FpDeviceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -20,6 +21,7 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
     {
         $this->FpDevices = new FpDevice();
         $this->branch = new Branch();
+        $this->fpDeviceService = new FpDeviceService();
     }
 
     public function index(): View
@@ -29,38 +31,17 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
 
     public function data(Request $request): JsonResponse
     {
-        $data = FpDevice::with('branch')
-            ->when($request->user()->hasRole('Branch Manager'), function ($query) use ($request) {
-                $query->where('branch_id', $request->user()->branch_id);
-            })
-            ->paginate(self::$perPage);
-        return response()->json($data);
+        return response()->json($this->fpDeviceService->data($request));
     }
 
     public function search(Request $request): JsonResponse
     {
-        $search = $request->input('search');
-
-        $data = FpDevice::with('branch')
-            ->when(!empty($search), function ($query) use ($search) {
-                $query->whereHas('branch', function ($query) use ($search) {
-                    $query->where('name', 'like', '%' . $search . '%');
-                })->orWhere('name', 'like', '%' . $search . '%')
-                    ->orWhere('serial_number', 'like', '%' . $search . '%')
-                    ->orWhere('ip_address', 'like', '%' . $search . '%');
-            })->paginate(self::$perPage);
-
-        return response()->json($data);
+        return response()->json($this->fpDeviceService->search($request));
     }
 
-    public function getBranchData(Request $request): JsonResponse
+    public function filter(Request $request): JsonResponse
     {
-        return response()->json($this->branch->getData($request));
-    }
-
-    public function selectedBranchData(FpDevice $fpDevice): JsonResponse
-    {
-        return response()->json($this->branch->getSelectedData($fpDevice->branch_id));
+        return response()->json($this->fpDeviceService->filter($request));
     }
 
     public function store(FpDeviceRequest $request): JsonResponse
@@ -128,6 +109,30 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
         ]);
     }
 
+    public function getUser(FpDevice $fpDevice)
+    {
+        $zk = new ZKTeco($fpDevice->ip_address, 4370);
+        $connected = $zk->connect();
+
+        if ($connected) {
+            $users = $zk->getUser();
+            $fpTemplate = [];
+
+            foreach ($users as $user) {
+                $uid = $user['uid'];
+                $fingerprintData = $zk->getFingerprint($uid);
+
+                $fpTemplate[] = [
+                    'user' => $user,
+                    'fingerprint' => $fingerprintData
+                ];
+            }
+            return response()->json(mb_convert_encoding($fpTemplate, 'UTF-8', 'UTF-8'));
+        }
+        return response()->json(['message' => 'error']);
+    }
+
+
 
     public function restartDevice(FpDevice $fpDevice): JsonResponse
     {
@@ -139,4 +144,6 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
         $zk->restart();
         return response()->json(['message' => 'Mesin berhasil direstart.']);
     }
+
+
 }

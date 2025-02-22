@@ -25,6 +25,11 @@ class Attendances extends Model
     ];
 
 
+    public function trackableKey(): ?string
+    {
+        return (string)$this->id;
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'employee_id', 'absent_id');

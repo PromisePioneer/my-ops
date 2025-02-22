@@ -4,11 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\Request;
+use Laravel\Scout\Searchable;
 
 
 class FpDevice extends Model
 {
+
+    use Searchable;
     protected $table = 'fp_devices';
 
     protected $fillable = [
@@ -19,9 +23,25 @@ class FpDevice extends Model
         'online',
     ];
 
+
+    public function toSearchableArray()
+    {
+        return [
+            'serial_number' => $this->serial_number,
+            'name' => $this->name,
+            'ip_address' => $this->ip_address
+        ];
+    }
+
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+
+    public function attendanceJobProgress(): HasOne
+    {
+        return $this->hasOne(AttendanceJobProgress::class, 'device_id');
     }
 
     public function getData(Request $request): array

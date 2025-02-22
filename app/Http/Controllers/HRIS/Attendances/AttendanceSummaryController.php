@@ -112,7 +112,7 @@ use Illuminate\View\View;
         $branchId = $request->branch_id;
         $roleId = $request->role_id;
 
-        return response()->json($this->attendanceSummaryService->filter($startDate, $endDate, $roleId, $branchId));
+        return response()->json($this->attendanceSummaryService->filter($request));
     }
 
 

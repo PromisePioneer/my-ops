@@ -13,7 +13,6 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class AttendancesSummaryService
 {
@@ -333,32 +332,22 @@ class AttendancesSummaryService
     }
 
 
-    public function filter($startDate, $endDate, $roleId, $branchId): LengthAwarePaginator
+    public function filter($request): LengthAwarePaginator
     {
-        $startDate = $startDate ?? $this->financialClosePeriodService->startDate();
-        $endDate = $endDate ?? $this->financialClosePeriodService->endDate();
+        $startDate = $request->start_date ?? $this->financialClosePeriodService->startDate();
+        $endDate = $request->end_date ?? $this->financialClosePeriodService->endDate();
 
 
-        $data = User::with([
-            'attendancesSummary' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('date', [$startDate, $endDate]);
+        $query = User::with([
+            'attendancesSummary' => function ($query) use ($startDate, $endDate, $request) {
+                $query->whereBetween('date', [$request->start_date, $request->end_date]);
             }
         ])->where('active', 1);
 
 
-        if (!empty($branchId) && Auth::user()->can('Filter Data Riwayat Absensi Berdasarkan Cabang')) {
-            $data->where(function ($query) use ($branchId) {
-                $query->where('branch_id', $branchId ?? null);
-            });
-        }
+        $filter = AttendanceQueryFilter::apply($query, $request);
 
-        if(!empty($roleId)){
-                $data->whereHas('roles', function ($query) use ($roleId) {
-                    $query->where('id', $roleId);
-                });
-        }
-
-        $attendanceSummary = $data->paginate(self::$perPage)->onEachSide(1);
+        $attendanceSummary = $filter->paginate(self::$perPage)->onEachSide(1);
         return self::formattedData($attendanceSummary, $startDate, $endDate);
     }
 

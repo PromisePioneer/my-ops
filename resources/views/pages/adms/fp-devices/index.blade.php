@@ -2,7 +2,34 @@
 @section('page-title', 'Data Mesin Absensi')
 @section('content')
     <div x-data="fpDevicesData()">
-        <div class="card card-xl-stretch mb-5 mb-xl-8">
+        <div class="d-flex flex-column flex-xl-row">
+            <div class="flex-column flex-lg-row-auto w-100 w-lg-250px mb-10">
+                <div class="card card-flush">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2 class="mb-0">Data Karyawan</h2>
+                        </div>
+                    </div>
+                    <form id="form-filter" @submit.prevent="filter()">
+                        <div class="card-body pt-0">
+                            <div class="d-flex flex-column text-gray-600">
+                                <div class="d-flex align-items-center py-2">
+                                    <select class="form-select form-select-solid main-branches-select2"
+                                            name="branch_id" id="branch-id-filter">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer pt-4 text-end">
+                            <button type="submit" class="btn btn-light btn-active-primary btn-sm">
+                                Filter
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="flex-lg-row-fluid ms-lg-10">
+                <div class="card card-flush">
             @include('pages.adms.fp-devices.form')
             @include('pages.adms.fp-devices.query-attlog')
             <div class="card-header border-0 pt-6">
@@ -15,23 +42,23 @@
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
                 </div>
-            </div>
-            <div class="card-body py-3">
-                <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         @can('Tambah Menu Mesin Absen')
-                        <button type="button" class="btn btn-light-primary btn-sm"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-fp-device">
-                            <i class="ki-duotone ki-message-add fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                            </i> Tambah
-                        </button>
+                            <button type="button" class="btn btn-light-primary btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-fp-device">
+                                <i class="ki-duotone ki-message-add fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i> Tambah
+                            </button>
                         @endcan
                     </div>
                 </div>
+            </div>
+            <div class="card-body py-3">
                 <div class="py-5">
                     <div class="col-12 ">
                         <form id="deleteForm" @submit.prevent="destroy()">
@@ -50,7 +77,7 @@
                         </form>
                     </div>
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
+                        <table class="table align-middle table-bordered fs-6 gy-5" id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
@@ -61,9 +88,9 @@
                                 <th class="min-w-125px text-center">Cabang</th>
                                 <th class="min-w-125px text-center">Nama Mesin</th>
                                 <th class="min-w-125px text-center">IP Address</th>
-                                <th class="min-w-125px text-center">Serial Number</th>
-                                <th class="min-w-125px text-center">Terakhir Handshake</th>
-                                <th class="min-w-125px text-center">Actions</th>
+                                <th class="min-w-125px text-center">Realtime Status</th>
+                                <th class="min-w-125px text-center">Last Download</th>
+                                <th class="min-w-250px text-center">Actions</th>
                             </thead>
                             <tbody class="fw-bold">
                             <template x-if="isLoading">
@@ -96,33 +123,40 @@
                                     <td class="text-center" x-text="device.branch?.name ?? 'Belum Diset'"></td>
                                     <td class="text-center" x-text="device.name"></td>
                                     <td class="text-center" x-text="device.ip_address"></td>
-                                    <td class="text-center" x-text="device.serial_number"></td>
-                                    <td class="text-center" x-text="device.online ?? '-'"></td>
-                                    <td>
+                                    <td class="text-center">
+                                        <span
+                                            :class="!device.online ? 'badge bg-success text-white' : 'badge bg-danger text-white'"
+                                            x-text="device.online"></span>
+                                    </td>
+                                    <td class="text-center ">
+                                        <span x-text="formatDate(device.last_query_date)"></span>
+                                        <span x-text="device.last_query_date"></span>
+                                    </td>
+                                    <td class="d-flex flex-column">
                                         <template x-if="Number(editPermission) === 1">
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                            <button class="btn btn-light-primary btn-sm mb-4" data-bs-toggle="modal"
                                                 data-bs-target="#modal-fp-device" @click="edit(device.id)">
-                                            <i class="bi bi-pencil"></i>
+                                                <i class="bi bi-pencil"></i> Ubah Data
                                         </button>
                                         </template>
                                         <template x-if="Number(testConnectionPermission) === 1">
-                                            <button class="btn btn-light-info btn-sm" data-bs-toggle="tooltip"
+                                            <button class="btn btn-light-info btn-sm mb-4" data-bs-toggle="tooltip"
                                                     data-bs-placement="top" title="Test Koneksi Mesin"
                                                 @click="testConnection(device.id)"
                                         >
                                                 <i class="bi bi-ethernet"></i>
+                                                Tes Koneksi
                                         </button>
                                         </template>
 
-                                        <template x-if="Number(queryDataPermission) === 1">
-                                        <button class="btn btn-light-danger btn-sm"
+                                        <button class="btn btn-light-danger btn-sm mb-4"
                                                 data-bs-toggle="tooltip"
                                                 data-bs-placement="top" title="Tarik Data"
-                                                @click="showDeviceInfo(device.id)"
+                                                @click="getUsers(device.id)"
                                         >
-                                            <i class="bi bi-cloud-arrow-down-fill"></i>
+                                            <i class="bi bi-info-circle-fill"></i>
+                                            Ambil Data
                                         </button>
-                                        </template>
                                     </td>
                                 </tr>
                             </template>
@@ -141,12 +175,39 @@
                 </div>
             </div>
         </div>
+            </div>
     </div>
+
+
+        <div>
+        </div>
+    </div>
+
+
+
     @include('components.toast')
 @endsection
 @push('script')
     <script defer>
         $('.date').flatpickr();
+
+
+        // Select elements
+        const button = document.getElementById('kt_docs_toast_toggle_button');
+        const toastElement = document.getElementById('kt_docs_toast_toggle');
+
+        // Get toast instance --- more info: https://getbootstrap.com/docs/5.1/components/toasts/#getinstance
+        const toast = bootstrap.Toast.getOrCreateInstance(toastElement);
+
+        // Handle button click
+        button.addEventListener('click', e => {
+            e.preventDefault();
+
+            // Toggle toast to show --- more info: https://getbootstrap.com/docs/5.1/components/toasts/#show
+            toast.show();
+        });
+
+
 
         function fpDevicesData() {
             return {
@@ -164,17 +225,19 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
+                userList: [],
                 form: document.getElementById('form-fp-device'),
                 modalForm: new bootstrap.Modal(document.getElementById('modal-fp-device')),
                 deleteForm: document.getElementById('deleteForm'),
                 formQueryAttLog: document.getElementById('form-query-attlog'),
                 modalQueryAttLog: new bootstrap.Modal(document.getElementById('modal-query-attlog')),
+                filterForm: document.getElementById('form-filter'),
                 async init() {
                     const resp = await axios.get('/adms/fp-devices/data');
                     this.devices = resp.data
                     this.startIndex = this.devices.from;
                     this.isLoading = false;
-                    await this.getBranchData();
+                    await this.getMainBranches();
                 },
                 async paginationEndPoint(url) {
                     if (url) {
@@ -272,11 +335,40 @@
                         this.buttonLoading = false;
                     }
                 },
+                async filter() {
+                    const branchId = $('#branch-id-filter').val();
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/adms/fp-devices/filter', {
+                            params: {branch_id: branchId},
+                        })
+                        this.devices = resp.data;
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
+
+                },
+                async getUsers(id) {
+                    this.buttonLoading = true;
+                    try {
+                        const resp = await axios.post(`/adms/fp-devices/get-users/${id}`);
+                        this.userList = resp.data;
+                        await showAlert('success', 'Koneksi ke mesin sukses');
+                        await this.init();
+                    } catch (error) {
+                        console.error(error);
+                        await showAlert('error', 'Koneksi Gagal');
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
                 async queryAttLog(id) {
                     this.buttonLoading = true;
                     try {
                         await axios.post(`/adms/fp-devices/attendance-log/${id}`, new FormData(this.formQueryAttLog));
-                        await showAlert('success', 'Data Kehadiran telah di masukkan kedalam antrian dan akan berjalan di latar belakang.', 10000);
+                        await showAlert('success', 'Data Kehadiran telah di masukkan kedalam antrian dan akan berjalan di latar belakang.');
                         this.formQueryAttLog.reset();
                         this.modalQueryAttLog.hide();
                         await this.init();
@@ -287,12 +379,12 @@
                         this.buttonLoading = false;
                     }
                 },
-                async getBranchData() {
-                    $(".branch-select2").select2({
+                async getMainBranches() {
+                    $(".main-branches-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Cabang",
                         ajax: {
-                            url: '/adms/fp-devices/branch/data',
+                            url: '/select2/main-branches-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -306,7 +398,7 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/adms/fp-devices/branch/selected/${this.editVal.id}`,
+                        url: `/select2/selected-branch/${this.editVal.branch_id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedBranch.append(option).trigger('change').trigger({

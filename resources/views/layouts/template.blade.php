@@ -40,6 +40,7 @@
 </div>
 
 <div class="d-flex flex-column flex-root">
+
     <div class="page d-flex flex-row flex-column-fluid">
         @include('layouts.partials.aside')
         <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">

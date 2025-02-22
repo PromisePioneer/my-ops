@@ -1101,18 +1101,18 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('/fp-devices')->group(function () {
             Route::get('/', [FpDevicesController::class, 'index']);
             Route::get('/data', [FpDevicesController::class, 'data']);
+            Route::get('/filter', [FpDevicesController::class, 'filter']);
             Route::post('/{fpDevice}', [FpDevicesController::class, 'update']);
             Route::get('/search', [FpDevicesController::class, 'search']);
             Route::post('/', [FpDevicesController::class, 'store']);
             Route::get('/{fpDevice}', [FpDevicesController::class, 'edit']);
-            Route::get('/branch/data', [FpDevicesController::class, 'getBranchData']);
-            Route::get('/branch/selected/{fpDevice}', [FpDevicesController::class, 'selectedBranchData']);
             Route::post('/destroy', [FpDevicesController::class, 'destroy']);
 
             Route::post('/test-connection/{fpDevice}', [FpDevicesController::class, 'testConnection']);
             Route::post('/attendance-log/{fpDevice}', [FpDevicesController::class, 'getAttendances']);
 
             Route::get('/restart-device/{fpDevice}', [FpDevicesController::class, 'restartDevice']);
+            Route::post('/get-users/{fpDevice}', [FpDevicesController::class, 'getUser']);
         });
 
         Route::prefix('/work-time')->group(function () {

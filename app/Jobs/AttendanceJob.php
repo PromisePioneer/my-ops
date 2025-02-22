@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use AllowDynamicProperties;
+use App\Models\AttendanceJobProgress;
 use App\Models\Attendances;
 use App\Models\FpDevice;
 use Carbon\Carbon;
@@ -16,8 +17,6 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
 {
     use Queueable, InteractsWithQueue, SerializesModels;
 
-
-    protected $zk;
     protected FpDevice $fpDevice;
     protected $startDate;
     protected $endDate;
@@ -41,6 +40,10 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
         $zk = new ZKTeco($this->fpDevice->ip_address, 4370);
         $connected = $zk->connect();
         if ($connected) {
+            $jobProgress = AttendanceJobProgress::create([
+                'device_id' => $this->fpDevice->id,
+                'status' => 'Pending',
+            ]);
             $chunk = array_chunk($zk->getAttendance(), 100);
             foreach ($chunk as $item) {
                 foreach ($item as $record) {
@@ -58,6 +61,10 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
                     }
                 }
             }
+
+            $jobProgress->update([
+                'status' => 'Sukses',
+            ]);
         }
         $zk->disconnect();
     }

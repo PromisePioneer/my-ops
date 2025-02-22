@@ -21,7 +21,7 @@ class FpDeviceSeeder extends Seeder
         FpDevice::create([
             'branch_id' => $this->branch->where('name', 'Dumai')->first()->id,
             'name' => 'Kantor',
-            'ip_address' => '203.153.21.78',
+            'ip_address' => '103.102.248.163',
             'serial_number' => 'AEWD233960062',
         ]);
 

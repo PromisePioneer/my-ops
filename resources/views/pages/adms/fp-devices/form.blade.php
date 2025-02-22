@@ -14,8 +14,8 @@
                     <div class="mb-10">
                         <label for="branch_id" class="required form-label">Cabang</label>
                         <select name="branch_id" id="selected-branch"
-                                class="form-select form-select-solid branch-select2"
-                                data-dropdown-parent="#modal-create">
+                                class="form-select form-select-solid main-branches-select2"
+                                data-dropdown-parent="#modal-fp-device">
                             <option value="0">Pilih</option>
                         </select>
                     </div>

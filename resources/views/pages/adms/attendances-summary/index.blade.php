@@ -11,7 +11,8 @@
                     <div class="col-lg-4">
                         @can('Filter Data Riwayat Absensi Berdasarkan Cabang')
                             <label for="name" class="form-label">Cabang</label>
-                            <select class="form-select form-select-solid form-select-sm branch-select2" name="branch_id"
+                            <select class="form-select form-select-solid form-select-sm main-branches-select2"
+                                    name="branch_id"
                                     id="branch_id">
                                 <option></option>
                             </select>
@@ -164,7 +165,7 @@
                 async init() {
                     await this.getAttendanceSummary();
                     await this.getMonths();
-                    await this.getBranchData();
+                    await this.getMainBranches();
                     await this.getRoleData();
                     await this.getDepartmentData();
                     await this.getFpDeviceData();
@@ -183,12 +184,12 @@
                         }
                     });
                 },
-                async getBranchData() {
-                    $(".branch-select2").select2({
+                async getMainBranches() {
+                    $(".main-branches-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Cabang",
                         ajax: {
-                            url: '/adms/attendances-summary/branch/data',
+                            url: '/select2/main-branches-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
