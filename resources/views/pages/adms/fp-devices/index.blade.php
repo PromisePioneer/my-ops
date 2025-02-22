@@ -160,9 +160,9 @@
                                                 </template>
 
                                                 <button class="btn btn-light-danger btn-sm mb-4"
-                                                        data-bs-toggle="tooltip"
                                                         data-bs-placement="top" title="Tarik Data"
-                                                        @click="queryAttLog(device.id)"
+                                                        @click="edit(device.id)" data-bs-target="#modal-query-attlog"
+                                                        data-bs-toggle="modal"
                                                 >
                                                     <i class="bi bi-info-circle-fill"></i>
                                                     Ambil Data
