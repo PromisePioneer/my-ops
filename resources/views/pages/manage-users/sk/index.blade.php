@@ -36,10 +36,10 @@
                     <div class="card-body pt-0">
                         <div id="kt_roles_view_table_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
                             <div class="table-responsive">
-                                <table class="table align-middle table-row-dashed fs-6 gy-5 mb-0 dataTable no-footer"
+                                <table class="table align-middle table-bordered fs-6 gy-5 mb-0 dataTable no-footer"
                                        id="kt_roles_view_table">
                                     <thead>
-                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                    <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                         <th class="min-w-50px sorting" tabindex="0" aria-controls="kt_roles_view_table"
                                             rowspan="1" colspan="1" aria-label="ID: activate to sort column ascending">
                                             Nomor SK
@@ -92,7 +92,7 @@
                                         </tbody>
                                     </template>
                                     <template x-for="sk in skData.data" :key="sk.id">
-                                        <tbody class="fw-bold">
+                                        <tbody class="fw-bold text-center">
                                         <tr>
                                             <td x-text="sk.sk_number"></td>
                                             <td>
@@ -140,6 +140,7 @@
 @endsection
 @push('script')
     <script>
+        $('.date').flatpickr();
         function skData() {
             return {
                 isLoading: false,
@@ -162,7 +163,7 @@
                         });
                         this.skData = resp.data
                     } catch (e) {
-                        console.log(e)
+                        console.log(e);
                     } finally {
                         this.isLoading = false;
                     }
@@ -177,13 +178,17 @@
                     this.startIndex = resp.data.from
                     this.skData = resp.data
                 },
-                async save() {
+                async save(id = null) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/manage-users/sk/`, new FormData(this.formCreate))
+                        if (!id) {
+                            await axios.post(`/manage-users/sk/`, new FormData(this.form))
+                        } else {
+                            await axios.post(`/manage-users/sk/${id}`, new FormData(this.form))
+                        }
                         await showAlert('success', 'Data berhasil disimpan')
-                        await this.modalCreate.hide();
-                        await this.formCreate.reset();
+                        await this.modalForm.hide();
+                        await this.form.reset();
                         await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
@@ -231,6 +236,8 @@
                 },
                 async getUserData() {
                     $(".users-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih karyawan",
                         ajax: {
                             url: '/manage-users/sk/users/data',
                             dataType: "json",
@@ -244,6 +251,8 @@
 
                 async getMainBranches() {
                     $(".main-branches-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Cabang",
                         ajax: {
                             url: '/select2/main-branches-data',
                             dataType: "json",
@@ -256,6 +265,8 @@
                 },
                 async getRolesData() {
                     $(".roles-select2").select2({
+                        placeholder: "Pilih Jabatan",
+                        allowClear: true,
                         ajax: {
                             url: '/manage-users/sk/roles/data',
                             dataType: "json",

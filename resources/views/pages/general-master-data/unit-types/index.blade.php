@@ -1,5 +1,6 @@
 @extends('layouts.template')
-@section('page-title', 'Data Satuan')
+@section('page-title', 'Satuan')
+@section('breadcrumbs', 'Master Umum - Satuan')
 @section('content')
     <div x-data="unitTypesData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">

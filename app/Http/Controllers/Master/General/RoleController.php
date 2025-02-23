@@ -8,7 +8,7 @@ use App\Http\Requests\Master\Role\RoleRequest;
 use App\Models\Department;
 use App\Models\Role;
 use App\Models\RoleHasDepartment;
-use App\Service\User\RoleService;
+use App\Service\User\Role\RoleService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -33,7 +33,7 @@ use Throwable;
     public function index(): View
     {
         $this->authorize('view', Role::class);
-        return view('pages.general-master-data.role.index');
+        return view('pages.general-master-data.roles.index');
     }
 
     /**
@@ -61,7 +61,7 @@ use Throwable;
     public function create(): View
     {
         $this->authorize('create', Role::class);
-        return view('pages.general-master-data.role.create');
+        return view('pages.general-master-data.roles.create');
     }
 
 
@@ -129,7 +129,7 @@ use Throwable;
     public function edit(Role $role): View
     {
         $this->authorize('update', $role);
-        return view('pages.general-master-data.role.edit', compact('role'));
+        return view('pages.general-master-data.roles.edit', compact('role'));
     }
 
     /**
@@ -178,5 +178,11 @@ use Throwable;
             'message' => 'data sukses dihapus!',
             'data' => $role,
         ]);
+    }
+
+
+    public function getRoles(Request $request): JsonResponse
+    {
+        return response()->json($this->roleService->rolesData($request));
     }
 }

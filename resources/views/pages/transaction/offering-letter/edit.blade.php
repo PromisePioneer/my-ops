@@ -14,7 +14,7 @@
         </style>
     @endpush
     <div class="d-flex flex-column flex-lg-row" x-data="generateOfferingLetter">
-        @include('pages.general-master-data.contact.form')
+        @include('pages.general-master-data.contacts.form')
         @include('pages.general-master-data.unit-types.form')
         @include('pages.general-master-data.skl.form')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
@@ -86,7 +86,7 @@
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td class="pe-7" style='text-align:center; vertical-align:middle'>
                                             <select
-                                                :class="`form-select form-select-solid service-categories-select2`"
+                                                    :class="`form-select form-select-solid service-categories-select2`"
                                                     :name="`data[${index}][service_category_id]`"
                                                     :id="`selectedServices-${index}`"
                                                     x-model="field.service_category_id">
@@ -482,8 +482,8 @@
                     if (this.offeringLetterProductService.length > 1) {
                         this.offeringLetterProductService.splice(index, 1);
                         this.offeringLetterProductService.forEach((resp, index) => {
-                                this.selectedServiceCategories(resp, index);
-                                this.selectedUnitTypes(resp, index);
+                            this.selectedServiceCategories(resp, index);
+                            this.selectedUnitTypes(resp, index);
                         });
                     }
                 },

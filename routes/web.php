@@ -15,6 +15,8 @@ use App\Http\Controllers\Accounting\Transaction\FabController;
 use App\Http\Controllers\Accounting\Transaction\InitialBalanceController;
 use App\Http\Controllers\Accounting\Transaction\InvoiceController;
 use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
+use App\Http\Controllers\Accounting\Transaction\PurchaseOrderController;
+use App\Http\Controllers\Accounting\VendorPayrollController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\BAAController;
@@ -83,15 +85,13 @@ use App\Http\Controllers\Master\General\RoleController;
 use App\Http\Controllers\Master\General\ServicesCategoryController;
 use App\Http\Controllers\Master\General\SKLController;
 use App\Http\Controllers\Master\Operational\JointClosureCodeController;
+use App\Http\Controllers\Master\Operational\PSBController;
 use App\Http\Controllers\Master\Operational\SupplierController;
-use App\Http\Controllers\PSBController;
-use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
 use App\Http\Controllers\UserProfile\UserProfileController;
 use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
 use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
-use App\Http\Controllers\VendorPayrollController;
 use App\Http\Controllers\WarehouseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -301,10 +301,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/search', [AreaController::class, 'search']);
             Route::get('/filter', [AreaController::class, 'filter']);
             Route::post('/', [AreaController::class, 'store']);
-            Route::get('/branch/data', [AreaController::class, 'getBranchData']);
-            Route::get('/branch/selected/{area}', [AreaController::class, 'selectedBranch']);
-            Route::get('/department/data', [AreaController::class, 'departmentData']);
-            Route::get('/department/selected/{area}', [AreaController::class, 'selectedDepartment']);
             Route::post('/destroy', [AreaController::class, 'destroy']);
             Route::get('/{area}', [AreaController::class, 'edit']);
             Route::post('/{area}', [AreaController::class, 'update']);
@@ -424,12 +420,9 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('broadband-packets')->group(function () {
             Route::get('/', [BroadbandPacketController::class, 'index']);
             Route::get('/data', [BroadbandPacketController::class, 'data']);
-            Route::get('/branches/data', [BroadbandPacketController::class, 'branchData']);
-            Route::get('/filter', [BroadbandPacketController::class, 'filter']);
             Route::get('/search', [BroadbandPacketController::class, 'search']);
             Route::post('/', [BroadbandPacketController::class, 'store']);
             Route::get('/{broadbandPacket}', [BroadbandPacketController::class, 'edit']);
-            Route::get('/branch/selected/{broadbandPacket}', [BroadbandPacketController::class, 'selectedBranch']);
             Route::post('/destroy', [BroadbandPacketController::class, 'destroy']);
             Route::post('/{broadbandPacket}', [BroadbandPacketController::class, 'update']);
         });
@@ -1191,16 +1184,12 @@ Route::group(['middleware' => ['auth']], static function () {
 
         Route::prefix('allowances/position')->group(function () {
             Route::get('/', [PositionAllowancesController::class, 'index']);
+            Route::get('/filter', [PositionAllowancesController::class, 'filter']);
             Route::get('/data', [PositionAllowancesController::class, 'data']);
-            Route::get('/user/data', [PositionAllowancesController::class, 'getUser']);
-            Route::get(
-                '/user/selected/{jobInformation}',
-                [PositionAllowancesController::class, 'getSelectedUser']
-            );
             Route::get('/search', [PositionAllowancesController::class, 'search']);
             Route::post('/', [PositionAllowancesController::class, 'store']);
-            Route::get('/{jobInformation}', [PositionAllowancesController::class, 'edit']);
-            Route::post('/{jobInformation}', [PositionAllowancesController::class, 'update']);
+            Route::get('/{user}', [PositionAllowancesController::class, 'show']);
+            Route::post('/{user}', [PositionAllowancesController::class, 'updateOrStore']);
         });
 
 
@@ -1372,6 +1361,12 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/selected-branch/{branch}', [BranchController::class, 'selectedBranch']);
         Route::get('/companies-data', [CompanyController::class, 'getCompanies']);
         Route::get('/selected-company/{company}', [CompanyController::class, 'selectedCompany']);
+        Route::get('/roles-data', [RoleController::class, 'getRoles']);
+        Route::get('/selected-role/{role}', [RoleController::class, 'selectedRole']);
+        Route::get('/work-times-data', [WorkTimeController::class, 'getWorkTimes']);
+        Route::get('/selected-work-time/{workTime}', [WorkTimeController::class, 'selectedWorkTime']);
+        Route::get('/departments-data', [DepartmentController::class, 'getDepartments']);
+        Route::get('/selected-department/{department}', [DepartmentController::class, 'selectedDepartment']);
     });
 });
 

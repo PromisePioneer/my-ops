@@ -8,7 +8,7 @@ use App\Http\Requests\SPRequest;
 use App\Models\Branch;
 use App\Models\SP;
 use App\Models\User;
-use App\Service\User\SP\SpService;
+use App\Service\User\SP\SPService;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -24,7 +24,7 @@ use Throwable;
     public readonly int $perPage;
     public function __construct()
     {
-        $this->spService = new SPService();
+        $this->SPService = new SPService();
         $this->user = new User();
         $this->branch = new Branch();
     }
@@ -44,7 +44,7 @@ use Throwable;
     public function data(Request $request): JsonResponse
     {
         $this->authorize('view', SP::class);
-        return response()->json($this->spService->data($request));
+        return response()->json($this->SPService->data($request));
     }
 
     /**
@@ -53,7 +53,7 @@ use Throwable;
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', SP::class);
-        return response()->json($this->spService->search($request));
+        return response()->json($this->SPService->search($request));
     }
 
     /**
@@ -62,7 +62,7 @@ use Throwable;
     public function getUserData(Request $request): JsonResponse
     {
         $this->authorize('create', SP::class);
-        return response()->json($this->spService->getEmployeeData($request));
+        return response()->json($this->SPService->getEmployeeData($request));
     }
 
     public function filter(Request $request)
@@ -71,7 +71,7 @@ use Throwable;
         $year = $request->year;
         $month = $request->month;
 
-        return response()->json($this->spService->filter($request, $branchId, $year, $month));
+        return response()->json($this->SPService->filter($request, $branchId, $year, $month));
     }
 
     /**
@@ -80,7 +80,7 @@ use Throwable;
     public function getSPPIC(Request $request): JsonResponse
     {
         $this->authorize('create', SP::class);
-        return response()->json($this->spService->getSPPic($request));
+        return response()->json($this->SPService->getSPPic($request));
     }
 
     /**
@@ -89,40 +89,7 @@ use Throwable;
      */
     public function store(SPRequest $request): JsonResponse
     {
-        $currentSP = SP::where('user_id', $request->user_id)
-            ->where('expired_if_has_new_sp', false)
-            ->where('end_date', '>', Carbon::now())
-            ->first();
-
-
-        $punishedBy = User::where('id', $request->punished_by)->first();
-
-
-        $endData = Carbon::parse($request->start_date)->addMonths(6);
-        DB::transaction(function () use ($request, $currentSP, $endData, $punishedBy) {
-            $sp = SP::create([
-                'start_date' => $request->start_date,
-                'end_date' => $endData,
-                'branch_id' => $punishedBy->branch_id,
-                'user_id' => $request->user_id,
-                'sp_number' => $this->spService->generateSpNumber($request),
-                'sp_type' => $request->sp_type,
-                'created_by' => $request->user()->id,
-                'list_of_reason' => json_encode($request['data']),
-                'punished_by' => $request->punished_by
-            ]);
-
-            if ($currentSP) {
-                $currentSP->expired_if_has_new_sp = true;
-                $currentSP->save();
-            }
-
-            if ($currentSP?->sp_type === 'SP-3') {
-                $user = User::where('id', $sp->user_id)->first();
-                $user->active = false;
-                $user->save();
-            }
-        });
+        $this->SPService->store($request);
 
         return response()->json(['message' => 'Data berhasil disimpan.']);
     }
@@ -141,7 +108,7 @@ use Throwable;
      */
     public function update(SPRequest $request, SP $sp): JsonResponse
     {
-        $this->spService->update($request, $sp);
+        $this->SPService->update($request, $sp);
 
         return response()->json([
             'message' => 'Data berhasil disimpan.',
@@ -206,8 +173,12 @@ use Throwable;
         return response()->json($sp);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function exportToPDF(SP $sp): Response
     {
+        $this->authorize('viewDetail', $sp);
         $punishedBy = User::with('roles')->where('id', $sp->punished_by)->first();
         $operationalManager = User::role('Operational Manager')->with('roles')->first();
 
@@ -236,6 +207,6 @@ use Throwable;
 
     public function show(SP $sp): JsonResponse
     {
-        return response()->json($this->spService->showSPDetail($sp));
+        return response()->json($this->SPService->showSPDetail($sp));
     }
 }

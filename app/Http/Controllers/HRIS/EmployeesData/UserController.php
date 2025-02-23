@@ -136,7 +136,7 @@ use Maatwebsite\Excel\Facades\Excel;
      */
     public function detail(User $user): View
     {
-        $this->authorize('viewDetail', User::class);
+        $this->authorize('viewDetail', $user);
         $role = Role::with('department')
             ->where('id', $user->roles[0]->id ?? null)
             ->first();

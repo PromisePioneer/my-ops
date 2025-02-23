@@ -9,7 +9,7 @@
                 </div>
             </div>
 
-            <form id="form-sk" @submit.prevent="save()">
+            <form id="form-sk" @submit.prevent="save(editVal?.id)">
                 <div class="modal-body">
                     <div class="row mb-4">
                         <div class="col-lg-6">
@@ -17,7 +17,7 @@
                             <select name="user_id" id="selected-user"
                                     class="form-select form-select-solid users-select2"
                                     data-dropdown-parent="#modal-sk">
-                                <option>Pilih</option>
+                                <option></option>
                             </select>
                         </div>
                         <div class="col-lg-6">
@@ -33,15 +33,15 @@
                     <div class="row mb-4">
                         <div class="col-lg-6">
                             <label for="user_id" class="required form-label">Tanggal</label>
-                            <input type="date" name="date" id="date" class="form-control form-control-solid"
-                                   :value="editVal?.date">
+                            <input type="date" name="date" id="date" class="form-control form-control-solid date"
+                                   :value="editVal?.date" placeholder="Tanggal">
                         </div>
                         <div class="col-lg-6">
                             <label for="user_id" class="required form-label">Cabang</label>
                             <select name="branch_id" id="selected-branch"
                                     class="form-select form-select-solid main-branches-select2"
                                     data-dropdown-parent="#modal-sk">
-                                <option>Pilih Cabang</option>
+                                <option></option>
                             </select>
                         </div>
                     </div>
@@ -51,7 +51,7 @@
                             <select name="role_id" id="role_id"
                                     class="form-select form-select-solid roles-select2"
                                     data-dropdown-parent="#modal-sk">
-                                <option>Pilih Jabatan</option>
+                                <option></option>
                             </select>
                         </div>
                     </div>

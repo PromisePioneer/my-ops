@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Area;
 
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\AreaRequest;
+use App\Http\Requests\Master\General\Area\AreaFilterRequest;
+use App\Http\Requests\Master\General\Area\AreaRequest;
 use App\Models\Area;
-use App\Models\Branch;
 use App\Models\Department;
 use App\Service\Master\General\Area\AreaService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -18,14 +18,13 @@ use Illuminate\View\View;
 {
     public function __construct()
     {
-        $this->branch = new Branch();
         $this->areaService = new AreaService();
         $this->department = new Department();
     }
 
     public function index(): View
     {
-        return view('pages.general-master-data.area.index');
+        return view('pages.general-master-data.areas.index');
     }
 
     /**
@@ -35,28 +34,6 @@ use Illuminate\View\View;
     {
         $this->authorize('view', Area::class);
         return response()->json($this->areaService->data($request));
-    }
-
-
-    public function departmentData(Request $request)
-    {
-        $search = $request->input('search');
-        $department = Department::orderby('name', 'asc')->whereIn('name', ['Vendor', 'Area'])->when(!empty($search), function ($query) use ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
-        });
-
-        return $department->get()->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'text' => $item->name,
-            ];
-        })->toArray();
-    }
-
-
-    public function selectedDepartment(Area $area): JsonResponse
-    {
-        return response()->json($this->department->getSelectedData($area->department_id));
     }
 
     /**
@@ -69,7 +46,7 @@ use Illuminate\View\View;
     }
 
 
-    public function filter(Request $request): JsonResponse
+    public function filter(AreaFilterRequest $request): JsonResponse
     {
         return response()->json($this->areaService->filter($request));
     }
@@ -105,28 +82,6 @@ use Illuminate\View\View;
         return response()->json(['message' => 'Data berhasil diubah.']);
     }
 
-
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function getBranchData(Request $request): JsonResponse
-    {
-        $this->authorize('create', Area::class);
-        $this->authorize('update', Area::class);
-        $branch = $this->branch->getData($request);
-        return response()->json($branch);
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function selectedBranch(Area $area): JsonResponse
-    {
-        $this->authorize('update', $area);
-        return response()->json($this->branch->getSelectedData($area->branch_id));
-    }
-
     /**
      * @throws AuthorizationException
      */
@@ -149,6 +104,6 @@ use Illuminate\View\View;
     public function detail(Area $area): View
     {
         $this->authorize('viewDetail', $area);
-        return view('pages.general-master-data.area.detail.index', compact('area'));
+        return view('pages.general-master-data.areas.detail.index', compact('area'));
     }
 }

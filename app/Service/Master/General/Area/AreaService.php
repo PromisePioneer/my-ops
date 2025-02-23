@@ -3,7 +3,7 @@
 namespace App\Service\Master\General\Area;
 
 use AllowDynamicProperties;
-use App\Http\Requests\AreaRequest;
+use App\Http\Requests\Master\General\Area\AreaRequest;
 use App\Models\Area;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -19,25 +19,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
     public function data(Request $request): LengthAwarePaginator
     {
-        $areaQuery = Area::with('branch', 'department')->withCount('areaHasUser')
-            ->where(function ($query) use ($request) {
-                if ($request->user()->hasRole('Head Engineer')) {
-                    $query->whereHas('areaHasUser.user', function ($query) use ($request) {
-                        $query->where('user_id', $request->user()->id);
-                    });
-                }
-                if ($request->user()->hasRole('Branch Manager')) {
-                    $query->where('branch_id', $request->user()->branch_id);
-                }
-
-                if ($request->user()->hasRole('Project Controller & Vendor Supervisor')) {
-                    $query->whereHas('department', function ($query) use ($request) {
-                        $query->where('name', 'Vendor');
-                    });
-                }
-            })->paginate(self::$perPage);
-
-        return self::formattedData($areaQuery);
+        $query = Area::with('branch', 'department')->withCount('areaHasUser');
+        $aclFilter = AreaACLQuery::apply($query, $request)->paginate(self::$perPage);
+        return self::formattedData($aclFilter);
     }
 
 
@@ -57,15 +41,11 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
     public function filter(Request $request): LengthAwarePaginator
     {
-        $branchId = $request->branch_id;
-        $filterQuery = Area::with('branch')
-            ->when(!empty($branchId), function ($query) use ($branchId) {
-                $query->whereHas('branch', function ($query) use ($branchId) {
-                    $query->where('id', $branchId);
-                });
-            })->paginate(self::$perPage);
+        $query = Area::with('branch');
+        $areaFilterQuery = AreaFilterQuery::apply($query, $request);
+        $aclFilterQuery = AreaACLQuery::apply($areaFilterQuery, $request)->paginate(self::$perPage);
 
-        return self::formattedData($filterQuery);
+        return self::formattedData($aclFilterQuery);
     }
 
 

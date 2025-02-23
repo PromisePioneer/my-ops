@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
+use Laravel\Scout\Searchable;
 
 class BroadbandPacket extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $table = 'broadband_packets';
     protected $fillable = [
@@ -18,6 +19,16 @@ class BroadbandPacket extends Model
         'capacity',
         'price',
     ];
+
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'capacity' => $this->capacity,
+            'price' => $this->price,
+        ];
+    }
 
 
     public function branch(): BelongsTo

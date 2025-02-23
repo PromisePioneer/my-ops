@@ -2,6 +2,7 @@
 
 namespace App\Service\Attendances;
 
+use App\Http\Requests\AttendancesSummaryFilterByDateRequest;
 use App\Models\AttendancesSummary;
 use App\Models\EmployeeSchedule;
 use App\Models\LeaveAndPermission;
@@ -212,7 +213,7 @@ class AttendanceSummaryDetailService
     }
 
 
-    public function filterByDate(Request $request, User $user)
+    public function filterByDate(AttendancesSummaryFilterByDateRequest $request, User $user)
     {
         $startDate = $request->start_date;
         $endDate = $request->end_date;

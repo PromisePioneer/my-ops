@@ -10,7 +10,7 @@ use App\Models\Account;
 use App\Models\Asset;
 use App\Models\Branch;
 use App\Service\Assets\AssetDepreciationService;
-use App\Service\Master\AssetService;
+use App\Service\Master\Finance\AssetService;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;

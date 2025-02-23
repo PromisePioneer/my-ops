@@ -1,5 +1,6 @@
 @extends('layouts.template')
-@section('page-title', 'Data Kategori Layanan')
+@section('page-title', 'Kategori Layanan')
+@section('breadcrumbs', 'Master Umum - Kategori Layanan')
 @section('content')
 
     <div x-data="servicesCategoriesData()">

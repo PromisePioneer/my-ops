@@ -25,15 +25,10 @@ class AreaDetailService
 
     public function search(Request $request, Area $area): LengthAwarePaginator
     {
-        $search = $request->search;
-        $searchQuery = UserHasArea::with('user', 'user.roles')
-            ->whereHas('area', function ($query) use ($request, $area) {
-                $query->where('area_id', $area->id);
-            })->when(!empty($search), function ($query) use ($search) {
-                $query->whereHas('user', function ($query) use ($search) {
-                    $query->where('name', 'like', '%' . $search . '%');
-                });
-            })->paginate(self::$perPage);
+        $search = $request->input('search');
+        $searchQuery = UserHasArea::search($search)->query(callback: static function ($query) use ($area) {
+            $query->join('users', 'users.id', '=', 'user_has_area.user_id');
+        })->paginate(self::$perPage);
 
         return self::formattedData($searchQuery);
     }

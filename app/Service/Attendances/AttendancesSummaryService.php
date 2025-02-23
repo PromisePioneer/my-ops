@@ -2,10 +2,10 @@
 
 namespace App\Service\Attendances;
 
+use AllowDynamicProperties;
 use App\Models\AttendancesSummary;
 use App\Models\EmployeeSchedule;
 use App\Models\LeaveAndPermission;
-use App\Models\NationalHoliday;
 use App\Models\User;
 use App\Models\WorkTime;
 use App\Service\HelperService\FinancialClosePeriodService;
@@ -14,101 +14,32 @@ use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 
-class AttendancesSummaryService
+#[AllowDynamicProperties] class AttendancesSummaryService
 {
-
-    private FinancialClosePeriodService $financialClosePeriodService;
     private static int $perPage = 10;
 
     public function __construct()
     {
         $this->financialClosePeriodService = new FinancialClosePeriodService();
+        $this->startDate = $this->financialClosePeriodService->startDate();
+        $this->endDate = $this->financialClosePeriodService->endDate();
     }
 
     public function data(Request $request): LengthAwarePaginator
     {
-        $startDate = $this->financialClosePeriodService->startDate();
-        $endDate = $this->financialClosePeriodService->endDate();
-
-        $data = User::with([
-            'attendancesSummary' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('date', [$startDate, $endDate]);
+        $query = User::with([
+            'attendancesSummary' => function ($query) {
+                $query->whereBetween('date', [$this->startDate, $this->endDate]);
             }, 'roles'
         ])->where('active', 1);
 
-        if ($request->user()->hasAnyRole('NOC Supervisor', 'NOC Staff')) {
-            $data->whereHas('roles', function ($query) {
-                $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
-            })->where(function ($query) {
-                $query->whereNull('branch_id')->orWhere('branch_id', 1);
-            });
-        }
-
-        if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner', 'Legal & Corporate Commissioner')) {
-            $data->paginate(self::$perPage);
-        }
-
-
-        if ($request->user()->hasAnyRole('Head Engineer', 'Senior Engineer')) {
-            $data->whereHas('userHasArea', function ($query) use ($request) {
-                $query->where('area_id', $request->user()->userHasArea->area_id);
-            })->where(function ($query) use ($request) {
-                $query->where('branch_id', $request->user()->branch_id)
-                    ->where('active', 1);
-            });
-        }
-
-        if ($request->user()->hasAnyRole('Customer Service Leader')) {
-            $data->whereHas('roles', function ($query) use ($request) {
-                $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff', 'After Sales Customer Service']);
-            })->where(function ($query) use ($request) {
-                $query->whereNull('branch_id')->orWhereIn('branch_id', [1])
-                    ->where('active', 1);;
-            });
-        }
-
-
-        if ($request->user()->hasAnyRole('Finance & Accounting Supervisor')) {
-            $data->whereHas('roles', function ($query) use ($request) {
-                $query->whereIn('name', ['Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff', 'Stocker Staff', 'Inventory Controller Supervisor']);
-            })->where(function ($query) use ($request) {
-                $query->whereNull('branch_id')->orWhereIn('branch_id', [1])->where('active', 1);;
-            });
-        }
-
-
-        if ($request->user()->hasAnyRole('Head Of Electrical Engineer')) {
-            $data->whereHas('roles', function ($query) use ($request) {
-                $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer']);
-            })->whereNull('branch_id');
-        }
-
-
-        if ($request->user()->hasRole('Branch Manager')) {
-            $data->where('branch_id', $request->user()->branch_id)->paginate(self::$perPage);
-        }
-
-
-        if ($request->user()->hasRole('KU Head Engineer')) {
-            $data->whereHas('roles', function ($query) use ($request) {
-                $query->whereIn('name', ['KU Head Engineer', 'KU Engineer']);
-            });
-        }
-
-
-        if ($request->user()->hasRole('Quality Controller Supervisor')) {
-            $data->whereHas('roles', function ($query) use ($request) {
-                $query->whereIn('name', ['Quality Controller Supervisor', 'Quality Control Staff']);
-            });
-        }
-
-
+        $data = AttendancesACLFilter::apply($query, $request);
         $attendanceSummary = $data->paginate(self::$perPage)->onEachSide(1);
-        return self::formattedData($attendanceSummary, $startDate, $endDate);
+        return self::formattedData($attendanceSummary, $this->startDate, $this->endDate);
     }
 
 
-    public function getPeriod($startDate, $endDate, $user)
+    public function getPeriod($startDate, $endDate, $user): array
     {
         $period = CarbonPeriod::create($startDate, $endDate);
 
@@ -200,27 +131,20 @@ class AttendancesSummaryService
         return $user;
     }
 
-
-    public function getHoliday($user, $startDate, $endDate)
+    public function leavesQuery($user, $startDate, $endDate, $leaveStatus)
     {
-        $holiday = NationalHoliday::where(function ($query) use ($startDate, $endDate) {
-            $query->whereBetween('date', [$startDate, $endDate]);
-        })->get();
-
-
-        dd($holiday);
-    }
-
-
-    public function getLeaves($user, $startDate, $endDate): int
-    {
-
-        $leaveAndPermission = LeaveAndPermission::where('user_id', $user->id)
-            ->where('leaves_status', 'Cuti')
+        return LeaveAndPermission::where('user_id', $user->id)
+            ->where('leaves_status', $leaveStatus)
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('start_date', [$startDate, $endDate])
                     ->orWhereBetween('end_date', [$startDate, $endDate]);
-            })->get();
+            });
+    }
+
+    public function getLeaves($user, $startDate, $endDate): int
+    {
+        $leaveStatus = 'Cuti';
+        $leaveAndPermission = $this->leavesQuery($user, $startDate, $endDate, $leaveStatus)->get();
 
         $leavePeriods = [];
 
@@ -236,7 +160,7 @@ class AttendancesSummaryService
             $formattedDate = Carbon::parse($date)->format('Y-m-d');
             $leaves[$formattedDate] = collect([
                 'leaves_date' => $formattedDate,
-                'status' => 'Sakit',
+                'status' => 'Cuti',
             ]);
         }
 
@@ -246,12 +170,8 @@ class AttendancesSummaryService
     public function getSick($user, $startDate, $endDate): int
     {
 
-        $leaveAndPermission = LeaveAndPermission::where('user_id', $user->id)
-            ->where('leaves_status', 'Sakit')
-            ->where(function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('start_date', [$startDate, $endDate])
-                    ->orWhereBetween('end_date', [$startDate, $endDate]);
-            })->get();
+        $leaveStatus = 'Sakit';
+        $leaveAndPermission = $this->leavesQuery($user, $startDate, $endDate, $leaveStatus)->get();
 
         $leavePeriods = [];
 
@@ -267,22 +187,17 @@ class AttendancesSummaryService
             $formattedDate = Carbon::parse($date)->format('Y-m-d');
             $sick[$formattedDate] = collect([
                 'leaves_date' => $formattedDate,
-                'status' => 'Sakit',
+                'status' => $leaveStatus,
             ]);
         }
-
         return count($sick);
     }
 
 
     public function getPermission($user, $startDate, $endDate): int
     {
-        $leaveAndPermission = LeaveAndPermission::where('user_id', $user->id)
-            ->where('leaves_status', 'Izin')
-            ->where(function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('start_date', [$startDate, $endDate])
-                    ->orWhereBetween('end_date', [$startDate, $endDate]);
-            })->get();
+        $leaveStatus = 'Izin';
+        $leaveAndPermission = $this->leavesQuery($user, $startDate, $endDate, $leaveStatus)->get();
 
         $permissionPeriods = [];
 
@@ -298,12 +213,10 @@ class AttendancesSummaryService
             $formattedDate = Carbon::parse($date)->format('Y-m-d');
             $permissions[$formattedDate] = collect([
                 'leaves_date' => $formattedDate,
-                'status' => 'Sakit',
+                'status' => $leaveStatus,
             ]);
         }
-
         return count($permissions);
-
     }
 
 
@@ -349,13 +262,6 @@ class AttendancesSummaryService
 
         $attendanceSummary = $filter->paginate(self::$perPage)->onEachSide(1);
         return self::formattedData($attendanceSummary, $startDate, $endDate);
-    }
-
-
-    public function getUserWorktime($user)
-    {
-        $attendancesSummary = AttendancesSummary::where('employee_id', $user->absent_id)->first();
-        return WorkTime::where('id', $attendancesSummary?->work_time_id)->first() ?? WorkTime::where('name', 'Default')->first();
     }
 
 

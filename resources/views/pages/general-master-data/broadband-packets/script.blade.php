@@ -1,5 +1,5 @@
 <script>
-    function branchesData() {
+    function broadbandPacketData() {
         return {
             editPermission: "{{ request()->user()->can('Edit Data Paket Broadband') }}",
             deletePermission: "{{ request()->user()->can('Hapus Data Paket Broadband') }}",
@@ -18,7 +18,6 @@
             formFilter: document.getElementById('form-filter'),
             async init() {
                 await this.getBroadbandPacketData();
-                await this.getBranchData();
             },
             async getBroadbandPacketData() {
                 this.isLoading = true;
@@ -33,26 +32,11 @@
 
                 }
             },
-            async getBranchData() {
-                $(".branches-select2").select2({
-                    allowClear: true,
-                    placeholder: "Pilih Cabang",
-                    ajax: {
-                        url: '/general-master-data/broadband-packets/branches/data',
-                        dataType: "json",
-                        type: "GET",
-                        data: params => ({search: params.term}),
-                        processResults: data => ({results: data}),
-                        cache: true
-                    }
-                });
-            },
             async searchData() {
-                const branchId = $('#branch_id_filter').val()
+                this.isLoading = true;
                 try {
                     const resp = await axios.get('/general-master-data/broadband-packets/search', {
                         params: {
-                            branch_id: branchId,
                             search: this.search
                         },
                         headers: {'Content-Type': 'application/json'}
@@ -60,32 +44,13 @@
                     this.broadbandPackets = resp.data;
                 } catch (error) {
                     console.log(error);
-                }
-            },
-            async filter() {
-                try {
-                    const branchId = $('#branch_id_filter').val()
-                    const resp = await axios.get('/general-master-data/broadband-packets/filter', {
-                        params: {
-                            branch_id: branchId
-                        }
-                    })
-                    this.broadbandPackets = resp.data;
-                } catch (e) {
-                    console.log(e)
                 } finally {
                     this.isLoading = false;
                 }
-
             },
             async paginate(url) {
-                const branchId = $('#branch_id_filter').val()
                 if (url) {
-                    const resp = await axios.get(`${url}`, {
-                        params: {
-                            branch_id: branchId
-                        }
-                    });
+                    const resp = await axios.get(`${url}`);
                     this.broadbandPackets = resp.data
                 }
             },
@@ -112,20 +77,6 @@
             async edit(id) {
                 const resp = await axios.get(`/general-master-data/broadband-packets/${id}`);
                 this.editVal = resp.data;
-                await this.selectedBranch();
-            },
-            async selectedBranch() {
-                const selectedBranch = $('#selected-branch');
-                const response = await $.ajax({
-                    type: 'GET',
-                    dataType: "JSON",
-                    url: `/general-master-data/broadband-packets/branch/selected/${this.editVal.id}`,
-                });
-                const option = new Option(response.name, response.id, true, true);
-                selectedBranch.append(option).trigger('change').trigger({
-                    type: 'select2:select',
-                    params: {results: response}
-                });
             },
             toggleAllCheckBox() {
                 if (Number(this.deletePermission) === 1) {

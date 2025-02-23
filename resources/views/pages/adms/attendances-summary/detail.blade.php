@@ -3,7 +3,6 @@
 @section('content')
     <div x-data="attendancesSummaryDetail()">
         @include('pages.adms.attendances-summary.modal.correction')
-        @include('pages.adms.attendances-summary.modal.query-data')
         <div class="d-flex flex-column flex-xl-row">
             <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
                 <div class="card card-flush">
@@ -152,8 +151,6 @@
         function attendancesSummaryDetail() {
             return {
                 correctionPermission: "{{ request()->user()->can('Koreksi Data Riwayat Absensi') }}",
-                modalQueryData: new bootstrap.Modal(document.getElementById('modal-attendance-query-data')),
-                formQueryData: document.getElementById('form-attendance-query-data'),
                 buttonLoading: false,
                 isLoading: false,
                 attendancesSummaryRecords: [],
@@ -166,9 +163,8 @@
                 modalCorrection: new bootstrap.Modal(document.getElementById('modal-attendance-correction')),
                 async init() {
                     await this.getAttendanceSummaryRecords();
-                    await this.getWorkTimeData();
+                    await this.getWorkTimes();
                     await this.getFpDeviceData();
-                    await this.getRunningCommands();
                 },
                 async getAttendanceSummaryRecords() {
                     const resp = await axios.get(`/adms/attendances-summary/detail/data/${this.id}/${this.startDates}/${this.endDates}`);
@@ -186,27 +182,12 @@
                             }
                         });
                         this.attendancesSummaryRecords = resp.data;
-                    } catch (e) {
-                        console.log(e);
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
                     } finally {
                         this.isLoading = false;
                     }
-                },
-                async getRunningCommands() {
-                    const resp = await axios.get(`/adms/attendances-summary/detail/running-commands/${this.id}`);
-                    this.runningCommands = resp.data;
-                },
-                async deactivateRunningCommands() {
-                    showConfirmModal("Anda yakin?", "Tarik data akan dihentikan.", "Ya, Hentikan!", async () => {
-                        try {
-                            await axios.get(`/adms/attendances-summary/detail/deactivate-active-commands/${this.id}`);
-                            await showAlert('success', 'Tarik Data Sukses Dihentikan');
-                            await this.init();
-                        } catch (error) {
-                            console.error(error);
-                            await showAlert('error', 'Terjadi kesalahan');
-                        }
-                    });
                 },
                 async correction(datePeriod) {
                     const resp = await axios.get(`/adms/attendances-summary/detail/correction/${datePeriod}/${this.id}`);
@@ -223,11 +204,11 @@
                     });
                 },
                 async selectedWorkTime() {
-                    const selectedWorkTime = $('#selectedWorkTime');
+                    const selectedWorkTime = $('#selected-work-time');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/adms/attendances-summary/detail/correction/work-time/selected/${this.correctionVal.work_time_id}`,
+                        url: `/select2/selected-work-time/${this.correctionVal.work_time_id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedWorkTime.append(option).trigger('change').trigger({
@@ -235,12 +216,12 @@
                         params: {results: response}
                     });
                 },
-                async getWorkTimeData() {
-                    $(".work-time-select2").select2({
+                async getWorkTimes() {
+                    $(".work-times-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Jam Kerja",
                         ajax: {
-                            url: '/adms/attendances-summary/detail/correction/work-time/data',
+                            url: '/select2/work-times-data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),
@@ -248,42 +229,6 @@
                             cache: true
                         }
                     });
-                },
-                async getFpDeviceData() {
-                    $(".devices-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Mesin",
-                        ajax: {
-                            url: '/adms/attendances-summary/detail/get-fp-devices',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async saveCommand() {
-                    const deviceSN = $('#device-id').text();
-                    const getSN = deviceSN.split('-')[0].trim();
-                    this.buttonLoading = true;
-                    try {
-                        await axios.get('/iclock/getrequest', {
-                            params: {
-                                SN: getSN
-                            }
-                        })
-                        await axios.post(`/adms/attendances-summary/detail/query-data/${this.id}`, new FormData(this.formQueryData));
-                        await showAlert('success', 'Data berhasil disimpan');
-                        this.formQueryData.reset();
-                        this.modalQueryData.hide();
-                        this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]));
-                    } finally {
-                        this.buttonLoading = false;
-                    }
                 },
                 async saveCorrection(datePeriod) {
                     this.buttonLoading = true;

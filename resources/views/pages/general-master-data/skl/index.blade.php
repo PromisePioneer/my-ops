@@ -1,5 +1,6 @@
 @extends('layouts.template')
-@section('page-title', 'Master Umum - Data Cabang')
+@section('page-title', 'Syarat Ketentuan Layanan')
+@section('breadcrumbs', 'Master Umum - Syarat Ketentuan Layanan')
 @section('content')
     <div x-data="sklData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">

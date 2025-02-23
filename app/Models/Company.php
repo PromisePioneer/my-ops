@@ -21,8 +21,8 @@ class Company extends Model
     public function toSearchableArray(): array
     {
         return [
-            'id' => $this->id,
             'code' => $this->code,
+            'name' => $this->name,
         ];
     }
 

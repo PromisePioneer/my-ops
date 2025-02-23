@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class BroadbandPacketRequest extends FormRequest
 {
@@ -24,7 +23,6 @@ class BroadbandPacketRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'branch_id' => ['required', Rule::exists('branches', 'id')],
             'name' => ['required', 'string'],
             'capacity' => ['required', 'numeric', 'min:1'],
             'price' => ['required', 'numeric', 'min:1']
@@ -35,8 +33,6 @@ class BroadbandPacketRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'branch_id.required' => 'Cabang tidak boleh kosong.',
-            'branch_id.exists' => 'Cabang tidak ditemukan.',
             'name.required' => 'Nama paket tidak boleh kosong.',
             'capacity.required' => 'Nama paket tidak boleh kosong.',
             'capacity.numeric' => 'Kapasitas paket harus berupa angka.',

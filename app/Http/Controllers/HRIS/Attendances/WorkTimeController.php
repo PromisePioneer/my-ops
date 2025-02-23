@@ -8,7 +8,7 @@ use App\Http\Requests\ADMS\UserWorkTimeRequest;
 use App\Http\Requests\ADMS\WorkTimeRequest;
 use App\Models\User;
 use App\Models\WorkTime;
-use App\Service\WorkTimeService;
+use App\Service\Attendances\WorkTimeService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -138,6 +138,18 @@ use Illuminate\View\View;
     {
         $this->authorize('viewDetail', WorkTime::class);
         return view('pages.adms.work-time.detail', compact('workTime'));
+    }
+
+
+    public function getWorkTimes(Request $request): JsonResponse
+    {
+        return response()->json($this->workTimeService->getWorktimes($request));
+    }
+
+
+    public function selectedWorkTime(WorkTime $workTime): JsonResponse
+    {
+        return response()->json($this->workTimeService->selectedWorkTime($workTime));
     }
 
 }

@@ -4,15 +4,15 @@ namespace App\Http\Controllers\HRIS;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Permission\PermissionRequest;
+use App\Models\Permission;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
-    public int $perPage = 10;
+    public static int $perPage = 10;
     /**
      * @throws AuthorizationException
      */
@@ -28,7 +28,7 @@ class PermissionController extends Controller
     public function permissionData(): JsonResponse
     {
         $this->authorize('view', Permission::class);
-        $permission = Permission::paginate($this->perPage)->onEachSide(1);
+        $permission = Permission::paginate(self::$perPage)->onEachSide(1);
         return response()->json($permission);
     }
 
@@ -39,14 +39,9 @@ class PermissionController extends Controller
     {
         $this->authorize('view', Permission::class);
         $search = $request->input('search');
-        $query = Permission::query();
+        $query = Permission::search($search)->paginate(self::$perPage);
 
-
-        if (!empty($search)) {
-            $query->where('name', 'like', '%'.$search.'%');
-        }
-
-        return response()->json($query->paginate($this->perPage));
+        return response()->json($query);
     }
 
     /**

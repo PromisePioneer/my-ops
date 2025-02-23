@@ -24,7 +24,7 @@ class FpDevice extends Model
     ];
 
 
-    public function toSearchableArray()
+    public function toSearchableArray(): array
     {
         return [
             'serial_number' => $this->serial_number,

@@ -12,7 +12,6 @@ return new class extends Migration {
     {
         Schema::create('broadband_packets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('branch_id')->constrained('branches');
             $table->string('name');
             $table->integer('capacity');
             $table->double('price');

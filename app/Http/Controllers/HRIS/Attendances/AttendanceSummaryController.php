@@ -10,7 +10,6 @@ use App\Models\AttendancesSummary;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\FpDevice;
-use App\Models\FPDeviceCommand;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\WorkTime;
@@ -58,15 +57,6 @@ use Illuminate\View\View;
         return response()->json($this->department->getData($request));
     }
 
-    public function getBranchData(Request $request): JsonResponse
-    {
-        return response()->json($this->branch->getData($request));
-    }
-
-    public function getRolesData(Request $request): JsonResponse
-    {
-        return response()->json($this->role->getData($request));
-    }
 
     public function search(Request $request): JsonResponse
     {
@@ -107,11 +97,6 @@ use Illuminate\View\View;
     public function filter(Request $request): JsonResponse
     {
 
-        $startDate = Carbon::make($request->start_date);
-        $endDate = Carbon::make($request->end_date);
-        $branchId = $request->branch_id;
-        $roleId = $request->role_id;
-
         return response()->json($this->attendanceSummaryService->filter($request));
     }
 
@@ -142,61 +127,4 @@ use Illuminate\View\View;
 
         return response()->json(['message' => 'Data berhasil disimpan.']);
     }
-
-
-    public function getWorkTime(Request $request): JsonResponse
-    {
-        return response()->json($this->workTime->getData($request));
-    }
-
-    public function selectedData(WorkTime $workTime): JsonResponse
-    {
-        return response()->json($this->workTime->getSelectedData($workTime->id));
-    }
-
-
-    public function absenTanpaMesin(): View
-    {
-        $users = User::all();
-        return view('pages.adms.absen-tanpa-mesin.index', compact('users'));
-    }
-
-
-    public function getFpDevice(Request $request): JsonResponse
-    {
-        return response()->json($this->fpDevice->getData($request));
-    }
-
-
-    public function queryData(User $user, Request $request): JsonResponse
-    {
-        return response()->json($this->FpDeviceCommandService->storeCommands($request, $user));
-    }
-
-
-    public function getFPDeviceData(Request $request): JsonResponse
-    {
-        return response()->json($this->FpDeviceCommandService->getFpDeviceData($request));
-    }
-
-
-    public function getRunningCommands(User $user): JsonResponse
-    {
-        $commands = FPDeviceCommand::where('user_id', $user->id)->where('status', 1)->get();
-        return response()->json($commands);
-    }
-
-
-    public function deactivateRunningCommand(User $user): JsonResponse
-    {
-        \DB::transaction(function () use ($user) {
-            FPDeviceCommand::where('user_id', $user->id)->update([
-                'status' => 0,
-            ]);
-        });
-        return response()->json([
-            'message' => 'Command berhasil dimatikan',
-        ]);
-    }
-
 }

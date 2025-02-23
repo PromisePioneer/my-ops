@@ -25,7 +25,7 @@ use Illuminate\View\View;
     public function index(): View
     {
         $this->authorize('view', Contact::class);
-        return view('pages.general-master-data.contact.index');
+        return view('pages.general-master-data.contacts.index');
     }
 
 

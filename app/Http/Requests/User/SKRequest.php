@@ -24,10 +24,25 @@ class SKRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'integer', 'exists:users,id'],
+            'user_id' => ['required', 'exists:users,id'],
             'sk_type' => ['required', Rule::in('Promosi', 'Demosi', 'Mutasi')],
-            'branch_id' => ['required', 'integer', 'exists:branches,id'],
-            'role_id' => ['required', 'integer', 'exists:roles,id'],
+            'branch_id' => ['required', 'exists:branches,id'],
+            'role_id' => ['required', 'exists:roles,id'],
+        ];
+    }
+
+
+    public function messages(): array
+    {
+        return [
+            'user_id.required' => 'Karyawan tidak boleh kosong',
+            'user_id.exists' => 'Karyawan tidak ditemukan',
+            'sk_type.required' => 'Jenis SK tidak boleh kosong',
+            'sk_type.in' => 'Jenis SK tidak valid',
+            'branch_id.required' => 'Cabang tidak boleh kosong',
+            'branch_id.exists' => 'Cabang tidak ditemukan',
+            'role_id.required' => 'Role tidak boleh kosong',
+            'role_id.exists' => 'Role tidak ditemukan',
         ];
     }
 }

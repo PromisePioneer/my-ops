@@ -1,6 +1,7 @@
 @extends('layouts.template')
+@section('page-title', 'Dashboard')
+@section('breadcrumbs', 'Home')
 @section('content')
-
     <div x-data="dashboard()">
         <div class="row g-5 g-xl-8">
             <div class="col-xl-6">

@@ -149,6 +149,7 @@ class PermissionSeeder extends Seeder
     public function fpDevice(): void
     {
         $permissions = [
+            'Filter Data Mesin Absen Berdasarkan Cabang',
             'Lihat Menu Mesin Absen',
             'Tambah Menu Mesin Absen',
             'Edit Menu Mesin Absen',
@@ -215,6 +216,7 @@ class PermissionSeeder extends Seeder
             'Filter Data SP Berdasarkan Cabang',
             'Edit Data SP',
             'Hapus Data SP',
+            'Lihat Detail Data SP'
         ];
 
         foreach ($permissions as $permission) {

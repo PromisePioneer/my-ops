@@ -1,7 +1,6 @@
 @extends('layouts.template')
 @section('content')
     <div x-data="attendancesSummary()">
-        @include('pages.adms.attendances-summary.modal.get-attendance-data')
         <div class="card shadow-sm mb-4">
             <div class="card-header">
                 <h3 class="card-title">Filter</h3>
@@ -55,16 +54,6 @@
                         </span>
                         <input type="text" name="search" x-model="search" @input.debounce="searchData()"
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
-                    </div>
-                </div>
-                <div class="card-toolbar">
-                    <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-{{--                        <button type="button" data-bs-toggle="modal"--}}
-                        {{--                                data-bs-target="#modal-get-attendances-data"--}}
-                        {{--                                class="btn btn-primary btn-sm"--}}
-                        {{--                        >--}}
-                        {{--                            Import Data Absen--}}
-                        {{--                        </button>--}}
                     </div>
                 </div>
             </div>
@@ -160,13 +149,12 @@
                 startIndex: null,
                 search: '',
                 months: [],
-                getAttendaceDataModal: new bootstrap.Modal(document.getElementById('modal-get-attendances-data')),
                 attendanceSummaryDetail: [],
                 async init() {
                     await this.getAttendanceSummary();
                     await this.getMonths();
                     await this.getMainBranches();
-                    await this.getRoleData();
+                    await this.getRoles();
                     await this.getDepartmentData();
                     await this.getFpDeviceData();
                 },
@@ -198,12 +186,12 @@
                         }
                     });
                 },
-                async getRoleData() {
+                async getRoles() {
                     $(".roles-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Jabatan",
                         ajax: {
-                            url: '/adms/attendances-summary/roles/data',
+                            url: '/select2/roles-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -235,9 +223,6 @@
                 async filter() {
                     const startDate = document.getElementById('start_dates')?.value ?? '';
                     const endDate = document.getElementById('end_dates')?.value ?? '';
-
-                    // console.log(startDate);
-
                     const branch_id = $('#branch_id').val();
                     const role_id = $('#role_id').val()
                     this.isLoading = true;

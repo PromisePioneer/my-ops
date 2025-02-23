@@ -8,177 +8,177 @@
             }
         </style>
     @endpush
-        <div class="d-flex flex-column flex-lg-row" x-data="generatePO">
-            @include('pages.general-master-data.contact.form')
-            @include('pages.general-master-data.unit-types.form')
-            <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
-                <div class="card p-10">
-                    <form id="form" @submit.prevent="generatePO()">
-                        <div class="card-body p-12">
+    <div class="d-flex flex-column flex-lg-row" x-data="generatePO">
+        @include('pages.general-master-data.contacts.form')
+        @include('pages.general-master-data.unit-types.form')
+        <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
+            <div class="card p-10">
+                <form id="form" @submit.prevent="generatePO()">
+                    <div class="card-body p-12">
+                        <div class="row gx-10 mb-5">
+                            <div class="col-lg-6">
+                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                    Tanggal
+                                </label>
+                                <div class="mb-5">
+                                    <input type="date" name="date" class="form-control form-control-solid date"
+                                           placeholder="Masukkan tanggal">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="separator separator-dashed my-10"></div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                    Subject
+                                </label>
+                                <div class="mb-5">
+                                    <input type="text" class="form-control form-control-solid" name="subject"
+                                           id="subject" placeholder="Subject">
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                    PIC
+                                </label>
+                                <div class="mb-5">
+                                    <select name="pic" class="form-select form-select-solid users-select2">
+                                        <option></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-0">
                             <div class="row gx-10 mb-5">
                                 <div class="col-lg-6">
                                     <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
-                                        Tanggal
+                                        Calon Klien
                                     </label>
                                     <div class="mb-5">
-                                        <input type="date" name="date" class="form-control form-control-solid date"
-                                               placeholder="Masukkan tanggal">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="separator separator-dashed my-10"></div>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
-                                        Subject
-                                    </label>
-                                    <div class="mb-5">
-                                        <input type="text" class="form-control form-control-solid" name="subject"
-                                               id="subject" placeholder="Subject">
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
-                                        PIC
-                                    </label>
-                                    <div class="mb-5">
-                                        <select name="pic" class="form-select form-select-solid users-select2">
+                                        <select name="contact_id"
+                                                class="form-select form-select-solid contact-select2">
                                             <option></option>
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="mb-0">
-                                <div class="row gx-10 mb-5">
-                                    <div class="col-lg-6">
-                                        <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
-                                            Calon Klien
-                                        </label>
-                                        <div class="mb-5">
-                                            <select name="contact_id"
-                                                    class="form-select form-select-solid contact-select2">
-                                                <option></option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div :class="contactHasOfferingLetter === null ? 'col-lg-6 d-none' : 'col-lg-6'"
-                                         x-transition x-cloak>
-                                        <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
-                                            Surat Penawaran
-                                        </label>
-                                        <div class="mb-5">
-                                            <select name="offering_letter_id" id="offering_letter_id"
-                                                    class="form-select form-select-solid">
-                                                <option :value="contactHasOfferingLetter?.id"
-                                                        x-text="contactHasOfferingLetter?.offering_number"></option>
-                                            </select>
-                                        </div>
+                                <div :class="contactHasOfferingLetter === null ? 'col-lg-6 d-none' : 'col-lg-6'"
+                                     x-transition x-cloak>
+                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                        Surat Penawaran
+                                    </label>
+                                    <div class="mb-5">
+                                        <select name="offering_letter_id" id="offering_letter_id"
+                                                class="form-select form-select-solid">
+                                            <option :value="contactHasOfferingLetter?.id"
+                                                    x-text="contactHasOfferingLetter?.offering_number"></option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
-                            <div class="table-responsive mb-20">
-                                <table class="table g-5 gs-0 mb-0 fw-bolder text-gray-700" data-kt-element="items">
-                                    <thead>
-                                    <tr class="border-bottom fs-7 fw-bolder text-gray-700 text-uppercase">
-                                        <th class="min-w-300px w-475px required">Item</th>
-                                        <th class="min-w-100px w-100px required">Qty</th>
-                                        <th class="min-w-100px w-100px required">Satuan</th>
-                                        <th class="min-w-100px w-100px required">Total Harga</th>
-                                        <th class="min-w-75px w-75px text-end">Action</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <template x-for="(field,index) in poItem" :key="index">
-                                        <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
-                                            <td class="pe-7" style='text-align:center; vertical-align:middle'>
-                                                <input type="text" class="form-control form-control-solid"
-                                                       x-model="field.item" :name="`data[${index}][item]`"
-                                                       placeholder="Tambahkan item">
-                                            </td>
-                                            <td style='text-align:center; vertical-align:middle' class="w-50">
-                                                <input class="form-control form-control-solid" type="number" min="1"
-                                                       x-model="field.qty" :name="`data[${index}][qty]`"
-                                                       placeholder="Kuantitas" value="0"
-                                                       @change="calculateTotal(index)"/>
-                                            </td>
-                                            <td style='text-align:center; vertical-align:middle' class="w-20">
-                                                <select :class="`form-select form-select-solid unit-types-select2`"
-                                                        :name="`data[${index}][unit_type_id]`"
-                                                        x-model="field.unit_type_id">
-                                                    <option></option>
-                                                </select>
-                                            </td>
+                        </div>
+                        <div class="table-responsive mb-20">
+                            <table class="table g-5 gs-0 mb-0 fw-bolder text-gray-700" data-kt-element="items">
+                                <thead>
+                                <tr class="border-bottom fs-7 fw-bolder text-gray-700 text-uppercase">
+                                    <th class="min-w-300px w-475px required">Item</th>
+                                    <th class="min-w-100px w-100px required">Qty</th>
+                                    <th class="min-w-100px w-100px required">Satuan</th>
+                                    <th class="min-w-100px w-100px required">Total Harga</th>
+                                    <th class="min-w-75px w-75px text-end">Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <template x-for="(field,index) in poItem" :key="index">
+                                    <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
+                                        <td class="pe-7" style='text-align:center; vertical-align:middle'>
+                                            <input type="text" class="form-control form-control-solid"
+                                                   x-model="field.item" :name="`data[${index}][item]`"
+                                                   placeholder="Tambahkan item">
+                                        </td>
+                                        <td style='text-align:center; vertical-align:middle' class="w-50">
+                                            <input class="form-control form-control-solid" type="number" min="1"
+                                                   x-model="field.qty" :name="`data[${index}][qty]`"
+                                                   placeholder="Kuantitas" value="0"
+                                                   @change="calculateTotal(index)"/>
+                                        </td>
+                                        <td style='text-align:center; vertical-align:middle' class="w-20">
+                                            <select :class="`form-select form-select-solid unit-types-select2`"
+                                                    :name="`data[${index}][unit_type_id]`"
+                                                    x-model="field.unit_type_id">
+                                                <option></option>
+                                            </select>
+                                        </td>
 
-                                            <td style='text-align:center; vertical-align:middle' class="w-50">
-                                                <input class="form-control form-control-solid" type="number" min="1"
-                                                       x-model="field.price" :name="`data[${index}][price]`"
-                                                       placeholder="Harga" value="0" @change="calculateTotal(index)"/>
-                                            </td>
-                                            <td class="text-end" style='text-align:center; vertical-align:middle'>
-                                                <button type="button"
-                                                        class="btn btn-sm btn-icon btn-active-color-primary"
-                                                        @click="removeOfferingLetterProductService(index)">
+                                        <td style='text-align:center; vertical-align:middle' class="w-50">
+                                            <input class="form-control form-control-solid" type="number" min="1"
+                                                   x-model="field.price" :name="`data[${index}][price]`"
+                                                   placeholder="Harga" value="0" @change="calculateTotal(index)"/>
+                                        </td>
+                                        <td class="text-end" style='text-align:center; vertical-align:middle'>
+                                            <button type="button"
+                                                    class="btn btn-sm btn-icon btn-active-color-primary"
+                                                    @click="removeOfferingLetterProductService(index)">
                                                     <span class="svg-icon svg-icon-3">
                                                         <i class="bi bi-trash"></i>
                                                     </span>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </template>
-                                    </tbody>
-                                    <tfoot>
-                                    <tr class="border-top border-top-dashed align-top fs-6 fw-bolder text-gray-700">
-                                        <th class="text-primary">
-                                            <button type="button" class="btn btn-link py-1"
-                                                    @click="addPOItem()">Tambah
                                             </button>
-                                        </th>
+                                        </td>
                                     </tr>
-                                    </tfoot>
-                                </table>
+                                </template>
+                                </tbody>
+                                <tfoot>
+                                <tr class="border-top border-top-dashed align-top fs-6 fw-bolder text-gray-700">
+                                    <th class="text-primary">
+                                        <button type="button" class="btn btn-link py-1"
+                                                @click="addPOItem()">Tambah
+                                        </button>
+                                    </th>
+                                </tr>
+                                </tfoot>
+                            </table>
 
 
-                                <table class="float-end">
-                                    <thead>
-                                    <tr class="align-top fw-bolder text-gray-700">
-                                        <th></th>
-                                        <th colspan="2" class="fs-4 ps-0">Grand Total</th>
-                                        <th class="w-70"></th>
-                                        <th colspan="2" class="text-end fs-4 text-nowrap">
-                                            <span x-text="formatNumber(calculateTotalAll())">0.00</span>
-                                            <input type="hidden" name="grand_total" x-model="calculateTotalAll()"/>
-                                        </th>
+                            <table class="float-end">
+                                <thead>
+                                <tr class="align-top fw-bolder text-gray-700">
+                                    <th></th>
+                                    <th colspan="2" class="fs-4 ps-0">Grand Total</th>
+                                    <th class="w-70"></th>
+                                    <th colspan="2" class="text-end fs-4 text-nowrap">
+                                        <span x-text="formatNumber(calculateTotalAll())">0.00</span>
+                                        <input type="hidden" name="grand_total" x-model="calculateTotalAll()"/>
+                                    </th>
 
-                                    </tr>
-                                    </thead>
-                                </table>
-                            </div>
+                                </tr>
+                                </thead>
+                            </table>
                         </div>
-                        <div class="float-end">
-                            <a href="{{ url('/income-transactions/po/') }}"
-                               class="btn btn-light-danger btn-sm">
-                                <i class="ki-duotone ki-technology-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                </i>
-                                Kembali
-                            </a>
-                            <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
-                                <i class="ki-duotone ki-click fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                    <span class="path4"></span>
-                                    <span class="path5"></span>
-                                </i>
-                                <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="float-end">
+                        <a href="{{ url('/income-transactions/po/') }}"
+                           class="btn btn-light-danger btn-sm">
+                            <i class="ki-duotone ki-technology-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                            </i>
+                            Kembali
+                        </a>
+                        <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
+                            <i class="ki-duotone ki-click fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                                <span class="path5"></span>
+                            </i>
+                            <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
-        @include('components.toast')
+    </div>
+    @include('components.toast')
 @endsection
 
 @push('script')

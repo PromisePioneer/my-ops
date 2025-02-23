@@ -16,21 +16,19 @@ use Illuminate\View\View;
 
 #[AllowDynamicProperties] class BranchController extends Controller
 {
-    private static int $perPage = 10;
-
-    /**
-     * @throws AuthorizationException
-     */
 
     public function __construct()
     {
         $this->branchService = new BranchService();
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function index(): View
     {
         $this->authorize('view', Branch::class);
-        return view('pages.general-master-data.branch.index');
+        return view('pages.general-master-data.branches.index');
     }
 
     /**

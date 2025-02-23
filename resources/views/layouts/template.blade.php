@@ -100,8 +100,17 @@
                 <div class="toolbar">
                     <div
                         class="container-fluid py-6 py-lg-0 d-flex flex-column flex-lg-row align-items-center justify-content-lg-between">
-                        <div class="page-title d-flex flex-column me-5 align-items-center">
-                            <h1 class="d-flex flex-column text-dark fw-bolder fs-3 mb-0">@yield('page-title')</h1>
+                        <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3 ">
+                            <h1 class="page-heading d-flex text-gray-900 fw-bold fs-3 flex-column justify-content-center my-0">
+                                @yield('page-title')
+                            </h1>
+                            <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0 pt-1">
+                                <li class="breadcrumb-item text-muted">
+                                    <a href="#" class="text-muted text-hover-primary">
+                                        @yield('breadcrumbs') </a>
+                                </li>
+                            </ul>
+                            <!--end::Breadcrumb-->
                         </div>
                         <div class="d-flex align-items-center pt-lg-0">
                             <div class="d-flex align-items-center">

@@ -127,7 +127,7 @@
                                                 </div>
                                             </td>
                                             <td class="text-center"
-                                                x-text="device.branch?.name ?? 'Belum Diset'"></td>
+                                                x-text="device.branch_name ?? 'Belum Diset'"></td>
                                             <td class="text-center" x-text="device.name"></td>
                                             <td class="text-center" x-text="device.ip_address"></td>
                                             <td class="text-center">
@@ -198,24 +198,6 @@
 @push('script')
     <script defer>
         $('.date').flatpickr();
-
-
-        // Select elements
-        const button = document.getElementById('kt_docs_toast_toggle_button');
-        const toastElement = document.getElementById('kt_docs_toast_toggle');
-
-        // Get toast instance --- more info: https://getbootstrap.com/docs/5.1/components/toasts/#getinstance
-        const toast = bootstrap.Toast.getOrCreateInstance(toastElement);
-
-        // Handle button click
-        button.addEventListener('click', e => {
-            e.preventDefault();
-
-            // Toggle toast to show --- more info: https://getbootstrap.com/docs/5.1/components/toasts/#show
-            toast.show();
-        });
-
-
         function fpDevicesData() {
             return {
                 createPermission: "{{ request()->user()->can('Tambah Menu Mesin Absen') }}",

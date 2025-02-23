@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Master\General;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Department\DepartmentRequest;
 use App\Models\Department;
+use App\Service\Master\General\Department\DepartmentQueryFilter;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class DepartmentController extends Controller
     public function index(): View
     {
         $this->authorize('view', Department::class);
-        return view('pages.general-master-data.department.index');
+        return view('pages.general-master-data.departments.index');
     }
 
     /**
@@ -29,7 +30,7 @@ class DepartmentController extends Controller
     public function data(): JsonResponse
     {
         $this->authorize('view', Department::class);
-        $departments = Department::paginate(self::$perPage);
+        $departments = Department::orderBy('code')->paginate(self::$perPage);
 
         return response()->json($departments);
     }
@@ -41,7 +42,9 @@ class DepartmentController extends Controller
     {
         $this->authorize('view', Department::class);
         $search = $request->input('search');
-        $departments = Department::search($search)->paginate(self::$perPage);
+        $departments = Department::search($search)->query(callback: function ($query) {
+            $query->orderBy('code');
+        })->paginate(self::$perPage);
 
         return response()->json($departments);
     }
@@ -65,7 +68,6 @@ class DepartmentController extends Controller
     public function edit(Department $department): JsonResponse
     {
         $this->authorize('update', $department);
-
         return response()->json($department);
     }
 
@@ -95,5 +97,31 @@ class DepartmentController extends Controller
         return response()->json([
             'message' => 'data berhasil dihapus',
         ]);
+    }
+
+    public function getDepartments(Request $request): array
+    {
+        $search = $request->input('search');
+        $departments = Department::search($search)->query(callback: function ($query) use ($request) {
+            $query = $query->orderby('name', 'asc');
+            DepartmentQueryFilter::apply($query, $request);
+        })->get();
+
+        return $departments->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->name,
+            ];
+        })->toArray();
+    }
+
+    public function selectedDepartment(?int $departmentId): array
+    {
+        $department = Department::where('id', $departmentId)->first();
+
+        return [
+            'id' => $department?->id ?? '-',
+            'name' => $department?->name ?? '-',
+        ];
     }
 }

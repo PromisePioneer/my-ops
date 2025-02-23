@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BroadbandPacketRequest;
 use App\Models\Branch;
 use App\Models\BroadbandPacket;
-use App\Service\Master\BroadbandPacketService;
+use App\Service\Master\General\BroadbandPacketService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

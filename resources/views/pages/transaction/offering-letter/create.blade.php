@@ -8,7 +8,7 @@
         }
     </style>
     <div class="d-flex flex-column flex-lg-row" x-data="generateOfferingLetter">
-        @include('pages.general-master-data.contact.form')
+        @include('pages.general-master-data.contacts.form')
         @include('pages.general-master-data.unit-types.form')
         @include('pages.general-master-data.skl.form')
         @include('pages.general-master-data.services-categories.form')
@@ -77,10 +77,10 @@
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td class="pe-7" style='text-align:center; vertical-align:middle'>
                                             <select
-                                                :class="`form-select form-select-solid service-categories-select2-${index}`"
+                                                    :class="`form-select form-select-solid service-categories-select2-${index}`"
                                                     :name="`data[${index}][service_category_id]`"
-                                                x-model="field.service_category_id"
-                                                :id="`selectedServices-${index}`">
+                                                    x-model="field.service_category_id"
+                                                    :id="`selectedServices-${index}`">
                                                 <option></option>
                                             </select>
                                         </td>

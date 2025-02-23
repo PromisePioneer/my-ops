@@ -25,6 +25,11 @@ class Attendances extends Model
     ];
 
 
+    public function fpDevice(): BelongsTo
+    {
+        return $this->belongsTo(FpDevice::class, 'sn', 'serial_number');
+    }
+
     public function trackableKey(): ?string
     {
         return (string)$this->id;

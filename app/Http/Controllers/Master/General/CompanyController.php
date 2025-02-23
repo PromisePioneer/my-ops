@@ -28,7 +28,7 @@ use Illuminate\View\View;
     public function index(): View
     {
         $this->authorize('view', Company::class);
-        return view('pages.general-master-data.company.index');
+        return view('pages.general-master-data.companies.index');
     }
 
 
@@ -50,15 +50,8 @@ use Illuminate\View\View;
     {
         $this->authorize('view', Company::class);
         $search = $request->input('search');
-        $company = Company::paginate(self::$perPage);
-
-
-        if (!empty($search)) {
-            $company->where('name', 'like', '%' . $search . '%');
-        }
-
-        $data = $company->paginate(self::$perPage);
-        return response()->json($data);
+        $companies = Company::search($search)->paginate(self::$perPage);
+        return response()->json($companies);
     }
 
 

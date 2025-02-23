@@ -17,14 +17,6 @@
             <form id="form-broadband-packet" @submit.prevent="save(editVal?.id)">
                 <div class="modal-body">
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Cabang</label>
-                            <select name="branch_id" id="selected-branch"
-                                class="form-select form-select-solid branches-select2"
-                                    data-dropdown-parent="#modal-broadband-packet">
-                            <option></option>
-                        </select>
-                    </div>
-                    <div class="mb-10">
                         <label for="name" class="required form-label">Nama Paket</label>
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
                                placeholder="Nama Paket" :value="editVal?.name"/>

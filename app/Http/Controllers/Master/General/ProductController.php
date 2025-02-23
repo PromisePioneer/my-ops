@@ -28,7 +28,7 @@ class ProductController extends Controller
     public function index(): View
     {
         $this->authorize('view', Product::class);
-        return view('pages.general-master-data.product.index');
+        return view('pages.general-master-data.products.index');
     }
 
     /**

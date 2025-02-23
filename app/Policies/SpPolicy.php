@@ -41,4 +41,14 @@ class SpPolicy
         return $user->can('Hapus Data SP');
     }
 
+
+    public function viewDetail(User $user, SP $sp): bool
+    {
+        if (!$user->can('Lihat Detail Data SP')) {
+            return $user->id === $sp->user_id;
+        }
+
+        return $user->can('Lihat Detail Data SP');
+    }
+
 }

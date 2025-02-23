@@ -10,37 +10,52 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 use function App\Helper\convertToRoman;
+use function App\Helper\formatDate;
 
 class SKService
 {
-
-
     private static int $perPage = 10;
-    private SK $sk;
 
 
-    public function __construct()
+    private static function generateSKNumber(SKRequest $request): string
     {
-        $this->sk = new SK();
+        $sk = SK::latest()->first();
+
+        $skMonth = convertToRoman(Carbon::parse($request->date)->format('m'));
+        $skYear = Carbon::parse($request->date)->format('Y');
+
+        if ($sk) {
+            $convertInvNumberToArray = explode('/', $sk->sk_number);
+            $startingNumber = $convertInvNumberToArray[0];
+            $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
+
+            return $startValue . '/MY-SP/' . $skMonth . '/' . $skYear;
+        }
+
+        $startingNumber = '000';
+        $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
+
+        return $startValue . '/MY-SK/' . $skMonth . '/' . $skYear;
     }
 
     public function data(): LengthAwarePaginator
     {
-        $sk = $this->sk->getData()->paginate(self::$perPage);
+        $sk = SK::with('user', 'oldBranch', 'newBranch', 'oldRole', 'newRole')
+            ->paginate(self::$perPage);
         return self::formattedData($sk);
     }
 
     private static function formattedData(LengthAwarePaginator $sk): LengthAwarePaginator
     {
-        $data = $sk->getCollection()->map(callback: function ($item) {
+        $data = $sk->getCollection()->map(callback: static function ($item) {
             return [
                 'id' => $item->id,
                 'sk_number' => $item->sk_number,
                 'user_name' => '('.$item->user->nip.')'.$item->user->name,
                 'sk_type' => $item->sk_type,
-                'date' => Carbon::parse($item->date)->locale('id')->settings(['formatFunction' => 'translatedFormat']
-                )->format('l, j F Y'),
+                'date' => formatDate($item->date),
             ];
         });
 
@@ -51,29 +66,26 @@ class SKService
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $query = $this->sk->getData();
-
-        if (!empty($search)) {
-            $query->where('sk_number', 'like', '%'.$search.'%')
-                ->orWhere('sk_type', 'like', '%'.$search.'%')
-                ->orWhere('date', 'like', '%'.$search.'%')
-                ->orWhereHas('newRole', function ($query) use ($search) {
-                    $query->where('name', 'like', '%'.$search.'%');
-                })->orWhereHas('user', function ($query) use ($search) {
-                    $query->where('name', 'like', '%'.$search.'%');
-                    $query->orWhere('nip', 'like', '%'.$search.'%');
-                });
-        }
-
-
-        $data = $query->paginate(self::$perPage);
-        return self::formattedData($data);
+        $query = SK::search($search)->query(static function ($query) {
+            $query->join('users', 'users.id', '=', 'sk.user_id');
+        })->paginate(self::$perPage);
+        return self::formattedData($query);
     }
 
-    public function store(SKRequest $request)
+
+    public function filter(Request $request): LengthAwarePaginator
     {
-//        dd($request->all());
-        DB::transaction(callback: function () use ($request) {
+        $query = SK::with('user', 'oldBranch', 'newBranch', 'oldRole', 'newRole');
+        $sk = SKQueryFilter::apply($query, $request)->paginate(self::$perPage);
+        return self::formattedData($sk);
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function store(SKRequest $request): void
+    {
+        DB::transaction(callback: static function () use ($request) {
             $user = User::with('roles')->where('id', $request->user_id)->first();
             SK::create([
                 'sk_number' => self::generateSKNumber($request),
@@ -95,27 +107,9 @@ class SKService
         });
     }
 
-    private static function generateSKNumber(SKRequest $request): string
-    {
-        $sk = SK::latest()->first();
-
-        $skMonth = convertToRoman(Carbon::parse($request->date)->format('m'));
-        $skYear = Carbon::parse($request->date)->format('Y');
-
-        if ($sk) {
-            $convertInvNumberToArray = explode('/', $sk->sk_number);
-            $startingNumber = $convertInvNumberToArray[0];
-            $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
-
-            return $startValue.'/MY-SP/'.$skMonth.'/'.$skYear;
-        }
-
-        $startingNumber = '000';
-        $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
-
-        return $startValue.'/MY-SK/'.$skMonth.'/'.$skYear;
-    }
-
+    /**
+     * @throws Throwable
+     */
     public function update(SKRequest $request, SK $sk): void
     {
         DB::transaction(function () use ($request, $sk) {

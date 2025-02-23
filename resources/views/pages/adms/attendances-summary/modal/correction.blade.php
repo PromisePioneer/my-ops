@@ -19,8 +19,8 @@
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Jam Kerja</label>
-                        <select name="work_time_id" id="selectedWorkTime"
-                                class="form-select form-select-solid work-time-select2"
+                        <select name="work_time_id" id="selected-work-time"
+                                class="form-select form-select-solid work-times-select2"
                                 data-dropdown-parent="#modal-attendance-correction">
                             <option></option>
                         </select>

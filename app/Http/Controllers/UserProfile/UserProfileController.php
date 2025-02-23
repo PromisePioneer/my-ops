@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\UserProfile;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Utilities\UserProfile\UpdatePasswordRequest;
 use App\Http\Requests\Utilities\UserProfile\UserProfileRequest;
@@ -10,27 +11,21 @@ use App\Models\JobInformation;
 use App\Models\SP;
 use App\Models\User;
 use App\Service\HelperService\HandleFileUploadService;
+use App\Service\User\SP\SPService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
-class UserProfileController extends Controller
+#[AllowDynamicProperties] class UserProfileController extends Controller
 {
-    private IdentityInformation $identityInformation;
-
-    private JobInformation $jobInformation;
-
-    private HandleFileUploadService $handleFileUpload;
-
-    private SP $sp;
-
     public function __construct()
     {
         $this->identityInformation = new IdentityInformation();
         $this->jobInformation = new JobInformation();
         $this->handleFileUpload = new HandleFileUploadService();
         $this->sp = new SP();
+        $this->SPService = new SPService();
     }
 
     public function index(): View
@@ -86,7 +81,7 @@ class UserProfileController extends Controller
 
     public function spData(Request $request): JsonResponse
     {
-        return response()->json($this->sp->getSPBasedOnUserId($request->user()->id));
+        return response()->json($this->SPService->getOwnSP($request));
     }
 
 }

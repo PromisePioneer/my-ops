@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Laravel\Scout\Searchable;
 
 class SK extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $table = 'sk';
     protected $fillable = [
@@ -23,6 +24,14 @@ class SK extends Model
         'new_role_id',
     ];
 
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'sk_number' => $this->sk_number,
+            'users.name' => '',
+        ];
+    }
 
     public function user(): BelongsTo
     {

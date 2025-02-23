@@ -27,8 +27,8 @@ class FpDeviceService
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $data = FpDevice::search($search)->query(function ($query) use ($search) {
-            $query->with('branch')->paginate(self::$perPage);
+        $data = FpDevice::search($search)->query(function ($query) {
+            $query->with('branch');
         })->paginate(self::$perPage);
 
         return self::formattedData($data);
