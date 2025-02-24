@@ -151,5 +151,4 @@ use Illuminate\View\View;
     {
         return response()->json($this->workTimeService->selectedWorkTime($workTime));
     }
-
 }

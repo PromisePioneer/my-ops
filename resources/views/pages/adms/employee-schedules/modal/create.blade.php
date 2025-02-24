@@ -48,7 +48,7 @@
 
                     <div class="mb-10">
                         <label for="name" class="required form-label">Jam Kerja</label>
-                        <select class="form-select form-select-solid work-time-select2" name="work_time_id"
+                        <select class="form-select form-select-solid work-times-select2" name="work_time_id"
                                 id="selectedWorkTime" data-dropdown-parent="#modal-create">
                             <option></option>
                         </select>

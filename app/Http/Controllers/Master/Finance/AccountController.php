@@ -116,4 +116,21 @@ use Illuminate\View\View;
         ]);
     }
 
+
+    public function getAccounts(Request $request): JsonResponse
+    {
+        return response()->json($this->accountService->getAccounts($request));
+    }
+
+    public function selectedAccount(Account $account): array
+    {
+        $account = $account->where('id', $account->id)->first();
+
+        return [
+            'id' => $account->id,
+            'name' => $account->name,
+            'code' => $account->code,
+        ];
+    }
+
 }

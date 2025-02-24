@@ -16,6 +16,7 @@ use App\Http\Controllers\Accounting\Transaction\InitialBalanceController;
 use App\Http\Controllers\Accounting\Transaction\InvoiceController;
 use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
 use App\Http\Controllers\Accounting\Transaction\PurchaseOrderController;
+use App\Http\Controllers\Accounting\TransactionTypeController;
 use App\Http\Controllers\Accounting\VendorPayrollController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
@@ -87,6 +88,7 @@ use App\Http\Controllers\Master\General\SKLController;
 use App\Http\Controllers\Master\Operational\JointClosureCodeController;
 use App\Http\Controllers\Master\Operational\PSBController;
 use App\Http\Controllers\Master\Operational\SupplierController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
 use App\Http\Controllers\UserProfile\UserProfileController;
 use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
@@ -133,6 +135,13 @@ Route::group(['middleware' => ['auth']], static function () {
     Route::get('home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/summary', [HomeController::class, 'summary']);
 
+
+    Route::prefix('/transactions')->group(function () {
+        Route::get('/', [TransactionController::class, 'index']);
+        Route::get('/data', [TransactionController::class, 'data']);
+        Route::get('/search', [TransactionController::class, 'search']);
+        Route::post('/', [TransactionController::class, 'store']);
+    });
 
     Route::prefix('/manage-users')->group(function () {
         Route::prefix('users')->group(function () {
@@ -482,6 +491,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/destroy', [TaxSettingController::class, 'destroy']);
             Route::post('/update/{taxSetting}', [TaxSettingController::class, 'update']);
         });
+
         Route::prefix('assets')->group(function () {
             Route::post('/destroy', [AssetController::class, 'destroy']);
             Route::get('/', [AssetController::class, 'index']);
@@ -500,6 +510,17 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/detail/data/{asset}', [AssetController::class, 'getDetailData']);
             Route::post('/import', [AssetController::class, 'import']);
         });
+
+        Route::prefix('transaction-types')->group(function () {
+            Route::get('/', [TransactionTypeController::class, 'index']);
+            Route::get('/data', [TransactionTypeController::class, 'data']);
+            Route::get('/search', [TransactionTypeController::class, 'search']);
+            Route::post('/', [TransactionTypeController::class, 'store']);
+            Route::get('/{transactionType}', [TransactionTypeController::class, 'edit']);
+            Route::post('/destroy', [TransactionTypeController::class, 'destroy']);
+            Route::post('/update/{transactionType}', [TransactionTypeController::class, 'update']);
+        });
+
     });
 
 
@@ -1367,6 +1388,11 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/selected-work-time/{workTime}', [WorkTimeController::class, 'selectedWorkTime']);
         Route::get('/departments-data', [DepartmentController::class, 'getDepartments']);
         Route::get('/selected-department/{department}', [DepartmentController::class, 'selectedDepartment']);
+
+        Route::get('/accounts-data', [AccountController::class, 'getAccounts']);
+        Route::get('/selected-account/{account}', [AccountController::class, 'selectedAccount']);
+        Route::get('/work-times-data', [WorkTimeController::class, 'getWorkTimes']);
+        Route::get('/selected-work-time/{workTime}', [WorkTimeController::class, 'selectedWorkTime']);
     });
 });
 

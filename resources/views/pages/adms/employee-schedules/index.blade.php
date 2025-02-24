@@ -171,7 +171,7 @@
                     const endDate = document.getElementById('end_date')?.value ?? null;
 
                     console.log(startDate, endDate)
-                    
+
                     const resp = await axios.get('/adms/employee-schedules/filter', {
                         params: {
                             start_date: startDate,
@@ -242,11 +242,11 @@
                     }
                 },
                 async getWorkTimeData() {
-                    $(`.work-time-select2`).select2({
+                    $(`.work-times-select2`).select2({
                         placeholder: "Pilih Jam Kerja",
                         allowClear: true,
                         ajax: {
-                            url: '/adms/employee-schedules/work-time/data',
+                            url: '/select2/work-times-data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),
@@ -261,7 +261,7 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/adms/employee-schedules/work-time/selected/${this.schedulesValue.id}`,
+                        url: `select2/selected-work-time/${this.schedulesValue.work_time_id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedWorkTime.append(option).trigger('change').trigger({

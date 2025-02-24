@@ -79,4 +79,20 @@ class AccountService
     }
 
 
+    public function getAccounts(Request $request)
+    {
+        $search = $request->input('search');
+        $query = Account::search($search)->query(callback: function ($query) {
+            $query->orderby('code')->select('id', 'name', 'code');
+        })->get();
+
+        return $query->map(function ($c) {
+            return [
+                'id' => $c->id,
+                'text' => $c->code . ' ' . $c->name,
+            ];
+        })->toArray();
+    }
+
+
 }

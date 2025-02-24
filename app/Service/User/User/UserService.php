@@ -96,7 +96,8 @@ use Illuminate\Support\Facades\Hash;
             $data['placement'] = 'Cabang';
             $data['branch_id'] = $request->user()->branch_id;
         }
-        $data['password'] = empty($request->password) ? $user->password : Hash::make($request->password);
+        $data['password'] = empty($request->password)
+            ? $user->password : Hash::make($request->password);
         $data['nip'] = $request->roles[0] === 'Vendor' ? null : $this->formattedNip($data);
         $user->update($data);
         if ($request->user()->hasRole('Super Admin')) {
