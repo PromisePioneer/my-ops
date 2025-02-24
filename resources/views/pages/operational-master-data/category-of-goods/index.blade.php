@@ -1,5 +1,5 @@
 @extends('layouts.template')
-@section('page-title', 'Data Kategori Barang')
+@section('page-title', 'Master Operasional - Kategori Barang')
 @section('content')
     <div x-data="inventoryData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
@@ -140,6 +140,7 @@
                 async init() {
                     await this.getItemCategories();
                 },
+
                 async searchData() {
                     try {
                         const resp = await axios.get('/operational-master-data/category-of-goods/search', {
@@ -152,7 +153,7 @@
                     }
                 },
                 async add() {
-                    this.editVal = '';
+                    this.form.reset();
                 },
                 async paginationEndPoint(url) {
                     if (url) {

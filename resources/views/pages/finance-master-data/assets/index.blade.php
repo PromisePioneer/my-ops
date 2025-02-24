@@ -1,5 +1,6 @@
 @extends('layouts.template')
-@section('page-title', 'Data Aset')
+@section('page-title', 'Aset')
+@section('breadcrumbs', 'Master Keuangan - Aset')
 @section('content')
     <div x-data="assetsData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">

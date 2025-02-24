@@ -1,4 +1,6 @@
 @extends('layouts.template')
+@section('page-title', 'Detail Area')
+@section('breadcrumbs', 'Master Umum - Area - Detail Area')
 @section('content')
     <div x-data="userHasArea()">
         @include('pages.general-master-data.areas.detail.form')
@@ -69,7 +71,9 @@
                                     <td colspan="9">
                                         <div style="text-align: center;">
                                             <div class="spinner-border" role="status">
-                                                <span class="visually-hidden">Loading...</span>
+                                                <span class="visually-hidden">
+                                                    Loading...
+                                                </span>
                                             </div>
                                         </div>
                                     </td>

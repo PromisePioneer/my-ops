@@ -1,6 +1,7 @@
 @php @endphp
 @extends('layouts.template')
-@section('page-title', 'Data Saldo Awal')
+@section('page-title', 'Saldo Awal')
+@section('breadcrumbs', 'Master Keuangan - Saldo Awal')
 @section('content')
     @push('styles')
         <style>
@@ -71,8 +72,8 @@
                                                                       transform="rotate(45 17.0365 15.1223)"
                                                                       fill="black"></rect>
 																<path
-                                                                    d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
-                                                                    fill="black"></path>
+                                                                        d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
+                                                                        fill="black"></path>
 															</svg>
 														</span>
                                 <input type="text" class="form-control form-control-solid w-250px ps-15"
@@ -103,7 +104,7 @@
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                         <th class="w-10px pe-2">
                                             <div
-                                                class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                                    class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                             </div>
                                         </th>
                                         <th class="min-w-125px">Akun</th>
@@ -176,8 +177,8 @@
                                             <tr>
                                                 <td>
                                                     <div
-                                                        class="form-check form-check-sm form-check-custom form-check-solid"
-                                                        @click="selectCheckBox($event)">
+                                                            class="form-check form-check-sm form-check-custom form-check-solid"
+                                                            @click="selectCheckBox($event)">
                                                         <input class="form-check-input" type="checkbox"
                                                                :value="subAccount.id"
                                                                :id="'checkbox-' + subAccount.id"

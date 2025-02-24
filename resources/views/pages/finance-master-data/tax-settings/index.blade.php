@@ -1,5 +1,6 @@
 @extends('layouts.template')
 @section('page-title', 'Pengaturan Pajak')
+@section('breadcrumbs', 'Master Keuangan - Pengaturan Pajak')
 @section('content')
 
     <div x-data="taxSettingsData()">

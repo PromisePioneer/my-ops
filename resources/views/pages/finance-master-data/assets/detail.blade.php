@@ -1,5 +1,7 @@
 @php use function App\Helper\formatDate; @endphp
 @extends('layouts.template')
+@section('page-title', 'Detail Aset')
+@section('breadcrumbs', 'Master Keuangan - Aset - Detail Aset')
 @section('content')
     <div x-data="assetDepreciationDetail()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">

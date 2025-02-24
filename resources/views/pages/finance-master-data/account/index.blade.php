@@ -1,8 +1,9 @@
 @extends('layouts.template')
-@section('page-title', 'Data Account')
+@section('page-title', 'Daftar Akun')
+@section('breadcrumbs', 'Master Keuangan - Akun')
 @section('content')
     <div x-data="accountData()">
-        <div class="card card-xl-stretch mb-5 mb-xl-8">
+    <div class="card card-xl-stretch mb-5 mb-xl-8">
             @include('pages.finance-master-data.account.modal.create')
             @include('pages.finance-master-data.account.modal.create-children')
             @include('pages.finance-master-data.account.modal.edit-children')
@@ -20,15 +21,15 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
                         @can('Tambah Data Akun')
-                        <button type="button" class="btn btn-light-primary btn-sm"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modal-create">
-                            <i class="ki-duotone ki-message-add fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                            </i> Tambah
-                        </button>
+                            <button type="button" class="btn btn-light-primary btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-create">
+                                <i class="ki-duotone ki-message-add fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i> Tambah
+                            </button>
                         @endcan
                     </div>
                     <div class="d-flex justify-content-end align-items-center d-none"

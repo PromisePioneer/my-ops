@@ -1,5 +1,6 @@
 @extends('layouts.template')
-@section('page-title', 'Data Supplier')
+@section('page-title', 'Supplier')
+@section('breadcrumbs', 'Master Operasional - Supplier')
 @section('content')
     <div x-data="supplierData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
