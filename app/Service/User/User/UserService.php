@@ -82,7 +82,7 @@ use Illuminate\Support\Facades\Hash;
             $data['branch_id'] = $request->user()->branch_id;
         }
         $data['password'] = Hash::make($request->password);
-        $data['nip'] = $this->formattedNip($data);
+        $data['nip'] = $request->roles[0] === 'Vendor' ? null : $this->formattedNip($data);
         $user = User::create($data);
         $user->syncRoles($request->roles);
     }
@@ -97,7 +97,7 @@ use Illuminate\Support\Facades\Hash;
             $data['branch_id'] = $request->user()->branch_id;
         }
         $data['password'] = empty($request->password) ? $user->password : Hash::make($request->password);
-        $data['nip'] = $this->formattedNip($data);
+        $data['nip'] = $request->roles[0] === 'Vendor' ? null : $this->formattedNip($data);
         $user->update($data);
         if ($request->user()->hasRole('Super Admin')) {
             $user->syncRoles($request->roles);
