@@ -54,7 +54,6 @@ use Illuminate\Http\Request;
         $employeeSchedule = EmployeeSchedule::where('employee_id', $user->absent_id)
             ->whereBetween('start_date', [$startDate, $endDate])->orderBy('start_date', 'asc')->get()->keyBy('start_date');
 
-
         $dates = [];
         foreach ($period as $date) {
             $formattedDate = $date->format('Y-m-d');
@@ -84,7 +83,6 @@ use Illuminate\Http\Request;
 
 
             foreach ($getPeriod as $period) {
-
                 if($period['employeeSchedule']?->status === 'L'){
                     continue;
                 }
@@ -92,6 +90,7 @@ use Illuminate\Http\Request;
                 if (empty($period['attendanceData']) && Carbon::parse($period['attendancesDate'])->lessThan(Carbon::now())) {
                     $totalAbsent++;
                 }
+
             }
 
             foreach ($user->attendancesSummary as $attendance) {
@@ -122,7 +121,7 @@ use Illuminate\Http\Request;
                 'total_leaves' => $totalLeaves,
                 'total_sick' => $totalSick,
                 'total_permission' => $totalPermission,
-                'total_absent' => $totalAbsent
+                'total_absent' => $totalAbsent - $totalLeaves - $totalSick - $totalPermission
             ];
         });
 
@@ -141,7 +140,7 @@ use Illuminate\Http\Request;
             });
     }
 
-    public function getLeaves($user, $startDate, $endDate): int
+    public function getLeaves($user, $startDate, $endDate)
     {
         $leaveStatus = 'Cuti';
         $leaveAndPermission = $this->leavesQuery($user, $startDate, $endDate, $leaveStatus)->get();
