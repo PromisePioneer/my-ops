@@ -18,7 +18,6 @@
                                 <h2 class="mb-0">Data Karyawan</h2>
                             </div>
                         </div>
-                        <form id="form-filter" @submit.prevent="filter()">
                             <div class="card-body pt-0">
                                 <div class="d-flex flex-column text-gray-600">
                                     <div class="d-flex align-items-center py-2">
@@ -69,11 +68,10 @@
                                 </div>
                             </div>
                             <div class="card-footer pt-4 text-end">
-                                <button type="submit" class="btn btn-light btn-active-primary btn-sm">
+                                <button type="button" @click="filter()" class="btn btn-light btn-active-primary btn-sm">
                                     Filter
                                 </button>
                             </div>
-                        </form>
                     </div>
                 </div>
             @endcanany
@@ -282,7 +280,6 @@
                 selectAll: false,
                 singleChecked: false,
                 search: '',
-                formFilter: document.getElementById('form-filter'),
                 modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
                 formImport: document.getElementById('form-import'),
                 formDelete: document.getElementById('form-delete'),
@@ -385,8 +382,21 @@
                     }
                 },
                 async searchData() {
+                    const year = document.getElementById('year')?.value ?? '';
+                    const month = document.getElementById('month')?.value ?? '';
+                    const branch_id = $(".main-branches-select2")?.val();
+                    const company_id = $(".companies-select2")?.val();
+                    const active = document.getElementById('active')?.value;
+
                     const resp = await axios.get('/manage-users/users/search', {
-                        params: {search: this.search},
+                        params: {
+                            search: this.search,
+                            month: month,
+                            year: year,
+                            branch_id: branch_id,
+                            company_id: company_id,
+                            active: active
+                        },
                         headers: {'Content-Type': 'application/json'}
                     });
 

@@ -58,12 +58,10 @@ class User extends Authenticatable
 
     public function toSearchableArray(): array
     {
+        $this->loadMissing('attendancesSummary');
         return [
-            'id' => $this->id,
             'name' => $this->name,
-            'nip' => $this->nip,
-            'absent_id' => $this->absent_id,
-            'active' => $this->active
+            'nip' => $this->nip
         ];
     }
 

@@ -58,7 +58,7 @@ use Maatwebsite\Excel\Facades\Excel;
     public function search(User $user, Request $request): JsonResponse
     {
         $this->authorize('view', User::class);
-        return response()->json($this->userService->search($user, $request));
+        return response()->json($this->userService->search($request));
     }
 
     /**

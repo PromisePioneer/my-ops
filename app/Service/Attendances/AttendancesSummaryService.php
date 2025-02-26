@@ -276,21 +276,11 @@ use Illuminate\Http\Request;
         $search = $request->input('search');
 
 
-        $data = User::with([
-            'attendancesSummary' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('date', [$startDate, $endDate]);
-            },
-        ]);
+        $data = User::search($search)->query(function ($query) use ($request) {
+            AttendancesACLFilter::apply($query, $request);
+        });
 
-        $filter = AttendancesACLFilter::apply($data, $request);
-
-        if (!empty($search)) {
-            $data->where('name', 'like', '%' . $search . '%')
-                ->orWhere('nip', 'like', '%' . $search . '%');
-        }
-
-
-        $user = $filter->paginate(10)->onEachSide(1);
+        $user = $data->paginate(self::$perPage)->onEachSide(1);
         return self::formattedData($user, $startDate, $endDate);
     }
 }

@@ -32,21 +32,13 @@ use Illuminate\Support\Facades\Hash;
     }
 
 
-    public function search(User $user, Request $request): LengthAwarePaginator
+    public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $query = User::with('branch', 'roles', 'company')
-            ->when($request->user()->hasRole('Branch Manager'), function ($query) use ($request) {
-                $query->where('branch_id', $request->user()->branch_id)
-                    ->where('id', '!=', $request->user()->id);
-            })->orderBy('absent_id');
-
-        if ($search) {
-            $query->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('nip', 'like', '%' . $search . '%');
-            });
-        }
+        $query = User::search($search)->query(function ($query) use ($request) {
+            $getUsers = $this->userRepository->getUsers($query, $request);
+            UserQueryFilter::apply($getUsers, $request);
+        });
 
         $data = $query->paginate(self::$perPage);
         return self::formattedData($data);
@@ -55,9 +47,11 @@ use Illuminate\Support\Facades\Hash;
 
     public function filter(Request $request): LengthAwarePaginator
     {
-        $query = User::query();
-        $users = UserQueryFilter::apply($query, $request)->paginate(self::$perPage);
-
+        $search = $request->input('search');
+        $users = User::search($search)->query(function ($query) use ($request) {
+            $getUsers = $this->userRepository->getUsers($query, $request);
+            UserQueryFilter::apply($getUsers, $request);
+        })->paginate(self::$perPage);
         return self::formattedData($users);
     }
 
