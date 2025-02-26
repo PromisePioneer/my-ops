@@ -35,10 +35,21 @@ use Illuminate\Support\Facades\Hash;
     public function search(User $user, Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $query = User::search($search)->query(function () use ($user, $request) {
-            $this->userRepository->getUsers($user, $request);
-        })->paginate(self::$perPage);
-        return self::formattedData($query);
+        $query = User::with('branch', 'roles', 'company')
+            ->when($request->user()->hasRole('Branch Manager'), function ($query) use ($request) {
+                $query->where('branch_id', $request->user()->branch_id)
+                    ->where('id', '!=', $request->user()->id);
+            })->orderBy('absent_id');
+
+        if ($search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('nip', 'like', '%' . $search . '%');
+            });
+        }
+
+        $data = $query->paginate(self::$perPage);
+        return self::formattedData($data);
     }
 
 
