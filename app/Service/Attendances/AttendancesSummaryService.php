@@ -258,8 +258,9 @@ use Illuminate\Http\Request;
 
 
         $filter = AttendanceQueryFilter::apply($query, $request);
+        $aclFilter = AttendancesACLFilter::apply($filter, $request);
 
-        $attendanceSummary = $filter->paginate(self::$perPage)->onEachSide(1);
+        $attendanceSummary = $aclFilter->paginate(self::$perPage)->onEachSide(1);
         return self::formattedData($attendanceSummary, $startDate, $endDate);
     }
 
