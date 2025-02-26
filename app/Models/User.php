@@ -58,7 +58,6 @@ class User extends Authenticatable
 
     public function toSearchableArray(): array
     {
-        $this->loadMissing('branch');
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -66,6 +65,11 @@ class User extends Authenticatable
             'absent_id' => $this->absent_id,
             'active' => $this->active
         ];
+    }
+
+    public function makeSearchableUsing(Collection $models): Collection
+    {
+        return $models->load('attendancesSummary');
     }
 
     public function userHasArea(): HasOne

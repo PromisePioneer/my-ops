@@ -281,13 +281,15 @@ use Illuminate\Http\Request;
             },
         ]);
 
+        $filter = AttendancesACLFilter::apply($data, $request);
 
         if (!empty($search)) {
             $data->where('name', 'like', '%' . $search . '%')
                 ->orWhere('nip', 'like', '%' . $search . '%');
         }
 
-        $user = $data->paginate(10)->onEachSide(1);
+
+        $user = $filter->paginate(10)->onEachSide(1);
         return self::formattedData($user, $startDate, $endDate);
     }
 }
