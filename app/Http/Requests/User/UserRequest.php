@@ -21,10 +21,10 @@ class UserRequest extends FormRequest
             'placement' => [
                 Rule::in('Pusat', 'Cabang'),
                 new UniqueLeaders($request),
-                Rule::requiredIf($request->user()->placement !== 'Pusat'),
+                Rule::requiredIf($request->user()->placement === 'Pusat'),
             ],
             'branch_id' => [
-                Rule::requiredIf($request->user()->placement === 'Cabang'),
+                Rule::requiredIf($request->user()->placement === 'Pusat'),
             ],
             'absent_id' => [
                 'nullable',
