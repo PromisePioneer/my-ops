@@ -100,9 +100,7 @@ use Illuminate\Support\Facades\Hash;
             ? $user->password : Hash::make($request->password);
         $data['nip'] = $request->roles[0] === 'Vendor' ? null : $this->formattedNip($data);
         $user->update($data);
-        if ($request->user()->hasRole('Super Admin')) {
             $user->syncRoles($request->roles);
-        }
     }
 
 

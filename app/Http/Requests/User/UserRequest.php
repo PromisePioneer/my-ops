@@ -23,7 +23,7 @@ class UserRequest extends FormRequest
                 new UniqueLeaders($request),
             ],
             'branch_id' => [
-                Rule::exists('branches', 'name')
+                Rule::exists('branches', 'id')
             ],
             'absent_id' => [
                 'nullable',
@@ -63,7 +63,6 @@ class UserRequest extends FormRequest
             'roles.integer' => 'Role tidak valid',
             'roles.exists' => 'Role tidak valid',
             'branch_id.required_if' => 'Branch tidak boleh kosong',
-            'branch_id.integer' => 'Branch tidak valid',
             'branch_id.exists' => 'Branch tidak valid',
             'absent_id.max' => 'Absent tidak boleh lebih dari 3 karakter',
             'placement.required_if' => 'Penempatan tidak boleh kosong',
