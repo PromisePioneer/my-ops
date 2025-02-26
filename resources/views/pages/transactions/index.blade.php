@@ -4,7 +4,6 @@
 @section('content')
     <div x-data="transactionData()">
         <div class="d-flex flex-column flex-xl-row">
-            @can('Filter Data Mesin Absen Berdasarkan Cabang')
                 <div class="flex-column flex-lg-row-auto w-100 w-lg-250px mb-10">
                     <div class="card card-flush">
                         <div class="card-header">
@@ -30,7 +29,6 @@
                         </form>
                     </div>
                 </div>
-            @endcan
             <div class="flex-lg-row-fluid ms-lg-10">
                 <div class="card card-flush">
                     @include('pages.transactions.form')
@@ -46,24 +44,22 @@
                             </div>
                         </div>
                         <div class="card-toolbar">
-                            <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                                @can('Tambah Menu Mesin Absen')
+                            <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
                                     <button type="button" class="btn btn-light-primary btn-sm"
                                             data-bs-toggle="modal"
-                                            data-bs-target="#modal-fp-device">
+                                            data-bs-target="#modal-transactions">
                                         <i class="ki-duotone ki-message-add fs-2">
                                             <span class="path1"></span>
                                             <span class="path2"></span>
                                             <span class="path3"></span>
                                         </i> Tambah
                                     </button>
-                                @endcan
                             </div>
                         </div>
                     </div>
                     <div class="card-body py-3">
                         <div class="py-5">
-                            <div class="col-12 ">
+                            <div class="col-12 mb-4">
                                 <form id="deleteForm" @submit.prevent="destroy()">
                                     <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
                                     <button type="submit" class="btn btn-light-danger btn-sm mt-5"
@@ -80,7 +76,7 @@
                                 </form>
                             </div>
                             <div class="table-responsive">
-                                <table class="table align-middle table-bordered fs-6 gy-5" id="kt_table_users">
+                                <table class="table align-middle table-bordered fs-6 gy-5">
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                         <th class="w-10px pe-2">
@@ -91,11 +87,9 @@
                                             </div>
                                         </th>
                                         <th class="min-w-125px text-center">Tanggal</th>
-                                        <th class="min-w-125px text-center">
-                                            Nomor Transaksi
-                                        </th>
-                                        <th class="min-w-125px text-center">Tipe</th>
-                                        <th class="min-w-125px text-center">Detail</th>
+                                        <th class="min-w-125px text-center">Transaksi</th>
+                                        <th class="min-w-250px text-center">Tipe</th>
+                                        <th class="min-w-250px text-center">Detail</th>
                                         <th class="min-w-125px text-center">Jumlah</th>
                                         <th class="min-w-250px text-center">Actions</th>
                                     </thead>
@@ -118,56 +112,46 @@
                                             </td>
                                         </tr>
                                     </template>
-                                    <template x-for="(device, index) in transactions?.data" :key="device.id">
+                                    <template x-for="(transaction, index) in transactions?.data" :key="transaction.id">
                                         <tr>
                                             <td>
                                                 <div class="form-check form-check-sm form-check-custom form-check-solid"
                                                      @click="selectCheckBox($event)">
                                                     <input class="form-check-input" type="checkbox"
-                                                           :value="device.id"
-                                                           :id="'checkbox-' + device.id"/>
+                                                           :value="transaction.id"
+                                                           :id="'checkbox-' + transaction.id"/>
                                                 </div>
                                             </td>
                                             <td class="text-center"
-                                                x-text="device.branch_name ?? 'Belum Diset'"></td>
-                                            <td class="text-center" x-text="device.name"></td>
-                                            <td class="text-center" x-text="device.ip_address"></td>
+                                                x-text="transaction.date"></td>
+                                            <td class="text-center" x-text="transaction.transaction_number"></td>
                                             <td class="text-center">
-                                        <span
-                                            :class="device.online === 'Offline' ? 'badge bg-danger text-white' : 'badge bg-success text-white'"
-                                            x-text="device.online"></span>
+                                                <div class="d-flex flex-column align-items-center">
+                                                    <span x-text="transaction.transaction_type"></span>
+                                                    <a :href="`/account-transactions/${transaction.debit_account_id}`"
+                                                       class="btn btn-primary btn-sm py-2 mb-2"
+                                                       x-text="`${transaction.debit}`"></a>
+                                                    <a class="btn btn-danger btn-sm py-2 mb-2"
+                                                       x-text="`${transaction.credit}`"></a>
+                                                </div>
                                             </td>
-                                            <td class="text-center ">
-                                                <span x-text="formatDate(device.last_query_date)"></span>
-                                                <span x-text="device.last_query_date"></span>
-                                            </td>
+                                            <td x-text="transaction.detail"></td>
+                                            <td x-text="transaction.amount"></td>
                                             <td class="d-flex flex-column">
-                                                <template x-if="Number(editPermission) === 1">
-                                                    <button class="btn btn-light-primary btn-sm mb-4"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#modal-fp-device"
-                                                            @click="edit(device.id)">
-                                                        <i class="bi bi-pencil"></i> Ubah Data
-                                                    </button>
-                                                </template>
-                                                <template x-if="Number(testConnectionPermission) === 1">
-                                                    <button class="btn btn-light-info btn-sm mb-4"
-                                                            data-bs-toggle="tooltip"
-                                                            data-bs-placement="top" title="Test Koneksi Mesin"
-                                                            @click="testConnection(device.id)"
-                                                    >
-                                                        <i class="bi bi-ethernet"></i>
-                                                        Tes Koneksi
-                                                    </button>
-                                                </template>
-
-                                                <button class="btn btn-light-danger btn-sm mb-4"
-                                                        data-bs-placement="top" title="Tarik Data"
-                                                        @click="edit(device.id)" data-bs-target="#modal-query-attlog"
+                                                <button class="btn btn-light-primary btn-sm mb-4"
+                                                        @click="edit(transaction.id)"
                                                         data-bs-toggle="modal"
+                                                        data-bs-target="#modal-transactions">
+                                                    <i class="bi bi-pencil"></i> Ubah Data
+                                                </button>
+
+                                                <button class="btn btn-light-info btn-sm mb-4"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
+                                                        @click="confirm(transaction.id)"
                                                 >
-                                                    <i class="bi bi-info-circle-fill"></i>
-                                                    Ambil Data
+                                                    <i class="bi bi-check-circle-fill"></i>
+                                                    Konfirmasi
                                                 </button>
                                             </td>
                                         </tr>
@@ -192,7 +176,7 @@
         <div>
         </div>
     </div>
-
+    @include('components.toast')
 @endsection
 @push('script')
     <script defer>
@@ -216,29 +200,14 @@
                 filterForm: document.getElementById('form-filter'),
                 async init() {
                     await this.getTransactions();
+                    await this.getMainBranches();
+                    await this.getTransactionType();
                 },
                 async paginationEndPoint(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
                         this.transactions = resp.data
                     }
-                },
-                async getTransactions() {
-                    this.isLoading = true;
-                    try {
-                        const resp = await axios.get('/transactions/data');
-                        this.transactions = resp.data;
-                    } catch (e) {
-                        console.log(e);
-                    } finally {
-                        this.isLoading = false;
-                    }
-                },
-                async showDeviceInfo(id) {
-                    const resp = await axios.get(`/adms/fp-transactions/${id}`);
-                    this.editVal = resp.data;
-                    await this.selectedBranch();
-                    this.modalQueryAttLog.show();
                 },
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
@@ -279,9 +248,9 @@
                     this.buttonLoading = true;
                     try {
                         if (!id) {
-                            await axios.post('/adms/fp-transactions/', new FormData(this.form))
+                            await axios.post('/transactions', new FormData(this.form))
                         } else {
-                            await axios.post(`/adms/fp-transactions/${id}`, new FormData(this.form))
+                            await axios.post(`/transactions/${id}`, new FormData(this.form))
                         }
                         await showAlert('success', 'Data berhasil disimpan')
                         this.form.reset();
@@ -295,14 +264,15 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/adms/fp-transactions/${id}`);
+                    const resp = await axios.get(`/transactions/${id}`);
                     this.editVal = resp.data;
                     await this.selectedBranch();
+                    await this.selectedTransactionType();
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/adms/fp-transactions/destroy`, new FormData(this.deleteForm));
+                            await axios.post(`/transactions/destroy`, new FormData(this.deleteForm));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -311,24 +281,11 @@
                         }
                     });
                 },
-                async testConnection(id) {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post(`/adms/fp-transactions/test-connection/${id}`);
-                        await showAlert('success', 'Koneksi ke mesin sukses');
-                        await this.init();
-                    } catch (error) {
-                        console.error(error);
-                        await showAlert('error', 'Koneksi Gagal');
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
                 async filter() {
                     const branchId = $('#branch-id-filter').val();
                     this.isLoading = true;
                     try {
-                        const resp = await axios.get('/adms/fp-transactions/filter', {
+                        const resp = await axios.get('/transactions/filter', {
                             params: {branch_id: branchId},
                         })
                         this.transactions = resp.data;
@@ -336,36 +293,6 @@
                         console.log(e)
                     } finally {
                         this.isLoading = false;
-                    }
-
-                },
-                async getUsers(id) {
-                    this.buttonLoading = true;
-                    try {
-                        const resp = await axios.post(`/adms/fp-transactions/get-users/${id}`);
-                        this.userList = resp.data;
-                        await showAlert('success', 'Koneksi ke mesin sukses');
-                        await this.init();
-                    } catch (error) {
-                        console.error(error);
-                        await showAlert('error', 'Koneksi Gagal');
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
-                async queryAttLog(id) {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post(`/adms/fp-transactions/attendance-log/${id}`, new FormData(this.formQueryAttLog));
-                        await showAlert('success', 'Data Kehadiran telah di masukkan kedalam antrian dan akan berjalan di latar belakang.');
-                        this.formQueryAttLog.reset();
-                        this.modalQueryAttLog.hide();
-                        await this.init();
-                    } catch (error) {
-                        console.error(error);
-                        await showAlert('error', 'Koneksi Gagal');
-                    } finally {
-                        this.buttonLoading = false;
                     }
                 },
                 async getMainBranches() {
@@ -382,6 +309,18 @@
                         }
                     });
                 },
+                async confirm(id) {
+                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                        try {
+                            await axios.post(`/transactions/confirm/${id}`);
+                            await showAlert('success', 'Data sukses dikonfirmasi');
+                            await this.init();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
+                },
                 async selectedBranch() {
                     const selectedBranch = $('#selected-branch');
                     const response = await $.ajax({
@@ -391,6 +330,44 @@
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedBranch.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
+                async getTransactions() {
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/transactions/data');
+                        this.transactions = resp.data;
+                    } catch (e) {
+                        console.log(e);
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+                async getTransactionType() {
+                    $(".transaction-types-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Tipe Transaksi",
+                        ajax: {
+                            url: '/select2/transaction-types-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async selectedTransactionType() {
+                    const selectedTransactionType = $('#selected-transaction-type');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/select2/selected-transaction-type/${this.editVal.transaction_type_id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedTransactionType.append(option).trigger('change').trigger({
                         type: 'select2:select',
                         params: {results: response}
                     });

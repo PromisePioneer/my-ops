@@ -65,7 +65,7 @@ class LeaveACLFilter
 
 
         if ($request->user()->hasRole('Branch Manager')) {
-            return $query->whereHas('branch', function ($query) use ($request) {
+            return $query->whereHas('user.branch', function ($query) use ($request) {
                 $query->where('branch_id', $request->user()->branch_id);
             });
         }

@@ -2,11 +2,14 @@
 
 namespace App\Service\Transaction;
 
+use AllowDynamicProperties;
+use App\Models\Account;
 use App\Models\Contact;
 use App\Models\Fab;
 use App\Models\FabHasSKL;
 use App\Models\FabServiceCategory;
 use App\Models\PurchaseOrder;
+use App\Service\Accounts\AccountTransactionService;
 use App\Service\CompanyNameService;
 use App\Service\HelperService\HandleFileUploadService;
 use Carbon\Carbon;
@@ -17,16 +20,15 @@ use Throwable;
 use function App\Helper\convertToRoman;
 use function App\Helper\formatDate;
 
-class FabService
+#[AllowDynamicProperties] class FabService
 {
     private static int $perPage = 10;
-    private CompanyNameService $companyNameService;
-    private HandleFileUploadService $handleFileUploadService;
-
+    public const string ACCOUNT_TRANSACTION_DESCRIPTION = 'FAB dikirim ke %s No.FAB: %s';
     public function __construct()
     {
         $this->companyNameService = new CompanyNameService();
         $this->handleFileUploadService = new HandleFileUploadService();
+        $this->accountTransactionService = new AccountTransactionService();
     }
 
     private static function generateFABNumber(Request $request): string
@@ -143,6 +145,9 @@ class FabService
     }
 
 
+    /**
+     * @throws Throwable
+     */
     public function update($request, $fab): void
     {
         DB::transaction(function () use ($request, $fab) {
@@ -181,8 +186,35 @@ class FabService
     }
 
 
+    /**
+     * @throws Throwable
+     */
     public function confirm($fab): void
     {
+        $fabServiceCategory = FabServiceCategory::where('fab_id', $fab->id)->sum('price');
+        $debitAccount = Account::where('code', '403-04')->first();
+        $creditAccount = Account::where('code', '113-01')->first();
+        DB::transaction(function () use (
+            $fabServiceCategory,
+            $debitAccount,
+            $fab
+        ) {
+            $this->accountTransactionService->createDebitTransaction(
+                null,
+                $fab->account_id,
+                $debitAccount->id,
+                $fabServiceCategory
+            );
+
+            $this->accountTransactionService->createDebitTransaction(
+                null,
+                $fab->account_id,
+                $debitAccount->id,
+                $fabServiceCategory
+            );
+
+
+        });
         $fab->status = true;
         $fab->save();
     }

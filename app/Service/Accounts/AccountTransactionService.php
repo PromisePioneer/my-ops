@@ -35,8 +35,13 @@ class AccountTransactionService
             'account_id' => $accountId,
             'description' => $description,
             'transaction_type' => 'TR',
-            'entries_type' => 'debit',
+            'entries_type' => 'credit',
             'amount' => $amount,
         ]);
+    }
+
+    public function getHistory(int $accountId)
+    {
+        return AccountTransaction::where('account_id', $accountId)->get();
     }
 }

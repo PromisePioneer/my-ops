@@ -88,7 +88,8 @@ class EmployeeScheduleService
 
 
         if ($request->user()->hasRole('Branch Manager')) {
-            $user->where('branch_id', $request->user()->branch_id->where('active', 1))->paginate(self::$perPage);
+            $user->where('branch_id', $request->user()->branch_id)
+                ->where('active', 1)->paginate(self::$perPage);
         }
 
 

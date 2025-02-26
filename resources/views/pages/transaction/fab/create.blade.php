@@ -83,9 +83,7 @@
                                                    placeholder="Kapasitas" value="0" @change="calculateTotal(index)"/>
                                         </td>
                                         <td style='text-align:center; vertical-align:middle' class="w-20">
-                                            <select :class="`form-select form-select-solid unit-type-select2-${index}`"
-                                                    :id="`#selectedUnitType-${index}`"
-                                                    :name="`fabServices[${index}][unit_type_id]`"
+                                            <select :class="`form-select form-select-solid unit-type-select2-${index}`" :id="`#selectedUnitType-${index}`" :name="`fabServices[${index}][unit_type_id]`"
                                                     x-model="field.unit_type_id">
                                                 <option></option>
                                             </select>

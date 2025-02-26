@@ -140,7 +140,7 @@ use Illuminate\Http\Request;
             });
     }
 
-    public function getLeaves($user, $startDate, $endDate)
+    public function getLeaves($user, $startDate, $endDate): int
     {
         $leaveStatus = 'Cuti';
         $leaveAndPermission = $this->leavesQuery($user, $startDate, $endDate, $leaveStatus)->get();

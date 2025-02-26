@@ -194,7 +194,9 @@ use Throwable;
         $purchaseOrder->update([
             'status' => 1
         ]);
-        return response()->json();
+        return response()->json([
+            'message' => 'Purchase Order berhasil dikonfirmasi.'
+        ]);
     }
 
 

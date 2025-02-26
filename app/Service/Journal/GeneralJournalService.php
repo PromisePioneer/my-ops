@@ -8,11 +8,10 @@ use Illuminate\Http\Request;
 
 class GeneralJournalService
 {
-    public function data(Request $request)
+    public function data()
     {
         $generalJournal = AccountTransaction::with('account')
             ->where('transaction_type', 'TR')
-            ->where('branch_id', $request->user()->branch_id)
             ->whereYear('date', Carbon::now())
             ->orderBy('date')
             ->get();

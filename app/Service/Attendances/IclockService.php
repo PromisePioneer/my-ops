@@ -18,9 +18,6 @@ use Throwable;
 
 class IclockService
 {
-
-
-
     public function handshake(Request $request): string
     {
         $data = [
@@ -76,7 +73,6 @@ class IclockService
                     }
                     $attendanceData = $this->prepareAttendanceData($line, $request);
                     $shift = $this->getShiftForUser($attendanceData['employee_id'], $attendanceData['timestamp'], $attendanceData['status1']);
-//dd($shift);
 
                     $this->processAttendanceRecord($attendanceData, $shift);
                     $processedCount++;
@@ -85,9 +81,7 @@ class IclockService
             });
             return 'OK: ' . $processedCount;
         } catch (Throwable $e) {
-            // Log and report any errors
             Log::info($e);
-
             return 'ERROR: ' . $e . "\n";
         }
     }
@@ -101,10 +95,7 @@ class IclockService
 
     private function prepareAttendanceData(string $line, Request $request): array
     {
-        // Split line by tab character
         $data = explode("\t", $line);
-
-
         return [
             'sn' => $request->input('SN'),
             'table' => $request->input('table'),
@@ -129,11 +120,9 @@ class IclockService
 
 
         $userShift = null;
-        // If the given timestamp is later than the start of the day, check `end_date`
 
         if ($dateTime->greaterThan($startOfTime)) {
 
-            // malam
             if ($dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '23:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '23:59:59'))) {
 //                dd('test');
                 $userShift = EmployeeSchedule::with('workTime')
@@ -199,11 +188,6 @@ class IclockService
             $shiftTimeToCheckIn = Carbon::parse($startDateEmpSchedule . ' ' . $shift->workTime?->time_to_checkin);
             $shiftEndTimeToCheckIn = Carbon::parse($endDateEmpSchedule . ' ' . $shift->workTime->end_time_to_checkin);
         }
-
-
-
-
-
 
         if ($this->isValidTimeToCheckIn($date, $shiftTimeToCheckIn ?? $shift->time_to_checkin, $shiftEndTimeToCheckIn ?? $shift->end_time_to_checkin, $shift?->name)) {
             Attendances::create($attendanceData);

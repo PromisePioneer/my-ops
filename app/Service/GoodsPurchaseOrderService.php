@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 use function App\Helper\formatDate;
 
 class GoodsPurchaseOrderService
@@ -103,6 +104,9 @@ class GoodsPurchaseOrderService
     }
 
 
+    /**
+     * @throws Throwable
+     */
     public function confirm(Request $request, GoodsPurchaseOrder $goodsPurchaseOrder): void
     {
         DB::transaction(function () use ($request, $goodsPurchaseOrder) {
@@ -170,6 +174,8 @@ class GoodsPurchaseOrderService
             ]);
         });
     }
+
+
 
 
 }

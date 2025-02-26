@@ -18,6 +18,7 @@ use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
 use App\Http\Controllers\Accounting\Transaction\PurchaseOrderController;
 use App\Http\Controllers\Accounting\TransactionTypeController;
 use App\Http\Controllers\Accounting\VendorPayrollController;
+use App\Http\Controllers\AccountTransactionController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\BAAController;
@@ -97,6 +98,7 @@ use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
 use App\Http\Controllers\WarehouseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Jmrashed\Zkteco\Lib\ZKTeco;
 
 /*
 |--------------------------------------------------------------------------
@@ -113,9 +115,19 @@ Route::get('/', function () {
     return redirect('home');
 });
 
-//Route::get('/', static function () {
-//    return redirect('/login');
-//});
+Route::get('/test-route', static function () {
+
+    $zk = new ZKTeco("103.141.255.197", 4370);
+    $connected = $zk->connect();
+
+    if ($connected) {
+        dd($zk->getAttendance());
+    } else {
+        return response()->json(['message' => 'Koneksi Gagal'], 500);
+    }
+
+
+});
 
 Auth::routes();
 
@@ -141,6 +153,9 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/data', [TransactionController::class, 'data']);
         Route::get('/search', [TransactionController::class, 'search']);
         Route::post('/', [TransactionController::class, 'store']);
+        Route::get('/{transaction}', [TransactionController::class, 'edit']);
+        Route::post('/{transaction}', [TransactionController::class, 'update']);
+        Route::post('/confirm/{transaction}', [TransactionController::class, 'confirm']);
     });
 
     Route::prefix('/manage-users')->group(function () {
@@ -1393,6 +1408,15 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/selected-account/{account}', [AccountController::class, 'selectedAccount']);
         Route::get('/work-times-data', [WorkTimeController::class, 'getWorkTimes']);
         Route::get('/selected-work-time/{workTime}', [WorkTimeController::class, 'selectedWorkTime']);
+        Route::get('/transaction-types-data', [TransactionTypeController::class, 'getTransactionTypes']);
+        Route::get('/selected-transaction-type/{transactionType}', [TransactionTypeController::class, 'selectedTransactionType']);
+    });
+
+
+    Route::prefix('account-transactions')->group(function () {
+        Route::get('/data/{account}', [AccountTransactionController::class, 'accountTransactionHistory']);
+        Route::get('/{account}', [AccountTransactionController::class, 'index']);
+        Route::get('/search', [AccountTransactionController::class, 'search']);
     });
 });
 

@@ -1,5 +1,5 @@
 <div class="modal fade" tabindex="-1" id="modal-transactions">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Form Transaksi</h5>
@@ -11,30 +11,59 @@
 
             <form id="form-transactions" @submit.prevent="save(editVal?.id)">
                 <div class="modal-body">
-                    <div class="mb-10">
-                        <label for="branch_id" class="required form-label">Cabang</label>
-                        <select name="branch_id" id="selected-branch"
-                                class="form-select form-select-solid main-branches-select2"
-                                data-dropdown-parent="#modal-fp-device">
-                            <option value="0">Pilih</option>
-                        </select>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-10">
+                                <label for="branch_id" class="required form-label">Cabang</label>
+                                <select name="branch_id" id="selected-branch"
+                                        class="form-select form-select-solid main-branches-select2"
+                                        data-dropdown-parent="#modal-transactions">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-10">
+                                <label for="transaction_type_id" class="required form-label">Tipe Transaksi</label>
+                                <select name="transaction_type_id" id="selected-transaction-type"
+                                        class="form-select form-select-solid transaction-types-select2"
+                                        data-dropdown-parent="#modal-transactions">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Nama</label>
-                        <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama Kantor/Pop" :value="editVal?.name"/>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="mb-10">
+                                <label for="name" class="required form-label">
+                                    Jumlah
+                                </label>
+                                <input type="number" class="form-control form-control-solid" name="amount"
+                                       id="amount"
+                                       placeholder="Jumlah" :value="editVal.amount">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="mb-10">
+                                <label for="name" class="required form-label">Tanggal</label>
+                                <input type="date" id="date" name="date" class="form-control form-control-solid date"
+                                       placeholder="Tanggal" :value="editVal?.date"
+                                />
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-10">
-                        <label for="serial_number" class="required form-label">IP Address</label>
-                        <input type="text" id="ip_address" name="ip_address"
-                               class="form-control form-control-solid"
-                               placeholder="IP Address" :value="editVal?.ip_address"/>
-                    </div>
-                    <div class="mb-10">
-                        <label for="serial_number" class="required form-label">Serial Number</label>
-                        <input type="text" id="serial_number" name="serial_number"
-                               class="form-control form-control-solid"
-                               placeholder="Nama" :value="editVal?.serial_number"/>
+
+
+                    <div class="row">
+                        <div class="mb-10">
+                            <label for="name" class="required form-label">
+                                Detail Transaksi
+                            </label>
+                            <textarea type="text" class="form-control form-control-solid" name="detail" id="detail"
+                                      placeholder="Detail" x-text="editVal.detail">
+                                </textarea>
+                        </div>
                     </div>
                 </div>
 

@@ -22,7 +22,7 @@
                     <div class="mb-10">
                         <label for="debit_account_id" class="required form-label">Akun Debit</label>
                         <select name="debit_account_id" id="selected-debit-account"
-                                class="form-control form-control-solid accounts-select2"
+                                class="form-select form-select-solid accounts-select2"
                                 data-dropdown-parent="#modal-transaction-type">
                             <option></option>
                         </select>
@@ -31,7 +31,7 @@
                     <div class="mb-10">
                         <label for="credit_account_id" class="required form-label">Akun Kredit</label>
                         <select name="credit_account_id" id="selected-credit-account"
-                                class="form-control form-control-solid accounts-select2"
+                                class="form-select form-select-solid accounts-select2"
                                 data-dropdown-parent="#modal-transaction-type">
                             <option></option>
                         </select>

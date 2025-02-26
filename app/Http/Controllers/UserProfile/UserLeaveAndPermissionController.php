@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserProfile\LeaveAndPermissionRequest;
 use App\Models\LeaveAndPermission;
 use App\Service\HelperService\HandleFileUploadService;
-use App\Service\LeaveAndPermission\UserLeaveAndPermissionService;
 use App\Service\User\LeaveAndPermission\CalculateUserLeaves;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
