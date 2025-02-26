@@ -11,7 +11,9 @@ class AttendanceQueryFilter
     public static function apply(Builder|EloquentBuilder $query, Request $request): EloquentBuilder|Builder
     {
         if ($request->filled('branch_id')) {
-            $query->where('branch_id', $request->input('branch_id'));
+            $query->whereHas('branch', function ($query) use ($request) {
+                $query->where('id', $request->input('branch_id'));
+            });
         }
 
 
@@ -20,7 +22,7 @@ class AttendanceQueryFilter
                 $query->where('id', $request->input('role_id'));
             });
         }
-        
+
         return $query;
     }
 }
