@@ -5,6 +5,7 @@ namespace App\Service\User\LeaveAndPermission;
 use AllowDynamicProperties;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
+use App\Service\User\User\UserQueryFilter;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use function App\Helper\formatDate;
@@ -87,7 +88,7 @@ use function App\Helper\formatDate;
             });
         }
 
-        $query = LeaveACLFilter::apply($query, $request);
+        $query = LeaveSelect2QueryFilter::apply($query, $request);
         $users = $query->get();
 
 
