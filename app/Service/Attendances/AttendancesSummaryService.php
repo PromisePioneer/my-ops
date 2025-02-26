@@ -246,15 +246,15 @@ use Illuminate\Http\Request;
 
     public function filter($request): LengthAwarePaginator
     {
-        $startDate = $request->start_date ?? $this->financialClosePeriodService->startDate();
-        $endDate = $request->end_date ?? $this->financialClosePeriodService->endDate();
+        $startDate = $request->start_date ?? $this->startDate;
+        $endDate = $request->end_date ?? $this->endDate;
 
 
         $query = User::with([
             'attendancesSummary' => function ($query) use ($startDate, $endDate, $request) {
-                $query->whereBetween('date', [$request->start_date, $request->end_date]);
+                $query->whereBetween('date', [$startDate, $endDate]);
             }
-        ])->where('active', 1);
+        ], 'branch')->where('active', 1);
 
 
         $filter = AttendanceQueryFilter::apply($query, $request);
