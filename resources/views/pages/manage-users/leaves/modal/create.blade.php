@@ -42,6 +42,7 @@
                             <option value="Sakit">Sakit</option>
                             <option value="Cuti">Cuti</option>
                             <option value="Izin">Izin</option>
+                            <option value="Dinas">Dinas</option>
                         </select>
                     </div>
                     <div class="mb-10" x-show="sickLetter === 'Sakit'" x-transition>
@@ -51,9 +52,9 @@
                                accept=".jpg,.png,.jpeg"/>
                     </div>
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Alasan Cuti</label>
+                        <label for="name" class="required form-label">Alasan</label>
                         <textarea type="date" id="reason" name="reason" class="form-control form-control-solid"
-                                  data-kt-autosize="true" placeholder="ALasan Cuti"></textarea>
+                                  data-kt-autosize="true" placeholder="ALasan"></textarea>
                     </div>
                 </div>
 

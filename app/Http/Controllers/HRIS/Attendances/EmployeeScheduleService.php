@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\HRIS\Attendances;
 
 use App\Models\EmployeeSchedule;
+use App\Models\LeaveAndPermission;
 use App\Models\User;
 use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
@@ -21,6 +22,7 @@ class EmployeeScheduleService
 
     public function __construct()
     {
+
         $this->financialClosePeriodService = new FinancialClosePeriodService();
     }
 
@@ -272,8 +274,6 @@ class EmployeeScheduleService
     {
 
         $period = CarbonPeriod::create($startDate, $endDate);
-
-
         $data = $userData->getCollection()->map(function ($item) use ($startDate, $endDate, $period) {
             $allSchedules = EmployeeSchedule::with('workTime')
                 ->whereBetween('start_date', [$startDate, $endDate])
@@ -281,12 +281,22 @@ class EmployeeScheduleService
                 ->get()
                 ->keyBy('start_date');
 
+            $getLeaves = $this->getLeaves($item, $startDate, $endDate);
+            $getSick = $this->getSick($item, $startDate, $endDate);
+            $getPermission = $this->getPermission($item, $startDate, $endDate);
+
             $dates = [];
             foreach ($period as $date) {
                 $formattedDate = $date->format('Y-m-d');
+                $leaveDetails = $getLeaves[$formattedDate] ?? null;
+                $sickDetails = $getSick[$formattedDate] ?? null;
+                $permissionDetails = $getPermission[$formattedDate] ?? null;
                 $dates[$formattedDate] = [
                     'periodDate' => $formattedDate,
                     'employeeSchedules' => $allSchedules->get($formattedDate),
+                    'leaves' => $leaveDetails,
+                    'sick' => $sickDetails,
+                    'permission' => $permissionDetails,
                 ];
             }
 
@@ -298,9 +308,10 @@ class EmployeeScheduleService
                     return [
                         'period_date' => $date['periodDate'],
                         'schedules_date' => $date['employeeSchedules'],
-                        'work_time_schedules' => $date['employeeSchedules']?->workTime?->name .
-                            ' (' . $date['employeeSchedules']?->workTime?->clock_in .
-                            ' - ' . $date['employeeSchedules']?->workTime?->clock_out . ')',
+                        'work_time_schedules' => $date['employeeSchedules']?->workTime?->name,
+                        'sick' => $date['sick'] ?? null,
+                        'permission' => $date['permission'] ?? null,
+                        'leaves' => $date['leaves'] ?? null,
                     ];
                 })->values(),
                 'area' => $item->userHasArea?->area,
@@ -323,6 +334,102 @@ class EmployeeScheduleService
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
         $items = $items instanceof Collection ? $items : Collection::make($items);
         return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
+    }
+
+
+    public function getPermission($user, $startDate, $endDate): array
+    {
+        $sick = LeaveAndPermission::where('user_id', $user->id)
+            ->where('leaves_status', 'Izin')
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('start_date', [$startDate, $endDate])
+                    ->orWhereBetween('end_date', [$startDate, $endDate]);
+            })
+            ->get();
+
+        $permissionPeriod = [];
+
+        foreach ($sick as $dates) {
+            $permissionPeriod = array_merge(
+                $permissionPeriod,
+                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
+            );
+        }
+
+        $sick = [];
+        foreach ($permissionPeriod as $date) {
+            $formattedDate = Carbon::parse($date)->format('Y-m-d');
+            $sick[$formattedDate] = collect([
+                'permission_date' => $formattedDate,
+                'status' => 'Izin',
+            ]);
+        }
+
+        return $sick;
+    }
+
+
+    public function getSick($user, $startDate, $endDate)
+    {
+        $sick = LeaveAndPermission::where('user_id', $user->id)
+            ->where('leaves_status', 'Sakit')
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('start_date', [$startDate, $endDate])
+                    ->orWhereBetween('end_date', [$startDate, $endDate]);
+            })
+            ->get();
+
+        $sickPeriod = [];
+
+        foreach ($sick as $dates) {
+            $sickPeriod = array_merge(
+                $sickPeriod,
+                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
+            );
+        }
+
+        $sick = [];
+        foreach ($sickPeriod as $date) {
+            $formattedDate = Carbon::parse($date)->format('Y-m-d');
+            $sick[$formattedDate] = collect([
+                'sick_date' => $formattedDate,
+                'status' => 'Sakit',
+            ]);
+        }
+
+        return $sick;
+    }
+
+    public function getLeaves($user, $startDate, $endDate): array
+    {
+        $leaveAndPermission = LeaveAndPermission::where('user_id', $user->id)
+            ->where('leaves_status', 'Cuti')
+            ->where('confirmation_status', 'Diterima')
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('start_date', [$startDate, $endDate])
+                    ->orWhereBetween('end_date', [$startDate, $endDate]);
+            })->get();
+
+
+        $leavePeriods = [];
+
+        foreach ($leaveAndPermission as $dates) {
+            $leavePeriods = array_merge(
+                $leavePeriods,
+                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
+            );
+        }
+
+        $leaves = [];
+        foreach ($leavePeriods as $date) {
+            $formattedDate = Carbon::parse($date)->format('Y-m-d');
+            $leaves[$formattedDate] = collect([
+                'leaves_date' => $formattedDate,
+                'status' => 'Cuti',
+            ]);
+        }
+
+        return $leaves;
     }
 
 }

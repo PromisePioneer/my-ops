@@ -79,7 +79,7 @@
                             <tbody class=" fw-bold">
                             <template x-if="isLoading">
                                 <tr>
-                                    <td colspan="9">
+                                    <td colspan="11">
                                         <div style="text-align: center;">
                                             <div class="spinner-border" role="status">
                                                 <span class="visually-hidden">Loading...</span>
@@ -209,12 +209,16 @@
                 async paginationEndPointForAttendanceSummary(url) {
                     const startDate = document.getElementById('start_dates')?.value ?? '';
                     const endDate = document.getElementById('end_dates')?.value ?? '';
+                    const branchId = $('#branch_id').val();
+                    const roleId = $('#role_id').val();
 
                     if (url) {
                         const resp = await axios.get(`${url}`, {
                             params: {
                                 start_date: startDate,
-                                end_date: endDate
+                                end_date: endDate,
+                                branch_id: branchId,
+                                role_id: roleId
                             }
                         });
                         this.attendanceSummary = resp.data
@@ -272,12 +276,18 @@
                 },
                 async additionalFilter() {
                     this.isLoading = true;
+                    const startDate = document.getElementById('start_dates')?.value ?? '';
+                    const endDate = document.getElementById('end_dates')?.value ?? '';
+                    const branch_id = $('#branch_id').val();
+                    const role_id = $('#role_id').val()
                     try {
                         const resp = await axios.get('/adms/attendances-summary/additional-filter', {
                             params: {
+                                start_date: startDate,
+                                end_date: endDate,
                                 department_id: department,
                                 branch_id: branch_id,
-                                role: role,
+                                role_id: role_id,
                             }
                         })
 
@@ -294,7 +304,7 @@
                     const endDate = document.getElementById('end_dates');
                     const department = $('#department_id').val();
                     const branch_id = $('#branch_id').val();
-                    const role = $('#role_id').val();
+                    const role_id = $('#role_id').val();
                     try {
                         const resp = await axios.get('/adms/attendances-summary/filter-date', {
                             params: {
@@ -303,7 +313,7 @@
                                 end_date: endDate,
                                 department: department,
                                 branch_id: branch_id,
-                                role: role,
+                                role: role_id,
                             }
                         });
                         this.attendanceSummary = resp.data;
@@ -319,12 +329,18 @@
                     this.isLoading = true;
                     const startDate = document.getElementById('start_dates')?.value;
                     const endDate = document.getElementById('end_dates')?.value;
+                    const department = $('#department_id').val();
+                    const branch_id = $('#branch_id').val();
+                    const role_id = $('#role_id').val();
                     try {
                         const response = await axios.get('/adms/attendances-summary/search', {
                             params: {
                                 search: this.search,
                                 start_date: startDate,
                                 end_date: endDate,
+                                department: department,
+                                branch_id: branch_id,
+                                role_id: role_id
                             },
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -347,43 +363,6 @@
                     ];
                     return monthNames[monthIndex];
                 },
-                async getAttendanceData() {
-                    this.buttonLoading = true;
-                    const serial_number = $('#serial_number').val();
-                    const startDate = document.getElementById('start_date').value ?? '';
-                    const endDate = document.getElementById('end_date').value ?? '';
-                    try {
-                        await axios.get('/iclock/getrequest', {
-                            params: {
-                                SN: serial_number,
-                            },
-                            headers: {
-                                'startDate': startDate,
-                                'endDate': endDate,
-                            },
-                        })
-                    } catch (e) {
-                        console.log(e)
-                    } finally {
-                        setTimeout(() => {
-                            this.buttonLoading = false;
-                        }, 12000);
-                    }
-                },
-                async getFpDeviceData() {
-                    $(".devices-select2").select2({
-                        allowClear: true,
-                        placeholder: 'Pilih mesin.',
-                        ajax: {
-                            url: '/adms/attendances-summary/get-fp-devices',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                }
             }
         }
     </script>

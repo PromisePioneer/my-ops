@@ -41,6 +41,7 @@
                             <option value="Sakit" :selected="editVal.leaves_status === 'Sakit'">Sakit</option>
                             <option value="Cuti" :selected="editVal.leaves_status === 'Cuti'">Cuti</option>
                             <option value="Izin" :selected="editVal.leaves_status === 'Izin'">Izin</option>
+                            <option value="Dinas" :selected="editVal.leaves_status === 'Dinas'">Dinas</option>
                         </select>
                     </div>
                     <div class="mb-10" x-show="sickLetter === 'Sakit'" x-transition>
@@ -50,9 +51,9 @@
                                accept=".jpg,.png,.jpeg,.pdf"/>
                     </div>
                     <div class="mb-10">
-                        <label for="name" class="required form-label">Alasan Cuti</label>
+                        <label for="name" class="required form-label">Alasan</label>
                         <textarea type="date" id="reason" name="reason" class="form-control form-control-solid"
-                                  data-kt-autosize="true" placeholder="ALasan Cuti" x-text="editVal?.reason"></textarea>
+                                  data-kt-autosize="true" placeholder="ALasan" x-text="editVal?.reason"></textarea>
                     </div>
                 </div>
 

@@ -63,7 +63,7 @@
                                 <template x-if="isLoading">
                                     <tbody class="fw-bold">
                                     <tr>
-                                        <td colspan="5">
+                                        <td colspan="6">
                                             <div style="text-align: center;">
                                                 <div class="spinner-border" role="status">
                                                     <span class="visually-hidden">Loading...</span>

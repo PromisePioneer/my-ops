@@ -82,13 +82,12 @@
                             <table class="table align-middle gy-5 table-scroll fs-6">
                                 <thead>
                                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                    <th class="min-w-200px bg-light border border-black px-5 text-white fix">
-
+                                    <th class="min-w-100px bg-light border border-black px-5 text-white fix">
                                     </th>
                                     <template x-if="employeeSchedules?.data.length > 0">
                                         <template x-for="date in employeeSchedules?.data[0].date"
                                                   :key="date.period_date">
-                                            <th class="min-w-325px bg-light text-center text-black border border-black"
+                                            <th class="min-w-50px bg-light text-center text-black border border-black"
                                                 x-text="formatDate(date.period_date)">
                                             </th>
                                         </template>
@@ -102,14 +101,46 @@
                                         <td class="bg-dark border border-black text-white px-2 fix"
                                             x-text="employeeSchedule?.name"></td>
                                         <template x-for="dates in employeeSchedule?.date">
-                                            <td :class="`${dates.schedules_date?.status === 'L' ? 'border border-black text-center bg-warning' : dates.schedules_date?.status === 'H' ? 'border border-black text-center bg-primary' : 'border border-black text-center bg-light'}`">
-                                                <div>
-                                                    <a href="#" data-bs-toggle="modal"
+                                            <td :class="`${dates.leaves?.status === 'Cuti' ? 'text-center border border-black text-black bg-warning' : dates.leaves?.status === 'Izin' ? 'text-center border border-black text-black bg-warning' : dates.leaves?.status === 'Sakit' ? 'text-center border border-black text-black bg-warning' : dates.schedules_date?.status === 'L' ? 'text-center border border-black text-black bg-warning' : dates.schedules_date?.status === 'H' ? 'text-center border border-black text-white bg-info' : 'text-center border border-black text-white' }`">
+                                                <template x-if="dates.leaves?.status === 'Izin'">
+                                                    <div class="text-black text-uppercase">
+                                                        <span>Izin</span>
+                                                    </div>
+                                                </template>
+                                                <template x-if="dates.leaves?.status === 'Sakit'">
+                                                    <div class="text-black text-uppercase">
+                                                        <span>Sakit</span>
+                                                    </div>
+                                                </template>
+                                                <template x-if="dates.leaves?.status === 'Cuti'">
+                                                    <div class="text-black text-uppercase pt-3">
+                                                        <span>Cuti</span>
+                                                    </div>
+                                                </template>
+                                                <template x-if="!dates.leaves && !dates.permission && !dates.sick">
+                                                    <div>
+                                                        <a href="#" class="btn btn-link text-decoration-underline"
+                                                           data-bs-toggle="modal"
                                                        data-bs-target="#modal-create"
-                                                       :class="`${dates.schedules_date?.status === 'L' ? 'text-black' : dates.schedules_date?.status === 'H' ? 'text-black' : 'text-black'}`"
+                                                           :class="`${dates.schedules_date?.status === 'L' ? 'text-black fw-bolder text-uppercase' : dates.schedules_date?.status === 'H' ? 'text-white fw-bolder text-uppercase' : 'text-black'}`"
                                                        @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.period_dates ??  dates.period_date )"
-                                                       x-text="`${dates?.work_time_schedules} ${dates.schedules_date?.status === 'L' ? 'Libur' : dates.schedules_date?.status === 'H' ? 'Hadir' : ''}`  ?? '-'"></a>
+                                                        >
+                                                            <template x-if="dates?.work_time_schedules">
+                                                                <span
+                                                                    x-text="`${dates.schedules_date?.status === 'L' ? 'LIBUR' : dates?.work_time_schedules }`"></span>
+                                                                <span
+                                                                    x-text="`${dates.schedules_date?.status === 'L' ? '(Libur)' : dates.schedules_date?.status === 'H' ? '(Hadir)' : ''}`"></span>
+                                                            </template>
+
+                                                            <template x-if="!dates?.work_time_schedules">
+                                                            <span>
+                                                                <i class="fas fa-add text-danger"></i>
+                                                                Tambah
+                                                            </span>
+                                                            </template>
+                                                        </a>
                                                 </div>
+                                                </template>
                                             </td>
                                         </template>
                                     </tr>

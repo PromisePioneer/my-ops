@@ -111,8 +111,8 @@ use Illuminate\View\View;
             EmployeeSchedule::updateOrCreate([
                 'employee_id' => $request->employee_id,
                 'start_date' => $period->format('Y-m-d'),
-                'end_date' => $endDate->format('Y-m-d'),
             ], [
+                'end_date' => $endDate->format('Y-m-d'),
                 'work_time_id' => $request->work_time_id,
                 'status' => $request->status,
             ]);

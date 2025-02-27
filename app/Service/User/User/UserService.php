@@ -138,7 +138,9 @@ use Illuminate\Support\Facades\Hash;
                 'Head Engineer',
                 'Senior Engineer',
                 'Engineer',
-                'Vendor'
+                'Vendor',
+                'KU Engineer',
+                'KU Head Engineer'
             ]);
         });
     }

@@ -7,14 +7,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\ManageUserLeaveAndPermissionRequest;
 use App\Http\Requests\UserProfile\LeaveAndPermissionRequest;
 use App\Models\Branch;
+use App\Models\EmployeeSchedule;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
 use App\Service\HelperService\HandleFileUploadService;
 use App\Service\User\LeaveAndPermission\CalculateUserLeaves;
 use App\Service\User\LeaveAndPermission\ManageUserLeaveAndPermissionService;
+use Carbon\CarbonPeriod;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 #[AllowDynamicProperties] class ManageUserLeavesController extends Controller
@@ -92,9 +95,29 @@ use Illuminate\View\View;
     ): JsonResponse
     {
         $this->authorize('confirm', LeaveAndPermission::class);
-        $data = $request->validated();
-        $data['acc_by'] = $request->user()->id;
-        $leaveAndPermission->update($data);
+        DB::transaction(function () use ($request, $leaveAndPermission) {
+            $empSchedule = EmployeeSchedule::whereBetween('start_date', [$request->start_date, $request->end_date])->orWhereBetween('end_date', [$request->start_date, $request->end_date])->get();
+
+            $period = [];
+
+            foreach ($empSchedule as $schedule) {
+                $period = array_merge(
+                    $period,
+                    CarbonPeriod::create($schedule->start_date, $schedule->end_date)->toArray()
+                );
+            }
+
+            foreach ($period as $p) {
+                EmployeeSchedule::whereBetween('start_date', [$p->format('Y-m-d'), $p->format('Y-m-d')])
+                    ->orWhereBetween('end_date', [$p->format('Y-m-d'), $p->format('Y-m-d')])
+                    ->delete();
+            }
+
+            $data = $request->validated();
+            $data['acc_by'] = $request->user()->id;
+            $leaveAndPermission->update($data);
+        });
+
 
         return response()->json([
             'message' => 'Data berhasil di simpan',
@@ -110,18 +133,21 @@ use Illuminate\View\View;
 
     public function store(LeaveAndPermissionRequest $request): JsonResponse
     {
-        LeaveAndPermission::create([
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'user_id' => $request->user_id,
-            'reason' => $request->reason,
-            'leaves_status' => $request->leaves_status,
-            'sick_letter' => $this->handleFileUploadService->upload(
-                $request,
-                'documents/leaves-and-permissions/sick-letter',
-                'sick_letter'
-            ),
-        ]);
+        DB::transaction(function () use ($request) {
+            LeaveAndPermission::create([
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'user_id' => $request->user_id,
+                'reason' => $request->reason,
+                'leaves_status' => $request->leaves_status,
+                'sick_letter' => $this->handleFileUploadService->upload(
+                    $request,
+                    'documents/leaves-and-permissions/sick-letter',
+                    'sick_letter'
+                ),
+            ]);
+
+        });
 
 
         return response()->json(['message' => 'Data berhasil disimpan.']);
