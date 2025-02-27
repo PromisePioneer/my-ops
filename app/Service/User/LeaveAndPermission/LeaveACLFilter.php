@@ -28,7 +28,7 @@ class LeaveACLFilter
             return $query->whereHas('user.userHasArea', function ($query) use ($request) {
                 $query->where('area_id', $request->user()->userHasArea->area_id);
             })->where(function ($query) use ($request) {
-                $query->whereHas('branch', function ($query) use ($request) {
+                $query->whereHas('user.branch', function ($query) use ($request) {
                     $query->where('branch_id', $request->user()->branch_id);
                 })->where('active', 1);
             });
