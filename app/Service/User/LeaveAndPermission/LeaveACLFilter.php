@@ -25,7 +25,7 @@ class LeaveACLFilter
 
         if ($request->user()->hasAnyRole(['Head Engineer', 'Senior Engineer'])) {
 
-            return $query->whereHas('userHasArea', function ($query) use ($request) {
+            return $query->whereHas('user.userHasArea', function ($query) use ($request) {
                 $query->where('area_id', $request->user()->userHasArea->area_id);
             })->where(function ($query) use ($request) {
                 $query->whereHas('branch', function ($query) use ($request) {
