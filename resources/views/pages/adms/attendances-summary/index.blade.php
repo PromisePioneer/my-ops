@@ -215,6 +215,7 @@
                     if (url) {
                         const resp = await axios.get(`${url}`, {
                             params: {
+                                search: this.search,
                                 start_date: startDate,
                                 end_date: endDate,
                                 branch_id: branchId,
