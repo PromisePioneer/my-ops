@@ -149,15 +149,22 @@
                             </table>
                         </div>
                     </div>
-                    <ul class="pagination float-end mb-4 mt-4">
-                        <template x-for="pagination in employeeSchedules?.links">
-                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
-                                        x-html="pagination.label">
-                                </button>
-                            </li>
-                        </template>
-                    </ul>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-danger fs-3">
+                                Note : Harap Isi Cuti, Izin, Sakit di Menu Manejemen Cuti Terlebih dahulu per periode.
+                            </span>
+                        </div>
+                        <ul class="pagination float-end mb-4 mt-4">
+                            <template x-for="pagination in employeeSchedules?.links">
+                                <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                    <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                            x-html="pagination.label">
+                                    </button>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
