@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use AllowDynamicProperties;
 use App\Http\Requests\TransactionRequest;
 use App\Models\Transaction;
-use App\Service\TransactionService;
+use App\Models\UnitType;
+use App\Service\Transactions\TransactionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -29,6 +30,11 @@ use Throwable;
     public function data(): JsonResponse
     {
         return response()->json($this->transactionService->data());
+    }
+
+    public function filter(Request $request): JsonResponse
+    {
+        return response()->json($this->transactionService->filter($request));
     }
 
     public function search(Request $request): JsonResponse
@@ -73,5 +79,17 @@ use Throwable;
     public function destroy()
     {
 
+    }
+
+
+    public function getUnitType(Request $request, UnitType $unitType): JsonResponse
+    {
+        return response()->json($unitType->getData($request));
+    }
+
+
+    public function selectedUnitType(UnitType $unitType): JsonResponse
+    {
+        return response()->json($this->selectedUnitType($unitType->id));
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Transaction;
+namespace App\Service\IncomeTransaction;
 
 use App\Http\Requests\Transaction\Invoice\InvoiceRequest;
 use App\Models\Account;

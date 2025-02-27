@@ -239,11 +239,6 @@
                                     Daftar Aset
                                 </x-dropdown-menu-item>
                             @endcan
-                            <x-dropdown-menu-item
-                                    :active="request()->segment(2) === 'transaction-types'"
-                                    href="{{ url('finances-master-data/transaction-types') }}">
-                                Jenis Transaksi
-                            </x-dropdown-menu-item>
                         @endslot
                     </x-dropdown-menu>
                 @endcanany

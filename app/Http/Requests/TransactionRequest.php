@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class TransactionRequest extends FormRequest
 {
@@ -22,10 +23,15 @@ class TransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'transaction_type_id' => ['required'],
-            'date' => ['required'],
+            'branch_id' => [Rule::exists('branches', 'id')],
+            'date' => ['required', 'date'],
             'detail' => ['required'],
-            'amount' => ['required'],
+            'qty' => ['required', 'numeric'],
+            'unit_type_id' => ['required', Rule::exists('unit_types', 'id')],
+            'unit_price' => ['required', 'numeric'],
+            'total_price' => ['required', 'numeric'],
+            'debit_account_id' => ['required', Rule::exists('accounts', 'id')],
+            'credit_account_id' => ['required', Rule::exists('accounts', 'id')],
         ];
     }
 

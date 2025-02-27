@@ -8,18 +8,43 @@ use Laravel\Scout\Searchable;
 
 class Transaction extends Model
 {
-
     use Searchable;
-
     protected $table = 'transactions';
     protected $fillable = [
-        'branch_id',
-        'transaction_type_id',
-        'date',
         'transaction_number',
+        'branch_id',
+        'date',
         'detail',
-        'amount',
+        'qty',
+        'unit_type_id',
+        'unit_price',
+        'total_price',
+        'status',
+        'debit_account_id',
+        'credit_account_id'
     ];
+
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+
+    public function unitType(): BelongsTo
+    {
+        return $this->belongsTo(UnitType::class, 'unit_type_id');
+    }
+
+    public function debitAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'debit_account_id');
+    }
+
+    public function creditAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'credit_account_id');
+    }
 
 
     public function toSearchableArray(): array
@@ -27,10 +52,5 @@ class Transaction extends Model
         return [
             'transaction_number' => $this->transaction_number,
         ];
-    }
-
-    public function transactionType(): BelongsTo
-    {
-        return $this->belongsTo(TransactionType::class, 'transaction_type_id');
     }
 }

@@ -16,7 +16,6 @@ use App\Http\Controllers\Accounting\Transaction\InitialBalanceController;
 use App\Http\Controllers\Accounting\Transaction\InvoiceController;
 use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
 use App\Http\Controllers\Accounting\Transaction\PurchaseOrderController;
-use App\Http\Controllers\Accounting\TransactionTypeController;
 use App\Http\Controllers\Accounting\VendorPayrollController;
 use App\Http\Controllers\AccountTransactionController;
 use App\Http\Controllers\Area\AreaController;
@@ -151,6 +150,7 @@ Route::group(['middleware' => ['auth']], static function () {
     Route::prefix('/transactions')->group(function () {
         Route::get('/', [TransactionController::class, 'index']);
         Route::get('/data', [TransactionController::class, 'data']);
+        Route::get('/filter', [TransactionController::class, 'filter']);
         Route::get('/search', [TransactionController::class, 'search']);
         Route::post('/', [TransactionController::class, 'store']);
         Route::get('/{transaction}', [TransactionController::class, 'edit']);
@@ -524,16 +524,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/detail/{asset}', [AssetController::class, 'detail']);
             Route::get('/detail/data/{asset}', [AssetController::class, 'getDetailData']);
             Route::post('/import', [AssetController::class, 'import']);
-        });
-
-        Route::prefix('transaction-types')->group(function () {
-            Route::get('/', [TransactionTypeController::class, 'index']);
-            Route::get('/data', [TransactionTypeController::class, 'data']);
-            Route::get('/search', [TransactionTypeController::class, 'search']);
-            Route::post('/', [TransactionTypeController::class, 'store']);
-            Route::get('/{transactionType}', [TransactionTypeController::class, 'edit']);
-            Route::post('/destroy', [TransactionTypeController::class, 'destroy']);
-            Route::post('/update/{transactionType}', [TransactionTypeController::class, 'update']);
         });
 
     });
@@ -1408,8 +1398,8 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/selected-account/{account}', [AccountController::class, 'selectedAccount']);
         Route::get('/work-times-data', [WorkTimeController::class, 'getWorkTimes']);
         Route::get('/selected-work-time/{workTime}', [WorkTimeController::class, 'selectedWorkTime']);
-        Route::get('/transaction-types-data', [TransactionTypeController::class, 'getTransactionTypes']);
-        Route::get('/selected-transaction-type/{transactionType}', [TransactionTypeController::class, 'selectedTransactionType']);
+        Route::get('/unit-types-data', [UnitTypeController::class, 'getUnitTypes']);
+        Route::get('/selected-unit-type/{unitType}', [UnitTypeController::class, 'selectedUnitType']);
     });
 
 

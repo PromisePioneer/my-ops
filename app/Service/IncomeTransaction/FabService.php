@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Transaction;
+namespace App\Service\IncomeTransaction;
 
 use AllowDynamicProperties;
 use App\Models\Account;

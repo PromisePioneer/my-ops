@@ -12,16 +12,20 @@ return new class extends Migration {
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->string('transaction_number');
             $table->foreignId('branch_id')
                 ->constrained('branches')
                 ->cascadeOnDelete();
-            $table->foreignId('transaction_type_id')
-                ->constrained('transactions')
-                ->cascadeOnDelete();
             $table->date('date');
-            $table->string('transaction_number');
+            $table->double('qty');
+            $table->foreignId('unit_type_id')
+                ->constrained('unit_types')
+                ->cascadeOnDelete();
+            $table->double('unit_price');
+            $table->double('total_price');
             $table->text('detail');
-            $table->double('amount');
+            $table->foreignId('debit_account_id')->constrained('accounts')->cascadeOnDelete();
+            $table->foreignId('credit_account_id')->constrained('accounts')->cascadeOnDelete();
             $table->boolean('status')->default(false);
             $table->timestamps();
         });

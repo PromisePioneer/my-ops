@@ -16,7 +16,7 @@ use App\Models\SKL;
 use App\Models\TaxSetting;
 use App\Models\UnitType;
 use App\Models\User;
-use App\Service\Transaction\FabService;
+use App\Service\IncomeTransaction\FabService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

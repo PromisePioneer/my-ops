@@ -11,7 +11,6 @@
                                 <h2 class="mb-0">Filter</h2>
                             </div>
                         </div>
-                        <form id="form-filter" @submit.prevent="filter()">
                             <div class="card-body pt-0">
                                 <div class="d-flex flex-column text-gray-600">
                                     <div class="d-flex align-items-center py-2">
@@ -19,14 +18,21 @@
                                                 name="branch_id" id="branch-id-filter">
                                         </select>
                                     </div>
+                                    <div class="d-flex align-items-center py-2">
+                                        <input type="date" class="form-control form-control-solid date"
+                                               name="start_date" id="start_date" placeholder="Tgl awal">
+                                    </div>
+                                    <div class="d-flex align-items-center py-2">
+                                        <input type="date" class="form-control form-control-solid date" name="end_date"
+                                               id="end_date" placeholder="Tgl akhir">
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-footer pt-4 text-end">
-                                <button type="submit" class="btn btn-light btn-active-primary btn-sm">
+                                <button type="button" @click="filter()" class="btn btn-light btn-active-primary btn-sm">
                                     Filter
                                 </button>
                             </div>
-                        </form>
                     </div>
                 </div>
             <div class="flex-lg-row-fluid ms-lg-10">
@@ -82,13 +88,12 @@
                                         <th class="w-10px pe-2">
                                             <div
                                                 class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                                <input class="form-check-input" type="checkbox"
-                                                       @click="toggleAllCheckBox()">
+
                                             </div>
                                         </th>
                                         <th class="min-w-125px text-center">Tanggal</th>
                                         <th class="min-w-125px text-center">Transaksi</th>
-                                        <th class="min-w-250px text-center">Tipe</th>
+                                        <th class="min-w-250px text-center">Akun</th>
                                         <th class="min-w-250px text-center">Detail</th>
                                         <th class="min-w-125px text-center">Jumlah</th>
                                         <th class="min-w-250px text-center">Actions</th>
@@ -119,7 +124,7 @@
                                                      @click="selectCheckBox($event)">
                                                     <input class="form-check-input" type="checkbox"
                                                            :value="transaction.id"
-                                                           :id="'checkbox-' + transaction.id"/>
+                                                           :id="'checkbox-' + transaction.id" :disabled="transaction.status === 1"/>
                                                 </div>
                                             </td>
                                             <td class="text-center"
@@ -136,7 +141,8 @@
                                                 </div>
                                             </td>
                                             <td x-text="transaction.detail"></td>
-                                            <td x-text="transaction.amount"></td>
+                                            <td x-text="transaction.total_price"></td>
+                                            <template x-if="transaction.status === 0">
                                             <td class="d-flex flex-column">
                                                 <button class="btn btn-light-primary btn-sm mb-4"
                                                         @click="edit(transaction.id)"
@@ -144,7 +150,6 @@
                                                         data-bs-target="#modal-transactions">
                                                     <i class="bi bi-pencil"></i> Ubah Data
                                                 </button>
-
                                                 <button class="btn btn-light-info btn-sm mb-4"
                                                         data-bs-toggle="tooltip"
                                                         data-bs-placement="top"
@@ -154,6 +159,12 @@
                                                     Konfirmasi
                                                 </button>
                                             </td>
+                                            </template>
+                                            <template x-if="transaction.status === 1">
+                                                <td class="text-center">
+                                                    <span class="badge bg-success">Terkonfirmasi</span>
+                                                </td>
+                                            </template>
                                         </tr>
                                     </template>
                                     </tbody>
@@ -197,15 +208,22 @@
                 form: document.getElementById('form-transactions'),
                 modalForm: new bootstrap.Modal(document.getElementById('modal-transactions')),
                 deleteForm: document.getElementById('deleteForm'),
-                filterForm: document.getElementById('form-filter'),
                 async init() {
                     await this.getTransactions();
                     await this.getMainBranches();
-                    await this.getTransactionType();
+                    await this.getUnitTypeData();
+                    await this.getAccounts();
                 },
                 async paginationEndPoint(url) {
                     if (url) {
-                        const resp = await axios.get(`${url}`);
+                        const resp = await axios.get(`${url}`, {
+                            params: {
+                                search: this.search,
+                                branch_id: $('#branch-id-filter').val(),
+                                start_date: $('#start-date-filter').val(),
+                                end_date: $('#end-date-filter').val(),
+                            }
+                        });
                         this.transactions = resp.data
                     }
                 },
@@ -233,10 +251,33 @@
                         }
                     }
                 },
+                async filter() {
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/transactions/filter', {
+                            params: {
+                                search: this.search,
+                                branch_id: $('#branch-id-filter').val(),
+                                start_date: $('#start-date-filter').val(),
+                                end_date: $('#end-date-filter').val(),
+                            }
+                        });
+                        this.transactions = resp.data;
+                    } catch (e) {
+                        console.log(e);
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
                 async searchData() {
                     try {
                         const resp = await axios.get('/transactions/search', {
-                            params: {search: this.search},
+                            params: {
+                                search: this.search,
+                                branch_id: $('#branch-id-filter').val(),
+                                start_date: $('#start-date-filter').val(),
+                                end_date: $('#end-date-filter').val(),
+                            },
                             headers: {'Content-Type': 'application/json'}
                         });
                         this.transactions = resp.data;
@@ -267,7 +308,9 @@
                     const resp = await axios.get(`/transactions/${id}`);
                     this.editVal = resp.data;
                     await this.selectedBranch();
-                    await this.selectedTransactionType();
+                    await this.selectedDebitAccount();
+                    await this.selectedCreditAccount();
+                    await this.selectedUnitType();
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
@@ -281,26 +324,26 @@
                         }
                     });
                 },
-                async filter() {
-                    const branchId = $('#branch-id-filter').val();
-                    this.isLoading = true;
-                    try {
-                        const resp = await axios.get('/transactions/filter', {
-                            params: {branch_id: branchId},
-                        })
-                        this.transactions = resp.data;
-                    } catch (e) {
-                        console.log(e)
-                    } finally {
-                        this.isLoading = false;
-                    }
-                },
                 async getMainBranches() {
                     $(".main-branches-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Cabang",
                         ajax: {
                             url: '/select2/main-branches-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async getAccounts() {
+                    $(".accounts-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Akun",
+                        ajax: {
+                            url: '/select2/accounts-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -334,6 +377,45 @@
                         params: {results: response}
                     });
                 },
+                async selectedDebitAccount() {
+                    const selectedDebitAccount = $('#selected-debit-account');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/select2/selected-account/${this.editVal.debit_account_id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedDebitAccount.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
+                async selectedCreditAccount() {
+                    const selectedCreditAccount = $('#selected-credit-account');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/select2/selected-account/${this.editVal.debit_account_id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedCreditAccount.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
+                async selectedUnitType() {
+                    const selectedUnitType = $('#selected-unit-type');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/select2/selected-unit-type/${this.editVal.unit_type_id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedUnitType.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
                 async getTransactions() {
                     this.isLoading = true;
                     try {
@@ -345,31 +427,18 @@
                         this.isLoading = false;
                     }
                 },
-                async getTransactionType() {
-                    $(".transaction-types-select2").select2({
+                async getUnitTypeData() {
+                    $(".unit-types-select2").select2({
                         allowClear: true,
-                        placeholder: "Pilih Tipe Transaksi",
+                        placeholder: "Pilih Satuan",
                         ajax: {
-                            url: '/select2/transaction-types-data',
+                            url: '/select2/unit-types-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
                             processResults: data => ({results: data}),
                             cache: true
                         }
-                    });
-                },
-                async selectedTransactionType() {
-                    const selectedTransactionType = $('#selected-transaction-type');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-transaction-type/${this.editVal.transaction_type_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedTransactionType.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
                     });
                 },
             }

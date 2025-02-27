@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Transactions;
 
 use AllowDynamicProperties;
 use App\Http\Requests\TransactionRequest;
 use App\Models\Transaction;
-use App\Models\TransactionType;
 use App\Service\Accounts\AccountTransactionService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -48,7 +47,7 @@ use function App\Helper\formatDate;
 
     public function data(): LengthAwarePaginator
     {
-        $data = Transaction::with('transactionType', 'transactionType.debitAccount', 'transactionType.creditAccount')
+        $data = Transaction::with('branch', 'unitType', 'debitAccount', 'creditAccount')
             ->paginate(self::$perPage);
 
         return self::formattedData($data);
@@ -66,21 +65,30 @@ use function App\Helper\formatDate;
     }
 
 
+    public function filter(Request $request): LengthAwarePaginator
+    {
+        $query = Transaction::with('branch', 'unitType', 'debitAccount', 'creditAccount');
+        $filter = TransactionQueryFilter::apply($query, $request)
+            ->paginate(self::$perPage);
+
+        return self::formattedData($filter);
+    }
+
+
     public function formattedData(LengthAwarePaginator $data): LengthAwarePaginator
     {
         $transactions = $data->getCollection()->map(callback: function ($item) {
             return [
                 'id' => $item->id,
+                'branch_id' => $item->branch_id,
                 'date' => formatDate($item->date),
                 'transaction_number' => $item->transaction_number,
-                'transaction_type' => $item->transactionType->name,
-                'debit' => $item->transactionType->debitAccount->code . ' ' . $item->transactionType->debitAccount->name,
-                'debit_account_id' => $item->transactionType->debitAccount->id,
-                'credit_account_id' => $item->transactionType->creditAccount->id,
-                'credit' => $item->transactionType->creditAccount->code . ' ' . $item->transactionType->creditAccount->name,
-                'name' => $item->name,
+                'debit' => $item->debitAccount->code . ' ' . $item->debitAccount->name,
+                'debit_account_id' => $item->debitAccount->id,
+                'credit_account_id' => $item->creditAccount->id,
+                'credit' => $item->creditAccount->code . ' ' . $item->creditAccount->name,
                 'detail' => $item->detail,
-                'amount' => 'Rp.' . number_format($item->amount, 2),
+                'total_price' => 'Rp.' . number_format($item->total_price),
                 'status' => $item->status
             ];
         });
@@ -92,12 +100,16 @@ use function App\Helper\formatDate;
     public function store(TransactionRequest $request): void
     {
         Transaction::create([
-            'branch_id' => $request->branch_id,
             'transaction_number' => $this->generateTransactionNumber($request),
-            'transaction_type_id' => $request->transaction_type_id,
-            'date' => $request->date,
-            'detail' => $request->detail,
-            'amount' => $request->amount,
+            'branch_id' => $request->input('branch_id'),
+            'date' => $request->input('date'),
+            'detail' => $request->input('detail'),
+            'qty' => $request->input('qty'),
+            'unit_type_id' => $request->input('unit_type_id'),
+            'unit_price' => $request->input('unit_price'),
+            'total_price' => $request->input('unit_price') * $request->input('qty'),
+            'debit_account_id' => $request->input('debit_account_id'),
+            'credit_account_id' => $request->input('credit_account_id'),
         ]);
     }
 
@@ -105,12 +117,16 @@ use function App\Helper\formatDate;
     public function update(TransactionRequest $request, Transaction $transaction): void
     {
         $transaction->update([
-            'branch_id' => $request->branch_id,
             'transaction_number' => $this->generateTransactionNumber($request),
-            'transaction_type_id' => $request->transaction_type_id,
-            'date' => $request->date,
-            'detail' => $request->detail,
-            'amount' => $request->amount,
+            'branch_id' => $request->input('branch_id'),
+            'date' => $request->input('date'),
+            'detail' => $request->input('detail'),
+            'qty' => $request->input('qty'),
+            'unit_type_id' => $request->input('unit_type_id'),
+            'unit_price' => $request->input('unit_price'),
+            'total_price' => $request->input('unit_price') * $request->input('qty'),
+            'debit_account_id' => $request->input('debit_account_id'),
+            'credit_account_id' => $request->input('credit_account_id'),
         ]);
     }
 
@@ -120,20 +136,24 @@ use function App\Helper\formatDate;
      */
     public function confirm(Transaction $transaction): void
     {
-        $transactionType = TransactionType::with('debitAccount', 'creditAccount')->where('id', $transaction->transaction_type_id)->first();
-        DB::transaction(function () use ($transaction, $transactionType) {
+        DB::transaction(function () use ($transaction) {
+
+            $transaction->update([
+                'status' => true
+            ]);
+
             $this->accountTransactionService->createDebitTransaction(
                 $transaction->branch_id,
                 $transaction->detail,
-                $transactionType->debitAccount->id,
-                $transaction->amount,
+                $transaction->debit_account_id,
+                $transaction->total_price,
             );
 
             $this->accountTransactionService->createCreditTransaction(
                 $transaction->branch_id,
                 $transaction->detail,
-                $transactionType->creditAccount->id,
-                $transaction->amount,
+                $transaction->credit_account_id,
+                $transaction->total_price,
             );
         });
     }

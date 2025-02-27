@@ -13,7 +13,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceProductService;
 use App\Models\LetterHead;
 use App\Service\CompanyProfileServices;
-use App\Service\Transaction\InvoiceService;
+use App\Service\IncomeTransaction\InvoiceService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

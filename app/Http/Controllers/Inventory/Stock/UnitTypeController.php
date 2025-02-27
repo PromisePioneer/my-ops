@@ -99,4 +99,32 @@ use Illuminate\View\View;
             'message' => 'data berhasil dihapus',
         ], 200);
     }
+
+
+    public function getUnitTypes(Request $request): array
+    {
+        $search = $request->input('search');
+        $query = UnitType::search($search)->query(function ($query) {
+            $query->orderBy('name');
+        })->get();
+
+        return $query->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->name,
+            ];
+        })->toArray();
+    }
+
+    public function selectedUnitType(UnitType $unitType): array
+    {
+        $unitType = UnitType::where('id', $unitType->id)->first();
+
+        return [
+            'id' => $unitType->id,
+            'name' => $unitType->name,
+        ];
+    }
+
+
 }

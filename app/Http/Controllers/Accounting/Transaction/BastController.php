@@ -13,7 +13,7 @@ use App\Models\CompanyProfile;
 use App\Models\Contact;
 use App\Models\PurchaseOrderItem;
 use App\Models\TaxSetting;
-use App\Service\Transaction\BastService;
+use App\Service\IncomeTransaction\BastService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
