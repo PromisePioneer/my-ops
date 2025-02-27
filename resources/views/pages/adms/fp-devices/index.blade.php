@@ -230,7 +230,11 @@
                 },
                 async paginationEndPoint(url) {
                     if (url) {
-                        const resp = await axios.get(`${url}`);
+                        const resp = await axios.get(`${url}`, {
+                            params: {
+                                branch_id: $('#branch-id-filter').val()
+                            }
+                        });
                         this.devices = resp.data
                     }
                 },
@@ -267,7 +271,10 @@
                 async searchData() {
                     try {
                         const resp = await axios.get('/adms/fp-devices/search', {
-                            params: {search: this.search},
+                            params: {
+                                search: this.search,
+                                branch_id: $('#branch-id-filter').val()
+                            },
                             headers: {'Content-Type': 'application/json'}
                         });
                         this.devices = resp.data;

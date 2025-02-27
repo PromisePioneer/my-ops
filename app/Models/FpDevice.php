@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -26,11 +27,17 @@ class FpDevice extends Model
 
     public function toSearchableArray(): array
     {
+        $this->loadMissing('branch');
         return [
             'serial_number' => $this->serial_number,
             'name' => $this->name,
             'ip_address' => $this->ip_address
         ];
+    }
+
+    public function makeSearchableUsing(Collection $models): Collection
+    {
+        return $models->load('branch');
     }
 
     public function branch(): BelongsTo
