@@ -154,7 +154,8 @@ class User extends Authenticatable
     public function getUserBasedOnBranch(Request $request): array
     {
         $search = $request->input('search');
-        $query = self::with('branch')->where('branch_id', $request->user()->branch_id);
+        $query = self::with('branch')
+            ->where('branch_id', $request->user()->branch_id);
 
         if ($search !== '') {
             $query->where('name', 'like', '%' . $search . '%');
