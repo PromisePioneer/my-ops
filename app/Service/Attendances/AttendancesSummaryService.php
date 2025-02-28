@@ -110,6 +110,18 @@ use Illuminate\Http\Request;
                 }
             }
 
+            if ($totalPermission > 0) {
+                $totalAbsent -= $totalPermission;
+            }
+
+            if ($totalLeaves > 0) {
+                $totalAbsent -= $totalLeaves;
+            }
+
+            if ($totalSick > 0) {
+                $totalAbsent -= $totalSick;
+            }
+
 
             return [
                 'id' => $user->id,
