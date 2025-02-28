@@ -235,7 +235,7 @@ use Illuminate\Http\Request;
         $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
 
 
-        if ($checkInToUse->diffInMinutes($actualCheckIn) >= 2.5) {
+        if ($checkInToUse->diffInMinutes($actualCheckIn) > 2.5) {
             $lateness = $checkInToUse->diffInMinutes($actualCheckIn);
             $totalMinutesLate += $lateness;
         }
