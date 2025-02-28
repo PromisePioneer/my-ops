@@ -110,15 +110,15 @@ use Illuminate\Http\Request;
                 }
             }
 
-            if ($totalPermission > 0) {
+            if ($totalPermission >= 0) {
                 $totalAbsent -= $totalPermission;
             }
 
-            if ($totalLeaves > 0) {
+            if ($totalLeaves >= 0) {
                 $totalAbsent -= $totalLeaves;
             }
 
-            if ($totalSick > 0) {
+            if ($totalSick >= 0) {
                 $totalAbsent -= $totalSick;
             }
 
