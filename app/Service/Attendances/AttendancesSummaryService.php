@@ -110,18 +110,6 @@ use Illuminate\Http\Request;
                 }
             }
 
-            if ($totalPermission >= 0 && $totalAbsent > 0) {
-                $totalAbsent -= $totalPermission;
-            }
-
-            if ($totalLeaves >= 0 && $totalAbsent > 0) {
-                $totalAbsent -= $totalLeaves;
-            }
-
-            if ($totalSick >= 0 && $totalAbsent > 0) {
-                $totalAbsent -= $totalSick;
-            }
-
 
             return [
                 'id' => $user->id,
@@ -135,7 +123,7 @@ use Illuminate\Http\Request;
                 'total_leaves' => $totalLeaves,
                 'total_sick' => $totalSick,
                 'total_permission' => $totalPermission,
-                'total_absent' => $totalAbsent
+                'total_absent' => $totalAbsent > 0 ? $totalAbsent : 0
             ];
         });
 
