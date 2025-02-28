@@ -123,7 +123,7 @@ use Illuminate\Http\Request;
                 'total_leaves' => $totalLeaves,
                 'total_sick' => $totalSick,
                 'total_permission' => $totalPermission,
-                'total_absent' => $totalAbsent - $totalLeaves
+                'total_absent' => $totalAbsent > 0 ? $totalAbsent - $totalLeaves : 0
             ];
         });
 
