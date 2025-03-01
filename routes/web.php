@@ -115,33 +115,33 @@ Route::get('/', function () {
     return redirect('home');
 });
 
-Route::get('/test-route', static function () {
-
-    $zk = new ZKTeco("103.141.255.227", 4370);
-    $connected = $zk->connect();
-    $attendanceLog = $zk->getAttendance();
-    $todayDate = date('2025-02-27');
-    $todayRecords = [];
-    foreach ($attendanceLog as $record) {
-        $recordDate = substr($record['timestamp'], 0, 10);
-
-        if ($recordDate === $todayDate) {
-            $data = [
-                'sn' => 'CKEB223360674',
-                'table' => '999',
-                'stamp' => 'ATTLOG',
-                'employee_id' => $record['id'],
-                'timestamp' => $record['timestamp'],
-                'status1' => $record['type'],
-            ];
-            Attendances::create($data);
-        }
-    }
-
-    dd($todayRecords);
-
-
-});
+//Route::get('/test-route', static function () {
+//
+//    $zk = new ZKTeco("103.141.255.227", 4370);
+//    $connected = $zk->connect();
+//    $attendanceLog = $zk->getAttendance();
+//    $todayDate = date('2025-02-27');
+//    $todayRecords = [];
+//    foreach ($attendanceLog as $record) {
+//        $recordDate = substr($record['timestamp'], 0, 10);
+//
+//        if ($recordDate === $todayDate) {
+//            $data = [
+//                'sn' => 'CKEB223360674',
+//                'table' => '999',
+//                'stamp' => 'ATTLOG',
+//                'employee_id' => $record['id'],
+//                'timestamp' => $record['timestamp'],
+//                'status1' => $record['type'],
+//            ];
+//            Attendances::create($data);
+//        }
+//    }
+//
+//    dd($todayRecords);
+//
+//
+//});
 
 Auth::routes();
 
