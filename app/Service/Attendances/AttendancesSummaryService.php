@@ -167,7 +167,7 @@ use Illuminate\Http\Request;
         $lateness = $expectedCheckIn->diffInMinutes($actualCheckIn, false);
 
         // Only count positive lateness within grace period
-        if ($lateness <= 2.5) {
+        if ($lateness >= 2.5) {
             return $lateness;
         }
 
