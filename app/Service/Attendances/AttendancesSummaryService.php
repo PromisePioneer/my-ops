@@ -107,7 +107,7 @@ use Illuminate\Http\Request;
                 }
 
                 $userWorktime = WorkTime::where('id', $attendance->work_time_id)->first();
-                if ($this->calculateLate($userWorktime, $attendance) > 2.5) {
+                if ($this->calculateLate($userWorktime, $attendance) <= 2.5) {
                     continue;
                 } else {
                     $totalMinutesLate += $this->calculateLate($userWorktime, $attendance);
