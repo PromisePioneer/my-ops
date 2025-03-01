@@ -4,7 +4,6 @@ namespace App\Service\Attendances;
 
 use AllowDynamicProperties;
 use App\Models\User;
-use App\Models\WorkTime;
 use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -89,43 +88,26 @@ use Illuminate\Http\Request;
     {
 
         $data = $user->getCollection()->map(function ($user) use ($startDate, $endDate) {
-            $totalMinutesLate = 0;
-            $totalNotCheckIn = 0;
-            $totalNotCheckOut = 0;
-
-            $getPeriod = $this->getScheduledDays($user, $startDate, $endDate);
             $totalPresent = $user->attendancesSummary->count();
-            $totalSick = $this->getSick($user, $startDate, $endDate);
-            $totalLeaves = $this->getLeaves($user, $startDate, $endDate);
-            $totalPermission = $this->getPermission($user, $startDate, $endDate);
-            $totalAbsent = 0;
+            $totalSick = $this->calculateLeaveDays($user, $startDate, $endDate, 'Sakit');
+            $totalLeaves = $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti');
+            $totalPermission = $this->calculateLeaveDays($user, $startDate, $endDate, 'Izin');
+            $scheduledDays = $this->getScheduledDays($user, $startDate, $endDate);
 
+            $totalAbsent = max(
+                $scheduledDays - ($totalPresent + $totalLeaves + $totalSick + $totalPermission),
+                0
+            );
 
-            foreach ($getPeriod as $period) {
-                if ($period['employeeSchedule']?->status === 'L') {
-                    continue;
-                }
+            // Calculate late minutes and check-in/out issues
+            $totalMinutesLate = $user->attendancesSummary->sum(function ($attendance) {
+                return $this->calculateLate($attendance->workTime, $attendance);
+            });
 
-                if (empty($period['attendanceData']) && Carbon::parse($period['attendancesDate'])->lessThan(Carbon::now())) {
-                    $totalAbsent++;
-                }
-
-            }
-
-            foreach ($user->attendancesSummary as $attendance) {
-                if (empty($attendance->clock_in) && $attendance->clock_out) {
-                    $totalNotCheckIn++;
-                }
-
-                if ($attendance->date != Carbon::now()->format('Y-m-d')) {
-                    if (empty($attendance->clock_out) && $attendance->clock_in) {
-                        $totalNotCheckOut++;
-                    }
-                }
-
-                $userWorktime = WorkTime::where('id', $attendance->work_time_id)->first();
-                $this->calculateLate($userWorktime, $attendance);
-            }
+            $totalNotCheckIn = $user->attendancesSummary->whereNull('clock_in')->count();
+            $totalNotCheckOut = $user->attendancesSummary
+                ->where('date', '!=', Carbon::today()->format('Y-m-d'))
+                ->whereNull('clock_out')->count();
 
 
             return [
