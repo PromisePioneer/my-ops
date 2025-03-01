@@ -110,7 +110,7 @@ use Illuminate\Http\Request;
                 if ($this->calculateLate($userWorktime, $attendance) <= 2.5) {
                     $totalMinutesLate += 0;
                 } else {
-                    $totalMinutesLate += $this->calculateLate($userWorktime, $attendance);
+                    $this->calculateLate($userWorktime, $attendance);
                 }
             }
 
@@ -120,7 +120,7 @@ use Illuminate\Http\Request;
                 'user_nip' => $user->nip,
                 'user_name' => $user?->name,
                 'role' => $user->roles[0]?->name ?? '',
-                'total_minutes_late' => (int)$totalMinutesLate,
+                'total_minutes_late' => $totalMinutesLate,
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
                 'total_present' => $totalPresent,
