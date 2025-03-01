@@ -86,8 +86,33 @@ use Illuminate\Http\Request;
 
     public function formattedData(LengthAwarePaginator $users, $startDate, $endDate): LengthAwarePaginator
     {
-
         $data = $users->getCollection()->map(function ($user) use ($startDate, $endDate) {
+            // Data keterlambatan harian (untuk ditampilkan)
+            $dailyLates = $user->attendancesSummary->map(function ($attendance) {
+                return [
+                    'date' => $attendance->date,
+                    'late_minutes' => $this->calculateDailyLate($attendance->workTime, $attendance),
+                ];
+            });
+
+            // Hitung total bulanan dengan aturan mingguan
+            $groupedByWeek = $user->attendancesSummary->groupBy(function ($attendance) {
+                return Carbon::parse($attendance->date)->weekOfYear;
+            });
+
+            $totalMinutesLate = 0;
+            foreach ($groupedByWeek as $week => $attendances) {
+                $weeklyTotal = $attendances->sum(function ($attendance) {
+                    return $this->calculateDailyLate($attendance->workTime, $attendance);
+                });
+
+                // Jika total mingguan >15 menit, tambahkan ke total bulanan
+                if ($weeklyTotal > 15) {
+                    $totalMinutesLate += $weeklyTotal;
+                }
+            }
+
+
             $totalPresent = $user->attendancesSummary->count();
             $totalSick = $this->calculateLeaveDays($user, $startDate, $endDate, 'Sakit');
             $totalLeaves = $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti');
@@ -101,7 +126,7 @@ use Illuminate\Http\Request;
 
             // Calculate late minutes and check-in/out issues
             $totalMinutesLate = $user->attendancesSummary->sum(function ($attendance) {
-                return $this->calculateLate($attendance->workTime, $attendance);
+                return $this->calculateDailyLate($attendance->workTime, $attendance);
             });
 
             $totalNotCheckIn = $user->attendancesSummary->whereNull('clock_in')->count();
@@ -151,29 +176,23 @@ use Illuminate\Http\Request;
     }
 
 
-
-    public function calculateLate($userWorktime, $attendance): float|int
+    public function calculateDailyLate($userWorktime, $attendance): float|int
     {
-        $totalMinutesLate = 0;
-        $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);
-        $workDate = $attendance?->date;
-        $expectedCheckIn = Carbon::parse("$workDate {$userWorktime?->clock_in}");
-
-        $newExpectedCheckIn = null;
-        if ($userWorktime?->name === "Malam") {
-            $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
+        if (!$userWorktime || !$attendance?->clock_in) {
+            return 0;
         }
 
+        $actualCheckIn = Carbon::parse($attendance->clock_in);
+        $workDate = Carbon::parse($attendance->date);
+        $expectedCheckIn = $workDate->copy()->setTimeFromTimeString($userWorktime->clock_in);
 
-        // Calculate lateness (negative values mean early arrival)
+        // Sesuaikan untuk shift malam
+        if ($userWorktime->name === "Malam") {
+            $expectedCheckIn->addDay();
+        }
+
         $lateness = $expectedCheckIn->diffInMinutes($actualCheckIn, false);
-
-        // Only count positive lateness within grace period
-        if ($lateness > 0 && $lateness <= 2.5) {
-            return $lateness;
-        }
-
-        return 0;
+        return max($lateness, 0); // Hanya nilai positif (terlambat)
     }
 
 
