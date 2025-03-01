@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -60,5 +61,13 @@ class LoginController extends Controller
         }
 
         return redirect()->intended($this->redirectTo);
+    }
+
+
+    protected function sendFailedLoginResponse(Request $request)
+    {
+        throw ValidationException::withMessages([
+            $this->username() => 'NIK atau password salah',
+        ]);
     }
 }

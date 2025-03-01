@@ -162,6 +162,7 @@ class AttendanceSummaryDetailService
     {
         $leaveAndPermission = LeaveAndPermission::where('user_id', $user->id)
             ->where('leaves_status', 'Cuti')
+            ->where('confirmation_status', 'Diterima')
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('start_date', [$startDate, $endDate])
                     ->orWhereBetween('end_date', [$startDate, $endDate]);

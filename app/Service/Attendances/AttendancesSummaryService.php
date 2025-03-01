@@ -70,10 +70,12 @@ use Illuminate\Http\Request;
 
     public function formattedData(LengthAwarePaginator $user, $startDate, $endDate): LengthAwarePaginator
     {
+
         $data = $user->getCollection()->map(function ($user) use ($startDate, $endDate) {
             $totalMinutesLate = 0;
             $totalNotCheckIn = 0;
             $totalNotCheckOut = 0;
+
             $getPeriod = $this->getPeriod($startDate, $endDate, $user);
             $totalPresent = $user->attendancesSummary->count();
             $totalSick = $this->getSick($user, $startDate, $endDate);
@@ -106,7 +108,9 @@ use Illuminate\Http\Request;
 
                 $userWorktime = WorkTime::where('id', $attendance->work_time_id)->first();
                 if ($this->calculateLate($userWorktime, $attendance) > 2.5) {
-                $totalMinutesLate += $this->calculateLate($userWorktime, $attendance);
+                    continue;
+                } else {
+                    $totalMinutesLate += $this->calculateLate($userWorktime, $attendance);
                 }
             }
 
@@ -136,6 +140,7 @@ use Illuminate\Http\Request;
     {
         return LeaveAndPermission::where('user_id', $user->id)
             ->where('leaves_status', $leaveStatus)
+            ->where('confirmation_status', 'Diterima')
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('start_date', [$startDate, $endDate])
                     ->orWhereBetween('end_date', [$startDate, $endDate]);
