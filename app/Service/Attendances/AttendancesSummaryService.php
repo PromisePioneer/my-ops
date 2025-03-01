@@ -191,8 +191,7 @@ use Illuminate\Http\Request;
 
 
         if ($checkInToUse->diffInMinutes($actualCheckIn) >= 2.5) {
-            $lateness = $checkInToUse->diffInMinutes($actualCheckIn);
-            return $totalMinutesLate + $lateness;
+           return $checkInToUse->diffInMinutes($actualCheckIn);
         }
 
         return 0;
