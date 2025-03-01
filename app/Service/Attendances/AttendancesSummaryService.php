@@ -4,6 +4,7 @@ namespace App\Service\Attendances;
 
 use AllowDynamicProperties;
 use App\Models\User;
+use App\Models\WorkTime;
 use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -84,51 +85,71 @@ use Illuminate\Http\Request;
     }
 
 
-    public function formattedData(LengthAwarePaginator $users, $startDate, $endDate): LengthAwarePaginator
+    public function formattedData(LengthAwarePaginator $user, $startDate, $endDate): LengthAwarePaginator
     {
-        $data = $users->getCollection()->map(function ($user) use ($startDate, $endDate) {
+
+        $data = $user->getCollection()->map(function ($user) use ($startDate, $endDate) {
+            $totalMinutesLate = 0;
+            $totalNotCheckIn = 0;
+            $totalNotCheckOut = 0;
+
+            $getPeriod = $this->getScheduledDays($user, $startDate, $endDate);
             $totalPresent = $user->attendancesSummary->count();
-            $totalSick = $this->calculateLeaveDays($user, $startDate, $endDate, 'Sakit');
-            $totalLeaves = $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti');
-            $totalPermission = $this->calculateLeaveDays($user, $startDate, $endDate, 'Izin');
-            $scheduledDays = $this->getScheduledDays($user, $startDate, $endDate);
+            $totalSick = $this->getSick($user, $startDate, $endDate);
+            $totalLeaves = $this->getLeaves($user, $startDate, $endDate);
+            $totalPermission = $this->getPermission($user, $startDate, $endDate);
+            $totalAbsent = 0;
 
-            $totalAbsent = max(
-                $scheduledDays - ($totalPresent + $totalLeaves + $totalSick + $totalPermission),
-                0
-            );
 
-            // Calculate late minutes and check-in/out issues
-            $totalMinutesLate = $user->attendancesSummary->sum(function ($attendance) {
-                return $this->calculateLate($attendance->workTime, $attendance);
-            });
+            foreach ($getPeriod as $period) {
+                if ($period['employeeSchedule']?->status === 'L') {
+                    continue;
+                }
 
-            $totalNotCheckIn = $user->attendancesSummary->whereNull('clock_in')->count();
-            $totalNotCheckOut = $user->attendancesSummary
-                ->where('date', '!=', Carbon::today()->format('Y-m-d'))
-                ->whereNull('clock_out')->count();
+                if (empty($period['attendanceData']) && Carbon::parse($period['attendancesDate'])->lessThan(Carbon::now())) {
+                    $totalAbsent++;
+                }
+
+            }
+
+            foreach ($user->attendancesSummary as $attendance) {
+                if (empty($attendance->clock_in) && $attendance->clock_out) {
+                    $totalNotCheckIn++;
+                }
+
+                if ($attendance->date != Carbon::now()->format('Y-m-d')) {
+                    if (empty($attendance->clock_out) && $attendance->clock_in) {
+                        $totalNotCheckOut++;
+                    }
+                }
+
+                $userWorktime = WorkTime::where('id', $attendance->work_time_id)->first();
+                $this->calculateLate($userWorktime, $attendance);
+            }
+
 
             return [
                 'id' => $user->id,
                 'user_nip' => $user->nip,
-                'user_name' => $user->name,
-                'role' => $user->roles->first()->name ?? '',
-                'total_minutes_late' => (int)$totalMinutesLate,
+                'user_name' => $user?->name,
+                'role' => $user->roles[0]?->name ?? '',
+                'total_minutes_late' => $totalMinutesLate,
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
                 'total_present' => $totalPresent,
                 'total_leaves' => $totalLeaves,
                 'total_sick' => $totalSick,
                 'total_permission' => $totalPermission,
-                'total_absent' => $totalAbsent
+                'total_absent' => $totalAbsent > 0 ? $totalAbsent - $totalLeaves : 0
             ];
         });
 
-        $users->setCollection($data);
-        return $users;
+
+        $user->setCollection($data);
+        return $user;
     }
 
-    private function calculateLeaveDays($user, $startDate, $endDate, $type): float|int
+    private function calculateLeaveDays($user, $startDate, $endDate, $type)
     {
         $periodStart = Carbon::parse($startDate);
         $periodEnd = Carbon::parse($endDate);
@@ -149,6 +170,28 @@ use Illuminate\Http\Request;
         return $totalDays;
     }
 
+    public function getLeaves($user, $startDate, $endDate): int
+    {
+        $leaveStatus = 'Cuti';
+        return $this->calculateLeaveDays($user, $startDate, $endDate, $leaveStatus);
+    }
+
+    public function getSick($user, $startDate, $endDate): int
+    {
+
+        $leaveStatus = 'Sakit';
+        return $this->calculateLeaveDays($user, $startDate, $endDate, $leaveStatus);
+
+    }
+
+
+    public function getPermission($user, $startDate, $endDate): int
+    {
+        $leaveStatus = 'Izin';
+        return $this->calculateLeaveDays($user, $startDate, $endDate, $leaveStatus);
+    }
+
+
 
     public function calculateLate($userWorktime, $attendance): float|int
     {
@@ -162,16 +205,15 @@ use Illuminate\Http\Request;
             $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
         }
 
+        $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
 
-        // Calculate lateness (negative values mean early arrival)
-        $lateness = $expectedCheckIn->diffInMinutes($actualCheckIn, false);
 
-        // Only count positive lateness within grace period
-        if ($lateness >= 2.5) {
-            return $lateness;
+        if ($checkInToUse->diffInMinutes($actualCheckIn) > 2.5) {
+            $lateness = $checkInToUse->diffInMinutes($actualCheckIn);
+            $totalMinutesLate += $lateness;
         }
 
-        return 0;
+        return $totalMinutesLate;
     }
 
 
