@@ -3,14 +3,9 @@
 namespace App\Service\Attendances;
 
 use AllowDynamicProperties;
-use App\Models\AttendancesSummary;
-use App\Models\EmployeeSchedule;
-use App\Models\LeaveAndPermission;
 use App\Models\User;
-use App\Models\WorkTime;
 use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 
@@ -29,8 +24,20 @@ use Illuminate\Http\Request;
     {
         $query = User::with([
             'attendancesSummary' => function ($query) {
-                $query->whereBetween('date', [$this->startDate, $this->endDate]);
-            }, 'roles'
+                $query->whereBetween('date', [$this->startDate, $this->endDate])->with('workTime');
+            },
+            'employeeSchedules' => function ($query) {
+                $query->where('start_date', '<=', $this->startDate)
+                    ->orderBy('start_date', 'asc');
+            },
+            'leaveAndPermissions' => function ($query) {
+                $query->where('confirmation_status', 'Diterima')
+                    ->where(function ($q) {
+                        $q->whereBetween('start_date', [$this->startDate, $this->endDate])
+                            ->orWhereBetween('end_date', [$this->startDate, $this->endDate]);
+                    });
+            },
+            'roles'
         ])->where('active', 1);
 
         $data = AttendancesACLFilter::apply($query, $request);
@@ -39,190 +46,129 @@ use Illuminate\Http\Request;
     }
 
 
-    public function getPeriod($startDate, $endDate, $user): array
+    private function getScheduledDays($user, $startDate, $endDate): float|int
     {
-        $period = CarbonPeriod::create($startDate, $endDate);
+        $schedules = $user->employeeSchedules->sortBy('start_date');
+        $periodStart = Carbon::parse($startDate);
+        $periodEnd = Carbon::parse($endDate);
+        $scheduledDays = 0;
 
-        $attendancesData = AttendancesSummary::with('user')
-            ->where('employee_id', $user->absent_id)
-            ->whereBetween('date', [$startDate, $endDate])
-            ->orderBy('date', 'asc')
-            ->get()
-            ->keyBy('date');
+        $prevDate = $periodStart->copy();
+        foreach ($schedules as $schedule) {
+            $scheduleStart = Carbon::parse($schedule->start_date);
+            if ($scheduleStart > $periodEnd) break;
 
+            $nextScheduleStart = $schedules->where('start_date', '>', $schedule->start_date)
+                ->first()->start_date ?? $periodEnd->addDay();
 
-        $employeeSchedule = EmployeeSchedule::where('employee_id', $user->absent_id)
-            ->whereBetween('start_date', [$startDate, $endDate])->orderBy('start_date', 'asc')->get()->keyBy('start_date');
+            $scheduleEnd = Carbon::parse($nextScheduleStart)->subDay();
+            $effectiveStart = $scheduleStart->max($periodStart);
+            $effectiveEnd = $scheduleEnd->min($periodEnd);
 
-        $dates = [];
-        foreach ($period as $date) {
-            $formattedDate = $date->format('Y-m-d');
-            $dates[$formattedDate] = collect([
-                'attendancesDate' => $formattedDate,
-                'attendanceData' => $attendancesData->get($formattedDate),
-                'employeeSchedule' => $employeeSchedule->get($formattedDate),
-            ]);
+            if ($effectiveStart > $effectiveEnd) continue;
+
+            // Exclude 'L' status schedules
+            if ($schedule->status !== 'L') {
+                $scheduledDays += $effectiveStart->diffInDays($effectiveEnd) + 1;
+            }
+
+            $prevDate = $effectiveEnd->addDay();
         }
 
-        return $dates;
+        // Handle remaining days after last schedule
+        if ($prevDate <= $periodEnd) {
+            $scheduledDays += $prevDate->diffInDays($periodEnd) + 1;
+        }
+
+        return $scheduledDays;
     }
 
 
-    public function formattedData(LengthAwarePaginator $user, $startDate, $endDate): LengthAwarePaginator
+    public function formattedData(LengthAwarePaginator $users, $startDate, $endDate): LengthAwarePaginator
     {
 
-        $data = $user->getCollection()->map(function ($user) use ($startDate, $endDate) {
-            $totalMinutesLate = 0;
-            $totalNotCheckIn = 0;
-            $totalNotCheckOut = 0;
-
-            $getPeriod = $this->getPeriod($startDate, $endDate, $user);
+        $data = $users->getCollection()->map(function ($user) use ($startDate, $endDate) {
             $totalPresent = $user->attendancesSummary->count();
-            $totalSick = $this->getSick($user, $startDate, $endDate);
-            $totalLeaves = $this->getLeaves($user, $startDate, $endDate);
-            $totalPermission = $this->getPermission($user, $startDate, $endDate);
-            $totalAbsent = 0;
+            $totalSick = $this->calculateLeaveDays($user, $startDate, $endDate, 'Sakit');
+            $totalLeaves = $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti');
+            $totalPermission = $this->calculateLeaveDays($user, $startDate, $endDate, 'Izin');
+            $scheduledDays = $this->getScheduledDays($user, $startDate, $endDate);
 
+            $totalAbsent = max(
+                $scheduledDays - ($totalPresent + $totalLeaves + $totalSick + $totalPermission),
+                0
+            );
 
-            foreach ($getPeriod as $period) {
-                if($period['employeeSchedule']?->status === 'L'){
-                    continue;
-                }
+            // Calculate late minutes and check-in/out issues
+            $totalMinutesLate = $user->attendancesSummary->sum(function ($attendance) {
+                return $this->calculateLate($attendance->workTime, $attendance);
+            });
 
-                if (empty($period['attendanceData']) && Carbon::parse($period['attendancesDate'])->lessThan(Carbon::now())) {
-                    $totalAbsent++;
-                }
-
-            }
-
-            foreach ($user->attendancesSummary as $attendance) {
-                if (empty($attendance->clock_in) && $attendance->clock_out) {
-                    $totalNotCheckIn++;
-                }
-
-                if ($attendance->date != Carbon::now()->format('Y-m-d')) {
-                    if (empty($attendance->clock_out) && $attendance->clock_in) {
-                        $totalNotCheckOut++;
-                    }
-                }
-
-                $userWorktime = WorkTime::where('id', $attendance->work_time_id)->first();
-                if ($this->calculateLate($userWorktime, $attendance) <= 2.5) {
-                    $totalMinutesLate += 0;
-                } else {
-                    $this->calculateLate($userWorktime, $attendance);
-                }
-            }
-
+            $totalNotCheckIn = $user->attendancesSummary->whereNull('clock_in')->count();
+            $totalNotCheckOut = $user->attendancesSummary
+                ->where('date', '!=', Carbon::today()->format('Y-m-d'))
+                ->whereNull('clock_out')->count();
 
             return [
                 'id' => $user->id,
                 'user_nip' => $user->nip,
-                'user_name' => $user?->name,
-                'role' => $user->roles[0]?->name ?? '',
-                'total_minutes_late' => $totalMinutesLate,
+                'user_name' => $user->name,
+                'role' => $user->roles->first()->name ?? '',
+                'total_minutes_late' => (int)$totalMinutesLate,
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
                 'total_present' => $totalPresent,
                 'total_leaves' => $totalLeaves,
                 'total_sick' => $totalSick,
                 'total_permission' => $totalPermission,
-                'total_absent' => $totalAbsent > 0 ? $totalAbsent - $totalLeaves : 0
+                'total_absent' => $totalAbsent
             ];
         });
 
-
-        $user->setCollection($data);
-        return $user;
+        $users->setCollection($data);
+        return $users;
     }
 
-    public function leavesQuery($user, $startDate, $endDate, $leaveStatus)
+    private function calculateLeaveDays($user, $startDate, $endDate, $type)
     {
-        return LeaveAndPermission::where('user_id', $user->id)
-            ->where('leaves_status', $leaveStatus)
-            ->where('confirmation_status', 'Diterima')
-            ->where(function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('start_date', [$startDate, $endDate])
-                    ->orWhereBetween('end_date', [$startDate, $endDate]);
-            });
+        $periodStart = Carbon::parse($startDate);
+        $periodEnd = Carbon::parse($endDate);
+        $totalDays = 0;
+
+        foreach ($user->leaveAndPermissions->where('leaves_status', $type) as $leave) {
+            $leaveStart = Carbon::parse($leave->start_date);
+            $leaveEnd = Carbon::parse($leave->end_date);
+
+            $overlapStart = $leaveStart->max($periodStart);
+            $overlapEnd = $leaveEnd->min($periodEnd);
+
+            if ($overlapStart->gt($overlapEnd)) continue;
+
+            $totalDays += $overlapStart->diffInDays($overlapEnd) + 1;
+        }
+
+        return $totalDays;
     }
 
     public function getLeaves($user, $startDate, $endDate): int
     {
         $leaveStatus = 'Cuti';
-        $leaveAndPermission = $this->leavesQuery($user, $startDate, $endDate, $leaveStatus)->get();
-
-        $leavePeriods = [];
-
-        foreach ($leaveAndPermission as $dates) {
-            $leavePeriods = array_merge(
-                $leavePeriods,
-                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
-            );
-        }
-
-        $leaves = [];
-        foreach ($leavePeriods as $date) {
-            $formattedDate = Carbon::parse($date)->format('Y-m-d');
-            $leaves[$formattedDate] = collect([
-                'leaves_date' => $formattedDate,
-                'status' => 'Cuti',
-            ]);
-        }
-
-        return count($leaves);
+        return $this->calculateLeaveDays($user, $startDate, $endDate, $leaveStatus);
     }
 
     public function getSick($user, $startDate, $endDate): int
     {
 
         $leaveStatus = 'Sakit';
-        $leaveAndPermission = $this->leavesQuery($user, $startDate, $endDate, $leaveStatus)->get();
+        return $this->calculateLeaveDays($user, $startDate, $endDate, $leaveStatus);
 
-        $leavePeriods = [];
-
-        foreach ($leaveAndPermission as $dates) {
-            $leavePeriods = array_merge(
-                $leavePeriods,
-                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
-            );
-        }
-
-        $sick = [];
-        foreach ($leavePeriods as $date) {
-            $formattedDate = Carbon::parse($date)->format('Y-m-d');
-            $sick[$formattedDate] = collect([
-                'leaves_date' => $formattedDate,
-                'status' => $leaveStatus,
-            ]);
-        }
-        return count($sick);
     }
 
 
     public function getPermission($user, $startDate, $endDate): int
     {
         $leaveStatus = 'Izin';
-        $leaveAndPermission = $this->leavesQuery($user, $startDate, $endDate, $leaveStatus)->get();
-
-        $permissionPeriods = [];
-
-        foreach ($leaveAndPermission as $dates) {
-            $permissionPeriods = array_merge(
-                $permissionPeriods,
-                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
-            );
-        }
-
-        $permissions = [];
-        foreach ($permissionPeriods as $date) {
-            $formattedDate = Carbon::parse($date)->format('Y-m-d');
-            $permissions[$formattedDate] = collect([
-                'leaves_date' => $formattedDate,
-                'status' => $leaveStatus,
-            ]);
-        }
-        return count($permissions);
+        return $this->calculateLeaveDays($user, $startDate, $endDate, $leaveStatus);
     }
 
 
