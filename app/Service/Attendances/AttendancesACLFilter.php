@@ -18,7 +18,7 @@ class AttendancesACLFilter
             });
         }
 
-        if ($request->user()->hasAnyRole('Head Engineer', 'Senior Engineer')) {
+        if ($request->user()->hasAnyRole(['Head Engineer', 'Senior Engineer'])) {
             $query->whereHas('userHasArea', function ($query) use ($request) {
                 $query->where('area_id', $request->user()->userHasArea->area_id);
             })->where(function ($query) use ($request) {
