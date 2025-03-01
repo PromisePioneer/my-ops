@@ -99,7 +99,6 @@ use Illuminate\Http\Request;
                 0
             );
 
-            // Calculate late minutes and check-in/out issues
             $totalMinutesLate = $user->attendancesSummary->sum(function ($attendance) {
                 return $this->calculateLate($attendance->workTime, $attendance);
             });
@@ -177,7 +176,6 @@ use Illuminate\Http\Request;
 
     public function calculateLate($userWorktime, $attendance): float|int
     {
-        $totalMinutesLate = 0;
         $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);
         $workDate = $attendance?->date;
         $expectedCheckIn = Carbon::parse("$workDate {$userWorktime?->clock_in}");
@@ -190,11 +188,11 @@ use Illuminate\Http\Request;
         $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
 
 
-        if ($checkInToUse->diffInMinutes($actualCheckIn) >= 2.5) {
-           return $checkInToUse->diffInMinutes($actualCheckIn);
+        if ($checkInToUse->diffInMinutes($actualCheckIn) < 2.6) {
+            return 0;
         }
 
-        return 0;
+        return $checkInToUse->diffInMinutes($actualCheckIn);
     }
 
 
