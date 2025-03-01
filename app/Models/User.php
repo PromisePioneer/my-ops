@@ -107,6 +107,18 @@ class User extends Authenticatable
         return $this->hasMany(AttendancesSummary::class, 'employee_id', 'absent_id');
     }
 
+
+    public function employeeSchedules(): HasMany
+    {
+        return $this->hasMany(EmployeeSchedule::class, 'employee_id', 'absent_id');
+    }
+
+
+    public function leaveAndPermissions(): HasMany
+    {
+        return $this->hasMany(LeaveAndPermission::class, 'user_id');
+    }
+
     public function overtimeAllowance()
     {
         return $this->hasMany(UserHasOvertime::class, 'user_id');
