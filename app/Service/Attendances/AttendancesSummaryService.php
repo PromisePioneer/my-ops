@@ -129,7 +129,7 @@ use Illuminate\Http\Request;
         return $users;
     }
 
-    private function calculateLeaveDays($user, $startDate, $endDate, $type)
+    private function calculateLeaveDays($user, $startDate, $endDate, $type): float|int
     {
         $periodStart = Carbon::parse($startDate);
         $periodEnd = Carbon::parse($endDate);
@@ -150,27 +150,6 @@ use Illuminate\Http\Request;
         return $totalDays;
     }
 
-    public function getLeaves($user, $startDate, $endDate): int
-    {
-        $leaveStatus = 'Cuti';
-        return $this->calculateLeaveDays($user, $startDate, $endDate, $leaveStatus);
-    }
-
-    public function getSick($user, $startDate, $endDate): int
-    {
-
-        $leaveStatus = 'Sakit';
-        return $this->calculateLeaveDays($user, $startDate, $endDate, $leaveStatus);
-
-    }
-
-
-    public function getPermission($user, $startDate, $endDate): int
-    {
-        $leaveStatus = 'Izin';
-        return $this->calculateLeaveDays($user, $startDate, $endDate, $leaveStatus);
-    }
-
 
 
     public function calculateLate($userWorktime, $attendance): float|int
@@ -185,15 +164,16 @@ use Illuminate\Http\Request;
             $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
         }
 
-        $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
 
+        // Calculate lateness (negative values mean early arrival)
+        $lateness = $expectedCheckIn->diffInMinutes($actualCheckIn, false);
 
-        if ($checkInToUse->diffInMinutes($actualCheckIn) > 2.5) {
-            $lateness = $checkInToUse->diffInMinutes($actualCheckIn);
-            $totalMinutesLate += $lateness;
+        // Only count positive lateness within grace period
+        if ($lateness > 0 && $lateness <= 2.5) {
+            return $lateness;
         }
 
-        return $totalMinutesLate;
+        return 0;
     }
 
 
