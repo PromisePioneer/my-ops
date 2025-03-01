@@ -115,7 +115,7 @@ use Illuminate\Http\Request;
                 'user_nip' => $user->nip,
                 'user_name' => $user?->name,
                 'role' => $user->roles[0]?->name ?? '',
-                'total_minutes_late' => $totalMinutesLate,
+                'total_minutes_late' => (int)$totalMinutesLate,
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
                 'total_present' => $totalPresent,
@@ -131,7 +131,7 @@ use Illuminate\Http\Request;
         return $user;
     }
 
-    private function calculateLeaveDays($user, $startDate, $endDate, $type)
+    private function calculateLeaveDays($user, $startDate, $endDate, $type): float|int
     {
         $periodStart = Carbon::parse($startDate);
         $periodEnd = Carbon::parse($endDate);
