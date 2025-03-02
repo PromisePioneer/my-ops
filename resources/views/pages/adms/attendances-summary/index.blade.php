@@ -243,7 +243,7 @@
 
                     try {
                         if (url) {
-                            await this.attendanceSummary = [];
+                            this.attendanceSummary = [];
                             this.isLoading = true;
                             const resp = await axios.get(`${url}`, {
                                 params: {
