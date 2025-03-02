@@ -5,12 +5,15 @@ namespace App\Service\User\User;
 use AllowDynamicProperties;
 use App\Http\Requests\User\UserRequest;
 use App\Models\User;
+use App\Models\WeekHoliday;
 use App\Service\Master\General\Branch\BranchService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Throwable;
 
 #[AllowDynamicProperties] class UserService
 {
@@ -77,35 +80,56 @@ use Illuminate\Support\Facades\Hash;
     }
 
 
+    /**
+     * @throws Throwable
+     */
     public function store(UserRequest $request): void
     {
-        $data = $request->validated();
-        $data['placement'] = $request->placement;
-        $data['branch_id'] = $request->branch_id;
-        if ($request->user()->hasRole('Branch Manager')) {
-            $data['placement'] = 'Cabang';
-            $data['branch_id'] = $request->user()->branch_id;
-        }
-        $data['password'] = Hash::make($request->password);
-        $data['nip'] = $request->roles[0] === 'Vendor' ? null : $this->formattedNip($data);
-        $user = User::create($data);
-        $user->syncRoles($request->roles);
+        DB::transaction(function () use ($request) {
+            $data = $request->validated();
+            $data['placement'] = $request->placement;
+            $data['branch_id'] = $request->branch_id;
+            if ($request->user()->hasRole('Branch Manager')) {
+                $data['placement'] = 'Cabang';
+                $data['branch_id'] = $request->user()->branch_id;
+            }
+            $data['password'] = Hash::make($request->password);
+            $data['nip'] = $request->roles[0] === 'Vendor' ? null : $this->formattedNip($data);
+            $user = User::create($data);
+            $user->syncRoles($request->roles);
+
+            WeekHoliday::create([
+                'user_id' => $user->id,
+                'day' => $request->day
+            ]);
+        });
     }
 
+    /**
+     * @throws Throwable
+     */
     public function update(UserRequest $request, User $user): void
     {
-        $data = $request->validated();
-        $data['placement'] = $request->placement;
-        $data['branch_id'] = $request->branch_id;
-        if ($request->user()->hasRole('Branch Manager')) {
-            $data['placement'] = 'Cabang';
-            $data['branch_id'] = $request->user()->branch_id;
-        }
-        $data['password'] = empty($request->password)
-            ? $user->password : Hash::make($request->password);
-        $data['nip'] = $request->roles[0] === 'Vendor' ? null : $this->formattedNip($data);
-        $user->update($data);
-        $user->syncRoles($request->roles);
+        DB::transaction(function () use ($request, $user) {
+            $data = $request->validated();
+            $data['placement'] = $request->placement;
+            $data['branch_id'] = $request->branch_id;
+            if ($request->user()->hasRole('Branch Manager')) {
+                $data['placement'] = 'Cabang';
+                $data['branch_id'] = $request->user()->branch_id;
+            }
+            $data['password'] = empty($request->password)
+                ? $user->password : Hash::make($request->password);
+            $data['nip'] = $request->roles[0] === 'Vendor' ? null : $this->formattedNip($data);
+            $user->update($data);
+            $user->syncRoles($request->roles);
+
+            WeekHoliday::updateOrCreate([
+                'user_id' => $user->id,
+            ], [
+                'day' => $request->day
+            ]);
+        });
     }
 
 

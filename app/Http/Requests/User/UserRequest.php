@@ -47,7 +47,6 @@ class UserRequest extends FormRequest
             ],
             'day' => [
                 'required',
-                Rule::exists('user_week_holidays', 'day')
             ]
         ];
     }
