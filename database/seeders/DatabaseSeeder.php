@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\WeekHoliday;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -44,6 +45,7 @@ class DatabaseSeeder extends Seeder
             SupplierSeeder::class,
             AreaSeeder::class,
             PSBSeeder::class,
+            WeekHolidaySeeder::class,
         ]);
     }
 }

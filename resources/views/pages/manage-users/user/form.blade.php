@@ -76,6 +76,35 @@
                                        id="password" placeholder="password">
                             </div>
                         </div>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="col-form-label required fw-bold fs-6">Libur Mingguan</label>
+                                <select name="day" id="day" class="form-select form-select-solid">
+                                    <option>Pilih Hari Libur</option>
+                                    <option value="Senin" {{ ($user->weekHoliday?->day ?? '') === 'Senin' ? 'selected' : '' }}>
+                                        Senin
+                                    </option>
+                                    <option value="Selasa" {{ $user->weekHoliday?->day ?? '' === 'Selasa' ? 'selected' : '' }}>
+                                        Selasa
+                                    </option>
+                                    <option value="Rabu" {{ $user->weekHoliday?->day ?? '' === 'Rabu' ? 'selected' : '' }}>
+                                        Rabu
+                                    </option>
+                                    <option value="Kamis" {{ $user->weekHoliday->day ?? '' === 'Kamis' ? 'selected' : '' }}>
+                                        Kamis
+                                    </option>
+                                    <option value="Jumat" {{ $user->weekHoliday?->day ?? '' === 'Jumat' ? 'selected' : '' }}>
+                                        Jum'at
+                                    </option>
+                                    <option value="Sabtu" {{ $user->weekHoliday?->day ?? '' === 'Sabtu' ? 'selected' : '' }}>
+                                        Sabtu
+                                    </option>
+                                    <option value="Minggu" {{ $user->weekHoliday?->day ?? '' === 'Minggu' ? 'selected' : '' }}>
+                                        Minggu
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
 
                         <div class="form-group row mb-6">
                             <label class="col-lg-1 col-form-label required fw-bold fs-6">Role</label>

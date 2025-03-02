@@ -90,56 +90,61 @@
                             <template x-for="(attendance, index) in attendanceSummary?.data" :key="index">
                                 <tr class="text-center">
                                     <td>
-                                        <a :href="`/manage-users/users/detail/${attendance.id}`"
-                                           x-text="`(${attendance.user_nip}) ${attendance.user_name}`"></a>
+                                        <div class="d-flex flex-column text-center align-items-center">
+                                            <a class="text-center" href="#"
+                                               x-text="attendance.user_name"></a>
+                                            <span class="badge bg-info w-150px text-center text-white text-uppercase"
+                                                  x-text="`Jabatan : ${attendance.role}`"></span>
+                                            <span x-text="attendance.user_nip"></span>
+                                        </div>
                                     </td>
-                                    <td class="d-flex flex-start justify-content-around">
-                                        <table class="table table-row-bordered">
-                                            <tr>
-                                                <td>Terlambat (Menit)</td>
-                                                <td>:</td>
-                                                <td x-text="`${attendance.total_minutes_late}`"></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Total Hadir (Hari)</td>
-                                                <td>:</td>
-                                                <td x-text="`${attendance.total_present}`"></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Total Alfa (Hari)</td>
-                                                <td>:</td>
-                                                <td x-text="`${attendance.total_absent} Hari`"></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Tdk Checkin</td>
-                                                <td>:</td>
-                                                <td x-text="`${attendance.total_not_check_in}`"></td>
-                                            </tr>
-                                        </table>
-
-                                        <table class="table">
-
-                                            <tr>
-                                                <td>Tdk Checkin</td>
-                                                <td>:</td>
-                                                <td x-text="`${attendance.total_not_check_out}`"></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Cuti</td>
-                                                <td>:</td>
-                                                <td x-text="`${attendance.total_leaves}`"></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Izin</td>
-                                                <td>:</td>
-                                                <td x-text="`${attendance.total_permission}`"></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Sakit</td>
-                                                <td>:</td>
-                                                <td x-text="`${attendance.total_sick}`"></td>
-                                            </tr>
-                                        </table>
+                                    <td>
+                                        <div class="d-flex flex-start justify-content-around">
+                                            <table class="table table-row-bordered">
+                                                <tr class="bg-warning text-center">
+                                                    <td>Terlambat (Menit)</td>
+                                                    <td>:</td>
+                                                    <td x-text="`${attendance.total_minutes_late}`"></td>
+                                                </tr>
+                                                <tr class="bg-warning text-center">
+                                                    <td>Total Hadir (Hari)</td>
+                                                    <td>:</td>
+                                                    <td x-text="`${attendance.total_present}`"></td>
+                                                </tr>
+                                                <tr class="bg-warning text-center">
+                                                    <td>Total Alfa (Hari)</td>
+                                                    <td>:</td>
+                                                    <td x-text="`${attendance.total_absent}`"></td>
+                                                </tr>
+                                                <tr class="bg-warning text-center">
+                                                    <td>Tdk Checkin</td>
+                                                    <td>:</td>
+                                                    <td x-text="`${attendance.total_not_check_in}`"></td>
+                                                </tr>
+                                            </table>
+                                            <table class="table table-row-bordered ">
+                                                <tr class="bg-warning text-center">
+                                                    <td>Tdk Checkin</td>
+                                                    <td>:</td>
+                                                    <td x-text="`${attendance.total_not_check_out}`"></td>
+                                                </tr>
+                                                <tr class="bg-warning text-center">
+                                                    <td>Cuti</td>
+                                                    <td>:</td>
+                                                    <td x-text="`${attendance.total_leaves}`"></td>
+                                                </tr>
+                                                <tr class="bg-warning text-center">
+                                                    <td>Izin</td>
+                                                    <td>:</td>
+                                                    <td x-text="`${attendance.total_permission}`"></td>
+                                                </tr>
+                                                <tr class="bg-warning text-center">
+                                                    <td>Sakit</td>
+                                                    <td>:</td>
+                                                    <td x-text="`${attendance.total_sick}`"></td>
+                                                </tr>
+                                            </table>
+                                        </div>
                                     </td>
                                     <td>
                                         <a :href="`/adms/attendances-summary/detail/${attendance.id}/${startDates}/${endDates}`"

@@ -37,8 +37,9 @@ use Illuminate\Http\Request;
                             ->orWhereBetween('end_date', [$this->startDate, $this->endDate]);
                     });
             },
-            'roles'
-        ])->where('active', 1);
+            'roles',
+            'weekHoliday'
+        ])->where('active', 1)->orderBy('absent_id');
 
         $data = AttendancesACLFilter::apply($query, $request);
         $attendanceSummary = $data->paginate(self::$perPage)->onEachSide(1);
@@ -75,7 +76,6 @@ use Illuminate\Http\Request;
             $prevDate = $effectiveEnd->addDay();
         }
 
-        // Handle remaining days after last schedule
         if ($prevDate <= $periodEnd) {
             $scheduledDays += $prevDate->diffInDays($periodEnd) + 1;
         }

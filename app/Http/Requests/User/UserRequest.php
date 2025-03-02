@@ -45,6 +45,10 @@ class UserRequest extends FormRequest
                 'required',
                 Rule::exists('roles', 'name'),
             ],
+            'day' => [
+                'required',
+                Rule::exists('user_week_holidays', 'day')
+            ]
         ];
     }
 

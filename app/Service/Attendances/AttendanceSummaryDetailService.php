@@ -7,6 +7,7 @@ use App\Models\AttendancesSummary;
 use App\Models\EmployeeSchedule;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
+use App\Models\WeekHoliday;
 use App\Models\WorkTime;
 use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
@@ -78,6 +79,11 @@ class AttendanceSummaryDetailService
             $userWorktime = WorkTime::where('id', $item['attendanceData']?->work_time_id)->first()
                 ?? '-';
 
+            $user = User::where('absent_id', $empId)->first();
+            $weekHoliday = WeekHoliday::where('user_id', $user->id)->where('day', Carbon::parse($item['attendancesDate'])->dayName)->first();
+            $isHoliday = $weekHoliday?->is_holiday ? 'L' : 'H';
+            $empSchedule = $item['employeeSchedule']?->status ?? $isHoliday;
+
 
             return [
                 'id' => $item['attendanceData']?->id,
@@ -86,7 +92,7 @@ class AttendanceSummaryDetailService
                 'clock_out' => Carbon::make($item['attendanceData']?->clock_out)?->format('d/m/Y H:i:s') ?? null,
                 'late' => $this->calculateLate($item, $userWorktime) ?? null,
                 'work_time' => $userWorktime->name ?? null,
-                'schedule' => $item['employeeSchedule']?->status ?? null,
+                'schedule' => $empSchedule,
                 'leaves' => $item['leaves'] ?? null,
                 'sick' => $item['sick'] ?? null,
                 'permission' => $item['permission'] ?? null,

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\HRIS\Attendances;
 use App\Models\EmployeeSchedule;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
+use App\Models\WeekHoliday;
 use App\Service\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -304,10 +305,14 @@ class EmployeeScheduleService
                 'id' => $item->id,
                 'name' => $item->name,
                 'absent_id' => $item->absent_id,
-                'date' => collect($dates)->map(function ($date) {
+                'date' => collect($dates)->map(function ($date) use ($item) {
+                    $weekHoliday = $date['employeeSchedules'];
+                    if (empty($weekHoliday)) {
+                        $weekHoliday = WeekHoliday::where('user_id', $item->id)->where('day', Carbon::parse($date['periodDate'])->dayName)->first();
+                    }
                     return [
                         'period_date' => $date['periodDate'],
-                        'schedules_date' => $date['employeeSchedules'],
+                        'schedules_date' => $weekHoliday,
                         'work_time_schedules' => $date['employeeSchedules']?->workTime?->name,
                         'sick' => $date['sick'] ?? null,
                         'permission' => $date['permission'] ?? null,
@@ -320,12 +325,6 @@ class EmployeeScheduleService
 
         $userData->setCollection($data);
         return $userData;
-    }
-
-
-    public function leavesData()
-    {
-
     }
 
 

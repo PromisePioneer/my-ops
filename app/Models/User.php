@@ -157,6 +157,12 @@ class User extends Authenticatable
     }
 
 
+    public function weekHoliday(): HasOne
+    {
+        return $this->hasOne(WeekHoliday::class, 'user_id');
+    }
+
+
     //eloquent
     public function getData(): Builder
     {

@@ -6,12 +6,12 @@ use App\Models\Attendances;
 use App\Models\AttendancesSummary;
 use App\Models\EmployeeSchedule;
 use App\Models\User;
+use App\Models\WeekHoliday;
 use App\Models\WorkTime;
 use Carbon\Carbon;
 
 class AttendanceSummaryObserver
 {
-
     public function created(Attendances $attendances): void
     {
         $timestamp = Carbon::parse($attendances->timestamp);
@@ -24,6 +24,12 @@ class AttendanceSummaryObserver
         $workTime = $this->getWorkTime($attendances, $user, $timestamp);
 
         if (!$workTime) {
+            return;
+        }
+
+        $weekHoliday = WeekHoliday::where('user_id', $user->id)->where('day', $timestamp->dayName)->first();
+
+        if ($weekHoliday) {
             return;
         }
 

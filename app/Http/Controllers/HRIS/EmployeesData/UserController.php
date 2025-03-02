@@ -12,6 +12,7 @@ use App\Models\Company;
 use App\Models\Department;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\WeekHoliday;
 use App\Service\User\User\UserService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;

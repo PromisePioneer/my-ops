@@ -109,7 +109,7 @@
                                         </tr>
                                     </template>
                                     <template
-                                            x-if="!attendance.leaves && !attendance.permission && !attendance.sick && !attendance.schedule || attendance.schedule !== 'L'">
+                                        x-if="!attendance?.leaves && !attendance?.permission && !attendance.sick && attendance.schedule === 'H'">
                                         <tr>
                                             <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
                                             <td class="text-center" x-text="attendance.clock_in"></td>

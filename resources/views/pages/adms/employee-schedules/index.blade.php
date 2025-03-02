@@ -101,7 +101,7 @@
                                         <td class="bg-dark border border-black text-white px-2 fix"
                                             x-text="employeeSchedule?.name"></td>
                                         <template x-for="dates in employeeSchedule?.date">
-                                            <td :class="`${dates.leaves?.status === 'Cuti' ? 'text-center border border-black text-black bg-warning' : dates.leaves?.status === 'Izin' ? 'text-center border border-black text-black bg-warning' : dates.leaves?.status === 'Sakit' ? 'text-center border border-black text-black bg-warning' : dates.schedules_date?.status === 'L' ? 'text-center border border-black text-black bg-warning' : dates.schedules_date?.status === 'H' ? 'text-center border border-black text-white bg-info' : 'text-center border border-black text-white' }`">
+                                            <td :class="`${dates.leaves?.status === 'Cuti' ? 'text-center border border-black text-black bg-warning' : dates.leaves?.status === 'Izin' ? 'text-center border border-black text-black bg-warning' : dates.leaves?.status === 'Sakit' ? 'text-center border border-black text-black bg-warning' : dates.schedules_date?.status === 'L' || dates.schedules_date?.is_holiday  ? 'text-center border border-black text-black bg-warning' : dates.schedules_date?.status === 'H' ? 'text-center border border-black text-white bg-info' : 'text-center border border-black text-white' }`">
                                                 <template x-if="dates.leaves?.status === 'Izin'">
                                                     <div class="text-black text-uppercase">
                                                         <span>Izin</span>
@@ -122,17 +122,15 @@
                                                         <a href="#" class="btn btn-link text-decoration-underline"
                                                            data-bs-toggle="modal"
                                                        data-bs-target="#modal-create"
-                                                           :class="`${dates.schedules_date?.status === 'L' ? 'text-black fw-bolder text-uppercase' : dates.schedules_date?.status === 'H' ? 'text-white fw-bolder text-uppercase' : 'text-black'}`"
+                                                           :class="`${dates.schedules_date?.status === 'L'  || dates.schedules_date?.is_holiday ? 'text-black fw-bolder text-uppercase' : dates.schedules_date?.status === 'H' ? 'text-white fw-bolder text-uppercase' : 'text-black'}`"
                                                        @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.period_dates ??  dates.period_date )"
                                                         >
-                                                            <template x-if="dates?.work_time_schedules">
-                                                                <span
-                                                                    x-text="`${dates.schedules_date?.status === 'L' ? 'LIBUR' : dates?.work_time_schedules }`"></span>
-                                                                <span
-                                                                    x-text="`${dates.schedules_date?.status === 'L' ? '(Libur)' : dates.schedules_date?.status === 'H' ? '(Hadir)' : ''}`"></span>
-                                                            </template>
+                                                            <span
+                                                                x-text="`${dates.schedules_date?.status === 'L' || dates.schedules_date?.is_holiday ? '(Libur)' : dates.schedules_date?.status === 'H' ? '(Hadir)' : ''}`">
+                                                            </span>
 
-                                                            <template x-if="!dates?.work_time_schedules">
+                                                            <template
+                                                                x-if="!dates?.work_time_schedules && !dates.schedules_date?.is_holiday">
                                                             <span>
                                                                 <i class="fas fa-add text-danger"></i>
                                                                 Tambah
