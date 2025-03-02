@@ -267,10 +267,12 @@
                     const endDate = document.getElementById('end_dates')?.value ?? '';
                     const branch_id = $('#branch_id').val();
                     const role_id = $('#role_id').val()
-                    this.isLoading = true;
                     try {
+                        this.attendanceSummary = [];
+                        this.isLoading = true;
                         const resp = await axios.get(`/adms/attendances-summary/filter`, {
                             params: {
+                                search: this.search,
                                 start_date: startDate,
                                 end_date: endDate,
                                 branch_id: branch_id,
@@ -364,13 +366,14 @@
                     }
                 },
                 async searchData() {
-                    this.isLoading = true;
                     const startDate = document.getElementById('start_dates')?.value;
                     const endDate = document.getElementById('end_dates')?.value;
                     const department = $('#department_id').val();
                     const branch_id = $('#branch_id').val();
                     const role_id = $('#role_id').val();
                     try {
+                        this.attendanceSummary = [];
+                        this.isLoading = true;
                         const response = await axios.get('/adms/attendances-summary/search', {
                             params: {
                                 search: this.search,
