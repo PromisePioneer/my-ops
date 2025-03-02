@@ -65,15 +65,7 @@
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0 text-center">
                                 <th class="min-w-125px">Nama Karyawan</th>
-                                <th class="min-w-125px">Jabatan</th>
-                                <th class="min-w-125px">Terlambat</th>
-                                <th class="min-w-125px">Total Hadir</th>
-                                <th class="min-w-125px">Tidak Hadir</th>
-                                <th class="min-w-125px">Tidak CheckIn</th>
-                                <th class="min-w-125px">Tidak Checkout</th>
-                                <th class="min-w-125px">Cuti</th>
-                                <th class="min-w-125px">Sakit</th>
-                                <th class="min-w-125px">Izin</th>
+                                <th>Detail</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class=" fw-bold">
@@ -101,15 +93,54 @@
                                         <a :href="`/manage-users/users/detail/${attendance.id}`"
                                            x-text="`(${attendance.user_nip}) ${attendance.user_name}`"></a>
                                     </td>
-                                    <td x-text="`${attendance.role}`"></td>
-                                    <td x-text="`${attendance.total_minutes_late} Menit`"></td>
-                                    <td x-text="`${attendance.total_present}`"></td>
-                                    <td x-text="`${attendance.total_absent}`"></td>
-                                    <td x-text="`${attendance.total_not_check_in}`"></td>
-                                    <td x-text="`${attendance.total_not_check_out}`"></td>
-                                    <td x-text="`${attendance.total_leaves}`"></td>
-                                    <td x-text="`${attendance.total_sick}`"></td>
-                                    <td x-text="`${attendance.total_permission}`"></td>
+                                    <td class="d-flex flex-start justify-content-around">
+                                        <table class="table table-row-bordered">
+                                            <tr>
+                                                <td>Terlambat (Menit)</td>
+                                                <td>:</td>
+                                                <td x-text="`${attendance.total_minutes_late}`"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Total Hadir (Hari)</td>
+                                                <td>:</td>
+                                                <td x-text="`${attendance.total_present}`"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Total Alfa (Hari)</td>
+                                                <td>:</td>
+                                                <td x-text="`${attendance.total_absent} Hari`"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Tdk Checkin</td>
+                                                <td>:</td>
+                                                <td x-text="`${attendance.total_not_check_in}`"></td>
+                                            </tr>
+                                        </table>
+
+                                        <table class="table">
+
+                                            <tr>
+                                                <td>Tdk Checkin</td>
+                                                <td>:</td>
+                                                <td x-text="`${attendance.total_not_check_out}`"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Cuti</td>
+                                                <td>:</td>
+                                                <td x-text="`${attendance.total_leaves}`"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Izin</td>
+                                                <td>:</td>
+                                                <td x-text="`${attendance.total_permission}`"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Sakit</td>
+                                                <td>:</td>
+                                                <td x-text="`${attendance.total_sick}`"></td>
+                                            </tr>
+                                        </table>
+                                    </td>
                                     <td>
                                         <a :href="`/adms/attendances-summary/detail/${attendance.id}/${startDates}/${endDates}`"
                                            class="btn btn-light-primary btn-sm">
@@ -156,7 +187,6 @@
                     await this.getMainBranches();
                     await this.getRoles();
                     await this.getDepartmentData();
-                    await this.getFpDeviceData();
                 },
                 async getDepartmentData() {
                     $(".departments-select2").select2({
@@ -200,29 +230,30 @@
                         }
                     });
                 },
-                async paginationEndPointForAttendanceSummaryDetail(url) {
-                    if (url) {
-                        const resp = await axios.get(`${url}`);
-                        this.attendanceSummaryDetail = resp.data
-                    }
-                },
                 async paginationEndPointForAttendanceSummary(url) {
                     const startDate = document.getElementById('start_dates')?.value ?? '';
                     const endDate = document.getElementById('end_dates')?.value ?? '';
                     const branchId = $('#branch_id').val();
                     const roleId = $('#role_id').val();
 
-                    if (url) {
-                        const resp = await axios.get(`${url}`, {
-                            params: {
-                                search: this.search,
-                                start_date: startDate,
-                                end_date: endDate,
-                                branch_id: branchId,
-                                role_id: roleId
-                            }
-                        });
-                        this.attendanceSummary = resp.data
+                    try {
+                        if (url) {
+                            this.attendanceSummary = [];
+                            const resp = await axios.get(`${url}`, {
+                                params: {
+                                    search: this.search,
+                                    start_date: startDate,
+                                    end_date: endDate,
+                                    branch_id: branchId,
+                                    role_id: roleId
+                                }
+                            });
+                            this.attendanceSummary = resp.data
+                        }
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false
                     }
                 },
                 async filter() {
