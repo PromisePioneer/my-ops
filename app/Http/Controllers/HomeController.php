@@ -31,9 +31,21 @@ class HomeController extends Controller
 
         $totalEmp = User::withoutRole('Super Admin')->where('active', true)->count();
         $totalBranch = Branch::whereNull('parent_id')->count();
+
         return response()->json([
             'totalEmp' => $totalEmp,
             'totalBranch' => $totalBranch,
+        ]);
+    }
+
+
+    public function branchManagerDasboard(Request $request): JsonResponse
+    {
+        $totalActiveEmp = User::where('branch_id', $request->user()->branch_id)->where('active', true)->count();
+        $totalUnactiveEmp = User::where('branch_id', $request->user()->branch_id)->where('active', false)->count();
+        return response()->json([
+            'totalActiveEmployee' => $totalActiveEmp,
+            'totalUnactiveEmployee' => $totalUnactiveEmp
         ]);
     }
 

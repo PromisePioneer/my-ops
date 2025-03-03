@@ -95,10 +95,8 @@ use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
 use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
 use App\Http\Controllers\WarehouseController;
-use App\Models\Attendances;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Jmrashed\Zkteco\Lib\ZKTeco;
 
 /*
 |--------------------------------------------------------------------------
@@ -160,6 +158,7 @@ Route::group(['middleware' => ['auth']], static function () {
     //dashboard
     Route::get('home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/summary', [HomeController::class, 'summary']);
+    Route::get('/branch-manager-dashboard/data', [HomeController::class, 'branchManagerDasboard']);
 
 
     Route::prefix('/transactions')->group(function () {
