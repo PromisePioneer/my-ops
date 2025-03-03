@@ -409,7 +409,7 @@
                     const company_id = $(".companies-select2")?.val();
                     const year = document.getElementById('year')?.value ?? '';
                     const month = document.getElementById('month')?.value ?? '';
-                    const branch_id = $(".branch-select2")?.val();
+                    const branch_id = $(".main-branches-select2")?.val();
                     const active = document.getElementById('active')?.value;
 
                     try {
@@ -419,10 +419,10 @@
                             const resp = await axios.get(`${url}`, {
                                 params: {
                                     search: this.search,
+                                    branch_id: branch_id,
                                     company_id: company_id,
                                     year: year,
                                     month: month,
-                                    branch_id: branch_id,
                                     active: active
                                 }
                             });
