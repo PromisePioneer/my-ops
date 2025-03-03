@@ -25,7 +25,6 @@ use App\Http\Controllers\GoodsController;
 use App\Http\Controllers\GoodsPurchaseOrderController;
 use App\Http\Controllers\GoodsStockController;
 use App\Http\Controllers\GoodsTransactionController;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
 use App\Http\Controllers\HRIS\Attendances\FpDevicesController;
@@ -157,8 +156,6 @@ Route::prefix('/iclock')->group(function () {
 Route::group(['middleware' => ['auth']], static function () {
     //dashboard
     Route::get('home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-    Route::get('/summary', [HomeController::class, 'summary']);
-    Route::get('/branch-manager-dashboard/data', [HomeController::class, 'branchManagerDasboard']);
 
 
     Route::prefix('/transactions')->group(function () {
