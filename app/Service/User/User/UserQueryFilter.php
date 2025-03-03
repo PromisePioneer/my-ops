@@ -14,7 +14,9 @@ class UserQueryFilter
         }
 
         if ($request->filled('role_id')) {
-            $query->where('role_id', $request->input('role_id'));
+            $query->whereHas('roles', function ($query) use ($request) {
+                $query->where('id', $request->input('role_id'));
+            });
         }
 
         if ($request->filled('company_id')) {
