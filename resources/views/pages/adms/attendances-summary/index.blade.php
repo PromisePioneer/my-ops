@@ -60,7 +60,7 @@
             <div class="card-body py-3">
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed table-bordered fs-6 gy-5 table-striped"
+                        <table class="table align-middle table-bordered fs-6 gy-5"
                                id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0 text-center">
@@ -90,60 +90,85 @@
                             <template x-for="(attendance, index) in attendanceSummary?.data" :key="index">
                                 <tr class="text-center">
                                     <td>
-                                        <div class="d-flex flex-column text-center align-items-center">
-                                            <a class="text-center" href="#"
-                                               x-text="attendance.user_name"></a>
-                                            <span class="badge bg-info w-150px text-center text-white text-uppercase"
-                                                  x-text="`Jabatan : ${attendance.role}`"></span>
-                                            <span x-text="attendance.user_nip"></span>
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
+                                                <a href="#">
+                                                    <div class="symbol-label">
+                                                        <img :src="getImageURL(attendance.profile_pic ?? null)"
+                                                             @click="$dispatch('lightbox', `${getImageURL(attendance.profile_pic) ?? null}`)"
+                                                             alt="Foto Karyawan" class="w-100"/>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <a href="#"
+                                                   class="text-gray-800 text-hover-primary mb-1">
+                                                    <span x-text="attendance.user_name"></span>
+                                                </a>
+                                                <span class="badge badge-light-info fw-bolder fs-8"
+                                                      x-text="attendance?.role ?? ''">
+                                                    </span>
+                                            </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="d-flex flex-start justify-content-around">
-                                            <table class="table table-row-bordered">
-                                                <tr class="bg-warning text-center">
-                                                    <td>Terlambat (Menit)</td>
-                                                    <td>:</td>
-                                                    <td x-text="`${attendance.total_minutes_late}`"></td>
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="table-responsive">
+                                                <table class="table table-row-bordered">
+                                                    <tr class="bg-gray-100 text-center">
+                                                        <td class="min-w-125px">Terlambat (Menit)</td>
+                                                        <td class="min-w-125px">:</td>
+                                                        <td class="min-w-125px"
+                                                            x-text="`${attendance.total_minutes_late}`"></td>
+                                                    </tr>
+                                                    <tr class="bg-gray-100 text-center">
+                                                        <td class="min-w-125px">Total Hadir (Hari)</td>
+                                                        <td class="min-w-125px">:</td>
+                                                        <td class="min-w-125px"
+                                                            x-text="`${attendance.total_present}`"></td>
+                                                    </tr>
+                                                    <tr class="bg-gray-100 text-center">
+                                                        <td class="min-w-125px">Total Alfa (Hari)</td>
+                                                        <td class="min-w-125px">:</td>
+                                                        <td class="min-w-125px"
+                                                            x-text="`${attendance.total_absent}`"></td>
+                                                    </tr>
+                                                    <tr class="bg-gray-100 text-center">
+                                                        <td class="min-w-125px">Tdk Checkin</td>
+                                                        <td class="min-w-125px">:</td>
+                                                        <td class="min-w-125px"
+                                                            x-text="`${attendance.total_not_check_in}`"></td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-row-bordered">
+                                                    <tr class="bg-gray-100 text-center">
+                                                        <td class="min-w-125px">Tdk Checkin</td>
+                                                        <td class="min-w-125px">:</td>
+                                                        <td class="min-w-125px"
+                                                            x-text="`${attendance.total_not_check_out}`"></td>
                                                 </tr>
-                                                <tr class="bg-warning text-center">
-                                                    <td>Total Hadir (Hari)</td>
-                                                    <td>:</td>
-                                                    <td x-text="`${attendance.total_present}`"></td>
+                                                    <tr class="bg-gray-100 text-center">
+                                                        <td class="min-w-125px">Cuti</td>
+                                                        <td class="min-w-125px">:</td>
+                                                        <td class="min-w-125px"
+                                                            x-text="`${attendance.total_leaves}`"></td>
                                                 </tr>
-                                                <tr class="bg-warning text-center">
-                                                    <td>Total Alfa (Hari)</td>
-                                                    <td>:</td>
-                                                    <td x-text="`${attendance.total_absent}`"></td>
+                                                    <tr class="bg-gray-100 text-center">
+                                                        <td class="min-w-125px">Izin</td>
+                                                        <td class="min-w-125px">:</td>
+                                                        <td class="min-w-125px"
+                                                            x-text="`${attendance.total_permission}`"></td>
                                                 </tr>
-                                                <tr class="bg-warning text-center">
-                                                    <td>Tdk Checkin</td>
-                                                    <td>:</td>
-                                                    <td x-text="`${attendance.total_not_check_in}`"></td>
+                                                    <tr class="bg-gray-100 text-center">
+                                                        <td class="min-w-125px">Sakit</td>
+                                                        <td class="min-w-125px">:</td>
+                                                        <td class="min-w-125px"
+                                                            x-text="`${attendance.total_sick}`"></td>
                                                 </tr>
                                             </table>
-                                            <table class="table table-row-bordered ">
-                                                <tr class="bg-warning text-center">
-                                                    <td>Tdk Checkin</td>
-                                                    <td>:</td>
-                                                    <td x-text="`${attendance.total_not_check_out}`"></td>
-                                                </tr>
-                                                <tr class="bg-warning text-center">
-                                                    <td>Cuti</td>
-                                                    <td>:</td>
-                                                    <td x-text="`${attendance.total_leaves}`"></td>
-                                                </tr>
-                                                <tr class="bg-warning text-center">
-                                                    <td>Izin</td>
-                                                    <td>:</td>
-                                                    <td x-text="`${attendance.total_permission}`"></td>
-                                                </tr>
-                                                <tr class="bg-warning text-center">
-                                                    <td>Sakit</td>
-                                                    <td>:</td>
-                                                    <td x-text="`${attendance.total_sick}`"></td>
-                                                </tr>
-                                            </table>
+                                            </div>
                                         </div>
                                     </td>
                                     <td>
@@ -403,6 +428,13 @@
                         "Juli", "Agustus", "September", "Oktober", "November", "December"
                     ];
                     return monthNames[monthIndex];
+                },
+                getImageURL(imagePath) {
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        return "{{ asset('') }}" + placeholders;
+                    }
+                    return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
                 },
             }
         }

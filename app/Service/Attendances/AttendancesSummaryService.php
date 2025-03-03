@@ -112,6 +112,7 @@ use Illuminate\Http\Request;
                 'id' => $user->id,
                 'user_nip' => $user->nip,
                 'user_name' => $user?->name,
+                'profile_pic' => $user->profile_pic,
                 'role' => $user->roles[0]?->name ?? '',
                 'total_minutes_late' => (int)$totalMinutesLate,
                 'total_not_check_in' => $totalNotCheckIn,
