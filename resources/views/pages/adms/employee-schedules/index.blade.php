@@ -325,7 +325,7 @@
                     const startDate = document.getElementById('start_dates').value;
                     const endDate = document.getElementById('end_date').value;
                     try {
-                        await axios.post('/adms/employee-schedules/', new FormData(this.formCreate)).then(async res => {
+                        await axios.post('/adms/employee-schedules/', new FormData(this.formCreate)).then(async () => {
                             const resp = await axios.get(`${this.employeeSchedules.path}?page=${this.employeeSchedules.current_page}`, {
                                 params: {
                                     start_date: startDate,

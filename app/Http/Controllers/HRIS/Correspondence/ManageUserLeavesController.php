@@ -53,7 +53,7 @@ use Illuminate\View\View;
         $year = $request->year;
         $month = $request->month;
         return response()->json($this->manageUserLeaveAndPermissionService
-            ->filter($request, $branchId, $year, $month));
+            ->filter($request));
     }
 
     public function getBranchData(Request $request): JsonResponse

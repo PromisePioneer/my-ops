@@ -249,7 +249,7 @@
                 months: [],
                 async init() {
                     this.getMonth();
-                    await this.getBranchData();
+                    await this.getMainBranches();
                     await this.getLeavesData();
                     await this.getUserData();
                 },
@@ -269,7 +269,7 @@
                         {name: "Desember", number: '12'},
                     )
                 },
-                async getBranchData() {
+                async getMainBranches() {
                     $(".main-branches-select2").select2({
                         allowClear: true,
                         placeholder: 'Pilih Cabang',
@@ -308,16 +308,13 @@
                     }
                 },
                 async filter() {
-                    const branchId = document.getElementById('branch_id').value;
-                    const year = document.getElementById('year').value;
-                    const month = document.getElementById('month').value;
                     this.isLoading = true;
                     try {
                         const resp = await axios.get('/manage-users/leaves/filter', {
                             params: {
-                                month: month,
-                                year: year,
-                                branch_id: branchId,
+                                month: document.getElementById('month').value,
+                                year: document.getElementById('year').value,
+                                branch_id: document.getElementById('branch_id').value,
                             }
                         });
                         this.leaves = resp.data;
@@ -331,7 +328,12 @@
                     this.isLoading = true;
                     try {
                         const response = await axios.get('/manage-users/leaves/search', {
-                            params: {search: this.search},
+                            params: {
+                                search: this.search,
+                                month: document.getElementById('month').value,
+                                year: document.getElementById('year').value,
+                                branch_id: document.getElementById('branch_id').value,
+                            },
                             headers: {'Content-Type': 'application/json'}
                         });
                         this.leaves = response.data;
@@ -343,7 +345,14 @@
                 },
                 async paginationEndPoint(url) {
                     if (url) {
-                        const resp = await axios.get(`${url}`);
+                        const resp = await axios.get(`${url}`, {
+                            params: {
+                                search: this.search,
+                                month: document.getElementById('month').value,
+                                year: document.getElementById('year').value,
+                                branch_id: document.getElementById('branch_id').value,
+                            }
+                        });
                         this.leaves = resp.data
                     }
                 },
@@ -395,11 +404,19 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/manage-users/leaves/', new FormData(this.formCreate))
+                        await axios.post('/manage-users/leaves/', new FormData(this.formCreate)).then(async res => {
+                            const resp = await axios.get(`${this.leaves.path}?page=${this.leaves.current_page}`, {
+                                params: {
+                                    start_date: startDate,
+                                    end_date: endDate,
+                                    search: this.search
+                                }
+                            });
+                            this.leaves = resp.data
+                        })
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
-                        await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
@@ -410,7 +427,16 @@
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/manage-users/leaves/update/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/manage-users/leaves/update/${id}`, new FormData(this.formEdit)).then(async () => {
+                            const resp = await axios.get(`${this.leaves.path}?page=${this.leaves.current_page}`, {
+                                params: {
+                                    start_date: startDate,
+                                    end_date: endDate,
+                                    search: this.search
+                                }
+                            });
+                            this.leaves = resp.data
+                        })
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formEdit.reset();
                         this.modalEdit.hide();
