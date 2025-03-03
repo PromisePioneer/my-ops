@@ -17,14 +17,12 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         @can('Tambah Data Permission')
-                            <button type="button" class="btn btn-light-primary btn-sm"
-                                    data-bs-toggle="modal"
+                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                     data-bs-target="#modal-permission">
-                                <i class="ki-duotone ki-message-add fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                </i> Tambah
+                                <span class="svg-icon svg-icon-2">
+                                    <i class="bi bi-plus-circle-fill"></i>
+                                </span>
+                                Tambah
                             </button>
                         @endcan
                     </div>

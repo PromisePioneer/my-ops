@@ -20,14 +20,10 @@ class WorkTimeService
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $data = WorkTime::query();
-
-        if (!empty($search)) {
-            $data->where('name', 'like', '%'.$search.'%');
-        }
-
-        $workTime = $data->paginate(self::$perPage);
-        return self::formattedData($workTime);
+        $data = WorkTime::search($search)->query(function ($query) {
+            $query->orderby('name', 'asc');
+        })->paginate(self::$perPage);
+        return self::formattedData($data);
     }
 
     public function formattedData(LengthAwarePaginator $workTime): LengthAwarePaginator

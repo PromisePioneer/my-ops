@@ -49,16 +49,7 @@ use Illuminate\View\View;
 
     public function filter(Request $request): JsonResponse
     {
-        $branchId = $request->branch_id;
-        $year = $request->year;
-        $month = $request->month;
-        return response()->json($this->manageUserLeaveAndPermissionService
-            ->filter($request));
-    }
-
-    public function getBranchData(Request $request): JsonResponse
-    {
-        return response()->json($this->branch->getData($request));
+        return response()->json($this->manageUserLeaveAndPermissionService->filter($request));
     }
 
     public function selectedUserData(Request $request, LeaveAndPermission $leaveAndPermission): JsonResponse

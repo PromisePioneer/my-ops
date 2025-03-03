@@ -18,60 +18,68 @@
                                 <h2 class="mb-0">Data Karyawan</h2>
                             </div>
                         </div>
-                            <div class="card-body pt-0">
-                                <div class="d-flex flex-column text-gray-600">
-                                    <div class="d-flex align-items-center py-2">
+                        <div class="card-body pt-0">
+                            <div class="d-flex flex-column text-gray-600">
+                                <div class="d-flex align-items-center py-2">
                                     @can('Filter Data Karyawan Berdasarkan Cabang')
-                                            <select class="form-select form-select-solid main-branches-select2"
+                                        <select class="form-select form-select-solid main-branches-select2"
                                                 name="branch_id" id="branch_id">
                                         </select>
-                                        @endcan
-                                    </div>
-                                    <div class="d-flex align-items-center py-2">
-                                        @can('Filter Data Karyawan Berdasarkan Perusahaan')
-                                            <select name="company_id" id="company_id"
-                                                    class="form-select form-select-solid companies-select2">
-                                                <option></option>
-                                            </select>
-                                        @endcan
-                                    </div>
-                                    <div class="d-flex align-items-center py-2">
-                                        @can('Filter Data Karyawan Berdasarkan Tahun')
-                                            <input type="number" name="year" id="year"
-                                                   class="form-control form-control-solid"
-                                                   placeholder="Filter Berdasarkan Tahun">
-                                        @endcan
-                                    </div>
-                                    <div class="d-flex align-items-center py-2">
-                                        @can('Filter Data Karyawan Berdasarkan Bulan')
-                                            <select class="form-select form-select-solid"
-                                                    name="month" id="month" data-control="select2"
-                                                    data-placeholder="Pilih Bulan">
-                                                <option></option>
-                                                <template x-for="month in months" :key="index">
-                                                    <option :value="month.number" x-text="month.name"></option>
-                                                </template>
-                                            </select>
-                                        @endcan
-                                    </div>
-                                    <div class="d-flex align-items-center py-2">
-                                        @can('Filter Data Karyawan Berdasarkan Aktif Dan Tidak Aktif')
-                                            <select class="form-select form-select-solid" name="active" id="active"
-                                                    data-control="select2"
-                                                    data-placeholder="Select an option" data-allow-clear="true">
-                                                <option></option>
-                                                <option value="1">Aktif</option>
-                                                <option value="0">Tidak Aktif</option>
-                                            </select>
-                                        @endcan
-                                    </div>
+                                    @endcan
+                                </div>
+                                <div class="d-flex align-items-center py-2">
+                                    @can('Filter Data Karyawan Berdasarkan Jabatan')
+                                        <select name="role_id" id="role_id"
+                                                class="form-select form-select-solid roles-select2">
+                                            <option></option>
+                                        </select>
+                                    @endcan
+                                </div>
+                                <div class="d-flex align-items-center py-2">
+                                    @can('Filter Data Karyawan Berdasarkan Perusahaan')
+                                        <select name="company_id" id="company_id"
+                                                class="form-select form-select-solid companies-select2">
+                                            <option></option>
+                                        </select>
+                                    @endcan
+                                </div>
+                                <div class="d-flex align-items-center py-2">
+                                    @can('Filter Data Karyawan Berdasarkan Tahun')
+                                        <input type="number" name="year" id="year"
+                                               class="form-control form-control-solid"
+                                               placeholder="Filter Berdasarkan Tahun">
+                                    @endcan
+                                </div>
+                                <div class="d-flex align-items-center py-2">
+                                    @can('Filter Data Karyawan Berdasarkan Bulan')
+                                        <select class="form-select form-select-solid"
+                                                name="month" id="month" data-control="select2"
+                                                data-placeholder="Pilih Bulan">
+                                            <option></option>
+                                            <template x-for="month in months" :key="index">
+                                                <option :value="month.number" x-text="month.name"></option>
+                                            </template>
+                                        </select>
+                                    @endcan
+                                </div>
+                                <div class="d-flex align-items-center py-2">
+                                    @can('Filter Data Karyawan Berdasarkan Aktif Dan Tidak Aktif')
+                                        <select class="form-select form-select-solid" name="active" id="active"
+                                                data-control="select2"
+                                                data-placeholder="Select an option" data-allow-clear="true">
+                                            <option></option>
+                                            <option value="1">Aktif</option>
+                                            <option value="0">Tidak Aktif</option>
+                                        </select>
+                                    @endcan
                                 </div>
                             </div>
-                            <div class="card-footer pt-4 text-end">
-                                <button type="button" @click="filter()" class="btn btn-light btn-active-primary btn-sm">
-                                    Filter
-                                </button>
-                            </div>
+                        </div>
+                        <div class="card-footer pt-4 text-end">
+                            <button type="button" @click="filter()" class="btn btn-light btn-active-primary btn-sm">
+                                Filter
+                            </button>
+                        </div>
                     </div>
                 </div>
             @endcanany
@@ -288,6 +296,7 @@
                     await this.getMainBranches();
                     await this.getUserData();
                     await this.getMonth();
+                    await this.getRoles();
                 },
                 async reload() {
                     this.users = [];
@@ -359,22 +368,18 @@
                     }
                 },
                 async filter() {
-                    const year = document.getElementById('year')?.value ?? '';
-                    const month = document.getElementById('month')?.value ?? '';
-                    const branch_id = $(".main-branches-select2")?.val();
-                    const company_id = $(".companies-select2")?.val();
-                    const active = document.getElementById('active')?.value;
                     try {
                         this.users = [];
                         this.isLoading = true;
                         const resp = await axios.get('/manage-users/users/filter', {
                             params: {
                                 search: this.search,
-                                month: month,
-                                year: year,
-                                branch_id: branch_id,
-                                company_id: company_id,
-                                active: active
+                                month: document.getElementById('month')?.value,
+                                year: document.getElementById('year')?.value,
+                                branch_id: $(".main-branches-select2")?.val(),
+                                company_id: $(".companies-select2")?.val(),
+                                active: document.getElementById('active')?.value,
+                                role_id: $('#role_id').val(),
                             }
                         });
                         this.users = resp.data;
@@ -385,20 +390,15 @@
                     }
                 },
                 async searchData() {
-                    const year = document.getElementById('year')?.value ?? '';
-                    const month = document.getElementById('month')?.value ?? '';
-                    const branch_id = $(".main-branches-select2")?.val();
-                    const company_id = $(".companies-select2")?.val();
-                    const active = document.getElementById('active')?.value;
-
                     const resp = await axios.get('/manage-users/users/search', {
                         params: {
                             search: this.search,
-                            month: month,
-                            year: year,
-                            branch_id: branch_id,
-                            company_id: company_id,
-                            active: active
+                            month: document.getElementById('month')?.value,
+                            year: document.getElementById('year')?.value,
+                            branch_id: $(".main-branches-select2")?.val(),
+                            company_id: $(".companies-select2")?.val(),
+                            active: document.getElementById('active')?.value,
+                            role_id: $('#role_id').val(),
                         },
                         headers: {'Content-Type': 'application/json'}
                     });
@@ -406,12 +406,6 @@
                     this.users = resp.data
                 },
                 async paginate(url) {
-                    const company_id = $(".companies-select2")?.val();
-                    const year = document.getElementById('year')?.value ?? '';
-                    const month = document.getElementById('month')?.value ?? '';
-                    const branch_id = $(".main-branches-select2")?.val();
-                    const active = document.getElementById('active')?.value;
-
                     try {
                         if (url) {
                             this.users = [];
@@ -419,11 +413,12 @@
                             const resp = await axios.get(`${url}`, {
                                 params: {
                                     search: this.search,
-                                    branch_id: branch_id,
-                                    company_id: company_id,
-                                    year: year,
-                                    month: month,
-                                    active: active
+                                    month: document.getElementById('month')?.value,
+                                    year: document.getElementById('year')?.value,
+                                    branch_id: $(".main-branches-select2")?.val(),
+                                    company_id: $(".companies-select2")?.val(),
+                                    active: document.getElementById('active')?.value,
+                                    role_id: $('#role_id').val(),
                                 }
                             });
                             this.users = resp.data
@@ -451,6 +446,20 @@
                         placeholder: "Pilih Cabang",
                         ajax: {
                             url: '/select2/main-branches-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true,
+                        },
+                    });
+                },
+                async getRoles() {
+                    $(".roles-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Jabatan",
+                        ajax: {
+                            url: '/select2/roles-data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),

@@ -13,7 +13,6 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Jmrashed\Zkteco\Lib\ZKTeco;
 use Throwable;
 
 class IclockService
@@ -116,15 +115,12 @@ class IclockService
         $dateTime = Carbon::parse($date);
 
         $startOfTime = $dateTime->copy()->startOfDay();
-        $endOfTime = $dateTime->copy()->endOfDay();
 
 
         $userShift = null;
 
         if ($dateTime->greaterThan($startOfTime)) {
-
             if ($dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '23:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '23:59:59'))) {
-//                dd('test');
                 $userShift = EmployeeSchedule::with('workTime')
                     ->where('employee_id', $employeeId)
                     ->whereDate('start_date', $dateTime->format('Y-m-d'))
@@ -151,8 +147,7 @@ class IclockService
         }
 
 
-        // If the timestamp is at or before the start of the day, check `start_date`
-        if (!$userShift) { // Prevents unnecessary queries if shift was already found
+        if (!$userShift) {
             $userShift = EmployeeSchedule::with('workTime')
                 ->where('employee_id', $employeeId)
                 ->whereDate('start_date', $dateTime)
@@ -160,7 +155,6 @@ class IclockService
         }
 
 
-        // Return the found shift or a default WorkTime
         return $userShift ?? WorkTime::find(1);
     }
 
