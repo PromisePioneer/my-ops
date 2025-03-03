@@ -169,7 +169,7 @@
                                     <tbody class="fw-bold text-gray-600">
                                     <template x-if="isLoading">
                                         <tr>
-                                            <td colspan="5">
+                                            <td colspan="7">
                                                 <div style="text-align: center;">
                                                     <div class="spinner-border" role="status">
                                                         <span class="visually-hidden">Loading...</span>
@@ -180,7 +180,7 @@
                                     </template>
                                     <template x-if="!isLoading && users.data?.length === 0">
                                         <tr>
-                                            <td colspan="9">
+                                            <td colspan="7">
                                                 <center>Data Tidak Ditemukan</center>
                                             </td>
                                         </tr>
@@ -247,7 +247,7 @@
                                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                                 <button
                                                         class="page-link"
-                                                        @click="paginationEndPoint(pagination.url)"
+                                                        @click="paginate(pagination.url)"
                                                         x-html="pagination.label"></button>
                                             </li>
                                         </ul>
@@ -290,6 +290,7 @@
                     await this.getMonth();
                 },
                 async reload() {
+                    this.users = [];
                     await this.init()
                 },
                 getMonth() {
@@ -363,10 +364,12 @@
                     const branch_id = $(".main-branches-select2")?.val();
                     const company_id = $(".companies-select2")?.val();
                     const active = document.getElementById('active')?.value;
-                    this.isLoading = true;
                     try {
+                        this.users = [];
+                        this.isLoading = true;
                         const resp = await axios.get('/manage-users/users/filter', {
                             params: {
+                                search: this.search,
                                 month: month,
                                 year: year,
                                 branch_id: branch_id,
@@ -402,24 +405,34 @@
 
                     this.users = resp.data
                 },
-                async paginationEndPoint(url) {
+                async paginate(url) {
                     const company_id = $(".companies-select2")?.val();
                     const year = document.getElementById('year')?.value ?? '';
                     const month = document.getElementById('month')?.value ?? '';
                     const branch_id = $(".branch-select2")?.val();
                     const active = document.getElementById('active')?.value;
 
-                    const resp = await axios.get(`${url}`, {
-                        params: {
-                            company_id: company_id,
-                            year: year,
-                            month: month,
-                            branch_id: branch_id,
-                            active: active
+                    try {
+                        if (url) {
+                            this.users = [];
+                            this.isLoading = true;
+                            const resp = await axios.get(`${url}`, {
+                                params: {
+                                    search: this.search,
+                                    company_id: company_id,
+                                    year: year,
+                                    month: month,
+                                    branch_id: branch_id,
+                                    active: active
+                                }
+                            });
+                            this.users = resp.data
                         }
-                    });
-                    this.startIndex = resp.data.from
-                    this.users = resp.data
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {

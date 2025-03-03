@@ -95,7 +95,7 @@ class UserSeeder extends Seeder
         ]);
 
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 30; $i++) {
             $kca = User::factory()->create([
                 'absent_id' => mt_rand(1000, 9999),
                 'join_date' => $faker->date(),
