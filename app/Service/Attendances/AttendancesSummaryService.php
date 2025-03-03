@@ -68,7 +68,6 @@ use Illuminate\Http\Request;
 
             if ($effectiveStart > $effectiveEnd) continue;
 
-            // Exclude 'L' status schedules
             if ($schedule->status !== 'L') {
                 $scheduledDays += $effectiveStart->diffInDays($effectiveEnd) + 1;
             }

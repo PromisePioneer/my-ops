@@ -163,6 +163,12 @@ class User extends Authenticatable
     }
 
 
+    public function employeeSchedule()
+    {
+        return $this->belongsTo(EmployeeSchedule::class, 'employee_id', 'absent_id');
+    }
+
+
     //eloquent
     public function getData(): Builder
     {

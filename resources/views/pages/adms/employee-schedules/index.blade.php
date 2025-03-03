@@ -94,6 +94,19 @@
                                     </template>
                                 </tr>
                                 </thead>
+                                <template x-if="isLoading">
+                                    <tbody class="fw-bold">
+                                    <tr>
+                                        <td colspan="6">
+                                            <div style="text-align: center;">
+                                                <div class="spinner-border" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
                                 <template x-for="employeeSchedule in employeeSchedules?.data"
                                           :key="employeeSchedule.id">
                                     <tbody class="fw-bold">
@@ -206,8 +219,6 @@
                     const startDate = document.getElementById('start_dates')?.value ?? null;
                     const endDate = document.getElementById('end_date')?.value ?? null;
 
-                    console.log(startDate, endDate)
-
                     const resp = await axios.get('/adms/employee-schedules/filter', {
                         params: {
                             start_date: startDate,
@@ -230,13 +241,17 @@
                     const startDate = document.getElementById('start_dates').value;
                     const endDate = document.getElementById('end_date').value;
                     if (url) {
-                        const resp = await axios.get(`${url}`, {
-                            params: {
-                                start_date: startDate,
-                                end_date: endDate,
-                            }
-                        });
-                        this.employeeSchedules = resp.data
+                        try {
+                            const resp = await axios.get(`${url}`, {
+                                params: {
+                                    start_date: startDate,
+                                    end_date: endDate,
+                                }
+                            });
+                            this.employeeSchedules = resp.data
+                        } catch (e) {
+                            this.isLoading = false;
+                        }
                     }
                 },
                 async searchData() {
