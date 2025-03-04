@@ -94,6 +94,7 @@ use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
 use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
 use App\Http\Controllers\WarehouseController;
+use App\Mail\SendEmail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -138,6 +139,17 @@ Route::get('/', function () {
 //    dd($todayRecords);
 //
 //
+//});
+
+//Route::get('/tests', function () {
+//    $data = [
+//        'name' => 'Syahrizal As',
+//        'body' => 'Testing Kirim Email di Santri Koding'
+//    ];
+//
+//    Mail::to('fifirman000@gmail.com')->send(new SendEmail($data));
+//
+//    dd("Email Berhasil dikirim.");
 //});
 
 Auth::routes();
@@ -349,8 +361,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/{area}', [AreaDetailController::class, 'assignUser']);
             Route::get('/search/{area}', [AreaDetailController::class, 'search']);
             Route::get('users/selected/{area}', [AreaDetailController::class, 'selectedUser']);
-            Route::get('/show/{area}', [AreaDetailController::class, 'show']);
-            Route::get('/save-week-holiday/{user}', [AreaDetailController::class, 'saveDay']);
+            Route::get('/show/{user}', [AreaDetailController::class, 'show']);
+            Route::post('/save-week-holiday/{user}', [AreaDetailController::class, 'assignWeekHoliday']);
         });
 
         Route::prefix('branch')->group(function () {

@@ -14,8 +14,8 @@ class AreaDetailService
 
     public function data(Area $area): LengthAwarePaginator
     {
-        $userHasAreaQuery = UserHasArea::with('user', 'user.roles', 'user.jobInformation')
-            ->whereHas('area', function ($query) use ($area) {
+        $userHasAreaQuery = User::with('roles', 'jobInformation', 'userHasArea', 'weekHoliday')
+            ->whereHas('userHasArea', function ($query) use ($area) {
                 $query->where('area_id', $area->id);
             })->paginate(self::$perPage);
 
@@ -39,9 +39,9 @@ class AreaDetailService
         $data = $userHasAreaQuery->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
-                'user_name' => "({$item->user->nip}) {$item->user->name}",
-                'role_name' => $item->user->roles->pluck('name')->implode(', '),
-                'week_holiday' => $item->jobInformation?->week_holiday,
+                'user_name' => "({$item->nip}) {$item->name}",
+                'role_name' => $item->roles->pluck('name')->implode(', '),
+                'week_holiday' => $item->weekHoliday->day,
             ];
         });
 

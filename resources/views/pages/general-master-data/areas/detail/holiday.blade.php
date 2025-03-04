@@ -14,7 +14,7 @@
                 </div>
             </div>
 
-            <form id="form-pick-holiday" @submit.prevent="pickHoliday(this.editVal?.user_id)">
+            <form id="form-pick-holiday" @submit.prevent="pickHoliday(editVal?.id)">
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Pilih Hari</label>

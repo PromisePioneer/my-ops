@@ -229,13 +229,21 @@
                     await this.getMainBranches();
                 },
                 async paginationEndPoint(url) {
-                    if (url) {
-                        const resp = await axios.get(`${url}`, {
-                            params: {
-                                branch_id: $('#branch-id-filter').val()
-                            }
-                        });
-                        this.devices = resp.data
+                    try {
+                        if (url) {
+                            this.devices = [];
+                            this.isLoading = true;
+                            const resp = await axios.get(`${url}`, {
+                                params: {
+                                    branch_id: $('#branch-id-filter').val()
+                                }
+                            });
+                            this.devices = resp.data
+                        }
+                    } catch (e) {
+                        console.log(e);
+                    } finally {
+                        this.isLoading = false;
                     }
                 },
                 async showDeviceInfo(id) {
@@ -270,6 +278,8 @@
                 },
                 async searchData() {
                     try {
+                        this.devices = [];
+                        this.isLoading = true;
                         const resp = await axios.get('/adms/fp-devices/search', {
                             params: {
                                 search: this.search,
@@ -280,6 +290,8 @@
                         this.devices = resp.data;
                     } catch (error) {
                         console.log(error);
+                    } finally {
+                        this.isLoading = false;
                     }
                 },
                 async save(id = null) {

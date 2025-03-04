@@ -77,7 +77,7 @@
                             <template x-if="isLoading">
                                 <tbody class="fw-bold">
                                 <tr>
-                                    <td colspan="9">
+                                    <td colspan="6">
                                         <div style="text-align: center;">
                                             <div class="spinner-border" role="status">
                                                 <span class="visually-hidden">Loading...</span>
@@ -90,7 +90,7 @@
                             <template x-if="!isLoading && branches.data?.length === 0">
                                 <tbody class="fw-bold">
                                 <tr>
-                                    <td colspan="9">
+                                    <td colspan="6">
                                         <center>Data Tidak Ditemukan</center>
                                     </td>
                                 </tr>
@@ -222,8 +222,20 @@
                 },
                 async paginationEndPoint(url) {
                     if (url) {
-                        const resp = await axios.get(`${url}`);
-                        this.branches = resp.data
+                        this.branches = [];
+                        this.isLoading = true;
+                        try {
+                            const resp = await axios.get(`${url}`, {
+                                params: {
+                                    search: this.search,
+                                }
+                            });
+                            this.branches = resp.data
+                        } catch (e) {
+                            console.log(e)
+                        } finally {
+                            this.isLoading = false
+                        }
                     }
                 },
                 toggleAllCheckBox() {
@@ -252,12 +264,21 @@
                 },
                 async save() {
                     this.buttonLoading = true;
+                    console.log(this.branches.path);
                     try {
                         await axios.post('/general-master-data/branch', new FormData(this.formCreate))
+                            .then(async () => {
+                                const resp = await axios.get(`${this.branches.path}?page=${this.branches.current_page}`, {
+                                    params: {
+                                        search: this.search
+                                    }
+                                });
+                                this.branches = resp.data;
+                            })
+
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formCreate.reset();
                         this.modalCreate.hide();
-                        await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
@@ -272,11 +293,17 @@
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/general-master-data/branch/update/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/general-master-data/branch/update/${id}`, new FormData(this.formEdit)).then(async () => {
+                            const resp = await axios.get(`${this.branches.path}?page=${this.branches.current_page}`, {
+                                params: {
+                                    search: this.search
+                                }
+                            });
+                            this.branches = resp.data;
+                        })
                         await showAlert('success', 'Data berhasil disimpan')
                         this.modalEdit.hide();
                         this.formEdit.reset();
-                        await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]));

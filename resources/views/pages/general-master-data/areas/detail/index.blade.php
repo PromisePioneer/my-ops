@@ -64,6 +64,7 @@
                                 </th>
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Jabatan</th>
+                                <th class="min-w-125px">Jadwal Libur</th>
                             </thead>
                             <template x-if="isLoading">
                                 <tbody class="fw-bold">
@@ -103,6 +104,18 @@
                                     </td>
                                     <td x-text="area.user_name"></td>
                                     <td x-text="area.role_name ?? '-'"></td>
+                                    <td>
+                                        <template x-if="!area.week_holiday">
+                                            <button class="btn btn-primary btn-sm" data-bs-target="#modal-pick-holiday"
+                                                    @click="show(area.id)"
+                                                    data-bs-toggle="modal">Pilih Jadwal Libur
+                                            </button>
+                                        </template>
+
+                                        <template x-if="area.week_holiday">
+                                            <span x-text="area.week_holiday"></span>
+                                        </template>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </template>
@@ -151,13 +164,13 @@
                     await this.getAssociatedUsers();
                     await this.getUserData();
                     this.days.push(
-                        {value: 'Sunday', label: 'Minggu'},
-                        {value: 'Monday', label: 'Senin'},
-                        {value: 'Tuesday', label: 'Selasa'},
-                        {value: 'Wednesday', label: 'Rabu'},
-                        {value: 'Thursday', label: 'Kamis'},
-                        {value: 'Friday', label: "Jum'at"},
-                        {value: 'Saturday', label: 'Sabtu'},
+                        {value: 'Minggu', label: 'Minggu'},
+                        {value: 'Senin', label: 'Senin'},
+                        {value: 'Selasa', label: 'Selasa'},
+                        {value: 'Rabu', label: 'Rabu'},
+                        {value: 'Kamis', label: 'Kamis'},
+                        {value: 'Jumat', label: "Jum'at"},
+                        {value: 'Sabtu', label: 'Sabtu'},
                     )
                 },
                 async searchData() {
@@ -232,7 +245,9 @@
                 async show(id) {
                     const resp = await axios.get(`/general-master-data/area-detail/show/${id}`);
                     this.editVal = resp.data;
+                    console.log(this.editVal);
                 },
+
                 async save() {
                     this.buttonLoading = true;
                     try {
