@@ -41,7 +41,7 @@ class AreaDetailService
                 'id' => $item->id,
                 'user_name' => "({$item->nip}) {$item->name}",
                 'role_name' => $item->roles->pluck('name')->implode(', '),
-                'week_holiday' => $item->weekHoliday->day,
+                'week_holiday' => $item->weekHoliday?->day,
             ];
         });
 
