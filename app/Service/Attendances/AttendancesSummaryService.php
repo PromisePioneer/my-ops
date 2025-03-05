@@ -228,21 +228,17 @@ use Illuminate\Http\Request;
         $search = $request->input('search');
 
 
-        $query = User::with([
-            'attendancesSummary' => function ($query) use ($startDate, $endDate, $request) {
-                $query->whereBetween('date', [$startDate, $endDate]);
-            }
-        ], 'branch')->where('active', 1);
+        $users = User::search($search)->query(function ($query) use ($startDate, $endDate, $request) {
+            $query = $query->with([
+                'attendancesSummary' => function ($query) use ($startDate, $endDate, $request) {
+                    $query->whereBetween('date', [$startDate, $endDate]);
+                }
+            ], 'branch');
+            AttendancesACLFilter::apply($query, $request);
+        });
 
 
-        if ($search !== '') {
-            $query->where('name', 'like', '%' . $search . '%');
-            $query->orWhere('email', 'like', '%' . $search . '%');
-        }
-
-        $ACLFilter = AttendancesACLFilter::apply($query, $request);
-
-        $user = $ACLFilter->paginate(self::$perPage)->onEachSide(1);
+        $user = $users->paginate(self::$perPage)->onEachSide(1);
         return self::formattedData($user, $startDate, $endDate);
     }
 }
