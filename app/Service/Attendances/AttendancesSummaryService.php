@@ -234,10 +234,13 @@ use Illuminate\Http\Request;
             }
         ], 'branch')->where('active', 1);
 
+
         if ($search !== '') {
             $query->where('name', 'like', '%' . $search . '%');
             $query->orWhere('email', 'like', '%' . $search . '%');
         }
+
+        AttendancesACLFilter::apply($query, $request);
 
         $user = $query->paginate(self::$perPage)->onEachSide(1);
         return self::formattedData($user, $startDate, $endDate);
