@@ -240,9 +240,9 @@ use Illuminate\Http\Request;
             $query->orWhere('email', 'like', '%' . $search . '%');
         }
 
-        AttendancesACLFilter::apply($query, $request);
+        $ACLFilter = AttendancesACLFilter::apply($query, $request);
 
-        $user = $query->paginate(self::$perPage)->onEachSide(1);
+        $user = $ACLFilter->paginate(self::$perPage)->onEachSide(1);
         return self::formattedData($user, $startDate, $endDate);
     }
 }
