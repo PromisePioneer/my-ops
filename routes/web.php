@@ -1149,6 +1149,8 @@ Route::group(['middleware' => ['auth']], static function () {
 
             Route::get('/restart-device/{fpDevice}', [FpDevicesController::class, 'restartDevice']);
             Route::post('/get-users/{fpDevice}', [FpDevicesController::class, 'getUser']);
+
+            Route::get('/job-status/{fpDevice}', [FpDevicesController::class, 'getJobStatus']);
         });
 
         Route::prefix('/work-time')->group(function () {

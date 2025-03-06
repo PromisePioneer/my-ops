@@ -13,7 +13,10 @@ return new class extends Migration {
         Schema::create('attendance_job_progress', function (Blueprint $table) {
             $table->id();
             $table->foreignId('device_id')->constrained('fp_devices');
+            $table->date('start_date');
+            $table->date('end_date');
             $table->enum('status', ['Pending', 'Sukses', 'Gagal']);
+            $table->text('error_message')->nullable();
             $table->timestamps();
         });
     }

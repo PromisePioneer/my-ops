@@ -6,6 +6,7 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ADMS\FpDeviceRequest;
 use App\Jobs\AttendanceJob;
+use App\Models\AttendanceJobProgress;
 use App\Models\Branch;
 use App\Models\FpDevice;
 use App\Service\FpDevice\FpDeviceService;
@@ -81,10 +82,10 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
 
     public function testConnection(FpDevice $fpDevice): JsonResponse
     {
-        ini_set("max_execution_time", 1);
         $zk = new ZKTeco($fpDevice->ip_address, 4370);
         $connected = $zk->connect();
         if ($connected) {
+            $zk->disconnect();
             return response()->json(['message' => 'Koneksi Sukses']);
         } else {
             return response()->json(['message' => 'Koneksi Gagal'], 500);
@@ -94,16 +95,7 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
 
     public function getAttendances(Request $request, FpDevice $fpDevice): JsonResponse
     {
-
-        $zk = new ZKTeco($fpDevice->ip_address, 4370);
-        $connected = $zk->connect();
-        if ($connected) {
-            AttendanceJob::dispatch($fpDevice, $request->start_date, $request->end_date);
-        } else {
-            return response()->json([
-                'message' => 'Koneksi Gagal',
-            ], 500);
-        }
+        AttendanceJob::dispatch($fpDevice, $request->start_date, $request->end_date);
         return response()->json([
             'message' => 'Attendance processing has been queued and will be processed in the background.',
         ]);
@@ -143,6 +135,24 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
         }
         $zk->restart();
         return response()->json(['message' => 'Mesin berhasil direstart.']);
+    }
+
+
+    public function getJobStatus(FpDevice $fpDevice): JsonResponse
+    {
+        $progress = AttendanceJobProgress::where('device_id', $fpDevice->id)
+            ->latest()
+            ->first();
+
+
+        if (!$progress) {
+            return response()->json(['message' => 'No job found for this device.'], 404);
+        }
+
+        return response()->json([
+            'status' => $progress->status,
+            'error_message' => $progress->error_message,
+        ]);
     }
 
 

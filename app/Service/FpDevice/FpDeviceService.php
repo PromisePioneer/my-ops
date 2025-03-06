@@ -15,7 +15,7 @@ class FpDeviceService
     public function data(Request $request): LengthAwarePaginator
     {
         $data = FpDevice::with(['branch', 'attendanceJobProgress' => function ($query) {
-            $query->latest();
+            $query->latest('created_at');
         }])->when($request->user()->hasRole('Branch Manager'), function ($query) use ($request) {
             $query->where('branch_id', $request->user()->branch_id);
         })
@@ -56,8 +56,8 @@ class FpDeviceService
                 'ip_address' => $query->ip_address,
                 'branch_name' => $query->branch?->name,
                 'online' => $query->online ? 'Online' : 'Offline',
-                'last_query_date' => $query->attendanceJobProgress?->created_at ? Carbon::parse($query->attendanceJobProgress?->created_at)->format('d m Y H:i:s') : '-',
-                'status_query' => $query->attendanceJobProgress?->status ?? '-',
+                'last_download_date' => $query->attendanceJobProgress?->created_at ? Carbon::parse($query->attendanceJobProgress->created_at) : null,
+                'last_download_status' => $query->attendanceJobProgress?->status ?? null,
             ];
         });
 

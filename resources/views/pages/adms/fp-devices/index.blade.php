@@ -135,9 +135,11 @@
                                             :class="device.online === 'Offline' ? 'badge bg-danger text-white' : 'badge bg-success text-white'"
                                             x-text="device.online"></span>
                                             </td>
-                                            <td class="text-center ">
-                                                <span x-text="formatDate(device.last_query_date)"></span>
-                                                <span x-text="device.last_query_date"></span>
+                                            <td class="text-center">
+                                                <span x-text="formatDate(device.last_download_date)"></span>
+                                                <span
+                                                    :class="device.last_download_status === 'Pending' ? 'badge bg-warning text-white' : device.last_download_status === 'Sukses' ? 'badge bg-success text-white' ? device.last_download_status === 'Gagal' ? 'badge bg-danger text-white' : 'badge bg-success text-white' : '' : ''"
+                                                    x-text="device.last_download_status"></span>
                                             </td>
                                             <td class="d-flex flex-column">
                                                 <template x-if="Number(editPermission) === 1">
@@ -163,6 +165,7 @@
                                                         data-bs-placement="top" title="Tarik Data"
                                                         @click="edit(device.id)" data-bs-target="#modal-query-attlog"
                                                         data-bs-toggle="modal"
+                                                        :disabled="device.last_download_status === 'Pending'"
                                                 >
                                                     <i class="bi bi-info-circle-fill"></i>
                                                     Ambil Data
@@ -221,6 +224,7 @@
                 formQueryAttLog: document.getElementById('form-query-attlog'),
                 modalQueryAttLog: new bootstrap.Modal(document.getElementById('modal-query-attlog')),
                 filterForm: document.getElementById('form-filter'),
+                jobStatuses: null,
                 async init() {
                     const resp = await axios.get('/adms/fp-devices/data');
                     this.devices = resp.data
@@ -414,6 +418,15 @@
                         params: {results: response}
                     });
                 },
+                async getJobStatus(id) {
+                    try {
+                        const resp = await axios.get(`/adms/fp-devices/job-status/${id}`);
+                        this.jobStatuses = resp.data;
+                    } catch (error) {
+                        const respError = error.response.data.message;
+                        toastr.error(respError)
+                    }
+                }
             }
         }
     </script>

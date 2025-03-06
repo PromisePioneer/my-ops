@@ -10,7 +10,9 @@ class AttendanceJobProgress extends Model
     protected $table = 'attendance_job_progress';
     protected $fillable = [
         'device_id',
-        'status'
+        'start_date',
+        'end_date',
+        'status',
     ];
 
 

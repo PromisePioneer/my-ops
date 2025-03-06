@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Jmrashed\Zkteco\Lib\ZKTeco;
 
 #[AllowDynamicProperties] class AttendanceJob implements ShouldQueue
@@ -20,7 +21,8 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
     protected FpDevice $fpDevice;
     protected $startDate;
     protected $endDate;
-    public $timeout = 12000000;
+    public int $timeout = 0;
+    protected AttendanceJobProgress $progress;
 
     /**
      * Create a new job instance.
@@ -30,6 +32,12 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
         $this->fpDevice = $fpDevice;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->progress = AttendanceJobProgress::create([
+            'device_id' => $fpDevice->id,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'status' => 'pending',
+        ]);
     }
 
     /**
@@ -37,15 +45,10 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
      */
     public function handle(): void
     {
-        $zk = new ZKTeco($this->fpDevice->ip_address, 4370);
-        $connected = $zk->connect();
-        if ($connected) {
-            $jobProgress = AttendanceJobProgress::create([
-                'device_id' => $this->fpDevice->id,
-                'status' => 'Pending',
-            ]);
-            $chunk = array_chunk($zk->getAttendance(), 100);
-            foreach ($chunk as $item) {
+        try {
+            $zk = new ZKTeco($this->fpDevice->ip_address, 4370);
+            if ($zk->connect()) {
+                $item = $zk->getAttendance();
                 foreach ($item as $record) {
                     $recordDate = Carbon::parse($record['timestamp']);
                     if ($recordDate->between($this->startDate, $this->endDate)) {
@@ -60,12 +63,16 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
                         Attendances::create($data);
                     }
                 }
+                $zk->disconnect();
             }
+            $this->progress->update(['status' => 'Sukses']);
+        } catch (\Exception $e) {
+            Log::error("Attendance Job Failed: " . $e->getMessage());
 
-            $jobProgress->update([
-                'status' => 'Sukses',
+            $this->progress->update([
+                'status' => 'Gagal',
+                'error_message' => $e->getMessage(),
             ]);
         }
-        $zk->disconnect();
     }
 }

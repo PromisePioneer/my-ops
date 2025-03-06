@@ -48,7 +48,7 @@ class FpDevice extends Model
 
     public function attendanceJobProgress(): HasOne
     {
-        return $this->hasOne(AttendanceJobProgress::class, 'device_id');
+        return $this->hasOne(AttendanceJobProgress::class, 'device_id')->latestOfMany();
     }
 
     public function getData(Request $request): array
