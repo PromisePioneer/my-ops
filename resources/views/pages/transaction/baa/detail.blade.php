@@ -242,11 +242,11 @@
                 },
 
                 async selectedFrom() {
-                    const selectedFrom = $('#selectedFrom');
+                    const selectedFrom = $('#selected-from');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/income-transactions/baa/get-selected-from/${this.spkVal.from}`,
+                        url: `/select2/selected-user/${this.spkVal.from}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedFrom.append(option).trigger('change').trigger({
@@ -255,11 +255,11 @@
                     });
                 },
                 async selectedTo() {
-                    const selectedTo = $('#selectedTo');
+                    const selectedTo = $('#selected-to');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/income-transactions/baa/get-selected-to/${this.spkVal.to}`,
+                        url: `/select2/selected-user/${this.spkVal.to}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedTo.append(option).trigger('change').trigger({
@@ -272,7 +272,7 @@
                         placeholder: "Pilih Karyawan",
                         allowClear: true,
                         ajax: {
-                            url: '/income-transactions/baa/users/data',
+                            url: '/select2/users-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),

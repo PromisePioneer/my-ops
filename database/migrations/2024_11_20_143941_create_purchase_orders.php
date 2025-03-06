@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->foreignId('contact_id')->constrained('contacts');
             $table->date('date');
             $table->string('po_number');
-            $table->string('pic');
+            $table->foreignId('pic')->constrained('users')->cascadeOnDelete();
             $table->boolean('status')->default(false);
             $table->timestamps();
         });

@@ -10,8 +10,6 @@ use App\Models\OfferingLetter;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\TaxSetting;
-use App\Models\UnitType;
-use App\Models\User;
 use App\Service\PurchaseOrderService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -26,9 +24,6 @@ use Throwable;
     public function __construct()
     {
         $this->purchaseOrderService = new PurchaseOrderService();
-        $this->contact = new Contact();
-        $this->unitType = new UnitType();
-        $this->user = new User();
     }
 
     /**
@@ -59,14 +54,7 @@ use Throwable;
     }
 
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function getContactData(Request $request): JsonResponse
-    {
-        $this->authorize('create', PurchaseOrder::class);
-        return response()->json($this->contact->getData($request));
-    }
+
 
     /**
      * @throws AuthorizationException
@@ -76,24 +64,6 @@ use Throwable;
         $this->authorize('create', PurchaseOrder::class);
         $data = OfferingLetter::where('contact_id', $contact->id)->first();
         return response()->json($data);
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function getUnitTypeData(Request $request): JsonResponse
-    {
-        $this->authorize('create', PurchaseOrder::class);
-        return response()->json($this->unitType->getData($request));
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function getUserData(Request $request): JsonResponse
-    {
-        $this->authorize('create', PurchaseOrder::class);
-        return response()->json($this->user->getUser($request));
     }
 
 
@@ -117,24 +87,6 @@ use Throwable;
         return response()->json(['message' => 'Purchase Order berhasil ditambahkan.']);
     }
 
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function selectedPIC(PurchaseOrder $purchaseOrder): JsonResponse
-    {
-        $this->authorize('update', PurchaseOrder::class);
-        return response()->json($this->user->getSelectedData($purchaseOrder->pic));
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function selectedContact(PurchaseOrder $purchaseOrder): JsonResponse
-    {
-        $this->authorize('update', PurchaseOrder::class);
-        return response()->json($this->contact->getSelectedData($purchaseOrder->contact_id));
-    }
 
     /**
      * @throws AuthorizationException
@@ -246,5 +198,17 @@ use Throwable;
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="example.pdf',
         ]);
+    }
+
+
+    public function getPurchaseOrders(Request $request): JsonResponse
+    {
+        return response()->json($this->purchaseOrderService->getPurchaseOrders($request));
+    }
+
+
+    public function selectedPurchaseOrder(PurchaseOrder $purchaseOrder): JsonResponse
+    {
+        return response()->json($this->purchaseOrderService->selectedPurchaseOrder($purchaseOrder));
     }
 }

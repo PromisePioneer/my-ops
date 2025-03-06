@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\Request;
+use Laravel\Scout\Searchable;
 
 class BAA extends Model
 {
+    use Searchable;
     protected $table = 'baa';
     protected $fillable = [
         'fab_id',
@@ -18,6 +20,13 @@ class BAA extends Model
         'status'
     ];
 
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'baa_number' => $this->baa_number
+        ];
+    }
 
     public function fab(): BelongsTo
     {

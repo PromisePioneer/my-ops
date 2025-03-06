@@ -44,7 +44,7 @@
                                         PIC
                                     </label>
                                     <div class="mb-5">
-                                        <select name="pic" id="selectedPIC"
+                                        <select name="pic" id="selected-user"
                                                 class="form-select form-select-solid users-select2">
                                             <option></option>
                                         </select>
@@ -60,7 +60,7 @@
                                         <div class="mb-5">
                                             <select name="contact_id"
                                                     class="form-select form-select-solid contact-select2"
-                                                    id="selectedContact">
+                                                    id="selected-contact">
                                                 <option></option>
                                             </select>
                                         </div>
@@ -195,6 +195,9 @@
         function generatePO() {
             return {
                 id: "{{ $purchaseOrder->id }}",
+                contactId: "{{ $purchaseOrder->contact_id }}",
+                pic: "{{ $purchaseOrder->pic }}",
+                editVal: "",
                 buttonLoading: false,
                 contactModal: new bootstrap.Modal(document.getElementById('contact-modal')),
                 contactForm: document.getElementById('contact-form'),
@@ -204,15 +207,15 @@
                 poItem: [],
                 contactHasOfferingLetter: null,
                 async init() {
+                    this.$nextTick(() => {
+                        this.getUnitTypes();
+                    });
                     await this.getPicData();
                     await this.getContactData();
 
-                    await this.selectedPIC();
+                    await this.selectedUser();
                     await this.selectedContact();
 
-                    this.$nextTick(() => {
-                        this.getUnitType();
-                    });
                     await this.getSelectedPurchaseOrder();
                 },
                 async getSelectedPurchaseOrder() {
@@ -225,11 +228,12 @@
                             price: resp.price,
                         });
                         this.$nextTick(() => {
-                            this.selectedUnitTypes(resp, index);
+                            this.getUnitTypes(resp, index);
+                            this.selectedUnitType(resp, index);
                         });
                     });
                 },
-                async selectedUnitTypes(resp, index) {
+                async selectedUnitType(resp, index) {
                     const selectedUnitType = $(`#selectedUnitType-${index}`);
                     $.ajax({
                         type: 'GET',
@@ -262,7 +266,7 @@
                 },
                 async addPOItem() {
                     this.$nextTick(() => {
-                        this.getUnitType();
+                        this.getUnitTypes();
                     })
                     this.poItem.push({
                         item: '',
@@ -276,7 +280,7 @@
                         this.poItem.splice(index, 1);
                         this.poItem.forEach((resp, index) => {
                             this.$nextTick(() => {
-                                this.selectedUnitTypes(resp, index);
+                                this.selectedUnitType(resp, index);
                             })
                         })
                     }
@@ -318,12 +322,12 @@
                         }
                     });
                 },
-                async getUnitType() {
+                async getUnitTypes() {
                     $(".unit-types-select2").select2({
                         placeholder: "Pilih Tipe Unit.",
                         allowClear: true,
                         ajax: {
-                            url: '/income-transactions/po/unit-types/data',
+                            url: '/select2/unit-types-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -345,7 +349,7 @@
                         placeholder: "Pilih PIC.",
                         allowClear: true,
                         ajax: {
-                            url: '/income-transactions/po/users/data',
+                            url: '/select2/users-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -369,25 +373,25 @@
                         this.buttonLoading = false;
                     }
                 },
-                async selectedPIC() {
-                    const selectedPIC = $('#selectedPIC');
+                async selectedUser() {
+                    const selectedUser = $('#selected-user');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/income-transactions/po/pic/selected/${this.id}`,
+                        url: `/select2/selected-user/${this.pic}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
-                    selectedPIC.append(option).trigger('change').trigger({
+                    selectedUser.append(option).trigger('change').trigger({
                         type: 'select2:select',
                         params: {results: response}
                     });
                 },
                 async selectedContact() {
-                    const selectedContact = $('#selectedContact');
+                    const selectedContact = $('#selected-contact');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/income-transactions/po/contact/selected/${this.id}`,
+                        url: `/select2/selected-contact/${this.contactId}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedContact.append(option).trigger('change').trigger({

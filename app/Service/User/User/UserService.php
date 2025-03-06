@@ -168,4 +168,30 @@ use Throwable;
             ]);
         });
     }
+
+    public function getUsers(Request $request)
+    {
+        $search = $request->input('search');
+        $user = User::search($search)->query(function ($query) {
+            $query->where('active', true);
+        })->get();
+
+
+        return $user->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->name
+            ];
+        });
+    }
+
+    public function selectedUser(User $user): array
+    {
+        $data = User::where('id', $user->id)->first();
+
+        return [
+            'id' => $data->id,
+            'name' => $data->name
+        ];
+    }
 }

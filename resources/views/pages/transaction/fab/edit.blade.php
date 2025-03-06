@@ -24,7 +24,7 @@
                                     PIC
                                 </label>
                                 <div class="position-relative d-flex align-items-center ms-4">
-                                    <select name="pic" id="selectedUser"
+                                    <select name="pic" id="selected-user"
                                             class="form-select form-select-solid users-select2">
                                         <option></option>
                                     </select>
@@ -40,7 +40,7 @@
                                     </label>
                                     <div class="mb-5">
                                         <select name="po_id" id="selectedPO"
-                                                class="form-select form-select-solid po-select2">
+                                                class="form-select form-select-solid purchase-orders-select2">
                                             <option></option>
                                         </select>
                                     </div>
@@ -207,6 +207,8 @@
                 editVal: '',
                 contactId: "{{ $fab->contact_id }}",
                 id: "{{ $fab->id }}",
+                poId: "{{ $fab->po_id }}",
+                pic: "{{ $fab->pic }}",
                 fabServices: [],
                 skl: [],
                 contactHasOfferingLetter: null,
@@ -214,13 +216,14 @@
                     this.$nextTick(() => {
                         this.getServicesCategories();
                     })
+                    await this.getPurchaserOrders();
                     await this.selectedFABSkl();
-                    await this.getContactData();
-                    await this.selectedContact();
+                    await this.contacts();
+                    await this.selectedPurchaseOrder();
                     await this.getSelectedFabService();
                     await this.getSKL();
-                    await this.getUserData();
-                    await this.getSelectedUser();
+                    await this.getUsers();
+                    await this.selectedUser();
                 },
                 async getSelectedFabService() {
                     const resp = await axios.get(`/income-transactions/fab/get-selected-services/${this.id}`);
@@ -241,12 +244,12 @@
                         })
                     });
                 },
-                async getUserData() {
+                async getUsers() {
                     $(".users-select2").select2({
                         placeholder: "Pilih PIC.",
                         allowClear: true,
                         ajax: {
-                            url: '/income-transactions/fab/users/data',
+                            url: '/select2/users-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -267,9 +270,9 @@
                         })
                     });
                 },
-                async getSelectedUser() {
-                    const selectedUser = $('#selectedUser');
-                    const response = await axios.get(`/income-transactions/fab/users/selected/${this.id}`);
+                async selectedUser() {
+                    const selectedUser = $('#selected-user');
+                    const response = await axios.get(`/select2/selected-user/${this.pic}`);
                     const option = new Option(response.data.name, response.data.id, true, true);
                     selectedUser.append(option).trigger('change').trigger({
                         type: 'select2:select',
@@ -494,7 +497,7 @@
 
 
                 },
-                async getContactData() {
+                async contacts() {
                     const self = this;
                     $(".contact-select2").select2({
                         escapeMarkup: function (markup) {
@@ -515,9 +518,23 @@
                         }
                     });
                 },
-                async selectedContact() {
+                async getPurchaserOrders() {
+                    $(".purchase-orders-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih PO",
+                        ajax: {
+                            url: '/select2/purchase-orders-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        },
+                    });
+                },
+                async selectedPurchaseOrder() {
                     const selectedPO = $('#selectedPO');
-                    const response = await axios.get(`/income-transactions/fab/get-selected-po/${this.id}`);
+                    const response = await axios.get(`/select2/selected-purchase-order/${this.poId}`);
                     const option = new Option(response.data.name, response.data.id, true, true);
                     selectedPO.append(option).trigger('change').trigger({
                         type: 'select2:select',

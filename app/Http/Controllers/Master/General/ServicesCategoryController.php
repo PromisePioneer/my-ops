@@ -101,4 +101,27 @@ class ServicesCategoryController extends Controller
             'message' => 'data berhasil dihapus',
         ], 200);
     }
+
+
+    public function getServiceCategories(Request $request)
+    {
+        $search = $request->input('search');
+        $serviceCategories = ServiceCategory::search($search)->get();
+
+        return $serviceCategories->map(function ($serviceCategory) {
+            return [
+                'id' => $serviceCategory->id,
+                'text' => $serviceCategory->name
+            ];
+        });
+    }
+
+
+    public function selectedServiceCategory(ServiceCategory $serviceCategory): array
+    {
+        return [
+            'id' => $serviceCategory->id,
+            'name' => $serviceCategory->name
+        ];
+    }
 }

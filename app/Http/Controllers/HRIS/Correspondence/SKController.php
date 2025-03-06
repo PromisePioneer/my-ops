@@ -74,11 +74,6 @@ use Throwable;
         return response()->json($this->branch->getSelectedData($sk->new_branch_id));
     }
 
-    public function getSelectedRole(SK $sk): JsonResponse
-    {
-        return response()->json($this->role->selectedRole($sk->new_role_id));
-    }
-
     public function edit(SK $sk): JsonResponse
     {
         return response()->json($sk);

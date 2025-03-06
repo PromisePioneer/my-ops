@@ -104,4 +104,29 @@ class BAAService
     }
 
 
+    public function getBAA(Request $request)
+    {
+        $search = $request->input('search');
+        $baa = BAA::search($search)->query(function ($query) {
+            $query->orderBy('created_at', 'asc');
+        })->get();
+
+        return $baa->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->baa_number
+            ];
+        });
+    }
+
+
+    public function selectedBAA(BAA $baa): array
+    {
+        return [
+            'id' => $baa->id,
+            'text' => $baa->baa_number
+        ];
+    }
+
+
 }

@@ -6,16 +6,11 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaction\Fab\FabRequest;
 use App\Models\CompanyProfile;
-use App\Models\Contact;
 use App\Models\Fab;
 use App\Models\FabHasSKL;
 use App\Models\FabServiceCategory;
-use App\Models\PurchaseOrder;
 use App\Models\ServiceCategory;
-use App\Models\SKL;
 use App\Models\TaxSetting;
-use App\Models\UnitType;
-use App\Models\User;
 use App\Service\IncomeTransaction\FabService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -27,16 +22,9 @@ use Throwable;
 
 #[AllowDynamicProperties] class FabController extends Controller
 {
-
     public function __construct()
     {
-        $this->serviceCategory = new ServiceCategory();
-        $this->contact = new Contact();
         $this->fabService = new FabService();
-        $this->skl = new SKL();
-        $this->unitType = new UnitType();
-        $this->user = new User();
-        $this->purchaseOrder = new PurchaseOrder();
     }
 
     /**
@@ -75,72 +63,7 @@ use Throwable;
         return view('pages.transaction.fab.create');
     }
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function contactData(Request $request): JsonResponse
-    {
-        $this->authorize('create', Fab::class);
-        $this->authorize('update', Fab::class);
-        $contact = $this->contact->getData($request);
-        return response()->json($contact);
-    }
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function getServicesCategoriesData(Request $request): JsonResponse
-    {
-        $this->authorize('create', Fab::class);
-        $this->authorize('update', Fab::class);
-        $services = $this->serviceCategory->getData($request);
-        return response()->json($services);
-    }
-
-    public function getPOData(Request $request): JsonResponse
-    {
-        return response()->json($this->purchaseOrder->getData($request));
-    }
-
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function getSKL(Request $request): JsonResponse
-    {
-        $this->authorize('create', Fab::class);
-        $this->authorize('update', Fab::class);
-        return response()->json($this->skl->getData($request));
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function getUnitType(Request $request): JsonResponse
-    {
-        $this->authorize('create', Fab::class);
-        $this->authorize('update', Fab::class);
-        return response()->json($this->unitType->getData($request));
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function getUserData(Request $request): JsonResponse
-    {
-        $this->authorize('create', Fab::class);
-        $this->authorize('update', Fab::class);
-        return response()->json($this->user->getUser($request));
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function getSelectedUser(Fab $fab): JsonResponse
-    {
-        $this->authorize('update', $fab);
-        return response()->json($this->user->getSelectedData($fab->pic));
-    }
 
     /**
      * @throws Throwable
@@ -228,17 +151,6 @@ use Throwable;
         $this->authorize('update', $fab);
 
         return view('pages.transaction.fab.edit', compact('fab'));
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function selectedPO(Fab $fab): JsonResponse
-    {
-        $this->authorize('update', $fab);
-        $selectedPO = $this->purchaseOrder->getSelectedData($fab->po_id);
-
-        return response()->json($selectedPO);
     }
 
     /**
@@ -391,5 +303,16 @@ use Throwable;
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="example.pdf"',
         ]);
+    }
+
+
+    public function getFab(Request $request): JsonResponse
+    {
+        return response()->json($this->fabService->getFab($request));
+    }
+
+    public function selectedFab(Fab $fab): JsonResponse
+    {
+        return response()->json($this->fabService->selectedFab($fab));
     }
 }

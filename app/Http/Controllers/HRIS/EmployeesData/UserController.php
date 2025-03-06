@@ -12,7 +12,6 @@ use App\Models\Company;
 use App\Models\Department;
 use App\Models\Role;
 use App\Models\User;
-use App\Models\WeekHoliday;
 use App\Service\User\User\UserService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -186,5 +185,16 @@ use Maatwebsite\Excel\Facades\Excel;
         $user->save();
 
         return response()->json(['message' => 'data sukses diupdate!']);
+    }
+
+
+    public function getUsers(Request $request): JsonResponse
+    {
+        return response()->json($this->userService->getUsers($request));
+    }
+
+    public function selectedUser(User $user): JsonResponse
+    {
+        return response()->json($this->userService->selectedUser($user));
     }
 }

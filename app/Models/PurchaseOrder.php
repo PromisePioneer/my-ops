@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
+use Laravel\Scout\Searchable;
 
 class PurchaseOrder extends Model
 {
+    use Searchable;
     protected $table = 'purchase_orders';
     protected $fillable = [
         'subject',
@@ -31,35 +33,16 @@ class PurchaseOrder extends Model
         return $this->belongsTo(User::class, 'pic');
     }
 
-
-    public function getData(Request $request): array
+    public function toSearchableArray(): array
     {
-        $search = $request->input('search');
-        $query = self::with('contact')->where('status', 1)->orderby('po_number', 'asc');
-        if ($search !== '') {
-            $query->where('po_number', 'like', '%' . $request->search . '%')
-                ->where('po_number', 'like', '%' . $request->search . '%');
-        }
-        $contact = $query->get();
-
-        return $contact->map(function ($po) {
-
-            return [
-                'id' => $po->id,
-                'text' => $po->po_number . ' - ' . $po->contact->company_name,
-            ];
-        })->toArray();
-    }
-
-    public function getSelectedData(int $poId): array
-    {
-        $po = self::where('id', $poId)->first();
-
         return [
-            'id' => $po->id,
-            'name' => $po->po_number . ' - ' . $po->contact->company_name,
+            'id' => $this->id,
+            'po_number' => $this->po_number,
+            'subject' => $this->subject,
         ];
     }
+
+
 }
 
 

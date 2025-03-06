@@ -24,9 +24,9 @@
                             <label for="user_id" class="required form-label">SK</label>
                             <select name="sk_type" id="sk_type" class="form-select form-select-solid">
                                 <option value="0">Pilih</option>
-                                <option value="Promosi">Promosi</option>
-                                <option value="Demosi">Demosi</option>
-                                <option value="Mutasi">Mutasi</option>
+                                <option value="Promosi" :selected="editVal?.sk_type === 'Promosi'">Promosi</option>
+                                <option value="Demosi" :selected="editVal?.sk_type === 'Demosi'">Demosi</option>
+                                <option value="Mutasi" :selected="editVal?.sk_type === 'Mutasi'">Mutasi</option>
                             </select>
                         </div>
                     </div>
@@ -48,7 +48,7 @@
                     <div class="row mb-4">
                         <div class="col-lg-6">
                             <label for="user_id" class="required form-label">Jabatan Baru</label>
-                            <select name="role_id" id="role_id"
+                            <select name="role_id" id="selected-role"
                                     class="form-select form-select-solid roles-select2"
                                     data-dropdown-parent="#modal-sk">
                                 <option></option>

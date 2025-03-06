@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Accounting\Transaction;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaction\Invoice\InvoiceRequest;
 use App\Models\Account;
@@ -22,17 +23,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Throwable;
 
-class InvoiceController extends Controller
+#[AllowDynamicProperties] class InvoiceController extends Controller
 {
     public int $perPage = 10;
     private InvoiceProductService $invoiceProductService;
-    private Invoice $invoice;
-    private Contact $contact;
-    private CompanyProfileServices $companyProfileServices;
-    private InvoiceService $invoiceService;
-    private Branch $branch;
-    private Account $account;
-    private InvoiceProductService $invoiceProductServices;
 
     public function __construct()
     {
@@ -58,11 +52,6 @@ class InvoiceController extends Controller
     public function search(Request $request): JsonResponse
     {
         return response()->json($this->invoiceService->search($request));
-    }
-
-    public function branchData(Request $request): JsonResponse
-    {
-        return response()->json($this->branch->getData($request));
     }
 
     public function filterByBranch(Branch $branch): JsonResponse

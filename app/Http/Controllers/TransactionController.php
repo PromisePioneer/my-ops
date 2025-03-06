@@ -76,9 +76,15 @@ use Throwable;
     }
 
 
-    public function destroy()
+    public function destroy(Request $request, Transaction $transaction): JsonResponse
     {
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $transaction->whereIn('id', $explodeID)->delete();
 
+        return response()->json([
+            'message' => 'data berhasil dihapus'
+        ]);
     }
 
 

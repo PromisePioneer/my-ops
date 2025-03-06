@@ -189,7 +189,7 @@ use function App\Helper\formatDate;
     /**
      * @throws Throwable
      */
-    public function confirm($fab): void
+    public function confirm(Fab $fab): void
     {
         $fabServiceCategory = FabServiceCategory::where('fab_id', $fab->id)->sum('price');
         $debitAccount = Account::where('code', '403-04')->first();
@@ -197,32 +197,49 @@ use function App\Helper\formatDate;
         DB::transaction(function () use (
             $fabServiceCategory,
             $debitAccount,
+            $creditAccount,
             $fab
         ) {
+
             $this->accountTransactionService->createDebitTransaction(
                 null,
-                $fab->account_id,
+                sprintf(self::ACCOUNT_TRANSACTION_DESCRIPTION, $fab->po->contact->company_name, $fab->fab_number),
                 $debitAccount->id,
                 $fabServiceCategory
             );
 
-            $this->accountTransactionService->createDebitTransaction(
+            $this->accountTransactionService->createCreditTransaction(
                 null,
-                $fab->account_id,
-                $debitAccount->id,
+                sprintf(self::ACCOUNT_TRANSACTION_DESCRIPTION, $fab->po->contact->company_name, $fab->fab_number),
+                $creditAccount->id,
                 $fabServiceCategory
             );
 
-
+            $fab->status = true;
+            $fab->save();
         });
-        $fab->status = true;
-        $fab->save();
     }
 
 
-    public function convertCompanyNameToCapitalLetter(Fab $fab): string
+    public function getFab(Request $request)
     {
-        return $this->companyNameService->convertCompanyNameToCapitalLetter($fab->po->contact->company_name);
+        $search = $request->input('search');
+        $fab = Fab::search($search)->get();
+
+        return $fab->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->fab_number
+            ];
+        });
     }
 
+
+    public function selectedFab(Fab $fab)
+    {
+        return [
+            'id' => $fab->id,
+            'name' => $fab->fab_number
+        ];
+    }
 }

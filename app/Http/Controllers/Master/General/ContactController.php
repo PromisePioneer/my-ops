@@ -93,4 +93,15 @@ use Illuminate\View\View;
         $contact->whereIn('id', $explodeID)->delete();
         return response()->json(['message' => 'data berhasil dihapus']);
     }
+
+
+    public function getContacts(Request $request): JsonResponse
+    {
+        return response()->json($this->contactService->getContacts($request));
+    }
+
+    public function selectedContact(Contact $contact): JsonResponse
+    {
+        return response()->json($this->contactService->selectedContact($contact));
+    }
 }

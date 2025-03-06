@@ -141,16 +141,16 @@ Route::get('/', function () {
 //
 //});
 
-//Route::get('/tests', function () {
-//    $data = [
-//        'name' => 'Syahrizal As',
-//        'body' => 'Testing Kirim Email di Santri Koding'
-//    ];
-//
-//    Mail::to('fifirman000@gmail.com')->send(new SendEmail($data));
-//
-//    dd("Email Berhasil dikirim.");
-//});
+Route::get('/tests', function () {
+    $data = [
+        'name' => 'Syahrizal As',
+        'body' => 'Testing Kirim Email di Santri Koding'
+    ];
+
+    Mail::to('fifirman000@gmail.com')->send(new SendEmail($data));
+
+    dd("Email Berhasil dikirim.");
+});
 
 Auth::routes();
 
@@ -321,16 +321,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [SKController::class, 'index']);
             Route::get('/data', [SKController::class, 'data']);
             Route::get('/search', [SKController::class, 'search']);
-            Route::get('/users/data', [SKController::class, 'getUserData']);
-            Route::get('/roles/data', [SKController::class, 'getRoleData']);
-            Route::get('/branch/data', [SKController::class, 'getBranchData']);
             Route::post('/', [SKController::class, 'store']);
             Route::get('/{sk}', [SKController::class, 'edit']);
             Route::post('/{sk}', [SKController::class, 'update']);
             Route::get('/export-pdf/{sk}', [SKController::class, 'exportToPDF']);
-            Route::get('/selected-branch/{sk}', [SKController::class, 'getSelectedBranch']);
-            Route::get('/selected-role/{sk}', [SKController::class, 'getSelectedRole']);
-            Route::get('/selected-user/{sk}', [SKController::class, 'getSelectedUser']);
         });
     });
 
@@ -1416,13 +1410,26 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/selected-work-time/{workTime}', [WorkTimeController::class, 'selectedWorkTime']);
         Route::get('/departments-data', [DepartmentController::class, 'getDepartments']);
         Route::get('/selected-department/{department}', [DepartmentController::class, 'selectedDepartment']);
-
         Route::get('/accounts-data', [AccountController::class, 'getAccounts']);
         Route::get('/selected-account/{account}', [AccountController::class, 'selectedAccount']);
         Route::get('/work-times-data', [WorkTimeController::class, 'getWorkTimes']);
         Route::get('/selected-work-time/{workTime}', [WorkTimeController::class, 'selectedWorkTime']);
         Route::get('/unit-types-data', [UnitTypeController::class, 'getUnitTypes']);
         Route::get('/selected-unit-type/{unitType}', [UnitTypeController::class, 'selectedUnitType']);
+        Route::get('/users-data', [UserController::class, 'getUsers']);
+        Route::get('/selected-user/{user}', [UserController::class, 'selectedUser']);
+        Route::get('/contacts-data', [ContactController::class, 'getContacts']);
+        Route::get('/selected-contact/{contact}', [ContactController::class, 'selectedContact']);
+        Route::get('/service-categories-data', [ServicesCategoryController::class, 'getServiceCategories']);
+        Route::get('/selected-service-category/{serviceCategory}', [ServicesCategoryController::class, 'selectedServiceCategory']);
+        Route::get('/skl-data', [SKLController::class, 'getSKL']);
+        Route::get('/selected-skl/{skl}', [SKLController::class, 'selectedSKL']);
+        Route::get('/purchase-orders-data', [PurchaseOrderController::class, 'getPurchaseOrders']);
+        Route::get('/selected-purchase-order/{purchaseOrder}', [PurchaseOrderController::class, 'selectedPurchaseOrder']);
+        Route::get('/baa-data', [BAAController::class, 'getBAA']);
+        Route::get('/selected-baa/{baa}', [BAAController::class, 'selectedBAA']);
+        Route::get('/fab-data', [FabController::class, 'getFab']);
+        Route::get('/selected-fab/{fab}', [FabController::class, 'selectedFab']);
     });
 
 

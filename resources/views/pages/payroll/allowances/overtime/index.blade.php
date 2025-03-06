@@ -2,8 +2,7 @@
 @section('content')
     <div x-data="overtimeAllowanceData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.payroll.allowances.overtime.modal.create')
-            @include('pages.payroll.allowances.overtime.modal.edit')
+            @include('pages.payroll.allowances.overtime.form')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -19,7 +18,7 @@
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modal-create">
+                                    data-bs-target="#modal-overtime">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
@@ -106,7 +105,7 @@
                                     <td x-text="overtimeAllowance.amount"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-edit" @click="edit(overtimeAllowance.id)">
+                                                data-bs-target="#modal-overtime" @click="edit(overtimeAllowance.id)">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
@@ -153,10 +152,8 @@
                 search: '',
                 editVal: '',
                 startIndex: null,
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
-                formCreate: document.getElementById('form-create'),
-                formEdit: document.getElementById('form-edit'),
+                modalCreate: new bootstrap.Modal(document.getElementById('modal-overtime')),
+                formCreate: document.getElementById('form-overtime'),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
                     await this.getPositionAllowancesData();

@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
+use Laravel\Scout\Searchable;
 
 class Fab extends Model
 {
+    use Searchable;
     protected $table = 'fab';
 
     protected $fillable = [

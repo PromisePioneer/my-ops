@@ -169,6 +169,10 @@
                     }
                 },
                 async add() {
+                    this.form.reset();
+                    $('#selected-user').val("");
+                    $('#selected-role').val("");
+                    $('#selected-branch').val("");
                     await this.getUserData();
                     await this.getRolesData();
                     await this.getMainBranches();
@@ -239,7 +243,7 @@
                         allowClear: true,
                         placeholder: "Pilih karyawan",
                         ajax: {
-                            url: '/manage-users/sk/users/data',
+                            url: '/select2/users-data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),
@@ -248,7 +252,6 @@
                         }
                     });
                 },
-
                 async getMainBranches() {
                     $(".main-branches-select2").select2({
                         allowClear: true,
@@ -268,7 +271,7 @@
                         placeholder: "Pilih Jabatan",
                         allowClear: true,
                         ajax: {
-                            url: '/manage-users/sk/roles/data',
+                            url: '/select2/roles-data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),
@@ -278,11 +281,11 @@
                     });
                 },
                 async selectedUser() {
-                    const selectedUser = $('#selectedUser');
+                    const selectedUser = $('#selected-user');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/manage-users/sk/selected-user/${this.editVal.id}`,
+                        url: `/select2/selected-user/${this.editVal.user_id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedUser.append(option).trigger('change').trigger({
@@ -292,11 +295,11 @@
                 },
 
                 async selectedRole() {
-                    const selectedRole = $('#selectedRole');
+                    const selectedRole = $('#selected-role');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/manage-users/sk/selected-role/${this.editVal.id}`,
+                        url: `/select2/selected-role/${this.editVal.new_role_id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedRole.append(option).trigger('change').trigger({
@@ -309,7 +312,7 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/select2/selected-branch/${this.editVal.branch_id}`,
+                        url: `/select2/selected-branch/${this.editVal.new_branch_id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedBranch.append(option).trigger('change').trigger({

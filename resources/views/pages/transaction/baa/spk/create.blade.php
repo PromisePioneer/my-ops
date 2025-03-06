@@ -43,7 +43,7 @@
 
                     <div class="mb-10">
                         <label for="name" class="required form-label">Pilih Karyawan (Pemberi SPK)</label>
-                        <select name="from" id="selectedFrom" class="form-select form-select-solid users-select2"
+                        <select name="from" id="selected-from" class="form-select form-select-solid users-select2"
                                 data-dropdown-parent="#spk-create">
                             <option></option>
                         </select>
@@ -51,7 +51,7 @@
 
                     <div class="mb-10">
                         <label for="name" class="required form-label">Pilih Karyawan (PIC)</label>
-                        <select name="to" id="selectedTo" class="form-select form-select-solid users-select2"
+                        <select name="to" id="selected-to" class="form-select form-select-solid users-select2"
                                 data-dropdown-parent="#spk-create">
                             <option></option>
                         </select>

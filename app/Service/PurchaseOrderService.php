@@ -143,4 +143,28 @@ class PurchaseOrderService
     {
 
     }
+
+
+    public function getPurchaseOrders(Request $request): array
+    {
+        $search = $request->input('search');
+        $purchaseOrder = PurchaseOrder::search($search)->query(function ($query) {
+            $query->where('status', 1)->orderby('po_number', 'asc');
+        })->get();
+
+        return $purchaseOrder->map(function ($po) {
+            return [
+                'id' => $po->id,
+                'text' => $po->po_number . ' - ' . $po->contact->company_name,
+            ];
+        })->toArray();
+    }
+
+    public function selectedPurchaseOrder(PurchaseOrder $purchaseOrder): array
+    {
+        return [
+            'id' => $purchaseOrder->id,
+            'name' => $purchaseOrder->po_number . ' - ' . $purchaseOrder->contact->company_name,
+        ];
+    }
 }

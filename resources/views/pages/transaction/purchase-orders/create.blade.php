@@ -26,7 +26,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="separator separator-dashed my-10"></div>
                         <div class="row">
                             <div class="col-lg-6">
                                 <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
@@ -56,7 +55,7 @@
                                     </label>
                                     <div class="mb-5">
                                         <select name="contact_id"
-                                                class="form-select form-select-solid contact-select2">
+                                                class="form-select form-select-solid contacts-select2">
                                             <option></option>
                                         </select>
                                     </div>
@@ -194,6 +193,7 @@
                 unitTypeModal: new bootstrap.Modal(document.getElementById('modal-unit-type')),
                 unitTypeForm: document.getElementById('unit-types-store'),
                 form: document.getElementById('form'),
+                editVal: '',
                 poItem: [{
                     item: '',
                     unit_type_id: '',
@@ -244,17 +244,17 @@
                 },
                 async getContactData() {
                     const self = this
-                    $(".contact-select2").select2({
+                    $(".contacts-select2").select2({
                         placeholder: "Pilih Kontak",
                         allowClear: true,
                         escapeMarkup: markup => (markup),
                         language: {
                             noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#contact-create">Tambahkan terlebih dahulu</a>`;
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#contact-modal">Tambahkan terlebih dahulu</a>`;
                             }
                         },
                         ajax: {
-                            url: '/income-transactions/po/contacts/data',
+                            url: '/select2/contacts-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -262,7 +262,7 @@
                             cache: true
                         }
                     }).on('change', async function () {
-                        const val = $(".contact-select2").val();
+                        const val = $(".contacts-select2").val();
                         const resp = await axios.get(`/income-transactions/po/offering-letter/${val}`);
                         if (Object.keys(resp.data).length >= 1) {
                             self.contactHasOfferingLetter = resp.data;
@@ -273,10 +273,10 @@
                 },
                 async getUnitType() {
                     $(".unit-types-select2").select2({
-                        placeholder: "Pilih Tipe Unit.",
+                        placeholder: "Pilih Satuan.",
                         allowClear: true,
                         ajax: {
-                            url: '/income-transactions/po/unit-types/data',
+                            url: '/select2/unit-types-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -298,7 +298,7 @@
                         placeholder: "Pilih PIC.",
                         allowClear: true,
                         ajax: {
-                            url: '/income-transactions/po/users/data',
+                            url: '/select2/users-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),

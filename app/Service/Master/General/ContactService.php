@@ -42,4 +42,28 @@ class ContactService
         $contacts->setCollection($data);
         return $contacts;
     }
+
+
+    public function getContacts(Request $request)
+    {
+        $search = $request->input('search');
+        $contacts = Contact::search($search)->query(function ($query) {
+            $query->orderBy('company_code', 'asc');
+        })->get();
+
+        return $contacts->map(function ($contact) {
+            return [
+                'id' => $contact->id,
+                'text' => ($contact->company_code . ' - ' . $contact->company_name)
+            ];
+        });
+    }
+
+    public function selectedContact(Contact $contact): array
+    {
+        return [
+            'id' => $contact->id,
+            'name' => ($contact->company_code . ' - ' . $contact->company_name)
+        ];
+    }
 }

@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers\HRIS\Payroll\PayrollComponent\Allowances;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Allowances\UserHasOvertimeRequest;
 use App\Models\User;
 use App\Models\UserHasOvertime;
+use App\Service\User\User\UserACLFilter;
 use App\Service\UserAllowance\OvertimeAllowanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
-class OvertimeAllowanceController extends Controller
+#[AllowDynamicProperties] class OvertimeAllowanceController extends Controller
 {
-    private UserHasOvertime $userHasOvertime;
-    private User $user;
-    private OvertimeAllowanceService $overtimeAllowanceService;
 
     public function __construct()
     {
@@ -39,9 +39,20 @@ class OvertimeAllowanceController extends Controller
         return response()->json($this->userHasOvertime->data());
     }
 
-    public function getUserData(Request $request): JsonResponse
+    public function getUserData(Request $request): Collection
     {
-        return response()->json($this->user->getUser($request));
+        $search = $request->input('search');
+        $query = User::search($search)->query(function () use ($request) {
+            $query = User::where('active', true)->orderBy('absent_id');
+            UserACLFilter::apply($query, $request);
+        });
+
+        return $query->get()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => "({$item->nip}) {$item->name}",
+            ];
+        });
     }
 
     public function getSelectedUser(UserHasOvertime $userHasOvertime): JsonResponse

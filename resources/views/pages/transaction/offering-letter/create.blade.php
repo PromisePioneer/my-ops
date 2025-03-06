@@ -241,8 +241,8 @@
                     await this.getUserData();
                     await this.getSKL();
                     this.offeringLetterProductService.forEach((field, index) => {
-                        this.getServicesCategories(field, index);
-                        this.getUnitTypeData(field, index);
+                        this.getServiceCategories(field, index);
+                        this.getUnitTypes(field, index);
                     });
                 },
                 async saveServiceCategories() {
@@ -291,8 +291,8 @@
                 async addOfferingLetterProductService() {
                     this.$nextTick(() => {
                         this.offeringLetterProductService.forEach((field, index) => {
-                            this.getServicesCategories(field, index);
-                            this.getUnitTypeData(field, index);
+                            this.getServiceCategories(field, index);
+                            this.getUnitTypes(field, index);
                         })
 
 
@@ -344,7 +344,7 @@
                         this.offeringLettersServiceDescription.splice(index, 1);
                     }
                 },
-                async getServicesCategories(field, index) {
+                async getServiceCategories(field, index) {
                     $(`.service-categories-select2-${index}`).select2({
                         placeholder: "Pilih kategori layanan",
                         allowClear: true,
@@ -355,7 +355,7 @@
                             }
                         },
                         ajax: {
-                            url: '/income-transactions/offering-letters/service-categories/data',
+                            url: '/select2/service-categories-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -372,7 +372,7 @@
                     $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/general-master-data/service-categories/show/${field.service_category_id}`,
+                        url: `/select2/selected-service-category/${field.service_category_id}`,
                     }).then(function (response) {
                         const option = new Option(response.name, response.id, true, true);
                         selectedServices.append(option).trigger('change');
@@ -409,7 +409,7 @@
                             }
                         },
                         ajax: {
-                            url: '/income-transactions/offering-letters/skl/data',
+                            url: '/select2/skl-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -429,7 +429,7 @@
                             }
                         },
                         ajax: {
-                            url: '/income-transactions/offering-letters/contact/data',
+                            url: '/select2/contacts-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -438,7 +438,7 @@
                         }
                     });
                 },
-                async getUnitTypeData(field, index) {
+                async getUnitTypes(field, index) {
                     $(`.unit-types-select2-${index}`).select2({
                         placeholder: "Pilih Satuan.",
                         allowClear: true,
@@ -449,7 +449,7 @@
                             }
                         },
                         ajax: {
-                            url: '/income-transactions/offering-letters/unit-types/data',
+                            url: '/select2/unit-types-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -510,7 +510,7 @@
                         placeholder: "Pilih PIC.",
                         allowClear: true,
                         ajax: {
-                            url: '/income-transactions/offering-letters/users/data',
+                            url: '/select2/users-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),

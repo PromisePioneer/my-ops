@@ -31,7 +31,6 @@ use App\Models\WorkTime;
 use App\Policies\AccountPolicy;
 use App\Policies\AreaPolicy;
 use App\Policies\AssetPolicy;
-use App\Policies\AttendanceRecordPolicy;
 use App\Policies\AttendanceSummaryPolicy;
 use App\Policies\BoqPolicy;
 use App\Policies\BranchPolicy;

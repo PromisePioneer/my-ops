@@ -11,7 +11,7 @@
                             <div class="col-lg-6">
                                 <div class="d-flex align-items-center flex-equal fw-row me-4 order-2"
                                      data-bs-toggle="tooltip" data-bs-trigger="hover" title="Specify invoice date">
-                                    <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal:</div>
+                         q           <div class="fs-6 fw-bolder text-gray-700 text-nowrap">Tanggal:</div>
                                     <div class="position-relative d-flex align-items-center ms-4">
                                         <input type="date" class="form-control form-control-solid fw-bolder pe-5 date"
                                                placeholder="Pilih Tanggal" name="date" id="date"/>

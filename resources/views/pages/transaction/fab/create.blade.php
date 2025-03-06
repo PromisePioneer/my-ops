@@ -45,7 +45,7 @@
                                     </label>
                                     <div class="mb-5">
                                         <select name="po_id"
-                                                class="form-select form-select-solid po-select2">
+                                                class="form-select form-select-solid purchase-orders-select2">
                                             <option></option>
                                         </select>
                                     </div>
@@ -54,7 +54,7 @@
                         </div>
                         <div class="separator my-10"></div>
                         <div class="table-responsive mb-20">
-                            <table class="table g-5 gs-0 mb-0 fw-bolder text-gray-700 table-bordered"
+                            <table class="table g-5 gs-0 mb-0 fw-bolder text-gray-700"
                                    data-kt-element="items">
                                 <thead>
                                 <tr class="border-bottom fs-7 fw-bolder text-gray-700 text-uppercase">
@@ -83,7 +83,9 @@
                                                    placeholder="Kapasitas" value="0" @change="calculateTotal(index)"/>
                                         </td>
                                         <td style='text-align:center; vertical-align:middle' class="w-20">
-                                            <select :class="`form-select form-select-solid unit-type-select2-${index}`" :id="`#selectedUnitType-${index}`" :name="`fabServices[${index}][unit_type_id]`"
+                                            <select :class="`form-select form-select-solid unit-types-select2-${index}`"
+                                                    :id="`#selectedUnitType-${index}`"
+                                                    :name="`fabServices[${index}][unit_type_id]`"
                                                     x-model="field.unit_type_id">
                                                 <option></option>
                                             </select>
@@ -215,6 +217,7 @@
                 sklForm: document.getElementById('form-skl'),
                 contactHasOfferingLetter: null,
                 buttonLoading: false,
+                editVal: '',
                 fabServices: [{
                     service_category_id: '',
                     capacity: '',
@@ -226,12 +229,12 @@
                     skl_id: '',
                 }],
                 async init() {
-                    await this.getPOData();
+                    await this.getPurchaserOrders();
                     await this.getSKL();
-                    await this.getUserData();
+                    await this.getUsers();
                     this.fabServices.forEach((resp, index) => {
                         this.getUnitType(resp, index);
-                        this.getServicesCategories(resp, index);
+                        this.getserviceCategories(resp, index);
                     })
                 },
                 async generateFAB() {
@@ -271,11 +274,11 @@
                         escapeMarkup: markup => (markup),
                         language: {
                             noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-skl-create"">Tambahkan terlebih dahulu</a>`;
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-skl"">Tambahkan terlebih dahulu</a>`;
                             }
                         },
                         ajax: {
-                            url: '/income-transactions/fab/get-skl/data',
+                            url: '/select2/skl-data',
                             dataType: "json",
                             type: "GET",
 
@@ -285,12 +288,12 @@
                         }
                     });
                 },
-                async getUserData() {
+                async getUsers() {
                     $(".users-select2").select2({
                         placeholder: "Pilih PIC.",
                         allowClear: true,
                         ajax: {
-                            url: '/income-transactions/fab/users/data',
+                            url: '/select2/users-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -317,7 +320,7 @@
                     this.$nextTick(() => {
                         this.fabServices.forEach((resp, index) => {
                             this.getUnitType(resp, index);
-                            this.getServicesCategories(resp, index);
+                            this.getserviceCategories(resp, index);
                         })
                     })
 
@@ -397,12 +400,12 @@
                         return Number(total) + Number(field.price)
                     }, 0);
                 },
-                async getPOData() {
-                    $(".po-select2").select2({
+                async getPurchaserOrders() {
+                    $(".purchase-orders-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih PO",
                         ajax: {
-                            url: '/income-transactions/fab/po/data',
+                            url: '/select2/purchase-orders-data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),
@@ -412,7 +415,7 @@
                     });
                 },
                 async getUnitType(response, index) {
-                    $(`.unit-type-select2-${index}`).select2({
+                    $(`.unit-types-select2-${index}`).select2({
                         allowClear: true,
                         placeholder: "Pilih Satuan",
                         escapeMarkup: markup => (markup),
@@ -422,7 +425,7 @@
                             }
                         },
                         ajax: {
-                            url: '/income-transactions/fab/get-unit-type/data',
+                            url: '/select2/unit-types-data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),
@@ -451,12 +454,12 @@
                         this.buttonLoading = false;
                     }
                 },
-                async getServicesCategories(response, index) {
+                async getserviceCategories(response, index) {
                     $(`.service-categories-select2-${index}`).select2({
                         placeholder: "Pilih Kategori",
                         allowClear: true,
                         ajax: {
-                            url: '/income-transactions/fab/services-categories/data',
+                            url: '/select2/service-categories-data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),

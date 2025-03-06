@@ -2,21 +2,24 @@
 
 namespace App\Service\UserAllowance;
 
+use AllowDynamicProperties;
 use App\Http\Requests\Allowances\UserHasOvertimeRequest;
 use App\Models\NationalHoliday;
 use App\Models\User;
 use App\Models\UserHasOvertime;
 use App\Service\HelperService\FinancialClosePeriodService;
+use App\Service\HelperService\HandleFileUploadService;
 use Carbon\Carbon;
 
-class OvertimeAllowanceService
+#[AllowDynamicProperties] class OvertimeAllowanceService
 {
-    private FinancialClosePeriodService $financialClosePeriodService;
 
     public function __construct()
     {
         $this->financialClosePeriodService = new FinancialClosePeriodService();
+        $this->handleFileUploadService = new HandleFileUploadService();
     }
+
 
 
     public function store(UserHasOvertimeRequest $request)
@@ -26,7 +29,9 @@ class OvertimeAllowanceService
 
         $data = $request->validated();
         $data['date'] = Carbon::now();
-        $data['amount'] = ($user->jobInformation->fixed_salary / $getPeriodOfWork / 8) * $request->hours;
+//        $data['amount'] = ($user->jobInformation->fixed_salary / $getPeriodOfWork / 8) * $request->hours;
+        $data['amount'] = '123213213';
+        $data['file'] = $this->handleFileUploadService->upload($request, 'documents/overtime', 'file');
         return UserHasOvertime::create($data);
     }
 

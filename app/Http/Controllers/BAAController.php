@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use AllowDynamicProperties;
 use App\Http\Requests\BaaRequest;
 use App\Http\Requests\SPKRequest;
 use App\Models\BAA;
@@ -18,13 +19,8 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Spatie\Browsershot\Browsershot;
 
-class BAAController extends Controller
+#[AllowDynamicProperties] class BAAController extends Controller
 {
-    private BAAService $baaService;
-    private Fab $fab;
-    private SPKService $spkService;
-    private User $user;
-
     public function __construct()
     {
         $this->baaService = new BAAService();
@@ -188,16 +184,6 @@ class BAAController extends Controller
         ]);
     }
 
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function getUserData(Request $request): JsonResponse
-    {
-        $this->authorize('create', BAA::class);
-        return response()->json($this->user->getUser($request));
-    }
-
     /**
      * @throws AuthorizationException
      */
@@ -270,5 +256,16 @@ class BAAController extends Controller
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $spk->spk_number . '".pdf"',
         ]);
+    }
+
+
+    public function getBAA(Request $request): JsonResponse
+    {
+        return response()->json($this->baaService->getBAA($request));
+    }
+
+    public function selectedBAA(BAA $baa): JsonResponse
+    {
+        return response()->json($this->baaService->selectedBAA($baa));
     }
 }

@@ -91,4 +91,29 @@ class SKLController extends Controller
             'message' => 'data berhasil dihapus',
         ]);
     }
+
+
+    public function getSKL(Request $request): array
+    {
+        $search = $request->input('search');
+        $skl = SKL::search($search)->query(function ($query) {
+            $query->orderby('name', 'asc');
+        })->get();
+
+        return $skl->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->name,
+            ];
+        })->toArray();
+    }
+
+
+    public function selectedSKL(SKL $skl): array
+    {
+        return [
+            'id' => $skl->id,
+            'text' => $skl->name,
+        ];
+    }
 }

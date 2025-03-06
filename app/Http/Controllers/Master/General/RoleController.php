@@ -186,11 +186,8 @@ use Throwable;
         return response()->json($this->roleService->rolesData($request));
     }
 
-    public function selectedRole(Role $role): array
+    public function selectedRole(Role $role): JsonResponse
     {
-        return [
-            'id' => $role->id,
-            'name' => $role->name,
-        ];
+        return response()->json($this->roleService->selectedRole($role));
     }
 }

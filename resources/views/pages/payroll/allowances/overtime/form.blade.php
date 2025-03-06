@@ -1,8 +1,8 @@
-<div class="modal fade" tabindex="-1" id="modal-edit">
+<div class="modal fade" tabindex="-1" id="modal-overtime">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form Tunjangan Transportasi</h5>
+                <h5 class="modal-title">Form Lembur</h5>
                 <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
@@ -14,31 +14,29 @@
                 </div>
             </div>
 
-            <form id="form-edit" @submit.prevent="update(editVal.id)">
+            <form id="form-overtime" @submit.prevent="save(editVal?.id)">
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Karyawan</label>
-                        <select name="user_id" id="selectedUser" class="form-control form-control-solid users-select2 "
-                                data-dropdown-parent="#modal-edit">
+                        <select name="user_id" id="selected-user" class="form-select form-select-solid users-select2"
+                                data-dropdown-parent="#modal-overtime">
                             <option></option>
                         </select>
                     </div>
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Tanggal</label>
-                        <input type="date" id="date" name="date" class="form-control form-control-solid date"
-                               placeholder="Pilih tanggal" :value="editVal.date"/>
-                    </div>
-
-
                     <div class="mb-10">
                         <label for="name" class="required form-label">Jumlah Lembur (Dalam Jam)</label>
                         <input type="number" id="hours" name="hours" class="form-control form-control-solid"
                                placeholder="Jumlah Lembur" :value="editVal.hours"/>
                     </div>
                     <div class="mb-10">
+                        <label for="name" class="required form-label">Bukti</label>
+                        <input type="file" class="form-control form-control-solid" name="file" id="file"
+                               accept="application/pdf">
+                    </div>
+                    <div class="mb-10">
                         <label for="name" class="required form-label">Alasan Lembur</label>
                         <textarea class="form-control form-control-solid" name="reason"
-                                  data-kt-autosize="true" x-text="editVal.reason"></textarea>
+                                  data-kt-autosize="true" x-text="editVal?.reason"></textarea>
                     </div>
                 </div>
 

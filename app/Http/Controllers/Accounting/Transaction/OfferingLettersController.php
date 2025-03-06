@@ -5,15 +5,10 @@ namespace App\Http\Controllers\Accounting\Transaction;
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaction\OfferingLetter\OfferingLetterRequest;
-use App\Models\Contact;
 use App\Models\OfferingLetter;
 use App\Models\OfferingLetterProduct;
 use App\Models\OfferingLetterServiceDescription;
-use App\Models\ServiceCategory;
-use App\Models\SKL;
 use App\Models\TaxSetting;
-use App\Models\UnitType;
-use App\Models\User;
 use App\Service\OfferingLetterService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -29,11 +24,6 @@ use Spatie\Browsershot\Browsershot;
     public function __construct()
     {
         $this->offeringLetterService = new OfferingLetterService();
-        $this->contact = new Contact();
-        $this->serviceCategory = new ServiceCategory();
-        $this->user = new  User();
-        $this->unitType = new UnitType();
-        $this->offeringLetterSKL = new SKL();
     }
 
     /**
@@ -73,36 +63,8 @@ use Spatie\Browsershot\Browsershot;
         return view('pages.transaction.offering-letter.create');
     }
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function getContactData(Request $request): JsonResponse
-    {
-        $this->authorize('create', OfferingLetter::class);
-        $this->authorize('update', OfferingLetter::class);
-        return response()->json($this->contact->getData($request));
-    }
 
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function getUserData(Request $request): JsonResponse
-    {
-        $this->authorize('create', OfferingLetter::class);
-        $this->authorize('update', OfferingLetter::class);
-        return response()->json($this->user->getUser($request));
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function getServicesCategoriesData(Request $request): JsonResponse
-    {
-        $this->authorize('create', OfferingLetter::class);
-        $this->authorize('update', OfferingLetter::class);
-        return response()->json($this->serviceCategory->getData($request));
-    }
 
     /**
      * @throws AuthorizationException
@@ -126,44 +88,6 @@ use Spatie\Browsershot\Browsershot;
         return response()->json($data);
     }
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function selectedUser(OfferingLetter $offeringLetter): JsonResponse
-    {
-        $this->authorize('create', OfferingLetter::class);
-        $this->authorize('update', OfferingLetter::class);
-        return response()->json($this->user->getSelectedData($offeringLetter->pic));
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function getUnitType(Request $request): JsonResponse
-    {
-        $this->authorize('create', OfferingLetter::class);
-        $this->authorize('update', OfferingLetter::class);
-        return response()->json($this->unitType->getData($request));
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function getSKL(Request $request): JsonResponse
-    {
-        $this->authorize('create', OfferingLetter::class);
-        $this->authorize('update', OfferingLetter::class);
-        return response()->json($this->offeringLetterSKL->getData($request));
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function getSelectedSKL(OfferingLetterServiceDescription $offeringLetterServiceDescription): JsonResponse
-    {
-        $this->authorize('update', OfferingLetter::class);
-        return response()->json($this->offeringLetterSKL->getSelectedData($offeringLetterServiceDescription->skl_id));
-    }
 
     /**
      * @throws \Throwable
@@ -241,25 +165,9 @@ use Spatie\Browsershot\Browsershot;
         return view('pages.transaction.offering-letter.edit', compact('offeringLetter'));
     }
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function getSelectedContact(OfferingLetter $offeringLetter): JsonResponse
-    {
-        $this->authorize('update', $offeringLetter);
-        $selected = $this->contact->getSelectedData($offeringLetter->contact_id);
-        return response()->json($selected);
-    }
 
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function getSelectedUnitType(OfferingLetterProduct $offeringLetterProduct): JsonResponse
-    {
-        $this->authorize('update', OfferingLetter::class);
-        return response()->json($this->unitType->getSelectedData($offeringLetterProduct->unit_type_id));
-    }
+
 
 
     public function getOfferingLetterProductServices(OfferingLetter $offeringLetter): JsonResponse

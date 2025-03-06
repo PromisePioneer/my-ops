@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->date('date');
             $table->integer('hours');
             $table->text('reason');
+            $table->string('file');
             $table->double('amount');
             $table->timestamps();
         });

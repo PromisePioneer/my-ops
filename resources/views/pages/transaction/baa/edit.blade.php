@@ -3,7 +3,7 @@
 @section('content')
 
     <div class="d-flex flex-column flex-lg-row" x-data="generateBAA()">
-        @include('pages.general-master-data.contacts.modal.create')
+        @include('pages.general-master-data.contacts.form')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card">
                 <div class="card-body p-12">
@@ -29,7 +29,7 @@
                                         Pilih FAB
                                     </label>
                                     <div class="mb-5">
-                                        <select name="fab_id" id="selectedFAB"
+                                        <select name="fab_id" id="selected-fab"
                                                 class="form-select form-select-solid fab-select2">
                                             <option></option>
                                         </select>
@@ -41,7 +41,8 @@
                                     </label>
                                     <div class="mb-5">
                                         <input type="text" class="form-control form-control-solid" name="po_number"
-                                               id="po_number" placeholder="No. PO" value="{{ $baa->po_number }}">
+                                               id="po_number" placeholder="No. PO"
+                                               value="{{ $baa->fab->po->po_number }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -79,11 +80,13 @@
         function generateBAA() {
             return {
                 id: {{ $baa->id }},
+                fabId: {{ $baa->fab_id }},
                 buttonLoading: false,
                 form: document.getElementById('form'),
+                editVal: "",
                 async init() {
                     await this.getFabData();
-                    await this.getSelectedFab();
+                    await this.selectedFab();
                 },
                 async getFabData() {
                     $('.fab-select2').select2({
@@ -99,12 +102,12 @@
                         }
                     })
                 },
-                async getSelectedFab() {
-                    const selectedFAB = $(`#selectedFAB`);
+                async selectedFab() {
+                    const selectedFAB = $(`#selected-fab`);
                     $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/income-transactions/baa/fab/selected/${this.id}`,
+                        url: `/select2/selected-fab/${this.fabId}`,
                     }).then(function (response) {
                         const option = new Option(response.name, response.id, true, true);
                         selectedFAB.append(option).trigger('change');

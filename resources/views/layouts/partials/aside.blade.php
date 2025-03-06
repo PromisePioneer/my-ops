@@ -399,20 +399,20 @@
                 @canany(['Lihat Menu Penawaran', 'Lihat Menu PO', 'Lihat Menu BAA', 'Lihat Menu Fab', 'Lihat Menu BAA', 'Lihat Menu Bast', 'Lihat Menu Invoice', 'Lihat Menu Pengeluaran', 'Lihat Menu Invoice Pengeluaran'])
                     <x-menu-sections>Transaksi</x-menu-sections>
                 @endcanany
-{{--                <x-single-menu-item :active="request()->segment(1) === 'transactions'"--}}
-{{--                                    href="{{ url('transactions') }}">--}}
-{{--                    @slot('parentIcon')--}}
-{{--                        <i class="ki-duotone ki-element-11 fs-2">--}}
-{{--                            <span class="path1"></span>--}}
-{{--                            <span class="path2"></span>--}}
-{{--                            <span class="path3"></span>--}}
-{{--                            <span class="path4"></span>--}}
-{{--                        </i>--}}
-{{--                    @endslot--}}
-{{--                    @slot('menuTitle')--}}
-{{--                        Transaksi--}}
-{{--                    @endslot--}}
-{{--                </x-single-menu-item>--}}
+                <x-single-menu-item :active="request()->segment(1) === 'transactions'"
+                                    href="{{ url('transactions') }}">
+                    @slot('parentIcon')
+                        <i class="ki-duotone ki-element-11 fs-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                            <span class="path4"></span>
+                        </i>
+                    @endslot
+                    @slot('menuTitle')
+                        Transaksi
+                    @endslot
+                </x-single-menu-item>
                 @canany(['Lihat Menu Penawaran', 'Lihat Menu PO', 'Lihat Menu BAA', 'Lihat Menu Fab', 'Lihat Menu BAA', 'Lihat Menu Bast', 'Lihat Menu Invoice'])
                     <x-dropdown-menu :active="request()->segment(1) === 'income-transactions'">
                         @slot('parentIcon')

@@ -29,8 +29,9 @@ class UserHasOvertimeRequest extends FormRequest
             'user_id' => [
                 'required',
                 'exists:users,id',
-                $this->validateUserFixedSalary($request),
+//                $this->validateUserFixedSalary($request),
             ],
+            'file' => ['required', 'mimes:pdf'],
             'hours' => ['required', 'numeric'],
             'reason' => ['required', 'string'],
         ];

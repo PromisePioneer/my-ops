@@ -24,7 +24,8 @@ class BastRequest extends FormRequest
         return [
             'baa_id' => [
                 'required',
-                Rule::unique('bast', 'baa_id')->ignore($request->route('bast') === null),
+                Rule::unique('bast', 'baa_id')
+                    ->ignore($request->route('bast')),
             ],
             'date' => ['required', 'date'],
             'invoice_address' => ['required', 'string'],

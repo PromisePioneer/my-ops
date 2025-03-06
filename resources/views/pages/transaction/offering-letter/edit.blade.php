@@ -36,7 +36,7 @@
                                     Penanggung Jawab
                                 </label>
                                 <div class="mb-5">
-                                    <select name="pic" id="selectedUser"
+                                    <select name="pic" id="selected-user"
                                             class="form-select form-select-solid users-select2">
                                         <option></option>
                                     </select>
@@ -51,7 +51,7 @@
                                         Calon Klien
                                     </label>
                                     <div class="mb-5">
-                                        <select name="contact_id" id="selectedContact"
+                                        <select name="contact_id" id="selected-contact"
                                                 class="form-select form-select-solid contact-select2"
                                                 data-placeholder="Select an option">
                                             <option selected>Pilih Calon Klien</option>
@@ -223,6 +223,8 @@
         function generateOfferingLetter() {
             return {
                 id: "{{ $offeringLetter->id }}",
+                pic: "{{ $offeringLetter->pic }}",
+                contactId: "{{ $offeringLetter->contact_id }}",
                 buttonLoading: false,
                 offeringLetterProductService: [],
                 offeringLettersServiceDescription: [],
@@ -259,7 +261,7 @@
                             this.selectedServiceCategories(resp, index);
                             this.selectedUnitTypes(resp, index);
                             this.getServicesCategories();
-                            this.getUnitTypeData();
+                            this.getUnitTypes();
                         });
                     });
                 },
@@ -357,7 +359,7 @@
                         }
                     });
                 },
-                async getUnitTypeData() {
+                async getUnitTypes() {
                     $(`.unit-types-select2`).select2({
                         placeholder: "Pilih Satuan.",
                         allowClear: true,
@@ -368,7 +370,7 @@
                             }
                         },
                         ajax: {
-                            url: '/income-transactions/offering-letters/unit-types/data',
+                            url: '/select2/unit-types-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -394,8 +396,8 @@
                     });
                 },
                 async getSelectedUser() {
-                    const selectedUser = $('#selectedUser');
-                    const response = await axios.get(`/income-transactions/offering-letters/users/selected/${this.id}`);
+                    const selectedUser = $('#selected-user');
+                    const response = await axios.get(`/select2/selected-user/${this.pic}`);
                     const option = new Option(response.data.name, response.data.id, true, true);
                     selectedUser.append(option).trigger('change').trigger({
                         type: 'select2:select',
@@ -403,8 +405,8 @@
                     });
                 },
                 async getSelectedContact() {
-                    const selectedContact = $('#selectedContact');
-                    const response = await axios.get(`/income-transactions/offering-letters/get-selected-contact/${this.id}`);
+                    const selectedContact = $('#selected-contact');
+                    const response = await axios.get(`/select2/selected-contact/${this.contactId}`);
                     const option = new Option(response.data.name, response.data.id, true, true);
                     selectedContact.append(option).trigger('change').trigger({
                         type: 'select2:select',
@@ -514,8 +516,8 @@
                 },
                 async getContactData() {
                     $(".contact-select2").select2({
-                        allowClear: true,
                         placeholder: "Pilih Calon Pelanggan",
+                        allowClear: true,
                         escapeMarkup: markup => (markup),
                         language: {
                             noResults: () => {
@@ -523,7 +525,7 @@
                             }
                         },
                         ajax: {
-                            url: '/income-transactions/offering-letters/contact/data',
+                            url: '/select2/contacts-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
