@@ -49,9 +49,11 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
             $zk = new ZKTeco($this->fpDevice->ip_address, 4370);
             if ($zk->connect()) {
                 $item = $zk->getAttendance();
+                $startDate = Carbon::parse($this->startDate)->startOfDay();
+                $endDate = Carbon::parse($this->endDate)->endOfDay();
                 foreach ($item as $record) {
                     $recordDate = Carbon::parse($record['timestamp']);
-                    if ($recordDate->between($this->startDate, $this->endDate)) {
+                    if ($recordDate->between($startDate, $endDate)) {
                         $data = [
                             'sn' => $this->fpDevice->serial_number,
                             'table' => '999',
