@@ -95,8 +95,11 @@ use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
 use App\Http\Controllers\WarehouseController;
 use App\Mail\SendEmail;
+use App\Models\Attendances;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Jmrashed\Zkteco\Lib\ZKTeco;
 
 /*
 |--------------------------------------------------------------------------
@@ -113,33 +116,28 @@ Route::get('/', function () {
     return redirect('home');
 });
 
-//Route::get('/test-route', static function () {
-//
-//    $zk = new ZKTeco("103.141.255.227", 4370);
-//    $connected = $zk->connect();
-//    $attendanceLog = $zk->getAttendance();
-//    $todayDate = date('2025-02-27');
-//    $todayRecords = [];
-//    foreach ($attendanceLog as $record) {
-//        $recordDate = substr($record['timestamp'], 0, 10);
-//
-//        if ($recordDate === $todayDate) {
-//            $data = [
-//                'sn' => 'CKEB223360674',
-//                'table' => '999',
-//                'stamp' => 'ATTLOG',
-//                'employee_id' => $record['id'],
-//                'timestamp' => $record['timestamp'],
-//                'status1' => $record['type'],
-//            ];
-//            Attendances::create($data);
-//        }
-//    }
-//
-//    dd($todayRecords);
-//
-//
-//});
+Route::get('/test-route', static function () {
+
+    $zk = new ZKTeco("103.102.248.112", 4370);
+    $zk->connect();
+    $startDate = Carbon::parse('2025-02-27')->startOfDay();
+    $endDate = Carbon::parse('2025-02-28')->endOfDay();
+    $attendanceLog = $zk->getAttendance();
+    foreach ($attendanceLog as $record) {
+        $recordDate = Carbon::parse($record['timestamp']);
+        if ($recordDate->between($startDate, $endDate)) {
+            $data = [
+                'sn' => 'BWXP212260422',
+                'table' => '999',
+                'stamp' => 'ATTLOG',
+                'employee_id' => $record['id'],
+                'timestamp' => $record['timestamp'],
+                'status1' => $record['type'],
+            ];
+            Attendances::create($data);
+        }
+    }
+});
 
 Route::get('/tests', function () {
     $data = [
