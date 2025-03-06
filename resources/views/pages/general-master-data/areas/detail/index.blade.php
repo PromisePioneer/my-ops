@@ -105,16 +105,11 @@
                                     <td x-text="area.user_name"></td>
                                     <td x-text="area.role_name ?? '-'"></td>
                                     <td>
-                                        <template x-if="!area.week_holiday">
                                             <button class="btn btn-primary btn-sm" data-bs-target="#modal-pick-holiday"
                                                     @click="show(area.id)"
-                                                    data-bs-toggle="modal">Pilih Jadwal Libur
+                                                    data-bs-toggle="modal"
+                                                    x-text="area.week_holiday ?? 'Pilih Jadwal Libur'">
                                             </button>
-                                        </template>
-
-                                        <template x-if="area.week_holiday">
-                                            <span x-text="area.week_holiday"></span>
-                                        </template>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -282,6 +277,7 @@
                         await showAlert('success', 'Data berhasil disimpan');
                         await this.holidayModal.hide();
                         await this.holidayForm.reset();
+                        await this.init();
                     } catch (e) {
                         console.log(e)
                     } finally {

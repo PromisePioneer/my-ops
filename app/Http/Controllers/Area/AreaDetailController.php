@@ -67,8 +67,12 @@ use Illuminate\Http\Request;
     public function assignWeekHoliday(Request $request, User $user): JsonResponse
     {
         WeekHoliday::updateOrCreate(
-            ['user_id' => $user->id],
-            ['week_holiday' => $request->week_holiday]
+            [
+                'user_id' => $user->id
+            ],
+            [
+                'day' => $request->week_holiday
+            ]
         );
 
         return response()->json([
