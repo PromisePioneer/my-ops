@@ -26,6 +26,7 @@ use App\Models\ServiceCategory;
 use App\Models\SKL;
 use App\Models\SP;
 use App\Models\TaxSetting;
+use App\Models\Transaction;
 use App\Models\UnitType;
 use App\Models\User;
 use App\Models\WorkTime;
@@ -54,6 +55,7 @@ use App\Policies\ServiceCategoriesPolicy;
 use App\Policies\SKLPolicy;
 use App\Policies\SpPolicy;
 use App\Policies\TaxSettingPolicy;
+use App\Policies\TransactionPolicy;
 use App\Policies\UnitTypePolicy;
 use App\Policies\UserPolicy;
 use App\Policies\WorkTimePolicy;
@@ -99,6 +101,7 @@ class AuthServiceProvider extends ServiceProvider
         Asset::class => AssetPolicy::class,
         PSB::class => PSBPolicy::class,
         EmployeeSchedule::class => EmployeeSchedulePolicy::class,
+        Transaction::class => TransactionPolicy::class
     ];
 
     /**

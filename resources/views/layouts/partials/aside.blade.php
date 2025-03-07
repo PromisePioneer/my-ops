@@ -261,11 +261,6 @@
                                     Supplier
                                 </x-dropdown-menu-item>
                             @endcan
-                            {{--                            <x-dropdown-menu-item--}}
-                            {{--                                    :active="request()->segment(2) === 'goods'"--}}
-                            {{--                                    href="{{ url('operational-master-data/goods') }}">--}}
-                            {{--                                Master Barang--}}
-                            {{--                            </x-dropdown-menu-item>--}}
                             @can('Lihat Menu Kategori Barang')
                                 <x-dropdown-menu-item
                                     :active="request()->segment(2) === 'category-of-goods'"
@@ -280,12 +275,6 @@
                                     Kode Joint Closure
                                 </x-dropdown-menu-item>
                             @endcan
-                            {{--                            <x-dropdown-menu-item--}}
-                            {{--                                    :active="request()->segment(2) === 'warehouses'"--}}
-                            {{--                                    href="{{ url('operational-master-data/warehouses') }}">--}}
-                            {{--                                Daftar Gudang Barang--}}
-                            {{--                            </x-dropdown-menu-item>--}}
-
                             <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'psb'"
                                 href="{{ url('operational-master-data/psb') }}">
@@ -325,16 +314,6 @@
                                 href="{{ url('inventory/goods/stock') }}">
                                 Stok Barang
                             </x-dropdown-menu-item>
-                            {{--                            <x-dropdown-menu-item--}}
-                            {{--                                    :active="request()->is('inventory/goods/goods-transaction*')"--}}
-                            {{--                                    href="{{ url('inventory/goods/goods-transaction') }}">--}}
-                            {{--                                Transaksi--}}
-                            {{--                            </x-dropdown-menu-item>--}}
-                            {{--                                <x-dropdown-menu-item--}}
-                            {{--                                    :active="request()->is('inventory/goods/goods-transaction*')"--}}
-                            {{--                                    href="{{ url('inventory/goods/goods-transaction') }}">--}}
-                            {{--                                    Permintaan Barang--}}
-                            {{--                                </x-dropdown-menu-item>--}}
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
@@ -377,28 +356,14 @@
                                     Buku Besar
                                 </x-dropdown-menu-item>
                             @endcan
-                            {{--                        <x-dropdown-menu-item--}}
-                            {{--                            :active="request()->segment(2) === 'financial-report'"--}}
-                            {{--                            href="{{ url('/journals/financial-report/') }}">--}}
-                            {{--                            Laporan Keuangan--}}
-                            {{--                        </x-dropdown-menu-item>--}}
-                            {{--                        <x-dropdown-menu-item--}}
-                            {{--                            :active="request()->segment(2) === 'income-statement'"--}}
-                            {{--                            href="{{ url('/journals/income-statement/') }}">--}}
-                            {{--                            Laba Rugi--}}
-                            {{--                        </x-dropdown-menu-item>--}}
-                            {{--                        <x-dropdown-menu-item--}}
-                            {{--                            :active="request()->segment(2) === 'cashflow-statement'"--}}
-                            {{--                            href="{{ url('/journals/cashflow-statement/') }}">--}}
-                            {{--                            Laporan Arus Kas--}}
-                            {{--                        </x-dropdown-menu-item>--}}
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
 
-                @canany(['Lihat Menu Penawaran', 'Lihat Menu PO', 'Lihat Menu BAA', 'Lihat Menu Fab', 'Lihat Menu BAA', 'Lihat Menu Bast', 'Lihat Menu Invoice', 'Lihat Menu Pengeluaran', 'Lihat Menu Invoice Pengeluaran'])
+                @canany(['Lihat Menu Penawaran', 'Lihat Menu PO', 'Lihat Menu BAA', 'Lihat Menu Fab', 'Lihat Menu BAA', 'Lihat Menu Bast', 'Lihat Menu Invoice', 'Lihat Menu Pengeluaran', 'Lihat Menu Invoice Pengeluaran', 'Lihat Menu Transaksi'])
                     <x-menu-sections>Transaksi</x-menu-sections>
                 @endcanany
+                @can('Lihat Menu Transaksi')
                 <x-single-menu-item :active="request()->segment(1) === 'transactions'"
                                     href="{{ url('transactions') }}">
                     @slot('parentIcon')
@@ -413,6 +378,7 @@
                         Transaksi
                     @endslot
                 </x-single-menu-item>
+                @endcan
                 @canany(['Lihat Menu Penawaran', 'Lihat Menu PO', 'Lihat Menu BAA', 'Lihat Menu Fab', 'Lihat Menu BAA', 'Lihat Menu Bast', 'Lihat Menu Invoice'])
                     <x-dropdown-menu :active="request()->segment(1) === 'income-transactions'">
                         @slot('parentIcon')
@@ -502,57 +468,6 @@
                     </x-dropdown-menu>
                 @endcanany
 
-                {{--                <x-menu-sections>Inventaris</x-menu-sections>--}}
-
-                {{--                <x-dropdown-menu :active="request()->segment(1) === 'inventory'">--}}
-                {{--                    @slot('parentIcon')--}}
-                {{--                        <i class="ki-duotone ki-basket-ok fs-2">--}}
-                {{--                            <span class="path1"></span>--}}
-                {{--                            <span class="path2"></span>--}}
-                {{--                            <span class="path3"></span>--}}
-                {{--                            <span class="path4"></span>--}}
-                {{--                        </i>--}}
-                {{--                    @endslot--}}
-                {{--                    @slot('menuTitle')--}}
-                {{--                        Inventaris--}}
-                {{--                    @endslot--}}
-                {{--                    @slot('menuItem')--}}
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                                :active="request()->segment(2) === 'goods'"--}}
-                {{--                                href="{{ url('inventory/goods') }}">--}}
-                {{--                            Barang--}}
-                {{--                        </x-dropdown-menu-item>--}}
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                                :active="request()->segment(2) === 'unit-types'"--}}
-                {{--                                href="{{ url('inventory/unit-types') }}">--}}
-                {{--                            Satuan--}}
-                {{--                        </x-dropdown-menu-item>--}}
-                {{--                    @endslot--}}
-                {{--                </x-dropdown-menu>--}}
-
-                {{--                <x-menu-sections>Penyesuaian Jurnal</x-menu-sections>--}}
-
-                {{--                <x-dropdown-menu :active="request()->segment(1) === 'journal-adjustment'">--}}
-                {{--                    @slot('parentIcon')--}}
-                {{--                        <i class="bi bi-tag-fill fs-1"></i>--}}
-                {{--                    @endslot--}}
-                {{--                    @slot('menuTitle')--}}
-                {{--                        Penyesuaian Jurnal--}}
-                {{--                    @endslot--}}
-                {{--                    @slot('menuItem')--}}
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                            :active="request()->segment(2) === 'initial-journal'"--}}
-                {{--                            href="{{ url('journal-adjustment/initial-journal') }}">--}}
-                {{--                            Jurnal Awal--}}
-                {{--                        </x-dropdown-menu-item>--}}
-                {{--                        <x-dropdown-menu-item--}}
-                {{--                            :active="request()->segment(2) === 'adjustment'"--}}
-                {{--                            href="{{ url('journal-adjustment/adjustment') }}">--}}
-                {{--                            Penyesuaian--}}
-                {{--                        </x-dropdown-menu-item>--}}
-                {{--                    @endslot--}}
-                {{--                </x-dropdown-menu>--}}
-
 
                 @canany('Lihat Menu Profil Perusahaan')
                     <x-menu-sections>Utilitas</x-menu-sections>
@@ -577,11 +492,6 @@
                                     Profil Perusahaan
                                 </x-dropdown-menu-item>
                             @endcan
-                            {{--                        <x-dropdown-menu-item--}}
-                            {{--                            :active="request()->segment(2) === 'letter-head'"--}}
-                            {{--                            href="{{ url('utility/letter-head') }}">--}}
-                            {{--                            Kop Surat--}}
-                            {{--                        </x-dropdown-menu-item>--}}
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
@@ -711,8 +621,8 @@
                             @endcan
                             @can('Lihat Menu Pengaturan Jadwal Libur')
                                 <x-dropdown-menu-item
-                                :active="request()->segment(2) === 'employee-schedules'"
-                                href="{{ url('adms/employee-schedules') }}">
+                                    :active="request()->segment(2) === 'employee-schedules'"
+                                    href="{{ url('adms/employee-schedules') }}">
                                     Pengaturan Jadwal Libur
                                 </x-dropdown-menu-item>
                             @endcan

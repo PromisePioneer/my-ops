@@ -4,37 +4,37 @@
 @section('content')
     <div x-data="transactionData()">
         <div class="d-flex flex-column flex-xl-row">
-                <div class="flex-column flex-lg-row-auto w-100 w-lg-250px mb-10">
-                    <div class="card card-flush">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <h2 class="mb-0">Filter</h2>
+            <div class="flex-column flex-lg-row-auto w-100 w-lg-250px mb-10">
+                <div class="card card-flush">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2 class="mb-0">Filter</h2>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0">
+                        <div class="d-flex flex-column text-gray-600">
+                            <div class="d-flex align-items-center py-2">
+                                <select class="form-select form-select-solid main-branches-select2"
+                                        name="branch_id" id="branch-id-filter">
+                                </select>
+                            </div>
+                            <div class="d-flex align-items-center py-2">
+                                <input type="date" class="form-control form-control-solid date"
+                                       name="start_date" id="start_date" placeholder="Tgl awal">
+                            </div>
+                            <div class="d-flex align-items-center py-2">
+                                <input type="date" class="form-control form-control-solid date" name="end_date"
+                                       id="end_date" placeholder="Tgl akhir">
                             </div>
                         </div>
-                            <div class="card-body pt-0">
-                                <div class="d-flex flex-column text-gray-600">
-                                    <div class="d-flex align-items-center py-2">
-                                        <select class="form-select form-select-solid main-branches-select2"
-                                                name="branch_id" id="branch-id-filter">
-                                        </select>
-                                    </div>
-                                    <div class="d-flex align-items-center py-2">
-                                        <input type="date" class="form-control form-control-solid date"
-                                               name="start_date" id="start_date" placeholder="Tgl awal">
-                                    </div>
-                                    <div class="d-flex align-items-center py-2">
-                                        <input type="date" class="form-control form-control-solid date" name="end_date"
-                                               id="end_date" placeholder="Tgl akhir">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer pt-4 text-end">
-                                <button type="button" @click="filter()" class="btn btn-light btn-active-primary btn-sm">
-                                    Filter
-                                </button>
-                            </div>
+                    </div>
+                    <div class="card-footer pt-4 text-end">
+                        <button type="button" @click="filter()" class="btn btn-light btn-active-primary btn-sm">
+                            Filter
+                        </button>
                     </div>
                 </div>
+            </div>
             <div class="flex-lg-row-fluid ms-lg-10">
                 <div class="card card-flush">
                     @include('pages.transactions.form')
@@ -51,6 +51,7 @@
                         </div>
                         <div class="card-toolbar">
                             <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                                @can('Tambah Data Transaksi')
                                     <button type="button" class="btn btn-light-primary btn-sm"
                                             data-bs-toggle="modal"
                                             data-bs-target="#modal-transactions">
@@ -60,6 +61,7 @@
                                             <span class="path3"></span>
                                         </i> Tambah
                                     </button>
+                                @endcan
                             </div>
                         </div>
                     </div>
@@ -87,7 +89,7 @@
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                         <th class="w-10px pe-2">
                                             <div
-                                                class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                                    class="form-check form-check-sm form-check-custom form-check-solid me-3">
 
                                             </div>
                                         </th>
@@ -96,7 +98,10 @@
                                         <th class="min-w-250px text-center">Akun</th>
                                         <th class="min-w-250px text-center">Detail</th>
                                         <th class="min-w-125px text-center">Jumlah</th>
-                                        <th class="min-w-250px text-center">Actions</th>
+                                        <template
+                                                x-if="Number(editPermission) === 1 || Number(confirmPermission) === 1">
+                                            <th class="min-w-250px text-center">Actions</th>
+                                        </template>
                                     </thead>
                                     <tbody class="fw-bold">
                                     <template x-if="isLoading">
@@ -124,7 +129,8 @@
                                                      @click="selectCheckBox($event)">
                                                     <input class="form-check-input" type="checkbox"
                                                            :value="transaction.id"
-                                                           :id="'checkbox-' + transaction.id" :disabled="transaction.status === 1"/>
+                                                           :id="'checkbox-' + transaction.id"
+                                                           :disabled="transaction.status === 1 || Number(destroyPermission) !== 1"/>
                                                 </div>
                                             </td>
                                             <td class="text-center"
@@ -142,23 +148,23 @@
                                             </td>
                                             <td x-text="transaction.detail"></td>
                                             <td x-text="transaction.total_price"></td>
-                                            <template x-if="transaction.status === 0">
-                                            <td class="d-flex flex-column">
-                                                <button class="btn btn-light-primary btn-sm mb-4"
-                                                        @click="edit(transaction.id)"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#modal-transactions">
-                                                    <i class="bi bi-pencil"></i> Ubah Data
-                                                </button>
-                                                <button class="btn btn-light-info btn-sm mb-4"
-                                                        data-bs-toggle="tooltip"
-                                                        data-bs-placement="top"
-                                                        @click="confirm(transaction.id)"
-                                                >
-                                                    <i class="bi bi-check-circle-fill"></i>
-                                                    Konfirmasi
-                                                </button>
-                                            </td>
+                                            <template x-if="transaction.status === 0 && Number(editPermission) === 1">
+                                                <td class="d-flex flex-column">
+                                                    <button class="btn btn-light-primary btn-sm mb-4"
+                                                            @click="edit(transaction.id)"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#modal-transactions">
+                                                        <i class="bi bi-pencil"></i> Ubah Data
+                                                    </button>
+                                                    <button class="btn btn-light-info btn-sm mb-4"
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="top"
+                                                            @click="confirm(transaction.id)"
+                                                    >
+                                                        <i class="bi bi-check-circle-fill"></i>
+                                                        Konfirmasi
+                                                    </button>
+                                                </td>
                                             </template>
                                             <template x-if="transaction.status === 1">
                                                 <td class="text-center">
@@ -195,6 +201,9 @@
 
         function transactionData() {
             return {
+                editPermission: "{{ request()->user()->can('Ubah Data Transaksi') }}",
+                destroyPermission: "{{ request()->user()->can('Hapus Data Transaksi') }}",
+                confirmPermission: "{{ request()->user()->can('Konfirmasi Data Transaksi') }}",
                 transactions: [],
                 isLoading: true,
                 buttonLoading: false,
