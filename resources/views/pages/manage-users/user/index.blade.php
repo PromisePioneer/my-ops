@@ -47,7 +47,7 @@
                                     @can('Filter Data Karyawan Berdasarkan Tahun')
                                         <input type="number" name="year" id="year"
                                                class="form-control form-control-solid"
-                                               placeholder="Filter Berdasarkan Tahun">
+                                               placeholder="Filter Berdasarkan Tahun"/>
                                     @endcan
                                 </div>
                                 <div class="d-flex align-items-center py-2">

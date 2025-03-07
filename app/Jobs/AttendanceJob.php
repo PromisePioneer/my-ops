@@ -52,12 +52,12 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
                 $startDate = Carbon::parse($this->startDate)->startOfDay();
                 $endDate = Carbon::parse($this->endDate)->endOfDay();
                 foreach ($item as $record) {
-                    $recordDate = Carbon::parse($record['timestamp']);
-                    if ($recordDate->between($startDate, $endDate)) {
+                    $recordDate = Carbon::parse(substr($record['timestamp'], 0, 10));
+                    if ($recordDate->greaterThanOrEqualTo($startDate) && $recordDate->lessThanOrEqualTo($endDate)) {
                         $data = [
                             'sn' => $this->fpDevice->serial_number,
-                            'table' => '999',
-                            'stamp' => 'ATTLOG',
+                            'table' => 'ATTLOG',
+                            'stamp' => '999',
                             'employee_id' => $record['id'],
                             'timestamp' => $record['timestamp'],
                             'status1' => $record['type'],

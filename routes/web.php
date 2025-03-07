@@ -116,39 +116,39 @@ Route::get('/', function () {
     return redirect('home');
 });
 
-Route::get('/test-route', static function () {
-
-    $zk = new ZKTeco("103.102.248.112", 4370);
-    $zk->connect();
-    $startDate = Carbon::parse('2025-02-27')->startOfDay();
-    $endDate = Carbon::parse('2025-02-28')->endOfDay();
-    $attendanceLog = $zk->getAttendance();
-    foreach ($attendanceLog as $record) {
-        $recordDate = Carbon::parse($record['timestamp']);
-        if ($recordDate->between($startDate, $endDate)) {
-            $data = [
-                'sn' => 'BWXP212260422',
-                'table' => '999',
-                'stamp' => 'ATTLOG',
-                'employee_id' => $record['id'],
-                'timestamp' => $record['timestamp'],
-                'status1' => $record['type'],
-            ];
-            Attendances::create($data);
-        }
-    }
-});
-
-Route::get('/tests', function () {
-    $data = [
-        'name' => 'Syahrizal As',
-        'body' => 'Testing Kirim Email di Santri Koding'
-    ];
-
-    Mail::to('fifirman000@gmail.com')->send(new SendEmail($data));
-
-    dd("Email Berhasil dikirim.");
-});
+//Route::get('/test-route', static function () {
+//
+//    $zk = new ZKTeco("103.102.248.112", 4370);
+//    $zk->connect();
+//    $startDate = Carbon::parse('2025-02-27')->startOfDay();
+//    $endDate = Carbon::parse('2025-02-28')->endOfDay();
+//    $attendanceLog = $zk->getAttendance();
+//    foreach ($attendanceLog as $record) {
+//        $recordDate = Carbon::parse(substr($record['timestamp'], 0, 10));
+//        if ($recordDate->greaterThanOrEqualTo($startDate) && $recordDate->lessThanOrEqualTo($endDate)) {
+//            $data = [
+//                'sn' => 'BWXP212260422',
+//                'table' => '999',
+//                'stamp' => 'ATTLOG',
+//                'employee_id' => $record['id'],
+//                'timestamp' => $record['timestamp'],
+//                'status1' => $record['type'],
+//            ];
+//            Attendances::create($data);
+//        }
+//    }
+//});
+//
+//Route::get('/tests', function () {
+//    $data = [
+//        'name' => 'Syahrizal As',
+//        'body' => 'Testing Kirim Email di Santri Koding'
+//    ];
+//
+//    Mail::to('fifirman000@gmail.com')->send(new SendEmail($data));
+//
+//    dd("Email Berhasil dikirim.");
+//});
 
 Auth::routes();
 

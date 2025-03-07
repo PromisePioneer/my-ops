@@ -14,6 +14,7 @@ use App\Models\BroadbandPacket;
 use App\Models\Company;
 use App\Models\Contact;
 use App\Models\Department;
+use App\Models\EmployeeSchedule;
 use App\Models\Fab;
 use App\Models\LeaveAndPermission;
 use App\Models\NationalHoliday;
@@ -38,6 +39,7 @@ use App\Policies\BroadbandPacketPolicy;
 use App\Policies\CompanyPolicy;
 use App\Policies\ContactPolicy;
 use App\Policies\DepartmentPolicy;
+use App\Policies\EmployeeSchedulePolicy;
 use App\Policies\FabPolicy;
 use App\Policies\InitialBalancePolicy;
 use App\Policies\LeaveAndPermissionPolicy;
@@ -95,7 +97,8 @@ class AuthServiceProvider extends ServiceProvider
         Area::class => AreaPolicy::class,
         TaxSetting::class => TaxSettingPolicy::class,
         Asset::class => AssetPolicy::class,
-        PSB::class => PSBPolicy::class
+        PSB::class => PSBPolicy::class,
+        EmployeeSchedule::class => EmployeeSchedulePolicy::class,
     ];
 
     /**

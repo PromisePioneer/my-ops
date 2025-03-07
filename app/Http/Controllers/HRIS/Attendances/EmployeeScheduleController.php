@@ -10,10 +10,12 @@ use App\Models\WorkTime;
 use App\Service\Attendances\EmployeeSchedule\EmployeeScheduleService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Throwable;
 
 #[AllowDynamicProperties] class EmployeeScheduleController extends Controller
 {
@@ -24,40 +26,68 @@ use Illuminate\View\View;
 
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function index(): View
     {
+        $this->authorize('view', EmployeeSchedule::class);
         return view('pages.adms.employee-schedules.index');
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function data(Request $request): JsonResponse
     {
+        $this->authorize('view', EmployeeSchedule::class);
         return response()->json($this->employeeScheduleService->data($request));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getWorkTime(Request $request): JsonResponse
     {
+        $this->authorize('view', EmployeeSchedule::class);
         return response()->json($this->workTime->getData($request));
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function search(Request $request): JsonResponse
     {
+        $this->authorize('view', EmployeeSchedule::class);
         return response()->json($this->employeeScheduleService->search($request));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function selectedWorkTime(EmployeeSchedule $employeeSchedule): JsonResponse
     {
+        $this->authorize('view', EmployeeSchedule::class);
         return response()->json($this->workTime->getSelectedData($employeeSchedule->work_time_id));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getSchedules($date, $absentId): JsonResponse
     {
+        $this->authorize('view', EmployeeSchedule::class);
         $employeeSchedules = EmployeeSchedule::whereDate('start_date', $date)->where('employee_id', $absentId)->first();
         return response()->json($employeeSchedules);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function filterByDate(Request $request): JsonResponse
     {
+        $this->authorize('filterByDate', EmployeeSchedule::class);
         $startDate = Carbon::parse($request->start_date);
         $endDate = Carbon::parse($request->end_date);
 
@@ -65,8 +95,12 @@ use Illuminate\View\View;
         return response()->json($this->employeeScheduleService->filterByDate($request, $startDate, $endDate));
     }
 
+    /**
+     * @throws Throwable
+     */
     public function saveSchedules(EmployeeScheduleRequest $request): JsonResponse
     {
+        $this->authorize('create', EmployeeSchedule::class);
         DB::transaction(function () use ($request) {
 
             $selectedWorkTime = WorkTime::find($request->work_time_id);
@@ -95,8 +129,12 @@ use Illuminate\View\View;
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function saveBatchSchedule(EmployeeScheduleRequest $request, $selectedWorkTime): void
     {
+        $this->authorize('create', EmployeeSchedule::class);
 
         $date = Carbon::parse($request->start_date);
         $dayCount = Carbon::make($request->start_date)->copy()->addDays((int)$request->day_count);
