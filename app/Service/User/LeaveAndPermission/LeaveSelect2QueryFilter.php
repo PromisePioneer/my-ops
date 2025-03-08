@@ -49,7 +49,7 @@ class LeaveSelect2QueryFilter
                 $query->whereIn('name', ['Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff', 'Stocker Staff', 'Inventory Controller Supervisor']);
             })->where(function ($query) use ($request) {
                 $query->whereHas('branch', function ($query) use ($request) {
-                    $query->whereNull('branch_id')->orWhereIn('branch_id', [1])->where('active', 1);
+                    $query->whereNull('branch_id')->where('active', 1);
                 });
             });
         }

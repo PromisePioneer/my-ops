@@ -52,7 +52,7 @@ use Illuminate\View\View;
         return response()->json($this->manageUserLeaveAndPermissionService->filter($request));
     }
 
-    public function selectedUserData(Request $request, LeaveAndPermission $leaveAndPermission): JsonResponse
+    public function selectedUserData(LeaveAndPermission $leaveAndPermission): JsonResponse
     {
         return response()->json($this->user->getSelectedData($leaveAndPermission->user_id));
     }
