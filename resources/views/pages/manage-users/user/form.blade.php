@@ -82,31 +82,31 @@
                                 <select name="day" id="day" class="form-select form-select-solid">
                                     <option>Pilih Hari Libur</option>
                                     <option
-                                        value="Senin" {{ isset($user->weekHoliday?->name) ? $user->weekHoliday?->day === 'Senin' ? 'selected' : '' : '' }}>
+                                        value="Senin" {{ isset($user->weekHoliday?->day) ? $user->weekHoliday?->day === 'Senin' ? 'selected' : '' : '' }}>
                                         Senin
                                     </option>
                                     <option
-                                        value="Selasa" {{ isset($user->weekHoliday?->name) ? $user->weekHoliday?->day  === 'Selasa' ? 'selected' : '' : '' }}>
+                                        value="Selasa" {{ isset($user->weekHoliday?->day) ? $user->weekHoliday?->day  === 'Selasa' ? 'selected' : '' : '' }}>
                                         Selasa
                                     </option>
                                     <option
-                                        value="Rabu" {{ isset($user->weekHoliday?->name) ? $user->weekHoliday?->day  === 'Rabu' ? 'selected' : '' : '' }}>
+                                        value="Rabu" {{ isset($user->weekHoliday?->day) ? $user->weekHoliday?->day  === 'Rabu' ? 'selected' : '' : '' }}>
                                         Rabu
                                     </option>
                                     <option
-                                        value="Kamis" {{ isset($user->weekHoliday?->name) ? $user->weekHoliday->day  === 'Kamis' ? 'selected' : '' : '' }}>
+                                        value="Kamis" {{ isset($user->weekHoliday?->day) ? $user->weekHoliday->day  === 'Kamis' ? 'selected' : '' : '' }}>
                                         Kamis
                                     </option>
                                     <option
-                                        value="Jumat" {{ isset($user->weekHoliday?->name) ? $user->weekHoliday?->day  === 'Jumat' ? 'selected' : '' : '' }}>
+                                        value="Jumat" {{ isset($user->weekHoliday?->day) ? $user->weekHoliday?->day  === 'Jumat' ? 'selected' : '' : '' }}>
                                         Jum'at
                                     </option>
                                     <option
-                                        value="Sabtu" {{ isset($user->weekHoliday?->name) ? $user->weekHoliday?->day  === 'Sabtu' ? 'selected' : '' : '' }}>
+                                        value="Sabtu" {{ isset($user->weekHoliday?->day) ? $user->weekHoliday?->day  === 'Sabtu' ? 'selected' : '' : '' }}>
                                         Sabtu
                                     </option>
                                     <option
-                                        value="Minggu" {{ isset($user->weekHoliday?->name) ? $user->weekHoliday?->day  === 'Minggu' ? 'selected' : '' : '' }}>
+                                        value="Minggu" {{ isset($user->weekHoliday?->day) ? $user->weekHoliday?->day  === 'Minggu' ? 'selected' : '' : '' }}>
                                         Minggu
                                     </option>
                                 </select>
