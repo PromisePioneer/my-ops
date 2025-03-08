@@ -12,6 +12,7 @@ use App\Models\Branch;
 use App\Models\CompanyProfile;
 use App\Models\Contact;
 use App\Models\PurchaseOrderItem;
+use App\Models\SPK;
 use App\Models\TaxSetting;
 use App\Service\IncomeTransaction\BastService;
 use Illuminate\Http\JsonResponse;
@@ -137,11 +138,12 @@ use Spatie\Browsershot\Browsershot;
     {
 
         $getPoItem = PurchaseOrderItem::where('po_id', $bast->baa->fab->po->id)->get();
+        $getSPKName = SPK::where('baa_id', $bast->baa->id)->first()->name;
         $getPPN = TaxSetting::where('name', 'PPN')->first();
         $totalPPN = $getPPN->rate / 100 * $getPoItem->sum('price');
         $total = $getPoItem->sum('price') + $totalPPN;
         $companyProfile = CompanyProfile::first();
-        $view = view('pages.transaction.bast.export-pdf', compact('bast', 'getPoItem', 'totalPPN', 'total', 'companyProfile'))->render();
+        $view = view('pages.transaction.bast.export-pdf', compact('bast', 'getPoItem', 'totalPPN', 'total', 'companyProfile', 'getSPKName'))->render();
         $pdf = Browsershot::html($view)
             ->setChromePath('/usr/bin/chromium')
             ->noSandbox()

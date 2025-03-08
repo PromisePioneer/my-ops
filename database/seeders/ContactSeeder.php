@@ -13,23 +13,17 @@ class ContactSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $faker = Faker::create('id_ID');
 
-        for ($i = 1; $i <= 1000; $i++) {
+        for ($i = 1; $i <= 50; $i++) {
             Contact::create([
-                'branch_id' => null,
-                'full_name' => $faker->name,
-                'company_name' => $faker->company,
-                'email' => $faker->email,
-                'phone_number' => $faker->phoneNumber,
-                'identity_type' => 'ktp',
-                'identity_number' => $faker->randomNumber(),
-                'fax' => $faker->phoneNumber,
-                'npwp' => $faker->unique()->randomNumber(),
-                'complete_address' => $faker->address,
-                'other_info' => $faker->text,
+                'pic_name' => $faker->name,
+                'company_name' => $faker->unique()->company,
+                'company_code' => $faker->unique()->randomNumber(3),
+                'phone_number' => $faker->phoneNumber(),
+                'pic_position' => 'Position'
             ]);
         }
     }

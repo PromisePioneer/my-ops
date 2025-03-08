@@ -39,7 +39,6 @@ class LeaveSelect2QueryFilter
                 $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff', 'After Sales Customer Service']);
             })->where(function ($query) use ($request) {
                 $query->where('active', 1)->whereNull('branch_id')->orWhereIn('branch_id', [1]);
-
             });
         }
 

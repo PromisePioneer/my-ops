@@ -55,7 +55,7 @@
                                     <template x-if="isLoading">
                                         <tbody class="fw-bold">
                                         <tr>
-                                            <td colspan="4">
+                                            <td colspan="5">
                                                 <div style="text-align: center;">
                                                     <div class="spinner-border" role="status">
                                                         <span class="visually-hidden">Loading...</span>
@@ -68,7 +68,7 @@
                                     <template x-if="!isLoading && attendanceRecords.length === 0">
                                         <tbody class="fw-bold">
                                         <tr>
-                                            <td colspan="4">
+                                            <td colspan="5">
                                                 <center>Data Tidak Ditemukan</center>
                                             </td>
                                         </tr>
@@ -79,31 +79,31 @@
                                         <template x-if="userAttendance.leaves?.status === 'Cuti'">
                                             <tr class="bg-success text-center">
                                                 <td x-text="formatDate(userAttendance.date_period)"></td>
-                                                <td colspan="4">CUTI</td>
+                                                <td colspan="5">CUTI</td>
                                             </tr>
                                         </template>
                                         <template x-if="userAttendance.permission?.status === 'Izin'">
                                             <tr class="bg-danger text-white text-center">
                                                 <td x-text="formatDate(userAttendance.date_period)"></td>
-                                                <td colspan="4">IZIN</td>
+                                                <td colspan="5">IZIN</td>
                                             </tr>
                                         </template>
                                         <template x-if="userAttendance?.sick?.status === 'Sakit'">
                                             <tr class="bg-primary text-center">
                                                 <td class="text-center"
                                                     x-text="formatDate(userAttendance.date_period)"></td>
-                                                <td colspan="4" class=" border border-3">SAKIT</td>
+                                                <td colspan="5" class=" border border-3">SAKIT</td>
                                             </tr>
                                         </template>
                                         <template x-if="userAttendance.schedule === 'L'">
                                             <tr class="bg-warning text-center">
                                                 <td class="text-center  border border-3"
                                                     x-text="formatDate(userAttendance.date_period)"></td>
-                                                <td colspan="4" class=" border border-3">LIBUR</td>
+                                                <td colspan="5" class=" border border-3">LIBUR</td>
                                             </tr>
                                         </template>
                                         <template
-                                            x-if="userAttendance.schedule === 'H' && !userAttendance.leaves && !userAttendance.sick && !userAttendance.permission || userAttendance.schedule === null">
+                                            x-if="!userAttendance?.leaves && !userAttendance?.permission && !userAttendance.sick && userAttendance.schedule === 'H'">
                                             <tr>
                                                 <td class="text-center"
                                                     x-text="formatDate(userAttendance.date_period)"></td>

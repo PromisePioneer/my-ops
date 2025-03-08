@@ -169,9 +169,20 @@
                 },
                 async paginate(url) {
                     if (url) {
-                        const resp = await axios.get(`${url}`);
-                        this.startIndex = resp.data.from
-                        this.contacts = resp.data
+                        try {
+                            this.contacts = [];
+                            this.isLoading = true;
+                            const resp = await axios.get(`${url}`, {
+                                params: {
+                                    search: this.search
+                                }
+                            });
+                            this.contacts = resp.data
+                        } catch (e) {
+                            console.log(e)
+                        } finally {
+                            this.isLoading = false
+                        }
                     }
                 },
                 toggleAllCheckBox() {
@@ -233,26 +244,6 @@
                             console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');
                         }
-                    });
-                },
-                async filterByBranch() {
-                    const self = this;
-                    $(".filter-branch-select2").select2({
-                        placeholder: "Pilih Cabang",
-                        allowClear: true,
-                        ajax: {
-                            url: '/general-master-data/contact/branch/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true
-                        }
-                    });
-                    $(".filter-branch-select2").on('change', async function (e) {
-                        const selectedBranch = $(this).select2('data')[0];
-                        const response = await axios.get(`/general-master-data/contact/filter/branch/data/${selectedBranch.id}`);
-                        self.contacts = response.data;
                     });
                 },
                 async contactData() {
