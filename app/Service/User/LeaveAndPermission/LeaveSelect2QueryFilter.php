@@ -38,8 +38,8 @@ class LeaveSelect2QueryFilter
             return $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff', 'After Sales Customer Service']);
             })->where(function ($query) use ($request) {
-                $query->whereNull('branch_id')->orWhereIn('branch_id', [1])
-                    ->where('active', 1);
+                $query->where('active', 1)->whereNull('branch_id')->orWhereIn('branch_id', [1]);
+
             });
         }
 
@@ -48,9 +48,7 @@ class LeaveSelect2QueryFilter
             return $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff', 'Stocker Staff', 'Inventory Controller Supervisor']);
             })->where(function ($query) use ($request) {
-                $query->whereHas('branch', function ($query) use ($request) {
-                    $query->whereNull('branch_id')->where('active', 1);
-                });
+                $query->where('active', 1)->whereNull('branch_id')->orWhereIn('branch_id', [1]);
             });
         }
 
