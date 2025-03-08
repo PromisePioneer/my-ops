@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Scout\Searchable;
@@ -17,10 +18,15 @@ class UserHasArea extends Model
 
     public function toSearchableArray(): array
     {
+        $this->loadMissing('user');
         return [
-            'users.name' => '',
+            'id' => $this->id
         ];
+    }
 
+    public function makeSearchableUsing(Collection $models): Collection
+    {
+        return $models->load('user');
     }
 
 

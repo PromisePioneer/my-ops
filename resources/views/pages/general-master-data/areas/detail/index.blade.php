@@ -105,7 +105,7 @@
                                     <td x-text="area.user_name"></td>
                                     <td x-text="area.role_name ?? '-'"></td>
                                     <td>
-                                            <button class="btn btn-primary btn-sm" data-bs-target="#modal-pick-holiday"
+                                            <button class="btn btn-light-info btn-sm" data-bs-target="#modal-pick-holiday"
                                                     @click="show(area.id)"
                                                     data-bs-toggle="modal"
                                                     x-text="area.week_holiday ?? 'Pilih Jadwal Libur'">

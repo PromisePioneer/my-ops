@@ -81,25 +81,25 @@
                                 <label class="col-form-label required fw-bold fs-6">Libur Mingguan</label>
                                 <select name="day" id="day" class="form-select form-select-solid">
                                     <option>Pilih Hari Libur</option>
-                                    <option value="Senin" {{ ($user->weekHoliday?->day ?? '') === 'Senin' ? 'selected' : '' }}>
+                                    <option value="Senin" {{ isset($user) ? $user->weekHoliday?->day === 'Senin' ? 'selected' : '' : '' }}>
                                         Senin
                                     </option>
-                                    <option value="Selasa" {{ $user->weekHoliday?->day ?? '' === 'Selasa' ? 'selected' : '' }}>
+                                    <option value="Selasa" {{ isset($user) ? $user->weekHoliday?->day  === 'Selasa' ? 'selected' : '' : '' }}>
                                         Selasa
                                     </option>
-                                    <option value="Rabu" {{ $user->weekHoliday?->day ?? '' === 'Rabu' ? 'selected' : '' }}>
+                                    <option value="Rabu" {{ isset($user) ? $user->weekHoliday?->day  === 'Rabu' ? 'selected' : '' : '' }}>
                                         Rabu
                                     </option>
-                                    <option value="Kamis" {{ $user->weekHoliday->day ?? '' === 'Kamis' ? 'selected' : '' }}>
+                                    <option value="Kamis" {{ isset($user) ? $user->weekHoliday->day  === 'Kamis' ? 'selected' : '' : '' }}>
                                         Kamis
                                     </option>
-                                    <option value="Jumat" {{ $user->weekHoliday?->day ?? '' === 'Jumat' ? 'selected' : '' }}>
+                                    <option value="Jumat" {{ isset($user) ? $user->weekHoliday?->day  === 'Jumat' ? 'selected' : '' : '' }}>
                                         Jum'at
                                     </option>
-                                    <option value="Sabtu" {{ $user->weekHoliday?->day ?? '' === 'Sabtu' ? 'selected' : '' }}>
+                                    <option value="Sabtu" {{ isset($user) ? $user->weekHoliday?->day  === 'Sabtu' ? 'selected' : '' : '' }}>
                                         Sabtu
                                     </option>
-                                    <option value="Minggu" {{ $user->weekHoliday?->day ?? '' === 'Minggu' ? 'selected' : '' }}>
+                                    <option value="Minggu" {{ isset($user) ? $user->weekHoliday?->day  === 'Minggu' ? 'selected' : '' : '' }}>
                                         Minggu
                                     </option>
                                 </select>

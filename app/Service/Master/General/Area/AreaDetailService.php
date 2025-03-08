@@ -4,7 +4,6 @@ namespace App\Service\Master\General\Area;
 
 use App\Models\Area;
 use App\Models\User;
-use App\Models\UserHasArea;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -26,10 +25,11 @@ class AreaDetailService
     public function search(Request $request, Area $area): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $searchQuery = UserHasArea::search($search)->query(callback: static function ($query) use ($area) {
-            $query->join('users', 'users.id', '=', 'user_has_area.user_id');
+        $searchQuery = User::search($search)->query(callback: function ($query) use ($area) {
+            $query->whereHas('userHasArea', function ($query) use ($area) {
+                $query->where('area_id', $area->id);
+            });
         })->paginate(self::$perPage);
-
         return self::formattedData($searchQuery);
     }
 
@@ -40,7 +40,7 @@ class AreaDetailService
             return [
                 'id' => $item->id,
                 'user_name' => "({$item->nip}) {$item->name}",
-                'role_name' => $item->roles->pluck('name')->implode(', '),
+                'role_name' => $item->roles->pluck('name'),
                 'week_holiday' => $item->weekHoliday?->day,
             ];
         });

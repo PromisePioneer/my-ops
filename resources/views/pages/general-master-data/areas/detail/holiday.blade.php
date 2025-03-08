@@ -18,7 +18,10 @@
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Pilih Hari</label>
-                        <select name="week_holiday" id="week_holiday" class="form-select form-select-solid">
+                        <select name="week_holiday" id="week_holiday" class="form-select form-select-solid"
+                                data-placeholder="Pilih Hari Libur Mingguan" data-control="select2"
+                                data-dropdown-parent="#modal-pick-holiday" data-allow-clear="true">
+                            <option></option>
                             <template x-for="(day, index) in days" :key="index">
                                 <option :value="day.value" x-text="day.label"></option>
                             </template>
