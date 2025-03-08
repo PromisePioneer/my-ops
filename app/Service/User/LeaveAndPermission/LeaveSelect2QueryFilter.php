@@ -18,13 +18,12 @@ class LeaveSelect2QueryFilter
             });
         }
 
-        if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner')) {
+        if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'Director', 'Main Commissioner')) {
             return $query;
         }
 
 
         if ($request->user()->hasAnyRole(['Head Engineer', 'Senior Engineer'])) {
-
             return $query->whereHas('userHasArea', function ($query) use ($request) {
                 $query->where('area_id', $request->user()->userHasArea->area_id);
             })->where(function ($query) use ($request) {
@@ -43,7 +42,7 @@ class LeaveSelect2QueryFilter
         }
 
 
-        if ($request->user()->hasAnyRole('Finance & Accounting Supervisor')) {
+        if ($request->user()->hasAnyRole(['Finance & Accounting Supervisor', 'FA & Tax Manager'])) {
             return $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff', 'Stocker Staff', 'Inventory Controller Supervisor']);
             })->where(function ($query) use ($request) {

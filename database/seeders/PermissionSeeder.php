@@ -102,6 +102,23 @@ class PermissionSeeder extends Seeder
         $this->workTime();
         $this->employeeSchedule();
         $this->attendancesSummary();
+        $this->transactions();
+    }
+
+
+    public function transactions()
+    {
+        $permissions = [
+            'Lihat Menu Transaksi',
+            'Tambah Data Transaksi',
+            'Edit Data Transaksi',
+            'Hapus Data Transaksi',
+            'Konfirmasi Data Transaksi',
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
     }
 
     public function attendancesSummary(): void
@@ -123,7 +140,10 @@ class PermissionSeeder extends Seeder
     public function employeeSchedule(): void
     {
         $permissions = [
-            'Lihat Menu Pemasangan',
+            'Lihat Menu Pengaturan Jadwal Libur',
+            'Tambah / Ubah Data Jadwal Libur',
+            'Filter Data Jadwal Libur Berdasarkan Cabang',
+            'Filter Data Jadwal Libur Berdasarkan Jabatan',
         ];
 
         foreach ($permissions as $permission) {
@@ -923,5 +943,11 @@ class PermissionSeeder extends Seeder
         foreach ($boq as $permission) {
             Permission::create(['name' => $permission]);
         }
+    }
+
+
+    public function e()
+    {
+
     }
 }
