@@ -310,7 +310,7 @@
             <tbody>
             <tr>
                 <td class="py-4 fw-bolder px-2">Nomor PO</td>
-                <td class="py-4 px-2">{{ $baa->po_number }}</td>
+                <td class="py-4 px-2">{{ $baa->fab->po->po_number }}</td>
             </tr>
             <tr>
                 <td class="py-4 fw-bolder px-2">Nama Pelanggan</td>

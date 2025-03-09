@@ -245,7 +245,7 @@
             <tr>
                 <td class="text-center py-1">2</td>
                 <td class="py-1 px-1"><b>Nama Pekerjaan</b></td>
-                <td class="py-1 px-1">-</td>
+                <td class="py-1 px-1">{{ $getSPKName }}</td>
             </tr>
             <tr>
                 <td class="text-center py-1">3</td>

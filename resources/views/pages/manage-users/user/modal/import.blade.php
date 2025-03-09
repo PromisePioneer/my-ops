@@ -9,7 +9,7 @@
                 </div>
             </div>
 
-            <div class="modal-body">
+0            <div class="modal-body">
                 <form id="form-import" @submit.prevent="importData()">
                     <div class="mb-10">
                         <label for="name" class="required form-label">File</label>
