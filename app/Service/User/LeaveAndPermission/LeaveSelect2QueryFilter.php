@@ -22,6 +22,16 @@ class LeaveSelect2QueryFilter
             return $query;
         }
 
+        if ($request->user()->Role('Operational Manager')) {
+            return $query->whereHas('roles', function ($query) {
+                $query->whereIn('name', [
+                    'NOC Supervisor', 'Programmer', 'Project Controller & Vendor Supervisor',
+                    'Stocker Supervisor', 'Quality Controller Supervisor', 'Graphic Designer & Socmed Admin',
+                    'After Sales Customer Service', 'Legal & Corporate Commissioner', 'Mechanic Senior Staff', 'Head Engineer'
+                ]);
+            });
+        }
+
 
         if ($request->user()->hasAnyRole(['Head Engineer', 'Senior Engineer'])) {
             return $query->whereHas('userHasArea', function ($query) use ($request) {

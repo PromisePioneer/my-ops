@@ -20,7 +20,7 @@ class EmployeeSchedulePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('Tambah / Ubah Jadwal Libur');
+        return $user->can('Tambah / Ubah Data Jadwal Libur');
     }
 
 

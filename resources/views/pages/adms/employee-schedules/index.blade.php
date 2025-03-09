@@ -56,23 +56,23 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="me-3">
-                                <label for="name" class="form-label mt-3">Filter Jadwal :</label>
-                            </div>
-                            <div class="me-3">
-                                <input type="date" class="form-control form-control-solid date" name="start_dates"
-                                       id="start_dates" placeholder="Pilih Tanggal Awal"/>
-                            </div>
-                            <div class="me-3">
-                                <input type="date" class="form-control form-control-solid date" id="end_date"
-                                       placeholder="Pilih Tanggal Akhir" name="end_date"/>
-                            </div>
-                            <div>
-                                <button type="button" @click="filterByDate()" class="btn btn-sm btn-light-info">Filter
-                                </button>
-                            </div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="me-3">
+                            <label for="name" class="form-label mt-3">Filter Jadwal :</label>
                         </div>
+                        <div class="me-3">
+                            <input type="date" class="form-control form-control-solid date" name="start_dates"
+                                   id="start_dates" placeholder="Pilih Tanggal Awal"/>
+                        </div>
+                        <div class="me-3">
+                            <input type="date" class="form-control form-control-solid date" id="end_date"
+                                   placeholder="Pilih Tanggal Akhir" name="end_date"/>
+                        </div>
+                        <div>
+                            <button type="button" @click="filterByDate()" class="btn btn-sm btn-light-info">Filter
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="card-body py-3">
@@ -132,11 +132,13 @@
                                                 </template>
                                                 <template x-if="!dates.leaves && !dates.permission && !dates.sick">
                                                     <div>
-                                                        <a href="#" class="btn btn-link text-decoration-underline"
+                                                        <button type="button"
+                                                                class="btn btn-link text-decoration-underline"
                                                            data-bs-toggle="modal"
-                                                       data-bs-target="#modal-create"
+                                                                data-bs-target="#modal-create"
+                                                                :disabled="Number(createPermission) !== 1"
                                                            :class="`${dates.schedules_date?.status === 'L'  || dates.schedules_date?.is_holiday ? 'text-black fw-bolder text-uppercase' : dates.schedules_date?.status === 'H' ? 'text-white fw-bolder text-uppercase' : 'text-black'}`"
-                                                       @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.period_dates ??  dates.period_date )"
+                                                                @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.period_dates ??  dates.period_date )"
                                                         >
                                                             <span
                                                                 x-text="`${dates.schedules_date?.status === 'L' || dates.schedules_date?.is_holiday ? '(Libur)' : dates.schedules_date?.status === 'H' ? '(Hadir)' : ''}`">
@@ -149,8 +151,8 @@
                                                                 Tambah
                                                             </span>
                                                             </template>
-                                                        </a>
-                                                </div>
+                                                        </button>
+                                                    </div>
                                                 </template>
                                             </td>
                                         </template>
@@ -189,6 +191,7 @@
 
         function employeeScheduleData() {
             return {
+                createPermission: "{{ request()->user()->can('Tambah / Ubah Data Jadwal Libur') }}",
                 search: '',
                 isLoading: false,
                 employeeSchedules: null,
