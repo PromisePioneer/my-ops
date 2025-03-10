@@ -199,7 +199,7 @@ class LeaveAndPermissionRequest extends FormRequest
                 ->first();
             $getHolidayFromWeekHoliday = WeekHoliday::where('user_id', $request->user_id)->first()?->week_holiday;
 
-            $weekHoliday = Carbon::parse($getHolidayFromEmployeeSchedule)->dayName ?? $getHolidayFromWeekHoliday;
+            $weekHoliday = Carbon::parse($getHolidayFromEmployeeSchedule->start_date)->dayName ?? $getHolidayFromWeekHoliday;
 
             $datePeriod = CarbonPeriod::create($request->start_date, $request->end_date);
 
@@ -223,9 +223,10 @@ class LeaveAndPermissionRequest extends FormRequest
 
             $user = User::find($request->user_id);
 
-            $getLeaves = LeaveAndPermission::where('user_id', $user->id)
+            $getLeaves = LeaveAndPermission::where('user_id', $user->id)->where('confirmation_status', '!=', 'Ditolak')
                 ->where(function ($query) use ($request) {
-                    $query->whereNot('confirmation_status', 'Ditolak')->whereBetween('start_date', [$request->start_date, $request->end_date])
+                    $query
+                        ->whereBetween('start_date', [$request->start_date, $request->end_date])
                         ->orWhereBetween('end_date', [$request->start_date, $request->end_date]);
                 })->get();
 
