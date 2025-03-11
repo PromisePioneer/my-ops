@@ -75,9 +75,7 @@ use function App\Helper\formatDate;
     public function getUserData(Request $request)
     {
         $search = $request->input('search');
-        $query = User::with('userHasArea', 'branch', 'roles')
-            ->orderBy('name')
-            ->select('id', 'name', 'nip');
+        $query = User::query();
 
 
         if (!empty($search)) {
