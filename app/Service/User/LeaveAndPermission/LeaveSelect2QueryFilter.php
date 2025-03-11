@@ -18,11 +18,11 @@ class LeaveSelect2QueryFilter
             });
         }
 
-        if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'Director', 'Main Commissioner')) {
+        if ($request->user()->hasAnyRole(['Super Admin', 'Operational Manager', 'Director', 'Main Commissioner'])) {
             $query;
         }
 
-        if ($request->user()->Role('Operational Manager')) {
+        if ($request->user()->hasRole('Operational Manager')) {
             $query->whereHas('roles', function ($query) {
                 $query->whereIn('name', [
                     'NOC Supervisor', 'Programmer', 'Project Controller & Vendor Supervisor',
@@ -43,7 +43,7 @@ class LeaveSelect2QueryFilter
             });
         }
 
-        if ($request->user()->hasAnyRole('Customer Service Leader')) {
+        if ($request->user()->hasRole('Customer Service Leader')) {
             $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff', 'After Sales Customer Service']);
             })->where(function ($query) use ($request) {
@@ -61,7 +61,7 @@ class LeaveSelect2QueryFilter
         }
 
 
-        if ($request->user()->hasAnyRole('Head Of Electrical Engineer')) {
+        if ($request->user()->hasRole('Head Of Electrical Engineer')) {
             $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer']);
             })->whereHas('branch', function ($query) use ($request) {
@@ -71,9 +71,7 @@ class LeaveSelect2QueryFilter
 
 
         if ($request->user()->hasRole('Branch Manager')) {
-            $query->where(function ($query) use ($request) {
-                $query->where('branch_id', $request->user()->branch_id);
-            });
+            $query->where('branch_id', $request->user()->branch_id);
         }
 
 
