@@ -74,7 +74,7 @@ use function App\Helper\formatDate;
 
     public function getUserData(Request $request)
     {
-        $search = $request->search;
+        $search = $request->input('search');
         $query = User::with('userHasArea', 'branch', 'roles')
             ->orderBy('name')
             ->select('id', 'name', 'nip');
@@ -87,9 +87,9 @@ use function App\Helper\formatDate;
             });
         }
 
-        $users = LeaveSelect2QueryFilter::apply($query, $request)->get();
+        $users = LeaveSelect2QueryFilter::apply($query, $request);
 
-        return $users->map(function ($item) {
+        return $users->get()->map(function ($item) {
             return [
                 'id' => $item->id,
                 'text' => $item->nip . ' ' . $item->name,
