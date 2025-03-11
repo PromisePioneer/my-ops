@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class LeaveSelect2QueryFilter
 {
-    public static function apply(Builder|EloquentBuilder $query, Request $request)
+    public static function apply(Builder|EloquentBuilder $query, Request $request): EloquentBuilder|Builder
     {
         if ($request->user()->hasAnyRole(['NOC Supervisor', 'NOC Staff'])) {
             $query->whereHas('roles', function ($query) {
@@ -71,7 +71,9 @@ class LeaveSelect2QueryFilter
 
 
         if ($request->user()->hasRole('Branch Manager')) {
-            $query->where('branch_id', $request->user()->branch_id);
+            $query->where(function ($query) use ($request) {
+                $query->where('branch_id', $request->user()->branch_id);
+            });
         }
 
 

@@ -5,6 +5,7 @@ namespace App\Service\User\LeaveAndPermission;
 use AllowDynamicProperties;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
+use App\Service\User\User\UserQueryFilter;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use function App\Helper\formatDate;
@@ -74,13 +75,24 @@ use function App\Helper\formatDate;
 
     public function getUserData(Request $request)
     {
-        $search = $request->input('search');
-        $query = User::query();
+        $search = $request->search;
+        $query = User::with('userHasArea', 'branch', 'roles')->where('active', '=', 1)
+            ->orderBy('name')
+            ->select('id', 'name', 'nip');
 
 
-        $users = LeaveSelect2QueryFilter::apply($query, $request);
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('nip', 'like', '%' . $search . '%');
+            });
+        }
 
-        return $users->get()->map(function ($item) {
+        $query = LeaveSelect2QueryFilter::apply($query, $request);
+        $users = $query->get();
+
+
+        return $users->map(function ($item) {
             return [
                 'id' => $item->id,
                 'text' => $item->nip . ' ' . $item->name,
