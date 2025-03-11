@@ -78,13 +78,6 @@ use function App\Helper\formatDate;
         $query = User::query();
 
 
-        if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('nip', 'like', '%' . $search . '%');
-            });
-        }
-
         $users = LeaveSelect2QueryFilter::apply($query, $request);
 
         return $users->get()->map(function ($item) {
