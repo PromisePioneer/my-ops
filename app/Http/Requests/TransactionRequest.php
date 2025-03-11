@@ -29,7 +29,6 @@ class TransactionRequest extends FormRequest
             'qty' => ['required', 'numeric'],
             'unit_type_id' => ['required', Rule::exists('unit_types', 'id')],
             'unit_price' => ['required', 'numeric'],
-            'total_price' => ['required', 'numeric'],
             'debit_account_id' => ['required', Rule::exists('accounts', 'id')],
             'credit_account_id' => ['required', Rule::exists('accounts', 'id')],
         ];

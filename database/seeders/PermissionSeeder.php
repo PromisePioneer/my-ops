@@ -106,7 +106,7 @@ class PermissionSeeder extends Seeder
     }
 
 
-    public function transactions()
+    public function transactions(): void
     {
         $permissions = [
             'Lihat Menu Transaksi',
