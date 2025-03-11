@@ -71,7 +71,7 @@ class LeaveSelect2QueryFilter
 
 
         if ($request->user()->hasRole('Branch Manager')) {
-            return $query->where('branch_id', $request->user()->branch_id);
+            return $query->where('branch_id', $request->user()->branch_id)->where('active', '=', 1);
         }
 
 
