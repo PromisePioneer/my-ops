@@ -5,7 +5,7 @@
     <div x-data="generateRole()">
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
-                <a class="btn btn-light-info btn-sm mb-6" href="{{ url('general-master-data/roles/') }}">Kembali</a>
+                <a class="btn btn-light-info btn-sm mb-6" href="{{ url('common-master-data/roles/') }}">Kembali</a>
             </div>
             <div class="card-body py-3">
                 <form id="form" @submit.prevent="save()">
@@ -121,7 +121,7 @@
                     await this.getPermissionsData();
                 },
                 async searchPermissionData() {
-                    const resp = await axios.get('/general-master-data/roles/permissions/search', {
+                    const resp = await axios.get('/common-master-data/roles/permissions/search', {
                         params: {
                             search: this.search
                         }
@@ -130,7 +130,7 @@
                 },
                 async getPermissionsData() {
                     try {
-                        const resp = await axios.get('/general-master-data/roles/permissions/data');
+                        const resp = await axios.get('/common-master-data/roles/permissions/data');
                         this.permissions = resp.data;
                     } catch (e) {
                         console.log(e);
@@ -138,7 +138,7 @@
                 },
                 async selectedPermission() {
                     try {
-                        const resp = await axios.get(`/general-master-data/roles/permissions/data/selected/${this.id}`);
+                        const resp = await axios.get(`/common-master-data/roles/permissions/data/selected/${this.id}`);
                         this.selectedPermissions = resp.data;
                     } catch (e) {
                         console.log(e);
@@ -147,9 +147,9 @@
                 async save() {
                     this.buttonLoading = true
                     try {
-                        await axios.post(`/general-master-data/roles/update/${this.id}`, new FormData(this.form))
+                        await axios.post(`/common-master-data/roles/update/${this.id}`, new FormData(this.form))
                         await showAlert('success', 'Data berhasil disimpan');
-                        window.location.href = '/general-master-data/roles/';
+                        window.location.href = '/common-master-data/roles/';
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
@@ -176,7 +176,7 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/general-master-data/roles/departments/data/selected/${this.id}`,
+                        url: `/common-master-data/roles/departments/data/selected/${this.id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedDepartment.append(option).trigger('change').trigger({

@@ -28,7 +28,7 @@ use Illuminate\View\View;
     public function index(): View
     {
         $this->authorize('view', BroadbandPacket::class);
-        return view('pages.general-master-data.broadband-packets.index');
+        return view('pages.master.common.broadband-packets.index');
     }
 
     /**

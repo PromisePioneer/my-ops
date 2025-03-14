@@ -4,7 +4,7 @@
 @section('content')
     <div x-data="departmentsData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.general-master-data.departments.form')
+            @include('pages.master.common.departments.form')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -152,7 +152,7 @@
                 async searchData() {
                     this.isLoading = true;
                     try {
-                        const resp = await axios.get('/general-master-data/department/search', {
+                        const resp = await axios.get('/common-master-data/department/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -200,9 +200,9 @@
                     this.buttonLoading = true;
                     try {
                         if (!id) {
-                            await axios.post('/general-master-data/department/', new FormData(this.form));
+                            await axios.post('/common-master-data/department/', new FormData(this.form));
                         } else {
-                            await axios.post(`/general-master-data/department/${id}`, new FormData(this.form));
+                            await axios.post(`/common-master-data/department/${id}`, new FormData(this.form));
                         }
                         await showAlert('success', 'Data berhasil disimpan');
                         this.modalForm.hide();
@@ -216,13 +216,13 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/general-master-data/department/${id}`);
+                    const resp = await axios.get(`/common-master-data/department/${id}`);
                     this.editVal = resp.data;
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/general-master-data/department/destroy`, new FormData(this.deleteForm));
+                            await axios.post(`/common-master-data/department/destroy`, new FormData(this.deleteForm));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -234,7 +234,7 @@
                 async getDepartmentData() {
                     this.isLoading = true
                     try {
-                        const resp = await axios.get('/general-master-data/department/data');
+                        const resp = await axios.get('/common-master-data/department/data');
                         this.departments = resp.data;
                         this.startIndex = this.departments.from;
                     } catch (error) {

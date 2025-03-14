@@ -33,7 +33,7 @@ use Throwable;
     public function index(): View
     {
         $this->authorize('view', Role::class);
-        return view('pages.general-master-data.roles.index');
+        return view('pages.master.common.roles.index');
     }
 
     /**
@@ -61,7 +61,7 @@ use Throwable;
     public function create(): View
     {
         $this->authorize('create', Role::class);
-        return view('pages.general-master-data.roles.create');
+        return view('pages.master.common.roles.create');
     }
 
 
@@ -129,7 +129,7 @@ use Throwable;
     public function edit(Role $role): View
     {
         $this->authorize('update', $role);
-        return view('pages.general-master-data.roles.edit', compact('role'));
+        return view('pages.master.common.roles.edit', compact('role'));
     }
 
     /**

@@ -24,7 +24,7 @@ use Illuminate\View\View;
 
     public function index(): View
     {
-        return view('pages.general-master-data.areas.index');
+        return view('pages.master.common.areas.index');
     }
 
     /**
@@ -104,6 +104,6 @@ use Illuminate\View\View;
     public function detail(Area $area): View
     {
         $this->authorize('viewDetail', $area);
-        return view('pages.general-master-data.areas.detail.index', compact('area'));
+        return view('pages.master.common.areas.detail.index', compact('area'));
     }
 }

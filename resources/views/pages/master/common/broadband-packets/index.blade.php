@@ -4,7 +4,7 @@
 @section('content')
     <div x-data="broadbandPacketData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.general-master-data.broadband-packets.form')
+            @include('pages.master.common.broadband-packets.form')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -138,5 +138,5 @@
     @include('components.toast')
 @endsection
 @push('script')
-    @include('pages.general-master-data.broadband-packets.script')
+    @include('pages.master.common.broadband-packets.script')
 @endpush

@@ -4,7 +4,7 @@
 @section('content')
     <div x-data="companyData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.general-master-data.companies.form')
+            @include('pages.master.common.companies.form')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -150,13 +150,13 @@
                     await this.getCompany();
                 },
                 async getCompany() {
-                    const resp = await axios.get('/general-master-data/companies/data');
+                    const resp = await axios.get('/common-master-data/companies/data');
                     this.companies = resp.data
                     this.isLoading = false;
                 },
                 async searchData() {
                     try {
-                        const resp = await axios.get('/general-master-data/companies/search', {
+                        const resp = await axios.get('/common-master-data/companies/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -201,9 +201,9 @@
                     this.buttonLoading = true;
                     try {
                         if (!id) {
-                            await axios.post('/general-master-data/companies', new FormData(this.form))
+                            await axios.post('/common-master-data/companies', new FormData(this.form))
                         } else {
-                            await axios.post(`/general-master-data/companies/update/${id}`, new FormData(this.form))
+                            await axios.post(`/common-master-data/companies/update/${id}`, new FormData(this.form))
                         }
                         await showAlert('success', 'Data berhasil disimpan')
                         this.form.reset();
@@ -217,13 +217,13 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/general-master-data/companies/${id}`);
+                    const resp = await axios.get(`/common-master-data/companies/${id}`);
                     this.editVal = resp.data;
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/general-master-data/companies/destroy`, new FormData(this.formDelete));
+                            await axios.post(`/common-master-data/companies/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {

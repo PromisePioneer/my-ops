@@ -21,7 +21,7 @@ class DepartmentController extends Controller
     public function index(): View
     {
         $this->authorize('view', Department::class);
-        return view('pages.general-master-data.departments.index');
+        return view('pages.master.common.departments.index');
     }
 
     /**

@@ -20,13 +20,13 @@
                 await this.getDepartments();
             },
             async getArea() {
-                const resp = await axios.get('/general-master-data/area/data')
+                const resp = await axios.get('/common-master-data/area/data')
                 this.areas = resp.data;
             },
             async searchData() {
                 try {
                     const branchId = $('#branch_id_filter').val();
-                    const resp = await axios.get(`/general-master-data/area/search/`, {
+                    const resp = await axios.get(`/common-master-data/area/search/`, {
                         params: {
                             search: this.search,
                             branch_id: branchId
@@ -42,7 +42,7 @@
                 this.isLoading = true;
                 try {
                     const branchId = $('#branch_id_filter').val();
-                    const resp = await axios.get('/general-master-data/area/filter', {
+                    const resp = await axios.get('/common-master-data/area/filter', {
                         params: {
                             branch_id: branchId,
                         }
@@ -69,9 +69,9 @@
                 this.buttonLoading = true;
                 try {
                     if (!id) {
-                        await axios.post('/general-master-data/area/', new FormData(this.form))
+                        await axios.post('/common-master-data/area/', new FormData(this.form))
                     } else {
-                        await axios.post(`/general-master-data/area/${id}`, new FormData(this.form))
+                        await axios.post(`/common-master-data/area/${id}`, new FormData(this.form))
                     }
                     await showAlert('success', 'Data berhasil disimpan')
                     this.form.reset();
@@ -85,7 +85,7 @@
                 }
             },
             async edit(id) {
-                const resp = await axios.get(`/general-master-data/area/${id}`);
+                const resp = await axios.get(`/common-master-data/area/${id}`);
                 this.editVal = resp.data;
                 await this.getMainBranches();
                 await this.selectedBranch();
@@ -174,7 +174,7 @@
             async destroy() {
                 showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                     try {
-                        await axios.post(`/general-master-data/area/destroy`, new FormData(this.formDelete));
+                        await axios.post(`/common-master-data/area/destroy`, new FormData(this.formDelete));
                         await showAlert('success', 'Data sukses dihapus');
                         await this.init();
                     } catch (error) {

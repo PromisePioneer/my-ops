@@ -3,7 +3,7 @@
 @section('breadcrumbs', 'Master Umum - Manajemen Area Teknisi')
 @section('content')
     <div x-data="areaData()">
-        @include('pages.general-master-data.areas.form')
+        @include('pages.master.common.areas.form')
         <div class="d-flex flex-column flex-xl-row">
             <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
                 <div class="card card-flush">
@@ -168,5 +168,5 @@
     @include('components.toast')
 @endsection
 @push('script')
-    @include('pages.general-master-data.areas.script')
+    @include('pages.master.common.areas.script')
 @endpush

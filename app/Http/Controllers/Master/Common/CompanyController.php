@@ -28,7 +28,7 @@ use Illuminate\View\View;
     public function index(): View
     {
         $this->authorize('view', Company::class);
-        return view('pages.general-master-data.companies.index');
+        return view('pages.master.common.companies.index');
     }
 
 

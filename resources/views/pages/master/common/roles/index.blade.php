@@ -30,7 +30,7 @@
                     <div class="card-px text-center py-20 my-10">
                         <h2 class="fs-2x fw-bolder mb-10">Data Tidak Ditemukan</h2>
                         <p class="text-gray-400 fs-4 fw-bold mb-10">Saat ini data yang anda cari tidak ditemukan.</p>
-                        <a href="{{ url('general-master-data/roles/create') }}" class="btn btn-primary">Tambah Role</a>
+                        <a href="{{ url('common-master-data/roles/create') }}" class="btn btn-primary">Tambah Role</a>
                     </div>
                 </div>
             </div>
@@ -64,7 +64,7 @@
                         </div>
                         <div class="card-footer flex-wrap pt-0">
                             <template x-if="Number(editPermission) === 1">
-                                <a :href="`/general-master-data/roles/edit/${role.id}`"
+                                <a :href="`/common-master-data/roles/edit/${role.id}`"
                                    class="btn btn-light btn-active-primary my-1 me-2">
                                     <i class="bi bi-pencil-square fs-3"></i>
                                 </a>
@@ -84,7 +84,7 @@
                     <div class="card h-md-100">
                         <div class="card-body d-flex flex-center">
                             @can('Tambah Data Jabatan')
-                                <a href="{{ url('general-master-data/roles/create')  }}"
+                                <a href="{{ url('common-master-data/roles/create')  }}"
                                    class="btn btn-clear d-flex flex-column flex-center">
                                     <div class="fw-bolder fs-3 text-gray-600 text-hover-primary">Tambah Role Baru</div>
                                 </a>
@@ -119,12 +119,12 @@
                     await this.getAllPermissions();
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/general-master-data/roles/edit/${id}`);
+                    const resp = await axios.get(`/common-master-data/roles/edit/${id}`);
                     await this.getAllPermissions();
                     this.editVal = resp.data;
                 },
                 async getRole() {
-                    const roles = await axios.get('/general-master-data/roles/data');
+                    const roles = await axios.get('/common-master-data/roles/data');
                     this.roles = roles.data
                     this.startIndex = this.roles.from;
                     this.isLoading = false;
@@ -132,7 +132,7 @@
                 async searchData() {
                     this.isLoading = true;
                     try {
-                        const response = await axios.get('/general-master-data/roles/search', {
+                        const response = await axios.get('/common-master-data/roles/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -160,7 +160,7 @@
                 async save() {
                     this.buttonLoading = true
                     try {
-                        await axios.post(`/general-master-data/roles/`, new FormData(this.formCreate))
+                        await axios.post(`/common-master-data/roles/`, new FormData(this.formCreate))
                         await showAlert('success', 'Data berhasil disimpan');
                         this.modalCreate.hide();
                         await this.init();
@@ -174,7 +174,7 @@
                 async update(id) {
                     this.buttonLoading = true
                     try {
-                        await axios.post(`/general-master-data/roles/update/${id}`, new FormData(this.formEdit))
+                        await axios.post(`/common-master-data/roles/update/${id}`, new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil disimpan');
                         this.modalEdit.hide();
                         await this.init();
@@ -188,7 +188,7 @@
                 async destroy(id) {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.delete(`/general-master-data/roles/${id}`);
+                            await axios.delete(`/common-master-data/roles/${id}`);
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -198,7 +198,7 @@
                     });
                 },
                 async getAllPermissions() {
-                    const resp = await axios.get('/general-master-data/roles/permissions/data');
+                    const resp = await axios.get('/common-master-data/roles/permissions/data');
                     this.permissionData = resp.data;
                 },
 

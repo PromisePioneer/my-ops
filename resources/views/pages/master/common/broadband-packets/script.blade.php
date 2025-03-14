@@ -22,7 +22,7 @@
             async getBroadbandPacketData() {
                 this.isLoading = true;
                 try {
-                    const resp = await axios.get('/general-master-data/broadband-packets/data');
+                    const resp = await axios.get('/common-master-data/broadband-packets/data');
                     this.broadbandPackets = resp.data
                     this.startIndex = this.broadbandPackets.from;
                 } catch (e) {
@@ -35,7 +35,7 @@
             async searchData() {
                 this.isLoading = true;
                 try {
-                    const resp = await axios.get('/general-master-data/broadband-packets/search', {
+                    const resp = await axios.get('/common-master-data/broadband-packets/search', {
                         params: {
                             search: this.search
                         },
@@ -58,9 +58,9 @@
                 this.buttonLoading = true;
                 try {
                     if (!id) {
-                        await axios.post('/general-master-data/broadband-packets', new FormData(this.form))
+                        await axios.post('/common-master-data/broadband-packets', new FormData(this.form))
                     } else {
-                        await axios.post(`/general-master-data/broadband-packets/${id}`, new FormData(this.form))
+                        await axios.post(`/common-master-data/broadband-packets/${id}`, new FormData(this.form))
                     }
 
                     await showAlert('success', 'Data berhasil disimpan')
@@ -75,7 +75,7 @@
                 }
             },
             async edit(id) {
-                const resp = await axios.get(`/general-master-data/broadband-packets/${id}`);
+                const resp = await axios.get(`/common-master-data/broadband-packets/${id}`);
                 this.editVal = resp.data;
             },
             toggleAllCheckBox() {
@@ -107,7 +107,7 @@
             async destroy() {
                 showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                     try {
-                        await axios.post(`/general-master-data/broadband-packets/destroy`, new FormData(this.deleteForm));
+                        await axios.post(`/common-master-data/broadband-packets/destroy`, new FormData(this.deleteForm));
                         await showAlert('success', 'Data sukses dihapus');
                         await this.init();
                     } catch (error) {

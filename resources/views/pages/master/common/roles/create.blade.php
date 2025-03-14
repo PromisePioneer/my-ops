@@ -5,7 +5,7 @@
     <div x-data="generateRole()">
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
-                <a class="btn btn-light-danger btn-sm mb-6" href="{{ url('general-master-data/roles/') }}">
+                <a class="btn btn-light-danger btn-sm mb-6" href="{{ url('common-master-data/roles/') }}">
                     <i class="bi bi-backspace"></i>
                     Kembali
                 </a>
@@ -129,14 +129,14 @@
                 },
                 async getPermissionsData() {
                     try {
-                        const resp = await axios.get('/general-master-data/roles/permissions/data');
+                        const resp = await axios.get('/common-master-data/roles/permissions/data');
                         this.permissions = resp.data
                     } catch (e) {
                         console.log(e);
                     }
                 },
                 async searchPermissionData() {
-                    const resp = await axios.get('/general-master-data/roles/permissions/search', {
+                    const resp = await axios.get('/common-master-data/roles/permissions/search', {
                         params: {
                             search: this.search
                         }
@@ -147,9 +147,9 @@
                 async save() {
                     this.buttonLoading = true
                     try {
-                        await axios.post(`/general-master-data/roles/`, new FormData(this.form))
+                        await axios.post(`/common-master-data/roles/`, new FormData(this.form))
                         await showAlert('success', 'Data berhasil disimpan');
-                        window.location.href = "/general-master-data/roles/";
+                        window.location.href = "/common-master-data/roles/";
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
