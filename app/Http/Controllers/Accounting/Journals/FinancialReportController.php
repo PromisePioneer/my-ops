@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Accounting\Journals;
 
 use App\Http\Controllers\Controller;
-use App\Models\Branch;
-use App\Service\Journal\FinancialReportService;
+use App\Models\Master\Common\Branch;
+use App\Support\Journal\FinancialReportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

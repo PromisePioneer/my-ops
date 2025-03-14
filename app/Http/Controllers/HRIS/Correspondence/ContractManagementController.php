@@ -4,10 +4,10 @@ namespace App\Http\Controllers\HRIS\Correspondence;
 
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
-use App\Models\Branch;
 use App\Models\ContractManagement;
+use App\Models\Master\Common\Branch;
 use App\Models\User;
-use App\Service\User\ContractManagement\ContractManagementService;
+use App\Support\User\ContractManagement\ContractManagementService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

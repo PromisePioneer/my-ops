@@ -9,7 +9,7 @@ use App\Imports\SalesBonusImport;
 use App\Models\BroadbandPacket;
 use App\Models\SaleBonus;
 use App\Models\User;
-use App\Service\SalesBonus\SalesBonusService;
+use App\Support\SalesBonus\SalesBonusService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

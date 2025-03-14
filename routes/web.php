@@ -21,9 +21,10 @@ use App\Http\Controllers\AccountTransactionController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\BAAController;
+use App\Http\Controllers\ConsumedStockController;
+use App\Http\Controllers\GoodsCategoryController;
 use App\Http\Controllers\GoodsController;
 use App\Http\Controllers\GoodsPurchaseOrderController;
-use App\Http\Controllers\GoodsStockController;
 use App\Http\Controllers\GoodsTransactionController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
@@ -61,45 +62,31 @@ use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollHistoryContro
 use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollScheduleController;
 use App\Http\Controllers\HRIS\PermissionController;
 use App\Http\Controllers\Inventory\BoQ\BoqController;
-use App\Http\Controllers\Inventory\FieldAssets\JointClosureController;
-use App\Http\Controllers\Inventory\FOCable\FOCableController;
-use App\Http\Controllers\Inventory\FOCable\FOCableMapController;
-use App\Http\Controllers\Inventory\ODP\ODPController;
-use App\Http\Controllers\Inventory\ODP\ODPMapController;
-use App\Http\Controllers\Inventory\Pole\PoleController;
-use App\Http\Controllers\Inventory\Pole\PoleMapController;
-use App\Http\Controllers\Inventory\Stock\GoodsCategoryController;
-use App\Http\Controllers\Inventory\Stock\UnitTypeController;
-use App\Http\Controllers\Inventory\Stock\UsedItemsController;
-use App\Http\Controllers\Master\Finance\AccountController;
-use App\Http\Controllers\Master\Finance\AssetController;
-use App\Http\Controllers\Master\Finance\TaxSettingController;
-use App\Http\Controllers\Master\General\BranchController;
-use App\Http\Controllers\Master\General\BroadbandPacketController;
-use App\Http\Controllers\Master\General\CompanyController;
-use App\Http\Controllers\Master\General\ContactController;
-use App\Http\Controllers\Master\General\DepartmentController;
-use App\Http\Controllers\Master\General\NationalHolidayController;
-use App\Http\Controllers\Master\General\ProductController;
-use App\Http\Controllers\Master\General\RoleController;
-use App\Http\Controllers\Master\General\ServicesCategoryController;
-use App\Http\Controllers\Master\General\SKLController;
-use App\Http\Controllers\Master\Operational\JointClosureCodeController;
+use App\Http\Controllers\Master\Accounting\AccountController;
+use App\Http\Controllers\Master\Accounting\AssetController;
+use App\Http\Controllers\Master\Accounting\TaxSettingController;
+use App\Http\Controllers\Master\Common\BranchController;
+use App\Http\Controllers\Master\Common\BroadbandPacketController;
+use App\Http\Controllers\Master\Common\CompanyController;
+use App\Http\Controllers\Master\Common\ContactController;
+use App\Http\Controllers\Master\Common\DepartmentController;
+use App\Http\Controllers\Master\Common\NationalHolidayController;
+use App\Http\Controllers\Master\Common\RoleController;
+use App\Http\Controllers\Master\Common\ServiceCategoryManagerController;
+use App\Http\Controllers\Master\Common\SKLController;
 use App\Http\Controllers\Master\Operational\PSBController;
 use App\Http\Controllers\Master\Operational\SupplierController;
+use App\Http\Controllers\StockController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\UnitTypeController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
 use App\Http\Controllers\UserProfile\UserProfileController;
 use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
 use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
 use App\Http\Controllers\WarehouseController;
-use App\Mail\SendEmail;
-use App\Models\Attendances;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Jmrashed\Zkteco\Lib\ZKTeco;
 
 /*
 |--------------------------------------------------------------------------
@@ -116,39 +103,6 @@ Route::get('/', function () {
     return redirect('home');
 });
 
-//Route::get('/test-route', static function () {
-//
-//    $zk = new ZKTeco("103.102.248.112", 4370);
-//    $zk->connect();
-//    $startDate = Carbon::parse('2025-02-27')->startOfDay();
-//    $endDate = Carbon::parse('2025-02-28')->endOfDay();
-//    $attendanceLog = $zk->getAttendance();
-//    foreach ($attendanceLog as $record) {
-//        $recordDate = Carbon::parse(substr($record['timestamp'], 0, 10));
-//        if ($recordDate->greaterThanOrEqualTo($startDate) && $recordDate->lessThanOrEqualTo($endDate)) {
-//            $data = [
-//                'sn' => 'BWXP212260422',
-//                'table' => '999',
-//                'stamp' => 'ATTLOG',
-//                'employee_id' => $record['id'],
-//                'timestamp' => $record['timestamp'],
-//                'status1' => $record['type'],
-//            ];
-//            Attendances::create($data);
-//        }
-//    }
-//});
-//
-//Route::get('/tests', function () {
-//    $data = [
-//        'name' => 'Syahrizal As',
-//        'body' => 'Testing Kirim Email di Santri Koding'
-//    ];
-//
-//    Mail::to('fifirman000@gmail.com')->send(new SendEmail($data));
-//
-//    dd("Email Berhasil dikirim.");
-//});
 
 Auth::routes();
 
@@ -333,7 +287,7 @@ Route::group(['middleware' => ['auth']], static function () {
     });
 
 
-    Route::prefix('general-master-data')->group(function () {
+    Route::prefix('common-master-data')->group(function () {
         Route::prefix('area')->group(function () {
             Route::get('/', [AreaController::class, 'index']);
             Route::get('/data', [AreaController::class, 'data']);
@@ -405,26 +359,14 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/destroy', [ContactController::class, 'destroy']);
             Route::post('/update/{contact}', [ContactController::class, 'update']);
         });
-        //product
-        Route::prefix('product')->group(function () {
-            Route::get('/', [ProductController::class, 'index']);
-            Route::get('/data', [ProductController::class, 'data']);
-            Route::get('/search', [ProductController::class, 'search']);
-            Route::post('/', [ProductController::class, 'store']);
-            Route::get('/show/{product}', [ProductController::class, 'show']);
-            Route::post('/update/{product}', [ProductController::class, 'update']);
-            Route::post('/destroy', [ProductController::class, 'destroy']);
-        });
-
-
         Route::prefix('service-categories')->group(function () {
-            Route::get('/', [ServicesCategoryController::class, 'index']);
-            Route::get('/data', [ServicesCategoryController::class, 'data']);
-            Route::get('/search', [ServicesCategoryController::class, 'search']);
-            Route::post('/', [ServicesCategoryController::class, 'store']);
-            Route::get('/show/{serviceCategory}', [ServicesCategoryController::class, 'show']);
-            Route::post('/update/{serviceCategory}', [ServicesCategoryController::class, 'update']);
-            Route::post('/destroy', [ServicesCategoryController::class, 'destroy']);
+            Route::get('/', [ServiceCategoryManagerController::class, 'index']);
+            Route::get('/data', [ServiceCategoryManagerController::class, 'data']);
+            Route::get('/search', [ServiceCategoryManagerController::class, 'search']);
+            Route::post('/', [ServiceCategoryManagerController::class, 'store']);
+            Route::get('/show/{serviceCategory}', [ServiceCategoryManagerController::class, 'show']);
+            Route::post('/update/{serviceCategory}', [ServiceCategoryManagerController::class, 'update']);
+            Route::post('/destroy', [ServiceCategoryManagerController::class, 'destroy']);
         });
 
 
@@ -498,10 +440,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [InitialBalanceController::class, 'data']);
             Route::get('/search', [InitialBalanceController::class, 'search']);
             Route::get('/account/data', [InitialBalanceController::class, 'getAccountData']);
-            Route::get('/branch/data', [InitialBalanceController::class, 'getBranchData']);
             Route::post('/', [InitialBalanceController::class, 'store']);
             Route::get('/{account}', [InitialBalanceController::class, 'edit']);
-            Route::get('/branch/selected/{branch}', [InitialBalanceController::class, 'selectedBranch']);
             Route::get(
                 '/account/selected/{account}',
                 [InitialBalanceController::class, 'selectedAccountData']
@@ -571,16 +511,6 @@ Route::group(['middleware' => ['auth']], static function () {
         });
 
 
-        Route::prefix('joint-closures-code')->group(function () {
-            Route::get('/', [JointClosureCodeController::class, 'index']);
-            Route::get('/data', [JointClosureCodeController::class, 'data']);
-            Route::get('/branch/data', [JointClosureCodeController::class, 'getBranchData']);
-            Route::get('/{jointClosureCode}', [JointClosureCodeController::class, 'edit']);
-            Route::get('/branch/selected/{jointClosureCode}', [JointClosureCodeController::class, 'selectedBranch']);
-            Route::post('/', [JointClosureCodeController::class, 'store']);
-            Route::post('/destroy', [JointClosureCodeController::class, 'destroy']);
-            Route::post('/{jointClosureCode}', [JointClosureCodeController::class, 'update']);
-        });
 
 
         Route::prefix('suppliers')->group(function () {
@@ -617,98 +547,7 @@ Route::group(['middleware' => ['auth']], static function () {
         });
     });
 
-    Route::prefix('operational')->group(function () {
-        Route::prefix('odp')->group(function () {
-            Route::get('/', [ODPController::class, 'index']);
-            Route::get('/data', [ODPController::class, 'data']);
-            Route::get('/search', [ODPController::class, 'search']);
-            Route::get('/create', [ODPController::class, 'create']);
-            Route::get('/branch/data', [ODPController::class, 'getBranchData']);
-            Route::get('/branch/selected/{odp}', [ODPController::class, 'selectedBranchData']);
-            Route::get('/export', [ODPController::class, 'export']);
-            Route::get('/odp-area/selected/{odp}', [ODPController::class, 'getSelectedODPArea']);
-            Route::post('/', [ODPController::class, 'store']);
-            Route::get('/{odp}', [ODPController::class, 'edit']);
-            Route::post('/import', [ODPController::class, 'import']);
-            Route::post('/destroy', [ODPController::class, 'destroy']);
-            Route::post('/{odp}', [ODPController::class, 'update']);
-        });
 
-
-        Route::prefix('odp-map')->group(function () {
-            Route::get('/', [ODPMapController::class, 'index']);
-            Route::get('/data', [ODPMapController::class, 'data']);
-            Route::get('/filter', [ODPMapController::class, 'filter']);
-        });
-
-
-        Route::prefix('poles-map')->group(function () {
-            Route::get('/', [PoleMapController::class, 'index']);
-            Route::get('/data', [PoleMapController::class, 'data']);
-            Route::get('/filter', [PoleMapController::class, 'filter']);
-        });
-
-        Route::prefix('fo-cables-map')->group(function () {
-            Route::get('/', [FOCableMapController::class, 'index']);
-            Route::get('/data', [FOCableMapController::class, 'data']);
-            Route::get('/filter', [FOCableMapController::class, 'filter']);
-        });
-
-
-        Route::prefix('fo-cables')->group(function () {
-            Route::get('/', [FOCableController::class, 'index']);
-            Route::get('/data', [FOCableController::class, 'data']);
-            Route::get('/search', [FOCableController::class, 'search']);
-            Route::get('/create', [FOCableController::class, 'create']);
-            Route::get('/branch/data', [FoCableController::class, 'getBranchData']);
-            Route::get('/branch/selected/{FOCable}', [FoCableController::class, 'selectedBranchData']);
-            Route::post('/', [FOCableController::class, 'store']);
-            Route::post('/destroy', [FOCableController::class, 'destroy']);
-            Route::post('/import', [FOCableController::class, 'import']);
-            Route::get('/export', [FOCableController::class, 'export']);
-            Route::get('/{FOCable}', [FOCableController::class, 'edit']);
-            Route::post('update/{FOCable}', [FOCableController::class, 'update']);
-            Route::post('/destroy', [FOCableController::class, 'destroy']);
-        });
-
-        Route::prefix('poles')->group(function () {
-            Route::get('/', [PoleController::class, 'index']);
-            Route::get('/data', [PoleController::class, 'data']);
-            Route::get('/create', [PoleController::class, 'create']);
-            Route::get('/search', [PoleController::class, 'search']);
-            Route::get('/branch/data', [PoleController::class, 'getBranchData']);
-            Route::get('/branch/selected/{pole}', [PoleController::class, 'selectedBranch']);
-            Route::post('/', [PoleController::class, 'store']);
-            Route::post('/destroy', [PoleController::class, 'destroy']);
-            Route::post('/import', [PoleController::class, 'import']);
-            Route::get('/export', [PoleController::class, 'export']);
-            Route::get('/{pole}', [PoleController::class, 'edit']);
-            Route::post('/{pole}', [PoleController::class, 'update']);
-        });
-
-        Route::prefix('joint-closures')->group(function () {
-            Route::get('/', [JointClosureController::class, 'index']);
-            Route::get('/data', [JointClosureController::class, 'data']);
-            Route::get('/code/data', [JointClosureController::class, 'getJointClosuresCode']);
-            Route::get('/fo-cables/data', [JointClosureController::class, 'getFoCable']);
-            Route::get('/code/selected/{jointClosure}', [JointClosureController::class, 'getSelectedCode']);
-            Route::get('/fo-cable/selected/{jointClosure}', [JointClosureController::class, 'getSelectedFoCable']);
-            Route::get('/search', [JointClosureController::class, 'search']);
-            Route::get('/create', [JointClosureController::class, 'create']);
-            Route::post('/', [JointClosureController::class, 'store']);
-            Route::post('/destroy', [JointClosureController::class, 'destroy']);
-            Route::post('/import', [JointClosureController::class, 'import']);
-            Route::get('/export', [JointClosureController::class, 'export']);
-            Route::get('/{jointClosure}', [JointClosureController::class, 'edit']);
-            Route::post('/{jointClosure}', [JointClosureController::class, 'update']);
-        });
-
-        Route::prefix('core-data')->group(function () {
-        });
-
-        Route::prefix('coverage-area')->group(function () {
-        });
-    });
 
     //utility
     Route::prefix('utility')->group(function () {
@@ -808,7 +647,6 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
     Route::prefix('inventory')->group(function () {
-
         Route::prefix('goods')->group(function () {
             Route::prefix('po')->group(function () {
                 Route::get('/', [GoodsPurchaseOrderController::class, 'index']);
@@ -831,7 +669,6 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::post('/destroy', [GoodsPurchaseOrderController::class, 'destroy']);
                 Route::get('/warehouses/selected/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'selectedWarehouse']);
             });
-
             Route::prefix('goods-transaction')->group(function () {
                 Route::get('/', [GoodsTransactionController::class, 'index']);
                 Route::get('/data', [GoodsTransactionController::class, 'data']);
@@ -844,40 +681,17 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::post('/store', [GoodsTransactionController::class, 'store']);
             });
 
-
             Route::prefix('stock')->group(function () {
-                Route::get('/', [GoodsStockController::class, 'index']);
-                Route::get('/data', [GoodsStockController::class, 'data']);
-                Route::get('/search', [GoodsStockController::class, 'goodsSearch']);
-                Route::get('/filter', [GoodsStockController::class, 'goodsFilter']);
-                Route::prefix('detail')->group(function () {
-                    Route::get('/{goods}', [GoodsStockController::class, 'detail']);
-                    Route::get('/po/data/{goods}', [GoodsStockController::class, 'getPO']);
-                    Route::post('/po/confirm-receive/{goodsPurchaseOrder}', [GoodsStockController::class, 'confirmGoodsReceived']);
-                    Route::get('/po/search/{goods}', [GoodsStockController::class, 'searchPO']);
-
-                    Route::prefix('/po/generate-sn')->group(function () {
-                        Route::get('/{goodsPurchaseOrder}', [GoodsStockController::class, 'generateSN']);
-                        Route::get('/po-detail/data/{goodsPurchaseOrder}', [GoodsStockController::class, 'PODetail']);
-                        Route::get('/po-detail/get-stock/{goodsPurchaseOrder}', [GoodsStockController::class, 'getGoodsStockBasedOnPO']);
-                        Route::post('/store/{goodsPurchaseOrder}', [GoodsStockController::class, 'createSN']);
-                        Route::post('auto/store/{goodsPurchaseOrder}', [GoodsStockController::class, 'autoCreateSN']);
-                        Route::get('/edit/{goodsStock}', [GoodsStockController::class, 'edit']);
-                        Route::post('/destroy', [GoodsStockController::class, 'destroy']);
-                        Route::post('/confirm', [GoodsStockController::class, 'confirm']);
-                        Route::post('/update/{goodsStock}', [GoodsStockController::class, 'update']);
-                    });
-                });
-
-
+                Route::get('/', [StockController::class, 'index']);
+                Route::get('/data', [StockController::class, 'data']);
+                Route::get('/search', [StockController::class, 'goodsSearch']);
+                Route::get('/filter', [StockController::class, 'goodsFilter']);
+                Route::get('/show/{stock}', [StockController::class, 'show']);
             });
-        });
 
-
-        Route::prefix('used-items')->group(function () {
-            Route::get('/get-used-items/{goods}', [UsedItemsController::class, 'getUsedItems']);
-            Route::post('/save-used-items/{goods}', [UsedItemsController::class, 'usedItems']);
-            Route::get('account/asset/data', [UsedItemsController::class, 'getAssetAccount']);
+            Route::prefix('consumed-stocks')->group(function () {
+                Route::post('/', [ConsumedStockController::class, 'store']);
+            });
         });
 
 
@@ -1420,8 +1234,8 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/selected-user/{user}', [UserController::class, 'selectedUser']);
         Route::get('/contacts-data', [ContactController::class, 'getContacts']);
         Route::get('/selected-contact/{contact}', [ContactController::class, 'selectedContact']);
-        Route::get('/service-categories-data', [ServicesCategoryController::class, 'getServiceCategories']);
-        Route::get('/selected-service-category/{serviceCategory}', [ServicesCategoryController::class, 'selectedServiceCategory']);
+        Route::get('/service-categories-data', [ServiceCategoryManagerController::class, 'getServiceCategories']);
+        Route::get('/selected-service-category/{serviceCategory}', [ServiceCategoryManagerController::class, 'selectedServiceCategory']);
         Route::get('/skl-data', [SKLController::class, 'getSKL']);
         Route::get('/selected-skl/{skl}', [SKLController::class, 'selectedSKL']);
         Route::get('/purchase-orders-data', [PurchaseOrderController::class, 'getPurchaseOrders']);
@@ -1430,6 +1244,12 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/selected-baa/{baa}', [BAAController::class, 'selectedBAA']);
         Route::get('/fab-data', [FabController::class, 'getFab']);
         Route::get('/selected-fab/{fab}', [FabController::class, 'selectedFab']);
+        Route::get('/goods-category-data', [GoodsCategoryController::class, 'getGoodsCategories']);
+        Route::get('/selected-goods-category/{goodsCategory}', [GoodsCategoryController::class, 'selectedGoodsCategory']);
+        Route::get('/goods-data', [GoodsController::class, 'getGoods']);
+        Route::get('/selected-goods/{goods}', [GoodsController::class, 'selectedGoods']);
+        Route::get('/asset-accounts-data', [AccountController::class, 'assetAccounts']);
+        Route::get('/kas-accounts-data', [AccountController::class, 'kasAccounts']);
     });
 
 

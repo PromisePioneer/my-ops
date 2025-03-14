@@ -2,7 +2,7 @@
 
 namespace App\Imports;
 
-use App\Models\Branch;
+use App\Models\Master\Common\Branch;
 use App\Models\ODP;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;

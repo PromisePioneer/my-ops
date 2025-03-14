@@ -5,10 +5,10 @@
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             @include('pages.operational-master-data.goods.modal.form')
             @include('pages.operational-master-data.category-of-goods.modal.form')
-            @include('pages.general-master-data.unit-types.form')
+            @include('pages.master.common.unit-types.form')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
-                    <div class="d-flex align-goods-center position-relative my-1">
+                    <div class="d-flex align-items-center position-relative my-1">
                         <span class="svg-icon svg-icon-1 position-absolute ms-6">
                            <i class="bi bi-search"></i>
                         </span>
@@ -53,7 +53,7 @@
                     <div class="table-responsive">
                         <table class="table align-middle table-bordered fs-6 gy-5" id="kt_table_users">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input" type="checkbox"
@@ -62,8 +62,7 @@
                                 </th>
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Kategori</th>
-                                <th class="min-w-125px">SN/Kode Sudah tertera di Barang</th>
-                                <th class="min-w-125px">Memerlukan SN/Kode</th>
+                                <th class="min-w-125px">Satuan</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -89,7 +88,7 @@
                                 </tbody>
                             </template>
                             <template x-for="item in goods?.data" :key="item.id">
-                                <tbody class="fw-bold">
+                                <tbody class="fw-bold text-center">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -100,22 +99,7 @@
                                     </td>
                                     <td x-text="item.name"></td>
                                     <td x-text="item.category?.name"></td>
-                                    <td>
-                                        <template x-if="item.already_has_sn_on_item === 1">
-                                            <span class="badge bg-success text-white fw-bold text-uppercase">Ya</span>
-                                        </template>
-                                        <template x-if="item.already_has_sn_on_item === 0">
-                                            <span class="badge bg-danger text-white fw-bold text-uppercase">Tidak</span>
-                                        </template>
-                                    </td>
-                                    <td>
-                                        <template x-if="item.need_sn === 1">
-                                            <span class="badge bg-success text-white fw-bold text-uppercase">Ya</span>
-                                        </template>
-                                        <template x-if="item.need_sn === 0">
-                                            <span class="badge bg-danger text-white fw-bold text-uppercase">Tidak</span>
-                                        </template>
-                                    </td>
+                                    <td x-text="item.unit_type?.name"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-item" @click="edit(item.id)">
@@ -174,8 +158,8 @@
                 add() {
                     this.editVal = '';
                     this.form.reset();
-                    $('#selectedCategory').val('').trigger('change');
-                    $('#selectedUnitType').val('').trigger('change');
+                    $('#selected-category').val('').trigger('change');
+                    $('#selected-unit-type').val('').trigger('change');
                 },
                 async getGoods() {
                     this.isLoading = true;
@@ -278,7 +262,7 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/operational-master-data/goods/unit-types/selected/${this.editVal.id}`,
+                        url: `/select2/selected-unit-type/${this.editVal.unit_type_id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedUnitType.append(option).trigger('change').trigger({
@@ -340,7 +324,7 @@
                             }
                         },
                         ajax: {
-                            url: '/operational-master-data/goods/unit-types/data',
+                            url: '/select2/unit-types-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),

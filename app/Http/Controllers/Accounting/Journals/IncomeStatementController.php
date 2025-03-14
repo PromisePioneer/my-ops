@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Accounting\Journals;
 
 use App\Http\Controllers\Controller;
-use App\Service\Journal\IncomeStatementService;
+use App\Support\Journal\IncomeStatementService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

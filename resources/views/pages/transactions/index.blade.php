@@ -3,201 +3,195 @@
 @section('breadcrumbs', 'Transaksi')
 @section('content')
     <div x-data="transactionData()">
-        <div class="d-flex flex-column flex-xl-row">
-            <div class="flex-column flex-lg-row-auto w-100 w-lg-250px mb-10">
-                <div class="card card-flush">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <h2 class="mb-0">Filter</h2>
-                        </div>
-                    </div>
-                    <div class="card-body pt-0">
-                        <div class="d-flex flex-column text-gray-600">
-                            <div class="d-flex align-items-center py-2">
-                                <select class="form-select form-select-solid main-branches-select2"
-                                        name="branch_id" id="branch-id-filter">
-                                </select>
-                            </div>
-                            <div class="d-flex align-items-center py-2">
-                                <input type="date" class="form-control form-control-solid date"
-                                       name="start_date" id="start_date" placeholder="Tgl awal">
-                            </div>
-                            <div class="d-flex align-items-center py-2">
-                                <input type="date" class="form-control form-control-solid date" name="end_date"
-                                       id="end_date" placeholder="Tgl akhir">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer pt-4 text-end">
-                        <button type="button" @click="filter()" class="btn btn-light btn-active-primary btn-sm">
-                            Filter
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="flex-lg-row-fluid ms-lg-10">
-                <div class="card card-flush">
-                    @include('pages.transactions.form')
-                    <div class="card-header border-0 pt-6">
-                        <div class="card-title">
-                            <div class="d-flex align-items-center position-relative my-1">
+        @include('pages.operational-master-data.goods.modal.form')
+        @include('pages.master.common.unit-types.form')
+        @include('pages.operational-master-data.category-of-goods.modal.form')
+        @include('pages.transactions.form')
+        <div class="flex-lg-row-fluid ms-lg-10">
+            <div class="card card-flush">
+                <div class="card-header border-0 pt-6">
+                    <div class="card-title">
+                        <div class="d-flex align-items-center position-relative my-1">
                         <span class="svg-icon svg-icon-1 position-absolute ms-6">
                            <i class="bi bi-search"></i>
                         </span>
-                                <input type="text" name="search" x-model="search" @input.debounce="searchData()"
-                                       class="form-control form-control-solid w-250px ps-14"
-                                       placeholder="Search...">
-                            </div>
-                        </div>
-                        <div class="card-toolbar">
-                            <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                                @can('Tambah Data Transaksi')
-                                    <button type="button" class="btn btn-light-primary btn-sm"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modal-transactions">
-                                        <i class="ki-duotone ki-message-add fs-2">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                        </i> Tambah
-                                    </button>
-                                @endcan
-                            </div>
+                            <input type="text" name="search" x-model="search" @input.debounce="searchData()"
+                                   class="form-control form-control-solid w-250px ps-14"
+                                   placeholder="Search...">
                         </div>
                     </div>
-                    <div class="card-body py-3">
-                        <div class="py-5">
-                            <div class="col-12 mb-4">
-                                <form id="deleteForm" @submit.prevent="destroy()">
-                                    <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
-                                    <button type="submit" class="btn btn-light-danger btn-sm mt-5"
-                                            x-show="selectedCheckBox.length > 0"
-                                            x-transition x-cloak>
-                                        <i class="ki-duotone ki-trash-square fs-2">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                            <span class="path4"></span>
-                                        </i>
-                                        Hapus
-                                    </button>
-                                </form>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table align-middle table-bordered fs-6 gy-5">
-                                    <thead>
-                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                        <th class="w-10px pe-2">
-                                            <div
-                                                    class="form-check form-check-sm form-check-custom form-check-solid me-3">
-
-                                            </div>
-                                        </th>
-                                        <th class="min-w-125px text-center">Tanggal</th>
-                                        <th class="min-w-125px text-center">Transaksi</th>
-                                        <th class="min-w-250px text-center">Akun</th>
-                                        <th class="min-w-250px text-center">Detail</th>
-                                        <th class="min-w-125px text-center">Jumlah</th>
-                                        <template
-                                                x-if="Number(editPermission) === 1 || Number(confirmPermission) === 1">
-                                            <th class="min-w-250px text-center">Actions</th>
-                                        </template>
-                                    </thead>
-                                    <tbody class="fw-bold">
-                                    <template x-if="isLoading">
-                                        <tr>
-                                            <td colspan="9">
-                                                <div style="text-align: center;">
-                                                    <div class="spinner-border" role="status">
-                                                        <span class="visually-hidden">Loading...</span>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </template>
-                                    <template x-if="!isLoading && transactions.data?.length === 0">
-                                        <tr>
-                                            <td colspan="9">
-                                                <center>Data Tidak Ditemukan</center>
-                                            </td>
-                                        </tr>
-                                    </template>
-                                    <template x-for="(transaction, index) in transactions?.data" :key="transaction.id">
-                                        <tr>
-                                            <td>
-                                                <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                                     @click="selectCheckBox($event)">
-                                                    <input class="form-check-input" type="checkbox"
-                                                           :value="transaction.id"
-                                                           :id="'checkbox-' + transaction.id"
-                                                           :disabled="transaction.status === 1 || Number(destroyPermission) !== 1"/>
-                                                </div>
-                                            </td>
-                                            <td class="text-center"
-                                                x-text="transaction.date"></td>
-                                            <td class="text-center" x-text="transaction.transaction_number"></td>
-                                            <td class="text-center">
-                                                <div class="d-flex flex-column align-items-center">
-                                                    <span x-text="transaction.transaction_type"></span>
-                                                    <a :href="`/account-transactions/${transaction.debit_account_id}`"
-                                                       class="btn btn-primary btn-sm py-2 mb-2"
-                                                       x-text="`${transaction.debit}`"></a>
-                                                    <a class="btn btn-danger btn-sm py-2 mb-2"
-                                                       x-text="`${transaction.credit}`"></a>
-                                                </div>
-                                            </td>
-                                            <td x-text="transaction.detail"></td>
-                                            <td x-text="transaction.total_price"></td>
-                                            <template x-if="transaction.status === 0 && Number(editPermission) === 1">
-                                                <td class="d-flex flex-column">
-                                                    <button class="btn btn-light-primary btn-sm mb-4"
-                                                            @click="edit(transaction.id)"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#modal-transactions">
-                                                        <i class="bi bi-pencil"></i> Ubah Data
-                                                    </button>
-                                                    <button class="btn btn-light-info btn-sm mb-4"
-                                                            data-bs-toggle="tooltip"
-                                                            data-bs-placement="top"
-                                                            @click="confirm(transaction.id)"
-                                                    >
-                                                        <i class="bi bi-check-circle-fill"></i>
-                                                        Konfirmasi
-                                                    </button>
-                                                </td>
-                                            </template>
-                                            <template x-if="transaction.status === 1">
-                                                <td class="text-center">
-                                                    <span class="badge bg-success">Terkonfirmasi</span>
-                                                </td>
-                                            </template>
-                                        </tr>
-                                    </template>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <ul class="pagination float-end mb-4 mt-4">
-                                <template x-for="pagination in transactions.links">
-                                    <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                        <button class="page-link" @click="paginationEndPoint(pagination.url)"
-                                                x-html="pagination.label">
-                                        </button>
-                                    </li>
-                                </template>
-                            </ul>
+                    <div class="card-toolbar">
+                        <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                            @can('Tambah Data Transaksi')
+                                <button type="button" class="btn btn-light-primary btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-transactions">
+                                    <i class="ki-duotone ki-message-add fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i> Tambah
+                                </button>
+                            @endcan
                         </div>
+                    </div>
+                </div>
+                <div class="card-body py-3">
+                    <div class="py-5">
+                        <div class="col-12 mb-4">
+                            <form id="deleteForm" @submit.prevent="destroy()">
+                                <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                                <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                                        x-show="selectedCheckBox.length > 0"
+                                        x-transition x-cloak>
+                                    <i class="ki-duotone ki-trash-square fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                        <span class="path4"></span>
+                                    </i>
+                                    Hapus
+                                </button>
+                            </form>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table align-middle table-bordered fs-6 gy-5">
+                                <thead>
+                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                    <th class="w-10px pe-2">
+                                        <div
+                                            class="form-check form-check-sm form-check-custom form-check-solid me-3">
+
+                                        </div>
+                                    </th>
+                                    <th class="min-w-125px text-center">Informasi Transaksi</th>
+                                    <th class="min-w-250px text-center">Akun</th>
+                                    <th class="min-w-250px text-center">Detail</th>
+                                    <template
+                                        x-if="Number(editPermission) === 1 || Number(confirmPermission) === 1">
+                                        <th class="min-w-250px text-center">Actions</th>
+                                    </template>
+                                </thead>
+                                <tbody class="fw-bold">
+                                <template x-if="isLoading">
+                                    <tr>
+                                        <td colspan="9">
+                                            <div style="text-align: center;">
+                                                <div class="spinner-border" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <template x-if="!isLoading && transactions.data?.length === 0">
+                                    <tr>
+                                        <td colspan="9">
+                                            <center>Data Tidak Ditemukan</center>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <template x-for="(transaction, index) in transactions?.data" :key="transaction.id">
+                                    <tr>
+                                        <td>
+                                            <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                                 @click="selectCheckBox($event)">
+                                                <input class="form-check-input" type="checkbox"
+                                                       :value="transaction.id"
+                                                       :id="'checkbox-' + transaction.id"
+                                                       :disabled="transaction.status === 1 || Number(destroyPermission) !== 1"/>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex flex-column">
+                                                <span x-text="`Transaksi ${transaction.type}`"></span>
+                                                <span x-text="`Tgl ${transaction.date}`"></span>
+                                                <span x-text="`No ${transaction.transaction_number}`"></span>
+                                                <hr>
+                                                <span x-text="`Barang : ${transaction.goods_name}`"></span>
+                                                <span x-text="`Total Harga : ${transaction.total_price}`"></span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="d-flex flex-column align-items-center">
+                                                <span x-text="transaction.transaction_type"></span>
+                                                <a :href="`/account-transactions/${transaction.debit_account_id}`"
+                                                   class="badge bg-primary text-white mb-2"
+                                                   x-text="`${transaction.debit}`"></a>
+                                                <a class="badge bg-danger text-white mb-2"
+                                                   x-text="`${transaction.credit}`"></a>
+                                            </div>
+                                        </td>
+                                        <td class="text-center" x-text="transaction.detail"></td>
+                                        <template x-if="transaction.status === 0 && Number(editPermission) === 1">
+                                            <td class="d-flex flex-column">
+                                                <button class="btn btn-light-primary btn-sm mb-4"
+                                                        @click="edit(transaction.id)"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modal-transactions">
+                                                    <i class="bi bi-pencil"></i> Ubah Data
+                                                </button>
+                                                <button class="btn btn-light-info btn-sm mb-4"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
+                                                        @click="confirm(transaction.id)"
+                                                >
+                                                    <i class="bi bi-check-circle-fill"></i>
+                                                    Konfirmasi
+                                                </button>
+                                            </td>
+                                        </template>
+                                        <template x-if="transaction.status === 1">
+                                            <td class="text-center">
+                                                <span class="badge bg-success">Terkonfirmasi</span>
+                                            </td>
+                                        </template>
+                                    </tr>
+                                </template>
+                                </tbody>
+                            </table>
+                        </div>
+                        <ul class="pagination float-end mb-4 mt-4">
+                            <template x-for="pagination in transactions.links">
+                                <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                    <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                            x-html="pagination.label">
+                                    </button>
+                                </li>
+                            </template>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
-        <div>
-        </div>
+    </div>
+    <div>
     </div>
     @include('components.toast')
 @endsection
 @push('script')
     <script defer>
         $('.date').flatpickr();
+
+        const transactionModal = new bootstrap.Modal(document.getElementById('modal-transactions'));
+        const goodsModal = document.getElementById('modal-item');
+        const unitTypeModal = document.getElementById('modal-unit-type');
+        const goodsCategoryModal = document.getElementById('modal-item-category');
+        goodsModal.addEventListener('hidden.bs.modal', (e) => {
+            transactionModal.show();
+        });
+
+        unitTypeModal.addEventListener('hidden.bs.modal', (e) => {
+            new bootstrap.Modal(goodsModal).show();
+            transactionModal.hide();
+        });
+
+        goodsCategoryModal.addEventListener('hidden.bs.modal', (e) => {
+            new bootstrap.Modal(goodsModal).show();
+            transactionModal.hide();
+        });
+
+
 
         function transactionData() {
             return {
@@ -206,6 +200,7 @@
                 confirmPermission: "{{ request()->user()->can('Konfirmasi Data Transaksi') }}",
                 transactions: [],
                 isLoading: true,
+                transactionType: null,
                 buttonLoading: false,
                 startIndex: null,
                 selectedCheckBox: [],
@@ -216,12 +211,20 @@
                 userList: [],
                 form: document.getElementById('form-transactions'),
                 modalForm: new bootstrap.Modal(document.getElementById('modal-transactions')),
+                goodsForm: document.getElementById('form-item'),
+                goodsModal: new bootstrap.Modal(document.getElementById('modal-item')),
+                unitTypeForm: document.getElementById('form-unit-type'),
+                unitTypeModal: new bootstrap.Modal(document.getElementById('modal-unit-type')),
+                goodsCategoryModal: new bootstrap.Modal(document.getElementById('modal-item-category')),
+                goodsCategoryForm: document.getElementById('form-item-category'),
                 deleteForm: document.getElementById('deleteForm'),
                 async init() {
                     await this.getTransactions();
                     await this.getMainBranches();
-                    await this.getUnitTypeData();
+                    await this.getUnitTypes();
                     await this.getAccounts();
+                    await this.getGoods();
+                    await this.goodsCategory();
                 },
                 async paginationEndPoint(url) {
                     if (url) {
@@ -313,13 +316,28 @@
                         this.buttonLoading = false;
                     }
                 },
+                async saveUnitTypes() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/general-master-data/unit-types/', new FormData(this.unitTypeForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.unitTypeForm.reset();
+                        this.unitTypeModal.hide();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
                 async edit(id) {
                     const resp = await axios.get(`/transactions/${id}`);
                     this.editVal = resp.data;
+                    this.transactionType = this.editVal.type;
+                    await this.selectedGoods();
                     await this.selectedBranch();
                     await this.selectedDebitAccount();
                     await this.selectedCreditAccount();
-                    await this.selectedUnitType();
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
@@ -362,7 +380,7 @@
                     });
                 },
                 async confirm(id) {
-                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                    showConfirmModal("Anda yakin?", "Data yang dikonfirmasi tidak akan dapat diubah kembali atau pun dihapus.", "Ya, Konfirmasi!", async () => {
                         try {
                             await axios.post(`/transactions/confirm/${id}`);
                             await showAlert('success', 'Data sukses dikonfirmasi');
@@ -436,10 +454,16 @@
                         this.isLoading = false;
                     }
                 },
-                async getUnitTypeData() {
+                async getUnitTypes() {
                     $(".unit-types-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Satuan",
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-unit-type">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
                         ajax: {
                             url: '/select2/unit-types-data',
                             dataType: "json",
@@ -449,6 +473,90 @@
                             cache: true
                         }
                     });
+                },
+                async getGoods() {
+                    $(".goods-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Barang",
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-item">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
+                        ajax: {
+                            url: '/select2/goods-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async selectedGoods() {
+                    if (this.editVal.type !== 'Barang') return;
+                    const selectedGoods = $('#selected-goods');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/select2/selected-goods/${this.editVal.goods_id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedGoods.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
+                async saveGoods() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/operational-master-data/goods', new FormData(this.goodsForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.goodsForm.reset();
+                        this.goodsModal.hide();
+                        this.modalForm.show();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async goodsCategory() {
+                    $(".category-of-goods-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Kategori Barang",
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-item-category">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
+                        ajax: {
+                            url: '/select2/goods-category-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async saveGoodsCategory() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/operational-master-data/category-of-goods', new FormData(this.goodsCategoryForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.goodsCategoryForm.reset();
+                        this.goodsCategoryModal.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
                 },
             }
         }

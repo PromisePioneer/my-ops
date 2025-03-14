@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Master\Common\Branch;
+use App\Models\Master\Common\Contact;
+use App\Models\Master\Common\ServiceCategory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 class OfferingLetter extends Model
 {

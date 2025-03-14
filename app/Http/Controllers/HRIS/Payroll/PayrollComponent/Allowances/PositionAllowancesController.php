@@ -6,7 +6,7 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Models\JobInformation;
 use App\Models\User;
-use App\Service\UserAllowance\PositionAllowance\PositionAllowanceService;
+use App\Support\UserAllowance\PositionAllowance\PositionAllowanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

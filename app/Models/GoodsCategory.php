@@ -5,15 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Laravel\Scout\Searchable;
 
 class GoodsCategory extends Model
 {
-    use HasFactory;
-
+    use HasFactory, Searchable;
     protected $table = 'category_of_goods';
     protected $fillable = [
         'name',
     ];
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+        ];
+    }
 
 
     public function getData(Request $request): array

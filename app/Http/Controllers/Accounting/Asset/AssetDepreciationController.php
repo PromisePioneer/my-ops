@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Accounting\Asset;
 
 use App\Http\Controllers\Controller;
-use App\Service\Assets\AssetDepreciationService;
+use App\Support\Assets\AssetDepreciationService;
 use Illuminate\Http\JsonResponse;
 
 class AssetDepreciationController extends Controller

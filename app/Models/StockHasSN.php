@@ -16,6 +16,6 @@ class StockHasSN extends Model
 
     public function goodsStock(): BelongsTo
     {
-        return $this->belongsTo(GoodsStock::class, 'goods_stock_id');
+        return $this->belongsTo(Stock::class, 'goods_stock_id');
     }
 }

@@ -31,8 +31,8 @@
                         <div class="card-body pt-0">
                             <div class="d-flex flex-column text-gray-600">
                                 <div class="d-flex align-items-center py-2">
-                                    <select class="form-select form-select-solid filter-branch-select2"
-                                            name="branch_id">
+                                    <select class="form-select form-select-solid main-branches-select2"
+                                            name="branch_id" id="branch-id-filter">
                                     </select>
                                 </div>
                             </div>
@@ -350,12 +350,12 @@
                         }
                     });
                 },
-                async getBranchData() {
-                    $(".branches-select2").select2({
+                async getMainBranches() {
+                    $(".main-branches-select2").select2({
                         allowClear: true,
                         placeholder: 'Pilih Cabang',
                         ajax: {
-                            url: '/finances-master-data/initial-balances/branch/data',
+                            url: '/select2/main-branches-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),

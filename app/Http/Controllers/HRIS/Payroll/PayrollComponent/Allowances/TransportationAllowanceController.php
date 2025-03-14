@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Allowances\TransportationAllowanceRequest;
 use App\Models\User;
 use App\Models\UserHasTransportationAllowance;
-use App\Service\UserAllowance\TransportationAllowanceService;
+use App\Support\UserAllowance\TransportationAllowanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;

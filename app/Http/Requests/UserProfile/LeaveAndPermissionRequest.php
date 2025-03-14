@@ -6,7 +6,7 @@ use App\Models\EmployeeSchedule;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
 use App\Models\WeekHoliday;
-use App\Service\User\LeaveAndPermission\CalculateUserLeaves;
+use App\Support\User\LeaveAndPermission\CalculateUserLeaves;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Closure;

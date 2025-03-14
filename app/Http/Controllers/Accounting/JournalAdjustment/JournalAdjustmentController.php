@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\JournalAdjustment\AdjustmentRequest;
 use App\Models\InitialJournal;
 use App\Models\JournalAdjustment;
-use App\Service\JournalAdjustmentServices;
+use App\Support\JournalAdjustmentServices;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

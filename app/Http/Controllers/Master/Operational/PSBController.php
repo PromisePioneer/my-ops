@@ -8,7 +8,7 @@ use App\Http\Requests\PSBRequest;
 use App\Models\Area;
 use App\Models\BroadbandPacket;
 use App\Models\PSB;
-use App\Service\PSBService;
+use App\Support\PSBService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

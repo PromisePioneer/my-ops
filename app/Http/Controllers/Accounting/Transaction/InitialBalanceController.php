@@ -7,8 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InitialBalanceRequest;
 use App\Models\Account;
 use App\Models\AccountTransaction;
-use App\Models\Branch;
-use App\Service\InitialBalanceService;
+use App\Models\Master\Common\Branch;
+use App\Support\InitialBalanceService;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -168,11 +168,6 @@ use Illuminate\Http\Request;
     /**
      * @throws AuthorizationException
      */
-    public function selectedBranch(Branch $branch): JsonResponse
-    {
-        $this->authorize('update', AccountTransaction::class);
-        return response()->json($this->branch->getSelectedData($branch->id));
-    }
 
     /**
      * @throws AuthorizationException

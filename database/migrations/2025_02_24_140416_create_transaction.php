@@ -17,10 +17,12 @@ return new class extends Migration {
                 ->constrained('branches')
                 ->cascadeOnDelete();
             $table->date('date');
-            $table->double('qty');
-            $table->foreignId('unit_type_id')
-                ->constrained('unit_types')
+            $table->foreignId('goods_id')
+                ->nullable()
+                ->constrained('goods')
                 ->cascadeOnDelete();
+            $table->double('qty')->nullable();
+            $table->enum('type', ['Default', 'Barang', 'Beban', 'Utang', 'Piutang']);
             $table->double('unit_price');
             $table->double('total_price');
             $table->text('detail');

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Accounting\Journals;
 
 use App\Http\Controllers\Controller;
 use App\Models\Account;
-use App\Service\Journal\GeneralLedgerService;
+use App\Support\Journal\GeneralLedgerService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

@@ -4,14 +4,13 @@ namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
 use App\Http\Requests\GoodsPurchaseOrderRequest;
-use App\Models\Branch;
 use App\Models\Goods;
 use App\Models\GoodsCategory;
 use App\Models\GoodsPurchaseOrder;
+use App\Models\Master\Common\UnitType;
 use App\Models\Supplier;
-use App\Models\UnitType;
 use App\Models\Warehouse;
-use App\Service\GoodsPurchaseOrderService;
+use App\Support\GoodsPurchaseOrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -23,7 +22,6 @@ use function App\Helper\formatDate;
     {
         $this->supplier = new Supplier();
         $this->goodsPurchaseOrderService = new GoodsPurchaseOrderService();
-        $this->branch = new Branch();
         $this->itemCategory = new GoodsCategory();
         $this->item = new Goods();
         $this->unitType = new UnitType();
@@ -55,12 +53,6 @@ use function App\Helper\formatDate;
     public function create(): View
     {
         return view('pages.inventory.goods.po.form');
-    }
-
-
-    public function getBranchData(Request $request): JsonResponse
-    {
-        return response()->json($this->branch->getData($request));
     }
 
 
@@ -103,11 +95,6 @@ use function App\Helper\formatDate;
     public function selectedSupplier(GoodsPurchaseOrder $goodsPurchaseOrder): JsonResponse
     {
         return response()->json($this->supplier->getSelectedData($goodsPurchaseOrder->supplier_id));
-    }
-
-    public function selectedBranch(GoodsPurchaseOrder $goodsPurchaseOrder): JsonResponse
-    {
-        return response()->json($this->branch->getSelectedData($goodsPurchaseOrder->branch_id));
     }
 
     public function edit(GoodsPurchaseOrder $goodsPurchaseOrder): View

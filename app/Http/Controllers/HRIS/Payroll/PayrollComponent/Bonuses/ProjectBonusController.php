@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectBonusRequest;
 use App\Models\ProjectBonus;
 use App\Models\User;
-use App\Service\ProjectBonusService;
+use App\Support\ProjectBonusService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

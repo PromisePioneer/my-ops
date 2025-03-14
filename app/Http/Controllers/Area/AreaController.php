@@ -8,7 +8,7 @@ use App\Http\Requests\Master\General\Area\AreaFilterRequest;
 use App\Http\Requests\Master\General\Area\AreaRequest;
 use App\Models\Area;
 use App\Models\Department;
-use App\Service\Master\General\Area\AreaService;
+use App\Support\Master\Common\Area\AreaService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,7 +24,7 @@ use Illuminate\View\View;
 
     public function index(): View
     {
-        return view('pages.general-master-data.areas.index');
+        return view('pages.master.common.areas.index');
     }
 
     /**
@@ -104,6 +104,6 @@ use Illuminate\View\View;
     public function detail(Area $area): View
     {
         $this->authorize('viewDetail', $area);
-        return view('pages.general-master-data.areas.detail.index', compact('area'));
+        return view('pages.master.common.areas.detail.index', compact('area'));
     }
 }
