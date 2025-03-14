@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Branch;
 use App\Models\FpDevice;
+use App\Models\Master\Common\Branch;
 use Illuminate\Database\Seeder;
 
 class FpDeviceSeeder extends Seeder

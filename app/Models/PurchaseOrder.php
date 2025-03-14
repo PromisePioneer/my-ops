@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Master\Common\Contact;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Http\Request;
 use Laravel\Scout\Searchable;
 
 class PurchaseOrder extends Model

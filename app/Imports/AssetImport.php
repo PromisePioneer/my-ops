@@ -4,7 +4,7 @@ namespace App\Imports;
 
 use App\Models\Account;
 use App\Models\Asset;
-use App\Models\Branch;
+use App\Models\Master\Common\Branch;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Maatwebsite\Excel\Concerns\ToModel;

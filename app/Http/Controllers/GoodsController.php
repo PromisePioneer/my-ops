@@ -6,7 +6,7 @@ use AllowDynamicProperties;
 use App\Http\Requests\GoodsRequest;
 use App\Models\Goods;
 use App\Models\GoodsCategory;
-use App\Models\UnitType;
+use App\Models\Master\Common\UnitType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -28,42 +28,25 @@ use Illuminate\View\View;
 
     public function data(): JsonResponse
     {
-        $goods = Goods::with('category')->paginate(self::$perPage);
+        $goods = Goods::with('category', 'unitType')->paginate(self::$perPage);
         return response()->json($goods);
     }
 
     public function search(Request $request): JsonResponse
     {
         $search = $request->input('search');
-        $goods = Goods::when(!empty($search), function ($query) use ($search) {
-            return $query->where('name', 'like', '%' . $search . '%');
-        })->paginate(self::$perPage);
-
+        $goods = Goods::search($search)->paginate(self::$perPage);
         return response()->json($goods);
     }
 
     public function store(GoodsRequest $request): JsonResponse
     {
-        $needSN = false;
-        $alreadyHasSNOnItem = false;
-
-        if ($request->need_sn === "on") {
-            $needSN = true;
-        }
-
-        if ($request->already_has_sn_on_item === "on") {
-            $alreadyHasSNOnItem = true;
-        }
-
-//        dd($needSN);
-
         Goods::create([
             'name' => $request->name,
             'category_id' => $request->category_id,
             'unit_type_id' => $request->unit_type_id,
-            'need_sn' => $needSN,
-            'already_has_sn_on_item' => $alreadyHasSNOnItem,
         ]);
+
         return response()->json([
             'message' => 'Data berhasil disimpan.'
         ]);
@@ -78,24 +61,10 @@ use Illuminate\View\View;
 
     public function update(Goods $goods, GoodsRequest $request): JsonResponse
     {
-        $needSN = false;
-        $snPerPo = false;
-
-        if ($request->need_sn === "on") {
-            $needSN = true;
-        }
-        if ($request->already_has_sn_on_item === "on") {
-            $snPerPo = true;
-        }
-
         $goods->update([
             'name' => $request->name,
             'category_id' => $request->category_id,
-            'unit_type_id' => $request->unit_type_id,
-            'need_sn' => $needSN,
-            'already_has_sn_on_item' => $snPerPo,
         ]);
-
 
         return response()->json([
             'message' => 'Data berhasil disimpan.'
@@ -126,16 +95,29 @@ use Illuminate\View\View;
     }
 
 
-    public function getUnitTypes(Request $request): JsonResponse
+    public function getGoods(Request $request)
     {
-        return response()->json($this->unitType->getData($request));
+        $search = $request->input('search');
+        $goods = Goods::search($search)->query(function ($query) {
+            $query->orderBy('name');
+        })->get();
+
+        return $goods->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->name
+            ];
+        });
     }
 
-    public function selectedUnitType(Goods $goods): JsonResponse
-    {
-        return response()->json($this->unitType->getSelectedData($goods->unit_type_id));
-    }
 
+    public function selectedGoods(Goods $goods): array
+    {
+        return [
+            'id' => $goods->id,
+            'name' => $goods->name,
+        ];
+    }
 
 
 }

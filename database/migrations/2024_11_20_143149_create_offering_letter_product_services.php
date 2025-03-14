@@ -17,7 +17,7 @@ return new class extends Migration {
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->foreignId('service_category_id')
-                ->constrained('services_categories')
+                ->constrained('service_categories')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->foreignId('unit_type_id')->constrained('unit_types');

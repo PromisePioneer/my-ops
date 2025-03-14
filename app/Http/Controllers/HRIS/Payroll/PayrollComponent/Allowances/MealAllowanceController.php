@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Allowances\MealAllowanceRequest;
 use App\Models\User;
 use App\Models\UserHasMealAllowance;
-use App\Service\UserAllowance\MealAllowanceService;
+use App\Support\UserAllowance\MealAllowanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

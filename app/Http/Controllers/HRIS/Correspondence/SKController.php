@@ -5,11 +5,11 @@ namespace App\Http\Controllers\HRIS\Correspondence;
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\SKRequest;
-use App\Models\Branch;
+use App\Models\Master\Common\Branch;
 use App\Models\Role;
 use App\Models\SK;
 use App\Models\User;
-use App\Service\User\SK\SKService;
+use App\Support\User\SK\SKService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -62,16 +62,6 @@ use Throwable;
     {
         $this->SKService->store($request);
         return response()->json(['message' => 'Data berhasil disimpan']);
-    }
-
-    public function getSelectedUser(SK $sk): JsonResponse
-    {
-        return response()->json($this->user->getSelectedData($sk->user_id));
-    }
-
-    public function getSelectedBranch(SK $sk): JsonResponse
-    {
-        return response()->json($this->branch->getSelectedData($sk->new_branch_id));
     }
 
     public function edit(SK $sk): JsonResponse

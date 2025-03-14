@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\EducationCertificateRequest;
 use App\Models\EducationCertificate;
 use App\Models\User;
-use App\Service\HelperService\HandleFileUploadService;
+use App\Support\HelperService\HandleFileUploadService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;

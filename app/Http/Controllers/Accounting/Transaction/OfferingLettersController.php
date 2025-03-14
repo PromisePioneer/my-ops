@@ -9,7 +9,7 @@ use App\Models\OfferingLetter;
 use App\Models\OfferingLetterProduct;
 use App\Models\OfferingLetterServiceDescription;
 use App\Models\TaxSetting;
-use App\Service\OfferingLetterService;
+use App\Support\OfferingLetterService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

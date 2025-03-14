@@ -13,12 +13,13 @@ return new class extends Migration {
         Schema::create('goods', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('category_id')->constrained('category_of_goods')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->foreignId('unit_type_id')->constrained('unit_types');
-            $table->boolean('already_has_sn_on_item')->default(false);
-            $table->boolean('need_sn')->default(false);
+            $table->foreignId('category_id')
+                ->constrained('category_of_goods')
+                ->cascadeOnDelete();
+            $table->foreignId('unit_type_id')
+                ->constrained('unit_types')
+                ->cascadeOnDelete();
+            $table->enum('material', ['Besi', 'Non besi']);
             $table->timestamps();
         });
     }

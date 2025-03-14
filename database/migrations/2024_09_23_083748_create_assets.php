@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->date('date_received');
             $table->string('name');
             $table->integer('unit');
-            $table->integer('useful_life');
+            $table->integer('useful_life')->nullable();
             $table->double('price_per_unit');
             $table->double('residu')->nullable();
             $table->double('total_price')->nullable();

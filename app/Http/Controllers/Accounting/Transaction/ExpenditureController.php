@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Accounting\Transaction;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Transaction\SubAccount;
 use App\Http\Requests\Transaction\Expenditure\ExpenditureRequest;
-use App\Models\Branch;
 use App\Models\Expenditure;
-use App\Service\ExpenditureServices;
+use App\Models\Master\Common\Branch;
+use App\Support\ExpenditureServices;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

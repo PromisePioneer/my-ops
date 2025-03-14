@@ -8,7 +8,7 @@ use App\Http\Requests\User\JobInformationRequest;
 use App\Models\Department;
 use App\Models\JobInformation;
 use App\Models\User;
-use App\Service\User\JobInformation\JobInformationService;
+use App\Support\User\JobInformation\JobInformationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

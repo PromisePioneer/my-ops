@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
 use App\Models\AccountTransaction;
-use App\Service\Accounts\AccountTransactionService;
+use App\Support\AccountTransactions\AccountTransactionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 

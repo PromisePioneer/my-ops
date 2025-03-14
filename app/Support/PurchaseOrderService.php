@@ -1,0 +1,170 @@
+<?php
+
+namespace App\Support;
+
+use App\Http\Requests\PORequest;
+use App\Models\Master\Common\Contact;
+use App\Models\PurchaseOrder;
+use App\Models\PurchaseOrderItem;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
+use Throwable;
+use function App\Helper\convertToRoman;
+
+class PurchaseOrderService
+{
+    private static int $perPage = 10;
+
+
+    private static function generatePurchaseOrderNumber(Request $request): string
+    {
+        $po = PurchaseOrder::where('contact_id', $request->contact_id)
+            ->latest()
+            ->first();
+
+        $companyCode = Contact::where('id', $request->contact_id)->first()->company_code;
+        $month = convertToRoman(Carbon::parse($request->date)->format('m'));
+        $year = Carbon::parse($request->date)->format('Y');
+
+
+        if ($po) {
+            $convertInvNumberToArray = explode('/', $po->fab_number);
+            $startingNumber = $convertInvNumberToArray[0];
+            $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
+
+            return $startValue . '/' . 'PO/' . 'MYT-' . $companyCode . '/' . $month . '/' . $year;
+        }
+
+        $startingNumber = '000';
+        $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
+
+        return $startValue . '/' . 'PO/' . 'MYT-' . $companyCode . '/' . $month . '/' . $year;
+    }
+
+    public function data(): LengthAwarePaginator
+    {
+        $data = PurchaseOrder::with('contact')->paginate(self::$perPage);
+        return self::formattedData($data);
+    }
+
+
+    public function search(Request $request): LengthAwarePaginator
+    {
+        $search = $request->input('search');
+        $data = PurchaseOrder::with('contact')
+            ->when(!empty($search), function ($query) use ($search) {
+                $query->where('po_number', 'like', '%' . $search . '%');
+            })->paginate(self::$perPage);
+
+        return self::formattedData($data);
+    }
+
+    private static function formattedData($data): LengthAwarePaginator
+    {
+        $poData = $data->getCollection()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'subject' => $item->subject,
+                'contact' => $item->contact->company_name . '-' . $item->contact->pic_name,
+                'date' => $item->date,
+                'po_number' => $item->po_number,
+                'pic' => $item->picName->name,
+                'status' => $item->status,
+            ];
+        });
+
+        $data->setCollection($poData);
+        return $data;
+    }
+
+
+    /**
+     * @throws Throwable
+     */
+    public function store(PORequest $request): void
+    {
+        DB::transaction(function () use ($request) {
+            $data = $request->validated();
+            $data['po_number'] = self::generatePurchaseOrderNumber($request);
+            $po = PurchaseOrder::create($data);
+            $this->purchaseOrderItemStoreOrUpdate($request, $po);
+        });
+    }
+
+
+    /**
+     * @throws Throwable
+     */
+    public function update(PORequest $request, PurchaseOrder $purchaseOrder): void
+    {
+        DB::transaction(function () use ($request, $purchaseOrder) {
+            $data = $request->validated();
+            $data['po_number'] = self::generatePurchaseOrderNumber($request);
+            $purchaseOrder->update($data);
+            PurchaseOrderItem::whereIn('po_id', [$purchaseOrder->id])->delete();
+            $this->purchaseOrderItemStoreOrUpdate($request, $purchaseOrder);
+        });
+    }
+
+
+    public function purchaseOrderItemStoreOrUpdate($request, $po): void
+    {
+        foreach ($request['data'] as $key => $value) {
+            $value['po_id'] = $po->id;
+            PurchaseOrderItem::create($value);
+        }
+    }
+
+
+    public function convertCompanyNameToTextCapitalize(PurchaseOrder $purchaseOrder): string
+    {
+        $companyName = strtolower($purchaseOrder->contact->company_name);
+        $convertCompanyNameToArray = explode(" ", $companyName);
+
+        $newString = '';
+        $newPTKey = '';
+
+        if (($key = array_search('pt.' || 'pt', $convertCompanyNameToArray)) !== false) {
+            $newPTKey = $convertCompanyNameToArray[$key];
+            unset($convertCompanyNameToArray[$key]);
+        }
+
+        foreach ($convertCompanyNameToArray as $abbr) {
+            $newString .= strtolower($abbr) . ' ';
+        }
+
+        return strtoupper($newPTKey) . ' ' . ucwords(trim($newString));
+    }
+
+
+    public function confirm()
+    {
+
+    }
+
+
+    public function getPurchaseOrders(Request $request): array
+    {
+        $search = $request->input('search');
+        $purchaseOrder = PurchaseOrder::search($search)->query(function ($query) {
+            $query->where('status', 1)->orderby('po_number', 'asc');
+        })->get();
+
+        return $purchaseOrder->map(function ($po) {
+            return [
+                'id' => $po->id,
+                'text' => $po->po_number . ' - ' . $po->contact->company_name,
+            ];
+        })->toArray();
+    }
+
+    public function selectedPurchaseOrder(PurchaseOrder $purchaseOrder): array
+    {
+        return [
+            'id' => $purchaseOrder->id,
+            'name' => $purchaseOrder->po_number . ' - ' . $purchaseOrder->contact->company_name,
+        ];
+    }
+}

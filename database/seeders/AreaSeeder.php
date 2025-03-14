@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Area;
-use App\Models\Branch;
 use App\Models\Department;
+use App\Models\Master\Common\Branch;
 use Illuminate\Database\Seeder;
 
 class AreaSeeder extends Seeder

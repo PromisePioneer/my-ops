@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\NinePastFiveTeenLateDeductionRequest;
 use App\Models\NinePastFiveTeenLateDeduction;
 use App\Models\User;
-use App\Service\UserDeduction\NinePastFiveteenLateDeductionService;
+use App\Support\UserDeduction\NinePastFiveteenLateDeductionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

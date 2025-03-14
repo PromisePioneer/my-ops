@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\IdentityInformationRequest;
 use App\Models\IdentityInformation;
 use App\Models\User;
-use App\Service\User\IdentityInformationService;
+use App\Support\User\IdentityInformationService;
 use Illuminate\Http\JsonResponse;
 
 class IdentityInformationController extends Controller

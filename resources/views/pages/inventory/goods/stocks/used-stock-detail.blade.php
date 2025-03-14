@@ -1,0 +1,148 @@
+@extends('layouts.template')
+@section('page-title', 'Riwayat Pemakaian Barang' . ' - ' . $goods->name)
+@section('breadcrumbs', 'Inventory Controller - Stok Barang - Riwayat Pemakaian Barang')
+@section('content')
+    <div class="d-flex flex-column flex-xl-row" x-data="stockHistoryData()">
+        <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
+            <div class="card card-flush">
+                <div class="card-header">
+                    <div class="card-title">
+                        <h2 class="mb-0">Filter</h2>
+                    </div>
+                </div>
+                <div class="card-body pt-0">
+                    <select name="branch_id_filter" id="branch_id_filter"
+                            class="form-select form-select-solid main-branches-select2">
+                    </select>
+                </div>
+                <div class="card-footer pt-4 text-end">
+                    <button type="button" class="btn btn-light btn-active-primary btn-sm" @click="filter()">
+                        Filter
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="flex-lg-row-fluid ms-lg-10">
+            <div class="card card-flush mb-6 mb-xl-9">
+                <div class="card-header border-0 pt-6">
+                    <div class="card-title">
+                        <div class="d-flex align-items-center position-relative my-1">
+                        <span class="svg-icon svg-icon-1 position-absolute ms-6">
+                           <i class="bi bi-search"></i>
+                        </span>
+                            <input type="text" name="search" x-model="search" @input.debounce="searchData()"
+                                   class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
+                        </div>
+                    </div>
+                    <div class="card-toolbar">
+                        <h1>
+                            Total Stok
+                        </h1>
+                    </div>
+                </div>
+                <div class="card-body py-3">
+                    <div class="py-5">
+                        <div class="table-responsive">
+                            <table class="table align-middle table-row-dashed table-bordered fs-6 gy-5"
+                                   id="kt_table_users">
+                                <thead>
+                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0 text-center">
+                                    <th class="w-10px pe-2">No</th>
+                                    <th class="min-w-125px">Tanggal</th>
+                                    <th class="min-w-125px">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <span class="me-1">Qty</span>
+                                        </div>
+                                    </th>
+                                    <th>PIC</th>
+                                    <th class="min-w-125px">Actions</th>
+                                </thead>
+                                <template x-if="isLoading">
+                                    <tbody class="fw-bold">
+                                    <tr>
+                                        <td colspan="9">
+                                            <div style="text-align: center;">
+                                                <div class="spinner-border" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                                <template x-if="!isLoading && goodsStock.data?.length === 0">
+                                    <tbody class="fw-bold">
+                                    <tr>
+                                        <td colspan="9">
+                                            <center>Data Tidak Ditemukan</center>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                                <template x-for="(item, index) in goodsStock?.data" :key="item.id">
+                                    <tbody class="fw-bold text-center">
+                                    <tr>
+                                        <td x-text="startIndex + index++"></td>
+                                        <td x-text="item.name"></td>
+                                        <td x-text="item.category_name"></td>
+                                        <td x-text="item.total_stock"></td>
+                                        <td>
+                                            <template x-if="item.total_stock > 0">
+                                                <button data-bs-target="#modal-used-item" data-bs-toggle="modal"
+                                                        class="btn btn-light-primary btn-sm"
+                                                        @click="showStockDetail(item.id)">
+                                                    Pemakaian <i class="bi bi-plus-circle"></i>
+                                                </button>
+                                            </template>
+                                            <a :href="`/inventory/goods/used-stock/history/${item.id}`"
+                                               class="btn btn-light-info btn-sm">
+                                                Riwayat Terpakai <i class="bi bi-clock-history"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                            </table>
+                        </div>
+                        <ul class="pagination float-end mb-4 mt-4">
+                            <template x-for="pagination in goodsStock.links">
+                                <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                    <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                            x-html="pagination.label">
+                                    </button>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@endsection
+
+@push('script')
+    <script>
+        function stockHistoryData() {
+            return {
+                isLoading: false,
+                goodsStock: [],
+                search: '',
+                goodsId: "{{ $goods->id }}",
+                async init() {
+                    await this.getGoodsStock();
+                },
+                async getGoodsStock() {
+                    const resp = await axios.get(`/inventory/goods/stock/data/${this.goodsId}`);
+                    this.goodsStock = resp.data;
+                },
+                async paginate(url) {
+                    if (url) {
+                        const resp = await axios.get(url);
+                        this.goodsStock = resp.data;
+                    }
+                }
+            }
+        }
+    </script>
+@endpush

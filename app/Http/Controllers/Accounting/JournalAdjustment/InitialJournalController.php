@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Accounting\JournalAdjustment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\JournalAdjustment\InitialJournalRequest;
 use App\Models\InitialJournal;
-use App\Service\InitialJournalServices;
+use App\Support\InitialJournalServices;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Accounting\Journals;
 
 use App\Http\Controllers\Controller;
-use App\Models\Branch;
-use App\Service\Journal\TrialBalanceService;
+use App\Models\Master\Common\Branch;
+use App\Support\Journal\TrialBalanceService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

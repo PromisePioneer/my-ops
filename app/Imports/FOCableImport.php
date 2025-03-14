@@ -2,8 +2,8 @@
 
 namespace App\Imports;
 
-use App\Models\Branch;
 use App\Models\FOCable;
+use App\Models\Master\Common\Branch;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;

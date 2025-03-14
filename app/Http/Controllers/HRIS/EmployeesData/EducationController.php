@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\EducationRequest;
 use App\Models\Education;
 use App\Models\User;
-use App\Service\HelperService\HandleFileUploadService;
+use App\Support\HelperService\HandleFileUploadService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Throwable;

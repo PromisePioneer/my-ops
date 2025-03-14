@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Accounting\Journals;
 
 use App\Http\Controllers\Controller;
-use App\Service\Journal\CashflowStatementService;
-use App\Service\Journal\FinancialReportService;
-use App\Service\Journal\IncomeStatementService;
+use App\Support\Journal\CashflowStatementService;
+use App\Support\Journal\FinancialReportService;
+use App\Support\Journal\IncomeStatementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

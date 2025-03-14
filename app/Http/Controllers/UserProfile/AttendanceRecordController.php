@@ -5,7 +5,7 @@ namespace App\Http\Controllers\UserProfile;
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Service\UserProfileService\AttendanceRecordService;
+use App\Support\UserProfileService\AttendanceRecordService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

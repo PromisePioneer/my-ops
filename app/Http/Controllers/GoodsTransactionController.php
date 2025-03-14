@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
-use App\Models\Branch;
 use App\Models\Goods;
-use App\Models\GoodsStock;
+use App\Models\Stock;
+use App\Models\Master\Common\Branch;
 use App\Models\Warehouse;
-use App\Service\GoodsTransactionService;
+use App\Support\GoodsTransactionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -61,7 +61,7 @@ use Illuminate\View\View;
 
     public function getStock(Goods $goods): JsonResponse
     {
-        $data = GoodsStock::with('po', 'warehouse', 'branch', 'item')
+        $data = Stock::with('po', 'warehouse', 'branch', 'item')
             ->where(function ($query) use ($goods) {
                 if (!empty(Auth::user()->branch_id)) {
                     $query->where('item_id', $goods->id)
@@ -79,7 +79,7 @@ use Illuminate\View\View;
     public function selectedStock(Request $request, Goods $goods): JsonResponse
     {
         $explodeID = explode(",", $request->selected_stock);
-        $data = GoodsStock::with('po', 'warehouse', 'branch', 'item')->whereIn('id', $explodeID)->paginate(5);
+        $data = Stock::with('po', 'warehouse', 'branch', 'item')->whereIn('id', $explodeID)->paginate(5);
         return response()->json($data);
     }
 

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use AllowDynamicProperties;
 use App\Http\Requests\TransactionRequest;
 use App\Models\Transaction;
-use App\Service\Transactions\TransactionService;
+use App\Support\Transactions\TransactionService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

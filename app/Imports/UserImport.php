@@ -2,8 +2,8 @@
 
 namespace App\Imports;
 
-use App\Models\Branch;
 use App\Models\Company;
+use App\Models\Master\Common\Branch;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -14,9 +14,7 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithPreCalculateFormulas;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class UserImport implements ToModel, WithHeadingRow, WithValidation, WithChunkReading, WithCalculatedFormulas
 {

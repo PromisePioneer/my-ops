@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\ServiceCategory;
+use App\Models\Master\Common\ServiceCategory;
 use Illuminate\Database\Seeder;
 
 class ServicesCategoriesSeeder extends Seeder

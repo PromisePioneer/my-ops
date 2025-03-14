@@ -23,7 +23,7 @@
                     </div>
                     <div class="mb-10">
                         <label for="category_id" class="required form-label">Kategori</label>
-                        <select name="category_id" id="selectedCategory"
+                        <select name="category_id" id="selected-category"
                                 class="form-select form-select-solid category-of-goods-select2"
                                 data-dropdown-parent="#modal-item">
                             <option></option>
@@ -32,30 +32,12 @@
 
                     <div class="mb-10">
                         <label for="unit_type_id" class="required form-label">Satuan</label>
-                        <select name="unit_type_id" id="selectedUnitType"
+                        <select name="unit_type_id" id="selected-unit-type"
                                 class="form-select form-select-solid unit-types-select2"
                                 data-dropdown-parent="#modal-item">
                             <option></option>
                         </select>
                     </div>
-                        <div
-                            class="d-flex justify-content-between align-items-center form-check form-switch form-check-custom form-check-solid mb-4">
-                            <label class="form-label" for="already_has_sn_on_item" style="cursor: pointer">
-                                Serial Number sudah tertera di barang (Klik jika ya).
-                            </label>
-                            <input class="form-check-input" x-model="hasSNOnItem" type="checkbox"
-                                   :checked="editVal.already_has_sn_on_item === 1" name="already_has_sn_on_item"
-                                   id="already_has_sn_on_item"/>
-                        </div>
-                        <div
-                            class="d-flex justify-content-between align-items-center form-check form-switch form-check-custom form-check-solid mb-10">
-                            <label class="form-label" for="snPerPO" style="cursor: pointer">
-                                Memerlukan Serial Number.
-                            </label>
-                            <input class="form-check-input" x-model="needSN" type="checkbox"
-                                   :checked="editVal.need_sn === 1" name="need_sn"
-                                   id="snPerPO"/>
-                        </div>
                 </div>
 
                 <div class="modal-footer">

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
@@ -40,6 +41,7 @@ class PermissionSeeder extends Seeder
 
         // Inventory Controller
         $this->BoQ();
+        $this->goodsStock();
 
         // journal
         $this->generalJournal();
@@ -946,8 +948,18 @@ class PermissionSeeder extends Seeder
     }
 
 
-    public function e()
+    public function goodsStock(): void
     {
+        $permissions = [
+            'Lihat Menu Stok Barang',
+            'Input Pemakaian Stok Barang',
+            'Filter Stok Barang Berdasarkan Cabang'
+        ];
 
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+        $branchManager = Role::where('name', 'Branch Manager')->first();
+        $branchManager->givePermissionTo($permissions);
     }
 }

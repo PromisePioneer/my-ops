@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Contact;
+use App\Models\Master\Common\Contact;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

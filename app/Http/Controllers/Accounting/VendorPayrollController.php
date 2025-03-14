@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Accounting;
 
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
-use App\Service\VendorPayrollService;
+use App\Support\VendorPayrollService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 
