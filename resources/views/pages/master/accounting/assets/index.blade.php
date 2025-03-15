@@ -252,10 +252,11 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`master/accounting/assets/${id}`);
+                    const resp = await axios.get(`/master/accounting/assets/${id}`);
                     this.editVal = resp.data;
                     await this.selectedBranch();
                     await this.selectedKasAccount();
+                    await this.selectedAssetAccount();
                 },
                 async update(id) {
                     this.buttonLoading = true;
@@ -275,7 +276,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`master/accounting/assets/destroy`, new FormData(this.formDelete));
+                            await axios.post(`/master/accounting/assets/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -353,11 +354,11 @@
                     });
                 },
                 async selectedBranch() {
-                    const selectedBranch = $('#selectedBranch');
+                    const selectedBranch = $('#selected-branch');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/master/accounting/assets/branch/selected/${this.editVal.id}`,
+                        url: `/select2/selected-branch/${this.editVal.branch_id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedBranch.append(option).trigger('change').trigger({
@@ -370,10 +371,24 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `select2/selected-account/${this.editVal.credit_account_id}`,
+                        url: `/select2/selected-account/${this.editVal.credit_account_id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedKasAccount.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
+
+                async selectedAssetAccount() {
+                    const selectedAssetAccount = $('#selected-asset-account');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/select2/selected-account/${this.editVal.debit_account_id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedAssetAccount.append(option).trigger('change').trigger({
                         type: 'select2:select',
                         params: {results: response}
                     });

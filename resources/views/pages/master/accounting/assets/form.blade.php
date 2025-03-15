@@ -14,7 +14,7 @@
                 </div>
             </div>
 
-            <form id="asset-form" @submit.prevent="save(editVal?.name)">
+            <form id="asset-form" @submit.prevent="save(editVal?.id)">
                 <div class="modal-body">
                     <div class="row mb-7">
                         <div class="col-md-6">

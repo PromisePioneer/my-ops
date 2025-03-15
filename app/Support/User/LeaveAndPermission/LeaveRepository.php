@@ -9,6 +9,6 @@ class LeaveRepository
 {
     public function leavesMainQuery(): Builder
     {
-        return LeaveAndPermission::with('accBy', 'user', 'user.userHasArea', 'user.branch');
+        return LeaveAndPermission::with('accBy', 'user', 'user.userHasArea', 'user.branch', 'user.roles.department');
     }
 }

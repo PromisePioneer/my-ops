@@ -90,6 +90,7 @@
                                             <td x-text="item.category_name"></td>
                                             <td>
                                                 <button class="btn btn-link btn-sm text-primary"
+                                                        data-bs-target="#modal-used-item" data-bs-toggle="modal"
                                                         x-text="`${item.total_stock} ${item.unit_name}`">
                                                 </button>
                                             </td>

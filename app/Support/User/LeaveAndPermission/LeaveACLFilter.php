@@ -11,20 +11,73 @@ class LeaveACLFilter
     public static function apply(Builder|EloquentBuilder $query, Request $request)
     {
         if ($request->user()->hasAnyRole(['NOC Supervisor', 'NOC Staff'])) {
-            return $query->whereHas('roles', function ($query) {
+            $query->whereHas('roles', function ($query) {
                 $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
             })->where(function ($query) {
                 $query->whereNull('branch_id')->orWhere('branch_id', 1);
             });
         }
 
-        if ($request->user()->hasAnyRole('Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner')) {
-            return $query;
+        if ($request->user()->hasRole('Director')) {
+            $query->whereHas('user.roles', function ($query) {
+                $query->whereIn('name', [
+                    'Branch Manager',
+                    'Operational Manager',
+                    'FA & Tax Manager',
+                ]);
+            });
+        }
+
+
+        if ($request->user()->hasRole('Operational Manager')) {
+            $query->whereHas('user.roles', function ($query) {
+                $query->whereIn('name', [
+                    'Head Engineer',
+                    'Senior Engineer',
+                    'Engineer',
+                    'KU Head Engineer',
+                    'KU Engineer',
+                    'Quality Controller Supervisor',
+                    'Backbone Team Supervisor',
+                    'Trainer & Quality Control Staff',
+                ]);
+            });
+        }
+
+
+        if ($request->user()->hasRole('FA & Tax Manager')) {
+            $query->whereHas('user.roles', function ($query) {
+                $query->whereIn('name', [
+                    'Tax Admin Supervisor',
+                    'Customer Payment Supervisor',
+                    'Finance & Accounting Staff',
+                    'After Sales Customer Service',
+                    'Electrical Senior Engineer',
+                    'NOC Supervisor',
+                    'Customer Service Staff',
+                    'Billing Admin Supervisor',
+                    'Finance & Accounting Supervisor',
+                    'Legal & Corporate Commissioner',
+                    'Stocker Supervisor',
+                    'Stocker Staff',
+                    'Warehouse Security',
+                    'NOC Staff',
+                    'Programmer',
+                    'Inventory Controller Supervisor',
+                    'FA Senior Staff',
+                    'HR & Operational Staff',
+                    'Project Controller & Vendor Supervisor',
+                    'Welding Senior Engineer',
+                    'Warehouse Stocker Staff',
+                    'Customer Service Leader',
+                    ''
+                ]);
+            });
         }
 
 
         if ($request->user()->hasAnyRole(['Head Engineer', 'Senior Engineer'])) {
-            return $query->whereHas('user.userHasArea', function ($query) use ($request) {
+            $query->whereHas('user.userHasArea', function ($query) use ($request) {
                 $query->where('area_id', $request->user()->userHasArea->area_id);
             })->where(function ($query) use ($request) {
                 $query->whereHas('user.branch', function ($query) use ($request) {
@@ -45,7 +98,7 @@ class LeaveACLFilter
 
 
         if ($request->user()->hasAnyRole('Finance & Accounting Supervisor')) {
-            return $query->whereHas('roles', function ($query) use ($request) {
+            $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff', 'Stocker Staff', 'Inventory Controller Supervisor']);
             })->where(function ($query) use ($request) {
                 $query->whereHas('branch', function ($query) use ($request) {
@@ -56,7 +109,7 @@ class LeaveACLFilter
 
 
         if ($request->user()->hasAnyRole('Head Of Electrical Engineer')) {
-            return $query->whereHas('roles', function ($query) use ($request) {
+            $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer']);
             })->whereHas('branch', function ($query) use ($request) {
                 $query->whereNull('branch_id');
@@ -65,21 +118,21 @@ class LeaveACLFilter
 
 
         if ($request->user()->hasRole('Branch Manager')) {
-            return $query->whereHas('user.branch', function ($query) use ($request) {
+            $query->whereHas('user.branch', function ($query) use ($request) {
                 $query->where('branch_id', $request->user()->branch_id);
             });
         }
 
 
         if ($request->user()->hasRole('KU Head Engineer')) {
-            return $query->whereHas('roles', function ($query) use ($request) {
+            $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['KU Head Engineer', 'KU Engineer']);
             });
         }
 
 
         if ($request->user()->hasRole('Quality Controller Supervisor')) {
-            return $query->whereHas('roles', function ($query) use ($request) {
+            $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Quality Controller Supervisor', 'Quality Control Staff']);
             });
         }

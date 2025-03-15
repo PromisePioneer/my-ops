@@ -199,7 +199,11 @@ class LeaveAndPermissionRequest extends FormRequest
                 ->first();
             $getHolidayFromWeekHoliday = WeekHoliday::where('user_id', $request->user_id)->first()?->week_holiday;
 
-            $weekHoliday = Carbon::parse($getHolidayFromEmployeeSchedule->start_date)->dayName ?? $getHolidayFromWeekHoliday;
+            $weekHoliday = Carbon::make($getHolidayFromEmployeeSchedule?->start_date)->dayName ?? $getHolidayFromWeekHoliday;
+
+            if (!$weekHoliday) {
+                return null;
+            }
 
             $datePeriod = CarbonPeriod::create($request->start_date, $request->end_date);
 

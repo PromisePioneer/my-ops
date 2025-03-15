@@ -7,7 +7,7 @@ use App\Models\GoodsPurchaseOrder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class GoodsStockService
+class StockService
 {
     private static int $perPage = 10;
 

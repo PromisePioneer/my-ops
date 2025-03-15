@@ -6,20 +6,16 @@ use AllowDynamicProperties;
 use App\Http\Requests\GenerateItemSNRequest;
 use App\Models\Goods;
 use App\Models\Stock;
-use App\Support\GoodsStockService;
+use App\Support\StockService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 #[AllowDynamicProperties] class StockController extends Controller
 {
-
-    private static int $perPage = 10;
-
-
     public function __construct()
     {
-        $this->goodsStockService = new GoodsStockService();
+        $this->stockService = new StockService();
     }
 
 
@@ -31,18 +27,18 @@ use Illuminate\View\View;
 
     public function data(): JsonResponse
     {
-        return response()->json($this->goodsStockService->goodsData());
+        return response()->json($this->stockService->goodsData());
     }
 
 
     public function goodsSearch(Request $request): JsonResponse
     {
-        return response()->json($this->goodsStockService->searchGoodsData($request));
+        return response()->json($this->stockService->searchGoodsData($request));
     }
 
     public function goodsFilter(Request $request): JsonResponse
     {
-        return response()->json($this->goodsStockService->filter($request));
+        return response()->json($this->stockService->filter($request));
     }
 
     public function detail(Goods $goods): View

@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\LeaveAndPermission;
 use App\Models\User;
 
 class LeaveAndPermissionPolicy
@@ -35,8 +36,12 @@ class LeaveAndPermissionPolicy
     }
 
 
-    public function confirm(User $user): bool
+    public function confirm(User $user, LeaveAndPermission $leaveAndPermission): bool
     {
+        if ($leaveAndPermission->user_id !== $user->id) {
+            return false;
+        }
+
         return $user->can('Konfirmasi Data Manajemen Cuti');
     }
 

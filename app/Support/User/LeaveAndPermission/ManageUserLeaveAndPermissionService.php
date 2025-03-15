@@ -22,7 +22,10 @@ use function App\Helper\formatDate;
     public function data(Request $request): LengthAwarePaginator
     {
         $query = $this->leaveRepository->leavesMainQuery();
-        $permissions = LeaveACLFilter::apply($query, $request);
+//        $permissions = LeaveACLFilter::apply($query, $request);
+
+        $permissions = $query->whereHas('user.roles.department', function ($query) {
+        });
         $query = $permissions->paginate(10);
         return self::formattedData($query);
     }
