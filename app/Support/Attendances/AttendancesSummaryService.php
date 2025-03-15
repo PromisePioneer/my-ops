@@ -188,7 +188,17 @@ use Illuminate\Http\Request;
         $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
 
 
-        if ($checkInToUse->diffInMinutes($actualCheckIn) < 2.6) {
+        $diffInSeconds = $actualCheckIn->diffInSeconds($expectedCheckIn, false);
+
+        // If actual check-in is earlier than or exactly on time, no late
+        if ($diffInSeconds <= 0) {
+            return 0;
+        }
+
+        // Convert to minutes and check against the 2.5-minute threshold
+        $diffInMinutes = $diffInSeconds / 60;
+
+        if ($diffInMinutes < 2.5) {
             return 0;
         }
 
