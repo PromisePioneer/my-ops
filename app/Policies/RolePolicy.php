@@ -26,7 +26,7 @@ class RolePolicy
 
     public function update(User $user): bool
     {
-        return $user->can('Update Data Jabatan');
+        return $user->can('Edit Data Jabatan');
     }
 
     public function delete(User $user): bool
