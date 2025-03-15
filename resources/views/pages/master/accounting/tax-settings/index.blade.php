@@ -1,10 +1,10 @@
-﻿@extends('layouts.template')
-@section('page-title', 'Pelanggan')
-@section('breadcrumbs', 'Master Umum - Pelanggan')
+@extends('layouts.template')
+@section('page-title', 'Pengaturan Pajak')
+@section('breadcrumbs', 'Master Keuangan - Pengaturan Pajak')
 @section('content')
 
-    <div x-data="contactData()">
-        @include('pages.master.common.contacts.form')
+    <div x-data="taxSettingsData()">
+        @include('pages.master.accounting.tax-settings.form')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -17,23 +17,23 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-                    <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                        <template x-if="Number(createPermission) === 1">
+                    <div class="d-flex justify-content-end" data-kt-category-table-toolbar="base">
+                        @can('Tambah Data Pengaturan Pajak')
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#contact-modal">
+                                    data-bs-target="#tax-modal">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
                                     <span class="path3"></span>
                                 </i> Tambah
                             </button>
-                        </template>
+                        @endcan
                     </div>
                 </div>
             </div>
             <div class="card-body py-3">
-                <div class="py-5">
+                <div class="col-12 ">
                     <form id="form-delete" @submit.prevent="destroy()">
                         <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
@@ -48,27 +48,26 @@
                             Hapus
                         </button>
                     </form>
+                </div>
+                <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table table-bordered align-middle table-row-dashed fs-6 gy-5">
+                        <table class="table align-middle table-bordered fs-6 gy-5">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0 text-center">
+                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3"
                                          @click="toggleAllCheckBox()">
-                                        <input class="form-check-input" type="checkbox"
-                                               :disabled="Number(deletePermission) !== 1"
-                                        />
+                                        <input class="form-check-input" type="checkbox" value="1"/>
                                     </div>
                                 </th>
-                                <th class="min-w-125px">PIC</th>
-                                <th class="min-w-125px">Nama Perusahaan</th>
-                                <th class="min-w-125px">No. Handphone</th>
-                                <template x-if="Number(editPermission) === 1">
+                                <th class="min-w-125px">Pajak</th>
+                                <th class="min-w-125px">Rate</th>
+                                <template x-if="Number(deletePermission) === 1">
                                     <th class="min-w-125px">Actions</th>
                                 </template>
                             </thead>
                             <template x-if="isLoading">
-                                <tbody class=" fw-bold text-center">
+                                <tbody class="fw-bold">
                                 <tr>
                                     <td colspan="9">
                                         <div style="text-align: center;">
@@ -80,8 +79,8 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-if="!isLoading && contacts.data?.length === 0">
-                                <tbody class=" fw-bold">
+                            <template x-if="!isLoading && taxSettings.data?.length === 0">
+                                <tbody class="fw-bold">
                                 <tr>
                                     <td colspan="9">
                                         <center>Data Tidak Ditemukan</center>
@@ -89,40 +88,39 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-for="(contact,index) in contacts?.data" :key="index">
-                                <tbody class="fw-bold">
+                            <template x-for="tax in taxSettings?.data" :key="tax.id">
+                                <tbody class="fw-bold text-center">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="contact.id"
-                                                   :id="'checkbox-' + contact.id"
+                                            <input class="form-check-input" type="checkbox" :value="tax.id"
+                                                   :id="'checkbox-' + tax.id"
                                                    :disabled="Number(deletePermission) !== 1"/>
                                         </div>
                                     </td>
-                                    <td x-text="contact.pic"></td>
-                                    <td x-text="contact.company_name"></td>
-                                    <td x-text="contact.phone_number"></td>
-                                    <template x-if="Number(editPermission) === 1">
-                                        <td>
+                                    <td x-text="tax.name"></td>
+                                    <td x-text="`${tax.rate} %`"></td>
+                                    <td>
+                                        <template x-if="Number(editPermission) === 1">
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#contact-modal" @click="edit(contact.id)">
+                                                    data-bs-target="#tax-modal" @click="edit(tax.id)">
                                                 <i class="ki-duotone ki-pencil fs-2">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
                                                 </i>
                                             </button>
-                                        </td>
-                                    </template>
+                                        </template>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </template>
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4 mt-4">
-                        <template x-for="pagination in contacts.links">
+                        <template x-for="pagination in taxSettings.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                <button class="page-link" @click="paginate(pagination.url)"
+                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
                                         x-html="pagination.label">
                                 </button>
                             </li>
@@ -135,69 +133,55 @@
     @include('components.toast')
 @endsection
 @push('script')
-    <script defer>
-        function contactData() {
+    <script>
+        function taxSettingsData() {
             return {
-                createPermission: "{{  request()->user()->can('Tambah Data Kontak')  }}",
-                editPermission: "{{  request()->user()->can('Edit Data Kontak')  }}",
-                deletePermission: "{{ request()->user()->can('Hapus Data Kontak') }}",
-                contacts: [],
-                isLoading: false,
+                editPermission: "{{ request()->user()->can('Edit Data Pengaturan Pajak') }}",
+                deletePermission: "{{ request()->user()->can('Hapus Data Pengaturan Pajak') }}",
+                taxSettings: [],
                 buttonLoading: false,
+                isLoading: true,
+                search: '',
                 selectAll: false,
                 selectedCheckBox: [],
                 singleChecked: false,
-                search: '',
                 editVal: '',
-                form: document.getElementById('contact-form'),
-                modal: new bootstrap.Modal(document.getElementById('contact-modal')),
-                formDelete: document.getElementById('form-delete'),
+                modal: new bootstrap.Modal(document.getElementById('tax-modal')),
+                form: document.getElementById('tax-form'),
+                deleteForm: document.getElementById('form-delete'),
                 async init() {
-                    await this.contactData();
-                    await this.filterByBranch();
+                    const taxSettings = await axios.get('/master/accounting/tax-settings/data');
+                    this.taxSettings = taxSettings.data;
+                    this.isLoading = false;
                 },
                 async searchData() {
-                    try {
-                        const resp = await axios.get('/master/common/contact/search', {
-                            params: {search: this.search},
-                            headers: {'Content-Type': 'application/json'}
-                        });
-                        this.contacts = resp.data;
-                    } catch (error) {
-                        console.error('Error fetching data:', error);
-                    }
-                },
-                async paginate(url) {
-                    if (url) {
-                        try {
-                            this.contacts = [];
-                            this.isLoading = true;
-                            const resp = await axios.get(`${url}`, {
-                                params: {
-                                    search: this.search
-                                }
-                            });
-                            this.contacts = resp.data
-                        } catch (e) {
-                            console.log(e)
-                        } finally {
-                            this.isLoading = false
+                    this.taxSettings = await axios.get('/master/accounting/tax-settings/search', {
+                        params: {
+                            search: this.search
+                        },
+                        headers: {
+                            'Content-Type': 'application/json',
                         }
+                    });
+                },
+                async paginationEndPoint(url) {
+                    if (url) {
+                        const resp = await axios.get(`${url}`);
+                        this.taxSettings = resp.data
                     }
                 },
                 toggleAllCheckBox() {
-                    if (Number(this.deletePermission) === 1) {
-                        this.selectAll = !this.selectAll;
-                        this.singleChecked = false;
-                        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                        this.selectedCheckBox = [];
-                        checkboxes.forEach((checkbox) => {
-                            checkbox.checked = this.selectAll;
-                            if (this.selectAll) {
-                                this.selectedCheckBox.push(checkbox.value);
-                            }
-                        });
-                    }
+                    this.selectAll = !this.selectAll;
+                    this.singleChecked = false;
+
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    this.selectedCheckBox = [];
+                    checkboxes.forEach((checkbox) => {
+                        checkbox.checked = this.selectAll;
+                        if (this.selectAll) {
+                            this.selectedCheckBox.push(checkbox.value);
+                        }
+                    });
                 },
                 selectCheckBox(event) {
                     const checkboxId = event.target.value;
@@ -210,53 +194,41 @@
                         }
                     }
                 },
-                async saveContact(id = null) {
+                async save(id = null) {
                     this.buttonLoading = true;
                     try {
                         if (!id) {
-                            await axios.post(`/general-master-data/contact`, new FormData(this.form))
+                            await axios.post('/master/accounting/tax-settings/', new FormData(this.form))
                         } else {
-                            await axios.post(`general-master-data/contact/update/${id}`, new FormData(this.form))
+                            await axios.post(`/master/accounting/tax-settings/update/${id}`, new FormData(this.form))
                         }
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.form.reset();
-                        this.modal.hide();
+                        await showAlert('success', 'Data berhasil disimpan');
+                        await this.modal.hide();
+                        await this.form.reset();
                         await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
                     } finally {
-                        this.buttonLoading = false;
+                        this.buttonLoading = false
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/master/common/contact/edit/${id}`);
+                    const resp = await axios.get(`/master/accounting/tax-settings/${id}`);
                     this.editVal = resp.data;
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/master/common/contact/destroy`, new FormData(this.formDelete));
+                            await axios.post(`/master/accounting/tax-settings/destroy`, new FormData(this.deleteForm));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
-                            this.selectedCheckBox = [];
                         } catch (error) {
                             console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');
                         }
                     });
                 },
-                async contactData() {
-                    this.isLoading = true;
-                    try {
-                        const resp = await axios.get('/master/common/contact/data')
-                        this.contacts = resp.data
-                    } catch (e) {
-                        console.log(e)
-                    } finally {
-                        this.isLoading = false;
-                    }
-                }
             }
         }
     </script>

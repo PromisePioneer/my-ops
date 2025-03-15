@@ -56,10 +56,9 @@
                                         </th>
                                         <th class="min-w-125px">
                                             <div class="d-flex align-items-center justify-content-center">
-                                                <span class="me-1">Total Stok</span>
+                                                <span class="me-1">Total Stok (Klik untuk detail)</span>
                                             </div>
                                         </th>
-                                        <th class="min-w-125px">Actions</th>
                                     </thead>
                                     <template x-if="isLoading">
                                         <tbody class="fw-bold">
@@ -89,19 +88,10 @@
                                             <td x-text="startIndex + index++"></td>
                                             <td x-text="item.name"></td>
                                             <td x-text="item.category_name"></td>
-                                            <td x-text="item.total_stock"></td>
                                             <td>
-                                                <template x-if="item.total_stock > 0">
-                                                    <button data-bs-target="#modal-used-item" data-bs-toggle="modal"
-                                                            class="btn btn-light-primary btn-sm"
-                                                            @click="showStockDetail(item.id)">
-                                                        Pemakaian <i class="bi bi-plus-circle"></i>
-                                                    </button>
-                                                </template>
-                                                <a :href="`/inventory/goods/used-stock/history/${item.id}`"
-                                                   class="btn btn-light-info btn-sm">
-                                                    Riwayat Terpakai <i class="bi bi-clock-history"></i>
-                                                </a>
+                                                <button class="btn btn-link btn-sm text-primary"
+                                                        x-text="`${item.total_stock} ${item.unit_name}`">
+                                                </button>
                                             </td>
                                         </tr>
                                         </tbody>

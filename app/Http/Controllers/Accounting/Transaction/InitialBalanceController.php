@@ -8,7 +8,7 @@ use App\Http\Requests\InitialBalanceRequest;
 use App\Models\Account;
 use App\Models\AccountTransaction;
 use App\Models\Master\Common\Branch;
-use App\Support\InitialBalanceService;
+use App\Support\Master\Accounting\InitialBalances\Service\InitialBalanceService;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -18,7 +18,6 @@ use Illuminate\Http\Request;
 
 #[AllowDynamicProperties] class InitialBalanceController extends Controller
 {
-
     public function __construct()
     {
         $this->account = new Account();
@@ -32,7 +31,7 @@ use Illuminate\Http\Request;
     public function index(): View
     {
         $this->authorize('view', AccountTransaction::class);
-        return view('pages.finance-master-data.initial-balances.index');
+        return view('pages.master.accounting.initial-balances.index');
     }
 
 
@@ -96,15 +95,6 @@ use Illuminate\Http\Request;
     }
 
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function getBranchData(Request $request): JsonResponse
-    {
-        $this->authorize('view', AccountTransaction::class);
-        return response()->json($this->branch->getData($request));
-    }
-
 
     /**
      * @throws AuthorizationException
@@ -164,10 +154,6 @@ use Illuminate\Http\Request;
 
         return response()->json($data);
     }
-
-    /**
-     * @throws AuthorizationException
-     */
 
     /**
      * @throws AuthorizationException

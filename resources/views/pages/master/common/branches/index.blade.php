@@ -194,13 +194,13 @@
                     await this.getBranchData();
                 },
                 async subBranchDetail(id) {
-                    const resp = await axios.get(`/common-master-data/branch/sub-branch/detail/${id}`);
+                    const resp = await axios.get(`/master/common/branch/sub-branch/detail/${id}`);
                     this.subBranchVal = resp.data;
                 },
                 async getBranchData() {
                     this.isLoading = false;
                     try {
-                        const branches = await axios.get('/common-master-data/branch/data');
+                        const branches = await axios.get('/master/common/branch/data');
                         this.branches = branches.data
                     } catch (e) {
                         console.log(e)
@@ -210,7 +210,7 @@
                 },
                 async searchData() {
                     try {
-                        const resp = await axios.get('/common-master-data/branch/search', {
+                        const resp = await axios.get('/master/common/branch/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -266,7 +266,7 @@
                     this.buttonLoading = true;
                     console.log(this.branches.path);
                     try {
-                        await axios.post('/common-master-data/branch', new FormData(this.formCreate))
+                        await axios.post('/master/common/branch', new FormData(this.formCreate))
                             .then(async () => {
                                 const resp = await axios.get(`${this.branches.path}?page=${this.branches.current_page}`, {
                                     params: {
@@ -287,13 +287,13 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/common-master-data/branch/show/${id}`);
+                    const resp = await axios.get(`/master/common/branch/show/${id}`);
                     this.editVal = resp.data;
                 },
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/common-master-data/branch/update/${id}`, new FormData(this.formEdit)).then(async () => {
+                        await axios.post(`/master/common/branch/update/${id}`, new FormData(this.formEdit)).then(async () => {
                             const resp = await axios.get(`${this.branches.path}?page=${this.branches.current_page}`, {
                                 params: {
                                     search: this.search
@@ -315,7 +315,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/common-master-data/branch/destroy`, new FormData(this.formDelete));
+                            await axios.post(`/master/common/branch/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -327,7 +327,7 @@
                 async saveChildren() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/common-master-data/branch/sub-branch/store`,
+                        await axios.post(`/master/common/branch/sub-branch/store`,
                             new FormData(this.formCreateChildren))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.modalCreateChildren.hide();
@@ -343,7 +343,7 @@
                 async updateChildren(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/common-master-data/branch/sub-branch/update/${id}`, new FormData(this.formChildrenDetail))
+                        await axios.post(`/master/common/branch/sub-branch/update/${id}`, new FormData(this.formChildrenDetail))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.modalChildrenDetail.hide();
                         this.formChildrenDetail.reset();
@@ -358,7 +358,7 @@
                 async destroyChildren(id) {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.delete(`/common-master-data/branch/sub-branch/destroy/${id}`, new FormData(this.formDelete));
+                            await axios.delete(`/master/common/branch/sub-branch/destroy/${id}`, new FormData(this.formDelete));
                             this.modalChildrenDetail.hide();
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();

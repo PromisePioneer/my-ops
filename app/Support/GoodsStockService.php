@@ -58,7 +58,9 @@ class GoodsStockService
             return [
                 'id' => $item->id,
                 'total_stock' => $item->goodsStock->sum('qty'),
-                'name' => $item->name
+                'category_name' => $item->category->name,
+                'name' => $item->name,
+                'unit_name' => $item->unitType->name
             ];
         });
 

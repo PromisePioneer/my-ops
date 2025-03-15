@@ -125,7 +125,7 @@
                             </div>
                             <div class="row mt-4">
                                 <div class="col-sm-12 col-md-5 d-flex align-items-center justify-content-center justify-content-md-start">
-                                    <a href="{{ url('/common-master-data/roles') }}"
+                                    <a href="{{ url('/master/common/roles') }}"
                                        class="btn btn-light btn-active-danger btn-sm">Kembali</a>
                                 </div>
                                 <div class="col-sm-12 col-md-7 d-flex align-items-center justify-content-center justify-content-md-end">
@@ -168,7 +168,7 @@
                 async getUserData() {
                     this.isLoading = true;
                     try {
-                        const resp = await axios.get(`/common-master-data/roles/detail/associated-users/${this.roleId}`);
+                        const resp = await axios.get(`/master/common/roles/detail/associated-users/${this.roleId}`);
                         this.users = resp.data;
                         this.startIndex = this.users.from;
                     } catch (e) {

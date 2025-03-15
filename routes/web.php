@@ -63,7 +63,7 @@ use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollScheduleContr
 use App\Http\Controllers\HRIS\PermissionController;
 use App\Http\Controllers\Inventory\BoQ\BoqController;
 use App\Http\Controllers\Master\Accounting\AccountController;
-use App\Http\Controllers\Master\Accounting\AssetController;
+use App\Http\Controllers\Master\Accounting\Asset\AssetController;
 use App\Http\Controllers\Master\Accounting\TaxSettingController;
 use App\Http\Controllers\Master\Common\BranchController;
 use App\Http\Controllers\Master\Common\BroadbandPacketController;
@@ -287,199 +287,201 @@ Route::group(['middleware' => ['auth']], static function () {
     });
 
 
-    Route::prefix('common-master-data')->group(function () {
-        Route::prefix('area')->group(function () {
-            Route::get('/', [AreaController::class, 'index']);
-            Route::get('/data', [AreaController::class, 'data']);
-            Route::get('/search', [AreaController::class, 'search']);
-            Route::get('/filter', [AreaController::class, 'filter']);
-            Route::post('/', [AreaController::class, 'store']);
-            Route::post('/destroy', [AreaController::class, 'destroy']);
-            Route::get('/{area}', [AreaController::class, 'edit']);
-            Route::post('/{area}', [AreaController::class, 'update']);
-            Route::get('detail/{area}', [AreaController::class, 'detail']);
+    Route::prefix('/master')->group(function () {
+        Route::prefix('/common')->group(function () {
+            Route::prefix('area')->group(function () {
+                Route::get('/', [AreaController::class, 'index']);
+                Route::get('/data', [AreaController::class, 'data']);
+                Route::get('/search', [AreaController::class, 'search']);
+                Route::get('/filter', [AreaController::class, 'filter']);
+                Route::post('/', [AreaController::class, 'store']);
+                Route::post('/destroy', [AreaController::class, 'destroy']);
+                Route::get('/{area}', [AreaController::class, 'edit']);
+                Route::post('/{area}', [AreaController::class, 'update']);
+                Route::get('detail/{area}', [AreaController::class, 'detail']);
+            });
+            Route::prefix('area-detail')->group(function () {
+                Route::get('/data/{area}', [AreaDetailController::class, 'data']);
+                Route::get('/users/data/{area}', [AreaDetailController::class, 'getUser']);
+                Route::post('/destroy', [AreaDetailController::class, 'destroy']);
+                Route::post('/{area}', [AreaDetailController::class, 'assignUser']);
+                Route::get('/search/{area}', [AreaDetailController::class, 'search']);
+                Route::get('users/selected/{area}', [AreaDetailController::class, 'selectedUser']);
+                Route::get('/show/{user}', [AreaDetailController::class, 'show']);
+                Route::post('/save-week-holiday/{user}', [AreaDetailController::class, 'assignWeekHoliday']);
+            });
+
+            Route::prefix('branch')->group(function () {
+                Route::get('/', [BranchController::class, 'index']);
+                Route::get('/data', [BranchController::class, 'data']);
+                Route::get('/search', [BranchController::class, 'search']);
+                Route::post('/', [BranchController::class, 'store']);
+                Route::get('/show/{branch}', [BranchController::class, 'show']);
+                Route::get('/sub-branch/detail/{branch}', [BranchController::class, 'subBranchDetail']);
+                Route::post('/sub-branch/store', [BranchController::class, 'storeChildren']);
+                Route::post('/sub-branch/update/{branch}', [BranchController::class, 'updateChildren']);
+                Route::post('update/{branch}', [BranchController::class, 'update']);
+                Route::post('/destroy/', [BranchController::class, 'destroy']);
+                Route::delete('/sub-branch/destroy/{branch}', [BranchController::class, 'destroyChildren']);
+            });
+
+            Route::prefix('unit-types')->group(function () {
+                Route::get('/', [UnitTypeController::class, 'index']);
+                Route::get('/data', [UnitTypeController::class, 'data']);
+                Route::get('/search', [UnitTypeController::class, 'search']);
+                Route::post('/', [UnitTypeController::class, 'store']);
+                Route::get('/show/{unitType}', [UnitTypeController::class, 'edit']);
+                Route::post('/destroy', [UnitTypeController::class, 'destroy']);
+                Route::post('/update/{unitType}', [UnitTypeController::class, 'update']);
+            });
+
+            Route::prefix('skl')->group(function () {
+                Route::get('/', [SKLController::class, 'index']);
+                Route::get('/data', [SKLController::class, 'data']);
+                Route::get('/search', [SKLController::class, 'search']);
+                Route::post('/', [SKLController::class, 'store']);
+                Route::get('/{skl}', [SKLController::class, 'edit']);
+                Route::post('/destroy', [SKLController::class, 'destroy']);
+                Route::post('/{skl}', [SKLController::class, 'update']);
+            });
+
+            Route::prefix('contact')->group(function () {
+                Route::get('/', [ContactController::class, 'index']);
+                Route::get('/data', [ContactController::class, 'data']);
+                Route::get('/search', [ContactController::class, 'search']);
+                Route::get('/branch/data', [ContactController::class, 'branchData']);
+                Route::get('filter/branch/data/{branch}', [ContactController::class, 'filterByBranch']);
+                Route::post('/', [ContactController::class, 'store']);
+                Route::get('/edit/{contact}', [ContactController::class, 'edit']);
+                Route::post('/destroy', [ContactController::class, 'destroy']);
+                Route::post('/update/{contact}', [ContactController::class, 'update']);
+            });
+            Route::prefix('service-categories')->group(function () {
+                Route::get('/', [ServiceCategoryManagerController::class, 'index']);
+                Route::get('/data', [ServiceCategoryManagerController::class, 'data']);
+                Route::get('/search', [ServiceCategoryManagerController::class, 'search']);
+                Route::post('/', [ServiceCategoryManagerController::class, 'store']);
+                Route::get('/show/{serviceCategory}', [ServiceCategoryManagerController::class, 'show']);
+                Route::post('/update/{serviceCategory}', [ServiceCategoryManagerController::class, 'update']);
+                Route::post('/destroy', [ServiceCategoryManagerController::class, 'destroy']);
+            });
+
+            Route::prefix('department')->group(function () {
+                Route::get('/', [DepartmentController::class, 'index']);
+                Route::get('/data', [DepartmentController::class, 'data']);
+                Route::get('/search', [DepartmentController::class, 'search']);
+                Route::post('/', [DepartmentController::class, 'store']);
+                Route::get('/{department}', [DepartmentController::class, 'edit']);
+                Route::post('/destroy', [DepartmentController::class, 'destroy']);
+                Route::post('/{department}', [DepartmentController::class, 'update']);
+            });
+
+            Route::prefix('roles')->group(function () {
+                Route::get('/', [RoleController::class, 'index']);
+                Route::get('/data', [RoleController::class, 'rolesData']);
+                Route::get('/departments/data', [RoleController::class, 'getDepartments']);
+                Route::get('/permissions/data', [RoleController::class, 'getPermissions']);
+                Route::get('/permissions/search', [RoleController::class, 'searchPermission']);
+                Route::get('/departments/data/selected/{role}', [RoleController::class, 'getSelectedDepartment']);
+                Route::get('/permissions/data/selected/{role}', [RoleController::class, 'getSelectedPermission']);
+                Route::get('/create', [RoleController::class, 'create']);
+                Route::get('/search', [RoleController::class, 'search']);
+                Route::post('/', [RoleController::class, 'store']);
+                Route::get('/edit/{role}', [RoleController::class, 'edit']);
+                Route::get('/show/{role}', [RoleController::class, 'show']);
+                Route::post('/update/{role}', [RoleController::class, 'update']);
+                Route::delete('/{role}', [RoleController::class, 'destroy']);
+            });
+
+            Route::prefix('broadband-packets')->group(function () {
+                Route::get('/', [BroadbandPacketController::class, 'index']);
+                Route::get('/data', [BroadbandPacketController::class, 'data']);
+                Route::get('/search', [BroadbandPacketController::class, 'search']);
+                Route::post('/', [BroadbandPacketController::class, 'store']);
+                Route::get('/{broadbandPacket}', [BroadbandPacketController::class, 'edit']);
+                Route::post('/destroy', [BroadbandPacketController::class, 'destroy']);
+                Route::post('/{broadbandPacket}', [BroadbandPacketController::class, 'update']);
+            });
+
+            Route::prefix('companies')->group(function () {
+                Route::get('/', [CompanyController::class, 'index']);
+                Route::get('/data', [CompanyController::class, 'data']);
+                Route::get('/search', [CompanyController::class, 'search']);
+                Route::post('/', [CompanyController::class, 'store']);
+                Route::get('/{company}', [CompanyController::class, 'edit']);
+                Route::post('/update/{company}', [CompanyController::class, 'update']);
+                Route::post('/destroy', [CompanyController::class, 'destroy']);
+                Route::post('/{company}', [CompanyController::class, 'update']);
+            });
         });
 
-        Route::prefix('area-detail')->group(function () {
-            Route::get('/data/{area}', [AreaDetailController::class, 'data']);
-            Route::get('/users/data/{area}', [AreaDetailController::class, 'getUser']);
-            Route::post('/destroy', [AreaDetailController::class, 'destroy']);
-            Route::post('/{area}', [AreaDetailController::class, 'assignUser']);
-            Route::get('/search/{area}', [AreaDetailController::class, 'search']);
-            Route::get('users/selected/{area}', [AreaDetailController::class, 'selectedUser']);
-            Route::get('/show/{user}', [AreaDetailController::class, 'show']);
-            Route::post('/save-week-holiday/{user}', [AreaDetailController::class, 'assignWeekHoliday']);
-        });
 
-        Route::prefix('branch')->group(function () {
-            Route::get('/', [BranchController::class, 'index']);
-            Route::get('/data', [BranchController::class, 'data']);
-            Route::get('/search', [BranchController::class, 'search']);
-            Route::post('/', [BranchController::class, 'store']);
-            Route::get('/show/{branch}', [BranchController::class, 'show']);
-            Route::get('/sub-branch/detail/{branch}', [BranchController::class, 'subBranchDetail']);
-            Route::post('/sub-branch/store', [BranchController::class, 'storeChildren']);
-            Route::post('/sub-branch/update/{branch}', [BranchController::class, 'updateChildren']);
-            Route::post('update/{branch}', [BranchController::class, 'update']);
-            Route::post('/destroy/', [BranchController::class, 'destroy']);
-            Route::delete('/sub-branch/destroy/{branch}', [BranchController::class, 'destroyChildren']);
-        });
+        Route::prefix('/accounting')->group(function () {
+            Route::prefix('accounts')->group(function () {
+                Route::get('/', [AccountController::class, 'index']);
+                Route::post('/create-child/{account}', [AccountController::class, 'createChildAccount']);
+                Route::get('/data', [AccountController::class, 'data']);
+                Route::get('/search', [AccountController::class, 'search']);
+                Route::post('/', [AccountController::class, 'store']);
+                Route::post('/import', [AccountController::class, 'import']);
+                Route::post('/destroy', [AccountController::class, 'destroy']);
+                Route::get('/edit/{account}', [AccountController::class, 'edit']);
+                Route::post('/update/{account}', [AccountController::class, 'update']);
+            });
+            Route::prefix('initial-balances')->group(function () {
+                Route::get('/filter', [InitialBalanceController::class, 'filter']);
+                Route::get('/', [InitialBalanceController::class, 'index']);
+                Route::get('/data', [InitialBalanceController::class, 'data']);
+                Route::get('/search', [InitialBalanceController::class, 'search']);
+                Route::get('/account/data', [InitialBalanceController::class, 'getAccountData']);
+                Route::post('/', [InitialBalanceController::class, 'store']);
+                Route::get('/{account}', [InitialBalanceController::class, 'edit']);
+                Route::get(
+                    '/account/selected/{account}',
+                    [InitialBalanceController::class, 'selectedAccountData']
+                );
 
-
-        Route::prefix('unit-types')->group(function () {
-            Route::get('/', [UnitTypeController::class, 'index']);
-            Route::get('/data', [UnitTypeController::class, 'data']);
-            Route::get('/search', [UnitTypeController::class, 'search']);
-            Route::post('/', [UnitTypeController::class, 'store']);
-            Route::get('/show/{unitType}', [UnitTypeController::class, 'edit']);
-            Route::post('/destroy', [UnitTypeController::class, 'destroy']);
-            Route::post('/update/{unitType}', [UnitTypeController::class, 'update']);
-        });
-
-
-        Route::prefix('skl')->group(function () {
-            Route::get('/', [SKLController::class, 'index']);
-            Route::get('/data', [SKLController::class, 'data']);
-            Route::get('/search', [SKLController::class, 'search']);
-            Route::post('/', [SKLController::class, 'store']);
-            Route::get('/{skl}', [SKLController::class, 'edit']);
-            Route::post('/destroy', [SKLController::class, 'destroy']);
-            Route::post('/{skl}', [SKLController::class, 'update']);
-        });
-
-        //contact
-        Route::prefix('contact')->group(function () {
-            Route::get('/', [ContactController::class, 'index']);
-            Route::get('/data', [ContactController::class, 'data']);
-            Route::get('/search', [ContactController::class, 'search']);
-            Route::get('/branch/data', [ContactController::class, 'branchData']);
-            Route::get('filter/branch/data/{branch}', [ContactController::class, 'filterByBranch']);
-            Route::post('/', [ContactController::class, 'store']);
-            Route::get('/edit/{contact}', [ContactController::class, 'edit']);
-            Route::post('/destroy', [ContactController::class, 'destroy']);
-            Route::post('/update/{contact}', [ContactController::class, 'update']);
-        });
-        Route::prefix('service-categories')->group(function () {
-            Route::get('/', [ServiceCategoryManagerController::class, 'index']);
-            Route::get('/data', [ServiceCategoryManagerController::class, 'data']);
-            Route::get('/search', [ServiceCategoryManagerController::class, 'search']);
-            Route::post('/', [ServiceCategoryManagerController::class, 'store']);
-            Route::get('/show/{serviceCategory}', [ServiceCategoryManagerController::class, 'show']);
-            Route::post('/update/{serviceCategory}', [ServiceCategoryManagerController::class, 'update']);
-            Route::post('/destroy', [ServiceCategoryManagerController::class, 'destroy']);
+                Route::post('/destroy', [InitialBalanceController::class, 'destroy']);
+                Route::post('/{accountTransaction}', [InitialBalanceController::class, 'update']);
+            });
+            Route::prefix('tax-settings')->group(function () {
+                Route::get('/', [TaxSettingController::class, 'index']);
+                Route::get('/data', [TaxSettingController::class, 'data']);
+                Route::get('/search', [TaxSettingController::class, 'search']);
+                Route::post('/', [TaxSettingController::class, 'store']);
+                Route::get('/{taxSetting}', [TaxSettingController::class, 'edit']);
+                Route::post('/destroy', [TaxSettingController::class, 'destroy']);
+                Route::post('/update/{taxSetting}', [TaxSettingController::class, 'update']);
+            });
+            Route::prefix('assets')->group(function () {
+                Route::post('/destroy', [AssetController::class, 'destroy']);
+                Route::get('/', [AssetController::class, 'index']);
+                Route::get('/data', [AssetController::class, 'data']);
+                Route::get('/search', [AssetController::class, 'search']);
+                Route::get('/branch/data', [AssetController::class, 'getBranchData']);
+                Route::get('/debit-account/data', [AssetController::class, 'getDebitAccount']);
+                Route::get('/credit-account/data', [AssetController::class, 'getCreditAccount']);
+                Route::get('/account/selected/{asset}', [AssetController::class, 'selectedAccount']);
+                Route::get('/branch/selected/{asset}', [AssetController::class, 'selectedBranch']);
+                Route::post('/', [AssetController::class, 'store']);
+                Route::get('/{asset}', [AssetController::class, 'edit']);
+                Route::post('/update/{asset}', [AssetController::class, 'update']);
+                Route::post('/confirm/{asset}', [AssetController::class, 'confirm']);
+                Route::get('/detail/{asset}', [AssetController::class, 'detail']);
+                Route::get('/detail/data/{asset}', [AssetController::class, 'depreciationData']);
+                Route::post('/import', [AssetController::class, 'import']);
+            });
         });
 
 
-        Route::prefix('department')->group(function () {
-            Route::get('/', [DepartmentController::class, 'index']);
-            Route::get('/data', [DepartmentController::class, 'data']);
-            Route::get('/search', [DepartmentController::class, 'search']);
-            Route::post('/', [DepartmentController::class, 'store']);
-            Route::get('/{department}', [DepartmentController::class, 'edit']);
-            Route::post('/destroy', [DepartmentController::class, 'destroy']);
-            Route::post('/{department}', [DepartmentController::class, 'update']);
-        });
+        Route::prefix('operational')->group(function () {
 
-
-        Route::prefix('roles')->group(function () {
-            Route::get('/', [RoleController::class, 'index']);
-            Route::get('/data', [RoleController::class, 'rolesData']);
-            Route::get('/departments/data', [RoleController::class, 'getDepartments']);
-            Route::get('/permissions/data', [RoleController::class, 'getPermissions']);
-            Route::get('/permissions/search', [RoleController::class, 'searchPermission']);
-            Route::get('/departments/data/selected/{role}', [RoleController::class, 'getSelectedDepartment']);
-            Route::get('/permissions/data/selected/{role}', [RoleController::class, 'getSelectedPermission']);
-            Route::get('/create', [RoleController::class, 'create']);
-            Route::get('/search', [RoleController::class, 'search']);
-            Route::post('/', [RoleController::class, 'store']);
-            Route::get('/edit/{role}', [RoleController::class, 'edit']);
-            Route::get('/show/{role}', [RoleController::class, 'show']);
-            Route::post('/update/{role}', [RoleController::class, 'update']);
-            Route::delete('/{role}', [RoleController::class, 'destroy']);
-        });
-
-        Route::prefix('broadband-packets')->group(function () {
-            Route::get('/', [BroadbandPacketController::class, 'index']);
-            Route::get('/data', [BroadbandPacketController::class, 'data']);
-            Route::get('/search', [BroadbandPacketController::class, 'search']);
-            Route::post('/', [BroadbandPacketController::class, 'store']);
-            Route::get('/{broadbandPacket}', [BroadbandPacketController::class, 'edit']);
-            Route::post('/destroy', [BroadbandPacketController::class, 'destroy']);
-            Route::post('/{broadbandPacket}', [BroadbandPacketController::class, 'update']);
-        });
-
-
-        Route::prefix('companies')->group(function () {
-            Route::get('/', [CompanyController::class, 'index']);
-            Route::get('/data', [CompanyController::class, 'data']);
-            Route::get('/search', [CompanyController::class, 'search']);
-            Route::post('/', [CompanyController::class, 'store']);
-            Route::get('/{company}', [CompanyController::class, 'edit']);
-            Route::post('/update/{company}', [CompanyController::class, 'update']);
-            Route::post('/destroy', [CompanyController::class, 'destroy']);
-            Route::post('/{company}', [CompanyController::class, 'update']);
         });
     });
 
 
     Route::prefix('finances-master-data')->group(function () {
-        Route::prefix('account')->group(function () {
-            Route::get('/', [AccountController::class, 'index']);
-            Route::post('/create-child/{account}', [AccountController::class, 'createChildAccount']);
-            Route::get('/data', [AccountController::class, 'data']);
-            Route::get('/search', [AccountController::class, 'search']);
-            Route::post('/', [AccountController::class, 'store']);
-            Route::post('/import', [AccountController::class, 'import']);
-            Route::post('/destroy', [AccountController::class, 'destroy']);
-            Route::get('/edit/{account}', [AccountController::class, 'edit']);
-            Route::post('/update/{account}', [AccountController::class, 'update']);
-        });
-        Route::prefix('initial-balances')->group(function () {
-            Route::get('/filter', [InitialBalanceController::class, 'filter']);
-            Route::get('/', [InitialBalanceController::class, 'index']);
-            Route::get('/data', [InitialBalanceController::class, 'data']);
-            Route::get('/search', [InitialBalanceController::class, 'search']);
-            Route::get('/account/data', [InitialBalanceController::class, 'getAccountData']);
-            Route::post('/', [InitialBalanceController::class, 'store']);
-            Route::get('/{account}', [InitialBalanceController::class, 'edit']);
-            Route::get(
-                '/account/selected/{account}',
-                [InitialBalanceController::class, 'selectedAccountData']
-            );
 
-            Route::post('/destroy', [InitialBalanceController::class, 'destroy']);
-            Route::post('/{accountTransaction}', [InitialBalanceController::class, 'update']);
-        });
-
-
-        Route::prefix('tax-settings')->group(function () {
-            Route::get('/', [TaxSettingController::class, 'index']);
-            Route::get('/data', [TaxSettingController::class, 'data']);
-            Route::get('/search', [TaxSettingController::class, 'search']);
-            Route::post('/', [TaxSettingController::class, 'store']);
-            Route::get('/{taxSetting}', [TaxSettingController::class, 'edit']);
-            Route::post('/destroy', [TaxSettingController::class, 'destroy']);
-            Route::post('/update/{taxSetting}', [TaxSettingController::class, 'update']);
-        });
-
-        Route::prefix('assets')->group(function () {
-            Route::post('/destroy', [AssetController::class, 'destroy']);
-            Route::get('/', [AssetController::class, 'index']);
-            Route::get('/data', [AssetController::class, 'data']);
-            Route::get('/search', [AssetController::class, 'search']);
-            Route::get('/branch/data', [AssetController::class, 'getBranchData']);
-            Route::get('/debit-account/data', [AssetController::class, 'getDebitAccount']);
-            Route::get('/credit-account/data', [AssetController::class, 'getCreditAccount']);
-            Route::get('/account/selected/{asset}', [AssetController::class, 'selectedAccount']);
-            Route::get('/branch/selected/{asset}', [AssetController::class, 'selectedBranch']);
-            Route::post('/', [AssetController::class, 'store']);
-            Route::get('/{asset}', [AssetController::class, 'edit']);
-            Route::post('/update/{asset}', [AssetController::class, 'update']);
-            Route::post('/confirm/{asset}', [AssetController::class, 'confirm']);
-            Route::get('/detail/{asset}', [AssetController::class, 'detail']);
-            Route::get('/detail/data/{asset}', [AssetController::class, 'getDetailData']);
-            Route::post('/import', [AssetController::class, 'import']);
-        });
 
     });
 

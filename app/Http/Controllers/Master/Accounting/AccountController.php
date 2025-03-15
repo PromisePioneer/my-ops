@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Account\AccountRequest;
 use App\Models\Account;
 use App\Models\Master\Common\Branch;
-use App\Support\Accounts\Service\AccountService;
+use App\Support\Master\Accounting\Accounts\Service\AccountService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,7 +15,6 @@ use Illuminate\View\View;
 
 #[AllowDynamicProperties] class AccountController extends Controller
 {
-
     public function __construct()
     {
         $this->account = new Account();
@@ -29,7 +28,7 @@ use Illuminate\View\View;
     public function index(): View
     {
         $this->authorize('view', Account::class);
-        return view('pages.finance-master-data.account.index');
+        return view('pages.master.accounting.accounts.index');
     }
 
 

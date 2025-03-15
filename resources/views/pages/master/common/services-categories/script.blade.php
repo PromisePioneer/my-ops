@@ -21,7 +21,7 @@
             async getServiceCategories() {
                 this.isLoading = true;
                 try {
-                    const resp = await axios.get('/common-master-data/service-categories/data');
+                    const resp = await axios.get('/master/common/service-categories/data');
                     this.categories = resp.data;
                 } catch (e) {
                     console.log(e)
@@ -30,7 +30,7 @@
                 }
             },
             async searchData() {
-                const resp = await axios.get('/common-master-data/service-categories/search', {
+                const resp = await axios.get('/master/common/service-categories/search', {
                     params: {
                         search: this.search
                     },
@@ -78,9 +78,9 @@
                 this.buttonLoading = true;
                 try {
                     if (!id) {
-                        await axios.post('/common-master-data/service-categories/', new FormData(this.form))
+                        await axios.post('/master/common/service-categories/', new FormData(this.form))
                     } else {
-                        await axios.post(`/common-master-data/service-categories/update/${id}`, new FormData(this.form))
+                        await axios.post(`/master/common/service-categories/update/${id}`, new FormData(this.form))
                     }
                     await showAlert('success', 'Data berhasil disimpan');
                     await this.init();
@@ -94,13 +94,13 @@
                 }
             },
             async edit(id) {
-                const resp = await axios.get(`/common-master-data/service-categories/show/${id}`);
+                const resp = await axios.get(`/master/common/service-categories/show/${id}`);
                 this.editVal = resp.data;
             },
             async destroy() {
                 showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                     try {
-                        await axios.post(`/common-master-data/service-categories/destroy`, new FormData(this.deleteForm));
+                        await axios.post(`/master/common/service-categories/destroy`, new FormData(this.deleteForm));
                         await showAlert('success', 'Data sukses dihapus');
                         await this.init();
                     } catch (error) {

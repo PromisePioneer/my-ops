@@ -146,7 +146,7 @@
                 modalForm: new bootstrap.Modal(document.getElementById('modal-unit-type')),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
-                    const unitTypes = await axios.get('/common-master-data/unit-types/data');
+                    const unitTypes = await axios.get('/master/common/unit-types/data');
                     this.unitTypes = unitTypes.data
                     this.startIndex = this.unitTypes.from;
                     this.isLoading = false;
@@ -156,7 +156,7 @@
                 },
                 async searchData() {
                     try {
-                        const resp = await axios.get('/common-master-data/unit-types/search', {
+                        const resp = await axios.get('/master/common/unit-types/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -202,9 +202,9 @@
                     this.buttonLoading = true;
                     try {
                         if (!id) {
-                            await axios.post('/common-master-data/unit-types/', new FormData(this.form))
+                            await axios.post('/master/common/unit-types/', new FormData(this.form))
                         } else {
-                            await axios.post(`/common-master-data/unit-types/update/${id}`, new FormData(this.form))
+                            await axios.post(`/master/common/unit-types/update/${id}`, new FormData(this.form))
                         }
                         await showAlert('success', 'Data berhasil disimpan')
                         this.form.reset();
@@ -218,13 +218,13 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/common-master-data/unit-types/show/${id}`);
+                    const resp = await axios.get(`/master/common/unit-types/show/${id}`);
                     this.editVal = resp.data;
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/common-master-data/unit-types/destroy`, new FormData(this.formDelete));
+                            await axios.post(`/master/common/unit-types/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                             this.selectedCheckBox = [];

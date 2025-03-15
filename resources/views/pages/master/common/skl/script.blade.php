@@ -21,7 +21,7 @@
             async getSklData() {
                 this.isLoading = false;
                 try {
-                    const resp = await axios.get('/common-master-data/skl/data');
+                    const resp = await axios.get('/master/common/skl/data');
                     this.skl = resp.data
                 } catch (e) {
                     console.log(e)
@@ -31,7 +31,7 @@
             },
             async searchData() {
                 try {
-                    const resp = await axios.get('/common-master-data/skl/search', {
+                    const resp = await axios.get('/master/common/skl/search', {
                         params: {search: this.search},
                         headers: {'Content-Type': 'application/json'}
                     });
@@ -73,14 +73,14 @@
                 }
             },
             async edit(id) {
-                const resp = await axios.get(`/common-master-data/skl/${id}`);
+                const resp = await axios.get(`/master/common/skl/${id}`);
                 console.log(resp);
                 this.editVal = resp.data;
             },
             async update(id) {
                 this.buttonLoading = true;
                 try {
-                    await axios.post(`/common-master-data/skl/${id}`, new FormData(this.formEdit))
+                    await axios.post(`/master/common/skl/${id}`, new FormData(this.formEdit))
                     await showAlert('success', 'Data berhasil disimpan')
                     this.modalEdit.hide();
                     this.formEdit.reset();
@@ -95,7 +95,7 @@
             async destroy() {
                 showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                     try {
-                        await axios.post(`/common-master-data/skl/destroy`, new FormData(this.formDelete));
+                        await axios.post(`/master/common/skl/destroy`, new FormData(this.formDelete));
                         await showAlert('success', 'Data sukses dihapus');
                         await this.init();
                     } catch (error) {
@@ -108,9 +108,9 @@
                 this.buttonLoading = true;
                 try {
                     if (!id) {
-                        await axios.post('/common-master-data/skl', new FormData(this.form))
+                        await axios.post('/master/common/skl', new FormData(this.form))
                     } else {
-                        await axios.post(`/common-master-data/skl/${id}`, new FormData(this.form))
+                        await axios.post(`/master/common/skl/${id}`, new FormData(this.form))
                     }
                     await showAlert('success', 'Data berhasil disimpan')
                     this.form.reset();

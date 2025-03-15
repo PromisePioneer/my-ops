@@ -5,7 +5,7 @@
     <div x-data="generateRole()">
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
-                <a class="btn btn-light-danger btn-sm mb-6" href="{{ url('common-master-data/roles/') }}">
+                <a class="btn btn-light-danger btn-sm mb-6" href="{{ url('master/common/roles/') }}">
                     <i class="bi bi-backspace"></i>
                     Kembali
                 </a>
@@ -49,10 +49,10 @@
                                 </div>
                                 <div class="form-check mb-4 border-top">
                                     <label
-                                        class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 pt-4">
+                                            class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 pt-4">
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                         <span
-                                            class="form-check-label text-capitalize fw-bold">
+                                                class="form-check-label text-capitalize fw-bold">
                                             Pilih Semua
                                         </span>
                                     </label>
@@ -73,7 +73,7 @@
                                         <div class="col-md-6">
                                             <div class="form-check mb-4">
                                                 <label
-                                                    class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                                        class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
                                                     <input class="form-check-input" type="checkbox"
                                                            :value="permission.name"
                                                            name="permission[]"
@@ -129,14 +129,14 @@
                 },
                 async getPermissionsData() {
                     try {
-                        const resp = await axios.get('/common-master-data/roles/permissions/data');
+                        const resp = await axios.get('/master/common/roles/permissions/data');
                         this.permissions = resp.data
                     } catch (e) {
                         console.log(e);
                     }
                 },
                 async searchPermissionData() {
-                    const resp = await axios.get('/common-master-data/roles/permissions/search', {
+                    const resp = await axios.get('/master/common/roles/permissions/search', {
                         params: {
                             search: this.search
                         }
@@ -147,9 +147,9 @@
                 async save() {
                     this.buttonLoading = true
                     try {
-                        await axios.post(`/common-master-data/roles/`, new FormData(this.form))
+                        await axios.post(`/master/common/roles/`, new FormData(this.form))
                         await showAlert('success', 'Data berhasil disimpan');
-                        window.location.href = "/common-master-data/roles/";
+                        window.location.href = "/master/common/roles/";
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));

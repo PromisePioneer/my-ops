@@ -18,7 +18,7 @@ class TaxSettingController extends Controller
     public function index(): View
     {
         $this->authorize('view', TaxSetting::class);
-        return view('pages.finance-master-data.tax-settings.index');
+        return view('pages.master.accounting.tax-settings.index');
     }
 
     /**
@@ -36,17 +36,11 @@ class TaxSettingController extends Controller
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', TaxSetting::class);
-        $query = TaxSetting::query();
         $search = $request->input('search');
-
-
-        if (!empty($search)) {
-            $query->where('name', 'like', '%'.$search.'%')
-                ->orWhere('percentage', 'like', '%'.$search.'%');
-        }
-
-        $data = $query->paginate(10);
-        return response()->json($data);
+        $query = TaxSetting::search($search)->query(function ($query) {
+            $query->orderBy('name');
+        })->paginate(10);
+        return response()->json($query);
     }
 
     /**
@@ -62,7 +56,7 @@ class TaxSettingController extends Controller
     /**
      * @throws AuthorizationException
      */
-    public function edit(TaxSetting $taxSetting)
+    public function edit(TaxSetting $taxSetting): JsonResponse
     {
         $this->authorize('update', $taxSetting);
         return response()->json($taxSetting);

@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('assets_depreciation', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('asset_id')->constrained('assets');
+            $table->foreignId('asset_id')->constrained('assets')->cascadeOnDelete();
             $table->date('depreciation_date');
             $table->double('depreciation_amount');
             $table->timestamps();
