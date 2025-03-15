@@ -18,7 +18,7 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-category-table-toolbar="base">
-                        @can('Lihat Data Kategori Layanan')
+                        @can('Tambah Data Kategori Layanan')
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-service-category">

@@ -1,7 +1,6 @@
 <script>
     function servicesCategoriesData() {
         return {
-            createPermission: "{{ request()->user()->can('Tambah Data Kategori Layanan') }}",
             editPermission: "{{ request()->user()->can('Edit Data Kategori Layanan') }}",
             deletePermission: "{{ request()->user()->can('Hapus Data Kategori Layanan') }}",
             categories: [],
