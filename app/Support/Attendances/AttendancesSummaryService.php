@@ -188,7 +188,7 @@ use Illuminate\Http\Request;
         $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
 
 
-        $diffInSeconds = $actualCheckIn->diffInSeconds($expectedCheckIn, false);
+        $diffInSeconds = $actualCheckIn->diffInSeconds($expectedCheckIn, true);
 
         // If actual check-in is earlier than or exactly on time, no late
         if ($diffInSeconds <= 0) {
