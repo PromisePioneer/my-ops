@@ -92,15 +92,21 @@ use Illuminate\Http\Request;
             $totalLeaves = $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti');
             $totalPermission = $this->calculateLeaveDays($user, $startDate, $endDate, 'Izin');
             $scheduledDays = $this->getScheduledDays($user, $startDate, $endDate);
+            $totalMinutesLate = 0;
 
             $totalAbsent = max(
                 $scheduledDays - ($totalPresent + $totalLeaves + $totalSick + $totalPermission),
                 0
             );
 
-            $totalMinutesLate = $user->attendancesSummary->map(function ($attendance) {
-                return $this->calculateLate($attendance->workTime, $attendance);
-            });
+//            $totalMinutesLate = $user->attendancesSummary->sum(function ($attendance) {
+//                return $this->calculateLate($attendance->workTime, $attendance);
+//            });
+
+
+            foreach ($user->attendancesSummary as $attendance) {
+                $totalMinutesLate += $this->calculateLate($attendance->workTime, $attendance);
+            }
 
             $totalNotCheckIn = $user->attendancesSummary->whereNull('clock_in')->count();
             $totalNotCheckOut = $user->attendancesSummary
@@ -173,58 +179,27 @@ use Illuminate\Http\Request;
     }
 
 
+
     public function calculateLate($userWorktime, $attendance): float|int
     {
-        // Check if attendance or clock_in is null to avoid incorrect calculations
-        if (!$attendance || is_null($attendance->clock_in)) {
-            return 0;
-        }
-
-        $actualCheckIn = Carbon::make($attendance->clock_in);
-        $workDate = $attendance->date;
+        $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);
+        $workDate = $attendance?->date;
         $expectedCheckIn = Carbon::parse("$workDate {$userWorktime?->clock_in}");
 
-        // Calculate the difference in seconds with direction (negative if actual is earlier)
-        $diffInSeconds = $actualCheckIn->diffInSeconds($expectedCheckIn, false);
+        $newExpectedCheckIn = null;
+        if ($userWorktime?->name === "Malam") {
+            $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
+        }
 
-        // If actual check-in is earlier than or exactly on time, no late
-        if ($diffInSeconds <= 0) {
+        $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
+
+
+        if ($checkInToUse->diffInMinutes($actualCheckIn) < 2.6) {
             return 0;
         }
 
-        // Convert to minutes and check against the 2.5-minute threshold
-        $diffInMinutes = $diffInSeconds / 60;
-
-        if ($diffInMinutes < 2.5) {
-            return 0;
-        }
-
-        // Return the exact minutes late as a float
-        return $diffInMinutes;
+        return $checkInToUse->diffInMinutes($actualCheckIn);
     }
-
-
-
-//    public function calculateLate($userWorktime, $attendance): float|int
-//    {
-//        $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);
-//        $workDate = $attendance?->date;
-//        $expectedCheckIn = Carbon::parse("$workDate {$userWorktime?->clock_in}");
-//
-//        $newExpectedCheckIn = null;
-//        if ($userWorktime?->name === "Malam") {
-//            $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
-//        }
-//
-//        $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
-//
-//
-//        if ($checkInToUse->diffInMinutes($actualCheckIn) < 2.6) {
-//            return 0;
-//        }
-//
-//        return $checkInToUse->diffInMinutes($actualCheckIn);
-//    }
 
 
     public function filter($request): LengthAwarePaginator
