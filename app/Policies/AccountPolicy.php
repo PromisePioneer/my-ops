@@ -21,7 +21,7 @@ class AccountPolicy
 
     public function update(User $user): bool
     {
-        return $user->can('Update Data Akun');
+        return $user->can('Edit Data Akun');
     }
 
     public function delete(User $user): bool

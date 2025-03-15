@@ -44,6 +44,16 @@
                                            placeholder="Search...">
 
                                 </div>
+                                <div class="form-check mb-4">
+                                    <label
+                                        class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                        <input class="form-check-input" type="checkbox"
+                                               @click="toggleAllCheckBox()"
+                                               multiple
+                                        >
+                                        <span class="form-check-label text-capitalize fw-bold">Pilih Semua</span>
+                                    </label>
+                                </div>
                                 <div class="row justify-content-center align-items-center">
                                     <template x-if="permissions.length === 0">
                                         <div class="col-md-12">
@@ -67,7 +77,7 @@
                                                            name="permission[]"
                                                            multiple
                                                     >
-                                                    <span class="form-check-label text-capitalize text-gray-600 fw-bold"
+                                                    <span class="form-check-label text-capitalize fw-bold"
                                                           x-text="permission.name">
                                                     </span>
                                                 </label>
