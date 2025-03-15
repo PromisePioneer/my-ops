@@ -19,7 +19,7 @@ class BranchPolicy
 
     public function update(User $user): bool
     {
-        return $user->can('Update Data Cabang');
+        return $user->can('Edit Data Cabang');
     }
 
     public function delete(User $user): bool

@@ -169,7 +169,7 @@
         function branchesData() {
             return {
                 createPermission: "{{ request()->user()->can('Tambah Data Cabang') }}",
-                editPermission: "{{ request()->user()->can('Update Data Cabang') }}",
+                editPermission: "{{ request()->user()->can('Edit Data Cabang') }}",
                 deletePermission: "{{ request()->user()->can('Hapus Data Cabang') }}",
                 branches: [],
                 isLoading: false,
