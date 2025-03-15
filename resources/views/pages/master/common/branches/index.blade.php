@@ -168,9 +168,9 @@
     <script defer>
         function branchesData() {
             return {
-                createPermission: "{{ request()->user()->can('Tambah Cabang') }}",
-                editPermission: "{{ request()->user()->can('Edit Cabang') }}",
-                deletePermission: "{{ request()->user()->can('Hapus Cabang') }}",
+                createPermission: "{{ request()->user()->can('Tambah Data Cabang') }}",
+                editPermission: "{{ request()->user()->can('Update Data Cabang') }}",
+                deletePermission: "{{ request()->user()->can('Hapus Data Cabang') }}",
                 branches: [],
                 isLoading: false,
                 buttonLoading: false,
@@ -264,7 +264,6 @@
                 },
                 async save() {
                     this.buttonLoading = true;
-                    console.log(this.branches.path);
                     try {
                         await axios.post('/master/common/branch', new FormData(this.formCreate))
                             .then(async () => {
