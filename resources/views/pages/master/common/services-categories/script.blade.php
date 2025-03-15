@@ -13,7 +13,7 @@
             editVal: '',
             modalForm: new bootstrap.Modal(document.getElementById('modal-service-category')),
             form: document.getElementById('form-service-category'),
-            deleteForm: document.getElementById('deleteForm'),
+            formDelete: document.getElementById('form-delete'),
             async init() {
                 await this.getServiceCategories();
             },
