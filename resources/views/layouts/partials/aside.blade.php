@@ -101,12 +101,10 @@
                 @canany(['Lihat Menu Supplier', 'Lihat Menu Kategori Barang', 'Lihat Menu Kode Joint Closure','Lihat Menu Cabang', 'Lihat Menu Kontak', 'Lihat Menu SKL',  'Lihat Menu Kategori Layanan', 'Lihat Menu Departemen', 'Lihat Menu Jabatan', 'Lihat Menu Paket Broadband', 'Lihat Menu Data Perusahaan', 'Lihat Menu Area','Lihat Menu Akun', 'Lihat Menu Saldo Awal', 'Lihat Menu Pengaturan Pajak', 'Lihat Menu Aset'])
                     <x-menu-sections>Master Data</x-menu-sections>
                 @endcanany
-                @canany([
-    'Lihat Menu Cabang', 'Lihat Menu Kontak', 'Lihat Menu SKL',
+                @canany(['Lihat Menu Cabang', 'Lihat Menu Kontak', 'Lihat Menu SKL',
                   'Lihat Menu Kategori Layanan', 'Lihat Menu Departemen',
                  'Lihat Menu Jabatan', 'Lihat Menu Paket Broadband', 'Lihat Menu Data Perusahaan',
-                  'Lihat Menu Area', 'Lihat Menu Satuan'
-                  ])
+                  'Lihat Menu Area', 'Lihat Menu Satuan'])
                     <x-dropdown-menu :active="request()->segment(2) === 'common'">
                         @slot('parentIcon')
                             <i class="ki-duotone ki-element-7 fs-2">
