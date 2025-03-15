@@ -18,7 +18,7 @@ class DepartmentPolicy
 
     public function update(User $user): bool
     {
-        return $user->can('Update Data Departemen');
+        return $user->can('Edit Data Departemen');
     }
 
     public function delete(User $user): bool

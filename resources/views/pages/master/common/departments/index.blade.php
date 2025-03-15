@@ -18,6 +18,7 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                            @can('Tambah Data Departemen')
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-department">
@@ -27,6 +28,7 @@
                                     <span class="path3"></span>
                                 </i> Tambah
                             </button>
+                            @endcan
                         </div>
                     </div>
                 </div>
