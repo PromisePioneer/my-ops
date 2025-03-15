@@ -98,7 +98,7 @@ use Illuminate\Http\Request;
                 0
             );
 
-            $totalMinutesLate = $user->attendancesSummary->sum(function ($attendance) {
+            $totalMinutesLate = $user->attendancesSummary->map(function ($attendance) {
                 return $this->calculateLate($attendance->workTime, $attendance);
             });
 
