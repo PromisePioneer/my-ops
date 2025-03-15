@@ -173,22 +173,19 @@ use Illuminate\Http\Request;
     }
 
 
-
     public function calculateLate($userWorktime, $attendance): float|int
     {
-        $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);
-        $workDate = $attendance?->date;
-        $expectedCheckIn = Carbon::parse("$workDate {$userWorktime?->clock_in}");
-
-        $newExpectedCheckIn = null;
-        if ($userWorktime?->name === "Malam") {
-            $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
+        // Check if attendance or clock_in is null to avoid incorrect calculations
+        if (!$attendance || is_null($attendance->clock_in)) {
+            return 0;
         }
 
-        $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
+        $actualCheckIn = Carbon::make($attendance->clock_in);
+        $workDate = $attendance->date;
+        $expectedCheckIn = Carbon::parse("$workDate {$userWorktime?->clock_in}");
 
-
-        $diffInSeconds = $actualCheckIn->diffInSeconds($expectedCheckIn, true);
+        // Calculate the difference in seconds with direction (negative if actual is earlier)
+        $diffInSeconds = $actualCheckIn->diffInSeconds($expectedCheckIn, false);
 
         // If actual check-in is earlier than or exactly on time, no late
         if ($diffInSeconds <= 0) {
@@ -202,8 +199,32 @@ use Illuminate\Http\Request;
             return 0;
         }
 
-        return $checkInToUse->diffInMinutes($actualCheckIn);
+        // Return the exact minutes late as a float
+        return $diffInMinutes;
     }
+
+
+
+//    public function calculateLate($userWorktime, $attendance): float|int
+//    {
+//        $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);
+//        $workDate = $attendance?->date;
+//        $expectedCheckIn = Carbon::parse("$workDate {$userWorktime?->clock_in}");
+//
+//        $newExpectedCheckIn = null;
+//        if ($userWorktime?->name === "Malam") {
+//            $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
+//        }
+//
+//        $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
+//
+//
+//        if ($checkInToUse->diffInMinutes($actualCheckIn) < 2.6) {
+//            return 0;
+//        }
+//
+//        return $checkInToUse->diffInMinutes($actualCheckIn);
+//    }
 
 
     public function filter($request): LengthAwarePaginator
