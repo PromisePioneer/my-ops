@@ -94,7 +94,7 @@ class ServiceCategoryManagerController extends Controller
 
         return response()->json([
             'message' => 'data berhasil dihapus',
-        ], 200);
+        ]);
     }
 
 

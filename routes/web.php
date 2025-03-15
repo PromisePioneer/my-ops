@@ -361,9 +361,9 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/data', [ServiceCategoryManagerController::class, 'data']);
                 Route::get('/search', [ServiceCategoryManagerController::class, 'search']);
                 Route::post('/', [ServiceCategoryManagerController::class, 'store']);
+                Route::post('/destroy', [ServiceCategoryManagerController::class, 'destroy']);
                 Route::get('/show/{serviceCategory}', [ServiceCategoryManagerController::class, 'show']);
                 Route::post('/update/{serviceCategory}', [ServiceCategoryManagerController::class, 'update']);
-                Route::post('/destroy', [ServiceCategoryManagerController::class, 'destroy']);
             });
 
             Route::prefix('department')->group(function () {

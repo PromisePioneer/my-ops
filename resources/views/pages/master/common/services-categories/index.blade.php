@@ -35,7 +35,7 @@
             <div class="card-body py-3">
                 <div class="col-12 ">
                     <form id="form-delete" @submit.prevent="destroy()">
-                        <input type="hidden" :name="`data[${selectedCheckBox}]`" :value="selectedCheckBox">
+                        <input type="hidden" name="id[]" :value="selectedCheckBox">
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                 x-show="selectedCheckBox.length > 0"
                                 x-transition x-cloak>

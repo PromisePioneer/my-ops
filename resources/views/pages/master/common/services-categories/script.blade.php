@@ -99,9 +99,10 @@
             async destroy() {
                 showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                     try {
-                        await axios.post(`/master/common/service-categories/destroy`, new FormData(this.deleteForm));
+                        await axios.post(`/master/common/service-categories/destroy`, new FormData(this.formDelete));
                         await showAlert('success', 'Data sukses dihapus');
                         await this.init();
+                        this.selectedCheckBox = [];
                     } catch (error) {
                         console.error(error);
                         await showAlert('error', 'Terjadi kesalahan');
