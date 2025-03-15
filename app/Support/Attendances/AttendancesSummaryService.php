@@ -115,12 +115,12 @@ use Illuminate\Http\Request;
                 $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
 
 
-                if ($checkInToUse->diffInMinutes($actualCheckIn) < 2.5) {
+                if ($checkInToUse->diffInMinutes($actualCheckIn) < 3) {
                     continue;
                 }
-
                 $totalMinutesLate += $checkInToUse->diffInMinutes($actualCheckIn);
             }
+
 
             $totalNotCheckIn = $user->attendancesSummary->whereNull('clock_in')->count();
             $totalNotCheckOut = $user->attendancesSummary
