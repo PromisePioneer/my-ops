@@ -15,7 +15,7 @@
                         <div class="card-body pt-0">
                             <div class="d-flex flex-column text-gray-600">
                                 <div class="d-flex align-items-center py-2">
-                                    <select class="form-select form-select-solid branch-select2"
+                                    <select class="form-select form-select-solid main-branches-select2"
                                             name="branch_id" id="branch_id">
                                     </select>
                                 </div>
@@ -127,7 +127,7 @@
                 months: [],
                 async init() {
                     await this.getGeneralJournalData();
-                    await this.getBranchData()
+                    await this.getMainBranches();
                     this.getMonth();
                 },
                 async getGeneralJournalData() {
@@ -145,14 +145,14 @@
                 async filter() {
                     const year = document.getElementById('year')?.value ?? '';
                     const month = document.getElementById('month')?.value ?? '';
-                    const branch_id = $(".branch-select2")?.val();
-                    this.isLoading = true;
                     try {
+                        this.generalJournal = []
+                        this.isLoading = true;
                         const resp = await axios.get('/journals/general-journal/filter', {
                             params: {
                                 month: month,
                                 year: year,
-                                branch_id: branch_id,
+                                branch_id: $(".main-branches-select2")?.val(),
                             }
                         });
                         this.generalJournal = resp.data;
@@ -184,12 +184,12 @@
                         currency: "IDR"
                     }).format(val);
                 },
-                async getBranchData() {
-                    $(".branch-select2").select2({
+                async getMainBranches() {
+                    $(".main-branches-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Cabang",
                         ajax: {
-                            url: '/journals/general-journal/branch/data',
+                            url: '/select2/main-branches-data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),

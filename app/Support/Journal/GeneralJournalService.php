@@ -37,6 +37,7 @@ class GeneralJournalService
 
     public function filter(Request $request)
     {
+
         $branch = $request->input('branch_id');
         $year = $request->input('year');
         $month = $request->input('month');
@@ -44,15 +45,15 @@ class GeneralJournalService
         $query = AccountTransaction::with('account')->orderBy('date');
 
         if ($branch) {
-            $query->orWhere('branch_id', $branch);
+            $query->where('branch_id', $branch);
         }
 
         if ($year) {
-            $query->orWhereYear('date', $year);
+            $query->whereYear('date', $year);
         }
 
         if ($month) {
-            $query->orWhereMonth('date', $month);
+            $query->whereMonth('date', $month);
         }
 
         if ($year && $month) {
