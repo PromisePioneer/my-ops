@@ -9,21 +9,21 @@ class BranchPolicy
 
     public function view(User $user): bool
     {
-        return $user->can('Lihat Cabang');
+        return $user->can('Lihat Menu Cabang');
     }
 
     public function create(User $user): bool
     {
-        return $user->can('Tambah Cabang');
+        return $user->can('Tambah Data Cabang');
     }
 
     public function update(User $user): bool
     {
-        return $user->can('Update Cabang');
+        return $user->can('Update Data Cabang');
     }
 
     public function delete(User $user): bool
     {
-        return $user->can('Hapus Cabang');
+        return $user->can('Hapus Data Cabang');
     }
 }
