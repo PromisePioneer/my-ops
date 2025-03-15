@@ -310,10 +310,10 @@
                 @endcanany
 
 
-                @canany('Lihat Menu Jurnal Umum', 'Lihat Menu Buku Besar', 'Lihat Menu Neraca Saldo')
+                @canany(['Lihat Menu Jurnal Umum', 'Lihat Menu Buku Besar', 'Lihat Menu Neraca Saldo'])
                     <x-menu-sections>Jurnal</x-menu-sections>
                 @endcanany
-                @canany('Lihat Menu Jurnal Umum', 'Lihat Menu Buku Besar', 'Lihat Menu Neraca Saldo')
+                @canany(['Lihat Menu Jurnal Umum', 'Lihat Menu Buku Besar', 'Lihat Menu Neraca Saldo'])
                     <x-dropdown-menu :active="request()->segment(1) === 'journals'">
                         @slot('parentIcon')
                             <i class="ki-duotone ki-book-square fs-2">
