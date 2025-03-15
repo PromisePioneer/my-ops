@@ -1,7 +1,6 @@
 <script>
     function sklData() {
         return {
-            createPermission: "{{ request()->user()->can('Tambah Data SKL') }}",
             editPermission: "{{ request()->user()->can('Edit Data SKL') }}",
             deletePermission: "{{ request()->user()->can('Hapus Data SKL') }}",
             skl: [],
