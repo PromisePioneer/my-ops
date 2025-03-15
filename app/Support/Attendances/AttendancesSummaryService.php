@@ -99,13 +99,27 @@ use Illuminate\Http\Request;
                 0
             );
 
-//            $totalMinutesLate = $user->attendancesSummary->sum(function ($attendance) {
-//                return $this->calculateLate($attendance->workTime, $attendance);
-//            });
+
 
 
             foreach ($user->attendancesSummary as $attendance) {
-                $totalMinutesLate += $this->calculateLate($attendance->workTime, $attendance);
+                $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);
+                $workDate = $attendance?->date;
+                $expectedCheckIn = Carbon::parse("$workDate {$attendance->workTime?->clock_in}");
+
+                $newExpectedCheckIn = null;
+                if ($attendance->workTime?->name === "Malam") {
+                    $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
+                }
+
+                $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
+
+
+                if ($checkInToUse->diffInMinutes($actualCheckIn) < 2.5) {
+                    continue;
+                }
+
+                $totalMinutesLate += $checkInToUse->diffInMinutes($actualCheckIn);
             }
 
             $totalNotCheckIn = $user->attendancesSummary->whereNull('clock_in')->count();
@@ -182,23 +196,23 @@ use Illuminate\Http\Request;
 
     public function calculateLate($userWorktime, $attendance): float|int
     {
-        $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);
-        $workDate = $attendance?->date;
-        $expectedCheckIn = Carbon::parse("$workDate {$userWorktime?->clock_in}");
-
-        $newExpectedCheckIn = null;
-        if ($userWorktime?->name === "Malam") {
-            $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
-        }
-
-        $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
-
-
-        if ($checkInToUse->diffInMinutes($actualCheckIn) < 2.6) {
-            return 0;
-        }
-
-        return $checkInToUse->diffInMinutes($actualCheckIn);
+//        $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);
+//        $workDate = $attendance?->date;
+//        $expectedCheckIn = Carbon::parse("$workDate {$userWorktime?->clock_in}");
+//
+//        $newExpectedCheckIn = null;
+//        if ($userWorktime?->name === "Malam") {
+//            $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
+//        }
+//
+//        $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
+//
+//
+//        if ($checkInToUse->diffInMinutes($actualCheckIn) < 2.5) {
+//            continue;
+//        }
+//
+//        return $checkInToUse->diffInMinutes($actualCheckIn);
     }
 
 
