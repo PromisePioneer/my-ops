@@ -90,8 +90,11 @@
                                             <td x-text="item.category_name"></td>
                                             <td>
                                                 <button class="btn btn-link btn-sm text-primary"
+                                                        @click="showStockDetail(item.id)"
                                                         data-bs-target="#modal-used-item" data-bs-toggle="modal"
-                                                        x-text="`${item.total_stock} ${item.unit_name}`">
+                                                        x-text="`${item.total_stock} ${item.unit_name}`"
+                                                        :disabled="item.total_stock === 0"
+                                                >
                                                 </button>
                                             </td>
                                         </tr>
@@ -130,7 +133,6 @@
                         modal: new bootstrap.Modal(document.getElementById('modal-used-item')),
                         async init() {
                             await this.getGoodsStock();
-                            await this.getMainBranches();
                             await this.debitAccounts();
                             await this.creditAccounts();
                         },
@@ -146,12 +148,12 @@
                                 this.isLoading = false;
                             }
                         },
-                        async getMainBranches() {
+                        async getMainBranches(id) {
                             $(".main-branches-select2").select2({
                                 allowClear: true,
                                 placeholder: "Pilih Cabang",
                                 ajax: {
-                                    url: '/select2/main-branches-data',
+                                    url: `/inventory/goods/stock/branch/data/${id}`,
                                     dataType: "json",
                                     type: "GET",
                                     data: params => ({search: params.term}),
@@ -190,12 +192,9 @@
                             }
                         },
                         async showStockDetail(id) {
-                            const resp = await axios.get(`/inventory/goods/stock/show/${id}`, {
-                                params: {
-                                    branch_id: $('#branch_id_filter').val()
-                                }
-                            });
+                            const resp = await axios.get(`/inventory/goods/stock/show/${id}`);
                             this.stockDetail = resp.data;
+                            await this.getMainBranches(id);
                         },
                         async debitAccounts() {
                             $(".debit-accounts-select2").select2({

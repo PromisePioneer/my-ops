@@ -33,8 +33,7 @@
                     @endif
 
                     <div class="row mb-10">
-                        <input type="hidden" name="stock_id" id="stock_id" :value="stockDetail.id">
-                        <input type="hidden" name="goods_id" id="goods_id" :value="stockDetail.item_id">
+                        <input type="hidden" name="goods_id" id="goods_id" :value="stockDetail?.id">
                         <div class="col-lg-6">
                             <label for="name" class="required form-label">Debit</label>
                             <select name="debit_account_id" id="selected-debit-account"

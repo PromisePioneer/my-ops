@@ -688,7 +688,9 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/data', [StockController::class, 'data']);
                 Route::get('/search', [StockController::class, 'goodsSearch']);
                 Route::get('/filter', [StockController::class, 'goodsFilter']);
-                Route::get('/show/{stock}', [StockController::class, 'show']);
+                Route::get('/show/{goods}', [StockController::class, 'show']);
+                Route::get('/detail/{stock}', [StockController::class, 'detail']);
+                Route::get('/branch/data/{goods}', [StockController::class, 'getMainBranchWithStock']);
             });
 
             Route::prefix('consumed-stocks')->group(function () {

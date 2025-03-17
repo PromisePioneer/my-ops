@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use AllowDynamicProperties;
 use App\Http\Requests\GenerateItemSNRequest;
 use App\Models\Goods;
+use App\Models\Master\Common\Branch;
 use App\Models\Stock;
 use App\Support\StockService;
 use Illuminate\Http\JsonResponse;
@@ -53,20 +54,12 @@ use Illuminate\View\View;
     }
 
 
-    public function show(Stock $stock): JsonResponse
+    public function show(Goods $goods): JsonResponse
     {
-        return response()->json($stock);
+        return response()->json($goods);
     }
 
 
-    public function update(Stock $goodsStock, GenerateItemSNRequest $request): JsonResponse
-    {
-        $goodsStock->update([
-            'sn' => $request->sn
-        ]);
-
-        return response()->json(['message' => 'data berhasil disimpan']);
-    }
 
 
     public function destroy(Request $request, Stock $goodsStock): JsonResponse
@@ -89,5 +82,20 @@ use Illuminate\View\View;
         return response()->json([
             'message' => 'data berhasil dihapus',
         ]);
+    }
+
+
+    public function getMainBranchWithStock(Goods $goods)
+    {
+        $branch = Branch::whereHas('stock', function ($query) use ($goods) {
+            $query->where('item_id', $goods->id);
+        })->get();
+
+        return $branch->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->name . ' - ' . $item->stock->sum('qty'),
+            ];
+        });
     }
 }

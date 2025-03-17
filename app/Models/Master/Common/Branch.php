@@ -3,6 +3,7 @@
 namespace App\Models\Master\Common;
 
 use App\Models\AccountTransaction;
+use App\Models\Stock;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -48,6 +49,12 @@ class Branch extends Model
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id');
+    }
+
+
+    public function stock(): HasMany
+    {
+        return $this->hasMany(Stock::class, 'branch_id');
     }
 
 }

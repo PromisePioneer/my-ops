@@ -3,7 +3,6 @@
 namespace App\Support;
 
 use App\Models\Goods;
-use App\Models\GoodsPurchaseOrder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -47,7 +46,6 @@ class StockService
             });
         }
 
-
         return self::formattedGoodsData($data->paginate(self::$perPage));
     }
 
@@ -66,24 +64,5 @@ class StockService
 
         $goodsData->setCollection($data);
         return $goodsData;
-    }
-
-
-    public function getPO(Goods $goods): LengthAwarePaginator
-    {
-        return GoodsPurchaseOrder::with('warehouse', 'branch', 'sendBy', 'receivedBy')
-            ->where('status_send', 1)
-            ->where('item_id', $goods->id)
-            ->paginate(self::$perPage);
-    }
-
-
-    public function searchPO(Request $request, Goods $goods)
-    {
-        $search = $request->input('search');
-        return GoodsPurchaseOrder::where('status', 1)->where('item_id', $goods->id)->when(!empty($search), function ($query) use ($search) {
-            $query->where('po_number', 'like', '%' . $search . '%')
-                ->orWhere('qty', 'like', '%' . $search . '%');
-        })->paginate(self::$perPage);
     }
 }
