@@ -69,6 +69,12 @@ class UserACLFilter
             });
         }
 
+        if ($request->user()->hasRole('Mechanic Senior Staff')) {
+            $query->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Mechanic Senior Staff', 'Mechanic Helper Staff']);
+            });
+        }
+
         return $query;
     }
 }

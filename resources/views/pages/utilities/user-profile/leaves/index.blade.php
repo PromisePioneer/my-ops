@@ -37,18 +37,13 @@
                                     </td>
                                 </tr>
                             </template>
-                            <template x-for="(sp, index) in leaves?.data"
+                            <template x-for="(leave, index) in leaves?.data"
                                       :key="index">
                                 <tr>
                                     <td x-text="startIndex + index++"></td>
-                                    <td x-text="sp.sp_number"></td>
-                                    <td x-text="sp.date"></td>
-                                    <td x-text="sp.punished_by"></td>
-                                    <td>
-                                        <a :href="`/manage-users/sp/export-pdf/${sp.id}`" class="btn btn-danger btn-sm">
-                                            <i class="bi bi-file-earmark-pdf"></i>
-                                        </a>
-                                    </td>
+                                    <td x-text="`${leave.start_date} - ${leave.end_date}`"></td>
+                                    <td x-text="leave.leaves_status"></td>
+                                    <td x-text="leave.confirmation_status"></td>
                                 </tr>
                             </template>
                             </tbody>
@@ -83,6 +78,7 @@
                     try {
                         const resp = await axios.get('/utility/user-profile/leaves/data');
                         this.leaves = resp.data;
+                        this.startIndex = this.leaves.from
                     } catch (error) {
                         console.log(error);
                     }
@@ -94,6 +90,7 @@
                             this.isLoading = true;
                             const resp = await axios.get(url);
                             this.leaves = resp.data;
+                            this.startIndex = this.leaves.from
                         }
                     } catch (error) {
                         console.log(error);

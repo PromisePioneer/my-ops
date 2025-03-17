@@ -22,11 +22,8 @@ use function App\Helper\formatDate;
     public function data(Request $request): LengthAwarePaginator
     {
         $query = $this->leaveRepository->leavesMainQuery();
-//        $permissions = LeaveACLFilter::apply($query, $request);
-
-        $permissions = $query->whereHas('user.roles.department', function ($query) {
-        });
-        $query = $permissions->paginate(10);
+        $permissions = LeaveACLFilter::apply($query, $request);
+        $query = $permissions->paginate(self::$perPage);
         return self::formattedData($query);
     }
 
@@ -93,8 +90,9 @@ use function App\Helper\formatDate;
 
     public function getOwnleaves(Request $request): LengthAwarePaginator
     {
-        $leaves = LeaveAndPermission::with('user')
-            ->where('user_id', $request->user()->id)->paginate(self::$perPage);
+        $leaves = LeaveAndPermission::with('accBy', 'user', 'user.userHasArea', 'user.branch', 'user.roles.department')
+            ->where('user_id', $request->user()->id)
+            ->paginate(self::$perPage);
 
         return self::formattedData($leaves);
     }
