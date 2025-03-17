@@ -9,7 +9,7 @@
                 </div>
             </div>
 
-            <form id="form-confirm" @submit.prevent="confirm(id)">
+            <form id="form-confirm" @submit.prevent="confirm(editVal?.id)">
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Status Konfirmasi</label>

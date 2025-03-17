@@ -182,7 +182,7 @@
                                                         x-if="Number(confirmPermission) === 1 && userSessionId !== leave.user_id">
                                                         <button class="btn btn-info btn-sm" data-bs-toggle="modal"
                                                                 data-bs-target="#modal-confirm"
-                                                                @click="openConfirmModal(leave.id)">
+                                                                @click="edit(leave.id)">
                                                             <i class="bi bi-gear-fill"></i>
                                                         </button>
                                                     </template>
@@ -422,18 +422,16 @@
                         this.buttonLoading = false;
                     }
                 },
-                openConfirmModal(id) {
-                    this.id = id;
-                },
                 async edit(id) {
                     const resp = await axios.get(`/manage-users/leaves/edit/${id}`);
                     this.editVal = resp.data;
                     await this.selectedUserData(this.editVal.id);
                 },
-                async confirm() {
+                async confirm(id) {
+                    // console.log(id);
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/manage-users/leaves/${this.id}`, new FormData(this.formConfirm))
+                        await axios.post(`/manage-users/leaves/${id}`, new FormData(this.formConfirm))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formConfirm.reset();
                         this.modalConfirm.hide();
