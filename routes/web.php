@@ -573,6 +573,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/job-information/data', [UserProfileController::class, 'jobInformation']);
             Route::get('/sp', [UserProfileController::class, 'spPage']);
             Route::get('/sp/data', [UserProfileController::class, 'spData']);
+            Route::get('/leaves', [UserProfileController::class, 'leavePage']);
+            Route::get('/leaves/data', [UserProfileController::class, 'leavesData']);
 
 
             Route::prefix('attendance-records')->group(function () {

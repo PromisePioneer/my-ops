@@ -91,4 +91,12 @@ use function App\Helper\formatDate;
         });
     }
 
+    public function getOwnleaves(Request $request): LengthAwarePaginator
+    {
+        $leaves = LeaveAndPermission::with('user')
+            ->where('user_id', $request->user()->id)->paginate(self::$perPage);
+
+        return self::formattedData($leaves);
+    }
+
 }

@@ -11,6 +11,7 @@ use App\Models\JobInformation;
 use App\Models\SP;
 use App\Models\User;
 use App\Support\HelperService\HandleFileUploadService;
+use App\Support\User\LeaveAndPermission\ManageUserLeaveAndPermissionService;
 use App\Support\User\SP\SPService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -26,6 +27,7 @@ use Illuminate\View\View;
         $this->handleFileUpload = new HandleFileUploadService();
         $this->sp = new SP();
         $this->SPService = new SPService();
+        $this->leaveAndPermissionService = new ManageUserLeaveAndPermissionService();
     }
 
     public function index(): View
@@ -82,6 +84,16 @@ use Illuminate\View\View;
     public function spData(Request $request): JsonResponse
     {
         return response()->json($this->SPService->getOwnSP($request));
+    }
+
+    public function leavePage(): View
+    {
+        return view('pages.utilities.user-profile.leaves.index');
+    }
+
+    public function leavesData(Request $request): JsonResponse
+    {
+        return response()->json($this->leaveAndPermissionService->getOwnleaves($request));
     }
 
 }
