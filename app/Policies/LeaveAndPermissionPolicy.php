@@ -38,7 +38,7 @@ class LeaveAndPermissionPolicy
 
     public function confirm(User $user, LeaveAndPermission $leaveAndPermission): bool
     {
-        if ($leaveAndPermission->user_id !== $user->id) {
+        if ($leaveAndPermission->user_id === $user->id) {
             return false;
         }
 
