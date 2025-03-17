@@ -91,7 +91,7 @@ use function App\Helper\formatDate;
     public function getOwnleaves(Request $request): LengthAwarePaginator
     {
         $leaves = LeaveAndPermission::with('accBy', 'user', 'user.userHasArea', 'user.branch', 'user.roles.department')
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', $request->user()->id)->orderBy('date')
             ->paginate(self::$perPage);
 
         return self::formattedData($leaves);
