@@ -16,7 +16,6 @@
                                 <th class="min-w-125px">Status (Cuti / Izin / Sakit)</th>
                                 <th class="min-w-125px">Keterangan</th>
                                 <th class="min-w-125px">Status Konfirmasi</th>
-                                <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class="fw-bold">
                             <template x-if="isLoading">
@@ -43,6 +42,7 @@
                                     <td x-text="startIndex + index++"></td>
                                     <td x-text="`${leave.start_date} - ${leave.end_date}`"></td>
                                     <td x-text="leave.leaves_status"></td>
+                                    <td x-text="leave.reason"></td>
                                     <td x-text="leave.confirmation_status"></td>
                                 </tr>
                             </template>
