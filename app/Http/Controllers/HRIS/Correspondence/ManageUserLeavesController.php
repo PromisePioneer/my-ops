@@ -85,7 +85,7 @@ use Illuminate\View\View;
         LeaveAndPermission  $leaveAndPermission
     ): JsonResponse
     {
-        $this->authorize('confirm', LeaveAndPermission::class);
+        $this->authorize('confirm', $leaveAndPermission);
         DB::transaction(function () use ($request, $leaveAndPermission) {
             $empSchedule = EmployeeSchedule::whereBetween('start_date', [$request->start_date, $request->end_date])->orWhereBetween('end_date', [$request->start_date, $request->end_date])->get();
 
