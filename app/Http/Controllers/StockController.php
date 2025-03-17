@@ -94,7 +94,7 @@ use Illuminate\View\View;
         return $branch->map(function ($item) {
             return [
                 'id' => $item->id,
-                'text' => $item->name . ' - ' . $item->stock->sum('qty'),
+                'text' => $item->name . ' - ' . 'Stock : ' . $item->stock->sum('qty'),
             ];
         });
     }
