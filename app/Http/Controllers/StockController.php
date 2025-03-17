@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
-use App\Http\Requests\GenerateItemSNRequest;
 use App\Models\Goods;
 use App\Models\Master\Common\Branch;
 use App\Models\Stock;
@@ -11,6 +10,7 @@ use App\Support\StockService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+
 
 #[AllowDynamicProperties] class StockController extends Controller
 {

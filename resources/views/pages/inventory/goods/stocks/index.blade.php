@@ -135,6 +135,7 @@
                             await this.getGoodsStock();
                             await this.debitAccounts();
                             await this.creditAccounts();
+                            await this.getMainBranches();
                         },
                         async getGoodsStock() {
                             this.isLoading = true;
@@ -148,13 +149,27 @@
                                 this.isLoading = false;
                             }
                         },
-                        async getMainBranches(id) {
+                        async getMainBranches() {
+                            $(".main-branches-select2").select2({
+                                allowClear: true,
+                                placeholder: "Pilih Cabang",
+                                ajax: {
+                                    url: `/select2/main-branches-data`,
+                                    dataType: "JSON",
+                                    type: "GET",
+                                    data: params => ({search: params.term}),
+                                    processResults: data => ({results: data}),
+                                    cache: true
+                                }
+                            });
+                        },
+                        async getMainBranchesWithStock(id) {
                             $(".main-branches-select2").select2({
                                 allowClear: true,
                                 placeholder: "Pilih Cabang",
                                 ajax: {
                                     url: `/inventory/goods/stock/branch/data/${id}`,
-                                    dataType: "json",
+                                    dataType: "JSON",
                                     type: "GET",
                                     data: params => ({search: params.term}),
                                     processResults: data => ({results: data}),
@@ -194,7 +209,7 @@
                         async showStockDetail(id) {
                             const resp = await axios.get(`/inventory/goods/stock/show/${id}`);
                             this.stockDetail = resp.data;
-                            await this.getMainBranches(id);
+                            await this.getMainBranchesWithStock(id);
                         },
                         async debitAccounts() {
                             $(".debit-accounts-select2").select2({
