@@ -76,11 +76,14 @@
                 },
                 async getOwnLeaves() {
                     try {
+                        this.isLoading = true;
                         const resp = await axios.get('/utility/user-profile/leaves/data');
                         this.leaves = resp.data;
                         this.startIndex = this.leaves.from
                     } catch (error) {
                         console.log(error);
+                    } finally {
+                        this.isLoading = false;
                     }
                 },
                 async paginate(url) {
