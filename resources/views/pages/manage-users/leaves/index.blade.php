@@ -13,7 +13,6 @@
                             <h2 class="mb-0">Filter</h2>
                         </div>
                     </div>
-                    <form id="form-filter" @submit.prevent="filter()">
                         <div class="card-body pt-0">
                             <div class="d-flex flex-column text-gray-600">
                                 <div class="d-flex align-items-center py-2">
@@ -41,11 +40,10 @@
                             </div>
                         </div>
                         <div class="card-footer pt-4 text-end">
-                            <button type="submit" class="btn btn-light btn-active-primary btn-sm">
+                            <button type="button" @click="filter()" class="btn btn-light btn-active-primary btn-sm">
                                 Filter
                             </button>
                         </div>
-                    </form>
                 </div>
             </div>
             <div class="flex-lg-row-fluid ms-lg-10">
@@ -312,6 +310,7 @@
                     try {
                         const resp = await axios.get('/manage-users/leaves/filter', {
                             params: {
+                                search: this.search,
                                 branch_id: document.getElementById('branch_id').value,
                                 year: document.getElementById('year').value,
                                 month: document.getElementById('month').value,
