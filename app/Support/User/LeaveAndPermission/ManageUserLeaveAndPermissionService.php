@@ -61,14 +61,16 @@ use function App\Helper\formatDate;
 
     public function search(Request $request): LengthAwarePaginator
     {
-        $search = $request->input('search');
-        $query = LeaveAndPermission::search($search)->query(function ($query) use ($request) {
-            $data = $query->join('users', 'users.id', '=', 'leaves_and_permissions.user_id');
-            LeaveACLFilter::apply($data, $request);
+        $search = $request->input('search', '');
+
+        $query = LeaveAndPermission::search($search)->query(function ($query) {
+            $query->join('users', 'users.id', '=', 'leaves_and_permissions.user_id')
+                ->select('leaves_and_permissions.*', 'users.nip', 'users.name');
         });
 
-        $data = $query->paginate(10);
-        return self::formattedData($data);
+        $leaveACLFilter = LeaveACLFilter::apply($query, $request);
+
+        return self::formattedData($leaveACLFilter->paginate(self::$perPage));
     }
 
 

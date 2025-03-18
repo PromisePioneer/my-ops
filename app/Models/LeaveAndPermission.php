@@ -46,10 +46,9 @@ class LeaveAndPermission extends Model
 
     public function toSearchableArray(): array
     {
-        $this->with('user');
-
         return [
-            'users.name' => $this->user?->name,
+            'id' => $this->id,
+            'users.name' => $this->name
         ];
     }
 

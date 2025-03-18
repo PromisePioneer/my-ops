@@ -5,10 +5,11 @@ namespace App\Support\User\LeaveAndPermission;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
+use Laravel\Scout\Builder as ScoutBuilder;
 
 class LeaveACLFilter
 {
-    public static function apply(Builder|EloquentBuilder $query, Request $request)
+    public static function apply(Builder|EloquentBuilder|ScoutBuilder $query, Request $request)
     {
         if ($request->user()->hasAnyRole(['NOC Supervisor', 'NOC Staff'])) {
             $query->whereHas('roles', function ($query) {
