@@ -12,7 +12,7 @@ use App\Models\Master\Common\Branch;
 use App\Models\User;
 use App\Support\HelperService\HandleFileUploadService;
 use App\Support\User\LeaveAndPermission\CalculateUserLeaves;
-use App\Support\User\LeaveAndPermission\ManageUserLeaveAndPermissionService;
+use App\Support\User\LeaveAndPermission\LeaveAndPermissionService;
 use Carbon\CarbonPeriod;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -20,11 +20,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
-#[AllowDynamicProperties] class ManageUserLeavesController extends Controller
+#[AllowDynamicProperties] class LeaveAndPermissionController extends Controller
 {
     public function __construct()
     {
-        $this->manageUserLeaveAndPermissionService = new ManageUserLeaveAndPermissionService();
+        $this->manageUserLeaveAndPermissionService = new LeaveAndPermissionService();
         $this->user = new User();
         $this->calculateUserLeaves = new CalculateUserLeaves();
         $this->handleFileUploadService = new HandleFileUploadService();

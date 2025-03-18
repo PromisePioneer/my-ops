@@ -9,7 +9,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use function App\Helper\formatDate;
 
-#[AllowDynamicProperties] class ManageUserLeaveAndPermissionService
+#[AllowDynamicProperties] class LeaveAndPermissionService
 {
     private static int $perPage = 10;
 
@@ -31,9 +31,9 @@ use function App\Helper\formatDate;
     public function filter(Request $request): LengthAwarePaginator
     {
         $query = $this->leaveRepository->leavesMainQuery();
-        $permissions = LeaveACLFilter::apply($query, $request);
-        $filter = LeaveQueryFilter::apply($permissions, $request);
-        $data = $filter->paginate(self::$perPage);
+        $filter = LeaveQueryFilter::apply($query, $request);
+        $permissions = LeaveACLFilter::apply($filter, $request);
+        $data = $permissions->paginate(self::$perPage);
         return self::formattedData($data);
     }
 

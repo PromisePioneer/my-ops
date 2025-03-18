@@ -11,7 +11,7 @@ use App\Models\JobInformation;
 use App\Models\SP;
 use App\Models\User;
 use App\Support\HelperService\HandleFileUploadService;
-use App\Support\User\LeaveAndPermission\ManageUserLeaveAndPermissionService;
+use App\Support\User\LeaveAndPermission\LeaveAndPermissionService;
 use App\Support\User\SP\SPService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,7 +27,7 @@ use Illuminate\View\View;
         $this->handleFileUpload = new HandleFileUploadService();
         $this->sp = new SP();
         $this->SPService = new SPService();
-        $this->leaveAndPermissionService = new ManageUserLeaveAndPermissionService();
+        $this->leaveAndPermissionService = new LeaveAndPermissionService();
     }
 
     public function index(): View

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class LeaveQueryFilter
 {
-    public static function apply(Builder|EloquentBuilder $query, Request $request)
+    public static function apply(Builder|EloquentBuilder $query, Request $request): EloquentBuilder|Builder
     {
         if ($request->filled('branch_id')) {
             $query->whereHas('user', function ($query) use ($request) {
