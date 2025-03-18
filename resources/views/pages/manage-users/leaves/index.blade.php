@@ -344,10 +344,12 @@
                             this.leaves = [];
                             this.isLoading = true;
                             const resp = await axios.get(`${url}`, {
-                                search: this.search,
-                                branch_id: document.getElementById('branch_id').value,
-                                year: document.getElementById('year').value,
-                                month: document.getElementById('month').value,
+                                params: {
+                                    search: this.search,
+                                    branch_id: document.getElementById('branch_id').value,
+                                    year: document.getElementById('year').value,
+                                    month: document.getElementById('month').value,
+                                }
                             });
                             this.leaves = resp.data
                         } catch (e) {
