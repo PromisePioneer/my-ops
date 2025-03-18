@@ -55,7 +55,7 @@ class LeaveAndPermissionRequest extends FormRequest
                 'required',
                 'date',
                 $this->validateStartDate($request, $getDiproses),
-                $ifDateRangeHasWeekHoliday,
+//                $ifDateRangeHasWeekHoliday,
                 $ifDateRangeHasLeaves
             ],
             'end_date' => [
