@@ -154,6 +154,4 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
             'error_message' => $progress->error_message,
         ]);
     }
-
-
 }

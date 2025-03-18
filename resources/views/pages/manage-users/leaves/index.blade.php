@@ -203,7 +203,7 @@
                             <ul class="pagination float-end mb-4">
                                 <template x-for="pagination in leaves.links">
                                     <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                        <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                        <button class="page-link" @click="paginate(pagination.url)"
                                                 x-html="pagination.label">
                                         </button>
                                     </li>
@@ -308,16 +308,13 @@
                     }
                 },
                 async filter() {
-                    const branchId = document.getElementById('branch_id').value;
-                    const year = document.getElementById('year').value;
-                    const month = document.getElementById('month').value;
                     this.isLoading = true;
                     try {
                         const resp = await axios.get('/manage-users/leaves/filter', {
                             params: {
-                                month: month,
-                                year: year,
-                                branch_id: branchId,
+                                month: document.getElementById('branch_id').value,
+                                year: document.getElementById('year').value,
+                                branch_id: document.getElementById('month').value,
                             }
                         });
                         this.leaves = resp.data;
@@ -341,10 +338,22 @@
                         this.isLoading = false;
                     }
                 },
-                async paginationEndPoint(url) {
+                async paginate(url) {
                     if (url) {
-                        const resp = await axios.get(`${url}`);
-                        this.leaves = resp.data
+                        try {
+                            this.leaves = [];
+                            this.isLoading = true;
+                            const resp = await axios.get(`${url}`, {
+                                month: document.getElementById('branch_id').value,
+                                year: document.getElementById('year').value,
+                                branch_id: document.getElementById('month').value,
+                            });
+                            this.leaves = resp.data
+                        } catch (e) {
+                            console.log(e);
+                        } finally {
+                            this.isLoading = false;
+                        }
                     }
                 },
                 async selectedUserData(id) {
@@ -428,7 +437,6 @@
                     await this.selectedUserData(this.editVal.id);
                 },
                 async confirm(id) {
-                    // console.log(id);
                     this.buttonLoading = true;
                     try {
                         await axios.post(`/manage-users/leaves/${id}`, new FormData(this.formConfirm))
