@@ -28,7 +28,7 @@ class LeaveSelect2QueryFilter
         }
 
         if ($request->user()->hasRole('Operational Manager')) {
-            $query->whereHas('user.roles', function ($query) {
+            $query->whereHas('roles', function ($query) {
                 $query->whereIn('name', [
                     'Head Engineer',
                     'Senior Engineer',
