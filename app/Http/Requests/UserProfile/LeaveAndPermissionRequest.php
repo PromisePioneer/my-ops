@@ -106,6 +106,7 @@ class LeaveAndPermissionRequest extends FormRequest
     {
         return LeaveAndPermission::where('user_id', $request->user_id)
             ->where('confirmation_status', 'Diproses')
+            ->where('leaves_status', 'Cuti')
             ->whereMonth('start_date', Carbon::now()->month)
             ->whereMonth('end_date', Carbon::now()->month)
             ->first();
