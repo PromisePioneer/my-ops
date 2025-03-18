@@ -344,9 +344,10 @@
                             this.leaves = [];
                             this.isLoading = true;
                             const resp = await axios.get(`${url}`, {
-                                month: document.getElementById('branch_id').value,
+                                search: this.search,
+                                branch_id: document.getElementById('branch_id').value,
                                 year: document.getElementById('year').value,
-                                branch_id: document.getElementById('month').value,
+                                month: document.getElementById('month').value,
                             });
                             this.leaves = resp.data
                         } catch (e) {
@@ -404,11 +405,20 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/manage-users/leaves/', new FormData(this.formCreate))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.formCreate.reset();
-                        this.modalCreate.hide();
-                        await this.init();
+                        await axios.post('/manage-users/leaves/', new FormData(this.formCreate)).then(async () => {
+                            await showAlert('success', 'Data berhasil disimpan')
+                            this.formCreate.reset();
+                            this.modalCreate.hide();
+                            const resp = await axios.get(`${this.leaves.path}?page=${this.leaves.current_page}`, {
+                                params: {
+                                    search: this.search,
+                                    branch_id: document.getElementById('branch_id').value,
+                                    year: document.getElementById('year').value,
+                                    month: document.getElementById('month').value,
+                                }
+                            });
+                            this.leaves = resp.data
+                        })
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
@@ -419,11 +429,20 @@
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/manage-users/leaves/update/${id}`, new FormData(this.formEdit))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.formEdit.reset();
-                        this.modalEdit.hide();
-                        await this.init();
+                        await axios.post(`/manage-users/leaves/update/${id}`, new FormData(this.formEdit)).then(async () => {
+                            await showAlert('success', 'Data berhasil disimpan')
+                            this.formEdit.reset();
+                            this.modalEdit.hide();
+                            const resp = await axios.get(`${this.leaves.path}?page=${this.leaves.current_page}`, {
+                                params: {
+                                    search: this.search,
+                                    branch_id: document.getElementById('branch_id').value,
+                                    year: document.getElementById('year').value,
+                                    month: document.getElementById('month').value,
+                                }
+                            });
+                            this.leaves = resp.data
+                        })
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
@@ -432,6 +451,7 @@
                     }
                 },
                 async edit(id) {
+                    console.log(id);
                     const resp = await axios.get(`/manage-users/leaves/edit/${id}`);
                     this.editVal = resp.data;
                     await this.selectedUserData(this.editVal.id);
