@@ -17,17 +17,57 @@ class LeaveSelect2QueryFilter
                 $query->whereNull('branch_id')->orWhere('branch_id', 1);
             });
         }
-
-        if ($request->user()->hasAnyRole(['Super Admin', 'Operational Manager', 'Director', 'Main Commissioner'])) {
-            $query;
+        if ($request->user()->hasRole('Director')) {
+            $query->whereHas('roles', function ($query) {
+                $query->whereIn('name', [
+                    'Branch Manager',
+                    'Operational Manager',
+                    'FA & Tax Manager',
+                ]);
+            });
         }
 
         if ($request->user()->hasRole('Operational Manager')) {
             $query->whereHas('roles', function ($query) {
                 $query->whereIn('name', [
-                    'NOC Supervisor', 'Programmer', 'Project Controller & Vendor Supervisor',
-                    'Stocker Supervisor', 'Quality Controller Supervisor', 'Graphic Designer & Socmed Admin',
-                    'After Sales Customer Service', 'Legal & Corporate Commissioner', 'Mechanic Senior Staff', 'Head Engineer'
+                    'Head Engineer',
+                    'Senior Engineer',
+                    'Engineer',
+                    'KU Head Engineer',
+                    'KU Engineer',
+                    'Quality Controller Supervisor',
+                    'Backbone Team Supervisor',
+                    'Trainer & Quality Control Staff',
+                ]);
+            });
+        }
+
+        if ($request->user()->hasRole('FA & Tax Manager')) {
+            $query->whereHas('roles', function ($query) {
+                $query->whereIn('name', [
+                    'Tax Admin Supervisor',
+                    'Customer Payment Supervisor',
+                    'Finance & Accounting Staff',
+                    'After Sales Customer Service',
+                    'Electrical Senior Engineer',
+                    'NOC Supervisor',
+                    'Customer Service Staff',
+                    'Billing Admin Supervisor',
+                    'Finance & Accounting Supervisor',
+                    'Legal & Corporate Commissioner',
+                    'Stocker Supervisor',
+                    'Stocker Staff',
+                    'Warehouse Security',
+                    'NOC Staff',
+                    'Programmer',
+                    'Inventory Controller Supervisor',
+                    'FA Senior Staff',
+                    'HR & Operational Staff',
+                    'Project Controller & Vendor Supervisor',
+                    'Welding Senior Engineer',
+                    'Warehouse Stocker Staff',
+                    'Customer Service Leader',
+                    ''
                 ]);
             });
         }
