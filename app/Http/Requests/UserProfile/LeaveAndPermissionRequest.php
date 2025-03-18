@@ -104,7 +104,7 @@ class LeaveAndPermissionRequest extends FormRequest
      */
     private function getDiproses(Request $request): Model|LeaveAndPermission|null
     {
-        return LeaveAndPermission::where('user_id', $request->user()->id)
+        return LeaveAndPermission::where('user_id', $request->user_id)
             ->where('confirmation_status', 'Diproses')
             ->whereMonth('start_date', Carbon::now()->month)
             ->whereMonth('end_date', Carbon::now()->month)
