@@ -20,6 +20,7 @@ use App\Http\Controllers\Accounting\VendorPayrollController;
 use App\Http\Controllers\AccountTransactionController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
+use App\Http\Controllers\AttendanceManualRequestController;
 use App\Http\Controllers\BAAController;
 use App\Http\Controllers\ConsumedStockController;
 use App\Http\Controllers\GoodsCategoryController;
@@ -32,7 +33,7 @@ use App\Http\Controllers\HRIS\Attendances\FpDevicesController;
 use App\Http\Controllers\HRIS\Attendances\IclockController;
 use App\Http\Controllers\HRIS\Attendances\WorkTimeController;
 use App\Http\Controllers\HRIS\Correspondence\ContractManagementController;
-use App\Http\Controllers\HRIS\Correspondence\ManageUserLeavesController;
+use App\Http\Controllers\HRIS\Correspondence\LeaveAndPermissionController;
 use App\Http\Controllers\HRIS\Correspondence\SKController;
 use App\Http\Controllers\HRIS\Correspondence\SPController;
 use App\Http\Controllers\HRIS\EmployeesData\EducationCertificateController;
@@ -216,20 +217,20 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
         Route::prefix('leaves')->group(function () {
-            Route::post('/destroy', [ManageUserLeavesController::class, 'destroy']);
-            Route::get('/leaves-left', [ManageUserLeavesController::class, 'getTotalLeavesLeft']);
-            Route::get('/', [ManageUserLeavesController::class, 'index']);
-            Route::get('/data', [ManageUserLeavesController::class, 'data']);
-            Route::get('/search', [ManageUserLeavesController::class, 'search']);
-            Route::post('/', [ManageUserLeavesController::class, 'store']);
-            Route::post('/{leaveAndPermission}', [ManageUserLeavesController::class, 'changeStatus']);
-            Route::get('/users/data', [ManageUserLeavesController::class, 'getUserData']);
-            Route::get('/branch/data', [ManageUserLeavesController::class, 'getBranchData']);
-            Route::get('/users/selected/{leaveAndPermission}', [ManageUserLeavesController::class, 'selectedUserData']);
-            Route::get('/filter', [ManageUserLeavesController::class, 'filter']);
-            Route::post('/', [ManageUserLeavesController::class, 'store']);
-            Route::get('/edit/{leaveAndPermission}', [ManageUserLeavesController::class, 'edit']);
-            Route::post('/update/{leaveAndPermission}', [ManageUserLeavesController::class, 'update']);
+            Route::post('/destroy', [LeaveAndPermissionController::class, 'destroy']);
+            Route::get('/leaves-left', [LeaveAndPermissionController::class, 'getTotalLeavesLeft']);
+            Route::get('/', [LeaveAndPermissionController::class, 'index']);
+            Route::get('/data', [LeaveAndPermissionController::class, 'data']);
+            Route::get('/search', [LeaveAndPermissionController::class, 'search']);
+            Route::post('/', [LeaveAndPermissionController::class, 'store']);
+            Route::post('/{leaveAndPermission}', [LeaveAndPermissionController::class, 'changeStatus']);
+            Route::get('/users/data', [LeaveAndPermissionController::class, 'getUserData']);
+            Route::get('/branch/data', [LeaveAndPermissionController::class, 'getBranchData']);
+            Route::get('/users/selected/{leaveAndPermission}', [LeaveAndPermissionController::class, 'selectedUserData']);
+            Route::get('/filter', [LeaveAndPermissionController::class, 'filter']);
+            Route::post('/', [LeaveAndPermissionController::class, 'store']);
+            Route::get('/edit/{leaveAndPermission}', [LeaveAndPermissionController::class, 'edit']);
+            Route::post('/update/{leaveAndPermission}', [LeaveAndPermissionController::class, 'update']);
         });
 
         Route::prefix('sp')->group(function () {
@@ -1010,6 +1011,24 @@ Route::group(['middleware' => ['auth']], static function () {
                 '/detail/correction/save/{user}/{datePeriod?}',
                 [AttendanceSummaryController::class, 'saveCorrection']);
             Route::get('/filter', [AttendanceSummaryController::class, 'filter']);
+
+            Route::prefix('/attendance-manual-requests')->group(function () {
+                Route::get('/', [AttendanceManualRequestController::class, 'index']);
+                Route::post('/destroy', [AttendanceManualRequestController::class, 'destroy']);
+                Route::get('/data', [AttendanceManualRequestController::class, 'data']);
+                Route::get('/create', [AttendanceManualRequestController::class, 'create']);
+                Route::post('/', [AttendanceManualRequestController::class, 'store']);
+                Route::get('/search', [AttendanceManualRequestController::class, 'search']);
+                Route::get('/attachments/{attendanceManualRequest}', [AttendanceManualRequestController::class, 'getAttachments']);
+                Route::get('/{attendanceManualRequest}', [AttendanceManualRequestController::class, 'edit']);
+                Route::get('/selected-users/{attendanceManualRequest}', [AttendanceManualRequestController::class, 'selectedUsers']);
+                Route::get('/selected-attachments/{attendanceManualRequest}', [AttendanceManualRequestController::class, 'selectedAttachments']);
+                Route::post('/remove-attachment/{attendanceManualAttachment}', [AttendanceManualRequestController::class, 'removeAttachment']);
+                Route::post('/update/{attendanceManualRequest}', [AttendanceManualRequestController::class, 'update']);
+                Route::get('/show/{attendanceManualRequest}', [AttendanceManualRequestController::class, 'show']);
+                Route::post('/confirm/{attendanceManualRequest}', [AttendanceManualRequestController::class, 'confirm']);
+            });
+
         });
 
         Route::prefix('/employee-schedules')->group(function () {
