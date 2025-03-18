@@ -32,7 +32,8 @@ use function App\Helper\formatDate;
     {
         $query = $this->leaveRepository->leavesMainQuery();
         $filter = LeaveQueryFilter::apply($query, $request);
-        $data = $filter->paginate(self::$perPage);
+        $permissions = LeaveACLFilter::apply($filter, $request);
+        $data = $permissions->paginate(self::$perPage);
         return self::formattedData($data);
     }
 

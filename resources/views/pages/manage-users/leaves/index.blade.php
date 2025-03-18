@@ -312,9 +312,9 @@
                     try {
                         const resp = await axios.get('/manage-users/leaves/filter', {
                             params: {
-                                month: document.getElementById('branch_id').value,
+                                branch_id: document.getElementById('branch_id').value,
                                 year: document.getElementById('year').value,
-                                branch_id: document.getElementById('month').value,
+                                month: document.getElementById('month').value,
                             }
                         });
                         this.leaves = resp.data;
