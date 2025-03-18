@@ -28,9 +28,8 @@ class LeaveSelect2QueryFilter
         }
 
         if ($request->user()->hasRole('Operational Manager')) {
-            $query->whereHas('roles', function ($query) {
+            $query->whereHas('user.roles', function ($query) {
                 $query->whereIn('name', [
-                    'Operational Manager',
                     'Head Engineer',
                     'Senior Engineer',
                     'Engineer',
@@ -39,9 +38,36 @@ class LeaveSelect2QueryFilter
                     'Quality Controller Supervisor',
                     'Backbone Team Supervisor',
                     'Trainer & Quality Control Staff',
+                    'Stocker Supervisor',
+                    'Programmer',
+                    'Legal & Corporate Commissioner',
+                    'After Sales Customer Service',
+                    'Project Controller & Vendor Supervisor',
                 ]);
             });
         }
+
+
+        if ($request->user()->hasRole('Legal & Corporate Commissioner')) {
+            $query->whereHas('roles', function ($query) {
+                $query->whereIn('name', [
+                    'Head Engineer',
+                    'Senior Engineer',
+                    'Engineer',
+                    'KU Head Engineer',
+                    'KU Engineer',
+                    'Quality Controller Supervisor',
+                    'Backbone Team Supervisor',
+                    'Trainer & Quality Control Staff',
+                    'Stocker Supervisor',
+                    'Programmer',
+                    'After Sales Customer Service',
+                    'Project Controller & Vendor Supervisor',
+                ]);
+            });
+
+        }
+
 
         if ($request->user()->hasRole('FA & Tax Manager')) {
             $query->whereHas('roles', function ($query) {

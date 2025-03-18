@@ -40,6 +40,11 @@ class LeaveACLFilter
                     'Quality Controller Supervisor',
                     'Backbone Team Supervisor',
                     'Trainer & Quality Control Staff',
+                    'Stocker Supervisor',
+                    'Programmer',
+                    'Legal & Corporate Commissioner',
+                    'After Sales Customer Service',
+                    'Project Controller & Vendor Supervisor',
                 ]);
             });
         }
@@ -51,26 +56,20 @@ class LeaveACLFilter
                     'Tax Admin Supervisor',
                     'Customer Payment Supervisor',
                     'Finance & Accounting Staff',
-                    'After Sales Customer Service',
                     'Electrical Senior Engineer',
                     'NOC Supervisor',
                     'Customer Service Staff',
                     'Billing Admin Supervisor',
                     'Finance & Accounting Supervisor',
-                    'Legal & Corporate Commissioner',
-                    'Stocker Supervisor',
                     'Stocker Staff',
                     'Warehouse Security',
                     'NOC Staff',
-                    'Programmer',
                     'Inventory Controller Supervisor',
                     'FA Senior Staff',
                     'HR & Operational Staff',
-                    'Project Controller & Vendor Supervisor',
                     'Welding Senior Engineer',
                     'Warehouse Stocker Staff',
                     'Customer Service Leader',
-                    ''
                 ]);
             });
         }
