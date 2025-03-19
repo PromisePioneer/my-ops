@@ -12,7 +12,7 @@ class LeaveACLFilter
     public static function apply(Builder|EloquentBuilder|ScoutBuilder $query, Request $request)
     {
         if ($request->user()->hasAnyRole(['NOC Supervisor', 'NOC Staff'])) {
-            $query->whereHas('roles', function ($query) {
+            $query->whereHas('user.roles', function ($query) {
                 $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
             })->where(function ($query) {
                 $query->whereNull('branch_id')->orWhere('branch_id', 1);

@@ -31,10 +31,7 @@ class LeaveSelect2QueryFilter
             $query->whereHas('roles', function ($query) {
                 $query->whereIn('name', [
                     'Head Engineer',
-                    'Senior Engineer',
-                    'Engineer',
                     'KU Head Engineer',
-                    'KU Engineer',
                     'Quality Controller Supervisor',
                     'Backbone Team Supervisor',
                     'Trainer & Quality Control Staff',

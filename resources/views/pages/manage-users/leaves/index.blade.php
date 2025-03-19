@@ -28,6 +28,11 @@
                                            placeholder="Filter Berdasarkan Tahun">
                                 </div>
                                 <div class="d-flex align-items-center py-2">
+                                    <select name="confirmation_status" id="confirmation_status">
+                                        <option ></option>
+                                    </select>
+                                </div>
+                                <div class="d-flex align-items-center py-2">
                                     <select class="form-select form-select-solid"
                                             name="month" id="month" data-control="select2"
                                             data-placeholder="Pilih Bulan">
@@ -410,6 +415,7 @@
                             await showAlert('success', 'Data berhasil disimpan')
                             this.formCreate.reset();
                             this.modalCreate.hide();
+                            this.leavesLeft = 0;
                             $('.users-select2').val('').trigger('change');
                             const resp = await axios.get(`${this.leaves.path}?page=${this.leaves.current_page}`, {
                                 params: {
@@ -435,6 +441,7 @@
                             await showAlert('success', 'Data berhasil disimpan')
                             this.formEdit.reset();
                             this.modalEdit.hide();
+                            this.leavesLeft = 0;
                             const resp = await axios.get(`${this.leaves.path}?page=${this.leaves.current_page}`, {
                                 params: {
                                     search: this.search,
@@ -461,11 +468,21 @@
                 async confirm(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/manage-users/leaves/${id}`, new FormData(this.formConfirm))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.formConfirm.reset();
-                        this.modalConfirm.hide();
-                        await this.init();
+                        await axios.post(`/manage-users/leaves/${id}`, new FormData(this.formConfirm)).then(async () => {
+                            await showAlert('success', 'Data berhasil disimpan')
+                            this.formConfirm.reset();
+                            this.modalConfirm.hide();
+                            this.leavesLeft = 0;
+                            const resp = await axios.get(`${this.leaves.path}?page=${this.leaves.current_page}`, {
+                                params: {
+                                    search: this.search,
+                                    branch_id: document.getElementById('branch_id').value,
+                                    year: document.getElementById('year').value,
+                                    month: document.getElementById('month').value,
+                                }
+                            });
+                            this.leaves = resp.data
+                        })
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
@@ -488,9 +505,19 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/manage-users/leaves/destroy`, new FormData(this.formDelete));
-                            await showAlert('success', 'Data sukses dihapus');
-                            await this.init();
+                            await axios.post(`/manage-users/leaves/destroy`, new FormData(this.formDelete)).then(async () => {
+                                await showAlert('success', 'Data sukses dihapus');
+                                this.leavesLeft = 0;
+                                const resp = await axios.get(`${this.leaves.path}?page=${this.leaves.current_page}`, {
+                                    params: {
+                                        search: this.search,
+                                        branch_id: document.getElementById('branch_id').value,
+                                        year: document.getElementById('year').value,
+                                        month: document.getElementById('month').value,
+                                    }
+                                });
+                                this.leaves = resp.data
+                            });
                         } catch (error) {
                             console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');
