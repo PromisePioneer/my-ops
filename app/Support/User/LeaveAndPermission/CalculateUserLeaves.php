@@ -17,7 +17,7 @@ class CalculateUserLeaves
         $yearsOfService = $joinDate->diffInYears($now);
         $leaveQuota = $this->leaveQuota($yearsOfService);
 
-        return $this->getDiffDays($request, $leaveQuota, $now);
+        return $this->getDiffDays($request, $leaveQuota, $now, $joinDate, $yearsOfService);
     }
 
     public function leaveQuota(int $yearsOfService): int
@@ -33,22 +33,26 @@ class CalculateUserLeaves
         return 0;
     }
 
-    public function getDiffDays(Request $request, int $leaveQuota, Carbon $now): int
+    public function getDiffDays(Request $request, int $leaveQuota, Carbon $now, $joinDate, $yearsOfService): int
     {
         $totalLeaves = LeaveAndPermission::where('user_id', $request->user_id ?? $request->user()->id)
             ->where('confirmation_status', 'Diterima')
             ->get();
 
-        foreach ($totalLeaves as $leave) {
-            $leaveStart = Carbon::parse($leave->start_date);
-            $leaveEnd = Carbon::parse($leave->end_date);
+        if ($now->greaterThan($joinDate)) {
+            $leaveQuota = $this->leaveQuota($yearsOfService);
+        } else {
+            foreach ($totalLeaves as $leave) {
+                $leaveStart = Carbon::parse($leave->start_date);
+                $leaveEnd = Carbon::parse($leave->end_date);
 
-            if ($leaveEnd->year < $now->year) {
-                continue;
+                if ($leaveEnd->year < $now->year) {
+                    continue;
+                }
+
+                $getDiffDays = $leaveStart->diffInDays($leaveEnd);
+                $leaveQuota -= $getDiffDays + 1;
             }
-
-            $getDiffDays = $leaveStart->diffInDays($leaveEnd);
-            $leaveQuota -= $getDiffDays + 1;
         }
 
         return abs($leaveQuota);
