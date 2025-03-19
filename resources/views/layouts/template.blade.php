@@ -12,6 +12,7 @@
     <link href="{{ asset('assets/css/style.bundle.css')}}" rel="stylesheet" type="text/css"/>
     <link href="{{ asset('assets/css/image-lightbox.css') }}" rel="stylesheet">
 
+
     @vite(['resources/js/app.js'])
 
     <style>

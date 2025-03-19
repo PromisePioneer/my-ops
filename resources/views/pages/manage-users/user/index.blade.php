@@ -211,6 +211,7 @@
                                                     <a href="#">
                                                         <div class="symbol-label">
                                                             <img :src="getImageURL(user.profile_pic ?? null)"
+                                                                 data-toggle="lightbox"
                                                                  @click="$dispatch('lightbox', `${getImageURL(user.profile_pic) ?? null}`)"
                                                                  alt="Foto Karyawan" class="w-100"/>
                                                         </div>
