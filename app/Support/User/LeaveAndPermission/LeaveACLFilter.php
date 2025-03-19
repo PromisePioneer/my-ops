@@ -92,7 +92,7 @@ class LeaveACLFilter
         }
 
         if ($request->user()->hasAnyRole('Customer Service Leader')) {
-            return $query->whereHas('roles', function ($query) use ($request) {
+            return $query->whereHas('user.roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff', 'After Sales Customer Service']);
             })->where(function ($query) use ($request) {
                 $query->whereNull('branch_id')->orWhereIn('branch_id', [1])
@@ -102,7 +102,7 @@ class LeaveACLFilter
 
 
         if ($request->user()->hasAnyRole('Finance & Accounting Supervisor')) {
-            $query->whereHas('roles', function ($query) use ($request) {
+            $query->whereHas('user.roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff', 'Stocker Staff', 'Inventory Controller Supervisor']);
             })->where(function ($query) use ($request) {
                 $query->whereHas('branch', function ($query) use ($request) {
@@ -113,7 +113,7 @@ class LeaveACLFilter
 
 
         if ($request->user()->hasAnyRole('Head Of Electrical Engineer')) {
-            $query->whereHas('roles', function ($query) use ($request) {
+            $query->whereHas('user.roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer']);
             })->whereHas('branch', function ($query) use ($request) {
                 $query->whereNull('branch_id');
@@ -129,21 +129,21 @@ class LeaveACLFilter
 
 
         if ($request->user()->hasRole('KU Head Engineer')) {
-            $query->whereHas('roles', function ($query) use ($request) {
+            $query->whereHas('user.roles', function ($query) use ($request) {
                 $query->whereIn('name', ['KU Head Engineer', 'KU Engineer']);
             });
         }
 
 
         if ($request->user()->hasRole('Quality Controller Supervisor')) {
-            $query->whereHas('roles', function ($query) use ($request) {
+            $query->whereHas('user.roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Quality Controller Supervisor', 'Quality Control Staff']);
             });
         }
 
 
         if ($request->user()->hasRole('Mechanic Senior Staff')) {
-            $query->whereHas('roles', function ($query) use ($request) {
+            $query->whereHas('user.roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Mechanic Senior Staff', 'Mechanic Helper Staff']);
             });
         }
