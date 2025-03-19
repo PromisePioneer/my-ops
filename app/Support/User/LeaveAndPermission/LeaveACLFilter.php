@@ -34,10 +34,7 @@ class LeaveACLFilter
             $query->whereHas('user.roles', function ($query) {
                 $query->whereIn('name', [
                     'Head Engineer',
-                    'Senior Engineer',
-                    'Engineer',
                     'KU Head Engineer',
-                    'KU Engineer',
                     'Quality Controller Supervisor',
                     'Backbone Team Supervisor',
                     'Trainer & Quality Control Staff',
@@ -47,6 +44,9 @@ class LeaveACLFilter
                     'After Sales Customer Service',
                     'Project Controller & Vendor Supervisor',
                 ]);
+            })->whereHas('user', function ($query) use ($request) {
+                $query->where('branch_id', 1)
+                    ->orWhere('branch_id', null);
             });
         }
 
@@ -72,7 +72,10 @@ class LeaveACLFilter
                     'Warehouse Stocker Staff',
                     'Customer Service Leader',
                 ]);
-            });
+            })->whereHas('user', function ($query) use ($request) {
+                $query->where('branch_id', 1)
+                    ->orWhere('branch_id', null);
+            });;
         }
 
 

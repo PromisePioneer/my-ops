@@ -410,6 +410,7 @@
                             await showAlert('success', 'Data berhasil disimpan')
                             this.formCreate.reset();
                             this.modalCreate.hide();
+                            $('.users-select2').val('').trigger('change');
                             const resp = await axios.get(`${this.leaves.path}?page=${this.leaves.current_page}`, {
                                 params: {
                                     search: this.search,
