@@ -10,6 +10,11 @@ class LeaveQueryFilter
 {
     public static function apply(Builder|EloquentBuilder $query, Request $request): EloquentBuilder|Builder
     {
+        if ($request->filled('confirmation_status')) {
+            $query->where('confirmation_status', $request->input('confirmation_status'));
+        }
+
+
         if ($request->filled('branch_id')) {
             $query->whereHas('user', function ($query) use ($request) {
                 $query->where('branch_id', $request->input('branch_id'));
