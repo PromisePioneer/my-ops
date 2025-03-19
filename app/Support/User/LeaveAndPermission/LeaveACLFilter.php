@@ -14,8 +14,9 @@ class LeaveACLFilter
         if ($request->user()->hasAnyRole(['NOC Supervisor', 'NOC Staff'])) {
             $query->whereHas('user.roles', function ($query) {
                 $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
-            })->where(function ($query) {
-                $query->whereNull('branch_id')->orWhere('branch_id', 1);
+            })->whereHas('user', function ($query) use ($request) {
+                $query->where('branch_id', 1)
+                    ->orWhere('branch_id', null);
             });
         }
 
