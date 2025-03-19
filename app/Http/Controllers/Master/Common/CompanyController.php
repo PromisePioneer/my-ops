@@ -70,7 +70,7 @@ use Illuminate\View\View;
      */
     public function edit(Company $company): JsonResponse
     {
-        $this->authorize('edit', $company);
+        $this->authorize('update', $company);
         return response()->json($company);
     }
 
@@ -80,7 +80,7 @@ use Illuminate\View\View;
      */
     public function update(CompanyRequest $request, Company $company): JsonResponse
     {
-        $this->authorize('edit', $company);
+        $this->authorize('update', $company);
         return response()->json($company->update($request->validated()));
     }
 
