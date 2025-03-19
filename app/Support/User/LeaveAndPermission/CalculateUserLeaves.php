@@ -37,23 +37,25 @@ class CalculateUserLeaves
     {
         $totalLeaves = LeaveAndPermission::where('user_id', $request->user_id ?? $request->user()->id)
             ->where('confirmation_status', 'Diterima')
+            ->whereMonth('start_date', '>=', $joinDate->format('m'))
+            ->whereDay('start_date', '>=', $joinDate->format('d'))
             ->get();
 
         if ($now->greaterThan($joinDate)) {
             $leaveQuota = $this->leaveQuota($yearsOfService);
-        } else {
-            foreach ($totalLeaves as $leave) {
-                $leaveStart = Carbon::parse($leave->start_date);
-                $leaveEnd = Carbon::parse($leave->end_date);
-
-                if ($leaveEnd->year < $now->year) {
-                    continue;
-                }
-
-                $getDiffDays = $leaveStart->diffInDays($leaveEnd);
-                $leaveQuota -= $getDiffDays + 1;
-            }
         }
+        foreach ($totalLeaves as $leave) {
+            $leaveStart = Carbon::parse($leave->start_date);
+            $leaveEnd = Carbon::parse($leave->end_date);
+
+            if ($leaveEnd->year < $now->year) {
+                continue;
+            }
+
+            $getDiffDays = $leaveStart->diffInDays($leaveEnd);
+            $leaveQuota -= $getDiffDays + 1;
+        }
+
 
         return abs($leaveQuota);
     }
