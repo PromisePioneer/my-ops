@@ -89,7 +89,7 @@ use Illuminate\Http\Request;
         $this->authorize('destroyDetail', Area::class);
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
-        $userHasArea->whereIn('id', $explodeID)->delete();
+        $userHasArea->whereIn('user_id', $explodeID)->delete();
 
         return response()->json([
             'message' => 'data berhasil dihapus',

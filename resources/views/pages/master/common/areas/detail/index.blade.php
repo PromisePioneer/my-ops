@@ -263,6 +263,7 @@
                         try {
                             await axios.post(`/master/common/area-detail/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
+                            this.selectedCheckBox = [];
                             await this.init();
                         } catch (error) {
                             console.error(error);

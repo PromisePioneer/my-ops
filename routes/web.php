@@ -302,9 +302,9 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('detail/{area}', [AreaController::class, 'detail']);
             });
             Route::prefix('area-detail')->group(function () {
+                Route::post('/destroy', [AreaDetailController::class, 'destroy']);
                 Route::get('/data/{area}', [AreaDetailController::class, 'data']);
                 Route::get('/users/data/{area}', [AreaDetailController::class, 'getUser']);
-                Route::post('/destroy', [AreaDetailController::class, 'destroy']);
                 Route::post('/{area}', [AreaDetailController::class, 'assignUser']);
                 Route::get('/search/{area}', [AreaDetailController::class, 'search']);
                 Route::get('users/selected/{area}', [AreaDetailController::class, 'selectedUser']);
