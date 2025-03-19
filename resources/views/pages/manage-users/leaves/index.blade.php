@@ -325,7 +325,7 @@
                                 branch_id: document.getElementById('branch_id').value,
                                 year: document.getElementById('year').value,
                                 month: document.getElementById('month').value,
-                                confirmation_status: document.getElementById('confirmation_status').value,
+                                confirmation_status: this.selectedConfirmationStatus,
                             }
                         });
                         this.leaves = resp.data;
@@ -360,7 +360,7 @@
                                     branch_id: document.getElementById('branch_id').value,
                                     year: document.getElementById('year').value,
                                     month: document.getElementById('month').value,
-                                    confirmation_status: document.getElementById('confirmation_status').value,
+                                    confirmation_status: this.selectedConfirmationStatus,
                                 }
                             });
                             this.leaves = resp.data
@@ -431,7 +431,7 @@
                                     branch_id: document.getElementById('branch_id').value,
                                     year: document.getElementById('year').value,
                                     month: document.getElementById('month').value,
-                                    confirmation_status: document.getElementById('confirmation_status').value,
+                                    confirmation_status: this.selectedConfirmationStatus,
                                 }
                             });
                             this.leaves = resp.data
@@ -457,7 +457,7 @@
                                     branch_id: document.getElementById('branch_id').value,
                                     year: document.getElementById('year').value,
                                     month: document.getElementById('month').value,
-                                    confirmation_status: document.getElementById('confirmation_status').value,
+                                    confirmation_status: this.selectedConfirmationStatus,
                                 }
                             });
                             this.leaves = resp.data
@@ -489,7 +489,7 @@
                                     branch_id: document.getElementById('branch_id').value,
                                     year: document.getElementById('year').value,
                                     month: document.getElementById('month').value,
-                                    confirmation_status: document.getElementById('confirmation_status').value,
+                                    confirmation_status: this.selectedConfirmationStatus,
                                 }
                             });
                             this.leaves = resp.data
@@ -525,7 +525,7 @@
                                         branch_id: document.getElementById('branch_id').value,
                                         year: document.getElementById('year').value,
                                         month: document.getElementById('month').value,
-                                        confirmation_status: document.getElementById('confirmation_status').value,
+                                        confirmation_status: this.selectedConfirmationStatus,
                                     }
                                 });
                                 this.leaves = resp.data
