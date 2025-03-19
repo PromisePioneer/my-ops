@@ -43,19 +43,19 @@ class CalculateUserLeaves
 
         if ($now->greaterThan($joinDate)) {
             $leaveQuota = $this->leaveQuota($yearsOfService);
-        }
-        foreach ($totalLeaves as $leave) {
-            $leaveStart = Carbon::parse($leave->start_date);
-            $leaveEnd = Carbon::parse($leave->end_date);
+        } else {
+            foreach ($totalLeaves as $leave) {
+                $leaveStart = Carbon::parse($leave->start_date);
+                $leaveEnd = Carbon::parse($leave->end_date);
 
-            if ($leaveEnd->year < $now->year) {
-                continue;
+                if ($leaveEnd->year < $now->year) {
+                    continue;
+                }
+
+                $getDiffDays = $leaveStart->diffInDays($leaveEnd);
+                $leaveQuota -= $getDiffDays + 1;
             }
-
-            $getDiffDays = $leaveStart->diffInDays($leaveEnd);
-            $leaveQuota -= $getDiffDays + 1;
         }
-
 
         return abs($leaveQuota);
     }
