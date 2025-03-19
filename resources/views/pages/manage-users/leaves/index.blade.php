@@ -24,12 +24,11 @@
                                 </div>
                                 <div class="d-flex align-items-center py-2">
                                     <select class="form-select-solid form-select" name="confirmation_status"
-                                            id="confirmation_status" data-control="select2"
-                                            data-placeholder="Pilih Status" data-allow-clear="true">
-                                        <option></option>
-                                        <option value="Diproses">Diproses</option>
-                                        <option value="Diterima">Diterima</option>
-                                        <option value="Ditolak">Ditolak</option>
+                                            id="confirmation_status" x-model="selectedConfirmationStatus">
+                                        <option selected>Pilih Status</option>
+                                        <option :value="`Diproses`">Diproses</option>
+                                        <option :value="`Diterima`">Diterima</option>
+                                        <option :value="`Ditolak`">Ditolak</option>
                                     </select>
                                 </div>
                                 <div class="d-flex align-items-center py-2">
@@ -317,7 +316,7 @@
                     }
                 },
                 async filter() {
-                    console.log($('#confirmation_status').val());
+                    console.log(this.selectedConfirmationStatus);
                     this.isLoading = true;
                     try {
                         const resp = await axios.get('/manage-users/leaves/filter', {
