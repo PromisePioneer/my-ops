@@ -51,6 +51,6 @@ class CalculateUserLeaves
             $leaveQuota -= $getDiffDays + 1;
         }
 
-        return $leaveQuota;
+        return abs($leaveQuota);
     }
 }
