@@ -23,19 +23,24 @@
                                     @endcan
                                 </div>
                                 <div class="d-flex align-items-center py-2">
+                                    <select class="form-select-solid form-select" name="confirmation_status"
+                                            id="confirmation_status" data-control="select2"
+                                            data-placeholder="Pilih Status" data-allow-clear="true">
+                                        <option></option>
+                                        <option value="Diproses">Diproses</option>
+                                        <option value="Diterima">Diterima</option>
+                                        <option value="Ditolak">Ditolak</option>
+                                    </select>
+                                </div>
+                                <div class="d-flex align-items-center py-2">
                                     <input type="number" name="year" id="year"
                                            class="form-control form-control-solid"
                                            placeholder="Filter Berdasarkan Tahun">
                                 </div>
                                 <div class="d-flex align-items-center py-2">
-                                    <select name="confirmation_status" id="confirmation_status">
-                                        <option ></option>
-                                    </select>
-                                </div>
-                                <div class="d-flex align-items-center py-2">
                                     <select class="form-select form-select-solid"
                                             name="month" id="month" data-control="select2"
-                                            data-placeholder="Pilih Bulan">
+                                            data-placeholder="Pilih Bulan" data-allow-clear="true">
                                         <option></option>
                                         <template x-for="month in months" :key="index">
                                             <option :value="month.number" x-text="month.name"></option>
@@ -319,6 +324,7 @@
                                 branch_id: document.getElementById('branch_id').value,
                                 year: document.getElementById('year').value,
                                 month: document.getElementById('month').value,
+                                confirmation_status: document.getElementById('confirmation_status').value,
                             }
                         });
                         this.leaves = resp.data;
@@ -353,6 +359,7 @@
                                     branch_id: document.getElementById('branch_id').value,
                                     year: document.getElementById('year').value,
                                     month: document.getElementById('month').value,
+                                    confirmation_status: document.getElementById('confirmation_status').value,
                                 }
                             });
                             this.leaves = resp.data
@@ -423,6 +430,7 @@
                                     branch_id: document.getElementById('branch_id').value,
                                     year: document.getElementById('year').value,
                                     month: document.getElementById('month').value,
+                                    confirmation_status: document.getElementById('confirmation_status').value,
                                 }
                             });
                             this.leaves = resp.data
@@ -448,6 +456,7 @@
                                     branch_id: document.getElementById('branch_id').value,
                                     year: document.getElementById('year').value,
                                     month: document.getElementById('month').value,
+                                    confirmation_status: document.getElementById('confirmation_status').value,
                                 }
                             });
                             this.leaves = resp.data
@@ -479,6 +488,7 @@
                                     branch_id: document.getElementById('branch_id').value,
                                     year: document.getElementById('year').value,
                                     month: document.getElementById('month').value,
+                                    confirmation_status: document.getElementById('confirmation_status').value,
                                 }
                             });
                             this.leaves = resp.data
@@ -514,6 +524,7 @@
                                         branch_id: document.getElementById('branch_id').value,
                                         year: document.getElementById('year').value,
                                         month: document.getElementById('month').value,
+                                        confirmation_status: document.getElementById('confirmation_status').value,
                                     }
                                 });
                                 this.leaves = resp.data
