@@ -249,6 +249,7 @@
                 selectAll: false,
                 singleChecked: false,
                 currentLoginId: "{{ Auth::id() }}",
+                selectedConfirmationStatus: null,
                 id: '',
                 detailValue: '',
                 modalConfirm: new bootstrap.Modal(document.getElementById('modal-confirm')),
@@ -316,6 +317,7 @@
                     }
                 },
                 async filter() {
+                    console.log($('#confirmation_status').val());
                     this.isLoading = true;
                     try {
                         const resp = await axios.get('/manage-users/leaves/filter', {

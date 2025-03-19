@@ -132,7 +132,7 @@
                                             </td>
                                             <td x-text="area.department_name"></td>
                                             <td>
-                                                <a :href="`/general-master-data/area/detail/${area.id}`"
+                                                <a :href="`/master/common/area/detail/${area.id}`"
                                                    x-text="area.area_name" class="text-uppercase"></a>
                                             </td>
                                             <td x-text="`${area.total_user} Karyawan`"></td>

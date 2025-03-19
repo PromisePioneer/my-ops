@@ -117,7 +117,7 @@
                         </table>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <a href="{{ url('/general-master-data/area') }}" class="btn btn-light-danger btn-sm">Kembali</a>
+                        <a href="{{ url('master/common/area') }}" class="btn btn-light-danger btn-sm">Kembali</a>
                         <ul class="pagination float-end mb-4 mt-4">
                             <template x-for="pagination in usersArea.links">
                                 <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
@@ -171,7 +171,7 @@
                 async searchData() {
                     this.isLoading = true;
                     try {
-                        const resp = await axios.get(`/general-master-data/area-detail/search/${this.id}`, {
+                        const resp = await axios.get(`master/common/area-detail/search/${this.id}`, {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -185,7 +185,7 @@
                 async getAssociatedUsers() {
                     this.isLoading = true;
                     try {
-                        const resp = await axios.get(`/general-master-data/area-detail/data/${this.id}`);
+                        const resp = await axios.get(`master/common/area-detail/data/${this.id}`);
                         this.usersArea = resp.data;
                     } catch (e) {
                         console.log(e)
@@ -222,7 +222,7 @@
                         placeholder: 'Pilih KCA/WKCA/Teknisi',
                         allowClear: true,
                         ajax: {
-                            url: `/general-master-data/area-detail/users/data/${this.id}`,
+                            url: `master/common/area-detail/users/data/${this.id}`,
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -238,7 +238,7 @@
                     }
                 },
                 async show(id) {
-                    const resp = await axios.get(`/general-master-data/area-detail/show/${id}`);
+                    const resp = await axios.get(`master/common/area-detail/show/${id}`);
                     this.editVal = resp.data;
                     console.log(this.editVal);
                 },
@@ -246,7 +246,7 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/general-master-data/area-detail/${this.id}`, new FormData(this.form))
+                        await axios.post(`master/common/area-detail/${this.id}`, new FormData(this.form))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.form.reset();
                         this.modalForm.hide();
@@ -261,7 +261,7 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/general-master-data/area-detail/destroy`, new FormData(this.formDelete));
+                            await axios.post(`master/common/area-detail/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
@@ -273,7 +273,7 @@
                 async pickHoliday(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/general-master-data/area-detail/save-week-holiday/${id}`, new FormData(this.holidayForm));
+                        await axios.post(`master/common/area-detail/save-week-holiday/${id}`, new FormData(this.holidayForm));
                         await showAlert('success', 'Data berhasil disimpan');
                         await this.holidayModal.hide();
                         await this.holidayForm.reset();
