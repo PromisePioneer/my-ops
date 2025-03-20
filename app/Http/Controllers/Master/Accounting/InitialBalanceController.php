@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Accounting\Transaction;
+namespace App\Http\Controllers\Master\Accounting;
 
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
