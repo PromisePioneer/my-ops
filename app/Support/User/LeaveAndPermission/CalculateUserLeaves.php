@@ -52,6 +52,7 @@ class CalculateUserLeaves
     public function getRemainingLeaves(int $userId, int $leaveQuota, Carbon $anniversaryDate, Carbon $now): int
     {
         $approvedLeaves = LeaveAndPermission::where('user_id', $userId)
+            ->where('leaves_status', 'Cuti')
             ->where('confirmation_status', 'Diterima')
             ->where('start_date', '>=', $anniversaryDate->toDateString())
             ->get();
