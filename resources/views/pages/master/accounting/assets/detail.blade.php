@@ -76,7 +76,7 @@
                 <div class="card-toolbar">
                     <div class="d-flex" data-kt-user-table-toolbar="base">
                         <div class="d-flex" data-kt-user-table-toolbar="base">
-                            <a href="{{ url('/master/assets/') }}" class="btn btn-light-danger btn-sm">
+                            <a href="{{ url('/master/accounting/assets/') }}" class="btn btn-light-danger btn-sm">
                                 Kembali
                             </a>
                         </div>
@@ -84,32 +84,16 @@
                 </div>
             </div>
             <div class="card-body py-3">
-                <div class="col-12 ">
-                    <form id="form-delete" @submit.prevent="destroy()">
-                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
-                        <button type="submit" class="btn btn-light-danger btn-sm mt-5"
-                                x-show="selectedCheckBox.length > 0"
-                                x-transition x-cloak>
-                            <i class="ki-duotone ki-trash-square fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                                <span class="path4"></span>
-                            </i>
-                            Hapus
-                        </button>
-                    </form>
-                </div>
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
+                        <table class="table align-middle table-bordered fs-6 gy-5" id="kt_table_users">
                             <thead>
                             <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th>Tahun</th>
-                                <th>Depresiasi</th>
+                                <th class="min-w-125px">Tahun</th>
+                                <th class="min-w-125px">Depresiasi</th>
                             </thead>
                             <template x-if="isLoading">
-                            <tbody class="fw-bold">
+                                <tbody class="fw-bold">
                                 <tr>
                                     <td colspan="9">
                                         <div style="text-align: center;">
@@ -119,7 +103,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                            </tbody>
+                                </tbody>
                             </template>
                             <template x-if="!isLoading && assetDepreciationData.data?.length === 0">
                                 <tr>

@@ -9,11 +9,11 @@ use App\Models\AssetDepreciation;
 use App\Support\AccountTransactions\AccountTransactionService;
 use App\Support\Master\Accounting\Assets\Repositories\AssetRepository;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Throwable;
+use function App\Helper\formatDate;
 
 #[AllowDynamicProperties] class AssetService
 {
@@ -144,8 +144,14 @@ use Throwable;
     }
 
 
-    public function depreciationData(Asset $asset): Collection
+    public function depreciationData(Asset $asset)
     {
-        return AssetDepreciation::with('asset')->where('asset_id', $asset->id)->get();
+        return AssetDepreciation::with('asset')->where('asset_id', $asset->id)->get()->map(function ($query) {
+            return [
+                'id' => $query->id,
+                'depreciation_date' => formatDate($query->depreciation_date),
+                'depreciation_amount' => number_format($query->depreciation_amount, 2),
+            ];
+        });
     }
 }

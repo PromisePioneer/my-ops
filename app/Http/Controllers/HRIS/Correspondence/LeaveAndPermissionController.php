@@ -19,6 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Throwable;
 
 #[AllowDynamicProperties] class LeaveAndPermissionController extends Controller
 {
@@ -122,6 +123,9 @@ use Illuminate\View\View;
     }
 
 
+    /**
+     * @throws Throwable
+     */
     public function store(LeaveAndPermissionRequest $request): JsonResponse
     {
         DB::transaction(function () use ($request) {
