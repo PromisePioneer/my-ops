@@ -44,6 +44,7 @@ class LeaveACLFilter
                     'Legal & Corporate Commissioner',
                     'After Sales Customer Service',
                     'Project Controller & Vendor Supervisor',
+                    'Head Of Electrical Engineer',
                 ]);
             })->whereHas('user', function ($query) use ($request) {
                 $query->where('branch_id', 1)
