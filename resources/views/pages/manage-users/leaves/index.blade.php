@@ -357,9 +357,9 @@
                             const resp = await axios.get(`${url}`, {
                                 params: {
                                     search: this.search,
-                                    branch_id: document.getElementById('branch_id').value,
-                                    year: document.getElementById('year').value,
-                                    month: document.getElementById('month').value,
+                                    branch_id: document.getElementById('branch_id')?.value,
+                                    year: document.getElementById('year')?.value,
+                                    month: document.getElementById('month')?.value,
                                     confirmation_status: this.selectedConfirmationStatus,
                                 }
                             });
