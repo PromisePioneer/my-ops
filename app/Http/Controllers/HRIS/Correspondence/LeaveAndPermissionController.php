@@ -79,7 +79,7 @@ use Throwable;
 
 
     /**
-     * @throws AuthorizationException
+     * @throws AuthorizationException|Throwable
      */
     public function changeStatus(
         ManageUserLeaveAndPermissionRequest $request,

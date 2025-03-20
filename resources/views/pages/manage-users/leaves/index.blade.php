@@ -350,8 +350,8 @@
                     }
                 },
                 async paginate(url) {
+                    try {
                     if (url) {
-                        try {
                             this.leaves = [];
                             this.isLoading = true;
                             const resp = await axios.get(`${url}`, {
@@ -364,12 +364,12 @@
                                 }
                             });
                             this.leaves = resp.data
+                    }
                         } catch (e) {
                             console.log(e);
                         } finally {
                             this.isLoading = false;
                         }
-                    }
                 },
                 async selectedUserData(id) {
                     const self = this;
