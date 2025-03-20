@@ -120,8 +120,8 @@
                                                                       transform="rotate(45 17.0365 15.1223)"
                                                                       fill="black"></rect>
 																<path
-                                                                        d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
-                                                                        fill="black"></path>
+                                                                    d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
+                                                                    fill="black"></path>
 															</svg>
 														</span>
                                 <input type="text" class="form-control form-control-solid w-250px ps-15"
@@ -154,7 +154,7 @@
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                         <th class="w-10px pe-2">
                                             <div
-                                                    class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                                class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                                 <input class="form-check-input" type="checkbox"
                                                        @click="toggleAllCheckBox()"
                                                        :disabled="Number(deletePermission) !== 1">
@@ -166,7 +166,7 @@
                                         <th>Karyawan</th>
                                         <th>Tanggal Masuk</th>
                                         <template
-                                                x-if="Number(editPermission === 1) || Number(activationPermission) === 1">
+                                            x-if="Number(editPermission === 1) || Number(activationPermission) === 1">
                                             <th class="text-end min-w-100px sorting_disabled" rowspan="1" colspan="1"
                                                 aria-label="Actions" style="width: 135.25px;">
                                                 Actions
@@ -210,10 +210,10 @@
                                                 <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
                                                     <a href="#">
                                                         <div class="symbol-label">
+                                                            <a href="#" @click="openImage(user.profile_pic)">
                                                             <img :src="getImageURL(user.profile_pic ?? null)"
-                                                                 data-toggle="lightbox"
-                                                                 @click="$dispatch('lightbox', `${getImageURL(user.profile_pic) ?? null}`)"
-                                                                 alt="Foto Karyawan" class="w-100"/>
+                                                                 alt="Image" class="w-100">
+                                                            </a>
                                                         </div>
                                                     </a>
                                                 </div>
@@ -238,8 +238,8 @@
                                                 </template>
                                                 <template x-if="Number(activationPermission) === 1">
                                                     <button
-                                                            :class="`${user.active ? 'btn btn-light btn-active-danger btn-sm' : 'btn btn-light btn-active-success btn-sm'}`"
-                                                            @click="changeActiveStatus(user.id)">
+                                                        :class="`${user.active ? 'btn btn-light btn-active-danger btn-sm' : 'btn btn-light btn-active-success btn-sm'}`"
+                                                        @click="changeActiveStatus(user.id)">
                                                         <i :class="`${user.active ? 'bi bi-x-circle-fill' : 'bi bi-check-circle'}`"></i>
                                                     </button>
                                                 </template>
@@ -255,9 +255,9 @@
                                         <ul class="pagination">
                                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                                 <button
-                                                        class="page-link"
-                                                        @click="paginate(pagination.url)"
-                                                        x-html="pagination.label"></button>
+                                                    class="page-link"
+                                                    @click="paginate(pagination.url)"
+                                                    x-html="pagination.label"></button>
                                             </li>
                                         </ul>
                                     </template>
@@ -302,6 +302,20 @@
                 async reload() {
                     this.users = [];
                     await this.init()
+                },
+                openImage(imagePath) {
+                    const lightbox = new FsLightbox();
+                    console.log(lightbox);
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        const image = "{{ asset('') }}" + placeholders
+                        lightbox.props.sources = [image, image];
+                        lightbox.open();
+                    } else {
+                        const image = "{{ Storage::url('') }}" + imagePath;
+                        lightbox.props.sources = [image];
+                        lightbox.open();
+                    }
                 },
                 getMonth() {
                     this.months.push(

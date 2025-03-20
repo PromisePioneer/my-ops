@@ -165,9 +165,9 @@
                                                 </template>
                                             </td>
                                             <td>
-                                                <img :src="getImageURL(leave.sick_letter)"
-                                                     @click="$dispatch('lightbox', `${getImageURL(leave.sick_letter) ?? null}`)"
-                                                     height="100"/>
+                                                <a href="#" @click="openImage(leave.sick_letter)">
+                                                    <img :src="getImageURL(leave.sick_letter)" height="100"/>
+                                                </a>
                                             </td>
                                             <template
                                                 x-if="leave.confirmation_status === 'Diterima' || leave.confirmation_status === 'Ditolak'">
@@ -538,6 +538,20 @@
                 },
                 getImageURL(imagePath) {
                     return imagePath ? "{{  Storage::url('') }}" + imagePath : '';
+                },
+                openImage(imagePath) {
+                    const lightbox = new FsLightbox();
+                    console.log(lightbox);
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        const image = "{{ asset('') }}" + placeholders
+                        lightbox.props.sources = [image, image];
+                        lightbox.open();
+                    } else {
+                        const image = "{{ Storage::url('') }}" + imagePath;
+                        lightbox.props.sources = [image];
+                        lightbox.open();
+                    }
                 },
             }
         }
