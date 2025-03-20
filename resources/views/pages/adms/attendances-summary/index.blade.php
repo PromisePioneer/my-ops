@@ -56,6 +56,14 @@
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
                 </div>
+{{--                <div class="card-toolbar">--}}
+{{--                    <div class="d-flex justify-content-end align-items-center" data-kt-user-table-toolbar="base">--}}
+{{--                        <a href="{{ url('adms/attendances-summary/attendance-manual-requests') }}"--}}
+{{--                           class="btn btn-light-info btn-sm">--}}
+{{--                            Pengajuan Absensi (Manual)--}}
+{{--                        </a>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
             </div>
             <div class="card-body py-3">
                 <div class="py-5">
@@ -90,12 +98,11 @@
                             <template x-for="(attendance, index) in attendanceSummary?.data" :key="index">
                                 <tr class="text-center">
                                     <td>
-                                        <div class="d-flex align-items-center justify-content-center">
+                                        <div class="d-flex align-self-center justify-content-center">
                                             <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
-                                                <a href="#">
+                                                <a href="#" @click="openImage(attendance.profile_pic)">
                                                     <div class="symbol-label">
                                                         <img :src="getImageURL(attendance.profile_pic ?? null)"
-                                                             @click="$dispatch('lightbox', `${getImageURL(attendance.profile_pic) ?? null}`)"
                                                              alt="Foto Karyawan" class="w-100"/>
                                                     </div>
                                                 </a>
@@ -128,27 +135,21 @@
                                                             x-text="`${attendance.total_present}`"></td>
                                                     </tr>
                                                     <tr class="bg-gray-100 text-center">
-                                                        <td class="min-w-125px">Total Alfa (Hari)</td>
-                                                        <td class="min-w-125px">:</td>
-                                                        <td class="min-w-125px"
-                                                            x-text="`${attendance.total_absent}`"></td>
-                                                    </tr>
-                                                    <tr class="bg-gray-100 text-center">
                                                         <td class="min-w-125px">Tdk Checkin</td>
                                                         <td class="min-w-125px">:</td>
                                                         <td class="min-w-125px"
                                                             x-text="`${attendance.total_not_check_in}`"></td>
                                                     </tr>
+                                                    <tr class="bg-gray-100 text-center">
+                                                        <td class="min-w-125px">Tdk Checkout</td>
+                                                        <td class="min-w-125px">:</td>
+                                                        <td class="min-w-125px"
+                                                            x-text="`${attendance.total_not_check_out}`"></td>
+                                                    </tr>
                                                 </table>
                                             </div>
                                             <div class="table-responsive">
                                                 <table class="table table-row-bordered">
-                                                    <tr class="bg-gray-100 text-center">
-                                                        <td class="min-w-125px">Tdk Checkin</td>
-                                                        <td class="min-w-125px">:</td>
-                                                        <td class="min-w-125px"
-                                                            x-text="`${attendance.total_not_check_out}`"></td>
-                                                </tr>
                                                     <tr class="bg-gray-100 text-center">
                                                         <td class="min-w-125px">Cuti</td>
                                                         <td class="min-w-125px">:</td>
@@ -199,6 +200,7 @@
 @endsection
 @push('script')
     <script>
+
         $('.date').flatpickr();
         function attendancesSummary() {
             return {
@@ -435,6 +437,20 @@
                         return "{{ asset('') }}" + placeholders;
                     }
                     return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
+                },
+                openImage(imagePath) {
+                    const lightbox = new FsLightbox();
+                    console.log(lightbox);
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        const image = "{{ asset('') }}" + placeholders
+                        lightbox.props.sources = [image, image];
+                        lightbox.open();
+                    } else {
+                        const image = "{{ Storage::url('') }}" + imagePath;
+                        lightbox.props.sources = [image];
+                        lightbox.open();
+                    }
                 },
             }
         }
