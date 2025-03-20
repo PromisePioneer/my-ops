@@ -11,13 +11,29 @@ class CalculateUserLeaves
 {
     public function calculate(Request $request, $userId = null): int
     {
-        $user = User::where('id', $request->user_id ?? $request->user()->id)->first();
+        $userId = $request->user_id ?? $request->user()->id;
+        $user = User::find($userId);
+
+        if (!$user) {
+            return 0;
+        }
+
         $joinDate = Carbon::parse($user->join_date);
         $now = Carbon::now();
-        $yearsOfService = $joinDate->diffInYears($now);
+
+
+        $anniversaryDate = Carbon::parse($now->year . '-' . $joinDate->format('m-d'));
+
+
+        if ($now->lessThan($anniversaryDate)) {
+            $anniversaryDate->subYear();
+        }
+
+
+        $yearsOfService = $joinDate->diffInYears($anniversaryDate);
         $leaveQuota = $this->leaveQuota($yearsOfService);
 
-        return $this->getDiffDays($request, $leaveQuota, $now, $joinDate, $yearsOfService);
+        return $this->getRemainingLeaves($userId, $leaveQuota, $anniversaryDate, $now);
     }
 
     public function leaveQuota(int $yearsOfService): int
@@ -33,27 +49,25 @@ class CalculateUserLeaves
         return 0;
     }
 
-    public function getDiffDays(Request $request, int $leaveQuota, Carbon $now, $joinDate, $yearsOfService): int
+    public function getRemainingLeaves(int $userId, int $leaveQuota, Carbon $anniversaryDate, Carbon $now): int
     {
-        $totalLeaves = LeaveAndPermission::where('user_id', $request->user_id ?? $request->user()->id)
+        $approvedLeaves = LeaveAndPermission::where('user_id', $userId)
             ->where('confirmation_status', 'Diterima')
-            ->whereMonth('start_date', '>=', $joinDate->format('m'))
-            ->whereDay('start_date', '>=', $joinDate->format('d'))
+            ->where('start_date', '>=', $anniversaryDate->toDateString())
             ->get();
 
-        foreach ($totalLeaves as $leave) {
+        foreach ($approvedLeaves as $leave) {
             $leaveStart = Carbon::parse($leave->start_date);
             $leaveEnd = Carbon::parse($leave->end_date);
 
-            if ($leaveEnd->year < $now->year) {
+            if ($leaveEnd->year > $now->year) {
                 continue;
             }
 
-            $getDiffDays = $leaveStart->diffInDays($leaveEnd);
-            $leaveQuota -= $getDiffDays + 1;
+            $usedDays = $leaveStart->diffInDays($leaveEnd) + 1;
+            $leaveQuota -= $usedDays;
         }
 
-
-        return abs($leaveQuota);
+        return max(0, $leaveQuota);
     }
 }
