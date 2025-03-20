@@ -115,7 +115,7 @@ class LeaveACLFilter
         if ($request->user()->hasAnyRole('Head Of Electrical Engineer')) {
             $query->whereHas('user.roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer']);
-            })->whereNull('branch_id');
+            });
         }
 
 
@@ -128,7 +128,7 @@ class LeaveACLFilter
 
         if ($request->user()->hasRole('KU Head Engineer')) {
             $query->whereHas('user.roles', function ($query) use ($request) {
-                $query->whereIn('name', ['KU Head Engineer', 'KU Engineer']);
+                $query->whereIn('name', ['KU Head Engineer', 'KU Engineer'])->where('branch_id', 1);
             });
         }
 
