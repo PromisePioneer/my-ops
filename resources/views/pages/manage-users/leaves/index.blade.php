@@ -189,7 +189,7 @@
                                                         x-if="Number(confirmPermission) === 1 && userSessionId !== leave.user_id">
                                                         <button class="btn btn-info btn-sm" data-bs-toggle="modal"
                                                                 data-bs-target="#modal-confirm"
-                                                                @click="edit(leave.id)">
+                                                                @click="edit(leave.id)" :disabled="userSessionId !== leave.user_id">
                                                             <i class="bi bi-gear-fill"></i>
                                                         </button>
                                                     </template>
@@ -470,7 +470,6 @@
                     }
                 },
                 async edit(id) {
-                    console.log(id);
                     const resp = await axios.get(`/manage-users/leaves/edit/${id}`);
                     this.editVal = resp.data;
                     await this.selectedUserData(this.editVal.id);
