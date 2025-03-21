@@ -41,10 +41,25 @@ use Illuminate\View\View;
 
     public function store(GoodsRequest $request): JsonResponse
     {
+        $unitType = UnitType::where('id', $request->unit_type_id)->first();
+        $category = GoodsCategory::where('id', $request->category_id)->first();
+
+        if (empty($category)) {
+            $categoryId = GoodsCategory::create([
+                'name' => $request->category_id
+            ]);
+        }
+
+        if (empty($unitType)) {
+            $unitTypeId = UnitType::create([
+                'name' => $request->unit_type_id
+            ]);
+        }
+
         Goods::create([
             'name' => $request->name,
-            'category_id' => $request->category_id,
-            'unit_type_id' => $request->unit_type_id,
+            'category_id' => $categoryId->id ?? $request->category_id,
+            'unit_type_id' => $unitTypeId->id ?? $request->unit_type_id
         ]);
 
         return response()->json([

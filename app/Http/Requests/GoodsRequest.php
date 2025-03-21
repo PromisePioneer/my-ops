@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class GoodsRequest extends FormRequest
 {
@@ -25,8 +24,8 @@ class GoodsRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
-            'unit_type_id' => ['required', 'string', Rule::exists('unit_types', 'id')],
-            'category_id' => ['required', 'string', Rule::exists('category_of_goods', 'id')],
+            'unit_type_id' => ['required', 'string'],
+            'category_id' => ['required', 'string'],
         ];
     }
 

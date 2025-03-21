@@ -4,8 +4,6 @@
 @section('content')
     <div x-data="transactionData()">
         @include('pages.operational-master-data.goods.modal.form')
-        @include('pages.master.common.unit-types.form')
-        @include('pages.operational-master-data.category-of-goods.modal.form')
         @include('pages.transactions.form')
         <div class="flex-lg-row-fluid ms-lg-10">
             <div class="card card-flush">
@@ -175,24 +173,6 @@
 
         const transactionModal = new bootstrap.Modal(document.getElementById('modal-transactions'));
         const goodsModal = document.getElementById('modal-item');
-        const unitTypeModal = document.getElementById('modal-unit-type');
-        const goodsCategoryModal = document.getElementById('modal-item-category');
-        goodsModal.addEventListener('hidden.bs.modal', (e) => {
-            transactionModal.show();
-        });
-
-        unitTypeModal.addEventListener('hidden.bs.modal', (e) => {
-            new bootstrap.Modal(goodsModal).show();
-            transactionModal.hide();
-        });
-
-        goodsCategoryModal.addEventListener('hidden.bs.modal', (e) => {
-            new bootstrap.Modal(goodsModal).show();
-            transactionModal.hide();
-        });
-
-
-
         function transactionData() {
             return {
                 editPermission: "{{ request()->user()->can('Ubah Data Transaksi') }}",
@@ -213,10 +193,6 @@
                 modalForm: new bootstrap.Modal(document.getElementById('modal-transactions')),
                 goodsForm: document.getElementById('form-item'),
                 goodsModal: new bootstrap.Modal(document.getElementById('modal-item')),
-                unitTypeForm: document.getElementById('form-unit-type'),
-                unitTypeModal: new bootstrap.Modal(document.getElementById('modal-unit-type')),
-                goodsCategoryModal: new bootstrap.Modal(document.getElementById('modal-item-category')),
-                goodsCategoryForm: document.getElementById('form-item-category'),
                 deleteForm: document.getElementById('deleteForm'),
                 async init() {
                     await this.getTransactions();
@@ -309,20 +285,6 @@
                         this.form.reset();
                         this.modalForm.hide();
                         await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
-                async saveUnitTypes() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post('/general-master-data/unit-types/', new FormData(this.unitTypeForm))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.unitTypeForm.reset();
-                        this.unitTypeModal.hide();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
@@ -457,13 +419,8 @@
                 async getUnitTypes() {
                     $(".unit-types-select2").select2({
                         allowClear: true,
+                        tags: true,
                         placeholder: "Pilih Satuan",
-                        escapeMarkup: markup => (markup),
-                        language: {
-                            noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-unit-type">Tambahkan terlebih dahulu</a>`;
-                            }
-                        },
                         ajax: {
                             url: '/select2/unit-types-data',
                             dataType: "json",
@@ -527,12 +484,7 @@
                     $(".category-of-goods-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Kategori Barang",
-                        escapeMarkup: markup => (markup),
-                        language: {
-                            noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-item-category">Tambahkan terlebih dahulu</a>`;
-                            }
-                        },
+                        tags: true,
                         ajax: {
                             url: '/select2/goods-category-data',
                             dataType: "json",
@@ -542,21 +494,6 @@
                             cache: true
                         }
                     });
-                },
-                async saveGoodsCategory() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post('/operational-master-data/category-of-goods', new FormData(this.goodsCategoryForm))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.goodsCategoryForm.reset();
-                        this.goodsCategoryModal.hide();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
                 },
             }
         }
