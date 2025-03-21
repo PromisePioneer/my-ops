@@ -186,7 +186,7 @@
                                             <template x-if="leave.confirmation_status === 'Diproses'">
                                                 <td>
                                                     <template
-                                                        x-if="Number(confirmPermission) === 1 || Number(userSessionId) !== leave.user_id">
+                                                        x-if="Number(confirmPermission) === 1 && Number(userSessionId) !== leave.user_id">
                                                         <button class="btn btn-info btn-sm" data-bs-toggle="modal"
                                                                 data-bs-target="#modal-confirm"
                                                                 @click="edit(leave.id)">
