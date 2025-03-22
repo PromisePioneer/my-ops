@@ -5,9 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    /**
-     * Run the migrations.
-     */
+
     public function up(): void
     {
         Schema::create('transactions', function (Blueprint $table) {
@@ -26,16 +24,26 @@ return new class extends Migration {
             $table->double('unit_price');
             $table->double('total_price');
             $table->text('detail');
-            $table->foreignId('debit_account_id')->constrained('accounts')->cascadeOnDelete();
-            $table->foreignId('credit_account_id')->constrained('accounts')->cascadeOnDelete();
-            $table->boolean('status')->default(false);
+            $table->foreignId('debit_account_id')
+                ->constrained('accounts')
+                ->cascadeOnDelete();
+            $table->foreignId('credit_account_id')
+                ->constrained('accounts')
+                ->cascadeOnDelete();
+            $table->boolean('locked_status')->default(false);
+            $table->foreignId('created_by')
+                ->constrained('users')
+                ->cascadeOnDelete();
+            $table->enum('confirmation_status', ['Diterima', 'Revisi', 'Diproses'])->default('Diproses');
+            $table->foreignId('confirmed_by')
+                ->nullable()
+                ->constrained('users')
+                ->cascadeOnDelete();
+            $table->text('reason')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('transaction');
