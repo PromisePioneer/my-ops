@@ -129,10 +129,11 @@ use Throwable;
     public function store(LeaveAndPermissionRequest $request): JsonResponse
     {
         DB::transaction(function () use ($request) {
+
             LeaveAndPermission::create([
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
-                'user_id' => $request->user_id,
+                'user_id' => $request->user_id ?? $request->user()->id,
                 'reason' => $request->reason,
                 'leaves_status' => $request->leaves_status,
                 'sick_letter' => $this->handleFileUploadService->upload(
@@ -159,7 +160,7 @@ use Throwable;
         $leaveAndPermission->update([
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
-            'user_id' => $request->user_id,
+            'user_id' => $request->user_id ?? $request->user()->id,
             'reason' => $request->reason,
             'leaves_status' => $request->leaves_status,
             'sick_letter' => $request->sick_letter,

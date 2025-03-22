@@ -50,6 +50,7 @@ class LeaveAndPermissionRequest extends FormRequest
         $ifDateRangeHasWeekHoliday = $this->ifDateRangeHasWeekHoliday($request);
         $ifDateRangeHasLeaves = $this->ifDateRangeHasLeaves($request);
 
+
         return [
             'start_date' => [
                 'required',
@@ -226,12 +227,12 @@ class LeaveAndPermissionRequest extends FormRequest
                 return null;
             }
 
-            $user = User::find($request->user_id);
+            $user = User::find($request->user_id ?? $request->user()->id);
 
-            $getLeaves = LeaveAndPermission::where('user_id', $user->id)->where('confirmation_status', '!=', 'Ditolak')
+            $getLeaves = LeaveAndPermission::where('user_id', $user->id)
+                ->where('confirmation_status', '!=', 'Ditolak')
                 ->where(function ($query) use ($request) {
-                    $query
-                        ->whereBetween('start_date', [$request->start_date, $request->end_date])
+                    $query->whereBetween('start_date', [$request->start_date, $request->end_date])
                         ->orWhereBetween('end_date', [$request->start_date, $request->end_date]);
                 })->get();
 
