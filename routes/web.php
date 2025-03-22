@@ -125,12 +125,14 @@ Route::group(['middleware' => ['auth']], static function () {
 
     Route::prefix('/transactions')->group(function () {
         Route::get('/', [TransactionController::class, 'index']);
+        Route::post('/destroy', [TransactionController::class, 'destroy']);
         Route::get('/data', [TransactionController::class, 'data']);
         Route::get('/filter', [TransactionController::class, 'filter']);
         Route::get('/search', [TransactionController::class, 'search']);
         Route::post('/', [TransactionController::class, 'store']);
         Route::get('/{transaction}', [TransactionController::class, 'edit']);
         Route::post('/{transaction}', [TransactionController::class, 'update']);
+        Route::post('/lock-transaction/{transaction}', [TransactionController::class, 'lockTransaction']);
         Route::post('/confirm/{transaction}', [TransactionController::class, 'confirm']);
     });
 
@@ -1275,6 +1277,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/selected-goods/{goods}', [GoodsController::class, 'selectedGoods']);
         Route::get('/asset-accounts-data', [AccountController::class, 'assetAccounts']);
         Route::get('/kas-accounts-data', [AccountController::class, 'kasAccounts']);
+        Route::get('/stock-accounts-data', [AccountController::class, 'stockAccounts']);
     });
 
 

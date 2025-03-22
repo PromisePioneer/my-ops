@@ -5,6 +5,7 @@
     <div x-data="transactionData()">
         @include('pages.operational-master-data.goods.modal.form')
         @include('pages.transactions.form')
+        @include('pages.transactions.confirmation')
         <div class="flex-lg-row-fluid ms-lg-10">
             <div class="card card-flush">
                 <div class="card-header border-0 pt-6">
@@ -37,7 +38,7 @@
                 <div class="card-body py-3">
                     <div class="py-5">
                         <div class="col-12 mb-4">
-                            <form id="deleteForm" @submit.prevent="destroy()">
+                            <form id="form-delete" @submit.prevent="destroy()">
                                 <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
                                 <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                         x-show="selectedCheckBox.length > 0"
@@ -57,14 +58,15 @@
                                 <thead>
                                 <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                     <th class="w-10px pe-2">
-                                        <div
-                                            class="form-check form-check-sm form-check-custom form-check-solid me-3">
-
+                                        <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                            <input class="form-check-input" type="checkbox"
+                                                   @click="toggleAllCheckBox()">
                                         </div>
                                     </th>
                                     <th class="min-w-125px text-center">Informasi Transaksi</th>
                                     <th class="min-w-250px text-center">Akun</th>
                                     <th class="min-w-250px text-center">Detail</th>
+                                    <th class="min-w-250px text-center">Status Konfirmasi</th>
                                     <template
                                         x-if="Number(editPermission) === 1 || Number(confirmPermission) === 1">
                                         <th class="min-w-250px text-center">Actions</th>
@@ -97,7 +99,7 @@
                                                 <input class="form-check-input" type="checkbox"
                                                        :value="transaction.id"
                                                        :id="'checkbox-' + transaction.id"
-                                                       :disabled="transaction.status === 1 || Number(destroyPermission) !== 1"/>
+                                                       :disabled="Number(destroyPermission) !== 1"/>
                                             </div>
                                         </td>
                                         <td class="text-center">
@@ -121,27 +123,55 @@
                                             </div>
                                         </td>
                                         <td class="text-center" x-text="transaction.detail"></td>
-                                        <template x-if="transaction.status === 0 && Number(editPermission) === 1">
-                                            <td class="d-flex flex-column">
-                                                <button class="btn btn-light-primary btn-sm mb-4"
-                                                        @click="edit(transaction.id)"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#modal-transactions">
-                                                    <i class="bi bi-pencil"></i> Ubah Data
-                                                </button>
-                                                <button class="btn btn-light-info btn-sm mb-4"
-                                                        data-bs-toggle="tooltip"
-                                                        data-bs-placement="top"
-                                                        @click="confirm(transaction.id)"
-                                                >
-                                                    <i class="bi bi-check-circle-fill"></i>
-                                                    Konfirmasi
-                                                </button>
-                                            </td>
-                                        </template>
-                                        <template x-if="transaction.status === 1">
-                                            <td class="text-center">
-                                                <span class="badge bg-success">Terkonfirmasi</span>
+                                        <td class="text-center">
+                                            <div class="d-flex flex-column align-items-center justify-content-center">
+                                                <div class="mb-10">
+                                                    <template x-if="transaction.confirmation_status === 'Diterima'">
+                                                        <span class="badge bg-success text-dark">Terkonfirmasi</span>
+                                                    </template>
+                                                </div>
+
+                                                <div>
+                                                    <template x-if="transaction.confirmation_status === 'Revisi'">
+                                                        <span class="badge bg-warning text-dark"
+                                                              x-text="`Revisi : ${transaction.reason}`"></span>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <template x-if="Number(editPermission) === 1">
+                                            <td>
+                                                <div
+                                                    class="d-flex flex-column align-items-center justify-content-center">
+                                                    <template x-if="transaction.locked_status === 0">
+                                                        <button class="btn btn-light-primary btn-sm mb-4"
+                                                                @click="edit(transaction.id)"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modal-transactions">
+                                                            <i class="bi bi-pencil"></i> Ubah Data
+                                                        </button>
+                                                    </template>
+                                                    <template x-if="transaction.locked_status === 0">
+                                                        <button class="btn btn-light-info btn-sm mb-4"
+                                                                data-bs-toggle="tooltip"
+                                                                data-bs-placement="top"
+                                                                @click="lockTransaction(transaction.id)"
+                                                                title="Kunci Transaksi">
+                                                            <i class="bi bi-lock"></i>
+                                                            Kunci Transaksi
+                                                        </button>
+                                                    </template>
+                                                    <template
+                                                        x-if="transaction.locked_status === 1 && Number(confirmPermission) === 1">
+                                                        <button class="btn btn-light-success text-dark btn-sm mb-4"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modal-confirmation"
+                                                                @click="edit(transaction.id)" :disabled="transaction.confirmation_status === 'Diterima'">
+                                                            <i class="bi bi-check-circle-fill"></i>
+                                                            Konfirmasi Transaksi
+                                                        </button>
+                                                    </template>
+                                                </div>
                                             </td>
                                         </template>
                                     </tr>
@@ -149,15 +179,18 @@
                                 </tbody>
                             </table>
                         </div>
-                        <ul class="pagination float-end mb-4 mt-4">
-                            <template x-for="pagination in transactions.links">
-                                <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                    <button class="page-link" @click="paginationEndPoint(pagination.url)"
-                                            x-html="pagination.label">
-                                    </button>
-                                </li>
-                            </template>
-                        </ul>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-danger">Note : Akun berwarna biru debet,merah kredit</span>
+                            <ul class="pagination float-end mb-4 mt-4">
+                                <template x-for="pagination in transactions.links">
+                                    <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                        <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                                x-html="pagination.label">
+                                        </button>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -170,9 +203,9 @@
 @push('script')
     <script defer>
         $('.date').flatpickr();
-
         const transactionModal = new bootstrap.Modal(document.getElementById('modal-transactions'));
         const goodsModal = document.getElementById('modal-item');
+
         function transactionData() {
             return {
                 editPermission: "{{ request()->user()->can('Ubah Data Transaksi') }}",
@@ -189,16 +222,20 @@
                 search: '',
                 editVal: '',
                 userList: [],
+                selectedConfirmationStatus: null,
                 form: document.getElementById('form-transactions'),
                 modalForm: new bootstrap.Modal(document.getElementById('modal-transactions')),
                 goodsForm: document.getElementById('form-item'),
                 goodsModal: new bootstrap.Modal(document.getElementById('modal-item')),
-                deleteForm: document.getElementById('deleteForm'),
+                formDelete: document.getElementById('form-delete'),
+                formConfirm: document.getElementById('form-confirmation'),
+                modalConfirm: new bootstrap.Modal(document.getElementById('modal-confirmation')),
                 async init() {
                     await this.getTransactions();
                     await this.getMainBranches();
                     await this.getUnitTypes();
-                    await this.getAccounts();
+                    await this.getKasAccounts();
+                    await this.getStockAccounts();
                     await this.getGoods();
                     await this.goodsCategory();
                 },
@@ -304,9 +341,10 @@
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/transactions/destroy`, new FormData(this.deleteForm));
+                            await axios.post(`/transactions/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
+                            this.selectedCheckBox = [];
                         } catch (error) {
                             console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');
@@ -327,12 +365,12 @@
                         }
                     });
                 },
-                async getAccounts() {
-                    $(".accounts-select2").select2({
+                async getStockAccounts() {
+                    $(".stock-accounts-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Akun",
                         ajax: {
-                            url: '/select2/accounts-data',
+                            url: '/select2/stock-accounts-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -341,17 +379,40 @@
                         }
                     });
                 },
-                async confirm(id) {
-                    showConfirmModal("Anda yakin?", "Data yang dikonfirmasi tidak akan dapat diubah kembali atau pun dihapus.", "Ya, Konfirmasi!", async () => {
+                async getKasAccounts() {
+                    $(".kas-accounts-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Akun",
+                        ajax: {
+                            url: '/select2/kas-accounts-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async lockTransaction(id) {
+                    showConfirmModal("Anda yakin?", "Data yang dikunci tidak akan bisa diubah maupun dihapus, jika ingin menghapus atau mengubah silahkan hubungi stakeholder terkait.", "Ya, Konfirmasi!", async () => {
                         try {
-                            await axios.post(`/transactions/confirm/${id}`);
-                            await showAlert('success', 'Data sukses dikonfirmasi');
+                            await axios.post(`/transactions/lock-transaction/${id}`);
+                            await showAlert('success', 'Data sukses Dikunci');
                             await this.init();
                         } catch (error) {
                             console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');
                         }
                     });
+                },
+                async unlockTransaction(id) {
+                    try {
+
+                    } catch (e) {
+                        console.log(e);
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async selectedBranch() {
                     const selectedBranch = $('#selected-branch');
@@ -495,6 +556,21 @@
                         }
                     });
                 },
+                async saveConfirmation(id) {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/transactions/confirm/${id}`, new FormData(this.formConfirm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.formConfirm.reset();
+                        this.modalConfirm.hide();
+                        await this.getTransactions();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                }
             }
         }
     </script>

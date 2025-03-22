@@ -57,7 +57,7 @@
             Akun Debit
         </label>
         <select name="debit_account_id" id="selected-debit-account"
-                class="form-select form-select-solid accounts-select2"
+                class="form-select form-select-solid stock-accounts-select2"
                 data-dropdown-parent="#modal-transactions">
             <option></option>
         </select>
@@ -67,7 +67,7 @@
             Akun Kredit
         </label>
         <select name="credit_account_id" id="selected-credit-account"
-                class="form-select-solid form-select accounts-select2"
+                class="form-select-solid form-select kas-accounts-select2"
                 data-dropdown-parent="#modal-transactions">
             <option></option>
         </select>

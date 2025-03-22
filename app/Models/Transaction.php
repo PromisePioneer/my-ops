@@ -22,10 +22,14 @@ class Transaction extends Model
         'unit_type_id',
         'unit_price',
         'total_price',
-        'status',
         'goods_id',
         'debit_account_id',
-        'credit_account_id'
+        'credit_account_id',
+        'locked_status',
+        'created_by',
+        'confirmation_status',
+        'confirmed_by',
+        'reason',
     ];
 
 
@@ -54,6 +58,11 @@ class Transaction extends Model
     public function goods(): BelongsTo
     {
         return $this->belongsTo(Goods::class, 'goods_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
 

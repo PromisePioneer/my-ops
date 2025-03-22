@@ -105,6 +105,22 @@ class PermissionSeeder extends Seeder
         $this->employeeSchedule();
         $this->attendancesSummary();
         $this->transactions();
+        $this->attendanceManualRequests();
+    }
+
+    public function attendanceManualRequests()
+    {
+        $permissions = [
+            'Lihat Menu Permintaan Absensi Manual',
+            'Tambah Data Permintaan Absensi Manual',
+            'Ubah Data Permintaan Absensi Manual',
+            'Hapus Data Permintaan Absensi Manual',
+            'Konfirmasi Data Permintaan Absensi Manual',
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
     }
 
 

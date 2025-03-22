@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
 use App\Http\Requests\TransactionRequest;
+use App\Http\Requests\TransactionConfirmationRequest;
 use App\Models\Transaction;
 use App\Support\Transactions\TransactionService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -93,12 +94,23 @@ use Throwable;
     /**
      * @throws Throwable
      */
-    public function confirm(Transaction $transaction): JsonResponse
+    public function lockTransaction(Transaction $transaction): JsonResponse
     {
-        $this->authorize('confirm', $transaction);
-        $this->transactionService->confirm($transaction);
+        $this->transactionService->lockTransaction($transaction);
         return response()->json([
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil dikunci'
+        ]);
+    }
+
+
+    /**
+     * @throws Throwable
+     */
+    public function confirm(Transaction $transaction, TransactionConfirmationRequest $request): JsonResponse
+    {
+        $this->transactionService->confirm($transaction, $request);
+        return response()->json([
+            'message' => 'data berhasil dibuka'
         ]);
     }
 
@@ -108,13 +120,24 @@ use Throwable;
      */
     public function destroy(Request $request, Transaction $transaction): JsonResponse
     {
-        $this->authorize('delete', $transaction);
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
         $transaction->whereIn('id', $explodeID)->delete();
-
         return response()->json([
             'message' => 'data berhasil dihapus'
         ]);
     }
+
+
+    /**
+     * @throws Throwable
+     */
+    public function confirmFromPIC(Transaction $transaction): JsonResponse
+    {
+        $this->transactionService->confirmFromPIC($transaction);
+        return response()->json([
+            'message' => 'data berhasil disimpan'
+        ]);
+    }
+
 }

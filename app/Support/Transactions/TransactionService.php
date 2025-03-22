@@ -3,6 +3,7 @@
 namespace App\Support\Transactions;
 
 use AllowDynamicProperties;
+use App\Http\Requests\TransactionConfirmationRequest;
 use App\Http\Requests\TransactionRequest;
 use App\Models\Stock;
 use App\Models\Transaction;
@@ -92,8 +93,9 @@ use function App\Helper\formatDate;
                 'credit' => $item->creditAccount->code . ' ' . $item->creditAccount->name,
                 'detail' => $item->detail,
                 'total_price' => 'Rp.' . number_format($item->total_price),
-                'status' => $item->status
-
+                'locked_status' => $item->locked_status,
+                'confirmation_status' => $item->confirmation_status,
+                'reason' => $item->reason
             ];
         });
 
@@ -103,7 +105,6 @@ use function App\Helper\formatDate;
 
     public function store(TransactionRequest $request): void
     {
-
         Transaction::create([
             'type' => $request->input('type'),
             'transaction_number' => $this->generateTransactionNumber($request),
@@ -116,6 +117,7 @@ use function App\Helper\formatDate;
             'total_price' => $request->input('unit_price') * $request->input('qty'),
             'debit_account_id' => $request->input('debit_account_id'),
             'credit_account_id' => $request->input('credit_account_id'),
+            'created_by' => $request->user()->id,
         ]);
     }
 
@@ -141,45 +143,63 @@ use function App\Helper\formatDate;
     /**
      * @throws Throwable
      */
-    public function confirm(Transaction $transaction): void
+    public function lockTransaction(Transaction $transaction): void
     {
-        DB::transaction(function () use ($transaction) {
+        $transaction->update([
+            'locked_status' => 1
+        ]);
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function confirm(Transaction $transaction, TransactionConfirmationRequest $request): void
+    {
+        DB::transaction(function () use ($transaction, $request) {
             $transaction->update([
-                'status' => true
+                'confirmation_status' => $request->confirmation_status,
+                'locked_status' => $request->confirmation_status === 'Revisi' ? 0 : 1,
+                'confirmed_by' => $request->confirmation_status === 'Diterima' ?: $request->user()->id,
+                'reason' => $request->input('reason')
             ]);
 
-            if ($transaction->type === 'Barang') {
-                $stocks = Stock::where('item_id', $transaction->goods_id)
-                    ->where('transaction_id', $transaction->id)
-                    ->where('branch_id', $transaction->branch_id);
+            if ($request->input('confirmation_status') === 'Diterima') {
+                if ($transaction->type === 'Barang') {
+                    $stocks = Stock::where('item_id', $transaction->goods_id)
+                        ->where('transaction_id', $transaction->id)
+                        ->where('branch_id', $transaction->branch_id);
 
-                if ($stocks->exists()) {
-                    $stocks->update([
-                        'qty' => $stocks->first()->qty + $transaction->qty
-                    ]);
-                } else {
-                    Stock::create([
-                        'branch_id' => $transaction->branch_id,
-                        'transaction_id' => $transaction->id,
-                        'item_id' => $transaction->goods_id,
-                        'qty' => $transaction->qty
-                    ]);
+                    if ($stocks->exists()) {
+                        $stocks->update([
+                            'qty' => $stocks->first()->qty + $transaction->qty
+                        ]);
+                    } else {
+                        Stock::create([
+                            'branch_id' => $transaction->branch_id,
+                            'transaction_id' => $transaction->id,
+                            'item_id' => $transaction->goods_id,
+                            'qty' => $transaction->qty
+                        ]);
+                    }
                 }
+
+
+                $this->accountTransactionService->createDebitTransaction(
+                    $transaction->branch_id,
+                    $transaction->detail,
+                    $transaction->debit_account_id,
+                    $transaction->total_price,
+                );
+
+                $this->accountTransactionService->createCreditTransaction(
+                    $transaction->branch_id,
+                    $transaction->detail,
+                    $transaction->credit_account_id,
+                    $transaction->total_price,
+                );
             }
-
-            $this->accountTransactionService->createDebitTransaction(
-                $transaction->branch_id,
-                $transaction->detail,
-                $transaction->debit_account_id,
-                $transaction->total_price,
-            );
-
-            $this->accountTransactionService->createCreditTransaction(
-                $transaction->branch_id,
-                $transaction->detail,
-                $transaction->credit_account_id,
-                $transaction->total_price,
-            );
         });
     }
+
+
 }
