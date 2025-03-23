@@ -4,7 +4,7 @@ namespace App\Support\Inventory;
 
 use App\Http\Requests\Inventory\GoodsRequest;
 use App\Models\Account;
-use App\Models\Goods;
+use App\Models\ItemCollection;
 use App\Models\Master\Common\UnitType;
 use App\Models\SubAccount;
 use App\Support\AccountTransactions\AccountTransactionService;
@@ -31,10 +31,10 @@ class GoodsServices
         $data = $request->validated();
         $data['file'] = self::handleFileUpload($request);
         $data['created_by'] = $request->user()->id;
-        Goods::create($data);
+        ItemCollection::create($data);
     }
 
-    private static function handleFileUpload(GoodsRequest $request, ?Goods $goods = null): string
+    private static function handleFileUpload(GoodsRequest $request, ?ItemCollection $goods = null): string
     {
         if ($goods) {
             Storage::delete($goods->file);
@@ -43,7 +43,7 @@ class GoodsServices
         return $request->file('file')->store('goods/image', 'public');
     }
 
-    public function update(GoodsRequest $request, Goods $goods): void
+    public function update(GoodsRequest $request, ItemCollection $goods): void
     {
         $data = $request->validated();
         $data['file'] = self::handleFileUpload($request, $goods);

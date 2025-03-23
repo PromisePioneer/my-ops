@@ -27,7 +27,7 @@ use Illuminate\View\View;
     public function index(): View
     {
         $this->authorize('view', PSB::class);
-        return view('pages.operational-master-data.psb.index');
+        return view('pages.master.operational.psb.index');
     }
 
     /**

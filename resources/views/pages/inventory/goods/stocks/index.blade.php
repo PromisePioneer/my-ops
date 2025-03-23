@@ -3,25 +3,27 @@
     <div x-data="goodsStockData()">
         @include('pages.inventory.goods.stocks.form')
         <div class="d-flex flex-column flex-xl-row">
-            <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
-                <div class="card card-flush">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <h2 class="mb-0">Filter</h2>
+            @can('Filter Stok Barang Berdasarkan Cabang')
+                <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
+                    <div class="card card-flush">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2 class="mb-0">Filter</h2>
+                            </div>
+                        </div>
+                        <div class="card-body pt-0">
+                            <select name="branch_id_filter" id="branch_id_filter"
+                                    class="form-select form-select-solid main-branches-select2">
+                            </select>
+                        </div>
+                        <div class="card-footer pt-4 text-end">
+                            <button type="button" class="btn btn-light btn-active-primary btn-sm" @click="filter()">
+                                Filter
+                            </button>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
-                        <select name="branch_id_filter" id="branch_id_filter"
-                                class="form-select form-select-solid main-branches-select2">
-                        </select>
-                    </div>
-                    <div class="card-footer pt-4 text-end">
-                        <button type="button" class="btn btn-light btn-active-primary btn-sm" @click="filter()">
-                            Filter
-                        </button>
-                    </div>
                 </div>
-            </div>
+            @endcan
             <div class="flex-lg-row-fluid ms-lg-10">
                 <div class="card card-flush mb-6 mb-xl-9">
                     <div class="card-header border-0 pt-6">
@@ -31,7 +33,8 @@
                            <i class="bi bi-search"></i>
                         </span>
                                 <input type="text" name="search" x-model="search" @input.debounce="searchData()"
-                                       class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
+                                       class="form-control form-control-solid w-250px ps-14"
+                                       placeholder="Search...">
                             </div>
                         </div>
                         <div class="card-toolbar">

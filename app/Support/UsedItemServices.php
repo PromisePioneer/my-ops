@@ -2,7 +2,7 @@
 
 namespace App\Support;
 
-use App\Models\Goods;
+use App\Models\ItemCollection;
 use App\Models\UsedItems;
 use App\Support\AccountTransactions\AccountTransactionService;
 use Exception;
@@ -20,7 +20,7 @@ class UsedItemServices
         $this->accountTransactionService = new AccountTransactionService();
     }
 
-    public function store(Request $request, Goods $goods): void
+    public function store(Request $request, ItemCollection $goods): void
     {
         $description = sprintf(
             self::ACCOUNT_TRANSACTIONS_IF_ITEM_IS_ASSET_DESCRIPTION,
@@ -56,7 +56,7 @@ class UsedItemServices
         });
     }
 
-    private function isQtyGreaterThanZero(Goods $goods, Request $request): void
+    private function isQtyGreaterThanZero(ItemCollection $goods, Request $request): void
     {
         if ($goods->qty > 0) {
             $goods->qty -= $request->total_used;
@@ -67,7 +67,7 @@ class UsedItemServices
     /**
      * @throws Exception
      */
-    public function isQtyLessThanZero(Goods $goods): void
+    public function isQtyLessThanZero(ItemCollection $goods): void
     {
         if ($goods->qty < 0) {
             throw new Exception('Stok sudah habis');
@@ -77,7 +77,7 @@ class UsedItemServices
     /**
      * @throws Exception
      */
-    public function isQtyLessThanTotalUsedItems(Goods $goods, Request $request): void
+    public function isQtyLessThanTotalUsedItems(ItemCollection $goods, Request $request): void
     {
         if ($goods->qty < $request->total_used) {
             throw new Exception('Stok tidak mencukupi');

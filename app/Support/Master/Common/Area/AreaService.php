@@ -3,7 +3,7 @@
 namespace App\Support\Master\Common\Area;
 
 use AllowDynamicProperties;
-use App\Http\Requests\Master\General\Area\AreaRequest;
+use App\Http\Requests\Master\Common\Area\AreaRequest;
 use App\Models\Area;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;

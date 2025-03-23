@@ -3,7 +3,7 @@
 @section('breadcrumbs', 'Transaksi')
 @section('content')
     <div x-data="transactionData()">
-        @include('pages.operational-master-data.goods.modal.form')
+        @include('pages.master.operational.items.form')
         @include('pages.transactions.form')
         @include('pages.transactions.confirmation')
         <div class="flex-lg-row-fluid ms-lg-10">
@@ -24,7 +24,8 @@
                             @can('Tambah Data Transaksi')
                                 <button type="button" class="btn btn-light-primary btn-sm"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#modal-transactions">
+                                        data-bs-target="#modal-transactions"
+                                        @click="add()">
                                     <i class="ki-duotone ki-message-add fs-2">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
@@ -108,7 +109,7 @@
                                                 <span x-text="`Tgl ${transaction.date}`"></span>
                                                 <span x-text="`No ${transaction.transaction_number}`"></span>
                                                 <hr>
-                                                <span x-text="`Barang : ${transaction.goods_name}`"></span>
+                                                <span x-text="`Barang : ${transaction.item_name}`"></span>
                                                 <span x-text="`Total Harga : ${transaction.total_price}`"></span>
                                             </div>
                                         </td>
@@ -166,7 +167,8 @@
                                                         <button class="btn btn-light-success text-dark btn-sm mb-4"
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#modal-confirmation"
-                                                                @click="edit(transaction.id)" :disabled="transaction.confirmation_status === 'Diterima'">
+                                                                @click="edit(transaction.id)"
+                                                                :disabled="transaction.confirmation_status === 'Diterima'">
                                                             <i class="bi bi-check-circle-fill"></i>
                                                             Konfirmasi Transaksi
                                                         </button>
@@ -204,7 +206,7 @@
     <script defer>
         $('.date').flatpickr();
         const transactionModal = new bootstrap.Modal(document.getElementById('modal-transactions'));
-        const goodsModal = document.getElementById('modal-item');
+        const itemModal = document.getElementById('modal-item');
 
         function transactionData() {
             return {
@@ -226,7 +228,7 @@
                 form: document.getElementById('form-transactions'),
                 modalForm: new bootstrap.Modal(document.getElementById('modal-transactions')),
                 goodsForm: document.getElementById('form-item'),
-                goodsModal: new bootstrap.Modal(document.getElementById('modal-item')),
+                itemModal: new bootstrap.Modal(document.getElementById('modal-item')),
                 formDelete: document.getElementById('form-delete'),
                 formConfirm: document.getElementById('form-confirmation'),
                 modalConfirm: new bootstrap.Modal(document.getElementById('modal-confirmation')),
@@ -236,8 +238,14 @@
                     await this.getUnitTypes();
                     await this.getKasAccounts();
                     await this.getStockAccounts();
-                    await this.getGoods();
-                    await this.goodsCategory();
+                    await this.getItemCollections();
+                    await this.itemCategories();
+                },
+                add() {
+                    this.form.reset();
+                    this.editVal = '';
+                    this.selectedBranch();
+                    this.modalForm.show();
                 },
                 async paginationEndPoint(url) {
                     if (url) {
@@ -333,7 +341,7 @@
                     const resp = await axios.get(`/transactions/${id}`);
                     this.editVal = resp.data;
                     this.transactionType = this.editVal.type;
-                    await this.selectedGoods();
+                    await this.selectedItem();
                     await this.selectedBranch();
                     await this.selectedDebitAccount();
                     await this.selectedCreditAccount();
@@ -492,8 +500,8 @@
                         }
                     });
                 },
-                async getGoods() {
-                    $(".goods-select2").select2({
+                async getItemCollections() {
+                    $(".items-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Barang",
                         escapeMarkup: markup => (markup),
@@ -512,27 +520,27 @@
                         }
                     });
                 },
-                async selectedGoods() {
+                async selectedItem() {
                     if (this.editVal.type !== 'Barang') return;
-                    const selectedGoods = $('#selected-goods');
+                    const selectedItem = $('#selected-item');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/select2/selected-goods/${this.editVal.goods_id}`,
+                        url: `/select2/selected-item/${this.editVal.item_id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
-                    selectedGoods.append(option).trigger('change').trigger({
+                    selectedItem.append(option).trigger('change').trigger({
                         type: 'select2:select',
                         params: {results: response}
                     });
                 },
-                async saveGoods() {
+                async saveItem() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/operational-master-data/goods', new FormData(this.goodsForm))
+                        await axios.post('master/operational/items', new FormData(this.goodsForm))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.goodsForm.reset();
-                        this.goodsModal.hide();
+                        this.itemModal.hide();
                         this.modalForm.show();
                     } catch (error) {
                         const respError = error.response.data.errors;
@@ -541,13 +549,13 @@
                         this.buttonLoading = false;
                     }
                 },
-                async goodsCategory() {
-                    $(".category-of-goods-select2").select2({
+                async itemCategories() {
+                    $(".item-category-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Kategori Barang",
                         tags: true,
                         ajax: {
-                            url: '/select2/goods-category-data',
+                            url: '/select2/item-categories-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),

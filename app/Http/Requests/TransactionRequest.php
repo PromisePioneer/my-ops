@@ -26,9 +26,9 @@ class TransactionRequest extends FormRequest
         return [
             'branch_id' => [Rule::exists('branches', 'id')],
             'detail' => ['required'],
-            'goods_id' => [
+            'item_id' => [
                 Rule::requiredIf($request->type === 'Barang'),
-                Rule::exists('goods', 'id')],
+                Rule::exists('item_collections', 'id')],
             'qty' => ['required', 'numeric'],
             'unit_price' => ['required', 'numeric'],
             'debit_account_id' => ['required', Rule::exists('accounts', 'id')],

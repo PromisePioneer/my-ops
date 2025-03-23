@@ -234,7 +234,7 @@
                     </x-dropdown-menu>
                 @endcanany
                 @canany(['Lihat Menu Supplier', 'Lihat Menu Kategori Barang', 'Lihat Menu PSB'])
-                    <x-dropdown-menu :active="request()->segment(1) === 'operational-master-data'">
+                    <x-dropdown-menu :active="request()->segment(2) === 'operational'">
                         @slot('parentIcon')
                             <i class="ki-duotone ki-element-7 fs-2">
                                 <span class="path1"></span>
@@ -247,28 +247,28 @@
                         @slot('menuItem')
                             @can('Lihat Menu Kategori Barang')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'goods'"
-                                        href="{{ url('operational-master-data/goods') }}">
+                                        :active="request()->segment(3) === 'item-categories'"
+                                        href="{{ url('master/operational/item-categories') }}">
+                                    Kategori Barang
+                                </x-dropdown-menu-item>
+                            @endcan
+                            @can('Lihat Menu Kategori Barang')
+                                <x-dropdown-menu-item
+                                        :active="request()->segment(3) === 'items'"
+                                        href="{{ url('/master/operational/items') }}">
                                     Daftar Barang
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Supplier')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'suppliers'"
-                                        href="{{ url('operational-master-data/suppliers') }}">
+                                        :active="request()->segment(3) === 'suppliers'"
+                                        href="{{ url('master/operational/suppliers') }}">
                                     Supplier
                                 </x-dropdown-menu-item>
                             @endcan
-                            @can('Lihat Menu Kategori Barang')
-                                <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'category-of-goods'"
-                                        href="{{ url('operational-master-data/category-of-goods') }}">
-                                    Kategori Barang
-                                </x-dropdown-menu-item>
-                            @endcan
                             <x-dropdown-menu-item
-                                    :active="request()->segment(2) === 'psb'"
-                                    href="{{ url('operational-master-data/psb') }}">
+                                    :active="request()->segment(3) === 'psb'"
+                                    href="{{ url('master/operational/psb') }}">
                                 Data Penarikan
                             </x-dropdown-menu-item>
                         @endslot

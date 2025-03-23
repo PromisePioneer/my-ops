@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Area;
 
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Master\General\Area\AreaFilterRequest;
-use App\Http\Requests\Master\General\Area\AreaRequest;
+use App\Http\Requests\Master\Common\Area\AreaFilterRequest;
+use App\Http\Requests\Master\Common\Area\AreaRequest;
 use App\Models\Area;
 use App\Models\Department;
 use App\Support\Master\Common\Area\AreaService;

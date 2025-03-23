@@ -19,7 +19,7 @@ return new class extends Migration {
                 ->constrained('branches')
                 ->cascadeOnDelete();
             $table->foreignId('item_id')
-                ->constrained('goods')
+                ->constrained('item_collections')
                 ->cascadeOnDelete()
                 ->cascadeOnDelete();
             $table->integer('qty');

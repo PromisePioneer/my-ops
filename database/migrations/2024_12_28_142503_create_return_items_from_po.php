@@ -13,10 +13,10 @@ return new class extends Migration {
         Schema::create('return_items_from_po', function (Blueprint $table) {
             $table->id();
             $table->foreignId('po_id')
-                ->constrained('goods_purchase_order')
+                ->constrained('item_purchase_orders')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-            $table->foreignId('item_id')->constrained('goods')
+            $table->foreignId('item_id')->constrained('item_collections')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->integer('qty');

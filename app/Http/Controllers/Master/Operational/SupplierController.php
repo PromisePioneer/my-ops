@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Master\Operational;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\SupplierRequest;
+use App\Http\Requests\Master\Operational\Supplier\SupplierRequest;
 use App\Models\Supplier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,13 +15,13 @@ class SupplierController extends Controller
 
     public function index(): View
     {
-        return view('pages.operational-master-data.supplier.index');
+        return view('pages.master.operational.supplier.index');
     }
 
 
     public function data(): JsonResponse
     {
-        $suppliers = Supplier::paginate(10);
+        $suppliers = Supplier::query()->orderBy('name')->paginate(10);
         return response()->json($suppliers);
     }
 

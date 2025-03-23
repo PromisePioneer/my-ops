@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Master\Common;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Master\Department\DepartmentRequest;
+use App\Http\Requests\Master\Common\Department\DepartmentRequest;
 use App\Models\Department;
 use App\Support\Master\Common\Department\DepartmentQueryFilter;
 use Illuminate\Auth\Access\AuthorizationException;

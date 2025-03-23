@@ -27,7 +27,7 @@
 
 
                     <div x-show="transactionType === 'Barang'" x-transition x-cloak>
-                        @include('pages.transactions.form-types.goods')
+                        @include('pages.transactions.form-types.item')
                     </div>
                 </div>
 

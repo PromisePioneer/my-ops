@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
-use App\Models\Goods;
+use App\Models\ItemCollection;
 use App\Models\Stock;
 use App\Models\Master\Common\Branch;
 use App\Models\Warehouse;
@@ -20,7 +20,7 @@ use Illuminate\View\View;
 
     public function __construct()
     {
-        $this->goods = new Goods();
+        $this->goods = new ItemCollection();
         $this->branch = new Branch();
         $this->warehouse = new Warehouse();
         $this->goodsTransactionService = new GoodsTransactionService();
@@ -59,7 +59,7 @@ use Illuminate\View\View;
     }
 
 
-    public function getStock(Goods $goods): JsonResponse
+    public function getStock(ItemCollection $goods): JsonResponse
     {
         $data = Stock::with('po', 'warehouse', 'branch', 'item')
             ->where(function ($query) use ($goods) {
@@ -76,7 +76,7 @@ use Illuminate\View\View;
         return response()->json($data);
     }
 
-    public function selectedStock(Request $request, Goods $goods): JsonResponse
+    public function selectedStock(Request $request, ItemCollection $goods): JsonResponse
     {
         $explodeID = explode(",", $request->selected_stock);
         $data = Stock::with('po', 'warehouse', 'branch', 'item')->whereIn('id', $explodeID)->paginate(5);

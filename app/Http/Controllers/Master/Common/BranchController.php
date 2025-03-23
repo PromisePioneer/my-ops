@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Master\Common;
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BranchChildrenRequest;
-use App\Http\Requests\Master\Branch\BranchRequest;
+use App\Http\Requests\Master\Common\Branch\BranchRequest;
 use App\Models\Master\Common\Branch;
 use App\Support\Master\Common\Branch\Service\BranchService;
 use Exception;

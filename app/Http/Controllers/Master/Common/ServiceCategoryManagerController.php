@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Master\Common;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Master\ServiceCategory\ServicesCategoryRequest;
+use App\Http\Requests\Master\Common\ServiceCategory\ServicesCategoryRequest;
 use App\Models\Master\Common\ServiceCategory;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;

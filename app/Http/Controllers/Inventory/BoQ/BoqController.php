@@ -10,7 +10,7 @@ use App\Models\Boq;
 use App\Models\BoqCommodity;
 use App\Models\BoqTimelineProject;
 use App\Models\CentralWarehouseItem;
-use App\Models\Goods;
+use App\Models\ItemCollection;
 use App\Models\Master\Common\UnitType;
 use App\Models\User;
 use App\Support\BoqService;
@@ -29,7 +29,7 @@ use Throwable;
         $this->boqService = new BoqService();
         $this->unitType = new UnitType();
         $this->user = new User();
-        $this->item = new Goods();
+        $this->item = new ItemCollection();
     }
 
     public function index(): View
@@ -186,7 +186,7 @@ use Throwable;
         return response()->json($this->item->getData($request));
     }
 
-    public function selectedItem(Goods $item): JsonResponse
+    public function selectedItem(ItemCollection $item): JsonResponse
     {
         return response()->json($this->item->getSelectedData($item->id));
     }

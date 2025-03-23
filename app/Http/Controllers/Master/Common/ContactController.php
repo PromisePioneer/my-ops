@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Master\Common;
 
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Master\Contact\ContactRequest;
+use App\Http\Requests\Master\Common\Contact\ContactRequest;
 use App\Models\Master\Common\Contact;
 use App\Support\Master\Common\Contact\Service\ContactService;
 use Illuminate\Auth\Access\AuthorizationException;

@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
 use App\Http\Requests\GoodsPurchaseOrderRequest;
-use App\Models\Goods;
-use App\Models\GoodsCategory;
+use App\Models\ItemCollection;
+use App\Models\ItemCategory;
 use App\Models\GoodsPurchaseOrder;
 use App\Models\Master\Common\UnitType;
 use App\Models\Supplier;
@@ -22,8 +22,8 @@ use function App\Helper\formatDate;
     {
         $this->supplier = new Supplier();
         $this->goodsPurchaseOrderService = new GoodsPurchaseOrderService();
-        $this->itemCategory = new GoodsCategory();
-        $this->item = new Goods();
+        $this->itemCategory = new ItemCategory();
+        $this->item = new ItemCollection();
         $this->unitType = new UnitType();
         $this->warehouse = new Warehouse();
     }

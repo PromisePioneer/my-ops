@@ -10,14 +10,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('goods_purchase_order', function (Blueprint $table) {
+        Schema::create('item_purchase_orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('branch_id')->nullable()->constrained('branches');
             $table->foreignId('warehouse_id')->nullable()->constrained('warehouses');
             $table->string('po_number')->unique();
             $table->string('invoice_number')->unique();
             $table->foreignId('item_id')
-                ->constrained('goods')
+                ->constrained('item_collections')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->date('date');

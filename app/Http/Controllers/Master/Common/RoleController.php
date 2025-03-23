@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Master\Common;
 
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Master\Role\RoleRequest;
+use App\Http\Requests\Master\Common\Role\RoleRequest;
 use App\Models\Department;
 use App\Models\Role;
 use App\Models\RoleHasDepartment;

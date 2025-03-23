@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
-use App\Http\Requests\TransactionRequest;
 use App\Http\Requests\TransactionConfirmationRequest;
+use App\Http\Requests\TransactionRequest;
 use App\Models\Transaction;
 use App\Support\Transactions\TransactionService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -128,16 +128,5 @@ use Throwable;
         ]);
     }
 
-
-    /**
-     * @throws Throwable
-     */
-    public function confirmFromPIC(Transaction $transaction): JsonResponse
-    {
-        $this->transactionService->confirmFromPIC($transaction);
-        return response()->json([
-            'message' => 'data berhasil disimpan'
-        ]);
-    }
 
 }

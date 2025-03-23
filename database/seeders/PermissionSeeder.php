@@ -41,7 +41,8 @@ class PermissionSeeder extends Seeder
 
         // Inventory Controller
         $this->BoQ();
-        $this->goodsStock();
+        $this->stock();
+        $this->consumedStock();
 
         // journal
         $this->generalJournal();
@@ -964,11 +965,10 @@ class PermissionSeeder extends Seeder
     }
 
 
-    public function goodsStock(): void
+    public function stock(): void
     {
         $permissions = [
             'Lihat Menu Stok Barang',
-            'Input Pemakaian Stok Barang',
             'Filter Stok Barang Berdasarkan Cabang'
         ];
 
@@ -977,5 +977,16 @@ class PermissionSeeder extends Seeder
         }
         $branchManager = Role::where('name', 'Branch Manager')->first();
         $branchManager->givePermissionTo($permissions);
+    }
+
+    public function consumedStock(): void
+    {
+        $permissions = [
+            'Input Pemakaian Stok Barang',
+        ];
+
+        foreach ($permissions as $permission){
+            Permission::create(['name' => $permission]);
+        }
     }
 }

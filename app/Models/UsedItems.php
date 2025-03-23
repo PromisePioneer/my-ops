@@ -14,7 +14,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
  * @property int $total_used
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Goods $goods
+ * @property-read \App\Models\ItemCollection $goods
  *
  * @method static \Illuminate\Database\Eloquent\Builder|UsedItems newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UsedItems newQuery()
@@ -46,7 +46,7 @@ class UsedItems extends Model
 
     public function goods(): BelongsTo
     {
-        return $this->belongsTo(Goods::class, 'goods_id');
+        return $this->belongsTo(ItemCollection::class, 'goods_id');
     }
 
     //eloquent

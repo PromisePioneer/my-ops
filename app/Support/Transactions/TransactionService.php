@@ -49,7 +49,7 @@ use function App\Helper\formatDate;
 
     public function data(): LengthAwarePaginator
     {
-        $data = Transaction::with('branch', 'unitType', 'debitAccount', 'creditAccount', 'goods')
+        $data = Transaction::with('branch', 'unitType', 'debitAccount', 'creditAccount', 'item')
             ->paginate(self::$perPage);
 
         return self::formattedData($data);
@@ -86,7 +86,7 @@ use function App\Helper\formatDate;
                 'branch_id' => $item->branch_id,
                 'date' => formatDate($item->date),
                 'transaction_number' => $item->transaction_number,
-                'goods_name' => $item->goods?->name,
+                'item_name' => $item->item?->name,
                 'debit_account_id' => $item->debitAccount->id,
                 'debit' => $item->debitAccount->code . ' ' . $item->debitAccount->name,
                 'credit_account_id' => $item->creditAccount->id,
@@ -112,7 +112,7 @@ use function App\Helper\formatDate;
             'date' => $request->input('date'),
             'detail' => $request->input('detail'),
             'qty' => $request->input('qty'),
-            'goods_id' => $request->input('type') === 'Barang' ? $request->input('goods_id') : null,
+            'item_id' => $request->input('type') === 'Barang' ? $request->input('item_id') : null,
             'unit_price' => $request->input('unit_price'),
             'total_price' => $request->input('unit_price') * $request->input('qty'),
             'debit_account_id' => $request->input('debit_account_id'),
@@ -131,7 +131,7 @@ use function App\Helper\formatDate;
             'date' => $request->input('date'),
             'detail' => $request->input('detail'),
             'qty' => $request->input('qty'),
-            'goods_id' => $request->input('type') === 'Barang' ? $request->input('goods_id') : null,
+            'item_id' => $request->input('type') === 'Barang' ? $request->input('item_id') : null,
             'unit_price' => $request->input('unit_price'),
             'total_price' => $request->input('unit_price') * $request->input('qty'),
             'debit_account_id' => $request->input('debit_account_id'),
@@ -165,7 +165,7 @@ use function App\Helper\formatDate;
 
             if ($request->input('confirmation_status') === 'Diterima') {
                 if ($transaction->type === 'Barang') {
-                    $stocks = Stock::where('item_id', $transaction->goods_id)
+                    $stocks = Stock::where('item_id', $transaction->item_id)
                         ->where('transaction_id', $transaction->id)
                         ->where('branch_id', $transaction->branch_id);
 
@@ -177,7 +177,7 @@ use function App\Helper\formatDate;
                         Stock::create([
                             'branch_id' => $transaction->branch_id,
                             'transaction_id' => $transaction->id,
-                            'item_id' => $transaction->goods_id,
+                            'item_id' => $transaction->item_id,
                             'qty' => $transaction->qty
                         ]);
                     }

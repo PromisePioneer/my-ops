@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('goods_request_item', function (Blueprint $table) {
             $table->id();
             $table->foreignId('goods_request_id')->constrained('goods_request');
-            $table->foreignId('item_id')->constrained('goods');
+            $table->foreignId('item_id')->constrained('item_collections');
             $table->integer('required_qty');
             $table->integer('qty_requested');
             $table->text('notes');

@@ -16,6 +16,6 @@ class GoodsStockHistory extends Model
 
     public function goods()
     {
-        return $this->belongsTo(Goods::class, 'goods_id');
+        return $this->belongsTo(ItemCollection::class, 'goods_id');
     }
 }

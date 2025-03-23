@@ -21,7 +21,7 @@ protected $table = 'consumed_stocks';
 
     public function goods(): BelongsTo
     {
-        return $this->belongsTo(Goods::class, 'goods_stock_id');
+        return $this->belongsTo(ItemCollection::class, 'goods_stock_id');
     }
 
 

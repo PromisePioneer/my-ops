@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\GoodsCategory;
+use App\Models\ItemCategory;
 use Illuminate\Database\Seeder;
 
 class ItemCategoriesSeeder extends Seeder
@@ -12,11 +12,11 @@ class ItemCategoriesSeeder extends Seeder
      */
     public function run(): void
     {
-        GoodsCategory::create([
+        ItemCategory::create([
             'name' => 'ASET',
         ]);
 
-        GoodsCategory::create([
+        ItemCategory::create([
             'name' => 'JUAL',
         ]);
     }

@@ -18,7 +18,7 @@ class Stock extends Model
 
     public function item(): BelongsTo
     {
-        return $this->belongsTo(Goods::class, 'item_id');
+        return $this->belongsTo(ItemCollection::class, 'item_id');
     }
 
     public function transaction(): BelongsTo

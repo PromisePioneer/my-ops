@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
 use App\App\Controllers\Controller;
-use App\Models\Goods;
+use App\Models\ItemCollection;
 use App\Models\ConsumedStock;
 use App\Support\Inventory\Stock\UsedStockRepository;
 use Illuminate\Http\JsonResponse;
@@ -20,7 +20,7 @@ use Illuminate\Http\JsonResponse;
     }
 
 
-    public function data(Goods $goods): JsonResponse
+    public function data(ItemCollection $goods): JsonResponse
     {
         $stock = ConsumedStock::with('goods', function ($query) use ($goods) {
             $query->where('goods_id', $goods->id);

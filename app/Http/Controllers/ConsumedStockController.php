@@ -6,7 +6,7 @@ use App\Http\Requests\UsedStockRequest;
 use App\Models\Account;
 use App\Models\Asset;
 use App\Models\ConsumedStock;
-use App\Models\Goods;
+use App\Models\ItemCollection;
 use App\Models\Stock;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -46,6 +46,7 @@ class ConsumedStockController extends Controller
      */
     public function store(UsedStockRequest $request): JsonResponse
     {
+        $this->authorize('create', ConsumedStock::class);
         DB::transaction(function () use ($request) {
             $stockId = Stock::where('branch_id', $request->branch_id)
                 ->where('item_id', $request->goods_id)
@@ -63,7 +64,7 @@ class ConsumedStockController extends Controller
                 ->where('item_id', $request->goods_id)
                 ->decrement('qty', $request->qty);
 
-            $goods = Goods::with('category')
+            $goods = ItemCollection::with('category')
                 ->where('id', $request->input('goods_id'))
                 ->first();
 
@@ -124,7 +125,7 @@ class ConsumedStockController extends Controller
     }
 
 
-    public function usedStockHistoryDetail(Goods $goods): View
+    public function usedStockHistoryDetail(ItemCollection $goods): View
     {
         return view('pages.inventory.goods.stocks.used-stock-detail', compact('goods'));
     }

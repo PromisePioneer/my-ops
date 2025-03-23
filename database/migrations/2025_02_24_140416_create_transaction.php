@@ -15,9 +15,9 @@ return new class extends Migration {
                 ->constrained('branches')
                 ->cascadeOnDelete();
             $table->date('date');
-            $table->foreignId('goods_id')
+            $table->foreignId('item_id')
                 ->nullable()
-                ->constrained('goods')
+                ->constrained('item_collections')
                 ->cascadeOnDelete();
             $table->double('qty')->nullable();
             $table->enum('type', ['Default', 'Barang', 'Beban', 'Utang', 'Piutang']);

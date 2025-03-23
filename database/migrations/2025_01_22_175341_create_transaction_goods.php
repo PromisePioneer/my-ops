@@ -12,10 +12,10 @@ return new class extends Migration {
     {
         Schema::create('transaction_goods', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('goods_transaction_id')->constrained('goods_transaction')
+            $table->foreignId('item_transaction_id')->constrained('item_transactions')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-            $table->foreignId('item_id')->constrained('goods')
+            $table->foreignId('item_id')->constrained('item_collections')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
             $table->foreignId('qty');
