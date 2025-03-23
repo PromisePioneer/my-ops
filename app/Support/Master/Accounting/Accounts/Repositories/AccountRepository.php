@@ -20,4 +20,12 @@ class AccountRepository implements AccountRepositoryInterface
             ->orderBy('code')
             ->select('id', 'name', 'code');
     }
+
+
+    public function getStockAccounts(Builder $query): Builder
+    {
+        return $query->whereIn('code', ['112-01', '112-02'])
+            ->orderBy('code')
+            ->select('id', 'name', 'code');
+    }
 }

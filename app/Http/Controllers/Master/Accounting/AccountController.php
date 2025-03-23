@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Master\Accounting;
 
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Master\Account\AccountRequest;
+use App\Http\Requests\Master\Accounting\Account\AccountRequest;
 use App\Models\Account;
 use App\Models\Master\Common\Branch;
 use App\Support\Master\Accounting\Accounts\Service\AccountService;
@@ -96,7 +96,7 @@ use Illuminate\View\View;
 
         return response()->json([
             'message' => 'data berhasil disimpan',
-        ], 200);
+        ]);
     }
 
 
@@ -130,6 +130,12 @@ use Illuminate\View\View;
             'name' => $account->name,
             'code' => $account->code,
         ];
+    }
+
+
+    public function stockAccounts(Request $request): JsonResponse
+    {
+        return response()->json($this->accountService->getStockAccounts($request));
     }
 
 
