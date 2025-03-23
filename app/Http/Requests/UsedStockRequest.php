@@ -55,7 +55,8 @@ class UsedStockRequest extends FormRequest
     public function isStockExists(Request $request): Closure
     {
         return static function ($attribute, $value, $fail) use ($request) {
-            $stock = Stock::where('branch_id', $request->branch_id)->where('item_id', $request->goods_id)->first();
+            $branchId = $request->user()->branch_id ?? $request->branch_id;
+            $stock = Stock::where('branch_id', $branchId)->where('item_id', $request->goods_id)->first();
 
             if ($stock->qty < $request->qty) {
                 return $fail('Stok barang tidak mencukupi');

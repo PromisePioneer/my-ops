@@ -47,8 +47,9 @@ class ConsumedStockController extends Controller
     public function store(UsedStockRequest $request): JsonResponse
     {
         DB::transaction(function () use ($request) {
-
-            $stockId = Stock::where('branch_id', $request->branch_id)->where('item_id', $request->goods_id)->first()->id;
+            $stockId = Stock::where('branch_id', $request->branch_id)
+                ->where('item_id', $request->goods_id)
+                ->first()->id;
             $data = $request->validated();
             $branchId = $request->branch_id ?? $request->user()->branch_id;
             $data['stock_id'] = $stockId;

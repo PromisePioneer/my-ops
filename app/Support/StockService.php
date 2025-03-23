@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\Goods;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 
 class StockService
 {
@@ -53,9 +54,18 @@ class StockService
     private static function formattedGoodsData(LengthAwarePaginator $goodsData): LengthAwarePaginator
     {
         $data = $goodsData->getCollection()->map(function ($item) {
+
+            $stock = 0;
+
+            if (Auth::user()->branch_id) {
+                $stock = $item->goodsStock->where('branch_id', Auth::user()->branch_id)->sum('qty');
+            } else {
+                $stock = $item->goodsStock->sum('qty');
+            }
+
             return [
                 'id' => $item->id,
-                'total_stock' => $item->goodsStock->sum('qty'),
+                'total_stock' => $stock,
                 'category_name' => $item->category->name,
                 'name' => $item->name,
                 'unit_name' => $item->unitType->name
