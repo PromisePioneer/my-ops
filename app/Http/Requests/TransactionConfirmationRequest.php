@@ -23,7 +23,7 @@ class TransactionConfirmationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'reason' => ['required'],
+            'confirmation_excuses' => ['required'],
         ];
     }
 }

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use AllowDynamicProperties;
 use App\Http\Requests\TransactionConfirmationRequest;
 use App\Http\Requests\TransactionRequest;
+use App\Models\AccountTransaction;
+use App\Models\Stock;
 use App\Models\Transaction;
 use App\Support\Transactions\TransactionService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -15,8 +17,6 @@ use Throwable;
 
 #[AllowDynamicProperties] class TransactionController extends Controller
 {
-
-
     public function __construct()
     {
         $this->transactionService = new TransactionService();
@@ -123,6 +123,30 @@ use Throwable;
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
         $transaction->whereIn('id', $explodeID)->delete();
+        return response()->json([
+            'message' => 'data berhasil dihapus'
+        ]);
+    }
+
+
+    public function finalStatus(Request $request, Transaction $transaction): JsonResponse
+    {
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+
+        $transaction->whereIn('id', $explodeID)
+            ->update([
+                'final_status' => $request->final_status,
+                'final_excuses' => $request->input('final_excuses'),
+                'approved_by' => $request->user()->id
+            ]);
+
+        if ($request->final_status === 'Ditolak') {
+            AccountTransaction::whereIn('id', $explodeID)->delete();
+            Stock::whereIn('transaction_id', $explodeID)->delete();
+        }
+
+
         return response()->json([
             'message' => 'data berhasil dihapus'
         ]);

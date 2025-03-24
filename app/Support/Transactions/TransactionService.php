@@ -19,7 +19,6 @@ use function App\Helper\formatDate;
 {
     private static int $perPage = 10;
 
-
     public function __construct()
     {
         $this->accountTransactionService = new AccountTransactionService();
@@ -69,7 +68,7 @@ use function App\Helper\formatDate;
 
     public function filter(Request $request): LengthAwarePaginator
     {
-        $query = Transaction::with('branch', 'unitType', 'debitAccount', 'creditAccount');
+        $query = Transaction::with('branch', 'unitType', 'debitAccount', 'creditAccount', 'confirmedBy', 'approvedBy', 'createdBy');
         $filter = TransactionQueryFilter::apply($query, $request)
             ->paginate(self::$perPage);
 
@@ -95,7 +94,11 @@ use function App\Helper\formatDate;
                 'total_price' => 'Rp.' . number_format($item->total_price),
                 'locked_status' => $item->locked_status,
                 'confirmation_status' => $item->confirmation_status,
-                'reason' => $item->reason
+                'confirmation_excuses' => $item->confirmation_excuses,
+                'final_status' => $item->final_status,
+                'confirmed_by' => $item->confirmedBy?->name,
+                'created_by' => $item->createdBy->name,
+
             ];
         });
 
@@ -160,7 +163,7 @@ use function App\Helper\formatDate;
                 'confirmation_status' => $request->confirmation_status,
                 'locked_status' => $request->confirmation_status === 'Revisi' ? 0 : 1,
                 'confirmed_by' => $request->confirmation_status === 'Diterima' ?: $request->user()->id,
-                'reason' => $request->input('reason')
+                'confirmation_excuses' => $request->input('confirmation_excuses'),
             ]);
 
             if ($request->input('confirmation_status') === 'Diterima') {
@@ -189,6 +192,7 @@ use function App\Helper\formatDate;
                     $transaction->detail,
                     $transaction->debit_account_id,
                     $transaction->total_price,
+                    $transaction->id,
                 );
 
                 $this->accountTransactionService->createCreditTransaction(
@@ -196,6 +200,7 @@ use function App\Helper\formatDate;
                     $transaction->detail,
                     $transaction->credit_account_id,
                     $transaction->total_price,
+                    $transaction->id
                 );
             }
         });

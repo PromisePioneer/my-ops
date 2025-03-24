@@ -6,42 +6,42 @@
         @include('pages.master.operational.items.form')
         @include('pages.transactions.form')
         @include('pages.transactions.confirmation')
-        <div class="flex-lg-row-fluid ms-lg-10">
-            <div class="card card-flush">
-                <div class="card-header border-0 pt-6">
-                    <div class="card-title">
-                        <div class="d-flex align-items-center position-relative my-1">
+        @include('pages.transactions.final-approve')
+        <div class="card card-xl-stretch mb-5 mb-xl-8">
+            <div class="card-header border-0 ">
+                <div class="card-title">
+                    <div class="d-flex align-items-center position-relative my-1">
                         <span class="svg-icon svg-icon-1 position-absolute ms-6">
                            <i class="bi bi-search"></i>
                         </span>
-                            <input type="text" name="search" x-model="search" @input.debounce="searchData()"
-                                   class="form-control form-control-solid w-250px ps-14"
-                                   placeholder="Search...">
-                        </div>
-                    </div>
-                    <div class="card-toolbar">
-                        <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                            @can('Tambah Data Transaksi')
-                                <button type="button" class="btn btn-light-primary btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modal-transactions"
-                                        @click="add()">
-                                    <i class="ki-duotone ki-message-add fs-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                    </i> Tambah
-                                </button>
-                            @endcan
-                        </div>
+                        <input type="text" name="search" x-model="search" @input.debounce="searchData()"
+                               class="form-control form-control-solid w-250px ps-14"
+                               placeholder="Search...">
                     </div>
                 </div>
-                <div class="card-body py-3">
-                    <div class="py-5">
-                        <div class="col-12 mb-4">
-                            <form id="form-delete" @submit.prevent="destroy()">
-                                <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
-                                <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                <div class="card-toolbar">
+                    <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
+                        @can('Tambah Data Transaksi')
+                            <button type="button" class="btn btn-light-primary btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-transactions"
+                                    @click="add()">
+                                <i class="ki-duotone ki-message-add fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i> Tambah
+                            </button>
+                        @endcan
+                    </div>
+                </div>
+            </div>
+            <div class="card-body py-3">
+                <div class="py-5">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <form id="form-approve" @submit.prevent="destroy()" class="me-2">
+                                <button type="button" class="btn btn-light-danger btn-sm mt-5"
                                         x-show="selectedCheckBox.length > 0"
                                         x-transition x-cloak>
                                     <i class="ki-duotone ki-trash-square fs-2">
@@ -54,146 +54,174 @@
                                 </button>
                             </form>
                         </div>
-                        <div class="table-responsive">
-                            <table class="table align-middle table-bordered fs-6 gy-5">
-                                <thead>
-                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                    <th class="w-10px pe-2">
-                                        <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                            <input class="form-check-input" type="checkbox"
-                                                   @click="toggleAllCheckBox()">
-                                        </div>
-                                    </th>
-                                    <th class="min-w-125px text-center">Informasi Transaksi</th>
-                                    <th class="min-w-250px text-center">Akun</th>
-                                    <th class="min-w-250px text-center">Detail</th>
-                                    <th class="min-w-250px text-center">Status Konfirmasi</th>
-                                    <template
-                                        x-if="Number(editPermission) === 1 || Number(confirmPermission) === 1">
-                                        <th class="min-w-250px text-center">Actions</th>
-                                    </template>
-                                </thead>
-                                <tbody class="fw-bold">
-                                <template x-if="isLoading">
-                                    <tr>
-                                        <td colspan="9">
-                                            <div style="text-align: center;">
-                                                <div class="spinner-border" role="status">
-                                                    <span class="visually-hidden">Loading...</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </template>
-                                <template x-if="!isLoading && transactions.data?.length === 0">
-                                    <tr>
-                                        <td colspan="9">
-                                            <center>Data Tidak Ditemukan</center>
-                                        </td>
-                                    </tr>
-                                </template>
-                                <template x-for="(transaction, index) in transactions?.data" :key="transaction.id">
-                                    <tr>
-                                        <td>
-                                            <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                                 @click="selectCheckBox($event)">
-                                                <input class="form-check-input" type="checkbox"
-                                                       :value="transaction.id"
-                                                       :id="'checkbox-' + transaction.id"
-                                                       :disabled="Number(destroyPermission) !== 1"/>
-                                            </div>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="d-flex flex-column">
-                                                <span x-text="`Transaksi ${transaction.type}`"></span>
-                                                <span x-text="`Tgl ${transaction.date}`"></span>
-                                                <span x-text="`No ${transaction.transaction_number}`"></span>
-                                                <hr>
-                                                <span x-text="`Barang : ${transaction.item_name}`"></span>
-                                                <span x-text="`Total Harga : ${transaction.total_price}`"></span>
-                                            </div>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="d-flex flex-column align-items-center">
-                                                <span x-text="transaction.transaction_type"></span>
-                                                <a :href="`/account-transactions/${transaction.debit_account_id}`"
-                                                   class="badge bg-primary text-white mb-2"
-                                                   x-text="`${transaction.debit}`"></a>
-                                                <a class="badge bg-danger text-white mb-2"
-                                                   x-text="`${transaction.credit}`"></a>
-                                            </div>
-                                        </td>
-                                        <td class="text-center" x-text="transaction.detail"></td>
-                                        <td class="text-center">
-                                            <div class="d-flex flex-column align-items-center justify-content-center">
-                                                <div class="mb-10">
-                                                    <template x-if="transaction.confirmation_status === 'Diterima'">
-                                                        <span class="badge bg-success text-dark">Terkonfirmasi</span>
-                                                    </template>
-                                                </div>
-
-                                                <div>
-                                                    <template x-if="transaction.confirmation_status === 'Revisi'">
-                                                        <span class="badge bg-warning text-dark"
-                                                              x-text="`Revisi : ${transaction.reason}`"></span>
-                                                    </template>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <template x-if="Number(editPermission) === 1">
-                                            <td>
-                                                <div
-                                                    class="d-flex flex-column align-items-center justify-content-center">
-                                                    <template x-if="transaction.locked_status === 0">
-                                                        <button class="btn btn-light-primary btn-sm mb-4"
-                                                                @click="edit(transaction.id)"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#modal-transactions">
-                                                            <i class="bi bi-pencil"></i> Ubah Data
-                                                        </button>
-                                                    </template>
-                                                    <template x-if="transaction.locked_status === 0">
-                                                        <button class="btn btn-light-info btn-sm mb-4"
-                                                                data-bs-toggle="tooltip"
-                                                                data-bs-placement="top"
-                                                                @click="lockTransaction(transaction.id)"
-                                                                title="Kunci Transaksi">
-                                                            <i class="bi bi-lock"></i>
-                                                            Kunci Transaksi
-                                                        </button>
-                                                    </template>
-                                                    <template
-                                                        x-if="transaction.locked_status === 1 && Number(confirmPermission) === 1">
-                                                        <button class="btn btn-light-success text-dark btn-sm mb-4"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#modal-confirmation"
-                                                                @click="edit(transaction.id)"
-                                                                :disabled="transaction.confirmation_status === 'Diterima'">
-                                                            <i class="bi bi-check-circle-fill"></i>
-                                                            Konfirmasi Transaksi
-                                                        </button>
-                                                    </template>
-                                                </div>
-                                            </td>
-                                        </template>
-                                    </tr>
-                                </template>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-danger">Note : Akun berwarna biru debet,merah kredit</span>
-                            <ul class="pagination float-end mb-4 mt-4">
-                                <template x-for="pagination in transactions.links">
-                                    <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                        <button class="page-link" @click="paginationEndPoint(pagination.url)"
-                                                x-html="pagination.label">
-                                        </button>
-                                    </li>
-                                </template>
-                            </ul>
+                        <div>
+                            <button type="button" class="btn btn-light-info btn-sm mt-5"
+                                    x-show="selectedCheckBox.length > 0"
+                                    x-transition x-cloak data-bs-target="#modal-final-approve"
+                                    data-bs-toggle="modal">
+                                <i class="ki-duotone ki-double-check">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                </i>
+                                Setujui Transaksi
+                            </button>
                         </div>
                     </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle table-bordered fs-6 gy-5">
+                        <thead>
+                        <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <th class="w-10px pe-2">
+                                <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                    <input class="form-check-input" type="checkbox"
+                                           @click="toggleAllCheckBox()">
+                                </div>
+                            </th>
+                            <th class="min-w-125px text-center">Informasi Transaksi</th>
+                            <th class="min-w-125px text-center">Akun</th>
+                            <th class="min-w-125px text-center">Detail</th>
+                            <th class="min-w-125px text-center">Status Konfirmasi</th>
+                            <template
+                                x-if="Number(editPermission) === 1 || Number(confirmPermission) === 1">
+                                <th class="min-w-250px text-center">Actions</th>
+                            </template>
+                        </thead>
+                        <tbody class="fw-bold">
+                        <template x-if="isLoading">
+                            <tr>
+                                <td colspan="9">
+                                    <div style="text-align: center;">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                        <template x-if="!isLoading && transactions.data?.length === 0">
+                            <tr>
+                                <td colspan="9">
+                                    <center>Data Tidak Ditemukan</center>
+                                </td>
+                            </tr>
+                        </template>
+                        <template x-for="(transaction, index) in transactions?.data" :key="transaction.id">
+                            <tr>
+                                <td>
+                                    <template x-if="transaction.confirmation_status === 'Diterima'">
+                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                             @click="selectCheckBox($event)">
+                                            <input class="form-check-input" type="checkbox"
+                                                   :value="transaction.id"
+                                                   :id="'checkbox-' + transaction.id"
+                                                   :disabled="Number(destroyPermission) !== 1"/>
+                                        </div>
+                                    </template>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex flex-column">
+                                        <span x-text="`Transaksi ${transaction.type}`"></span>
+                                        <span x-text="`Tgl ${transaction.date}`"></span>
+                                        <span x-text="`No ${transaction.transaction_number}`"></span>
+                                        <hr>
+                                        <span x-text="`Barang : ${transaction.item_name}`"></span>
+                                        <span x-text="`Total Harga : ${transaction.total_price}`"></span>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <span x-text="transaction.transaction_type"></span>
+                                        <a href="#"
+                                           class="badge bg-primary text-white mb-2"
+                                           x-text="`${transaction.debit}`"></a>
+                                        <a href="#" class="badge bg-danger text-white mb-2"
+                                           x-text="`${transaction.credit}`"></a>
+                                    </div>
+                                </td>
+                                <td class="text-center" x-text="transaction.detail"></td>
+                                <td class="text-center">
+                                    <div class="d-flex flex-column align-items-center justify-content-center">
+                                        <p class="fs-7">Status Pengajuan : <span
+                                                :class="transaction.locked_status === 1 ? 'text-info' : 'text-danger'"
+                                                x-text="transaction.locked_status === 1 ? `Sudah Diajukan (${transaction.created_by})` : 'Belum Diajukan'"></span>
+                                        </p>
+                                        <p class="fs-7">Status Konfirmasi : <span
+                                                :class="transaction.confirmation_status === 'Diproses'
+                                                        ? 'text-warning'
+                                                        : transaction.confirmation_status === 'Diterima' ? 'text-info'
+                                                        : 'text-danger'"
+                                                x-text="`${transaction.confirmation_status} (${transaction.confirmed_by})`"></span>
+                                        </p>
+                                        <template x-if="transaction.confirmation_status === 'Ditolak'">
+                                            <p class="fs-7">Alasan Ditolak : <span
+                                                    class="text-danger"
+                                                    x-text="`${transaction.confirmation_excuses}`"></span>
+                                            </p>
+                                        </template>
+                                        <p class="fs-7">Status Final : <span
+                                                :class="transaction.final_status === 'Diproses'
+                                                        ? 'text-warning'
+                                                        : transaction.final_status === 'Diterima' ? 'text-info'
+                                                        : transaction.final_status === 'Ditolak' ? 'text-info'
+                                                        : 'text-danger'"
+                                                x-text="`${transaction.final_status} `"></span>
+                                        </p>
+
+                                    </div>
+                                </td>
+                                <template x-if="Number(editPermission) === 1">
+                                    <td>
+                                        <div
+                                            class="d-flex flex-column align-items-center justify-content-center">
+                                            <template x-if="transaction.locked_status === 0">
+                                                <button class="btn btn-light-primary btn-sm mb-4"
+                                                        @click="edit(transaction.id)"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modal-transactions">
+                                                    <i class="bi bi-pencil"></i> Ubah Data
+                                                </button>
+                                            </template>
+                                            <template x-if="transaction.locked_status === 0">
+                                                <button class="btn btn-light-info btn-sm mb-4"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
+                                                        @click="lockTransaction(transaction.id)"
+                                                        title="Kunci Transaksi">
+                                                    <i class="bi bi-lock"></i>
+                                                    Kunci Transaksi
+                                                </button>
+                                            </template>
+                                            <template
+                                                x-if="transaction.locked_status === 1 && Number(confirmPermission) === 1">
+                                                <button class="btn btn-light-success text-dark btn-sm mb-4"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modal-confirmation"
+                                                        @click="edit(transaction.id)"
+                                                        :disabled="transaction.confirmation_status === 'Diterima'">
+                                                    <i class="bi bi-check-circle-fill"></i>
+                                                    Konfirmasi Transaksi
+                                                </button>
+                                            </template>
+                                        </div>
+                                    </td>
+                                </template>
+                            </tr>
+                        </template>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-danger">Note : Akun berwarna biru debet,merah kredit</span>
+                    <ul class="pagination float-end mb-4 mt-4">
+                        <template x-for="pagination in transactions.links">
+                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                        x-html="pagination.label">
+                                </button>
+                            </li>
+                        </template>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -232,6 +260,8 @@
                 formDelete: document.getElementById('form-delete'),
                 formConfirm: document.getElementById('form-confirmation'),
                 modalConfirm: new bootstrap.Modal(document.getElementById('modal-confirmation')),
+                formFinalApprove: document.getElementById('form-final-approve'),
+                finalApproveModal: new bootstrap.Modal(document.getElementById('modal-final-approve')),
                 async init() {
                     await this.getTransactions();
                     await this.getMainBranches();
@@ -571,6 +601,21 @@
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formConfirm.reset();
                         this.modalConfirm.hide();
+                        await this.getTransactions();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async saveFinalApprove() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/transactions/final-status`, new FormData(this.formFinalApprove))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.formFinalApprove.reset();
+                        this.modalFinalApprove.hide();
                         await this.getTransactions();
                     } catch (error) {
                         const respError = error.response.data.errors;

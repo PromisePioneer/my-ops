@@ -11,6 +11,7 @@ class AccountTransactionService
         string $description,
         ?int $accountId,
         float|int $amount,
+        $transactionId = null
     ): void {
         AccountTransaction::create([
             'date' => date('y-m-d'),
@@ -28,6 +29,7 @@ class AccountTransactionService
         string $description,
         ?int $accountId,
         float|int $amount,
+        $transactionId = null
     ): void {
         AccountTransaction::create([
             'branch_id' => $branchId,

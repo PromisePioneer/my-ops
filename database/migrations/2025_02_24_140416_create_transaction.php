@@ -30,16 +30,21 @@ return new class extends Migration {
             $table->foreignId('credit_account_id')
                 ->constrained('accounts')
                 ->cascadeOnDelete();
-            $table->boolean('locked_status')->default(false);
+            $table->boolean('locked_status')
+                ->default(false);
             $table->foreignId('created_by')
                 ->constrained('users')
                 ->cascadeOnDelete();
-            $table->enum('confirmation_status', ['Diterima', 'Revisi', 'Diproses'])->default('Diproses');
+            $table->enum('confirmation_status', ['Diterima', 'Revisi', 'Diproses', 'Ditolak'])
+                ->default('Diproses');
             $table->foreignId('confirmed_by')
                 ->nullable()
-                ->constrained('users')
-                ->cascadeOnDelete();
-            $table->text('reason')->nullable();
+                ->constrained('users');
+            $table->text('confirmation_excuses')
+                ->nullable();
+            $table->text('final_excuses')->nullable();
+            $table->enum('final_status', ['Diterima', 'Ditolak', 'Pending'])->default('Pending');
+            $table->foreignId('approved_by')->nullable()->constrained('users');
             $table->timestamps();
         });
     }

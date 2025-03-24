@@ -29,7 +29,11 @@ class Transaction extends Model
         'created_by',
         'confirmation_status',
         'confirmed_by',
-        'reason',
+        'excuses',
+        'final_status',
+        'approved_by',
+        'final_excuses',
+        'confirmation_excuses'
     ];
 
 
@@ -60,9 +64,19 @@ class Transaction extends Model
         return $this->belongsTo(ItemCollection::class, 'item_id');
     }
 
-    public function user(): BelongsTo
+    public function confirmedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'confirmed_by');
+    }
+
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function approvedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
 

@@ -15,6 +15,7 @@ class AccountTransaction extends Model
     protected $table = 'account_transactions';
     protected $fillable = [
         'branch_id',
+        'transaction_id',
         'date',
         'account_id',
         'description',

@@ -15,6 +15,10 @@ class CreateAccountTransactions extends Migration
     {
         Schema::create('account_transactions', static function (Blueprint $table) {
             $table->id();
+            $table->foreignId('transaction_id')
+                ->nullable()
+                ->constrained('transactions')
+                ->cascadeOnDelete();
             $table->foreignId('branch_id')->nullable()->constrained('branches');
             $table->date('date');
             $table->foreignId('account_id')->nullable()->constrained('accounts');
