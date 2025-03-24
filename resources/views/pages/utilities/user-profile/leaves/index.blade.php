@@ -129,6 +129,10 @@
                     await this.getOwnLeaves();
                     await this.getLeavesLeft();
                 },
+                add() {
+                    this.form.reset();
+                    this.editVal = '';
+                },
                 async getLeavesLeft() {
                     try {
                         const resp = await axios.get('/manage-users/leaves/leaves-left', {
@@ -176,7 +180,6 @@
                     this.buttonLoading = true;
                     try {
                         if (!id) {
-
                             await axios.post('/manage-users/leaves/', new FormData(this.form))
                                 .then(async () => {
                                     await this.successResponse();
