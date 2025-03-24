@@ -26,6 +26,7 @@ class LeaveACLFilter
                     'Branch Manager',
                     'Operational Manager',
                     'FA & Tax Manager',
+                    'NOC Supervisor',
                 ]);
             });
         }

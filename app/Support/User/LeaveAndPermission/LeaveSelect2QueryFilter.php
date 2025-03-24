@@ -23,6 +23,7 @@ class LeaveSelect2QueryFilter
                     'Branch Manager',
                     'Operational Manager',
                     'FA & Tax Manager',
+                    'NOC Supervisor',
                 ]);
             });
         }
