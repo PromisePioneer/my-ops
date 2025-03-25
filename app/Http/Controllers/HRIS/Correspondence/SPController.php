@@ -135,13 +135,13 @@ use Throwable;
      */
     public function selectedUserdata(SP $sp): JsonResponse
     {
-        $this->authorize('update', SP::class);
+        $this->authorize('update', $sp);
         return response()->json($this->user->getSelectedData($sp->user_id));
     }
 
     public function selectedPunishedBy(Sp $sp): JsonResponse
     {
-        $this->authorize('update', SP::class);
+        $this->authorize('update', $sp);
         return response()->json($this->user->getSelectedData($sp->punished_by));
     }
 
@@ -150,13 +150,13 @@ use Throwable;
      */
     public function edit(SP $sp): View
     {
-        $this->authorize('update', SP::class);
+        $this->authorize('update', $sp);
         return view('pages.manage-users.sp.edit', compact('sp'));
     }
 
     public function getListOfReason(SP $sp): JsonResponse
     {
-        $this->authorize('update', SP::class);
+        $this->authorize('update', $sp);
         $listOfReason = json_decode($sp->list_of_reason);
         return response()->json($listOfReason);
     }
