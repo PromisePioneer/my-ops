@@ -3,48 +3,47 @@
 @section('content')
     @push('styles')
         <style>
-            .wrapper {
-                overflow-x: scroll;
-                width: 100%;
-            }
-
             table {
-                table-layout: fixed;
+                table-layout: auto;
                 width: 100%;
                 border-collapse: collapse;
                 background: white;
             }
 
-            tr {
-                border-top: 1px solid #ccc;
-            }
-
-            td, th {
-                vertical-align: top;
-                text-align: left;
-                width: 150px;
+            tr th, td {
+                text-align: center;
                 padding: 5px;
-            }
-
-            .fix {
-                position: sticky;
-                background: white;
+                min-width: 100px; /* Reduce the minimum width */
+                white-space: nowrap; /* Prevents text wrapping */
             }
 
             .fix:first-child {
+                position: sticky;
                 left: 0;
                 width: 180px;
             }
 
             .fix:last-child {
+                position: sticky;
                 right: 0;
                 width: 120px;
             }
+
+            .wrapper {
+                overflow-x: hidden; /* Prevent horizontal scrolling */
+            }
+
+            .table-responsive {
+                overflow-x: auto;
+                max-width: 100%;
+            }
+
+
         </style>
     @endpush
     <div x-data="employeeScheduleData()">
         @include('pages.adms.employee-schedules.modal.create')
-        <div class="card card-xl-stretch mb-5 mb-xl-8">
+        <div class="card card-xl-stretch">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -77,90 +76,97 @@
             </div>
             <div class="card-body py-3">
                 <div class="py-5">
-                    <div id="table-scroll" class="table-scroll">
-                        <div class="table-responsive">
-                            <table class="table align-middle gy-5 table-scroll fs-6">
-                                <thead>
-                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                    <th class="min-w-100px bg-light border border-black px-5 text-white fix">
-                                    </th>
-                                    <template x-if="employeeSchedules?.data.length > 0">
-                                        <template x-for="date in employeeSchedules?.data[0].date"
-                                                  :key="date.period_date">
-                                            <th class="min-w-50px bg-light text-center text-black border border-black"
-                                                x-text="formatDate(date.period_date)">
-                                            </th>
-                                        </template>
+                    <div class="table-responsive">
+                        <table class="table fs-6">
+                            <thead>
+                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                <th class="bg-light border border-black px-5 text-dark fix">Nama</th>
+                                <template x-if="employeeSchedules?.data.length > 0">
+                                    <template x-for="date in employeeSchedules?.data[0].date" :key="date.period_date">
+                                        <th class=" bg-light text-center text-black border border-black"
+                                            x-text="formatDate(date.period_date)">
+                                        </th>
                                     </template>
-                                </tr>
-                                </thead>
-                                <template x-if="isLoading">
-                                    <tbody class="fw-bold">
-                                    <tr>
-                                        <td colspan="6">
-                                            <div style="text-align: center;">
-                                                <div class="spinner-border" role="status">
-                                                    <span class="visually-hidden">Loading...</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    </tbody>
                                 </template>
-                                <template x-for="employeeSchedule in employeeSchedules?.data"
-                                          :key="employeeSchedule.id">
-                                    <tbody class="fw-bold">
-                                    <tr>
-                                        <td class="bg-dark border border-black text-white px-2 fix"
-                                            x-text="employeeSchedule?.name"></td>
-                                        <template x-for="dates in employeeSchedule?.date">
-                                            <td :class="`${dates.leaves?.status === 'Cuti' ? 'text-center border border-black text-black bg-warning' : dates.leaves?.status === 'Izin' ? 'text-center border border-black text-black bg-warning' : dates.leaves?.status === 'Sakit' ? 'text-center border border-black text-black bg-warning' : dates.schedules_date?.status === 'L' || dates.schedules_date?.is_holiday  ? 'text-center border border-black text-black bg-warning' : dates.schedules_date?.status === 'H' ? 'text-center border border-black text-white bg-info' : 'text-center border border-black text-white' }`">
-                                                <template x-if="dates.leaves?.status === 'Izin'">
-                                                    <div class="text-black text-uppercase">
-                                                        <span>Izin</span>
-                                                    </div>
-                                                </template>
-                                                <template x-if="dates.leaves?.status === 'Sakit'">
-                                                    <div class="text-black text-uppercase">
-                                                        <span>Sakit</span>
-                                                    </div>
-                                                </template>
-                                                <template x-if="dates.leaves?.status === 'Cuti'">
-                                                    <div class="text-black text-uppercase pt-3">
-                                                        <span>Cuti</span>
-                                                    </div>
-                                                </template>
-                                                <template x-if="!dates.leaves && !dates.permission && !dates.sick">
-                                                    <div>
-                                                        <button type="button"
-                                                                class="btn btn-link text-decoration-underline"
-                                                           data-bs-toggle="modal"
-                                                                data-bs-target="#modal-create"
-                                                                :disabled="Number(createPermission) !== 1"
-                                                           :class="`${dates.schedules_date?.status === 'L'  || dates.schedules_date?.is_holiday ? 'text-black fw-bolder text-uppercase' : dates.schedules_date?.status === 'H' ? 'text-white fw-bolder text-uppercase' : 'text-black'}`"
-                                                                @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.period_dates ??  dates.period_date )"
-                                                        >
-                                                            <span
-                                                                x-text="`${dates.schedules_date?.status === 'L' || dates.schedules_date?.is_holiday ? '(Libur)' : dates.schedules_date?.status === 'H' ? '(Hadir)' : ''}`">
+                            </tr>
+                            </thead>
+                            <template x-if="isLoading">
+                                <tbody class="fw-bold">
+                                <tr>
+                                    <td colspan="6">
+                                        <div style="text-align: center;">
+                                            <div class="spinner-border" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </template>
+                            <template x-for="employeeSchedule in employeeSchedules?.data"
+                                      :key="employeeSchedule.id">
+                                <tbody class="fw-bold">
+                                <tr>
+                                    <td class="bg-dark border border-black text-white px-2 fix"
+                                        x-text="employeeSchedule?.name"></td>
+                                    <template x-for="dates in employeeSchedule?.date">
+                                        <td :class="`${dates.leaves || dates.sick || dates.permission ? 'text-center border border-black text-black bg-warning' : dates.schedules_date?.status === 'L' || dates.schedules_date?.is_holiday  ? 'text-center border border-black text-black bg-warning' : dates.schedules_date?.status === 'H' ? 'text-center border border-black text-white bg-info' : 'text-center border border-black text-white' }`">
+                                            <div>
+                                                <template
+                                                    x-if="!dates.leaves && !dates.sick && !dates.permission">
+                                                    <button type="button"
+                                                            class="btn btn-link text-decoration-underline"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#modal-create"
+                                                            :disabled="Number(createPermission) !== 1"
+                                                            :class="`${dates.schedules_date?.status === 'L'  || dates.schedules_date?.is_holiday ? 'text-black fw-bolder text-uppercase' : dates.schedules_date?.status === 'H' ? 'text-white fw-bolder text-uppercase' : 'text-black'}`"
+                                                            @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.period_dates ??  dates.period_date )"
+                                                    >
+
+                                                        <span x-text="dates.work_time_schedules"></span>
+
+                                                        <span
+                                                            x-text="`${dates.schedules_date?.status === 'L' || dates.schedules_date?.is_holiday ? '(L)' : dates.schedules_date?.status === 'H' ? '(H)' : ''}`">
                                                             </span>
 
-                                                            <template
-                                                                x-if="!dates?.work_time_schedules && !dates.schedules_date?.is_holiday">
+
+                                                        <template
+                                                            x-if="!dates?.work_time_schedules && !dates.schedules_date?.is_holiday">
                                                             <span>
                                                                 <i class="fas fa-add text-danger"></i>
                                                                 Tambah
                                                             </span>
-                                                            </template>
-                                                        </button>
-                                                    </div>
+                                                        </template>
+                                                    </button>
                                                 </template>
-                                            </td>
-                                        </template>
-                                    </tr>
-                                    </tbody>
-                                </template>
-                            </table>
-                        </div>
+                                            </div>
+                                            <div>
+                                                <template x-if="dates.leaves">
+                                                    <button type="button" class="btn text-decoration-underline fw-bolder">
+                                                        CUTI
+                                                    </button>
+                                                </template>
+                                            </div>
+                                            <div>
+                                                <template x-if="dates.sick">
+                                                    <button type="button" class="btn text-decoration-underline fw-bolder">
+                                                        SAKIT
+                                                    </button>
+                                                </template>
+                                            </div>
+                                            <div>
+                                                <template x-if="dates.permission">
+                                                    <button type="button" class="btn text-decoration-underline fw-bolder">
+                                                        IZIN
+                                                    </button>
+                                                </template>
+                                            </div>
+                                        </td>
+                                    </template>
+                                </tr>
+                                </tbody>
+                            </template>
+                        </table>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -315,7 +321,7 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `select2/selected-work-time/${this.schedulesValue.work_time_id}`,
+                        url: `/select2/selected-work-time/${this.schedulesValue.work_time_id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedWorkTime.append(option).trigger('change').trigger({

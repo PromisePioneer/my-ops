@@ -5,7 +5,6 @@ namespace App\Support\Attendances\EmployeeSchedule;
 use AllowDynamicProperties;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
-use App\Models\WeekHoliday;
 use App\Support\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -56,22 +55,26 @@ use Illuminate\Support\Collection;
         }
 
         $data = $user->paginate(self::$perPage);
-        return self::formattedData($data, $startDate, $endDate);
+        return self::formattedData($data);
     }
 
-    public function filterByDate($request, $startDate, $endDate)
+    public function filterByDate($request)
     {
         $user = EmployeeScheduleACLFilter::apply($this->query(), $request);
         $data = $user->paginate(self::$perPage);
-        return self::formattedData($data, $startDate, $endDate);
+        return self::formattedData($data);
     }
 
 
     public function formattedData($userData)
     {
+
+
         $period = CarbonPeriod::create($this->startDate, $this->endDate);
         $data = $userData->getCollection()->map(function ($item) use ($period) {
-            $allSchedules = $item->employeeSchedules->whereBetween('start_date', [$this->startDate, $this->endDate])->keyBy('start_date');
+            $allSchedules = $item->employeeSchedules
+                ->whereBetween('start_date', [$this->startDate->format('Y-m-d'), $this->endDate->format('Y-m-d')])
+                ->keyBy('start_date');
             $getLeaves = $this->getLeaves($item);
             $getSick = $this->getSick($item);
             $getPermission = $this->getPermission($item);
@@ -82,9 +85,10 @@ use Illuminate\Support\Collection;
                 $leaveDetails = $getLeaves[$formattedDate] ?? null;
                 $sickDetails = $getSick[$formattedDate] ?? null;
                 $permissionDetails = $getPermission[$formattedDate] ?? null;
+                $employeeSchedule = $allSchedules[$formattedDate] ?? null;
                 $dates[$formattedDate] = [
                     'periodDate' => $formattedDate,
-                    'employeeSchedules' => $allSchedules->get($formattedDate),
+                    'employeeSchedules' => $employeeSchedule,
                     'leaves' => $leaveDetails,
                     'sick' => $sickDetails,
                     'permission' => $permissionDetails,
@@ -96,13 +100,9 @@ use Illuminate\Support\Collection;
                 'name' => $item->name,
                 'absent_id' => $item->absent_id,
                 'date' => collect($dates)->map(function ($date) use ($item) {
-                    $weekHoliday = $date['employeeSchedules'];
-                    if (empty($weekHoliday)) {
-                        $weekHoliday = WeekHoliday::where('user_id', $item->id)->where('day', Carbon::parse($date['periodDate'])->dayName)->first();
-                    }
                     return [
                         'period_date' => $date['periodDate'],
-                        'schedules_date' => $weekHoliday,
+                        'schedules_date' => $date['employeeSchedules'],
                         'work_time_schedules' => $date['employeeSchedules']?->workTime?->name,
                         'sick' => $date['sick'] ?? null,
                         'permission' => $date['permission'] ?? null,
