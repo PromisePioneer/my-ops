@@ -105,7 +105,7 @@ use function App\Helper\convertToRoman;
                 'end_date' => $endDate,
                 'user_id' => $request->user_id,
                 'sp_number' => $this->generateSpNumber($request),
-                'sp_type' => $request->sp_type,
+                'sp_type' => $request->input('sp_type'),
                 'created_by' => $request->user()->id,
                 'list_of_reason' => json_encode($request['data']),
                 'punished_by' => $request->punished_by
