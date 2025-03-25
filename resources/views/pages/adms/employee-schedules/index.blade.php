@@ -215,14 +215,20 @@
                 async getEmployeeSchedules() {
                     const start_date = document.getElementById('start_dates')?.value ?? null;
                     const end_date = document.getElementById('end_date')?.value ?? null;
-
-                    const resp = await axios.get('/adms/employee-schedules/data', {
-                        params: {
-                            startDate: start_date,
-                            endDate: end_date
-                        }
-                    });
-                    this.employeeSchedules = resp.data
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/adms/employee-schedules/data', {
+                            params: {
+                                startDate: start_date,
+                                endDate: end_date
+                            }
+                        });
+                        this.employeeSchedules = resp.data
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false
+                    }
                 },
                 async filterByDate() {
                     const startDate = document.getElementById('start_dates')?.value ?? null;
