@@ -12,6 +12,7 @@ use App\Support\Transactions\TransactionService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Throwable;
 
@@ -117,12 +118,19 @@ use Throwable;
 
     /**
      * @throws AuthorizationException
+     * @throws Throwable
      */
     public function destroy(Request $request, Transaction $transaction): JsonResponse
     {
-        $implodeID = implode(',', $request->get('id'));
-        $explodeID = explode(',', $implodeID);
-        $transaction->whereIn('id', $explodeID)->delete();
+        DB::transaction(function () use ($request, $transaction) {
+            $implodeID = implode(',', $request->get('id'));
+            $explodeID = explode(',', $implodeID);
+
+            AccountTransaction::whereIn('transaction_id', $explodeID)->delete();
+            Stock::whereIn('transaction_id', $explodeID)->delete();
+
+            $transaction->whereIn('id', $explodeID)->delete();
+        });
         return response()->json([
             'message' => 'data berhasil dihapus'
         ]);
