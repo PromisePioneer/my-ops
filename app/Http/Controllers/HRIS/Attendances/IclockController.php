@@ -8,8 +8,6 @@ use App\Models\FingerLog;
 use App\Support\Attendances\IclockService;
 use App\Support\FpDeviceCommandService;
 use Illuminate\Http\Request;
-use Jmrashed\Zkteco\Lib\ZKTeco;
-use MehediJaman\LaravelZkteco\LaravelZkteco;
 use Throwable;
 
 #[AllowDynamicProperties] class IclockController extends Controller
@@ -25,14 +23,6 @@ use Throwable;
         $this->FpDeviceCommandService = new FpDeviceCommandService();
     }
 
-
-    public function getAttendanceViaPushSDK()
-    {
-        $zk = new LaravelZkteco('103.102.248.163', '4370');
-        $zk->connect();
-        dd($zk->getAttendance());
-        $zk->disconnect();
-    }
 
     public function getRequest(Request $request): string
     {

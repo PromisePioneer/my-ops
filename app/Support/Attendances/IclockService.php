@@ -163,19 +163,13 @@ class IclockService
         $date = Carbon::parse($attendanceData['timestamp']);
 
 
-        if ($attendanceData['status1'] == 0) {
-            $this->processCheckIn($attendanceData, $shift, $date, $date);
-        } elseif ($attendanceData['status1'] == 1) {
-            $this->processCheckOut($attendanceData, $shift, $date, $date);
-        }
+        $this->processCheckIn($attendanceData, $shift, $date, $date);
+        $this->processCheckOut($attendanceData, $shift, $date, $date);
 
     }
 
     private function processCheckIn(array $attendanceData, $shift, string $date): void
     {
-//        dd($date);
-
-
         if ($shift->workTime) {
             $startDateEmpSchedule = $shift->start_date ? Carbon::make($shift->start_date)->format('Y-m-d') : null;
             $endDateEmpSchedule = $shift->end_date ? Carbon::make($shift->end_date)->format('Y-m-d') : null;
@@ -216,9 +210,8 @@ class IclockService
         }
 
 
-
+        Attendances::create($attendanceData);
         if ($this->isValidTimeCheckOut($time, $shiftTimeToCheckOut ?? $shift->time_to_checkout, $shiftEndTimeToCheckOut ?? $shift->end_time_to_checkout, $shift?->name, $attendanceData['employee_id'])) {
-            Attendances::create($attendanceData);
         }
     }
 

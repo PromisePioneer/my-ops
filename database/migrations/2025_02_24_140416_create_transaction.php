@@ -35,15 +35,9 @@ return new class extends Migration {
             $table->foreignId('created_by')
                 ->constrained('users')
                 ->cascadeOnDelete();
-            $table->enum('confirmation_status', ['Diterima', 'Revisi', 'Diproses', 'Ditolak'])
+            $table->enum('status', ['Diterima', 'Revisi', 'Ditolak', 'Diproses'])
                 ->default('Diproses');
-            $table->foreignId('confirmed_by')
-                ->nullable()
-                ->constrained('users');
-            $table->text('confirmation_excuses')
-                ->nullable();
-            $table->text('final_excuses')->nullable();
-            $table->enum('final_status', ['Diterima', 'Ditolak', 'Pending'])->default('Pending');
+            $table->string('final_notes')->nullable();
             $table->foreignId('approved_by')->nullable()->constrained('users');
             $table->timestamps();
         });

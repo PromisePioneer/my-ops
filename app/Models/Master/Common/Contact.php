@@ -70,6 +70,7 @@ class Contact extends Model
         return [
             'id' => $contact->id,
             'name' => $contact->pic_name . ' - ' . $contact->company_name,
+            'company_name' => $contact->company_name
         ];
     }
 }

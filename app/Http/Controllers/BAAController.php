@@ -35,7 +35,7 @@ use Spatie\Browsershot\Browsershot;
     public function index(): View
     {
         $this->authorize('viewAny', BAA::class);
-        return view('pages.transaction.baa.index');
+        return view('pages.transaction.income-transactions.baa.index');
     }
 
 
@@ -83,7 +83,7 @@ use Spatie\Browsershot\Browsershot;
     public function create(): View
     {
         $this->authorize('create', BAA::class);
-        return view('pages.transaction.baa.create');
+        return view('pages.transaction.income-transactions.baa.create');
     }
 
 
@@ -115,7 +115,7 @@ use Spatie\Browsershot\Browsershot;
 
         $serviceCategory = implode(',', $fab);
 
-        return view('pages.transaction.baa.detail', compact('baa', 'serviceCategory'));
+        return view('pages.transaction.income-transactions.baa.detail', compact('baa', 'serviceCategory'));
     }
 
     /**
@@ -124,7 +124,7 @@ use Spatie\Browsershot\Browsershot;
     public function edit(BAA $baa): View
     {
         $this->authorize('update', $baa);
-        return view('pages.transaction.baa.edit', compact('baa'));
+        return view('pages.transaction.income-transactions.baa.edit', compact('baa'));
     }
 
     /**
@@ -167,7 +167,7 @@ use Spatie\Browsershot\Browsershot;
     public function exportPDF(BAA $baa): Response
     {
         $this->authorize('print', $baa);
-        $view = view('pages.transaction.baa.export-pdf', compact('baa'))->render();
+        $view = view('pages.transaction.income-transactions.baa.export-pdf', compact('baa'))->render();
         $pdf = Browsershot::html($view)
             ->setChromePath('/usr/bin/chromium')
             ->noSandbox()
@@ -241,7 +241,7 @@ use Spatie\Browsershot\Browsershot;
     {
         $this->authorize('printSPK', $baa);
         $spk = SPK::where('baa_id', $baa->id)->first();
-        $view = view('pages.transaction.baa.spk.export-pdf', compact('baa', 'spk'))->render();
+        $view = view('pages.transaction.income-transactions.baa.spk.export-pdf', compact('baa', 'spk'))->render();
         $pdf = Browsershot::html($view)
             ->setChromePath('/usr/bin/chromium')
             ->noSandbox()

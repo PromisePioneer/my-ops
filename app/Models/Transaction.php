@@ -27,8 +27,6 @@ class Transaction extends Model
         'credit_account_id',
         'locked_status',
         'created_by',
-        'confirmation_status',
-        'confirmed_by',
         'excuses',
         'final_status',
         'approved_by',
@@ -62,11 +60,6 @@ class Transaction extends Model
     public function item(): BelongsTo
     {
         return $this->belongsTo(ItemCollection::class, 'item_id');
-    }
-
-    public function confirmedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'confirmed_by');
     }
 
     public function createdBy(): BelongsTo

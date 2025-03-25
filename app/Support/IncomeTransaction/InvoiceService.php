@@ -2,7 +2,7 @@
 
 namespace App\Support\IncomeTransaction;
 
-use App\Http\Requests\Transaction\Invoice\InvoiceRequest;
+use App\Http\Requests\Transaction\IncomeTransactions\Invoice\InvoiceRequest;
 use App\Models\Account;
 use App\Models\AccountTransaction;
 use App\Models\Invoice;
