@@ -125,8 +125,8 @@ Route::group(['middleware' => ['auth']], static function () {
 
     Route::prefix('/transactions')->group(function () {
         Route::get('/', [TransactionController::class, 'index']);
-        Route::post('/destroy', [TransactionController::class, 'destroy']);
         Route::post('/final-status', [TransactionController::class, 'finalStatus']);
+        Route::post('/destroy', [TransactionController::class, 'destroy']);
         Route::get('/data', [TransactionController::class, 'data']);
         Route::get('/filter', [TransactionController::class, 'filter']);
         Route::get('/search', [TransactionController::class, 'search']);

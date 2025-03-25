@@ -40,8 +40,9 @@
                 <div class="py-5">
                     <div class="d-flex align-items-center">
                         <div>
-                            <form id="form-approve" @submit.prevent="destroy()" class="me-2">
-                                <button type="button" class="btn btn-light-danger btn-sm mt-5"
+                            <form id="form-delete" @submit.prevent="destroy()" class="me-2">
+                                <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                                <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                         x-show="selectedCheckBox.length > 0"
                                         x-transition x-cloak>
                                     <i class="ki-duotone ki-trash-square fs-2">
@@ -109,7 +110,8 @@
                         <template x-for="(transaction, index) in transactions?.data" :key="transaction.id">
                             <tr>
                                 <td>
-                                    <template x-if="transaction.confirmation_status === 'Diterima' && !transaction.final_status === 'Diproses'">
+                                    <template
+                                        x-if="transaction.confirmation_status === 'Diterima' && transaction.final_status === 'Pending'">
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
                                             <input class="form-check-input" type="checkbox"
@@ -119,6 +121,7 @@
                                         </div>
                                     </template>
                                 </td>
+
                                 <td class="text-center">
                                     <div class="d-flex flex-column">
                                         <span x-text="`Transaksi ${transaction.type}`"></span>
@@ -395,6 +398,7 @@
                     await this.selectedCreditAccount();
                 },
                 async destroy() {
+                    console.log(this.selectedCheckBox);
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
                             await axios.post(`/transactions/destroy`, new FormData(this.formDelete));
@@ -641,7 +645,7 @@
                     } finally {
                         this.buttonLoading = false;
                     }
-                }
+                },
             }
         }
     </script>
