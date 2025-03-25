@@ -21,6 +21,7 @@ class AccountTransactionService
             'transaction_type' => 'TR',
             'entries_type' => 'debit',
             'amount' => $amount,
+            'transaction_id' => $transactionId
         ]);
     }
 
@@ -39,6 +40,7 @@ class AccountTransactionService
             'transaction_type' => 'TR',
             'entries_type' => 'credit',
             'amount' => $amount,
+            'transaction_id' => $transactionId
         ]);
     }
 

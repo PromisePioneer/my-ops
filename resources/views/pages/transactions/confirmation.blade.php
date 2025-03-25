@@ -24,7 +24,8 @@
 
                     <div class="row mb-10">
                         <label class="form-label required">Alasan</label>
-                        <textarea name="reason" id="reason" class="form-control form-control-solid"
+                        <textarea name="confirmation_excuses" id="confirmation_excuses"
+                                  class="form-control form-control-solid"
                                   data-kt-autosize="true"></textarea>
                     </div>
 

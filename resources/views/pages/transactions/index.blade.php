@@ -109,7 +109,7 @@
                         <template x-for="(transaction, index) in transactions?.data" :key="transaction.id">
                             <tr>
                                 <td>
-                                    <template x-if="transaction.confirmation_status === 'Diterima'">
+                                    <template x-if="transaction.confirmation_status === 'Diterima' && !transaction.final_status === 'Diproses'">
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
                                             <input class="form-check-input" type="checkbox"
@@ -142,32 +142,50 @@
                                 <td class="text-center" x-text="transaction.detail"></td>
                                 <td class="text-center">
                                     <div class="d-flex flex-column align-items-center justify-content-center">
-                                        <p class="fs-7">Status Pengajuan : <span
+                                        <p class="fs-7">Status Transaksi : <span
                                                 :class="transaction.locked_status === 1 ? 'text-info' : 'text-danger'"
-                                                x-text="transaction.locked_status === 1 ? `Sudah Diajukan (${transaction.created_by})` : 'Belum Diajukan'"></span>
+                                                x-text="transaction.locked_status === 1 ? `Terkunci (${transaction.created_by})` : 'Belum Dikunci'"></span>
                                         </p>
-                                        <p class="fs-7">Status Konfirmasi : <span
-                                                :class="transaction.confirmation_status === 'Diproses'
+                                        <p class="fs-7">Dibuat Oleh : <span
+                                                x-text="`${transaction.created_by}`"></span>
+                                        </p>
+                                        <template x-if="transaction.locked_status === 1">
+                                            <p class="fs-7">Status Konfirmasi : <span
+                                                    :class="transaction.confirmation_status === 'Diproses'
                                                         ? 'text-warning'
                                                         : transaction.confirmation_status === 'Diterima' ? 'text-info'
                                                         : 'text-danger'"
-                                                x-text="`${transaction.confirmation_status} (${transaction.confirmed_by})`"></span>
-                                        </p>
-                                        <template x-if="transaction.confirmation_status === 'Ditolak'">
-                                            <p class="fs-7">Alasan Ditolak : <span
+                                                    x-text="transaction.confirmation_status"></span>
+
+                                            </p>
+                                        </template>
+                                        <template
+                                            x-if="transaction.confirmation_status === 'Diterima' || transaction.confirmation_status === 'Ditolak'">
+                                            <p class="fs-7">Dikonfirmasi Oleh : <span
+                                                    x-text="`${transaction.confirmed_by}`"></span>
+                                            </p>
+                                        </template>
+                                        <template x-if="transaction.confirmation_status === 'Revisi'">
+                                            <p class="fs-7">Alasan Revisi : <span
                                                     class="text-danger"
                                                     x-text="`${transaction.confirmation_excuses}`"></span>
                                             </p>
                                         </template>
-                                        <p class="fs-7">Status Final : <span
-                                                :class="transaction.final_status === 'Diproses'
-                                                        ? 'text-warning'
-                                                        : transaction.final_status === 'Diterima' ? 'text-info'
-                                                        : transaction.final_status === 'Ditolak' ? 'text-info'
-                                                        : 'text-danger'"
-                                                x-text="`${transaction.final_status} `"></span>
-                                        </p>
 
+                                        <template
+                                            x-if="transaction.final_status === 'Diterima' || transaction.final_status === 'Ditolak'">
+                                            <p class="fs-7">Status Final : <span
+                                                    :class="transaction.final_status === 'Diterima' ? 'text-info' : 'text-danger'"
+                                                    x-text="`${transaction.final_status}`"></span>
+                                            </p>
+                                        </template>
+                                        <template
+                                            x-if="transaction.final_status === 'Diterima' || transaction.final_status === 'Ditolak'">
+                                            <p class="fs-7">Alasan : <span
+                                                    :class="transaction.final_excuses === 'Diterima' ? 'text-info' : 'text-danger'"
+                                                    x-text="`${transaction.final_excuses}`"></span>
+                                            </p>
+                                        </template>
                                     </div>
                                 </td>
                                 <template x-if="Number(editPermission) === 1">
@@ -615,7 +633,7 @@
                         await axios.post(`/transactions/final-status`, new FormData(this.formFinalApprove))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formFinalApprove.reset();
-                        this.modalFinalApprove.hide();
+                        this.finalApproveModal.hide();
                         await this.getTransactions();
                     } catch (error) {
                         const respError = error.response.data.errors;

@@ -96,6 +96,7 @@ use function App\Helper\formatDate;
                 'confirmation_status' => $item->confirmation_status,
                 'confirmation_excuses' => $item->confirmation_excuses,
                 'final_status' => $item->final_status,
+                'final_excuses' => $item->final_excuses,
                 'confirmed_by' => $item->confirmedBy?->name,
                 'created_by' => $item->createdBy->name,
 

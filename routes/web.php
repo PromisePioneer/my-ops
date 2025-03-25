@@ -9,12 +9,12 @@ use App\Http\Controllers\Accounting\Journals\GeneralJournalController;
 use App\Http\Controllers\Accounting\Journals\GeneralLedgerController;
 use App\Http\Controllers\Accounting\Journals\IncomeStatementController;
 use App\Http\Controllers\Accounting\Journals\TrialBalanceController;
-use App\Http\Controllers\Accounting\Transaction\BastController;
-use App\Http\Controllers\Accounting\Transaction\ExpenditureController;
-use App\Http\Controllers\Accounting\Transaction\FabController;
-use App\Http\Controllers\Accounting\Transaction\InvoiceController;
-use App\Http\Controllers\Accounting\Transaction\OfferingLettersController;
-use App\Http\Controllers\Accounting\Transaction\PurchaseOrderController;
+use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\BastController;
+use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\ExpenditureController;
+use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\FabController;
+use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\InvoiceController;
+use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\OfferingLetterController;
+use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\PurchaseOrderController;
 use App\Http\Controllers\Accounting\VendorPayrollController;
 use App\Http\Controllers\AccountTransactionController;
 use App\Http\Controllers\Area\AreaController;
@@ -105,7 +105,6 @@ Route::get('/', function () {
     return redirect('home');
 });
 
-
 Auth::routes();
 
 
@@ -127,6 +126,7 @@ Route::group(['middleware' => ['auth']], static function () {
     Route::prefix('/transactions')->group(function () {
         Route::get('/', [TransactionController::class, 'index']);
         Route::post('/destroy', [TransactionController::class, 'destroy']);
+        Route::post('/final-status', [TransactionController::class, 'finalStatus']);
         Route::get('/data', [TransactionController::class, 'data']);
         Route::get('/filter', [TransactionController::class, 'filter']);
         Route::get('/search', [TransactionController::class, 'search']);
@@ -765,44 +765,44 @@ Route::group(['middleware' => ['auth']], static function () {
 
     Route::prefix('income-transactions')->group(function () {
         Route::prefix('offering-letters')->group(function () {
-            Route::get('/', [OfferingLettersController::class, 'index']);
-            Route::get('/data', [OfferingLettersController::class, 'data']);
-            Route::get('/branch/data', [OfferingLettersController::class, 'branchData']);
-            Route::get('filter/branch/data/{branch}', [OfferingLettersController::class, 'filterByBranch']);
-            Route::get('/search', [OfferingLettersController::class, 'search']);
-            Route::get('/create', [OfferingLettersController::class, 'create']);
-            Route::get('/contact/data', [OfferingLettersController::class, 'getContactData']);
-            Route::get('/service-categories/data', [OfferingLettersController::class, 'getServicesCategoriesData']);
-            Route::get('/unit-types/data', [OfferingLettersController::class, 'getUnitType']);
-            Route::get('/unit-types/selected/{offeringLetterProduct}', [OfferingLettersController::class, 'getSelectedUnitType']);
-            Route::get('/skl/data', [OfferingLettersController::class, 'getSKL']);
-            Route::get('/skl/selected/{offeringLetterServiceDescription}', [OfferingLettersController::class, 'getSelectedSKL']);
-            Route::post('/', [OfferingLettersController::class, 'store']);
-            Route::get('/users/data', [OfferingLettersController::class, 'getUserData']);
-            Route::get('/users/selected/{offeringLetter}', [OfferingLettersController::class, 'selectedUser']);
-            Route::post('/update/{offeringLetter}', [OfferingLettersController::class, 'update']);
-            Route::get('/view-file/{offeringLetter}', [OfferingLettersController::class, 'viewFile']);
-            Route::get('/detail/{offeringLetter}', [OfferingLettersController::class, 'show']);
-            Route::get('/edit/{offeringLetter}', [OfferingLettersController::class, 'edit']);
+            Route::get('/', [OfferingLetterController::class, 'index']);
+            Route::get('/data', [OfferingLetterController::class, 'data']);
+            Route::get('/branch/data', [OfferingLetterController::class, 'branchData']);
+            Route::get('filter/branch/data/{branch}', [OfferingLetterController::class, 'filterByBranch']);
+            Route::get('/search', [OfferingLetterController::class, 'search']);
+            Route::get('/create', [OfferingLetterController::class, 'create']);
+            Route::get('/contact/data', [OfferingLetterController::class, 'getContactData']);
+            Route::get('/service-categories/data', [OfferingLetterController::class, 'getServicesCategoriesData']);
+            Route::get('/unit-types/data', [OfferingLetterController::class, 'getUnitType']);
+            Route::get('/unit-types/selected/{offeringLetterProduct}', [OfferingLetterController::class, 'getSelectedUnitType']);
+            Route::get('/skl/data', [OfferingLetterController::class, 'getSKL']);
+            Route::get('/skl/selected/{offeringLetterServiceDescription}', [OfferingLetterController::class, 'getSelectedSKL']);
+            Route::post('/', [OfferingLetterController::class, 'store']);
+            Route::get('/users/data', [OfferingLetterController::class, 'getUserData']);
+            Route::get('/users/selected/{offeringLetter}', [OfferingLetterController::class, 'selectedUser']);
+            Route::post('/update/{offeringLetter}', [OfferingLetterController::class, 'update']);
+            Route::get('/view-file/{offeringLetter}', [OfferingLetterController::class, 'viewFile']);
+            Route::get('/detail/{offeringLetter}', [OfferingLetterController::class, 'show']);
+            Route::get('/edit/{offeringLetter}', [OfferingLetterController::class, 'edit']);
             Route::get(
                 '/get-selected-products/{offeringLetter}',
-                [OfferingLettersController::class, 'getOfferingLettersProduct']
+                [OfferingLetterController::class, 'getOfferingLettersProduct']
             );
             Route::get(
                 '/get-selected-offering-letters-service-description/{offeringLetter}',
-                [OfferingLettersController::class, 'getOfferingLetterDescription']
+                [OfferingLetterController::class, 'getOfferingLetterDescription']
             );
             Route::get(
                 '/get-selected-contact/{offeringLetter}',
-                [OfferingLettersController::class, 'getSelectedContact']
+                [OfferingLetterController::class, 'getSelectedContact']
             );
             Route::get(
                 '/get-selected-services/{offeringLetter}',
-                [OfferingLettersController::class, 'getOfferingLetterProductServices']
+                [OfferingLetterController::class, 'getOfferingLetterProductServices']
             );
-            Route::post('/confirm/{offeringLetter}', [OfferingLettersController::class, 'confirm']);
-            Route::delete('/{offeringLetter}', [OfferingLettersController::class, 'destroy']);
-            Route::get('/export-pdf/{offeringLetter}', [OfferingLettersController::class, 'exportToPDF']);
+            Route::post('/confirm/{offeringLetter}', [OfferingLetterController::class, 'confirm']);
+            Route::delete('/{offeringLetter}', [OfferingLetterController::class, 'destroy']);
+            Route::get('/export-pdf/{offeringLetter}', [OfferingLetterController::class, 'exportToPDF']);
         });
 
         Route::prefix('po')->group(function () {
