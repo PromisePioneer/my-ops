@@ -151,6 +151,9 @@
                 async init() {
                     await this.getShiftsData();
                 },
+                add() {
+                    this.editVal = '';
+                },
                 async searchData() {
                     this.isLoading = true;
                     try {
