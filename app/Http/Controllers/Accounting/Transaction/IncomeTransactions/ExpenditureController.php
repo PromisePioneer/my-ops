@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Accounting\Transaction;
+namespace App\Http\Controllers\Accounting\Transaction\IncomeTransactions;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Transaction\SubAccount;
-use App\Http\Requests\Transaction\Expenditure\ExpenditureRequest;
+use App\Http\Requests\Transaction\IncomeTransactions\Expenditure\ExpenditureRequest;
 use App\Models\Expenditure;
 use App\Models\Master\Common\Branch;
 use App\Support\ExpenditureServices;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Transaction\Expenditure;
+namespace App\Http\Requests\Transaction\IncomeTransactions\Expenditure;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

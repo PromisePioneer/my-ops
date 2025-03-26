@@ -2,7 +2,7 @@
 
 namespace App\Support;
 
-use App\Http\Requests\Transaction\Expenditure\ExpenditureRequest;
+use App\Http\Requests\Transaction\IncomeTransactions\Expenditure\ExpenditureRequest;
 use App\Models\Expenditure;
 use App\Support\AccountTransactions\AccountTransactionService;
 use Illuminate\Support\Facades\DB;
