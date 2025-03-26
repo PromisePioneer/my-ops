@@ -9,7 +9,7 @@
                 </div>
             </div>
 
-            <form id="form-work-time" @submit.prevent="update(editVal.id)">
+            <form id="form-work-time" @submit.prevent="save(editVal.id)">
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
