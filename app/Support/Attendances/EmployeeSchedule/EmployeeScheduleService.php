@@ -101,12 +101,11 @@ use Illuminate\Support\Collection;
                 'name' => $item->name,
                 'absent_id' => $item->absent_id,
                 'date' => collect($dates)->map(function ($date) use ($item) {
-                    $weekHoliday = WeekHoliday::where('user_id', $item->id)->where('day', Carbon::parse($date['periodDate'])->dayName)->first() ?? $date['employeeSchedules'];
-
-
+                    $weekHoliday = WeekHoliday::where('user_id', $item->id)->where('day', Carbon::parse($date['periodDate'])->dayName)->first();
                     return [
                         'period_date' => $date['periodDate'],
-                        'schedules_date' => $weekHoliday,
+                        'schedules_date' => $date['employeeSchedules'] ?? null,
+                        'is_holiday' => $date['employeeSchedules'] ? null : $weekHoliday?->is_holiday,
                         'work_time_schedules' => $date['employeeSchedules']?->workTime?->name,
                         'sick' => $date['sick'] ?? null,
                         'permission' => $date['permission'] ?? null,

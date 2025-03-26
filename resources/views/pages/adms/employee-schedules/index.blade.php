@@ -110,7 +110,7 @@
                                     <td class="bg-dark border border-black text-white px-2 fix"
                                         x-text="employeeSchedule?.name"></td>
                                     <template x-for="dates in employeeSchedule?.date">
-                                        <td :class="`${dates.leaves || dates.sick || dates.permission ? 'text-center border border-black text-black bg-warning' : dates.schedules_date?.status === 'L' || dates.schedules_date?.is_holiday  ? 'text-center border border-black text-black bg-warning' : dates.schedules_date?.status === 'H' ? 'text-center border border-black text-white bg-info' : 'text-center border border-black text-white' }`">
+                                        <td :class="`${dates.leaves || dates.sick || dates.permission ? 'text-center border border-black text-black bg-warning' : dates.schedules_date?.status === 'L' || dates.is_holiday  ? 'text-center border border-black text-black bg-warning' : dates.schedules_date?.status === 'H' ? 'text-center border border-black text-white bg-info' : 'text-center border border-black text-white' }`">
                                             <div>
                                                 <template
                                                     x-if="!dates.leaves && !dates.sick && !dates.permission">
@@ -119,19 +119,24 @@
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#modal-create"
                                                             :disabled="Number(createPermission) !== 1"
-                                                            :class="`${dates.schedules_date?.status === 'L'  || dates.schedules_date?.is_holiday ? 'text-black fw-bolder text-uppercase' : dates.schedules_date?.status === 'H' ? 'text-white fw-bolder text-uppercase' : 'text-black'}`"
+                                                            :class="`${dates.schedules_date?.status === 'L'  || dates.is_holiday ? 'text-black fw-bolder text-uppercase' : dates.schedules_date?.status === 'H' ? 'text-white fw-bolder text-uppercase' : 'text-black'}`"
                                                             @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.period_dates ??  dates.period_date )"
                                                     >
 
-                                                        <span x-text="dates.work_time_schedules"></span>
-
-                                                        <span
-                                                            x-text="`${dates.schedules_date?.status === 'L' || dates.schedules_date?.is_holiday ? '(L)' : dates.schedules_date?.status === 'H' ? '(H)' : ''}`">
-                                                            </span>
+                                                        <template
+                                                            x-if="dates.schedules_date?.status === 'H' && dates.is_holiday === null">
+                                                            <span
+                                                                x-text="`${dates.schedules_date?.work_time?.name} (HADIR)`"></span>
+                                                        </template>
 
 
                                                         <template
-                                                            x-if="!dates?.work_time_schedules && !dates.schedules_date?.is_holiday">
+                                                            x-if="dates.is_holiday === 1 || dates.schedules_date?.status === 'L'">
+                                                            <span >Libur</span>
+                                                        </template>
+
+                                                        <template
+                                                            x-if="!dates?.work_time_schedules && !dates.is_holiday && !dates.schedules_date">
                                                             <span>
                                                                 <i class="fas fa-add text-danger"></i>
                                                                 Tambah
