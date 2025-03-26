@@ -6,7 +6,6 @@ use App\Models\Attendances;
 use App\Models\AttendancesSummary;
 use App\Models\EmployeeSchedule;
 use App\Models\User;
-use App\Models\WeekHoliday;
 use App\Models\WorkTime;
 use Carbon\Carbon;
 
@@ -46,7 +45,7 @@ class AttendanceSummaryObserver
 
     private function getWorkTime(Attendances $attendances, User $user, Carbon $timestamp): ?WorkTime
     {
-        $isEngineer = $user->hasRole(['Engineer', 'Senior Engineer', 'KU Engineer', 'Quality Control Staff']) ? WorkTime::find(2) : null;
+        $isEngineer = $user->hasAnyRole(['Engineer', 'Senior Engineer', 'KU Engineer', 'Quality Control Staff', 'Warehouse Security']) ? WorkTime::find(2) : null;
 
         $userShift = null;
 
