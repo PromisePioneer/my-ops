@@ -1,12 +1,14 @@
 <div class="row mb-10">
-    <div class="col-md-6">
-        <label for="branch_id" class="required form-label">Cabang</label>
-        <select name="branch_id" id="selected-branch"
-                class="form-select form-select-solid main-branches-select2"
-                data-dropdown-parent="#modal-transactions">
-            <option></option>
-        </select>
-    </div>
+    @if(empty(Auth::user()->branch_id))
+        <div class="col-md-6">
+            <label for="branch_id" class="required form-label">Cabang</label>
+            <select name="branch_id" id="selected-branch"
+                    class="form-select form-select-solid main-branches-select2"
+                    data-dropdown-parent="#modal-transactions">
+                <option></option>
+            </select>
+        </div>
+    @endif
     <div class="col-md-6">
         <label for="date" class="required form-label">Tanggal</label>
         <input type="date" id="date" name="date" class="form-control-solid form-control date"
@@ -67,7 +69,7 @@
             Akun Kredit
         </label>
         <select name="credit_account_id" id="selected-credit-account"
-                class="form-select-solid form-select kas-accounts-select2"
+                class="form-select-solid form-select kas-and-leverage-accounts-select2"
                 data-dropdown-parent="#modal-transactions">
             <option></option>
         </select>

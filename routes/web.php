@@ -89,6 +89,7 @@ use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
 use App\Http\Controllers\WarehouseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Jmrashed\Zkteco\Lib\ZKTeco;
 
 /*
 |--------------------------------------------------------------------------
@@ -100,6 +101,15 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+
+Route::get('/test', function () {
+    $zk = new ZKTeco('103.177.218.152');
+    $connected = $zk->connect();
+    $attendanceLog = $zk->getAttendance();
+
+    dd($attendanceLog);
+});
 
 Route::get('/', function () {
     return redirect('home');
@@ -1271,7 +1281,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/goods-data', [ItemCollectionController::class, 'getGoods']);
         Route::get('/selected-item/{item}', [ItemCollectionController::class, 'selectedItem']);
         Route::get('/asset-accounts-data', [AccountController::class, 'assetAccounts']);
-        Route::get('/kas-accounts-data', [AccountController::class, 'kasAccounts']);
+        Route::get('/kas-and-leverages-accounts-data', [AccountController::class, 'kasAndLeverageAccounts']);
         Route::get('/stock-accounts-data', [AccountController::class, 'stockAccounts']);
     });
 

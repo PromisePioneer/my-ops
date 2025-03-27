@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 interface AccountRepositoryInterface
 {
-    public function getKasAccounts(Builder $query);
+    public function getKasAndLeverageAccounts(Builder $query);
 
     public function getAssetAccounts(Builder $query);
 }

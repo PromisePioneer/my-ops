@@ -110,8 +110,6 @@
                         <template x-for="(transaction, index) in transactions?.data" :key="transaction.id">
                             <tr>
                                 <td>
-                                    <template
-                                        x-if="transaction.confirmation_status === 'Diterima' && transaction.final_status === 'Pending'">
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
                                             <input class="form-check-input" type="checkbox"
@@ -119,7 +117,6 @@
                                                    :id="'checkbox-' + transaction.id"
                                                    :disabled="Number(destroyPermission) !== 1"/>
                                         </div>
-                                    </template>
                                 </td>
 
                                 <td class="text-center">
@@ -152,6 +149,7 @@
                                         <p class="fs-7">Dibuat Oleh : <span
                                                 x-text="`${transaction.created_by}`"></span>
                                         </p>
+
                                         <template x-if="transaction.locked_status === 1">
                                             <p class="fs-7">Status Konfirmasi : <span
                                                     :class="transaction.confirmation_status === 'Diproses'
@@ -160,33 +158,6 @@
                                                         : 'text-danger'"
                                                     x-text="transaction.confirmation_status"></span>
 
-                                            </p>
-                                        </template>
-                                        <template
-                                            x-if="transaction.confirmation_status === 'Diterima' || transaction.confirmation_status === 'Ditolak'">
-                                            <p class="fs-7">Dikonfirmasi Oleh : <span
-                                                    x-text="`${transaction.confirmed_by}`"></span>
-                                            </p>
-                                        </template>
-                                        <template x-if="transaction.confirmation_status === 'Revisi'">
-                                            <p class="fs-7">Alasan Revisi : <span
-                                                    class="text-danger"
-                                                    x-text="`${transaction.confirmation_excuses}`"></span>
-                                            </p>
-                                        </template>
-
-                                        <template
-                                            x-if="transaction.final_status === 'Diterima' || transaction.final_status === 'Ditolak'">
-                                            <p class="fs-7">Status Final : <span
-                                                    :class="transaction.final_status === 'Diterima' ? 'text-info' : 'text-danger'"
-                                                    x-text="`${transaction.final_status}`"></span>
-                                            </p>
-                                        </template>
-                                        <template
-                                            x-if="transaction.final_status === 'Diterima' || transaction.final_status === 'Ditolak'">
-                                            <p class="fs-7">Alasan : <span
-                                                    :class="transaction.final_excuses === 'Diterima' ? 'text-info' : 'text-danger'"
-                                                    x-text="`${transaction.final_excuses}`"></span>
                                             </p>
                                         </template>
                                     </div>
@@ -211,17 +182,6 @@
                                                         title="Kunci Transaksi">
                                                     <i class="bi bi-lock"></i>
                                                     Kunci Transaksi
-                                                </button>
-                                            </template>
-                                            <template
-                                                x-if="transaction.locked_status === 1 && Number(confirmPermission) === 1">
-                                                <button class="btn btn-light-success text-dark btn-sm mb-4"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#modal-confirmation"
-                                                        @click="edit(transaction.id)"
-                                                        :disabled="transaction.confirmation_status === 'Diterima'">
-                                                    <i class="bi bi-check-circle-fill"></i>
-                                                    Konfirmasi Transaksi
                                                 </button>
                                             </template>
                                         </div>
@@ -271,7 +231,7 @@
                 selectAll: false,
                 singleChecked: false,
                 search: '',
-                editVal: '',
+                editVal: null,
                 userList: [],
                 selectedConfirmationStatus: null,
                 form: document.getElementById('form-transactions'),
@@ -287,14 +247,14 @@
                     await this.getTransactions();
                     await this.getMainBranches();
                     await this.getUnitTypes();
-                    await this.getKasAccounts();
+                    await this.getKasAndLeverageAccounts();
                     await this.getStockAccounts();
                     await this.getItemCollections();
                     await this.itemCategories();
                 },
                 add() {
                     this.form.reset();
-                    this.editVal = '';
+                    this.editVal = null;
                     this.selectedBranch();
                     this.modalForm.show();
                 },
@@ -439,12 +399,12 @@
                         }
                     });
                 },
-                async getKasAccounts() {
-                    $(".kas-accounts-select2").select2({
+                async getKasAndLeverageAccounts() {
+                    $(".kas-and-leverage-accounts-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Akun",
                         ajax: {
-                            url: '/select2/kas-accounts-data',
+                            url: '/select2/kas-and-leverages-accounts-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -505,7 +465,7 @@
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/select2/selected-account/${this.editVal.debit_account_id}`,
+                        url: `/select2/selected-account/${this.editVal.credit_account_id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedCreditAccount.append(option).trigger('change').trigger({

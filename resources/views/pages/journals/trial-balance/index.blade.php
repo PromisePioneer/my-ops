@@ -53,8 +53,8 @@
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                         <th class="min-w-125 text-center">No</th>
                                         <th class="min-w-125px text-center">Akun</th>
-                                        <th class="min-w-125px text-center">Debit</th>
-                                        <th class="min-w-125px text-center">Kredit</th>
+                                        <th class="min-w-125px text-center">Saldo Debit</th>
+                                        <th class="min-w-125px text-center">Saldo Kredit</th>
                                     </tr>
                                     </thead>
                                     <tbody class="fw-bold">
@@ -112,7 +112,7 @@
                 async init() {
                     await this.getTrialBalance();
                     await this.getMonth();
-                    await this.getBranchData();
+                    await this.getMainBranches();
                 },
                 async getTrialBalance() {
 
@@ -163,12 +163,12 @@
                         {name: "Desember", number: '12'},
                     )
                 },
-                async getBranchData() {
+                async getMainBranches() {
                     $(".branch-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Cabang",
                         ajax: {
-                            url: '/journals/trial-balance/branch/data',
+                            url: '/select2/main-branches-data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),

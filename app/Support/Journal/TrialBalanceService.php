@@ -24,22 +24,30 @@ class TrialBalanceService
     public function formattedData(Builder $accounts, ?Request $request = null): Collection
     {
         return $accounts->get()->map(function ($account) use ($request) {
-            // Get transactions based on the filters if present
+            $debit = 0;
+            $credit = 0;
+            $childDebit = 0;
+            $childCredit = 0;
+
+            $debitAccountOnly = [111, 112, 113, 114, 115, 121, 122, 123, 124, 125, 126, 320, 500, 501, 502, 503, 504, 505, 506, 507, 508, 510, 511, 512, 513, 514];
+            $creditAccountOnly = [130, 211, 212, 213, 214, 215, 216, 221, 222, 223, 300, 401, 402, 403];
+
+            if (in_array($account->code, $debitAccountOnly)) {
             $debit = $this->getFilteredTransactionSum($account, 'debit', $request);
+                $childDebit = $account->children->sum(function ($child) use ($request, $account) {
+                    return $this->getFilteredTransactionSum($child, 'debit', $request);
+                });
+            }
+
             $credit = $this->getFilteredTransactionSum($account, 'credit', $request);
-
-            $childDebit = $account->children->sum(function ($child) use ($request) {
-                return $this->getFilteredTransactionSum($child, 'debit', $request);
-            });
-
             $childCredit = $account->children->sum(function ($child) use ($request) {
                 return $this->getFilteredTransactionSum($child, 'credit', $request);
             });
 
             return [
                 'account_name' => $account->name,
-                'debit' => 'Rp.'.number_format($debit + $childDebit, 2),
-                'credit' => 'Rp.'.number_format($credit + $childCredit, 2),
+                'debit' => in_array($account->code, $debitAccountOnly) ? 'Rp.' . number_format(($debit + $childDebit) - $childCredit, 2) : null,
+                'credit' => in_array($account->code, $creditAccountOnly) ? 'Rp.' . number_format($credit + $childCredit, 2) : null,
                 'balance' => 'Rp.'.number_format(($debit + $childDebit) - ($credit + $childCredit), 2),
             ];
         });

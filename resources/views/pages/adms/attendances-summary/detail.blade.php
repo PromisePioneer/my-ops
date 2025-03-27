@@ -36,8 +36,15 @@
             </div>
             <div class="flex-lg-row-fluid ms-lg-10">
                 <div class="card card-flush mb-6 mb-xl-9">
-                    <div class="card-header pt-5 mb-4">
+                    <div class="card-header pt-6 mb-4">
                         <div class="card-title">
+                            <a href="{{ url('adms/attendances-summary/') }}"
+                               class="btn btn-light btn-light-danger btn-sm mx-1">
+                                <i class="bi bi-backspace"></i>
+                                Kembali
+                            </a>
+                        </div>
+                        <div class="card-toolbar">
                             <button class="btn btn-light-info btn-sm" @click="init()">
                                 <i class="bi bi-arrow-clockwise"></i>
                                 Reload
@@ -55,6 +62,7 @@
                                     <th class="text-center">Clock Out</th>
                                     <th class="text-center">Terlambat</th>
                                     <th class="text-center">Jam Kerja</th>
+                                    <th class="text-center">Type</th>
                                     <template x-if="Number(correctionPermission) === 1">
                                         <th class="text-center">Action</th>
                                     </template>
@@ -87,35 +95,44 @@
                                     <template x-if="attendance.leaves?.status === 'Cuti'">
                                         <tr class="bg-success text-center">
                                             <td x-text="formatDate(attendance.date_period)"></td>
-                                            <td colspan="5">CUTI</td>
+                                            <td colspan="6">CUTI</td>
                                         </tr>
                                     </template>
                                     <template x-if="attendance.permission?.status === 'Izin'">
                                         <tr class="bg-danger text-white text-center">
                                             <td x-text="formatDate(attendance.date_period)"></td>
-                                            <td colspan="5">IZIN</td>
+                                            <td colspan="6">IZIN</td>
                                         </tr>
                                     </template>
                                     <template x-if="attendance?.sick?.status === 'Sakit'">
                                         <tr class="bg-primary text-center">
                                             <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
-                                            <td colspan="5">SAKIT</td>
+                                            <td colspan="6">SAKIT</td>
                                         </tr>
                                     </template>
                                     <template x-if="attendance.schedule === 'L'">
                                         <tr class="bg-warning text-center">
                                             <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
-                                            <td colspan="5">LIBUR</td>
+                                            <td colspan="6">LIBUR</td>
+                                        </tr>
+                                    </template>
+
+                                    <template x-if="attendance.attendanceManualRequest?.status === 'Pengecualian'">
+                                        <tr class="text-white text-center" style="background-color: #0dcaf0">
+                                            <td x-text="formatDate(attendance.date_period)"></td>
+                                            <td colspan="6"
+                                                x-text="`Pengecualian : ${attendance.attendanceManualRequest?.reason}`"></td>
                                         </tr>
                                     </template>
                                     <template
-                                        x-if="!attendance?.leaves && !attendance?.permission && !attendance.sick && attendance.schedule === 'H'">
+                                        x-if="!attendance?.leaves && !attendance?.permission && !attendance.sick && attendance.schedule === 'H' && !attendance.attendanceManualRequest">
                                         <tr>
                                             <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
                                             <td class="text-center" x-text="attendance.clock_in"></td>
                                             <td class="text-center" x-text="attendance.clock_out"></td>
                                             <td class="text-center" x-text="attendance.late"></td>
                                             <td class="text-center" x-text="attendance.work_time"></td>
+                                            <td class="text-center" x-text="attendance.type"></td>
                                             <template x-if="Number(correctionPermission) === 1">
                                                 <td class="text-center">
                                                     <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
@@ -130,11 +147,6 @@
                                     </tbody>
                                 </template>
                             </table>
-                            <a href="{{ url('adms/attendances-summary/') }}"
-                               class="btn btn-light btn-light-danger btn-sm mx-1">
-                                <i class="bi bi-backspace"></i>
-                                Kembali
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -147,7 +159,6 @@
 @push('script')
     <script>
         $('.date').flatpickr();
-
         function attendancesSummaryDetail() {
             return {
                 correctionPermission: "{{ request()->user()->can('Koreksi Data Riwayat Absensi') }}",

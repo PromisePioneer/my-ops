@@ -20,5 +20,5 @@ interface AccountServiceInterface
     public function getAssetAccounts(Request $request);
 
 
-    public function getKasAccounts(Request $request);
+    public function kasAndLeverageAccounts(Request $request);
 }

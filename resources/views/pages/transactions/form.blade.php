@@ -12,17 +12,29 @@
             <form id="form-transactions" @submit.prevent="save(editVal?.id)">
                 <div class="modal-body">
                     <div class="row mb-4">
-                        <div class="col-lg-6">
-                            <label class="form-label required">Tipe Transaksi</label>
-                            <select name="type" id="type" class="form-select form-select-solid"
-                                    x-model="transactionType">
-                                <option>--- Pilih ---</option>
-                                <option value="Barang">Barang</option>
-                                <option value="Beban">Beban</option>
-                                <option value="Hutang">Hutang</option>
-                                <option value="Piutang">Piutang</option>
-                            </select>
-                        </div>
+                       <template x-if="editVal === null">
+                           <div class="col-lg-6">
+                               <label class="form-label required">Tipe Transaksi</label>
+                               <select name="type" id="type" class="form-select form-select-solid"
+                                       x-model="transactionType">
+                                   <option>--- Pilih ---</option>
+                                   <option value="Barang">Barang</option>
+                                   <option value="Beban">Beban</option>
+                                   <option value="Hutang">Hutang</option>
+                                   <option value="Piutang">Piutang</option>
+                               </select>
+                           </div>
+                       </template>
+
+                        <template x-if="editVal">
+                            <div class="col-lg-6">
+                                <label class="form-label required">Tipe Transaksi</label>
+                                <select name="type" id="type" class="form-select form-select-solid"
+                                        x-model="transactionType">
+                                    <option :value="transactionType" x-text="transactionType">Barang</option>
+                                </select>
+                            </div>
+                        </template>
                     </div>
 
 

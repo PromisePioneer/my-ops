@@ -118,11 +118,11 @@ use Illuminate\Http\Request;
         })->toArray();
     }
 
-    public function getKasAccounts(Request $request): array
+    public function kasAndLeverageAccounts(Request $request): array
     {
         $search = $request->input('search');
         $query = Account::search($search)
-            ->query(fn($query) => $this->accountRepository->getKasAccounts($query))
+            ->query(fn($query) => $this->accountRepository->getKasAndLeverageAccounts($query))
             ->get();
 
 

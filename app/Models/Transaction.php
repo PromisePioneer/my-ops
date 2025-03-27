@@ -13,25 +13,22 @@ class Transaction extends Model
     use Searchable;
     protected $table = 'transactions';
     protected $fillable = [
-        'type',
         'transaction_number',
         'branch_id',
         'date',
-        'detail',
+        'item_id',
         'qty',
-        'unit_type_id',
+        'type',
         'unit_price',
         'total_price',
-        'item_id',
+        'detail',
         'debit_account_id',
         'credit_account_id',
         'locked_status',
         'created_by',
-        'excuses',
-        'final_status',
+        'status',
+        'final_notes',
         'approved_by',
-        'final_excuses',
-        'confirmation_excuses'
     ];
 
 

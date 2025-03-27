@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="modal-edit">
+<div class="modal fade" tabindex="-1" id="modal-initial-balance">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -14,13 +14,13 @@
                 </div>
             </div>
 
-            <form id="form-edit" @submit.prevent="update(editVal.id)">
+            <form id="form-initial-balance" @submit.prevent="save(editVal.id)">
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Cabang</label>
                         <select name="branch_id" id="selectedBranch"
                                 class="form-select form-select-solid main-branches-select2"
-                                data-dropdown-parent="#modal-edit">
+                                data-dropdown-parent="#modal-initial-balance">
                             <option></option>
                         </select>
                     </div>
@@ -28,7 +28,7 @@
                         <label for="account_id" class="required form-label">Akun</label>
                         <select name="account_id" id="selectedAccount"
                                 class="form-select form-select-solid accounts-select2"
-                                data-dropdown-parent="#modal-edit">
+                                data-dropdown-parent="#modal-initial-balance">
                             <option></option>
                         </select>
                     </div>

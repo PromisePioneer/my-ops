@@ -124,7 +124,7 @@ use Illuminate\Http\Request;
         $this->authorize('create', AccountTransaction::class);
         AccountTransaction::create([
             'branch_id' => $request->branch_id ?? null,
-            'date' => $request->date,
+            'date' => Carbon::now()->subYear()->endOfYear(),
             'account_id' => $request->account_id,
             'transaction_type' => 'SA',
             'entries_type' => 'Debit',
@@ -138,7 +138,7 @@ use Illuminate\Http\Request;
     /**
      * @throws AuthorizationException
      */
-    public function edit(Request $request, AccountTransaction $account): JsonResponse
+    public function edit(Request $request, Account $account): JsonResponse
     {
         $this->authorize('update', $account);
         $branchId = $request->branch_id;
@@ -147,7 +147,7 @@ use Illuminate\Http\Request;
             'account_transactions.account_id',
             '=',
             'accounts.id'
-        )->where('account_transactions.branch_id', $branchId)
+        )->where('account_transactions.branch_id', $branchId)->where('account_transactions.account_id', $account->id)
             ->whereYear('date', Carbon::now()->subYear())
             ->first();
 
@@ -173,7 +173,7 @@ use Illuminate\Http\Request;
         $this->authorize('update', $accountTransaction);
         $accountTransaction->update([
             'branch_id' => $request?->branch_id ?? null,
-            'date' => $request->date,
+            'date' => Carbon::now()->subYear()->endOfYear(),
             'account_id' => $request->account_id,
             'transaction_type' => 'SA',
             'amount' => $request->amount,

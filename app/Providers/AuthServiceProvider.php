@@ -7,6 +7,7 @@ use App\Models\Account;
 use App\Models\AccountTransaction;
 use App\Models\Area;
 use App\Models\Asset;
+use App\Models\AttendanceManualRequest;
 use App\Models\AttendancesSummary;
 use App\Models\Boq;
 use App\Models\BroadbandPacket;
@@ -33,6 +34,7 @@ use App\Models\WorkTime;
 use App\Policies\AccountPolicy;
 use App\Policies\AreaPolicy;
 use App\Policies\AssetPolicy;
+use App\Policies\AttendanceManualRequestPolicy;
 use App\Policies\AttendanceSummaryPolicy;
 use App\Policies\BoqPolicy;
 use App\Policies\BranchPolicy;
@@ -101,7 +103,8 @@ class AuthServiceProvider extends ServiceProvider
         Asset::class => AssetPolicy::class,
         PSB::class => PSBPolicy::class,
         EmployeeSchedule::class => EmployeeSchedulePolicy::class,
-        Transaction::class => TransactionPolicy::class
+        Transaction::class => TransactionPolicy::class,
+        AttendanceManualRequest::class => AttendanceManualRequestPolicy::class
     ];
 
     /**

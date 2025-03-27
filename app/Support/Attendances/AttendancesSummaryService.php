@@ -91,36 +91,8 @@ use Illuminate\Http\Request;
             $totalSick = $this->calculateLeaveDays($user, $startDate, $endDate, 'Sakit');
             $totalLeaves = $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti');
             $totalPermission = $this->calculateLeaveDays($user, $startDate, $endDate, 'Izin');
-            $scheduledDays = $this->getScheduledDays($user, $startDate, $endDate);
             $totalMinutesLate = 0;
-
-            $totalAbsent = max(
-                $scheduledDays - ($totalPresent + $totalLeaves + $totalSick + $totalPermission),
-                0
-            );
-
-
-
-
-            foreach ($user->attendancesSummary as $attendance) {
-                $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);
-                $workDate = $attendance?->date;
-                $expectedCheckIn = Carbon::parse("$workDate {$attendance->workTime?->clock_in}");
-
-                $newExpectedCheckIn = null;
-                if ($attendance->workTime?->name === "Malam") {
-                    $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
-                }
-
-                $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
-
-
-                if ($checkInToUse->diffInMinutes($actualCheckIn) < 3) {
-                    continue;
-                }
-                $totalMinutesLate += $checkInToUse->diffInMinutes($actualCheckIn);
-            }
-
+            $totalMinutesLate = $this->calculateLate($user->attendancesSummary);
 
             $totalNotCheckIn = $user->attendancesSummary->whereNull('clock_in')->count();
             $totalNotCheckOut = $user->attendancesSummary
@@ -141,7 +113,6 @@ use Illuminate\Http\Request;
                 'total_leaves' => $totalLeaves,
                 'total_sick' => $totalSick,
                 'total_permission' => $totalPermission,
-                'total_absent' => $totalAbsent > 0 ? $totalAbsent - $totalLeaves : 0
             ];
         });
 
@@ -171,48 +142,28 @@ use Illuminate\Http\Request;
         return $totalDays;
     }
 
-    public function getLeaves($user, $startDate, $endDate): int
+
+    public function calculateLate($attendanceSummary): float|int
     {
-        $leaveStatus = 'Cuti';
-        return $this->calculateLeaveDays($user, $startDate, $endDate, $leaveStatus);
-    }
+        foreach ($attendanceSummary as $attendance) {
+            $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);
+            $workDate = $attendance?->date;
+            $expectedCheckIn = Carbon::parse("$workDate {$attendance->workTime?->clock_in}");
 
-    public function getSick($user, $startDate, $endDate): int
-    {
+            $newExpectedCheckIn = null;
+            if ($attendance->workTime?->name === "Malam") {
+                $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
+            }
 
-        $leaveStatus = 'Sakit';
-        return $this->calculateLeaveDays($user, $startDate, $endDate, $leaveStatus);
-
-    }
-
-
-    public function getPermission($user, $startDate, $endDate): int
-    {
-        $leaveStatus = 'Izin';
-        return $this->calculateLeaveDays($user, $startDate, $endDate, $leaveStatus);
-    }
+            $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
 
 
-
-    public function calculateLate($userWorktime, $attendance): float|int
-    {
-//        $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);
-//        $workDate = $attendance?->date;
-//        $expectedCheckIn = Carbon::parse("$workDate {$userWorktime?->clock_in}");
-//
-//        $newExpectedCheckIn = null;
-//        if ($userWorktime?->name === "Malam") {
-//            $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
-//        }
-//
-//        $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
-//
-//
-//        if ($checkInToUse->diffInMinutes($actualCheckIn) < 2.5) {
-//            continue;
-//        }
-//
-//        return $checkInToUse->diffInMinutes($actualCheckIn);
+            if ($checkInToUse->diffInMinutes($actualCheckIn) < 3) {
+                continue;
+            }
+            return $checkInToUse->diffInMinutes($actualCheckIn);
+        }
+        return 0;
     }
 
 

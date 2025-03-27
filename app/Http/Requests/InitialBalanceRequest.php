@@ -7,7 +7,6 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class InitialBalanceRequest extends FormRequest
 {
@@ -27,8 +26,7 @@ class InitialBalanceRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
-            'date' => ['required', 'date', $this->uniqueYear($request)],
-            'account_id' => ['required', 'exists:accounts,id'],
+            'account_id' => ['required', 'exists:accounts,id', $this->uniqueYear($request)],
             'amount' => ['required', 'numeric'],
         ];
     }
@@ -51,19 +49,17 @@ class InitialBalanceRequest extends FormRequest
     {
         return static function ($attribute, $value, $fail) use ($request) {
             $getYear = Carbon::parse($request->date)->year;
+            $isAccountTransactionExists = AccountTransaction::whereYear('date', $getYear)
+                ->where('branch_id', $request->branch_id)
+                ->where('account_id', $request->account_id)
+                ->where('transaction_type', 'SA')->exists();
 
 
             if ($request->route('accountTransaction')) {
                 return null;
             }
 
-            if (
-                AccountTransaction::whereYear('date', $getYear)
-                    ->where('transaction_type', 'SA')->exists()
-                && AccountTransaction::where('account_id', $request->account_id)
-                    ->where('transaction_type', 'SA')->exists()
-                && AccountTransaction::where('branch_id', $request->branch_id)
-                    ->where('transaction_type', 'SA')->exists()) {
+            if ($isAccountTransactionExists) {
                 return $fail('Saldo awal sudah terdaftar!');
             }
 

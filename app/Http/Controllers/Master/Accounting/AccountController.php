@@ -145,9 +145,9 @@ use Illuminate\View\View;
     }
 
 
-    public function kasAccounts(Request $request): JsonResponse
+    public function kasAndLeverageAccounts(Request $request): JsonResponse
     {
-        return response()->json($this->accountService->getKasAccounts($request));
+        return response()->json($this->accountService->kasAndLeverageAccounts($request));
     }
 
 }
