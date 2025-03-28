@@ -158,9 +158,7 @@ use Illuminate\Http\Request;
             $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
 
 
-            if ($checkInToUse->diffInMinutes($actualCheckIn) < 3) {
-                continue;
-            } else {
+            if ($checkInToUse->diffInMinutes($actualCheckIn) > 3) {
                 return $checkInToUse->diffInMinutes($actualCheckIn);
             }
         }
