@@ -143,7 +143,7 @@ use Illuminate\Http\Request;
     }
 
 
-    public function calculateLate($attendanceSummary): float|int
+    public function calculateLate($attendanceSummary): float|int|null
     {
         foreach ($attendanceSummary as $attendance) {
             $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);
@@ -162,7 +162,6 @@ use Illuminate\Http\Request;
                 return $checkInToUse->diffInMinutes($actualCheckIn);
             }
         }
-        return 0;
     }
 
 
