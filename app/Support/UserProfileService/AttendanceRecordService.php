@@ -3,6 +3,7 @@
 namespace App\Support\UserProfileService;
 
 use AllowDynamicProperties;
+use App\Http\Requests\AttendancesSummaryFilterByDateRequest;
 use App\Support\Attendances\AttendanceSummaryDetailService;
 use App\Support\HelperService\FinancialClosePeriodService;
 use Illuminate\Http\Request;
@@ -22,6 +23,12 @@ use Illuminate\Http\Request;
     public function data(Request $request)
     {
         return $this->attendanceSummaryDetailService->data($request, $request->user()->absent_id);
+    }
+
+
+    public function filter(AttendancesSummaryFilterByDateRequest $request)
+    {
+        return $this->attendanceSummaryDetailService->filterByDate($request, $request->user());
     }
 
 }

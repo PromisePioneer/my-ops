@@ -33,8 +33,8 @@ class AttendanceSummaryDetailService
     public function data(Request $request, int $empId, $startDates = null, $endDates = null)
     {
 
-        $startDate = $startDates;
-        $endDate = $endDates;
+        $startDate = $startDates ?? $this->financialClosePeriodService->startDate();
+        $endDate = $endDates ?? $this->financialClosePeriodService->endDate();
 
         $attendancesData = AttendancesSummary::with('user')
             ->where('employee_id', $empId)

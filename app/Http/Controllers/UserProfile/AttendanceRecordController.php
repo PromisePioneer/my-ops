@@ -4,6 +4,7 @@ namespace App\Http\Controllers\UserProfile;
 
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AttendancesSummaryFilterByDateRequest;
 use App\Models\User;
 use App\Support\UserProfileService\AttendanceRecordService;
 use Illuminate\Http\JsonResponse;
@@ -23,15 +24,15 @@ use Illuminate\View\View;
     }
 
 
-    public function data(Request $request, ?User $user = null): JsonResponse
+    public function data(Request $request): JsonResponse
     {
-        $data = $this->attendanceRecordService->data($request, $user);
+        $data = $this->attendanceRecordService->data($request);
         return response()->json($data);
     }
 
 
-    public function filter(Request $request, ?User $user = null): JsonResponse
+    public function filter(AttendancesSummaryFilterByDateRequest $request): JsonResponse
     {
-        return response()->json($this->attendanceRecordService->filter($request, $user));
+        return response()->json($this->attendanceRecordService->filter($request));
     }
 }
