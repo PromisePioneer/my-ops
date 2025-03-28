@@ -33,7 +33,6 @@ use Illuminate\Support\Collection;
     }
 
 
-
     public function data(Request $request)
     {
 
@@ -61,20 +60,22 @@ use Illuminate\Support\Collection;
 
     public function filterByDate($request)
     {
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
         $user = EmployeeScheduleACLFilter::apply($this->query(), $request);
         $data = $user->paginate(self::$perPage);
-        return self::formattedData($data);
+        return self::formattedData($data, $startDate, $endDate);
     }
 
 
-    public function formattedData($userData)
+    public function formattedData($userData, $startDate = null, $endDate = null)
     {
 
 
-        $period = CarbonPeriod::create($this->startDate, $this->endDate);
+        $period = CarbonPeriod::create($startDate ?? $this->startDate, $endDate ?? $this->endDate);
         $data = $userData->getCollection()->map(function ($item) use ($period) {
             $allSchedules = $item->employeeSchedules
-                ->whereBetween('start_date', [$this->startDate->format('Y-m-d'), $this->endDate->format('Y-m-d')])
+                ->whereBetween('start_date', [$startDate ?? $this->startDate->format('Y-m-d'), $endDate ?? $this->endDate->format('Y-m-d')])
                 ->keyBy('start_date');
             $getLeaves = $this->getLeaves($item);
             $getSick = $this->getSick($item);
