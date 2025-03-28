@@ -3,6 +3,7 @@
 namespace App\Support\Attendances;
 
 use AllowDynamicProperties;
+use App\Models\EmployeeSchedule;
 use App\Models\User;
 use App\Models\WeekHoliday;
 use App\Support\HelperService\FinancialClosePeriodService;
@@ -108,7 +109,12 @@ use Illuminate\Http\Request;
             foreach ($periods as $period) {
                 $weekHoliday = WeekHoliday::where('user_id', $user->id)->first();
 
-                if ($period->dayName === $weekHoliday?->day) {
+
+                $weekHolidayFromEmpSchedule = EmployeeSchedule::where('employee_id', $user->absent_id)
+                    ->where('start_date', $period->format('Y-m-d'))
+                    ->where('status', 'L')->first();
+
+                if ($period->dayName === $weekHoliday?->day || $period->format('Y-m-d') === $weekHolidayFromEmpSchedule->start_date) {
                     continue;
                 } else {
                     $totalPeriodOfWork[] = $period->format('Y-m-d');
