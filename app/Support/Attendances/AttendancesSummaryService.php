@@ -145,6 +145,9 @@ use Illuminate\Http\Request;
 
     public function calculateLate($attendanceSummary): float|int|null
     {
+
+
+        $totalLate = 0;
         foreach ($attendanceSummary as $attendance) {
             $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);
             $workDate = $attendance?->date;
@@ -158,13 +161,14 @@ use Illuminate\Http\Request;
             $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
 
 
-            if ($checkInToUse->diffInMinutes($actualCheckIn) > 3) {
-                return $checkInToUse->diffInMinutes($actualCheckIn);
+            // If the difference is greater than 3 minutes, count it as late
+            $lateMinutes = $checkInToUse->diffInMinutes($actualCheckIn);
+
+            if ($lateMinutes > 3) {
+                $totalLate += $lateMinutes;
             }
-
-
-            return 0;
         }
+        return $totalLate;
     }
 
 
