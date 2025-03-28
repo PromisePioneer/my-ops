@@ -116,7 +116,7 @@ use Illuminate\Http\Request;
             }
 
 
-            $totalPeriodOfWork = count($totalPeriodOfWork) + $totalLeaves + $totalSick + $totalPermission;
+            $totalPeriodOfWork = count($totalPeriodOfWork);
 
 
             return [
@@ -128,7 +128,7 @@ use Illuminate\Http\Request;
                 'total_minutes_late' => (int)$totalMinutesLate,
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
-                'total_present' => $totalPresent . '/' . $totalPeriodOfWork,
+                'total_present' => $totalPresent + $totalLeaves + $totalSick + $totalPermission . '/' . $totalPeriodOfWork,
                 'total_leaves' => $totalLeaves,
                 'total_sick' => $totalSick,
                 'total_permission' => $totalPermission,
