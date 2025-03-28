@@ -106,6 +106,7 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
 
 
 Route::get('/test', function () {
+    ini_set('max_execution_time', 0);
     $zk = new ZKTeco('103.141.255.229');
     if ($zk->connect()) {
         $item = $zk->getAttendance();
