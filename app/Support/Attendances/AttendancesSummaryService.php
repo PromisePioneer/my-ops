@@ -4,8 +4,10 @@ namespace App\Support\Attendances;
 
 use AllowDynamicProperties;
 use App\Models\User;
+use App\Models\WeekHoliday;
 use App\Support\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 
@@ -91,13 +93,36 @@ use Illuminate\Http\Request;
             $totalSick = $this->calculateLeaveDays($user, $startDate, $endDate, 'Sakit');
             $totalLeaves = $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti');
             $totalPermission = $this->calculateLeaveDays($user, $startDate, $endDate, 'Izin');
-            $totalMinutesLate = 0;
             $totalMinutesLate = $this->calculateLate($user->attendancesSummary);
 
             $totalNotCheckIn = $user->attendancesSummary->whereNull('clock_in')->count();
             $totalNotCheckOut = $user->attendancesSummary
                 ->where('date', '!=', Carbon::today()->format('Y-m-d'))
                 ->whereNull('clock_out')->count();
+
+
+            $periods = CarbonPeriod::create($startDate, $endDate);
+            $totalPeriodOfWork = [];
+
+
+            foreach ($periods as $period) {
+                $weekHoliday = WeekHoliday::where('user_id', $user->id)->first();
+
+                if ($period->dayName === $weekHoliday?->day) {
+                    continue;
+                } else {
+                    $totalPeriodOfWork[] = $period->format('Y-m-d');
+                }
+            }
+
+
+            foreach ($user->attendancesSummary as $attendance) {
+                if ($attendance->clock_in || $attendance->clock_out) {
+                    $totalPresent++;
+                }
+            }
+
+            $totalPeriodOfWork = count($totalPeriodOfWork);
 
 
             return [
@@ -109,7 +134,7 @@ use Illuminate\Http\Request;
                 'total_minutes_late' => (int)$totalMinutesLate,
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
-                'total_present' => $totalPresent,
+                'total_present' => $totalPresent / $totalPeriodOfWork,
                 'total_leaves' => $totalLeaves,
                 'total_sick' => $totalSick,
                 'total_permission' => $totalPermission,
@@ -174,8 +199,8 @@ use Illuminate\Http\Request;
 
     public function filter($request): LengthAwarePaginator
     {
-        $startDate = $request->start_date ?? $this->startDate;
-        $endDate = $request->end_date ?? $this->endDate;
+        $startDate = Carbon::parse($request->start_date) ?? $this->startDate;
+        $endDate = Carbon::parse($request->end_date) ?? $this->endDate;
 
 
         $query = User::with([

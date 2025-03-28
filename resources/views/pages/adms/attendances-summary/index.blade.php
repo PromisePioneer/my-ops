@@ -56,14 +56,14 @@
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
                 </div>
-{{--                <div class="card-toolbar">--}}
-{{--                    <div class="d-flex justify-content-end align-items-center" data-kt-user-table-toolbar="base">--}}
-{{--                        <a href="{{ url('adms/attendances-summary/attendance-manual-requests') }}"--}}
-{{--                           class="btn btn-light-info btn-sm">--}}
-{{--                            Pengajuan Absensi (Manual)--}}
-{{--                        </a>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
+                {{--                <div class="card-toolbar">--}}
+                {{--                    <div class="d-flex justify-content-end align-items-center" data-kt-user-table-toolbar="base">--}}
+                {{--                        <a href="{{ url('adms/attendances-summary/attendance-manual-requests') }}"--}}
+                {{--                           class="btn btn-light-info btn-sm">--}}
+                {{--                            Pengajuan Absensi (Manual)--}}
+                {{--                        </a>--}}
+                {{--                    </div>--}}
+                {{--                </div>--}}
             </div>
             <div class="card-body py-3">
                 <div class="py-5">
@@ -155,20 +155,20 @@
                                                         <td class="min-w-125px">:</td>
                                                         <td class="min-w-125px"
                                                             x-text="`${attendance.total_leaves}`"></td>
-                                                </tr>
+                                                    </tr>
                                                     <tr class="bg-gray-100 text-center">
                                                         <td class="min-w-125px">Izin</td>
                                                         <td class="min-w-125px">:</td>
                                                         <td class="min-w-125px"
                                                             x-text="`${attendance.total_permission}`"></td>
-                                                </tr>
+                                                    </tr>
                                                     <tr class="bg-gray-100 text-center">
                                                         <td class="min-w-125px">Sakit</td>
                                                         <td class="min-w-125px">:</td>
                                                         <td class="min-w-125px"
                                                             x-text="`${attendance.total_sick}`"></td>
-                                                </tr>
-                                            </table>
+                                                    </tr>
+                                                </table>
                                             </div>
                                         </div>
                                     </td>
@@ -202,6 +202,7 @@
     <script>
 
         $('.date').flatpickr();
+
         function attendancesSummary() {
             return {
                 startDates: null,
