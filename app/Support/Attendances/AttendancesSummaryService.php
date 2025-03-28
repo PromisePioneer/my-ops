@@ -116,7 +116,7 @@ use Illuminate\Http\Request;
             }
 
 
-            $totalPeriodOfWork = count($totalPeriodOfWork);
+            $totalPeriodOfWork = count($totalPeriodOfWork) - $totalLeaves - $totalSick - $totalPermission;
 
 
             return [
