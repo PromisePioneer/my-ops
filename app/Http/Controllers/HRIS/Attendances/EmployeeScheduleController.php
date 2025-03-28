@@ -87,7 +87,7 @@ use Throwable;
      */
     public function filterByDate(Request $request): JsonResponse
     {
-        $this->authorize('filterByDate', EmployeeSchedule::class);
+//        $this->authorize('filterByDate', EmployeeSchedule::class);
         $startDate = Carbon::parse($request->start_date);
         $endDate = Carbon::parse($request->end_date);
 
