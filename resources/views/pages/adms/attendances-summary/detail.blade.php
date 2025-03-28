@@ -62,7 +62,6 @@
                                     <th class="text-center">Clock Out</th>
                                     <th class="text-center">Terlambat</th>
                                     <th class="text-center">Jam Kerja</th>
-                                    <th class="text-center">Type</th>
                                     <template x-if="Number(correctionPermission) === 1">
                                         <th class="text-center">Action</th>
                                     </template>
@@ -132,7 +131,6 @@
                                             <td class="text-center" x-text="attendance.clock_out"></td>
                                             <td class="text-center" x-text="attendance.late"></td>
                                             <td class="text-center" x-text="attendance.work_time"></td>
-                                            <td class="text-center" x-text="attendance.type"></td>
                                             <template x-if="Number(correctionPermission) === 1">
                                                 <td class="text-center">
                                                     <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
