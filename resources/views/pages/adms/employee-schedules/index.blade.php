@@ -249,13 +249,12 @@
                 },
                 formatDate(val) {
                     const date = new Date(val);
-
-                    const options = {
-                        day: "numeric",
+                    return date.toLocaleDateString("id", {
+                        weekday: "short",
                         year: "numeric",
-                        month: "numeric"
-                    };
-                    return date.toLocaleDateString("id", options)
+                        month: "2-digit",
+                        day: "numeric",
+                    });
                 },
                 async paginationEndPoint(url) {
                     const startDate = document.getElementById('start_dates').value;
@@ -364,7 +363,7 @@
                     } finally {
                         this.buttonLoading = false;
                     }
-                }
+                },
             }
         }
     </script>
