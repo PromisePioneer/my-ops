@@ -106,8 +106,8 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
 
 
 Route::get('/test', function () {
-    ini_set('max_execution_time', env('MAX_EXECUTION_TIME', 300));
-    ini_set('memory_limit', env('MEMORY_LIMIT', '512M'));
+    ini_set('memory_limit', '512M');
+    set_time_limit(300); // Set ke 5 menit
     $zk = new ZKTeco('103.141.255.229');
     if ($zk->connect()) {
         $item = $zk->getAttendance();
