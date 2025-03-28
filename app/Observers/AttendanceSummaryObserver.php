@@ -47,6 +47,8 @@ class AttendanceSummaryObserver
     {
         $isEngineer = $user->hasAnyRole(['Engineer', 'Senior Engineer', 'KU Engineer', 'Quality Control Staff', 'Warehouse Security']) ? WorkTime::find(2) : null;
 
+        $ifBranchDuri = $user->branch_id === 1 ? WorkTime::find(1) : null;
+
         $userShift = null;
 
         if ($timestamp->between(Carbon::parse($timestamp->copy()->format('Y-m-d') . '23:00:00'), Carbon::parse($timestamp->copy()->format('Y-m-d') . '23:59:59'))) {
@@ -78,7 +80,7 @@ class AttendanceSummaryObserver
                 ->first()?->workTime;
         }
 
-        return $userShift ?? $isEngineer ?? WorkTime::find(1);
+        return $userShift ?? $ifBranchDuri ??  $isEngineer ?? WorkTime::find(1);
     }
 
     private function findOrCreateSummary(Attendances $attendances, WorkTime $workTime, Carbon $timestamp): AttendancesSummary
