@@ -160,8 +160,9 @@ use Illuminate\Http\Request;
 
             if ($checkInToUse->diffInMinutes($actualCheckIn) < 3) {
                 continue;
+            } else {
+                return $checkInToUse->diffInMinutes($actualCheckIn);
             }
-            return $checkInToUse->diffInMinutes($actualCheckIn);
         }
         return 0;
     }
