@@ -116,7 +116,7 @@ use Illuminate\Http\Request;
             }
 
 
-            $totalPeriodOfWork = count($totalPeriodOfWork);
+            $totalPeriodOfWork = count($totalPeriodOfWork) + $totalLeaves + $totalSick + $totalPermission;
 
 
             return [
@@ -164,8 +164,6 @@ use Illuminate\Http\Request;
 
     public function calculateLate($attendanceSummary): float|int|null
     {
-
-
         $totalLate = 0;
         foreach ($attendanceSummary as $attendance) {
             $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);

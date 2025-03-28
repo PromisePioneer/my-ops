@@ -80,9 +80,6 @@ use Illuminate\View\View;
 
     public function detailData(Request $request, User $user, FinancialClosePeriodService $financialClosePeriodService, $startDate = null, $endDate = null): JsonResponse
     {
-
-
-
         $startDate = $startDate === 'null' ? $financialClosePeriodService->startDate() : $startDate;
         $endDate = $endDate === 'null' ? $financialClosePeriodService->endDate() : $endDate;
         return response()->json($this->attendanceSummaryDetailService->data($request, $user->absent_id, $startDate, $endDate));
