@@ -111,7 +111,7 @@ Route::get('/test', function () {
     if ($zk->connect()) {
         $item = $zk->getAttendance();
         $startDate = Carbon::parse('2025-02-28')->startOfDay();
-        $endDate = Carbon::parse('2025-03-27')->endOfDay();
+        $endDate = Carbon::parse('2025-03-10')->endOfDay();
         foreach ($item as $record) {
             $recordDate = Carbon::parse(substr($record['timestamp'], 0, 10));
             if ($recordDate->greaterThanOrEqualTo($startDate) && $recordDate->lessThanOrEqualTo($endDate)) {
