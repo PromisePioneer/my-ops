@@ -114,7 +114,7 @@ use Illuminate\Http\Request;
                     ->where('start_date', $period->format('Y-m-d'))
                     ->where('status', 'L')->first();
 
-                if ($period->dayName === $weekHoliday?->day || $period->format('Y-m-d') === $weekHolidayFromEmpSchedule->start_date) {
+                if ($period->dayName === $weekHoliday?->day || $period->format('Y-m-d') === $weekHolidayFromEmpSchedule?->start_date) {
                     continue;
                 } else {
                     $totalPeriodOfWork[] = $period->format('Y-m-d');
