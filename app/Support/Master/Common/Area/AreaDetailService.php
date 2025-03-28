@@ -55,7 +55,7 @@ class AreaDetailService
         $search = $request->search;
         $query = User::with('roles')->whereDoesntHave('userHasArea')
             ->whereHas('roles', function ($query) use ($area) {
-                $query->whereIn('name', ['Head Engineer', 'Engineer', 'Senior Engineer', 'Vendor']);
+                $query->whereIn('name', ['Head Engineer', 'Engineer', 'Senior Engineer', 'Vendor', 'KU Head Engineer', 'KU Engineer']);
             })
             ->where('branch_id', $area->branch_id)
             ->where('active', 1)
