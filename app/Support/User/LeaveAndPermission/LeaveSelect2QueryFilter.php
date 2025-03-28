@@ -127,8 +127,8 @@ class LeaveSelect2QueryFilter
 
 
         if ($request->user()->hasAnyRole('Head Of Electrical Engineer')) {
-            $query->whereHas('user.roles', function ($query) use ($request) {
-                $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer']);
+            $query->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer', 'Electrical Engineer']);
             })->whereNull('branch_id');
         }
 
