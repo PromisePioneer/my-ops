@@ -87,8 +87,6 @@ use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
 use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
 use App\Http\Controllers\WarehouseController;
-use App\Models\Attendances;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Jmrashed\Zkteco\Lib\ZKTeco;
@@ -106,29 +104,11 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
 
 
 Route::get('/test', function () {
-    ini_set('memory_limit', '512M');
-    set_time_limit(300); // Set ke 5 menit
-    $zk = new ZKTeco('103.141.255.229');
-    if ($zk->connect()) {
-        $item = $zk->getAttendance();
-        $startDate = Carbon::parse('2025-02-28')->startOfDay();
-        $endDate = Carbon::parse('2025-03-27')->endOfDay();
-        foreach ($item as $record) {
-            $recordDate = Carbon::parse(substr($record['timestamp'], 0, 10));
-            if ($recordDate->greaterThanOrEqualTo($startDate) && $recordDate->lessThanOrEqualTo($endDate)) {
-                $data = [
-                    'sn' => 'BWXP191660449',
-                    'table' => 'ATTLOG',
-                    'stamp' => '999',
-                    'employee_id' => $record['id'],
-                    'timestamp' => $record['timestamp'],
-                    'status1' => $record['type'],
-                ];
-                Attendances::create($data);
-            }
-        }
-        $zk->disconnect();
-    }
+    $zk = new ZKTeco('103.102.248.96');
+    $connected = $zk->connect();
+    $attendanceLog = $zk->getAttendance();
+
+    dd($attendanceLog);
 });
 
 Route::get('/', function () {
