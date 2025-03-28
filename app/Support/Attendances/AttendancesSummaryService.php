@@ -197,8 +197,8 @@ use Illuminate\Http\Request;
 
     public function filter($request): LengthAwarePaginator
     {
-        $startDate = Carbon::parse($request->start_date) ?? $this->startDate;
-        $endDate = Carbon::parse($request->end_date) ?? $this->endDate;
+        $startDate = Carbon::make($request->start_date) ?? $this->startDate;
+        $endDate = Carbon::make($request->end_date) ?? $this->endDate;
 
 
         $query = User::with([
