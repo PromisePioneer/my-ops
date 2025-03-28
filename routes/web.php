@@ -87,6 +87,8 @@ use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
 use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
 use App\Http\Controllers\WarehouseController;
+use App\Models\Attendances;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Jmrashed\Zkteco\Lib\ZKTeco;
@@ -104,11 +106,27 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
 
 
 Route::get('/test', function () {
-    $zk = new ZKTeco('103.177.218.152');
-    $connected = $zk->connect();
-    $attendanceLog = $zk->getAttendance();
-
-    dd($attendanceLog);
+    $zk = new ZKTeco('103.141.255.229');
+    if ($zk->connect()) {
+        $item = $zk->getAttendance();
+        $startDate = Carbon::parse('2025-02-28')->startOfDay();
+        $endDate = Carbon::parse('2025-03-27')->endOfDay();
+        foreach ($item as $record) {
+            $recordDate = Carbon::parse(substr($record['timestamp'], 0, 10));
+            if ($recordDate->greaterThanOrEqualTo($startDate) && $recordDate->lessThanOrEqualTo($endDate)) {
+                $data = [
+                    'sn' => 'BWXP191660449',
+                    'table' => 'ATTLOG',
+                    'stamp' => '999',
+                    'employee_id' => $record['id'],
+                    'timestamp' => $record['timestamp'],
+                    'status1' => $record['type'],
+                ];
+                Attendances::create($data);
+            }
+        }
+        $zk->disconnect();
+    }
 });
 
 Route::get('/', function () {
@@ -125,7 +143,6 @@ Route::prefix('/iclock')->group(function () {
     Route::get('/getrequest', [IclockController::class, 'getRequest']);
     Route::get('/get-attendance-via-push-sdk', [IclockController::class, 'getAttendanceViaPushSDK']);
 });
-
 
 
 Route::group(['middleware' => ['auth']], static function () {
@@ -555,7 +572,6 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
     });
-
 
 
     //utility
