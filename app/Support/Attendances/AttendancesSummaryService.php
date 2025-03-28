@@ -116,12 +116,6 @@ use Illuminate\Http\Request;
             }
 
 
-            foreach ($user->attendancesSummary as $attendance) {
-                if ($attendance->clock_in || $attendance->clock_out) {
-                    $totalPresent++;
-                }
-            }
-
             $totalPeriodOfWork = count($totalPeriodOfWork);
 
 
@@ -134,7 +128,7 @@ use Illuminate\Http\Request;
                 'total_minutes_late' => (int)$totalMinutesLate,
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
-                'total_present' => $totalPresent / $totalPeriodOfWork,
+                'total_present' => $totalPresent . '/' . $totalPeriodOfWork,
                 'total_leaves' => $totalLeaves,
                 'total_sick' => $totalSick,
                 'total_permission' => $totalPermission,
