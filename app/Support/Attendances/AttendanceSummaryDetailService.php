@@ -33,18 +33,18 @@ class AttendanceSummaryDetailService
     public function data(Request $request, int $empId, $startDates = null, $endDates = null)
     {
 
-        $startDate = Carbon::make($startDates === "null" ?: null) ?? $this->financialClosePeriodService->startDate();
-        $endDate = Carbon::make($endDates === "null" ?: null) ?? $this->financialClosePeriodService->endDate();
+        $startDate = $startDates;
+        $endDate = $endDates;
 
         $attendancesData = AttendancesSummary::with('user')
             ->where('employee_id', $empId)
-            ->whereBetween('date', [$startDate, $endDate])
+            ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
             ->orderBy('date', 'asc')
             ->get()
             ->keyBy('date');
 
         $employeeSchedule = EmployeeSchedule::where('employee_id', $empId)
-            ->whereBetween('start_date', [$startDate, $endDate])->orderBy('start_date', 'asc')->get()->keyBy('start_date');
+            ->whereBetween('start_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])->orderBy('start_date', 'asc')->get()->keyBy('start_date');
 
 
         $user = User::where('absent_id', $empId)->first();
@@ -222,18 +222,16 @@ class AttendanceSummaryDetailService
 
     public function filterByDate(AttendancesSummaryFilterByDateRequest $request, User $user)
     {
-        $startDate = $request->start_date;
-        $endDate = $request->end_date;
+        $startDate = Carbon::parse($request->start_date);
+        $endDate = Carbon::parse($request->end_date);
 
 
         $attendancesData = AttendancesSummary::with('user')
             ->where('employee_id', $user->absent_id)
-            ->whereBetween('date', [$startDate, $endDate])
+            ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
             ->orderBy('date', 'asc')
             ->get()
             ->keyBy('date');
-
-        $period = CarbonPeriod::create($startDate, $endDate);
 
 
         $employeeSchedule = EmployeeSchedule::where('employee_id', $user->absent_id)

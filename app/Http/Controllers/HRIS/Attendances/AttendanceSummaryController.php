@@ -16,6 +16,7 @@ use App\Models\WorkTime;
 use App\Support\Attendances\AttendancesSummaryService;
 use App\Support\Attendances\AttendanceSummaryDetailService;
 use App\Support\FpDeviceCommandService;
+use App\Support\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -77,8 +78,10 @@ use Illuminate\View\View;
     }
 
 
-    public function detailData(Request $request, User $user, $startDate = null, $endDate = null): JsonResponse
+    public function detailData(Request $request, User $user, FinancialClosePeriodService $financialClosePeriodService, $startDate = null, $endDate = null): JsonResponse
     {
+        $startDate = Carbon::parse($startDate ?? $financialClosePeriodService->startDate());
+        $endDate = Carbon::parse($endDate ?? $financialClosePeriodService->endDate());
         return response()->json($this->attendanceSummaryDetailService->data($request, $user->absent_id, $startDate, $endDate));
     }
 
