@@ -80,7 +80,7 @@ class AttendanceSummaryObserver
                 ->first()?->workTime;
         }
 
-        return $userShift ?? $ifBranchDuri ??  $isEngineer ?? WorkTime::find(1);
+        return $userShift ?? $ifBranchDuri ?? $isEngineer ?? WorkTime::find(1);
     }
 
     private function findOrCreateSummary(Attendances $attendances, WorkTime $workTime, Carbon $timestamp): AttendancesSummary
@@ -88,7 +88,9 @@ class AttendanceSummaryObserver
         $queryDate = $this->getShiftDate($timestamp, $workTime, $attendances);
 
         $summary = AttendancesSummary::where('employee_id', $attendances->employee_id)
-            ->where('work_time_id', $workTime->id)->whereDate('date', $queryDate->format('Y-m-d'))->first();
+            ->where('work_time_id', $workTime->id)->whereDate('date', $queryDate->format('Y-m-d'))
+            ->lockForUpdate()
+            ->first();
 
         if (!$summary) {
             $summary = new AttendancesSummary([
