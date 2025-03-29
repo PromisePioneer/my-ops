@@ -103,14 +103,13 @@ use Illuminate\Http\Request;
 
         $weekHolidays = WeekHoliday::whereIn('user_id', $userIds)
             ->get()
-            ->keyBy('user_id'); // Indexed by user_id untuk akses cepat
+            ->keyBy('user_id');
         $employeeSchedules = EmployeeSchedule::whereIn('employee_id', $absentIds)
             ->whereBetween('start_date', [$startDate, $endDate])
             ->where('status', 'L')
             ->get()
-            ->groupBy('employee_id'); // Indexed by employee_id untuk akses cepat
+            ->groupBy('employee_id');
 
-        // Periode kerja
         $periods = CarbonPeriod::create($startDate, $endDate)->toArray();
         $totalWorkDays = count($periods);
 
@@ -128,7 +127,6 @@ use Illuminate\Http\Request;
                 ->whereNull('clock_out')->count();
 
 
-            // Ambil data libur mingguan dan jadwal libur karyawan
             $weekHoliday = $weekHolidays[$user->id] ?? null;
             $employeeHolidays = $employeeSchedules[$user->absent_id] ?? collect();
 
