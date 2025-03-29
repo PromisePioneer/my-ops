@@ -88,7 +88,13 @@ use Throwable;
 
         $pdf = Browsershot::html($view)
             ->setOption('executablePath', env('BROWSERSHOT_CHROME_PATH'))
-            ->noSandbox()
+            ->addChromiumArguments([
+                '--headless',
+                '--disable-gpu',
+                '--disable-software-rasterizer',
+                '--disable-crash-reporter',
+                '--disable-setuid-sandbox'
+            ])
             ->waitUntilNetworkIdle()
             ->ignoreHttpsErrors()
             ->format('A4')->pdf();
