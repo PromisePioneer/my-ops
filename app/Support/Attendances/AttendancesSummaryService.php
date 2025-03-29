@@ -25,24 +25,31 @@ use Illuminate\Http\Request;
 
     public function data(Request $request): LengthAwarePaginator
     {
-        $query = User::with([
-            'attendancesSummary' => function ($query) {
-                $query->whereBetween('date', [$this->startDate, $this->endDate])->with('workTime');
-            },
-            'employeeSchedules' => function ($query) {
-                $query->where('start_date', '<=', $this->startDate)
-                    ->orderBy('start_date', 'asc');
-            },
-            'leaveAndPermissions' => function ($query) {
-                $query->where('confirmation_status', 'Diterima')
-                    ->where(function ($q) {
-                        $q->whereBetween('start_date', [$this->startDate, $this->endDate])
-                            ->orWhereBetween('end_date', [$this->startDate, $this->endDate]);
-                    });
-            },
-            'roles',
-            'weekHoliday'
-        ])->where('active', 1)->orderBy('absent_id');
+        $query = User::select('id', 'nip', 'name', 'profile_pic', 'active', 'absent_id')
+            ->with([
+                'attendancesSummary' => function ($query) {
+                    $query->select('employee_id', 'date', 'clock_in', 'clock_out', 'work_time_id')
+                        ->whereBetween('date', [$this->startDate, $this->endDate])
+                        ->with('workTime:id,clock_in,name');
+                },
+                'employeeSchedules' => function ($query) {
+                    $query->select('employee_id', 'start_date', 'status')
+                        ->where('start_date', '<=', $this->startDate)
+                        ->orderBy('start_date', 'asc');
+                },
+                'leaveAndPermissions' => function ($query) {
+                    $query->select('user_id', 'start_date', 'end_date', 'confirmation_status', 'leaves_status')
+                        ->where('confirmation_status', 'Diterima')
+                        ->where(function ($q) {
+                            $q->whereBetween('start_date', [$this->startDate, $this->endDate])
+                                ->orWhereBetween('end_date', [$this->startDate, $this->endDate]);
+                        });
+                },
+                'roles:id,name',
+                'weekHoliday:user_id,day'
+            ])
+            ->where('active', 1)
+            ->orderBy('absent_id');
 
         $data = AttendancesACLFilter::apply($query, $request);
         $attendanceSummary = $data->paginate(self::$perPage)->onEachSide(1);
@@ -89,48 +96,60 @@ use Illuminate\Http\Request;
     public function formattedData(LengthAwarePaginator $user, $startDate, $endDate): LengthAwarePaginator
     {
 
-        $data = $user->getCollection()->map(function ($user) use ($startDate, $endDate) {
+
+        // Ambil semua user IDs dan absent_ids
+        $userIds = $user->getCollection()->pluck('id');
+        $absentIds = $user->getCollection()->pluck('absent_id');
+
+        $weekHolidays = WeekHoliday::whereIn('user_id', $userIds)
+            ->get()
+            ->keyBy('user_id'); // Indexed by user_id untuk akses cepat
+        $employeeSchedules = EmployeeSchedule::whereIn('employee_id', $absentIds)
+            ->whereBetween('start_date', [$startDate, $endDate])
+            ->where('status', 'L')
+            ->get()
+            ->groupBy('employee_id'); // Indexed by employee_id untuk akses cepat
+
+        // Periode kerja
+        $periods = CarbonPeriod::create($startDate, $endDate)->toArray();
+        $totalWorkDays = count($periods);
+
+        $data = $user->getCollection()->map(function ($user) use ($startDate, $endDate, $weekHolidays, $employeeSchedules, $periods, $totalWorkDays) {
+
+
             $totalPresent = $user->attendancesSummary->count();
             $totalSick = $this->calculateLeaveDays($user, $startDate, $endDate, 'Sakit');
             $totalLeaves = $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti');
             $totalPermission = $this->calculateLeaveDays($user, $startDate, $endDate, 'Izin');
             $totalMinutesLate = $this->calculateLate($user->attendancesSummary);
-
             $totalNotCheckIn = $user->attendancesSummary->whereNull('clock_in')->count();
             $totalNotCheckOut = $user->attendancesSummary
                 ->where('date', '!=', Carbon::today()->format('Y-m-d'))
                 ->whereNull('clock_out')->count();
 
 
-            $periods = CarbonPeriod::create($startDate, $endDate);
-            $totalPeriodOfWork = [];
+            // Ambil data libur mingguan dan jadwal libur karyawan
+            $weekHoliday = $weekHolidays[$user->id] ?? null;
+            $employeeHolidays = $employeeSchedules[$user->absent_id] ?? collect();
+
+            $employeeHolidayDates = $employeeHolidays->pluck('start_date')->toArray();
 
 
-            foreach ($periods as $period) {
-                $weekHoliday = WeekHoliday::where('user_id', $user->id)->first();
+            $totalPeriodOfWork = collect($periods)->reject(function ($period) use ($weekHoliday, $employeeHolidayDates) {
+                return $weekHoliday?->day === $period->dayName || in_array($period->format('Y-m-d'), $employeeHolidayDates);
+            })->count();
 
 
-                $weekHolidayFromEmpSchedule = EmployeeSchedule::where('employee_id', $user->absent_id)
-                    ->where('start_date', $period->format('Y-m-d'))
-                    ->where('status', 'L')->first();
+            $totalPeriodOfWork -= ($totalLeaves + $totalSick + $totalPermission);
 
-                if ($period->dayName === $weekHoliday?->day || $period->format('Y-m-d') === $weekHolidayFromEmpSchedule?->start_date) {
-                    continue;
-                } else {
-                    $totalPeriodOfWork[] = $period->format('Y-m-d');
-                }
-            }
-
-
-            $totalPeriodOfWork = count($totalPeriodOfWork) - $totalLeaves - $totalSick - $totalPermission;
-
+            $totalAbsent = $totalPeriodOfWork - $totalPresent + $totalLeaves + $totalSick + $totalPermission;
 
             return [
                 'id' => $user->id,
                 'user_nip' => $user->nip,
-                'user_name' => $user?->name,
+                'user_name' => $user->name,
                 'profile_pic' => $user->profile_pic,
-                'role' => $user->roles[0]?->name ?? '',
+                'role' => $user->roles[0]->name ?? '',
                 'total_minutes_late' => (int)$totalMinutesLate,
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
@@ -138,6 +157,7 @@ use Illuminate\Http\Request;
                 'total_leaves' => $totalLeaves,
                 'total_sick' => $totalSick,
                 'total_permission' => $totalPermission,
+                'total_absent' => $totalAbsent,
             ];
         });
 
