@@ -90,15 +90,16 @@ use Throwable;
             ->setOption('executablePath', env('BROWSERSHOT_CHROME_PATH'))
             ->addChromiumArguments([
                 '--headless',
-                '--disable-gpu',
-                '--disable-software-rasterizer',
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
                 '--disable-crash-reporter',
-                '--disable-setuid-sandbox'
+                '--disable-gpu',
+                '--disable-software-rasterizer'
             ])
-            ->noSandbox()
             ->waitUntilNetworkIdle()
             ->ignoreHttpsErrors()
-            ->format('A4')->pdf();
+            ->format('A4')
+            ->pdf();
 
         return new Response($pdf, 200, [
             'Content-Type' => 'application/pdf',
