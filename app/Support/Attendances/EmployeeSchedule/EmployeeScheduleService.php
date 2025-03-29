@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 
 #[AllowDynamicProperties] class EmployeeScheduleService
 {
-    private static int $perPage = 10;
+    private static int $perPage = 50;
 
     public function __construct()
     {
