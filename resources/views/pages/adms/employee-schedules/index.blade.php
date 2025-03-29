@@ -174,26 +174,26 @@
                                             </div>
                                             <div>
                                                 <template x-if="dates.leaves">
-                                                    <button type="button"
-                                                            class="text-center border border-black text-black p-0">
+                                                    <span
+                                                        class="text-center border border-black text-black p-0">
                                                         C
-                                                    </button>
+                                                    </span>
                                                 </template>
                                             </div>
                                             <div>
                                                 <template x-if="dates.sick">
-                                                    <button type="button"
-                                                            class="text-center border border-black text-black p-0">
+                                                    <span
+                                                        class="text-center border border-black text-black p-0">
                                                         S
-                                                    </button>
+                                                    </span>
                                                 </template>
                                             </div>
                                             <div>
                                                 <template x-if="dates.permission">
-                                                    <button type="button"
-                                                            class="text-center border border-black text-black p-0">
+                                                    <span
+                                                        class="btn text-decoration-underline fw-bolder">
                                                         I
-                                                    </button>
+                                                    </span>
                                                 </template>
                                             </div>
                                         </td>
@@ -332,7 +332,7 @@
                             this.employeeSchedules = resp.data
                         } catch (e) {
                             console.log(e)
-                        }finally {
+                        } finally {
                             this.isLoading = false;
                         }
                     }
