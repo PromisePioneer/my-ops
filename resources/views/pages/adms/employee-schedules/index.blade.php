@@ -175,7 +175,7 @@
                                             <div>
                                                 <template x-if="dates.leaves">
                                                     <button type="button"
-                                                            class="btn text-decoration-underline fw-bolder">
+                                                            class="text-center border border-black text-black p-0">
                                                         C
                                                     </button>
                                                 </template>
@@ -183,7 +183,7 @@
                                             <div>
                                                 <template x-if="dates.sick">
                                                     <button type="button"
-                                                            class="btn text-decoration-underline fw-bolder">
+                                                            class="text-center border border-black text-black p-0">
                                                         S
                                                     </button>
                                                 </template>
@@ -191,7 +191,7 @@
                                             <div>
                                                 <template x-if="dates.permission">
                                                     <button type="button"
-                                                            class="btn text-decoration-underline fw-bolder">
+                                                            class="text-center border border-black text-black p-0">
                                                         I
                                                     </button>
                                                 </template>
