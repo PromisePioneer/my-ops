@@ -1046,6 +1046,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/', [EmployeeScheduleController::class, 'saveSchedules']);
             Route::get('/filter', [EmployeeScheduleController::class, 'filterByDate']);
             Route::get('/national-holidays', [EmployeeScheduleController::class, 'getNationalHoliday']);
+            Route::get('/export-pdf', [EmployeeScheduleController::class, 'exportToPDF']);
         });
     });
 

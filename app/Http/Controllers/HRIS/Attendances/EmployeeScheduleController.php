@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\EmployeeScheduleRequest;
 use App\Models\EmployeeSchedule;
 use App\Models\NationalHoliday;
+use App\Models\User;
 use App\Models\WorkTime;
 use App\Support\Attendances\EmployeeSchedule\EmployeeScheduleService;
 use App\Support\HelperService\FinancialClosePeriodService;
@@ -16,8 +17,10 @@ use Carbon\CarbonPeriod;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Spatie\Browsershot\Browsershot;
 use Throwable;
 
 #[AllowDynamicProperties] class EmployeeScheduleController extends Controller
@@ -171,5 +174,40 @@ use Throwable;
         $nationalDay = $nationalHolidayService->getNationalHoliday($startDate, $endDate);
 
         return response()->json($nationalDay);
+    }
+
+
+    public function exportToPDF(Request $request, NationalHolidayService $nationalHolidayService, FinancialClosePeriodService $financialClosePeriodService): Response
+    {
+
+        $startDate = Carbon::make($request->start_date) ?? $financialClosePeriodService->startDate();
+        $endDate = Carbon::make($request->end_date) ?? $financialClosePeriodService->endDate();
+
+        $nationalHoliday = $nationalHolidayService->getNationalHoliday($startDate, $endDate);
+
+        $data = $this->employeeScheduleService->data($request);
+
+        $view = view('pages.adms.employee-schedules.schedules', compact('data', 'nationalHoliday'))->render();
+
+
+        $pdf = Browsershot::html($view)
+            ->addChromiumArguments([
+                '--headless',
+                '--no-sandbox',
+                '--disable-setuid-sandbox'
+            ])
+            ->setDelay(200)
+            ->ignoreHttpsErrors()
+            ->margins(10, 10, 10, 10)
+            ->margins(1, 1, 1, 1)
+            ->fullPage()
+            ->taggedPdf()
+            ->pdf();
+
+
+        return new Response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="example.pdf',
+        ]);
     }
 }
