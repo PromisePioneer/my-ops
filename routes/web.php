@@ -104,7 +104,7 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
 
 
 Route::get('/test', function () {
-    $zk = new ZKTeco('103.102.248.96');
+    $zk = new ZKTeco('103.141.255.223');
     $connected = $zk->connect();
     $attendanceLog = $zk->getAttendance();
 
@@ -1045,6 +1045,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/work-time/selected/{employeeSchedule}', [EmployeeScheduleController::class, 'selectedWorkTime']);
             Route::post('/', [EmployeeScheduleController::class, 'saveSchedules']);
             Route::get('/filter', [EmployeeScheduleController::class, 'filterByDate']);
+            Route::get('/national-holidays', [EmployeeScheduleController::class, 'getNationalHoliday']);
         });
     });
 

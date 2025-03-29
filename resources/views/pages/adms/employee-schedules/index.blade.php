@@ -4,7 +4,7 @@
     @push('styles')
         <style>
             table {
-                table-layout: auto;
+                table-layout: fixed;
                 width: 100%;
                 border-collapse: collapse;
                 background: white;
@@ -12,33 +12,58 @@
 
             tr th, td {
                 text-align: center;
-                padding: 5px;
-                min-width: 100px; /* Reduce the minimum width */
+                padding: 3px;
                 white-space: nowrap; /* Prevents text wrapping */
+                border: 1px solid #000;
+            }
+
+            /* Color codes for different schedule types */
+            .shift-p {
+                background-color: #5C95FF !important; /* Green for P shift */
+            }
+
+            .shift-s {
+                background-color: #FFA9A3 !important; /* Red for S shift */
+            }
+
+            .shift-m {
+                background-color: #7E6C6C !important; /* Yellow for M shift */
+            }
+
+            .libur {
+                background-color: #0000ff !important; /* Blue for Libur/Off days */
+                color: white;
             }
 
             .fix:first-child {
                 position: sticky;
                 left: 0;
-                width: 180px;
+                width: 200px;
+                background-color: white;
             }
 
-            .fix:last-child {
-                position: sticky;
-                right: 0;
-                width: 120px;
+            .date-header {
+                font-weight: bold;
+                background-color: #009900; /* Green header background */
+                color: white;
+                border: 1px solid #000 !important;
             }
 
-            .wrapper {
-                overflow-x: hidden; /* Prevent horizontal scrolling */
+            .table-title {
+                background-color: #123458;
+                color: white;
+                text-align: center;
+                font-weight: bold;
+                padding: 8px;
+                margin-bottom: 0;
             }
 
-            .table-responsive {
-                overflow-x: auto;
-                max-width: 100%;
+            .holiday-note {
+                background-color: #123458;
+                padding: 5px;
+                margin-top: 10px;
+                border: 1px solid #D4C9BE;
             }
-
-
         </style>
     @endpush
     <div x-data="employeeScheduleData()">
@@ -75,15 +100,19 @@
                 </div>
             </div>
             <div class="card-body py-3">
+                <h3 class="table-title"
+                    x-text="`${isLoading ? `Loading...` : `JADWAL LIBUR KARYAWAN BULAN ${formatDateToMonth(employeeSchedules?.data?.[0]?.date?.at(-1)?.period_date).toUpperCase()}` }`"></h3>
                 <div class="py-5">
                     <div class="table-responsive">
                         <table class="table fs-6">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="bg-light border border-black px-5 text-dark fix">Nama</th>
+                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0 fs-9">
+                                <th :class="`${isLoading ? 'bg-light border border-black px-5 text-dark fix d-none' : 'bg-light border border-black px-5 text-dark fix'}`">
+                                    Nama
+                                </th>
                                 <template x-if="employeeSchedules?.data.length > 0">
                                     <template x-for="date in employeeSchedules?.data[0].date" :key="date.period_date">
-                                        <th class=" bg-light text-center text-black border border-black"
+                                        <th class=" bg-light text-center text-black date-header"
                                             x-text="formatDate(date.period_date)">
                                         </th>
                                     </template>
@@ -105,64 +134,65 @@
                             </template>
                             <template x-for="employeeSchedule in employeeSchedules?.data"
                                       :key="employeeSchedule.id">
-                                <tbody class="fw-bold">
+                                <tbody class="fw-bold p-0">
                                 <tr>
-                                    <td class="bg-dark border border-black text-white px-2 fix"
-                                        x-text="employeeSchedule?.name"></td>
+                                    <td class="text-white fix fs-9"
+                                        x-text="employeeSchedule?.name" style="background-color: #123458"></td>
                                     <template x-for="dates in employeeSchedule?.date">
-                                        <td :class="`${dates.leaves || dates.sick || dates.permission ? 'text-center border border-black text-black bg-warning' : dates.schedules_date?.status === 'L' || dates.is_holiday  ? 'text-center border border-black text-black bg-warning' : dates.schedules_date?.status === 'H' ? 'text-center border border-black text-white bg-info' : 'text-center border border-black text-white' }`">
+                                        <td :class="getTdClass(dates)">
                                             <div>
                                                 <template
                                                     x-if="!dates.leaves && !dates.sick && !dates.permission">
-                                                    <button type="button"
-                                                            class="btn btn-link text-decoration-underline"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#modal-create"
-                                                            :disabled="Number(createPermission) !== 1"
-                                                            :class="`${dates.schedules_date?.status === 'L'  || dates.is_holiday ? 'text-black fw-bolder text-uppercase' : dates.schedules_date?.status === 'H' ? 'text-white fw-bolder text-uppercase' : 'text-black'}`"
-                                                            @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.period_dates ??  dates.period_date )"
+                                                    <a href="#"
+                                                       class="btn btn-link btn-sm text-decoration-underline"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#modal-create"
+                                                       :disabled="Number(createPermission) !== 1"
+                                                       @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.period_dates ??  dates.period_date )"
                                                     >
 
                                                         <template
                                                             x-if="dates.schedules_date?.status === 'H' && dates.is_holiday === null">
                                                             <span
-                                                                x-text="`${dates.schedules_date?.work_time?.name} (HADIR)`"></span>
+                                                                x-text="`${dates.schedules_date?.work_time?.name.charAt(0)}`"></span>
                                                         </template>
 
 
                                                         <template
                                                             x-if="dates.is_holiday === 1 || dates.schedules_date?.status === 'L'">
-                                                            <span >Libur</span>
+                                                            <span>L</span>
                                                         </template>
 
                                                         <template
                                                             x-if="!dates?.work_time_schedules && !dates.is_holiday && !dates.schedules_date">
                                                             <span>
-                                                                <i class="fas fa-add text-danger"></i>
-                                                                Tambah
+                                                               P
                                                             </span>
                                                         </template>
-                                                    </button>
+                                                    </a>
                                                 </template>
                                             </div>
                                             <div>
                                                 <template x-if="dates.leaves">
-                                                    <button type="button" class="btn text-decoration-underline fw-bolder">
-                                                        CUTI
+                                                    <button type="button"
+                                                            class="btn text-decoration-underline fw-bolder">
+                                                        C
                                                     </button>
                                                 </template>
                                             </div>
                                             <div>
                                                 <template x-if="dates.sick">
-                                                    <button type="button" class="btn text-decoration-underline fw-bolder">
-                                                        SAKIT
+                                                    <button type="button"
+                                                            class="btn text-decoration-underline fw-bolder">
+                                                        S
                                                     </button>
                                                 </template>
                                             </div>
                                             <div>
                                                 <template x-if="dates.permission">
-                                                    <button type="button" class="btn text-decoration-underline fw-bolder">
-                                                        IZIN
+                                                    <button type="button"
+                                                            class="btn text-decoration-underline fw-bolder">
+                                                        I
                                                     </button>
                                                 </template>
                                             </div>
@@ -173,9 +203,15 @@
                             </template>
                         </table>
                     </div>
+                    <div class="holiday-note mt-3">
+                        <template x-for="holiday in nationalHolidays" :key="holiday.id">
+
+                            <p class="mb-1 text-white" x-text="`${holiday.date} : ${holiday.description}`"></p>
+                        </template>
+                    </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <span class="text-danger fs-3">
+                            <span class="text-danger fs-9">
                                 Note : Harap Isi Cuti, Izin, Sakit di Menu Manejemen Cuti Terlebih dahulu per periode.
                             </span>
                         </div>
@@ -213,9 +249,11 @@
                 isCrossMidnightShift: false,
                 dayCount: 1,
                 isDayCount: false,
+                nationalHolidays: [],
                 async init() {
                     await this.getEmployeeSchedules();
                     await this.getWorkTimeData();
+                    await this.getNationalHoliday();
                 },
                 async getEmployeeSchedules() {
                     const start_date = document.getElementById('start_dates')?.value ?? null;
@@ -229,6 +267,24 @@
                             }
                         });
                         this.employeeSchedules = resp.data
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false
+                    }
+                },
+                async getNationalHoliday() {
+                    const start_date = document.getElementById('start_dates')?.value ?? null;
+                    const end_date = document.getElementById('end_date')?.value ?? null;
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/adms/employee-schedules/national-holidays', {
+                            params: {
+                                startDate: start_date,
+                                endDate: end_date
+                            }
+                        });
+                        this.nationalHolidays = resp.data
                     } catch (e) {
                         console.log(e)
                     } finally {
@@ -250,10 +306,14 @@
                 formatDate(val) {
                     const date = new Date(val);
                     return date.toLocaleDateString("id", {
-                        weekday: "short",
-                        year: "numeric",
-                        month: "2-digit",
                         day: "numeric",
+                    });
+                },
+                formatDateToMonth(val) {
+                    const date = new Date(val);
+                    return date.toLocaleDateString("id", {
+                        month: "long",
+                        year: "numeric"
                     });
                 },
                 async paginationEndPoint(url) {
@@ -261,6 +321,8 @@
                     const endDate = document.getElementById('end_date').value;
                     if (url) {
                         try {
+                            this.employeeSchedules = [];
+                            this.isLoading = true;
                             const resp = await axios.get(`${url}`, {
                                 params: {
                                     start_date: startDate,
@@ -269,6 +331,8 @@
                             });
                             this.employeeSchedules = resp.data
                         } catch (e) {
+                            console.log(e)
+                        }finally {
                             this.isLoading = false;
                         }
                     }
@@ -364,6 +428,71 @@
                         this.buttonLoading = false;
                     }
                 },
+
+                getTdClass(dates) {
+                    // Check for leave, sick, or permission status
+                    if (dates.leaves || dates.sick || dates.permission) {
+                        return 'text-center border border-black text-black bg-warning p-0';
+                    }
+
+                    if (dates.schedules_date?.status === 'L' || dates.is_holiday) {
+                        return 'text-center border border-black text-black bg-warning p-0';
+                    }
+
+                    if (dates.schedules_date?.status === 'H' && dates.schedules_date.work_time.name === 'Pagi') {
+                        return 'text-center border border-black shift-p text-white  p-0';
+                    }
+
+                    if (dates.schedules_date?.status === 'H' && dates.schedules_date.work_time.name === 'Pagi (Ramadhan)') {
+                        return 'text-center border border-black text-white shift-p bg-info p-0';
+                    }
+
+
+                    if (dates.schedules_date?.status === 'H' && dates.schedules_date.work_time.name === 'Lapangan') {
+                        return 'text-center border border-black shift-p text-white  p-0';
+                    }
+
+                    if (dates.schedules_date?.status === 'H' && dates.schedules_date.work_time.name === 'Lapangan (Ramadhan)') {
+                        return 'text-center border border-black text-white shift-p bg-info p-0';
+                    }
+
+                    if (dates.schedules_date?.status === 'H' && dates.schedules_date.work_time.name === 'Duri') {
+                        return 'text-center border border-black shift-p text-white  p-0';
+                    }
+
+                    if (dates.schedules_date?.status === 'H' && dates.schedules_date.work_time.name === 'Duri (Ramadhan)') {
+                        return 'text-center border border-black text-white shift-p bg-info p-0';
+                    }
+
+
+                    if (dates.schedules_date?.status === 'H' && dates.schedules_date.work_time.name === 'Lapangan') {
+                        return 'text-center border border-black shift-p text-white  p-0';
+                    }
+
+                    if (dates.schedules_date?.status === 'H' && dates.schedules_date.work_time.name === 'Lapangan (Ramadhan)') {
+                        return 'text-center border border-black text-white shift-p bg-info p-0';
+                    }
+
+                    if (dates.schedules_date?.status === 'H' && dates.schedules_date.work_time.name === 'Sore') {
+                        return 'text-center border border-black shift-s p-0';
+                    }
+
+
+                    if (dates.schedules_date?.status === 'H' && dates.schedules_date.work_time.name === 'Malam') {
+                        return 'text-center border border-black shift-m p-0';
+                    }
+
+
+                    if (dates.schedules_date?.status === 'H' && dates.schedules_date.work_time.name === 'KU Malam') {
+                        return 'text-center border border-black shift-m p-0';
+                    }
+
+                    if (!dates?.work_time_schedules && !dates.is_holiday && !dates.schedules_date) {
+                        return 'text-center border border-black shift-p fw-bolder p-0'
+                    }
+
+                    return 'text-center border border-black text-white p-0';
+                }
             }
         }
     </script>

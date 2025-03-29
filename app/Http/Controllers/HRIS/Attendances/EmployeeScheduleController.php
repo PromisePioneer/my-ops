@@ -6,8 +6,11 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmployeeScheduleRequest;
 use App\Models\EmployeeSchedule;
+use App\Models\NationalHoliday;
 use App\Models\WorkTime;
 use App\Support\Attendances\EmployeeSchedule\EmployeeScheduleService;
+use App\Support\HelperService\FinancialClosePeriodService;
+use App\Support\NationalHolidayService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -157,5 +160,16 @@ use Throwable;
                 'status' => $request->status,
             ]);
         }
+    }
+
+
+    public function getNationalHoliday(Request $request, NationalHolidayService $nationalHolidayService, FinancialClosePeriodService $financialClosePeriodService): JsonResponse
+    {
+        $startDate = Carbon::make($request->start_date) ?? $financialClosePeriodService->startDate();
+        $endDate = Carbon::make($request->end_date) ?? $financialClosePeriodService->endDate();
+
+        $nationalDay = $nationalHolidayService->getNationalHoliday($startDate, $endDate);
+
+        return response()->json($nationalDay);
     }
 }
