@@ -87,6 +87,7 @@ use Throwable;
 
 
         $pdf = Browsershot::html($view)
+            ->setOption('executablePath', env('BROWSERSHOT_CHROME_PATH'))
             ->noSandbox()
             ->waitUntilNetworkIdle()
             ->ignoreHttpsErrors()
