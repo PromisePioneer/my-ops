@@ -168,6 +168,12 @@
                                                         <td class="min-w-125px"
                                                             x-text="`${attendance.total_sick}`"></td>
                                                     </tr>
+                                                    <tr class="bg-gray-100 text-center">
+                                                        <td class="min-w-125px">Alfa</td>
+                                                        <td class="min-w-125px">:</td>
+                                                        <td class="min-w-125px"
+                                                            x-text="`${attendance.total_absent}`"></td>
+                                                    </tr>
                                                 </table>
                                             </div>
                                         </div>
