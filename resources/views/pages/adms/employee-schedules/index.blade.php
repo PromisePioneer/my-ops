@@ -175,7 +175,7 @@
                                             <div>
                                                 <template x-if="dates.leaves">
                                                     <span
-                                                        class="text-center text-black p-0">
+                                                        class="text-black p-0">
                                                         C
                                                     </span>
                                                 </template>
@@ -183,7 +183,7 @@
                                             <div>
                                                 <template x-if="dates.sick">
                                                     <span
-                                                        class="text-center text-black p-0">
+                                                        class="text-black p-0">
                                                         S
                                                     </span>
                                                 </template>
@@ -191,7 +191,7 @@
                                             <div>
                                                 <template x-if="dates.permission">
                                                     <span
-                                                        class="btn text-decoration-underline fw-bolder">
+                                                        class="fw-bolder">
                                                         I
                                                     </span>
                                                 </template>
