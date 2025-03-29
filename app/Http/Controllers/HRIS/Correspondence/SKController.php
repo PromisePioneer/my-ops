@@ -95,6 +95,7 @@ use Throwable;
                 '--disable-crash-reporter',
                 '--disable-setuid-sandbox'
             ])
+            ->noSandbox()
             ->waitUntilNetworkIdle()
             ->ignoreHttpsErrors()
             ->format('A4')->pdf();
