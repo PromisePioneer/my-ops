@@ -140,62 +140,36 @@
                                         x-text="employeeSchedule?.name" style="background-color: #123458"></td>
                                     <template x-for="dates in employeeSchedule?.date">
                                         <td :class="getTdClass(dates)">
-                                            <div>
+                                            <button href="#"
+                                                    class="btn btn-link btn-sm text-decoration-underline"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#modal-create"
+                                                    :disabled="Number(createPermission) !== 1 || dates.leaves || dates.sick || dates.permission"
+                                                    @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.period_dates ??  dates.period_date )"
+                                            >
                                                 <template
-                                                    x-if="!dates.leaves && !dates.sick && !dates.permission">
-                                                    <a href="#"
-                                                       class="btn btn-link btn-sm text-decoration-underline"
-                                                       data-bs-toggle="modal"
-                                                       data-bs-target="#modal-create"
-                                                       :disabled="Number(createPermission) !== 1"
-                                                       @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.period_dates ??  dates.period_date )"
-                                                    >
-
-                                                        <template
-                                                            x-if="dates.schedules_date?.status === 'H' && dates.is_holiday === null">
+                                                    x-if="!dates.leaves && !dates.sick && !dates.permission && dates.schedules_date?.status === 'H' && dates.is_holiday === null">
                                                             <span
                                                                 x-text="`${dates.schedules_date?.work_time?.name.charAt(0)}`"></span>
-                                                        </template>
-
-
-                                                        <template
-                                                            x-if="dates.is_holiday === 1 || dates.schedules_date?.status === 'L'">
-                                                            <span>L</span>
-                                                        </template>
-
-                                                        <template
-                                                            x-if="!dates?.work_time_schedules && !dates.is_holiday && !dates.schedules_date">
-                                                            <span>
-                                                               P
-                                                            </span>
-                                                        </template>
-                                                    </a>
                                                 </template>
-                                            </div>
-                                            <div>
+                                                <template
+                                                    x-if="dates.is_holiday === 1 || dates.schedules_date?.status === 'L'">
+                                                    <span>L</span>
+                                                </template>
+                                                <template
+                                                    x-if="!dates?.work_time_schedules && !dates.is_holiday && !dates.schedules_date && !dates.leaves && !dates.sick && !dates.permission">
+                                                    <span>P</span>
+                                                </template>
                                                 <template x-if="dates.leaves">
-                                                    <span
-                                                        class="text-black p-0">
-                                                        C
-                                                    </span>
+                                                    <span class="fw-bolder text-black">C</span>
                                                 </template>
-                                            </div>
-                                            <div>
                                                 <template x-if="dates.sick">
-                                                    <span
-                                                        class="text-black p-0">
-                                                        S
-                                                    </span>
+                                                    <span class="fw-bolder text-black">S</span>
                                                 </template>
-                                            </div>
-                                            <div>
                                                 <template x-if="dates.permission">
-                                                    <span
-                                                        class="fw-bolder">
-                                                        I
-                                                    </span>
+                                                    <span class="fw-bolder text-black">I</span>
                                                 </template>
-                                            </div>
+                                            </button>
                                         </td>
                                     </template>
                                 </tr>
@@ -432,7 +406,7 @@
                 getTdClass(dates) {
                     // Check for leave, sick, or permission status
                     if (dates.leaves || dates.sick || dates.permission) {
-                        return 'text-center border border-black text-black bg-warning p-0';
+                        return 'text-center border border-black text-black bg-warning p-0 fw-bolder';
                     }
 
                     if (dates.schedules_date?.status === 'L' || dates.is_holiday) {
