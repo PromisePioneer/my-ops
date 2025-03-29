@@ -150,7 +150,7 @@
                                                 <template
                                                     x-if="!dates.leaves && !dates.sick && !dates.permission && dates.schedules_date?.status === 'H' && dates.is_holiday === null">
                                                             <span
-                                                                x-text="`${dates.schedules_date?.work_time?.name.charAt(0)}`"></span>
+                                                                x-text="getWorkTime(dates)"></span>
                                                 </template>
                                                 <template
                                                     x-if="dates.is_holiday === 1 || dates.schedules_date?.status === 'L'">
@@ -448,6 +448,7 @@
                     }
 
                     if (dates.schedules_date?.status === 'H' && dates.schedules_date.work_time.name === 'Sore') {
+
                         return 'text-center border border-black shift-s p-0';
                     }
 
@@ -466,6 +467,23 @@
                     }
 
                     return 'text-center border border-black text-white p-0';
+                },
+                getWorkTime(dates) {
+                    if (dates.schedules_date.work_time.name === 'Pagi' || dates.schedules_date.work_time.name === 'Pagi (Ramadhan)' || dates.schedules_date.work_time.name === 'Duri' || dates.schedules_date.work_time.name === 'Duri (Ramadhan)' || dates.schedules_date.work_time.name === 'Lapangan' || dates.schedules_date.work_time.name === 'Lapangan (Ramadhan)') {
+                        return 'P';
+                    }
+
+                    if (dates.schedules_date.work_time.name === 'Sore') {
+
+                        return 'S';
+                    }
+
+
+                    if (dates.schedules_date.work_time.name === 'Malam' || dates.schedules_date.work_time.name === 'KU Malam') {
+                        return 'M';
+                    }
+
+                    return 'P';
                 }
             }
         }

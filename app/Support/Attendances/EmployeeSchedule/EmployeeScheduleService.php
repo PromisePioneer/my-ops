@@ -29,7 +29,14 @@ use Illuminate\Support\Collection;
 
     public function query(): Builder
     {
-        return User::with('employeeSchedules', 'roles', 'userHasArea')->orderBy('name');
+        return User::with([
+            'employeeSchedules' => function ($query) {
+                $query->select('id', 'employee_id', 'start_date', 'work_time_id', 'status');
+            },
+            'roles:id,name',
+            'userHasArea:id,user_id,area_id'
+        ])
+            ->orderBy('name');
     }
 
 
@@ -60,8 +67,8 @@ use Illuminate\Support\Collection;
 
     public function filterByDate($request)
     {
-        $startDate = $request->start_date;
-        $endDate = $request->end_date;
+        $startDate = Carbon::make($request->start_date);
+        $endDate = Carbon::make($request->end_date);
         $user = EmployeeScheduleACLFilter::apply($this->query(), $request);
         $data = $user->paginate(self::$perPage);
         return self::formattedData($data, $startDate, $endDate);
@@ -72,28 +79,31 @@ use Illuminate\Support\Collection;
     {
 
 
-        $period = CarbonPeriod::create($startDate ?? $this->startDate, $endDate ?? $this->endDate);
-        $data = $userData->getCollection()->map(function ($item) use ($period) {
-            $allSchedules = $item->employeeSchedules
-                ->whereBetween('start_date', [$startDate ?? $this->startDate->format('Y-m-d'), $endDate ?? $this->endDate->format('Y-m-d')])
-                ->keyBy('start_date');
-            $getLeaves = $this->getLeaves($item);
-            $getSick = $this->getSick($item);
-            $getPermission = $this->getPermission($item);
+        $startDate = $startDate ?? $this->startDate->format('Y-m-d');
+        $endDate = $endDate ?? $this->endDate->format('Y-m-d');
+        $period = collect(CarbonPeriod::create($startDate, $endDate))->map(fn($d) => $d->format('Y-m-d'));
 
-            $dates = [];
-            foreach ($period as $date) {
-                $formattedDate = $date->format('Y-m-d');
-                $leaveDetails = $getLeaves[$formattedDate] ?? null;
-                $sickDetails = $getSick[$formattedDate] ?? null;
-                $permissionDetails = $getPermission[$formattedDate] ?? null;
-                $employeeSchedule = $allSchedules[$formattedDate] ?? null;
-                $dates[$formattedDate] = [
-                    'periodDate' => $formattedDate,
-                    'employeeSchedules' => $employeeSchedule,
-                    'leaves' => $leaveDetails,
-                    'sick' => $sickDetails,
-                    'permission' => $permissionDetails,
+        $userIds = $userData->pluck('id')->toArray();
+
+        $allLeaves = $this->getLeaves($userIds);
+        $allSick = $this->getSick($userIds);
+        $allPermission = $this->getPermission($userIds);
+
+        $data = $userData->getCollection()->map(function ($item) use ($period, $allLeaves, $allSick, $allPermission) {
+            $schedules = $item->employeeSchedules->keyBy('start_date');
+            $leaves = $allLeaves[$item->id] ?? [];
+            $sick = $allSick[$item->id] ?? [];
+            $permission = $allPermission[$item->id] ?? [];
+
+            $dates = array_fill_keys($period->toArray(), []);
+
+            foreach ($dates as $date => &$entry) {
+                $entry = [
+                    'periodDate' => $date,
+                    'employeeSchedules' => $schedules[$date] ?? null,
+                    'leaves' => $leaves[$date] ?? null,
+                    'sick' => $sick[$date] ?? null,
+                    'permission' => $permission[$date] ?? null,
                 ];
             }
 
@@ -102,7 +112,9 @@ use Illuminate\Support\Collection;
                 'name' => $item->name,
                 'absent_id' => $item->absent_id,
                 'date' => collect($dates)->map(function ($date) use ($item) {
-                    $weekHoliday = WeekHoliday::where('user_id', $item->id)->where('day', Carbon::parse($date['periodDate'])->dayName)->first();
+                    $weekHoliday = WeekHoliday::where('user_id', $item->id)
+                        ->where('day', Carbon::parse($date['periodDate'])->dayName)
+                        ->first();
                     return [
                         'period_date' => $date['periodDate'],
                         'schedules_date' => $date['employeeSchedules'] ?? null,
@@ -119,6 +131,54 @@ use Illuminate\Support\Collection;
 
         $userData->setCollection($data);
         return $userData;
+
+    }
+
+
+    private function getLeaves(array $userIds): array
+    {
+        return $this->getLeaveData($userIds, 'Cuti');
+    }
+
+    private function getSick(array $userIds): array
+    {
+        return $this->getLeaveData($userIds, 'Sakit');
+    }
+
+    private function getPermission(array $userIds): array
+    {
+        return $this->getLeaveData($userIds, 'Izin');
+    }
+
+    private function getLeaveData(array $userIds, string $type): array
+    {
+        $leaves = LeaveAndPermission::whereIn('user_id', $userIds)
+            ->where('leaves_status', $type)
+            ->where('confirmation_status', 'Diterima')
+            ->where(function ($query) {
+                $query->whereBetween('start_date', [$this->startDate, $this->endDate])
+                    ->orWhereBetween('end_date', [$this->startDate, $this->endDate]);
+            })
+            ->get()
+            ->groupBy('user_id');
+
+        $result = [];
+
+        foreach ($leaves as $userId => $entries) {
+            $dates = [];
+            foreach ($entries as $entry) {
+                foreach (CarbonPeriod::create($entry->start_date, $entry->end_date) as $date) {
+                    $formattedDate = $date->format('Y-m-d');
+                    $dates[$formattedDate] = [
+                        'leave_date' => $formattedDate,
+                        'status' => $type,
+                    ];
+                }
+            }
+            $result[$userId] = $dates;
+        }
+
+        return $result;
     }
 
 
@@ -141,87 +201,87 @@ use Illuminate\Support\Collection;
     }
 
 
-    public function getPermission($user): array
-    {
-        $permission = $this->leavesQuery($user, 'Izin');
-
-        $permissionPeriod = [];
-
-        foreach ($permission as $dates) {
-            $permissionPeriod = array_merge(
-                $permissionPeriod,
-                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
-            );
-        }
-
-        $permission = [];
-        foreach ($permissionPeriod as $date) {
-            $formattedDate = Carbon::parse($date)->format('Y-m-d');
-            $permission[$formattedDate] = collect([
-                'permission_date' => $formattedDate,
-                'status' => 'Izin',
-            ]);
-        }
-
-        return $permission;
-    }
-
-
-    public function getSick($user): array
-    {
-        $sick = $this->leavesQuery($user, 'Sakit');
-
-        $sickPeriod = [];
-
-        foreach ($sick as $dates) {
-            $sickPeriod = array_merge(
-                $sickPeriod,
-                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
-            );
-        }
-
-        $sick = [];
-        foreach ($sickPeriod as $date) {
-            $formattedDate = Carbon::parse($date)->format('Y-m-d');
-            $sick[$formattedDate] = collect([
-                'sick_date' => $formattedDate,
-                'status' => 'Sakit',
-            ]);
-        }
-
-        return $sick;
-    }
-
-    public function getLeaves($user): array
-    {
-        $leaveAndPermission = LeaveAndPermission::where('user_id', $user->id)
-            ->where('leaves_status', 'Cuti')
-            ->where('confirmation_status', 'Diterima')
-            ->where(function ($query) {
-                $query->whereBetween('start_date', [$this->startDate, $this->endDate])
-                    ->orWhereBetween('end_date', [$this->startDate, $this->endDate]);
-            })->get();
-
-
-        $leavePeriods = [];
-
-        foreach ($leaveAndPermission as $dates) {
-            $leavePeriods = array_merge(
-                $leavePeriods,
-                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
-            );
-        }
-
-        $leaves = [];
-        foreach ($leavePeriods as $date) {
-            $formattedDate = Carbon::parse($date)->format('Y-m-d');
-            $leaves[$formattedDate] = collect([
-                'leaves_date' => $formattedDate,
-                'status' => 'Cuti',
-            ]);
-        }
-
-        return $leaves;
-    }
+//    public function getPermission($user): array
+//    {
+//        $permission = $this->leavesQuery($user, 'Izin');
+//
+//        $permissionPeriod = [];
+//
+//        foreach ($permission as $dates) {
+//            $permissionPeriod = array_merge(
+//                $permissionPeriod,
+//                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
+//            );
+//        }
+//
+//        $permission = [];
+//        foreach ($permissionPeriod as $date) {
+//            $formattedDate = Carbon::parse($date)->format('Y-m-d');
+//            $permission[$formattedDate] = collect([
+//                'permission_date' => $formattedDate,
+//                'status' => 'Izin',
+//            ]);
+//        }
+//
+//        return $permission;
+//    }
+//
+//
+//    public function getSick($user): array
+//    {
+//        $sick = $this->leavesQuery($user, 'Sakit');
+//
+//        $sickPeriod = [];
+//
+//        foreach ($sick as $dates) {
+//            $sickPeriod = array_merge(
+//                $sickPeriod,
+//                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
+//            );
+//        }
+//
+//        $sick = [];
+//        foreach ($sickPeriod as $date) {
+//            $formattedDate = Carbon::parse($date)->format('Y-m-d');
+//            $sick[$formattedDate] = collect([
+//                'sick_date' => $formattedDate,
+//                'status' => 'Sakit',
+//            ]);
+//        }
+//
+//        return $sick;
+//    }
+//
+//    public function getLeaves($user): array
+//    {
+//        $leaveAndPermission = LeaveAndPermission::where('user_id', $user->id)
+//            ->where('leaves_status', 'Cuti')
+//            ->where('confirmation_status', 'Diterima')
+//            ->where(function ($query) {
+//                $query->whereBetween('start_date', [$this->startDate, $this->endDate])
+//                    ->orWhereBetween('end_date', [$this->startDate, $this->endDate]);
+//            })->get();
+//
+//
+//        $leavePeriods = [];
+//
+//        foreach ($leaveAndPermission as $dates) {
+//            $leavePeriods = array_merge(
+//                $leavePeriods,
+//                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
+//            );
+//        }
+//
+//        $leaves = [];
+//        foreach ($leavePeriods as $date) {
+//            $formattedDate = Carbon::parse($date)->format('Y-m-d');
+//            $leaves[$formattedDate] = collect([
+//                'leaves_date' => $formattedDate,
+//                'status' => 'Cuti',
+//            ]);
+//        }
+//
+//        return $leaves;
+//    }
 
 }
