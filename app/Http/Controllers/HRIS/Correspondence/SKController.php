@@ -102,7 +102,9 @@ use Throwable;
             ->waitUntilNetworkIdle()
             ->ignoreHttpsErrors()
             ->format('A4')
-            ->pdf();
+            ->setEnvironmentOptions([
+                'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
+            ])->pdf();
 
 
         return new Response($pdf, 200, [
