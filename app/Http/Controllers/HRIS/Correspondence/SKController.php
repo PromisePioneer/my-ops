@@ -99,11 +99,13 @@ use Throwable;
                 'disable-dev-shm-usage',
                 'disable-extensions'
             ])
-            ->waitUntilNetworkIdle()
+            ->setDelay(200)
             ->ignoreHttpsErrors()
             ->format('A4')
             ->setEnvironmentOptions([
-                'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
+                'CHROME_CONFIG_HOME' => php_uname('s') === 'Windows NT'
+                    ? storage_path('app\\chrome\\config') // Path Windows
+                    : storage_path('app/chrome/.config')  // Path Linux/Mac
             ])->pdf();
 
 
