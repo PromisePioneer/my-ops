@@ -46,7 +46,7 @@ class UserRequest extends FormRequest
                 Rule::exists('roles', 'name'),
             ],
             'day' => [
-                'required', Rule::in('Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'),
+                'required', Rule::in('Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'),
             ]
         ];
     }
