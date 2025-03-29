@@ -157,6 +157,7 @@
 @push('script')
     <script>
         $('.date').flatpickr();
+
         function attendancesSummaryDetail() {
             return {
                 correctionPermission: "{{ request()->user()->can('Koreksi Data Riwayat Absensi') }}",
@@ -175,8 +176,16 @@
                     await this.getWorkTimes();
                 },
                 async getAttendanceSummaryRecords() {
-                    const resp = await axios.get(`/adms/attendances-summary/detail/data/${this.id}/${this.startDates}/${this.endDates}`);
-                    this.attendancesSummaryRecords = resp.data;
+                    try {
+                        this.isLoading = true;
+                        this.attendancesSummaryRecords = [];
+                        const resp = await axios.get(`/adms/attendances-summary/detail/data/${this.id}/${this.startDates}/${this.endDates}`);
+                        this.attendancesSummaryRecords = resp.data;
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async filter() {
                     const startDate = document.getElementById('start_date')?.value ?? null;
@@ -251,11 +260,11 @@
                             if (startDate !== '' && endDate !== '') {
                                 const resp = await axios.get(`/adms/attendances-summary/detail/filter/${this.id}`,
                                     {
-                                    params: {
-                                        start_date: startDate,
-                                        end_date: endDate,
-                                    }
-                                });
+                                        params: {
+                                            start_date: startDate,
+                                            end_date: endDate,
+                                        }
+                                    });
                                 this.attendancesSummaryRecords = resp.data;
                             } else {
                                 await this.init();
