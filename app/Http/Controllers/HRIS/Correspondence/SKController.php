@@ -89,12 +89,12 @@ use Throwable;
         $pdf = Browsershot::html($view)
             ->setOption('executablePath', env('BROWSERSHOT_CHROME_PATH'))
             ->addChromiumArguments([
-                '--headless',
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-crash-reporter',
-                '--disable-gpu',
-                '--disable-software-rasterizer'
+                'headless',
+                'no-sandbox',
+                'disable-setuid-sandbox',
+                'disable-crash-reporter',
+                'disable-gpu',
+                'disable-software-rasterizer'
             ])
             ->waitUntilNetworkIdle()
             ->ignoreHttpsErrors()
