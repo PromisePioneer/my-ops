@@ -49,7 +49,7 @@
                                     @can('Tambah Data Area')
                                         <button type="button" class="btn btn-light-primary btn-sm"
                                                 data-bs-toggle="modal"
-                                                data-bs-target="#modal-area">
+                                                data-bs-target="#modal-area" @click="add()">
                                             <i class="ki-duotone ki-message-add fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>

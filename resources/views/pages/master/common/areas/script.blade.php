@@ -19,6 +19,9 @@
                 await this.getArea();
                 await this.getDepartments();
             },
+            add() {
+                this.editVal = '';
+            },
             async getArea() {
                 const resp = await axios.get('/master/common/area/data')
                 this.areas = resp.data;
