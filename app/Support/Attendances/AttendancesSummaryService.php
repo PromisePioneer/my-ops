@@ -140,7 +140,11 @@ use Illuminate\Http\Request;
 
             $totalPeriodOfWork -= ($totalLeaves + $totalSick + $totalPermission);
 
-            $totalAbsent = $totalPeriodOfWork - $totalPresent;
+            $totalAbsent = collect($periods)
+                ->filter(fn ($period) => $period->lessThan(Carbon::today()))
+                ->reject(fn ($period) => $weekHoliday?->day === $period->dayName || in_array($period->format('Y-m-d'), $employeeHolidayDates))
+                ->filter(fn ($period) => !$user->attendancesSummary->where('date', $period->format('Y-m-d'))->whereNotNull('clock_in')->whereNotNull('clock_out')->count())
+                ->count();
 
             return [
                 'id' => $user->id,
