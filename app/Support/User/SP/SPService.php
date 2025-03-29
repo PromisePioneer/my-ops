@@ -16,6 +16,7 @@ use function App\Helper\convertToRoman;
 #[AllowDynamicProperties] class SPService
 {
     private static int $perPage = 10;
+
     public function __construct()
     {
         $this->SPRepository = new SPRepository();
@@ -32,13 +33,13 @@ use function App\Helper\convertToRoman;
             $startingNumber = $convertInvNumberToArray[0];
             $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
-            return $startValue.'/MY-SP/'.$spMonth.'/'.$spYear;
+            return $startValue . '/MY-SP/' . $spMonth . '/' . $spYear;
         }
 
         $startingNumber = '001';
         $startValue = str_pad((int)$startingNumber, 3, '0', STR_PAD_LEFT);
 
-        return $startValue.'/MY-SP/'.$spMonth.'/'.$spYear;
+        return $startValue . '/MY-SP/' . $spMonth . '/' . $spYear;
     }
 
 
@@ -126,16 +127,21 @@ use function App\Helper\convertToRoman;
 
     public function update(SPRequest $request, SP $sp): void
     {
-        $punishedBy = User::where('id', $request->punished_by)->first();
-        $sp->update([
-            'date' => $request->date,
-            'user_id' => $request->user_id,
-            'sp_number' => $this->generateSpNumber($request),
-            'sp_type' => $request->sp_type,
-            'created_by' => $request->user()->id,
-            'list_of_reason' => json_encode($request['data']),
-            'punished_by' => $request->punished_by
-        ]);
+
+        $endDate = Carbon::parse($request->start_date)->addMonths(6);
+
+        DB::transaction(function () use ($sp, $request, $endDate) {
+            $sp->update([
+                'start_date' => $request->start_date,
+                'end_date' => $endDate,
+                'user_id' => $request->user_id,
+                'sp_number' => $this->generateSpNumber($request),
+                'sp_type' => $request->input('sp_type'),
+                'created_by' => $request->user()->id,
+                'list_of_reason' => json_encode($request['data']),
+                'punished_by' => $request->punished_by
+            ]);
+        });
     }
 
     public function showSPDetail(SP $sp): array
