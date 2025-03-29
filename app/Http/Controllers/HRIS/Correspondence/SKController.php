@@ -94,12 +94,16 @@ use Throwable;
                 'disable-setuid-sandbox',
                 'disable-crash-reporter',
                 'disable-gpu',
-                'disable-software-rasterizer'
+                'disable-software-rasterizer',
+                'disable-background-networking',
+                'disable-dev-shm-usage',
+                'disable-extensions'
             ])
             ->waitUntilNetworkIdle()
             ->ignoreHttpsErrors()
             ->format('A4')
             ->pdf();
+
 
         return new Response($pdf, 200, [
             'Content-Type' => 'application/pdf',
