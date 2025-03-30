@@ -45,9 +45,9 @@ class AttendanceSummaryObserver
 
     private function getWorkTime(Attendances $attendances, User $user, Carbon $timestamp): ?WorkTime
     {
-        $isEngineer = $user->hasAnyRole(['Engineer', 'Senior Engineer', 'KU Engineer', 'Quality Control Staff', 'Warehouse Security']) ? WorkTime::find(2) : null;
+        $isEngineer = $user->hasAnyRole(['Engineer', 'Senior Engineer', 'KU Engineer', 'Quality Control Staff', 'Warehouse Security']) ? WorkTime::find(12) : null;
 
-        $ifBranchDuri = $user->branch_id === 2 ? WorkTime::find(13) : null;
+        $ifBranchDuri = $user->branch_id === 2 ? WorkTime::find(14) : null;
 
         $userShift = null;
 
@@ -80,7 +80,7 @@ class AttendanceSummaryObserver
                 ->first()?->workTime;
         }
 
-        return $userShift ?? $ifBranchDuri ?? $isEngineer ?? WorkTime::find(1);
+        return $userShift ?? $ifBranchDuri ?? $isEngineer ?? WorkTime::find(11);
     }
 
     private function findOrCreateSummary(Attendances $attendances, WorkTime $workTime, Carbon $timestamp): AttendancesSummary
