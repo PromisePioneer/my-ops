@@ -89,7 +89,6 @@ class AttendanceSummaryObserver
 
         $summary = AttendancesSummary::where('employee_id', $attendances->employee_id)
             ->where('work_time_id', $workTime->id)->whereDate('date', $queryDate->format('Y-m-d'))
-            ->lockForUpdate()
             ->first();
 
         if (!$summary) {
