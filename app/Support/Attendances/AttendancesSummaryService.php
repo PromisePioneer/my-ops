@@ -46,7 +46,8 @@ use Illuminate\Http\Request;
                         });
                 },
                 'roles:id,name',
-                'weekHoliday:user_id,day'
+                'weekHoliday:user_id,day',
+                'company:id,name',
             ])
             ->where('active', 1)
             ->orderBy('absent_id');
