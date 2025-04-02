@@ -21,18 +21,26 @@
                         </span>
                             @enderror
                         </div>
-                        <div class="fv-row mb-10">
+                        <div class="fv-row mb-2">
                             <div class="d-flex flex-stack mb-2">
                                 <label class="form-label fw-bolder text-dark fs-6 mb-0">Password</label>
                             </div>
                             <input
                                 class="form-control form-control-lg form-control-solid @error('password') is-invalid @enderror"
-                                type="password" name="password" autocomplete="off"/>
+                                type="password" name="password" id="password" autocomplete="off"/>
                             @error('password')
                             <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
                         </span>
                             @enderror
+                        </div>
+                        <div class="fv-row mb-10 float-end">
+                            <div class="form-check form-check-custom form-check-solid">
+                                <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault" @click="clickToSeePassword()"/>
+                                <label class="form-check-label fw-bold" for="flexCheckDefault">
+                                    Lihat Password
+                                </label>
+                            </div>
                         </div>
                         <div class="text-center">
                             <button :disabled="buttonLoading" type="submit" id="kt_sign_in_submit"
@@ -65,6 +73,14 @@
                         Object.keys(respError).map(err => toastr.error(respError[err][0]));
                     } finally {
                         this.buttonLoading = false;
+                    }
+                },
+                clickToSeePassword() {
+                    const x = document.getElementById("password");
+                    if (x.type === "password") {
+                        x.type = "text";
+                    } else {
+                        x.type = "password";
                     }
                 }
             }
