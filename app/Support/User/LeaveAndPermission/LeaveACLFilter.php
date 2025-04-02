@@ -148,7 +148,7 @@ class LeaveACLFilter
             });
         }
 
-        if ($request->user()->company_id === 'PT. Linkkita Teknologi') {
+        if ($request->user()->company_id === 3) {
             $query->whereHas('user.company', function ($query) use ($request) {
                 $query->where('id', $request->user()->company_id);
             });
