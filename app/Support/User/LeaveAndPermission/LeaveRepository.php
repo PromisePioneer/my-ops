@@ -9,6 +9,6 @@ class LeaveRepository
 {
     public function leavesMainQuery(): Builder
     {
-        return LeaveAndPermission::with('accBy', 'user', 'user.userHasArea', 'user.branch', 'user.roles.department')->orderByDesc('created_at');
+        return LeaveAndPermission::with('accBy', 'user', 'user.userHasArea', 'user.branch', 'user.roles.department', 'user.company')->orderByDesc('created_at');
     }
 }

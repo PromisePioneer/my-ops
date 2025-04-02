@@ -151,6 +151,12 @@ class LeaveSelect2QueryFilter
             });
         }
 
+        if ($request->user()->company_id === 3) {
+            $query->whereHas('company', function ($query) use ($request) {
+                $query->where('id', $request->user()->company_id);
+            });
+        }
+
         return $query;
     }
 }
