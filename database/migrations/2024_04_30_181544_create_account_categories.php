@@ -10,8 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('accounts', function ($table) {
-            $table->dropColumn('beginning_balances');
+        Schema::create('account_categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->foreignId('parent_id')->nullable()
+                ->constrained('account_categories')->cascadeOnDelete();
+            $table->timestamps();
         });
     }
 
@@ -20,6 +24,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('account_categories');
     }
 };

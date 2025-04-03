@@ -19,31 +19,34 @@
     <div x-data="InitialBalancesData()">
         @include('pages.master.accounting.initial-balances.form')
         <div class="d-flex flex-column flex-xl-row">
-            <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
-                <div class="card card-flush">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <h2 class="mb-0">Filter</h2>
-                        </div>
-                    </div>
-                    <form id="form-filter" @submit.prevent="filter()">
-                        <div class="card-body pt-0">
-                            <div class="d-flex flex-column text-gray-600">
-                                <div class="d-flex align-items-center py-2">
-                                    <select class="form-select form-select-solid main-branches-select2"
-                                            name="branch_id" id="branch-id-filter">
-                                    </select>
-                                </div>
+            @if(Auth::user()->branch_id === null)
+                <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
+                    <div class="card card-flush">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h2 class="mb-0">Filter</h2>
                             </div>
                         </div>
-                        <div class="card-footer pt-4 text-end">
-                            <button type="submit" class="btn btn-light btn-active-primary btn-sm">
-                                Filter
-                            </button>
-                        </div>
-                    </form>
+
+                        <form id="form-filter" @submit.prevent="filter()">
+                            <div class="card-body pt-0">
+                                <div class="d-flex flex-column text-gray-600">
+                                    <div class="d-flex align-items-center py-2">
+                                        <select class="form-select form-select-solid main-branches-select2"
+                                                name="branch_id" id="branch-id-filter">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer pt-4 text-end">
+                                <button type="submit" class="btn btn-light btn-active-primary btn-sm">
+                                    Filter
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            @endif
             <div class="flex-lg-row-fluid ms-lg-10">
                 <div class="card card-flush mb-6 mb-xl-9">
                     <div class="card-header pt-5">
@@ -179,19 +182,17 @@
                                                     x-text="`${subAccount.sub_account_code} ${subAccount.sub_account_name}`"></td>
                                                 <td x-text="subAccount.initial_balance"></td>
                                                 <td>
-                                                    <template x-if="branchId !== null">
-                                                        <template x-if="Number(editPermission) === 1">
-                                                            <button class="btn btn-light-primary btn-sm"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#modal-initial-balance"
-                                                                    @click="edit(subAccount.id)"
-                                                                    :disabled="subAccount.initial_balance === null || Number(subAccount.parent_account_code) >= 400">
-                                                                <i class="ki-duotone ki-pencil fs-2">
-                                                                    <span class="path1"></span>
-                                                                    <span class="path2"></span>
-                                                                </i>
-                                                            </button>
-                                                        </template>
+                                                    <template x-if="Number(editPermission) === 1 && branchId !== ''">
+                                                        <button class="btn btn-light-primary btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modal-initial-balance"
+                                                                @click="edit(subAccount.id)"
+                                                                :disabled="subAccount.initial_balance === null || Number(subAccount.parent_account_code) >= 400">
+                                                            <i class="ki-duotone ki-pencil fs-2">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                            </i>
+                                                        </button>
                                                     </template>
                                                 </td>
                                             </tr>
@@ -228,6 +229,15 @@
             ]
         });
 
+        Inputmask("numeric", {
+            radixPoint: ",",
+            groupSeparator: ".",
+            digits: 2,
+            autoGroup: true,
+            rightAlign: false,
+            allowMinus: false
+        }).mask("#amount");
+
         function InitialBalancesData() {
             return {
                 editPermission: "{{ request()->user()->can('Edit Data Saldo Awal') }}",
@@ -238,18 +248,20 @@
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
-                branchId: null,
-                search: '',
-                editVal: '',
+                branchId: "{{ request()->user()->branch_id ?? null }}",
+                search: "",
+                editVal: "",
+                accountVal: "",
+                branchVal: "",
                 form: document.getElementById('form-initial-balance'),
                 modalForm: new bootstrap.Modal(document.getElementById('modal-initial-balance')),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
-                    await this.getAccountData();
                     await this.getInitialBalances();
                     await this.getMainBranches();
                 },
                 async getInitialBalances() {
+                    console.log(this.branchId)
                     this.isLoading = true;
                     try {
                         const resp = await axios.get('/master/accounting/initial-balances/data');
@@ -307,21 +319,8 @@
                         }
                     }
                 },
-                async getAccountData() {
-                    $(".accounts-select2").select2({
-                        allowClear: true,
-                        placeholder: 'Pilih Akun',
-                        ajax: {
-                            url: '/master/accounting/initial-balances/account/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
                 async getMainBranches() {
+                    if (this.branchId === null) return;
                     $(".main-branches-select2").select2({
                         allowClear: true,
                         placeholder: 'Pilih Cabang',
@@ -335,37 +334,22 @@
                         }
                     });
                 },
-                async selectedBranch() {
+                async selectedBranch(id) {
+                    try {
+                        const resp = await axios.get(`/select2/selected-branch/${id}`);
+                        this.branchVal = resp.data;
+                    } catch (e) {
+                        console.log(e)
+                    }
 
-                    const branch_id = $("#branch-id-filter").val();
-                    const selectedBranch = $('#selectedBranch');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-branch/${this.editVal.branch_id ?? branch_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedBranch.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {
-                            results: response,
-                        }
-                    });
                 },
                 async selectedAccount(id) {
-                    const selectedAccount = $('#selectedAccount');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/master/accounting/initial-balances/account/selected/${this.editVal.account_id ?? id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedAccount.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {
-                            results: response,
-                        }
-                    });
+                    try {
+                        const resp = await axios.get(`/select2/selected-account/${id}`);
+                        this.accountVal = resp.data;
+                    } catch (e) {
+                        console.log(e);
+                    }
                 },
                 async filter() {
                     this.branchId = $("#branch-id-filter").val();
@@ -386,17 +370,10 @@
                 async save(id) {
                     this.buttonLoading = true;
                     try {
-                        if (!id) {
-                            await axios.post('/master/accounting/initial-balances/', new FormData(this.form))
-                                .then(async () => {
-                                    await this.successResponse();
-                                })
-                        } else {
-                            await axios.post(`/master/accounting/initial-balances/${id}`, new FormData(this.form))
-                                .then(async () => {
-                                    await this.successResponse();
-                                })
-                        }
+                        await axios.post('/master/accounting/initial-balances/', new FormData(this.form))
+                            .then(async () => {
+                                await this.successResponse();
+                            });
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
@@ -413,12 +390,8 @@
                         }
                     });
                     this.editVal = resp.data;
-
-                    const getAccount = await axios.get(`/master/accounting/accounts/edit/${id}`);
-
-
-                    await this.selectedBranch(resp.data.branch_id);
-                    await this.selectedAccount(resp.data.account_id ?? getAccount.data.id);
+                    await this.selectedBranch(resp.data.branch_id ?? branch_id);
+                    await this.selectedAccount(this.editVal.account_id ?? this.editVal.id);
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {

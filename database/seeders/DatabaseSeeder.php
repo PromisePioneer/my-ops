@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\AccountCategory;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,6 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             DepartmentSeeder::class,
             BranchSeeder::class,
+            AccountCategorySeeder::class,
             AccountSeeder::class,
             SubAccountSeeder::class,
             CompanySeeder::class,
@@ -44,7 +46,7 @@ class DatabaseSeeder extends Seeder
             AreaSeeder::class,
             PSBSeeder::class,
             WeekHolidaySeeder::class,
-            ContactSeeder::class
+            ContactSeeder::class,
         ]);
     }
 }

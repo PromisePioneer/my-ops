@@ -2,6 +2,15 @@
 @section('page-title', 'Laporan Keuangan')
 @section('content')
 
+    @push('styles')
+
+        <style>
+            .bg-seterah {
+                background-color: #d6e3bc;
+            }
+        </style>
+    @endpush
+
     <div x-data="financialReportData()">
         <div class="d-flex flex-column flex-xl-row">
             <div class="flex-column flex-lg-row-auto mb-10">
@@ -15,7 +24,7 @@
                         <div class="card-body pt-0">
                             <div class="d-flex flex-column text-gray-600">
                                 <div class="d-flex align-items-center py-2">
-                                    <select class="form-select form-select-solid branch-select2"
+                                    <select class="form-select form-select-solid main-branches-select2"
                                             name="branch_id" id="branch_id">
                                     </select>
                                 </div>
@@ -47,85 +56,42 @@
                 <div class="card card-xl-stretch mb-5 mb-xl-8">
                     <div class="card-body py-3">
                         <div class="py-5">
-                            <div class="table-responsive">
-                                <table class="table align-middle table-bordered fs-6" id="kt_table_users">
-                                    <thead>
-                                    <tr>
-                                        <th class="text-center text-uppercase" colspan="2">
-                                            <u>Aset Lancar</u>
-                                        </th>
-                                    </tr>
-                                    <template x-for="(currentAsset, index) in financialReports.current_asset"
-                                              :key="index">
-                                        <tr>
-                                            <th class="text-center w-50" x-text="currentAsset.account_name"></th>
-                                            <th class="text-center" x-text="currentAsset.amount"></th>
-                                        </tr>
-                                    </template>
-                                    <tr class="bg-danger">
-                                        <th class="text-center text-white">Jumlah Aset Lancar</th>
-                                        <th class="text-center text-white"
-                                            x-text="financialReports.total_current_asset"></th>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-center text-uppercase" colspan="2">
-                                            <u>Aset Tetap</u>
-                                        </th>
-                                    </tr>
-                                    <template x-for="(fixedAsset, index) in financialReports.fixed_asset" :key="index">
-                                        <tr>
-                                            <th class="text-center" x-text="fixedAsset.name"></th>
-                                            <th class="text-center" x-text="fixedAsset.amount"></th>
-                                        </tr>
-                                    </template>
-                                    <tr>
-                                        <th class="text-center">Akumulasi Penyusutan Aset Tetap</th>
-                                        <th class="text-center"
-                                            x-text="financialReports.total_depreciation_asset"></th>
-                                    </tr>
-                                    <tr>
-                                        <th class="bg-danger text-center text-white">Jumlah Aset Tetap</th>
-                                        <th class="bg-danger text-center text-white"
-                                            x-text="financialReports.total_fixed_asset"></th>
-                                    </tr>
-                                    <tr>
-                                        <th class="bg-dark text-center text-white">Total Aktifa</th>
-                                        <th class="bg-dark text-center text-white"
-                                            x-text="financialReports.total_aktiva"></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody class="fw-bold">
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card card-xl-stretch mb-5 mb-xl-8">
-                    <div class="card-body py-3">
-                        <div class="py-5">
-                            <div class="table-responsive">
-                                <table class="table align-middle table-bordered fs-6" id="kt_table_users">
-                                    <thead>
-                                    <tr>
-                                        <th class="text-center text-uppercase" colspan="2">
-                                            <u>Utang Lancar</u>
-                                        </th>
-                                    </tr>
-                                    <template x-for="(fixedDebt, index) in financialReports.current_debt" :key="index">
-                                        <tr>
-                                            <th class="text-center w-50" x-text="fixedDebt.account_name"></th>
-                                            <th class="text-center" x-text="fixedDebt.amount"></th>
-                                        </tr>
-                                    </template>
-                                    <tr class="bg-danger">
-                                        <th class="text-center text-white">Jumlah Utang Lancar</th>
-                                        <th class="text-center text-white"
-                                            x-text="financialReports.total_current_debt"></th>
-                                    </tr>
-                                    </thead>
-                                </table>
+                            <div>
+                                <template x-for="(report, index) in financialReports" :key="index">
+                                    <div>
+                                        <p class="p-1 m-0 bg-danger fs-6 fw-bolder text-white text-center text-uppercase mb-2"
+                                           x-text="report.name"></p>
+                                        <template x-for="(subCategory, index) in report.sub_categories"
+                                                  :key="index">
+                                            <div class="p-0">
+                                                <p class="p-1 text-center text-uppercase bg-info fw-bolder text-white"
+                                                   x-text="subCategory.name"></p>
+                                                <table class="w-100 table table-bordered">
+                                                    <template x-for="(account, index) in subCategory.accounts"
+                                                              :key="index">
+                                                        <thead>
+                                                        <tr class="text-center">
+                                                            <th class="w-50" x-text="account.name"></th>
+                                                            <th x-text="account.balance"></th>
+                                                        </tr>
+                                                        </thead>
+                                                    </template>
+                                                    <tr class="text-center">
+                                                        <th>Total</th>
+                                                        <th x-text="subCategory.total"></th>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </template>
+                                        <div>
+                                            <div
+                                                class="d-flex align-items-center justify-content-around bg-info text-center text-white text-uppercase p-1 fw-bolder mb-2 bg-seterah">
+                                                <span class="text-center" x-text="`Total ${report.name}`"></span>
+                                                <span class="text-center" x-text="report.total_each_categories"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
                             </div>
                         </div>
                     </div>
@@ -141,14 +107,13 @@
         function financialReportData() {
             return {
                 months: [],
-                currentAssets: [],
                 isLoading: true,
                 startIndex: null,
                 financialReports: [],
                 async init() {
                     await this.getFinancialReport();
                     this.getMonth();
-                    await this.getBranchData();
+                    await this.getMainBranches();
                 },
                 getMonth() {
                     this.months.push(
@@ -196,12 +161,12 @@
                         currency: "IDR"
                     }).format(val);
                 },
-                async getBranchData() {
-                    $(".branch-select2").select2({
+                async getMainBranches() {
+                    $(".main-branches-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Cabang",
                         ajax: {
-                            url: '/journals/financial-report/branch/data',
+                            url: '/select2/main-branches-data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),

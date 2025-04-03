@@ -8,6 +8,7 @@ use App\Http\Requests\TransactionRequest;
 use App\Models\Stock;
 use App\Models\Transaction;
 use App\Support\AccountTransactions\AccountTransactionService;
+use App\Support\HelperService\HandleFileUploadService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -22,6 +23,7 @@ use function App\Helper\formatDate;
     public function __construct()
     {
         $this->accountTransactionService = new AccountTransactionService();
+        $this->handleUploadService = new HandleFileUploadService();
     }
 
     public function generateTransactionNumber(Request $request): string
@@ -99,6 +101,7 @@ use function App\Helper\formatDate;
                 'final_excuses' => $item->final_excuses,
                 'confirmed_by' => $item->confirmedBy?->name,
                 'created_by' => $item->createdBy->name,
+                'attachment' => $item->attachment,
 
             ];
         });
@@ -109,6 +112,11 @@ use function App\Helper\formatDate;
 
     public function store(TransactionRequest $request): void
     {
+
+        $formattedValue = str_replace('.', '', $request->input('unit_price'));
+        $formattedValue = str_replace(',', '.', $formattedValue);
+        $unitPrice = (float)$formattedValue;
+
         Transaction::create([
             'type' => $request->input('type'),
             'transaction_number' => $this->generateTransactionNumber($request),
@@ -117,11 +125,16 @@ use function App\Helper\formatDate;
             'detail' => $request->input('detail'),
             'qty' => $request->input('qty'),
             'item_id' => $request->input('type') === 'Barang' ? $request->input('item_id') : null,
-            'unit_price' => $request->input('unit_price'),
-            'total_price' => $request->input('unit_price') * $request->input('qty'),
+            'unit_price' => $unitPrice,
+            'total_price' => $unitPrice * $request->input('qty'),
             'debit_account_id' => $request->input('debit_account_id'),
             'credit_account_id' => $request->input('credit_account_id'),
             'created_by' => $request->user()->id,
+            'attachment' => $this->handleUploadService->upload(
+                $request,
+                'documents/transaction/item-transactions/',
+                'attachment',
+            ),
         ]);
     }
 

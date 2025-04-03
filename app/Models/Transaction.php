@@ -11,6 +11,7 @@ use Laravel\Scout\Searchable;
 class Transaction extends Model
 {
     use Searchable;
+
     protected $table = 'transactions';
     protected $fillable = [
         'transaction_number',
@@ -29,6 +30,7 @@ class Transaction extends Model
         'status',
         'final_notes',
         'approved_by',
+        'attachment',
     ];
 
 

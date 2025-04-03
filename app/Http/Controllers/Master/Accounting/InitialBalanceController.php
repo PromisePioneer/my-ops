@@ -38,10 +38,10 @@ use Illuminate\Http\Request;
     /**
      * @throws AuthorizationException
      */
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
         $this->authorize('view', AccountTransaction::class);
-        $data = $this->initialBalanceService->data();
+        $data = $this->initialBalanceService->data($request);
         return response()->json($data);
     }
 
@@ -58,11 +58,11 @@ use Illuminate\Http\Request;
             ->select('id', 'name', 'code');
 
         if ($search !== '') {
-            $query->where('name', 'like', '%'.$search.'%')
-                ->orWhere('code', 'like', '%'.$search.'%')
+            $query->where('name', 'like', '%' . $search . '%')
+                ->orWhere('code', 'like', '%' . $search . '%')
                 ->orWhereHas('children', function ($query) use ($search) {
-                    $query->where('name', 'like', '%'.$search.'%')
-                        ->orWhere('code', 'like', '%'.$search.'%');
+                    $query->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('code', 'like', '%' . $search . '%');
                 });
         }
 
@@ -74,17 +74,17 @@ use Illuminate\Http\Request;
             if (!$hasChildren) {
                 return [
                     'id' => $c->id,
-                    'text' => $c->code.' '.$c->name,
+                    'text' => $c->code . ' ' . $c->name,
                 ];
             }
 
 
             return [
-                'text' => $c->code.' '.$c->name,
+                'text' => $c->code . ' ' . $c->name,
                 'children' => $c->children->filter(function ($child) {
                     return [
                         'id' => $child->id,
-                        'text' => $child->code.' '.$child->name,
+                        'text' => $child->code . ' ' . $child->name,
                     ];
                 })->toArray(),
                 'disabled' => true,
@@ -93,7 +93,6 @@ use Illuminate\Http\Request;
 
         return response()->json($data);
     }
-
 
 
     /**
@@ -122,13 +121,17 @@ use Illuminate\Http\Request;
     public function store(InitialBalanceRequest $request): JsonResponse
     {
         $this->authorize('create', AccountTransaction::class);
-        AccountTransaction::create([
-            'branch_id' => $request->branch_id ?? null,
-            'date' => Carbon::now()->subYear()->endOfYear(),
+        $rawAmount = $request->input('amount');
+        $formattedValue = str_replace(',', '.', str_replace('.', '', $rawAmount));
+        $amount = number_format((float)$formattedValue, 4, '.', '');
+        AccountTransaction::query()->updateOrCreate([
+            'branch_id' => $request->branch_id ?? $request->user()->branch_id,
             'account_id' => $request->account_id,
-            'transaction_type' => 'SA',
+        ], [
+            'date' => Carbon::now()->subYear()->endOfYear(),
             'entries_type' => 'Debit',
-            'amount' => $request->amount,
+            'transaction_type' => 'SA',
+            'amount' => $amount,
         ]);
 
         return response()->json(['message' => 'Saldo awal berhasil ditambahkan.']);
@@ -140,18 +143,14 @@ use Illuminate\Http\Request;
      */
     public function edit(Request $request, Account $account): JsonResponse
     {
+
         $this->authorize('update', $account);
-        $branchId = $request->branch_id;
-        $data = $account->join(
-            'account_transactions',
-            'account_transactions.account_id',
-            '=',
-            'accounts.id'
-        )->where('account_transactions.branch_id', $branchId)->where('account_transactions.account_id', $account->id)
-            ->whereYear('date', Carbon::now()->subYear())
-            ->first();
+        $branchId = $request->branch_id ?? $request->user()->branch_id;
+        $data = AccountTransaction::where('account_id', $account->id)->where('branch_id', $branchId)->where('transaction_type', 'SA')->whereYear('date', Carbon::now()->subYear())->first() ?? $account;
 
-
+        if ($data) {
+            $data->amount = (float)$data?->amount;
+        }
         return response()->json($data);
     }
 
@@ -168,19 +167,6 @@ use Illuminate\Http\Request;
     /**
      * @throws AuthorizationException
      */
-    public function update(InitialBalanceRequest $request, AccountTransaction $accountTransaction): JsonResponse
-    {
-        $this->authorize('update', $accountTransaction);
-        $accountTransaction->update([
-            'branch_id' => $request?->branch_id ?? null,
-            'date' => Carbon::now()->subYear()->endOfYear(),
-            'account_id' => $request->account_id,
-            'transaction_type' => 'SA',
-            'amount' => $request->amount,
-        ]);
-
-        return response()->json(['message' => 'Saldo awal berhasil diubah.']);
-    }
 
 
     /**

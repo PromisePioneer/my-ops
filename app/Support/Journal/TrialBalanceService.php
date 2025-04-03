@@ -4,6 +4,7 @@ namespace App\Support\Journal;
 
 use App\Models\Account;
 use App\Models\AccountTransaction;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -25,15 +26,10 @@ class TrialBalanceService
     {
         return $accounts->get()->map(function ($account) use ($request) {
             $debit = 0;
-            $credit = 0;
             $childDebit = 0;
-            $childCredit = 0;
 
-            $debitAccountOnly = [111, 112, 113, 114, 115, 121, 122, 123, 124, 125, 126, 320, 500, 501, 502, 503, 504, 505, 506, 507, 508, 510, 511, 512, 513, 514];
-            $creditAccountOnly = [130, 211, 212, 213, 214, 215, 216, 221, 222, 223, 300, 401, 402, 403];
-
-            if (in_array($account->code, $debitAccountOnly)) {
-            $debit = $this->getFilteredTransactionSum($account, 'debit', $request);
+            if ($account->trial_balance_type === 'debit') {
+                $debit = $this->getFilteredTransactionSum($account, 'debit', $request);
                 $childDebit = $account->children->sum(function ($child) use ($request, $account) {
                     return $this->getFilteredTransactionSum($child, 'debit', $request);
                 });
@@ -46,9 +42,9 @@ class TrialBalanceService
 
             return [
                 'account_name' => $account->name,
-                'debit' => in_array($account->code, $debitAccountOnly) ? 'Rp.' . number_format(($debit + $childDebit) - $childCredit, 2) : null,
-                'credit' => in_array($account->code, $creditAccountOnly) ? 'Rp.' . number_format($credit + $childCredit, 2) : null,
-                'balance' => 'Rp.'.number_format(($debit + $childDebit) - ($credit + $childCredit), 2),
+                'debit' => $account->trial_balance_type === 'debit' ? 'Rp.' . number_format(($debit + $childDebit) - $childCredit, 2) : null,
+                'credit' => $account->trial_balance_type === 'credit' ? 'Rp.' . number_format($credit + $childCredit, 2) : null,
+                'balance' => 'Rp.' . number_format(($debit + $childDebit) - ($credit + $childCredit), 2),
             ];
         });
     }
@@ -62,7 +58,10 @@ class TrialBalanceService
         }
 
         if ($request?->year) {
-            $transactions->whereYear('date', $request->year);
+            $transactions->whereBetween('date', [
+                Carbon::parse($request->year)->subYear()->endOfYear()->firstOfMonth()->format('Y-m-d'),
+                $request->year
+            ]);
         }
 
         if ($request?->month) {

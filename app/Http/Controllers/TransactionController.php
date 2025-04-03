@@ -158,7 +158,6 @@ use Throwable;
         });
 
 
-
         return response()->json([
             'message' => 'data berhasil dihapus'
         ]);

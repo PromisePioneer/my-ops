@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\AccountTransaction;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -30,9 +32,10 @@ class TransactionRequest extends FormRequest
                 Rule::requiredIf($request->type === 'Barang'),
                 Rule::exists('item_collections', 'id')],
             'qty' => ['required', 'numeric'],
-            'unit_price' => ['required', 'numeric'],
+            'unit_price' => ['required'],
             'debit_account_id' => ['required', Rule::exists('accounts', 'id')],
-            'credit_account_id' => ['required', Rule::exists('accounts', 'id')],
+            'credit_account_id' => ['required', Rule::exists('accounts', 'id'), $this->accountBalanceCheck($request)],
+            'attachment' => ['required', 'mimes:jpg,jpeg,png', 'max:2048'],
         ];
     }
 
@@ -53,7 +56,42 @@ class TransactionRequest extends FormRequest
             'debit_account_id.exists' => 'Akun Debit tidak ditemukan',
             'credit_account_id.required' => 'Akun Kredit tidak boleh kosong',
             'credit_account_id.exists' => 'Akun Kredit tidak ditemukan',
+            'attachment.required' => 'Bukti Transaksi tidak boleh kosong',
+            'attachment.mimes' => 'Bukti Transaksi harus berupa jpg,jpeg,png',
+            'attachment.max' => 'Ukuran Bukti Transaksi maksimal 2 Mb',
         ];
+    }
+
+
+    public function accountBalanceCheck(Request $request): \Closure
+    {
+        return static function ($value, $attribute, $fail) use ($request) {
+            $date = Carbon::now();
+            $accountTransactionDebit = AccountTransaction::where('account_id', $request->credit_account_id)
+                ->where('branch_id', $request->input('branch_id'))
+                ->where('entries_type', 'debit')
+                ->whereBetween('date', [$date->copy()->subYear()->format('Y-m-d'), $date->format('Y-m-d')])
+                ->sum('amount');
+
+            $accountTransactionCredit = AccountTransaction::where('account_id', $request->credit_account_id)
+                ->where('branch_id', $request->input('branch_id'))
+                ->where('entries_type', 'credit')
+                ->whereBetween('date', [$date->copy()->subYear()->format('Y-m-d'), $date->format('Y-m-d')])
+                ->sum('amount');
+
+            $formattedValue = str_replace('.', '', $request->input('unit_price'));
+            $formattedValue = str_replace(',', '.', $formattedValue);
+            $unitPrice = (float)$formattedValue;
+
+            $subtractBetweenDebitAndCreditTransaction = $accountTransactionDebit - $accountTransactionCredit;
+            $totalTransaction = $request->input('qty') * $unitPrice;
+
+            if ($totalTransaction > $subtractBetweenDebitAndCreditTransaction) {
+                $fail('Saldo Kurang!');
+            }
+
+            return true;
+        };
     }
 
 }

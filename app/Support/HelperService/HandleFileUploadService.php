@@ -13,6 +13,7 @@ class HandleFileUploadService
         ?string $fileName,
         ?string $currentFilePath = null
     ): string|bool|null {
+
         if ($currentFilePath && $request->file($fileName)) {
             Storage::disk('public')->delete($currentFilePath);
         }

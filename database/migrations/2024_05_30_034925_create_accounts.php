@@ -16,7 +16,11 @@ class CreateAccounts extends Migration
             $table->string('code', 10);
             $table->string('name', 100);
             $table->foreignId('parent_id')->nullable()->constrained('accounts')->cascadeOnDelete();
-            $table->double('beginning_balances')->nullable();
+            $table->enum('trial_balance_type', ['debit', 'credit']);
+            $table->foreignId('category_id')
+                ->nullable()
+                ->constrained('account_categories')
+                ->cascadeOnDelete();
             $table->timestamps();
         });
     }

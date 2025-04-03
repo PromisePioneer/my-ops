@@ -18,10 +18,10 @@ use Illuminate\Http\Request;
         $this->initialBalanceRepository = new InitialBalanceRepository();
     }
 
-    public function data()
+    public function data(Request $request)
     {
         $data = $this->initialBalanceRepository->handle()->paginate(self::$perPage);
-        return $this->formattedData($data);
+        return $this->formattedData($data, $request);
     }
 
 
@@ -30,7 +30,7 @@ use Illuminate\Http\Request;
         $search = $request->input('search');
         $query = Account::with('accountTransaction', 'children')->whereNull('parent_id');
         if (!empty($search)) {
-            $query->where('name', 'like', '%'.$search.'%')->orWhere('code', 'like', '%'.$search.'%');
+            $query->where('name', 'like', '%' . $search . '%')->orWhere('code', 'like', '%' . $search . '%');
         }
 
         $data = $query->paginate(self::$perPage);
@@ -52,18 +52,18 @@ use Illuminate\Http\Request;
             return [
                 'id' => $account->id,
                 'code' => $account->code,
-                'account' => $account->code.' '.$account->name,
-                'initial_balance' => number_format($initialBalance, 2) ?? null,
+                'account' => $account->code . ' ' . $account->name,
+                'initial_balance' => number_format($initialBalance, 2, '.', '.') ?? null,
                 'sub_accounts' => $account->children->map(function ($subAccount) use ($request) {
                     return [
                         'id' => $subAccount->id,
                         'parent_account_code' => $subAccount->parent->code,
                         'sub_account_code' => $subAccount->code,
                         'sub_account_name' => $subAccount->name,
-                        'initial_balance' => number_format(
-                            $this->getFilteredTransactionSum($subAccount, 'SA', $request),
-                            2
-                            ) ?? null,
+                        'initial_balance' => 'Rp.' . number_format(
+                                $this->getFilteredTransactionSum($subAccount, 'SA', $request), 2, '.', '.'
+                            )
+                            ?? null,
                     ];
                 }),
 
@@ -82,10 +82,9 @@ use Illuminate\Http\Request;
             ->whereYear('date', Carbon::now()->subYear())
             ->where('transaction_type', $type);
 
-        if ($request?->branch_id) {
-            $transactions->where('branch_id', $request->branch_id);
+        if ($request?->branch_id || $request->user()->branch_id) {
+            $transactions->where('branch_id', $request->branch_id ?? $request->user()->branch_id);
         }
-
         return $transactions->sum('amount');
     }
 

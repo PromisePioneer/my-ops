@@ -185,7 +185,11 @@ use Throwable;
 
         $nationalHoliday = $nationalHolidayService->getNationalHoliday($startDate, $endDate);
 
-        $data = $this->employeeScheduleService->data($request);
+        $data = [
+            ...$this->employeeScheduleService->data($request),
+            ...$this->employeeScheduleService->data($request),
+            ...$this->employeeScheduleService->data($request),
+        ];
 
         $view = view('pages.adms.employee-schedules.schedules', compact('data', 'nationalHoliday'))->render();
 
@@ -194,20 +198,17 @@ use Throwable;
             ->addChromiumArguments([
                 '--headless',
                 '--no-sandbox',
-                '--disable-setuid-sandbox'
             ])
             ->setDelay(200)
             ->ignoreHttpsErrors()
             ->margins(10, 10, 10, 10)
-            ->margins(1, 1, 1, 1)
             ->fullPage()
-            ->taggedPdf()
-            ->pdf();
+            ->save('test.jpg');
 
 
         return new Response($pdf, 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="example.pdf',
+            'Content-Disposition' => 'inline; filename="example.jpg',
         ]);
     }
 }

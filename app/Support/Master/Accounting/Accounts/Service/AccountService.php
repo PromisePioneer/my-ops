@@ -46,17 +46,11 @@ use Illuminate\Http\Request;
                 'account_id' => $account->id,
                 'account_code' => $account->code,
                 'account_name' => $account->name,
-                'balance' => 'Rp'.number_format($initialBalance, 2),
                 'sub_accounts' => $account->children->map(static function ($subAccount) {
                     return [
                         'sub_account_id' => $subAccount->id,
                         'sub_account_code' => $subAccount->code,
                         'sub_account_name' => $subAccount->name,
-                        'balance' => 'Rp.'.number_format(
-                                $subAccount->accountTransaction()
-                                    ->whereYear('date', Carbon::now()->subYear())->sum('amount'),
-                                2
-                            ),
                     ];
                 }),
             ];
@@ -73,8 +67,8 @@ use Illuminate\Http\Request;
 
         if (!empty($search)) {
             $query->where(function ($query) use ($search) {
-                $query->where('code', 'like', '%'.$search.'%')
-                    ->orWhere('name', 'like', '%'.$search.'%');
+                $query->where('code', 'like', '%' . $search . '%')
+                    ->orWhere('name', 'like', '%' . $search . '%');
             });
         }
         $accounts = $query->paginate(self::$perPage);

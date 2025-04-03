@@ -2,12 +2,8 @@
 @section('page-title', 'Daftar Akun')
 @section('breadcrumbs', 'Master Keuangan - Akun')
 @section('content')
-    <div x-data="accountData()">
+    <div x-data="accountCategoriesData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.master.accounting.accounts.modal.create')
-            @include('pages.master.accounting.accounts.modal.create-children')
-            @include('pages.master.accounting.accounts.modal.edit-children')
-            @include('pages.master.accounting.accounts.modal.edit')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -181,11 +177,9 @@
 @endsection
 @push('script')
     <script>
-        function accountData() {
+        function accountCategoriesData() {
             return {
-                editPermission: "{{ request()->user()->can('Edit Data Akun') }}",
-                deletePermission: "{{ request()->user()->can('Hapus Data Akun') }}",
-                accounts: [],
+                accountCategories: [],
                 buttonLoading: false,
                 isLoading: true,
                 startIndex: null,

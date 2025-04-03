@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class InitialBalanceRequest extends FormRequest
 {
@@ -26,8 +27,9 @@ class InitialBalanceRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
+            'branch_id' => [Rule::requiredIf(empty($request->user()->branch_id)), 'exists:branches,id'],
             'account_id' => ['required', 'exists:accounts,id', $this->uniqueYear($request)],
-            'amount' => ['required', 'numeric'],
+            'amount' => ['required'],
         ];
     }
 
@@ -35,12 +37,12 @@ class InitialBalanceRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'branch_id.required' => 'Cabang tidak boleh kosong',
             'date.required' => 'Tanggal tidak boleh kosong.',
             'date.date' => 'Tanggal tidak valid.',
             'account_id.required' => 'Account tidak boleh kosong.',
             'account_id.exists' => 'Account tidak valid.',
             'amount.required' => 'Saldo tidak boleh kosong.',
-            'amount.numeric' => 'Saldo tidak valid.',
         ];
     }
 

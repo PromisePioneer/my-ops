@@ -3,87 +3,141 @@
 namespace App\Support\Journal;
 
 use App\Models\Account;
+use App\Models\AccountCategory;
 use App\Models\AccountTransaction;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class FinancialReportService
 {
-    public function getFixedAssets()
-    {
-        $data = Account::with('accountTransaction')
-            ->whereBetween('code', ['121', '126']);
 
-        return self::formattedFixedData($data);
+
+    public function data(Request $request)
+    {
+        $data = AccountCategory::with('children', 'accounts', 'accounts.accountTransaction', 'accounts.children')
+            ->whereNull('parent_id')
+            ->get();
+
+        return self::formattedData($data, $request);
     }
 
 
-    private static function formattedFixedData($fixedAssets)
+    public function formattedData($data, $request)
     {
-        return $fixedAssets->get()->map(function ($query) {
+        return $data->map(function ($item) use ($request) {
+            $total = 0;
+            $totalEachCategories = 0;
+            foreach ($item->children as $children) {
+                foreach ($children->accounts as $account) {
+                    $debit = 0;
+                    $childDebit = 0;
+                    if ($account->trial_balance_type === 'debit') {
+                        $debit = $this->getFilteredTransactionSum($account, 'debit', $request);
+                        $childDebit = $account->children->sum(function ($child) use ($request, $account) {
+                            return $this->getFilteredTransactionSum($child, 'debit', $request);
+                        });
+                    }
+
+                    $credit = $this->getFilteredTransactionSum($account, 'credit', $request);
+                    $childCredit = $account->children->sum(function ($child) use ($request) {
+                        return $this->getFilteredTransactionSum($child, 'credit', $request);
+                    });
+
+                    if ($account->trial_balance_type === 'debit') {
+                        $balance = ($debit + $childDebit) - $childCredit;
+                    } else {
+                        $balance = $credit + $childCredit;
+                    }
+
+                    $total += $balance;
+                }
+                $totalEachCategories += $total;
+            }
+
             return [
-                'name' => $query->name,
-                'amount' => 'Rp.'.number_format(
-                        $query->accountTransaction->where('type', 'debit')->sum('amount'),
-                        2
-                    ),
+                'id' => $item->id,
+                'name' => $item->name,
+                'total_each_categories' => 'Rp.' . number_format($totalEachCategories, 2, '.', '.'),
+                'sub_categories' => $item->children->map(function ($child) use ($request) {
+                    $total = 0;
+                    foreach ($child->accounts as $account) {
+                        $debit = 0;
+                        $childDebit = 0;
+                        if ($account->trial_balance_type === 'debit') {
+                            $debit = $this->getFilteredTransactionSum($account, 'debit', $request);
+                            $childDebit = $account->children->sum(function ($child) use ($request, $account) {
+                                return $this->getFilteredTransactionSum($child, 'debit', $request);
+                            });
+                        }
+
+                        $credit = $this->getFilteredTransactionSum($account, 'credit', $request);
+                        $childCredit = $account->children->sum(function ($child) use ($request) {
+                            return $this->getFilteredTransactionSum($child, 'credit', $request);
+                        });
+
+                        if ($account->trial_balance_type === 'debit') {
+                            $balance = ($debit + $childDebit) - $childCredit;
+                        } else {
+                            $balance = $credit + $childCredit;
+                        }
+
+                        $total += $balance;
+                    }
+                    return [
+                        'id' => $child->id,
+                        'name' => $child->name,
+                        'total' => 'Rp.' . number_format($total, 2, '.', '.'),
+                        'accounts' => $child->accounts->map(function ($account) use ($request, $total) {
+                            $debit = 0;
+                            $childDebit = 0;
+                            if ($account->trial_balance_type === 'debit') {
+                                $debit = $this->getFilteredTransactionSum($account, 'debit', $request);
+                                $childDebit = $account->children->sum(function ($child) use ($request, $account) {
+                                    return $this->getFilteredTransactionSum($child, 'debit', $request);
+                                });
+                            }
+
+                            $credit = $this->getFilteredTransactionSum($account, 'credit', $request);
+                            $childCredit = $account->children->sum(function ($child) use ($request) {
+                                return $this->getFilteredTransactionSum($child, 'credit', $request);
+                            });
+
+                            if ($account->trial_balance_type === 'debit') {
+                                $balance = ($debit + $childDebit) - $childCredit;
+                            } else {
+                                $balance = $credit + $childCredit;
+                            }
+                            return [
+                                'id' => $account->id,
+                                'name' => $account->name,
+                                'trial_balance_type' => $account->trial_balance_type,
+                                'balance' => 'Rp.' . number_format($balance, 2, '.', '.'),
+                            ];
+                        })
+                    ];
+                })
             ];
         });
     }
 
-    public function getTotalFixedAssets()
+
+    public function getFilteredTransactionSum($account, $type, Request $request): float
     {
-        $totalFixedAssets = AccountTransaction::with('account')->whereHas('account', function ($query) {
-            $query->whereBetween('code', ['121', '126']);
-        })->where('type', 'debit')->sum('amount');
+        $transactions = $account->accountTransaction()->where('entries_type', $type);
 
-        return $this->getDepreciationAssetAccount() + $totalFixedAssets;
-    }
-
-    public function getDepreciationAssetAccount()
-    {
-        return AccountTransaction::with('account')->whereHas('account', function ($query) {
-            $query->where('code', '130');
-        })->where('type', 'credit')->sum('amount');
-    }
-
-    public function getCurrentAssetAccount()
-    {
-        $data = Account::with('children')
-            ->whereBetween('code', ['111', '115'])
-            ->whereNull('parent_id');
-
-        return self::currentAssetFormattedData($data);
-    }
-
-    public function currentAssetFormattedData(Builder $asset, ?Request $request = null)
-    {
-        return $asset->get()->map(function ($account) use ($request) {
-            $debit = $this->getFilteredTransactionSum($account, 'debit', $request);
-            $childDebit = $account->children->sum(function ($child) use ($request) {
-                return $this->getFilteredTransactionSum($child, 'debit', $request);
-            });
-
-            return [
-                'account_name' => $account->name,
-                'amount' => 'Rp.'.number_format($debit + $childDebit, 2),
-            ];
-        });
-    }
-
-    public function getFilteredTransactionSum($account, $type, ?Request $request): float
-    {
-        $transactions = $account->accountTransaction()->where('type', $type);
-
-        if ($request?->branch_id) {
+        if ($request->branch_id) {
             $transactions->where('branch_id', $request->branch_id);
         }
 
-        if ($request?->year) {
-            $transactions->whereYear('date', $request->year);
+        if ($request->year) {
+            $transactions->whereBetween('date', [
+                Carbon::parse($request->year)->subYear()->endOfYear()->firstOfMonth()->format('Y-m-d'),
+                $request->year
+            ]);
         }
 
-        if ($request?->month) {
+        if ($request->month) {
             $transactions->whereMonth('date', $request->month);
         }
 
@@ -91,83 +145,8 @@ class FinancialReportService
     }
 
 
-    public function getCurrentDebtAccount()
+    public function filter()
     {
-        $data = Account::with('children', 'accountTransaction')
-            ->whereBetween('code', ['211', '216'])
-            ->whereNull('parent_id');
 
-        return self::formattedDebtAccount($data);
     }
-
-
-    public function formattedDebtAccount(Builder $debt, ?Request $request = null)
-    {
-        return $debt->get()->map(function ($account) use ($request) {
-            $credit = $this->getFilteredTransactionSum($account, 'credit', $request);
-            $childCredit = $account->children->sum(function ($child) use ($request) {
-                return $this->getFilteredTransactionSum($child, 'credit', $request);
-            });
-
-            return [
-                'account_name' => $account->name,
-                'amount' => 'Rp.'.number_format($credit + $childCredit, 2),
-            ];
-        });
-    }
-
-
-    public function getTotalCurrentAssetAmount()
-    {
-        return AccountTransaction::with('account')->whereHas('account', function (Builder $query) {
-            $query->whereBetween('code', ['111', '115']);
-        })->sum('amount');
-    }
-
-
-    public function getTotalCurrentDebt()
-    {
-        return AccountTransaction::with('account')->whereHas('account', function (Builder $query) {
-            $query->whereBetween('code', ['211', '216']);
-        })->where('type', 'credit')
-            ->sum('amount');
-    }
-
-    public function filter(Request $request): array
-    {
-        $year = $request->input('year');
-        $month = $request->input('month');
-        $branchId = $request->input('branch_id');
-
-        $getFixedAsset = Account::with('children', 'accountTransaction')
-            ->whereBetween('code', ['121', '126']);
-
-
-        $getTotalFixedAsset = AccountTransaction::with('account')->whereHas('account', function ($query) {
-            $query->whereBetween('code', ['121', '126']);
-        })->where('type', 'debit');
-
-        $getDepreciationAsset = AccountTransaction::with('account')->whereHas('account', function ($query) {
-            $query->where('code', '130');
-        });
-
-
-        if ($branchId) {
-            $getFixedAsset->whereHas('accountTransaction', function ($query) use ($branchId) {
-                $query->where('branch_id', $branchId);
-            });
-
-            $getDepreciationAsset->sum('amount');
-            $getTotalFixedAsset->where('branch_id', $branchId);
-        }
-
-
-        return [
-            'fixed_asset' => $this->formattedFixedData($getFixedAsset),
-            'total_depreciation_asset' => number_format($getDepreciationAsset->sum('amount'), 2),
-            'total_fixed_asset' => number_format($getTotalFixedAsset->sum('amount'), 2),
-        ];
-    }
-
-
 }

@@ -41,9 +41,8 @@
                     <div class="d-flex align-items-center">
                         <div>
                             <form id="form-delete" @submit.prevent="destroy()" class="me-2">
-                                <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
                                 <button type="submit" class="btn btn-light-danger btn-sm mt-5"
-                                        x-show="selectedCheckBox.length > 0"
+                                        x-show="selectedCheckBox.length > 0 && hasLockedTransactions()"
                                         x-transition x-cloak>
                                     <i class="ki-duotone ki-trash-square fs-2">
                                         <span class="path1"></span>
@@ -57,7 +56,7 @@
                         </div>
                         <div>
                             <button type="button" class="btn btn-light-info btn-sm mt-5"
-                                    x-show="selectedCheckBox.length > 0"
+                                    x-show="selectedCheckBox.length > 0 && hasUnlockedTransactions()"
                                     x-transition x-cloak data-bs-target="#modal-final-approve"
                                     data-bs-toggle="modal">
                                 <i class="ki-duotone ki-double-check">
@@ -82,6 +81,7 @@
                             <th class="min-w-125px text-center">Informasi Transaksi</th>
                             <th class="min-w-125px text-center">Akun</th>
                             <th class="min-w-125px text-center">Detail</th>
+                            <th class="min-w-125px text-center">Bukti Transaksi</th>
                             <th class="min-w-125px text-center">Status Konfirmasi</th>
                             <template
                                 x-if="Number(editPermission) === 1 || Number(confirmPermission) === 1">
@@ -110,13 +110,13 @@
                         <template x-for="(transaction, index) in transactions?.data" :key="transaction.id">
                             <tr>
                                 <td>
-                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                             @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox"
-                                                   :value="transaction.id"
-                                                   :id="'checkbox-' + transaction.id"
-                                                   :disabled="Number(destroyPermission) !== 1"/>
-                                        </div>
+                                    <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                         @click="selectCheckBox($event)">
+                                        <input class="form-check-input" type="checkbox"
+                                               :value="transaction.id"
+                                               :id="'checkbox-' + transaction.id"
+                                               :disabled="Number(destroyPermission) !== 1"/>
+                                    </div>
                                 </td>
 
                                 <td class="text-center">
@@ -141,6 +141,16 @@
                                 </td>
                                 <td class="text-center" x-text="transaction.detail"></td>
                                 <td class="text-center">
+                                    <a href="#">
+                                        <div class="symbol-label">
+                                            <a href="#" @click="openImage(transaction.attachment)">
+                                                <img :src="getImageURL(transaction.attachment ?? null)"
+                                                     alt="Image" class="w-100">
+                                            </a>
+                                        </div>
+                                    </a>
+                                </td>
+                                <td class="text-center">
                                     <div class="d-flex flex-column align-items-center justify-content-center">
                                         <p class="fs-7">Status Transaksi : <span
                                                 :class="transaction.locked_status === 1 ? 'text-info' : 'text-danger'"
@@ -162,7 +172,7 @@
                                         </template>
                                     </div>
                                 </td>
-                                <template x-if="Number(editPermission) === 1">
+                                <template x-if="Number(editPermission) === 1 && transaction.locked_status === 0">
                                     <td>
                                         <div
                                             class="d-flex flex-column align-items-center justify-content-center">
@@ -213,6 +223,16 @@
 @endsection
 @push('script')
     <script defer>
+
+        Inputmask("numeric", {
+            radixPoint: ",",
+            groupSeparator: ".",
+            digits: 2,
+            autoGroup: true,
+            rightAlign: false,
+            allowMinus: false
+        }).mask("#unit_price");
+
         $('.date').flatpickr();
         const transactionModal = new bootstrap.Modal(document.getElementById('modal-transactions'));
         const itemModal = document.getElementById('modal-item');
@@ -348,6 +368,27 @@
                         this.buttonLoading = false;
                     }
                 },
+                openImage(imagePath) {
+                    const lightbox = new FsLightbox();
+                    console.log(lightbox);
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        const image = "{{ asset('') }}" + placeholders
+                        lightbox.props.sources = [image, image];
+                        lightbox.open();
+                    } else {
+                        const image = "{{ Storage::url('') }}" + imagePath;
+                        lightbox.props.sources = [image];
+                        lightbox.open();
+                    }
+                },
+                getImageURL(imagePath) {
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        return "{{ asset('') }}" + placeholders;
+                    }
+                    return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
+                },
                 async edit(id) {
                     const resp = await axios.get(`/transactions/${id}`);
                     this.editVal = resp.data;
@@ -424,15 +465,6 @@
                             await showAlert('error', 'Terjadi kesalahan');
                         }
                     });
-                },
-                async unlockTransaction(id) {
-                    try {
-
-                    } catch (e) {
-                        console.log(e);
-                    } finally {
-                        this.isLoading = false;
-                    }
                 },
                 async selectedBranch() {
                     const selectedBranch = $('#selected-branch');
@@ -605,6 +637,20 @@
                     } finally {
                         this.buttonLoading = false;
                     }
+                },
+                hasLockedTransactions() {
+                    if (this.selectedCheckBox.length === 0) return false;
+                    const selectedIds = this.selectedCheckBox;
+                    return this.transactions.data.some(transaction =>
+                        selectedIds.includes(transaction.id.toString()) && transaction.locked_status === 0
+                    );
+                },
+                hasUnlockedTransactions() {
+                    if (this.selectedCheckBox.length === 0) return false;
+                    const selectedIds = this.selectedCheckBox;
+                    return this.transactions.data.some(transaction =>
+                        selectedIds.includes(transaction.id.toString()) && transaction.locked_status === 1
+                    );
                 },
             }
         }

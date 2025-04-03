@@ -40,7 +40,7 @@
         <label for="name" class="required form-label">
             Harga Satuan
         </label>
-        <input type="number" class="form-control form-control-solid" name="unit_price"
+        <input type="text" class="form-control form-control-solid" name="unit_price"
                id="unit_price" :value="editVal?.unit_price" placeholder="Harga Satuan"/>
     </div>
 </div>
@@ -52,7 +52,16 @@
         <input type="number" class="form-control form-control-solid" name="qty" id="qty"
                placeholder="Kuantitas" :value="editVal?.qty">
     </div>
+
+    <div class="col-lg-6">
+        <label for="name" class="required form-label">Bukti Transaksi</label>
+        <input type="file" class="form-control form-control-solid" name="attachment" id="attachment"
+               placeholder="Bukti Transaksi">
+    </div>
+
 </div>
+
+
 <div class="row mb-10">
     <div class="col-lg-6">
         <label for="name" class="required form-label">

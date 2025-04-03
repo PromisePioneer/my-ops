@@ -61,6 +61,7 @@ use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollHistoryContro
 use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollScheduleController;
 use App\Http\Controllers\HRIS\PermissionController;
 use App\Http\Controllers\Inventory\BoQ\BoqController;
+use App\Http\Controllers\Master\Accounting\AccountCategoryController;
 use App\Http\Controllers\Master\Accounting\AccountController;
 use App\Http\Controllers\Master\Accounting\Asset\AssetController;
 use App\Http\Controllers\Master\Accounting\InitialBalanceController;
@@ -430,6 +431,18 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
         Route::prefix('/accounting')->group(function () {
+
+            Route::prefix('account-categories')->group(function () {
+                Route::get('/', [AccountCategoryController::class, 'index']);
+                Route::get('/data', [AccountCategoryController::class, 'data']);
+                Route::get('/search', [AccountCategoryController::class, 'search']);
+                Route::post('/', [AccountCategoryController::class, 'store']);
+                Route::post('/import', [AccountCategoryController::class, 'import']);
+                Route::post('/destroy', [AccountCategoryController::class, 'destroy']);
+                Route::get('/edit/{account}', [AccountCategoryController::class, 'edit']);
+                Route::post('/update/{account}', [AccountCategoryController::class, 'update']);
+            });
+
             Route::prefix('accounts')->group(function () {
                 Route::get('/', [AccountController::class, 'index']);
                 Route::post('/create-child/{account}', [AccountController::class, 'createChildAccount']);
@@ -453,9 +466,7 @@ Route::group(['middleware' => ['auth']], static function () {
                     '/account/selected/{account}',
                     [InitialBalanceController::class, 'selectedAccountData']
                 );
-
                 Route::post('/destroy', [InitialBalanceController::class, 'destroy']);
-                Route::post('/{accountTransaction}', [InitialBalanceController::class, 'update']);
             });
             Route::prefix('tax-settings')->group(function () {
                 Route::get('/', [TaxSettingController::class, 'index']);

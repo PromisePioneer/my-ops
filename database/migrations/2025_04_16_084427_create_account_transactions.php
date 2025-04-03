@@ -25,7 +25,7 @@ class CreateAccountTransactions extends Migration
             $table->enum('transaction_type', ['TR', 'SA'])->default('TR');
             $table->string('description')->nullable();
             $table->enum('entries_type', ['debit', 'credit'])->nullable();
-            $table->double('amount');
+            $table->decimal('amount', 15, 4);
             $table->timestamps();
         });
     }

@@ -21,9 +21,10 @@ return new class extends Migration {
                 ->cascadeOnDelete();
             $table->double('qty')->nullable();
             $table->enum('type', ['Default', 'Barang', 'Beban', 'Utang', 'Piutang']);
-            $table->double('unit_price');
-            $table->double('total_price');
+            $table->decimal('unit_price', 15, 4);
+            $table->decimal('total_price', 15, 4);
             $table->text('detail');
+            $table->string('attachment');
             $table->foreignId('debit_account_id')
                 ->constrained('accounts')
                 ->cascadeOnDelete();

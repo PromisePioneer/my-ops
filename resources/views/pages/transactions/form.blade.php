@@ -9,22 +9,22 @@
                 </div>
             </div>
 
-            <form id="form-transactions" @submit.prevent="save(editVal?.id)">
+            <form id="form-transactions" @submit.prevent="save(editVal?.id)" enctype="multipart/form-data">
                 <div class="modal-body">
                     <div class="row mb-4">
-                       <template x-if="editVal === null">
-                           <div class="col-lg-6">
-                               <label class="form-label required">Tipe Transaksi</label>
-                               <select name="type" id="type" class="form-select form-select-solid"
-                                       x-model="transactionType">
-                                   <option>--- Pilih ---</option>
-                                   <option value="Barang">Barang</option>
-                                   <option value="Beban">Beban</option>
-                                   <option value="Hutang">Hutang</option>
-                                   <option value="Piutang">Piutang</option>
-                               </select>
-                           </div>
-                       </template>
+                        <template x-if="editVal === null">
+                            <div class="col-lg-6">
+                                <label class="form-label required">Tipe Transaksi</label>
+                                <select name="type" id="type" class="form-select form-select-solid"
+                                        x-model="transactionType">
+                                    <option>--- Pilih ---</option>
+                                    <option value="Barang">Barang</option>
+                                    <option value="Beban">Beban</option>
+                                    <option value="Hutang">Hutang</option>
+                                    <option value="Piutang">Piutang</option>
+                                </select>
+                            </div>
+                        </template>
 
                         <template x-if="editVal">
                             <div class="col-lg-6">

@@ -16,25 +16,21 @@
 
             <form id="form-initial-balance" @submit.prevent="save(editVal.id)">
                 <div class="modal-body">
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Cabang</label>
-                        <select name="branch_id" id="selectedBranch"
-                                class="form-select form-select-solid main-branches-select2"
-                                data-dropdown-parent="#modal-initial-balance">
-                            <option></option>
-                        </select>
-                    </div>
+                    @if(empty(Auth::user()->branch_id))
+                        <div class="mb-10">
+                            <label for="account_id" class="required form-label">Akun</label>
+                            <input type="hidden" name="branch_id" :value="branchVal.id">
+                            <input type="text" class="form-control form-control-solid" :value="branchVal.name" disabled>
+                        </div>
+                    @endif
                     <div class="mb-10">
                         <label for="account_id" class="required form-label">Akun</label>
-                        <select name="account_id" id="selectedAccount"
-                                class="form-select form-select-solid accounts-select2"
-                                data-dropdown-parent="#modal-initial-balance">
-                            <option></option>
-                        </select>
+                        <input type="hidden" name="account_id" :value="accountVal.id">
+                        <input type="text" class="form-control form-control-solid" :value="accountVal.name" disabled>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Saldo</label>
-                        <input type="number" id="amount" name="amount" class="form-control form-control-solid"
+                        <input type="text" id="amount" name="amount" class="form-control form-control-solid"
                                placeholder="Saldo" :value="editVal.amount"/>
                     </div>
                 </div>
