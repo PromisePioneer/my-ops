@@ -55,7 +55,7 @@
                     <div class="row mb-10">
                         <div class="col-lg-6">
                             <label for="name" class="required form-label">Jumlah Pemakaian</label>
-                            <input type="text" class="form-control form-control-solid" name="qty" id="qty"
+                            <input type="number" class="form-control form-control-solid" name="qty" id="qty"
                                    placeholder="Jumlah Pemakaian">
                         </div>
                     </div>

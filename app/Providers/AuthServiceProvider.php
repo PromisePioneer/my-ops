@@ -4,6 +4,7 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 use App\Models\Account;
+use App\Models\AccountCategory;
 use App\Models\AccountTransaction;
 use App\Models\Area;
 use App\Models\Asset;
@@ -31,6 +32,7 @@ use App\Models\TaxSetting;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\WorkTime;
+use App\Policies\AccountCategoryPolicy;
 use App\Policies\AccountPolicy;
 use App\Policies\AreaPolicy;
 use App\Policies\AssetPolicy;
@@ -75,10 +77,10 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
+        AccountCategory::class => AccountCategoryPolicy::class,
         Account::class => AccountPolicy::class,
         Branch::class => BranchPolicy::class,
         Contact::class => ContactPolicy::class,
-        Product::class => ProductPolicy::class,
         ServiceCategory::class => ServiceCategoriesPolicy::class,
         Department::class => DepartmentPolicy::class,
         Role::class => RolePolicy::class,

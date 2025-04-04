@@ -13,7 +13,8 @@ return new class extends Migration {
         Schema::create('account_categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('parent_id')->nullable()
+            $table->foreignId('parent_id')
+                ->nullable()
                 ->constrained('account_categories')->cascadeOnDelete();
             $table->timestamps();
         });

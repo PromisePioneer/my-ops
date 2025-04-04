@@ -137,24 +137,13 @@ use Throwable;
     }
 
 
-    public function finalStatus(Request $request, Transaction $transaction): JsonResponse
+    /**
+     * @throws Throwable
+     */
+    public function finalStatus(Transaction $transaction, TransactionConfirmationRequest $request): JsonResponse
     {
-
-        \DB::transaction(function () use ($request, $transaction) {
-            $implodeID = implode(',', $request->get('id'));
-            $explodeID = explode(',', $implodeID);
-
-            $transaction->whereIn('id', $explodeID)
-                ->update([
-                    'final_status' => $request->final_status,
-                    'final_excuses' => $request->input('final_excuses'),
-                    'approved_by' => $request->user()->id
-                ]);
-
-            if ($request->final_status === 'Ditolak') {
-                AccountTransaction::whereIn('transaction_id', $explodeID)->delete();
-                Stock::whereIn('transaction_id', $explodeID)->delete();
-            }
+        DB::transaction(function () use ($transaction, $request) {
+            $this->transactionService->confirm($transaction, $request);
         });
 
 

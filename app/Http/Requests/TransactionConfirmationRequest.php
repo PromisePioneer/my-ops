@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class TransactionConfirmationRequest extends FormRequest
 {
@@ -23,7 +24,8 @@ class TransactionConfirmationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'confirmation_excuses' => ['required'],
+            'status' => ['required', Rule::in('Diterima', 'Ditolak', 'Revisi')],
+            'final_notes' => ['required'],
         ];
     }
 }

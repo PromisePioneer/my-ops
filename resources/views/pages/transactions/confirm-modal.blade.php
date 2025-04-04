@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="modal-final-approve">
+<div class="modal fade" tabindex="-1" id="modal-confirm">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -9,21 +9,22 @@
                 </div>
             </div>
 
-            <form id="form-final-approve" @submit.prevent="saveFinalApprove()">
+            <form id="form-confirm" @submit.prevent="confirm()">
                 <div class="modal-body">
                     <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
                     <div class="row mb-10">
                         <label class="form-label required">Status Konfirmasi</label>
-                        <select name="final_status" id="final_status" class="form-select form-select-solid">
+                        <select name="status" id="status" class="form-select form-select-solid">
                             <option selected>Pilih</option>
                             <option value="Diterima">Diterima</option>
+                            <option value="Revisi">Revisi</option>
                             <option value="Ditolak">Ditolak</option>
                         </select>
                     </div>
 
                     <div class="row mb-10">
                         <label class="form-label required">Alasan</label>
-                        <textarea name="final_excuses" id="final_excuses" class="form-control form-control-solid"
+                        <textarea name="final_notes" id="final_notes" class="form-control form-control-solid"
                                   data-kt-autosize="true"></textarea>
                     </div>
 

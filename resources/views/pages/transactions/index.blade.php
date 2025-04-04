@@ -5,8 +5,7 @@
     <div x-data="transactionData()">
         @include('pages.master.operational.items.form')
         @include('pages.transactions.form')
-        @include('pages.transactions.confirmation')
-        @include('pages.transactions.final-approve')
+        @include('pages.transactions.confirm-modal')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 ">
                 <div class="card-title">
@@ -55,16 +54,18 @@
                             </form>
                         </div>
                         <div>
-                            <button type="button" class="btn btn-light-info btn-sm mt-5"
-                                    x-show="selectedCheckBox.length > 0 && hasUnlockedTransactions()"
-                                    x-transition x-cloak data-bs-target="#modal-final-approve"
-                                    data-bs-toggle="modal">
-                                <i class="ki-duotone ki-double-check">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                </i>
-                                Setujui Transaksi
-                            </button>
+                            <template x-if="Number(finalApprovePermission) === 1">
+                                <button type="button" class="btn btn-light-info btn-sm mt-5"
+                                        x-show="selectedCheckBox.length > 0 && hasUnlockedTransactions()"
+                                        x-transition x-cloak data-bs-target="#modal-confirm"
+                                        data-bs-toggle="modal">
+                                    <i class="ki-duotone ki-double-check">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                    </i>
+                                    Setujui Transaksi
+                                </button>
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -112,10 +113,12 @@
                                 <td>
                                     <div class="form-check form-check-sm form-check-custom form-check-solid"
                                          @click="selectCheckBox($event)">
-                                        <input class="form-check-input" type="checkbox"
-                                               :value="transaction.id"
-                                               :id="'checkbox-' + transaction.id"
-                                               :disabled="Number(destroyPermission) !== 1"/>
+                                        <template x-if="transaction.status !== 'Diterima'">
+                                            <input class="form-check-input" type="checkbox"
+                                                   :value="transaction.id"
+                                                   :id="'checkbox-' + transaction.id"
+                                                   :disabled="Number(destroyPermission) !== 1"/>
+                                        </template>
                                     </div>
                                 </td>
 
@@ -162,11 +165,11 @@
 
                                         <template x-if="transaction.locked_status === 1">
                                             <p class="fs-7">Status Konfirmasi : <span
-                                                    :class="transaction.confirmation_status === 'Diproses'
+                                                    :class="transaction.status === 'Diproses'
                                                         ? 'text-warning'
-                                                        : transaction.confirmation_status === 'Diterima' ? 'text-info'
+                                                        : transaction.status === 'Diterima' ? 'text-info'
                                                         : 'text-danger'"
-                                                    x-text="transaction.confirmation_status"></span>
+                                                    x-text="transaction.status"></span>
 
                                             </p>
                                         </template>
@@ -242,6 +245,7 @@
                 editPermission: "{{ request()->user()->can('Ubah Data Transaksi') }}",
                 destroyPermission: "{{ request()->user()->can('Hapus Data Transaksi') }}",
                 confirmPermission: "{{ request()->user()->can('Konfirmasi Data Transaksi') }}",
+                finalApprovePermission: "{{ request()->user()->can('Final Approve Data Transaksi') }}",
                 transactions: [],
                 isLoading: true,
                 transactionType: null,
@@ -259,10 +263,8 @@
                 goodsForm: document.getElementById('form-item'),
                 itemModal: new bootstrap.Modal(document.getElementById('modal-item')),
                 formDelete: document.getElementById('form-delete'),
-                formConfirm: document.getElementById('form-confirmation'),
-                modalConfirm: new bootstrap.Modal(document.getElementById('modal-confirmation')),
-                formFinalApprove: document.getElementById('form-final-approve'),
-                finalApproveModal: new bootstrap.Modal(document.getElementById('modal-final-approve')),
+                formConfirm: document.getElementById('form-confirm'),
+                modalConfirm: new bootstrap.Modal(document.getElementById('modal-confirm')),
                 async init() {
                     await this.getTransactions();
                     await this.getMainBranches();
@@ -399,7 +401,6 @@
                     await this.selectedCreditAccount();
                 },
                 async destroy() {
-                    console.log(this.selectedCheckBox);
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
                             await axios.post(`/transactions/destroy`, new FormData(this.formDelete));
@@ -608,28 +609,13 @@
                         }
                     });
                 },
-                async saveConfirmation(id) {
+                async confirm() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/transactions/confirm/${id}`, new FormData(this.formConfirm))
+                        await axios.post(`/transactions/final-status`, new FormData(this.formConfirm))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.formConfirm.reset();
                         this.modalConfirm.hide();
-                        await this.getTransactions();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
-                async saveFinalApprove() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post(`/transactions/final-status`, new FormData(this.formFinalApprove))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.formFinalApprove.reset();
-                        this.finalApproveModal.hide();
                         await this.getTransactions();
                     } catch (error) {
                         const respError = error.response.data.errors;

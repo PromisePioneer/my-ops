@@ -150,4 +150,10 @@ use Illuminate\View\View;
         return response()->json($this->accountService->kasAndLeverageAccounts($request));
     }
 
+
+    public function kasAccounts(Request $request): JsonResponse
+    {
+        return response()->json($this->accountService->kasAccounts($request));
+    }
+
 }

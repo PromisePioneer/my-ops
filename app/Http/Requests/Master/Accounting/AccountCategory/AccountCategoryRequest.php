@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Master\Accounting\AccountCategory;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class SubAccountImportRequest extends FormRequest
+class AccountCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -16,20 +17,21 @@ class SubAccountImportRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
+     *
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
         return [
-            'file_import' => ['required', 'file', 'mimes:xlsx,xls'],
+            'name' => ['required', 'string'],
         ];
     }
+
 
     public function messages(): array
     {
         return [
-            'file_import.required' => 'File Import tidak boleh kosong',
-            'file_import.file' => 'File Import tidak valid',
-            'file_import.mimes' => 'File Import tidak valid',
+            'name.required' => ['Nama kategori akun tidak boleh kosong'],
         ];
     }
 }

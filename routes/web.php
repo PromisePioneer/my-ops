@@ -132,7 +132,6 @@ Route::group(['middleware' => ['auth']], static function () {
     //dashboard
     Route::get('home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-
     Route::prefix('/transactions')->group(function () {
         Route::get('/', [TransactionController::class, 'index']);
         Route::post('/final-status', [TransactionController::class, 'finalStatus']);
@@ -437,10 +436,12 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/data', [AccountCategoryController::class, 'data']);
                 Route::get('/search', [AccountCategoryController::class, 'search']);
                 Route::post('/', [AccountCategoryController::class, 'store']);
+                Route::post('/create-child/{accountCategory}', [AccountCategoryController::class, 'storeChild']);
                 Route::post('/import', [AccountCategoryController::class, 'import']);
                 Route::post('/destroy', [AccountCategoryController::class, 'destroy']);
-                Route::get('/edit/{account}', [AccountCategoryController::class, 'edit']);
-                Route::post('/update/{account}', [AccountCategoryController::class, 'update']);
+                Route::get('/edit/{accountCategory}', [AccountCategoryController::class, 'edit']);
+                Route::post('/update/{accountCategory}', [AccountCategoryController::class, 'update']);
+                Route::post('/update-child/{accountCategory}', [AccountCategoryController::class, 'updateChild']);
             });
 
             Route::prefix('accounts')->group(function () {
@@ -1293,6 +1294,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/selected-item/{item}', [ItemCollectionController::class, 'selectedItem']);
         Route::get('/asset-accounts-data', [AccountController::class, 'assetAccounts']);
         Route::get('/kas-and-leverages-accounts-data', [AccountController::class, 'kasAndLeverageAccounts']);
+        Route::get('/kas-accounts-data', [AccountController::class, 'kasAccounts']);
         Route::get('/stock-accounts-data', [AccountController::class, 'stockAccounts']);
     });
 

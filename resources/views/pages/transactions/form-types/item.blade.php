@@ -56,7 +56,7 @@
     <div class="col-lg-6">
         <label for="name" class="required form-label">Bukti Transaksi</label>
         <input type="file" class="form-control form-control-solid" name="attachment" id="attachment"
-               placeholder="Bukti Transaksi">
+               placeholder="Bukti Transaksi" accept=".jpg,.png,.jpeg">
     </div>
 
 </div>

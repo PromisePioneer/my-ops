@@ -95,12 +95,10 @@ use function App\Helper\formatDate;
                 'detail' => $item->detail,
                 'total_price' => 'Rp.' . number_format($item->total_price),
                 'locked_status' => $item->locked_status,
-                'confirmation_status' => $item->confirmation_status,
-                'confirmation_excuses' => $item->confirmation_excuses,
-                'final_status' => $item->final_status,
+                'status' => $item->status,
                 'final_excuses' => $item->final_excuses,
-                'confirmed_by' => $item->confirmedBy?->name,
                 'created_by' => $item->createdBy->name,
+                'approved_by' => $item->approvedBy?->name,
                 'attachment' => $item->attachment,
 
             ];
@@ -173,20 +171,23 @@ use function App\Helper\formatDate;
     public function confirm(Transaction $transaction, TransactionConfirmationRequest $request): void
     {
         DB::transaction(function () use ($transaction, $request) {
-            $transaction->update([
-                'confirmation_status' => $request->confirmation_status,
-                'locked_status' => $request->confirmation_status === 'Revisi' ? 0 : 1,
-                'confirmed_by' => $request->confirmation_status === 'Diterima' ?: $request->user()->id,
-                'confirmation_excuses' => $request->input('confirmation_excuses'),
+            $implodeID = implode(',', $request->get('id'));
+            $explodeID = explode(',', $implodeID);
+            $transaction->whereIn('id', $explodeID)->update([
+                'status' => $request->status,
+                'locked_status' => $request->status === 'Revisi' ? 0 : 1,
+                'approved_by' => $request->status === 'Diterima' ?: $request->user()->id,
+                'final_notes' => $request->input('final_notes'),
             ]);
 
-            if ($request->input('confirmation_status') === 'Diterima') {
-                if ($transaction->type === 'Barang') {
+            if ($request->input('status') === 'Diterima') {
+                foreach ($explodeID as $transactionId) {
+                    $transaction = Transaction::where('id', $transactionId)->first();
                     $stocks = Stock::where('item_id', $transaction->item_id)
                         ->where('transaction_id', $transaction->id)
                         ->where('branch_id', $transaction->branch_id);
 
-                    if ($stocks->exists()) {
+                    if ($transaction->type === 'Barang' && $stocks->exists()) {
                         $stocks->update([
                             'qty' => $stocks->first()->qty + $transaction->qty
                         ]);
@@ -198,24 +199,23 @@ use function App\Helper\formatDate;
                             'qty' => $transaction->qty
                         ]);
                     }
+
+                    $this->accountTransactionService->createDebitTransaction(
+                        $transaction->branch_id,
+                        $transaction->detail,
+                        $transaction->debit_account_id,
+                        $transaction->total_price,
+                        $transaction->id,
+                    );
+
+                    $this->accountTransactionService->createCreditTransaction(
+                        $transaction->branch_id,
+                        $transaction->detail,
+                        $transaction->credit_account_id,
+                        $transaction->total_price,
+                        $transaction->id
+                    );
                 }
-
-
-                $this->accountTransactionService->createDebitTransaction(
-                    $transaction->branch_id,
-                    $transaction->detail,
-                    $transaction->debit_account_id,
-                    $transaction->total_price,
-                    $transaction->id,
-                );
-
-                $this->accountTransactionService->createCreditTransaction(
-                    $transaction->branch_id,
-                    $transaction->detail,
-                    $transaction->credit_account_id,
-                    $transaction->total_price,
-                    $transaction->id
-                );
             }
         });
     }

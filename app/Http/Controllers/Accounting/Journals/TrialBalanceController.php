@@ -29,15 +29,21 @@ class TrialBalanceController extends Controller
 
     public function data(Request $request): JsonResponse
     {
-        $totalDebit = $this->trialBalanceService->getTotalDebit($request)->whereYear('date', Carbon::now())
+
+        $startDate = Carbon::now()->subYear()->endOfYear()->format('Y-m-d');
+        $endDate = Carbon::now()->format('Y-m-d');
+
+        $totalDebit = $this->trialBalanceService->getTotalDebit($request)
+            ->whereBetween('date', [$startDate, $endDate])
             ->sum('amount');
-        $totalCredit = $this->trialBalanceService->getTotalCredit($request)->whereYear('date', Carbon::now())
+
+        $totalCredit = $this->trialBalanceService->getTotalCredit($request)->whereBetween('date', [Carbon::now()->subYear()->endOfYear()->format('Y-m-d'), Carbon::now()->format('Y-m-d')])
             ->sum('amount');
 
         return response()->json([
             'trial_balances' => $this->trialBalanceService->data(),
-            'total_debit' => 'Rp.'.number_format($totalDebit, 2),
-            'total_credit' => 'Rp.'.number_format($totalCredit, 2),
+            'total_debit' => 'Rp.' . number_format($totalDebit - $totalCredit, 2),
+            'total_credit' => 'Rp.' . number_format($totalCredit, 2),
         ]);
     }
 

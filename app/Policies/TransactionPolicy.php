@@ -30,4 +30,10 @@ class TransactionPolicy
     {
         return $user->can('Konfirmasi Data Transaksi');
     }
+
+
+    public function finalApprove(User $user)
+    {
+        return $user->can('Final Approve Data Transaksi');
+    }
 }

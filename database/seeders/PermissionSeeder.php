@@ -28,6 +28,7 @@ class PermissionSeeder extends Seeder
 
 
         //accounting master data
+        $this->accountCategory();
         $this->account();
         $this->initialBalance();
         $this->taxSetting();
@@ -133,6 +134,7 @@ class PermissionSeeder extends Seeder
             'Edit Data Transaksi',
             'Hapus Data Transaksi',
             'Konfirmasi Data Transaksi',
+            'Final Approve Data Transaksi'
         ];
 
         foreach ($permissions as $permission) {
@@ -682,6 +684,22 @@ class PermissionSeeder extends Seeder
             'Tambah Data Saldo Awal',
             'Edit Data Saldo Awal',
         ];
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+    }
+
+
+    public function accountCategory(): void
+    {
+        $permissions = [
+            'Lihat Menu Kategori Akun',
+            'Tambah Data Kategori Akun',
+            'Edit Data Kategori Akun',
+            'Hapus Data Kategori Akun',
+        ];
+
 
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);

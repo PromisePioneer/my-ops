@@ -202,9 +202,9 @@
                             Master Keuangan
                         @endslot
                         @slot('menuItem')
-                            @can('Lihat Menu Akun')
+                            @can('Lihat Menu Kategori Akun')
                                 <x-dropdown-menu-item
-                                    :active="request()->segment(3) === 'account-category'"
+                                    :active="request()->segment(3) === 'account-categories'"
                                     href="{{ url('master/accounting/account-categories') }}">
                                     Kategori Akun
                                 </x-dropdown-menu-item>

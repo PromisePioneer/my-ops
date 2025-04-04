@@ -145,4 +145,20 @@ use Illuminate\Http\Request;
     }
 
 
+    public function kasAccounts(Request $request): array
+    {
+        $search = $request->input('search');
+        $query = Account::search($search)
+            ->query(fn($query) => $this->accountRepository->getKasAccounts($query))
+            ->get();
+
+        return $query->map(function ($c) {
+            return [
+                'id' => $c->id,
+                'text' => $c->code . ' ' . $c->name,
+            ];
+        })->toArray();
+    }
+
+
 }
