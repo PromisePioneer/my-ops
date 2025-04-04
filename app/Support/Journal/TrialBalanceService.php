@@ -120,7 +120,7 @@ class TrialBalanceService
     {
         $query = AccountTransaction::with('account')
             ->whereHas('account', function ($query) use ($type) {
-                $query->where('trial_balance_type', 'debit');
+                $query->where('trial_balance_type', $type);
             })->where('entries_type', $type);
 
         if ($request->branch_id) {

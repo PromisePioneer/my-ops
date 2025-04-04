@@ -133,7 +133,7 @@ class PermissionSeeder extends Seeder
             'Tambah Data Transaksi',
             'Edit Data Transaksi',
             'Hapus Data Transaksi',
-            'Konfirmasi Data Transaksi',
+            'Kunci Data Transaksi',
             'Final Approve Data Transaksi'
         ];
 

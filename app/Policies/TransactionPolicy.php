@@ -26,14 +26,13 @@ class TransactionPolicy
         return $user->can('Hapus Data Transaksi');
     }
 
-    public function confirm(User $user): bool
+    public function lockStatus(User $user): bool
     {
-        return $user->can('Konfirmasi Data Transaksi');
+        return $user->can('Kunci Data Transaksi');
     }
 
-
-    public function finalApprove(User $user)
+    public function confirm(User $user): bool
     {
-        return $user->can('Final Approve Data Transaksi');
+        return $user->can('Setujui Data Transaksi');
     }
 }

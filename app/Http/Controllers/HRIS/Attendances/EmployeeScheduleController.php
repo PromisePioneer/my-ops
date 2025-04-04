@@ -6,8 +6,6 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmployeeScheduleRequest;
 use App\Models\EmployeeSchedule;
-use App\Models\NationalHoliday;
-use App\Models\User;
 use App\Models\WorkTime;
 use App\Support\Attendances\EmployeeSchedule\EmployeeScheduleService;
 use App\Support\HelperService\FinancialClosePeriodService;
@@ -185,11 +183,7 @@ use Throwable;
 
         $nationalHoliday = $nationalHolidayService->getNationalHoliday($startDate, $endDate);
 
-        $data = [
-            ...$this->employeeScheduleService->data($request),
-            ...$this->employeeScheduleService->data($request),
-            ...$this->employeeScheduleService->data($request),
-        ];
+        $data = $this->employeeScheduleService->data($request);
 
         $view = view('pages.adms.employee-schedules.schedules', compact('data', 'nationalHoliday'))->render();
 
@@ -203,7 +197,7 @@ use Throwable;
             ->ignoreHttpsErrors()
             ->margins(10, 10, 10, 10)
             ->fullPage()
-            ->save('test.jpg');
+            ->pdf();
 
 
         return new Response($pdf, 200, [

@@ -121,7 +121,6 @@
     <h3 class="table-title">
         JADWAL LIBUR KARYAWAN BULAN
         {{ strtoupper(\Carbon\Carbon::parse($data[0]['date']->last()['period_date'])->translatedFormat('F Y')) }}
-
     </h3>
 
     <div class="py-5">

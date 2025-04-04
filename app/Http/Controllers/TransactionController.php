@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use AllowDynamicProperties;
 use App\Http\Requests\TransactionConfirmationRequest;
 use App\Http\Requests\TransactionRequest;
-use App\Models\AccountTransaction;
-use App\Models\Stock;
 use App\Models\Transaction;
 use App\Support\Transactions\TransactionService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -97,6 +95,7 @@ use Throwable;
      */
     public function lockTransaction(Transaction $transaction): JsonResponse
     {
+        $this->authorize('lockStatus', $transaction);
         $this->transactionService->lockTransaction($transaction);
         return response()->json([
             'message' => 'data berhasil dikunci'
@@ -109,6 +108,7 @@ use Throwable;
      */
     public function confirm(Transaction $transaction, TransactionConfirmationRequest $request): JsonResponse
     {
+        $this->authorize('confirm', $transaction);
         $this->transactionService->confirm($transaction, $request);
         return response()->json([
             'message' => 'data berhasil dibuka'
@@ -122,12 +122,12 @@ use Throwable;
      */
     public function destroy(Request $request, Transaction $transaction): JsonResponse
     {
+        $this->authorize('delete', Transaction::class);
+        $implodeID = implode(',', $request->get('id'));
+
         DB::transaction(function () use ($request, $transaction) {
             $implodeID = implode(',', $request->get('id'));
             $explodeID = explode(',', $implodeID);
-
-            AccountTransaction::whereIn('transaction_id', $explodeID)->delete();
-            Stock::whereIn('transaction_id', $explodeID)->delete();
 
             $transaction->whereIn('id', $explodeID)->delete();
         });
@@ -142,15 +142,13 @@ use Throwable;
      */
     public function finalStatus(Transaction $transaction, TransactionConfirmationRequest $request): JsonResponse
     {
+        $this->authorize('lockStatus', Transaction::class);
         DB::transaction(function () use ($transaction, $request) {
             $this->transactionService->confirm($transaction, $request);
         });
-
 
         return response()->json([
             'message' => 'data berhasil dihapus'
         ]);
     }
-
-
 }

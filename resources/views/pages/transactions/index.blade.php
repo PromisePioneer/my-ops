@@ -40,8 +40,9 @@
                     <div class="d-flex align-items-center">
                         <div>
                             <form id="form-delete" @submit.prevent="destroy()" class="me-2">
+                                <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
                                 <button type="submit" class="btn btn-light-danger btn-sm mt-5"
-                                        x-show="selectedCheckBox.length > 0 && hasLockedTransactions()"
+                                        x-show="selectedCheckBox.length > 0 && hasLockedTransactions() && !hasUnlockedTransactions()"
                                         x-transition x-cloak>
                                     <i class="ki-duotone ki-trash-square fs-2">
                                         <span class="path1"></span>
@@ -56,7 +57,7 @@
                         <div>
                             <template x-if="Number(finalApprovePermission) === 1">
                                 <button type="button" class="btn btn-light-info btn-sm mt-5"
-                                        x-show="selectedCheckBox.length > 0 && hasUnlockedTransactions()"
+                                        x-show="selectedCheckBox.length > 0 && hasUnlockedTransactions() && !hasLockedTransactions()"
                                         x-transition x-cloak data-bs-target="#modal-confirm"
                                         data-bs-toggle="modal">
                                     <i class="ki-duotone ki-double-check">
@@ -74,10 +75,6 @@
                         <thead>
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                             <th class="w-10px pe-2">
-                                <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                    <input class="form-check-input" type="checkbox"
-                                           @click="toggleAllCheckBox()">
-                                </div>
                             </th>
                             <th class="min-w-125px text-center">Informasi Transaksi</th>
                             <th class="min-w-125px text-center">Akun</th>
@@ -401,6 +398,7 @@
                     await this.selectedCreditAccount();
                 },
                 async destroy() {
+                    console.log(this.selectedCheckBox);
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
                             await axios.post(`/transactions/destroy`, new FormData(this.formDelete));
