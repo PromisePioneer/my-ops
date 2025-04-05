@@ -4,6 +4,7 @@ namespace App\Support\Master\Accounting\Assets\Service;
 
 use AllowDynamicProperties;
 use App\Http\Requests\AssetRequest;
+use App\Models\Account;
 use App\Models\Asset;
 use App\Models\AssetDepreciation;
 use App\Support\AccountTransactions\AccountTransactionService;
@@ -19,6 +20,7 @@ use function App\Helper\formatDate;
 {
 
     private const string PURCHASE_ASSET_DESCRIPTION = 'Pembelian %s unit %s';
+    private const string DEPRECIATION_ASSET_DESCRIPTION = 'Penyusutan %s unit %s';
 
     private static int $perPage = 10;
 
@@ -45,7 +47,7 @@ use function App\Helper\formatDate;
                 'credit_account' => $item->creditAccount->name,
                 'unit' => $item->unit,
                 'useful_life' => $item->useful_life,
-                'price_per_unit' => number_format($item->price_per_unit, 2),
+                'price_per_unit' => 'Rp.' . number_format($item->price_per_unit, 2, '.', '.'),
                 'price_at_first_recieved' => number_format($item->price_at_first_recieved, 2),
                 'status' => $item->status,
             ];
@@ -128,11 +130,23 @@ use function App\Helper\formatDate;
             $date = Carbon::parse($asset->date_received)->addMonths($i);
             $price -= $depreciation;
 
-            AssetDepreciation::create([
-                'asset_id' => $asset->id,
-                'depreciation_date' => $date,
-                'depreciation_amount' => $price,
-            ]);
+            DB::transaction(function () use ($date, $price, $asset, $i) {
+                AssetDepreciation::create([
+                    'asset_id' => $asset->id,
+                    'depreciation_date' => $date,
+                    'depreciation_amount' => $price,
+                ]);
+
+                $accounts = Account::where('code', '130')->first();
+                $description = sprintf(self::DEPRECIATION_ASSET_DESCRIPTION, $asset->unit, $asset->name, $i);
+
+                $this->accountTransactionService->createCreditTransaction(
+                    $asset->branch_id,
+                    $description,
+                    $accounts->id,
+                    $price,
+                );
+            });
         }
     }
 

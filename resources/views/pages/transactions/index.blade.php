@@ -121,6 +121,7 @@
 
                                 <td class="text-center">
                                     <div class="d-flex flex-column">
+                                        <span x-text="`[${transaction.branch_name}]`"></span>
                                         <span x-text="`Transaksi ${transaction.type}`"></span>
                                         <span x-text="`Tgl ${transaction.date}`"></span>
                                         <span x-text="`No ${transaction.transaction_number}`"></span>

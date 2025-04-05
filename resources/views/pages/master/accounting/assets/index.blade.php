@@ -103,11 +103,9 @@
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
-                                            <template x-if="asset.status === 0">
                                                 <input class="form-check-input" type="checkbox" :value="asset.id"
                                                        :id="'checkbox-' + asset.id"
                                                        :disabled="Number(deletePermission) !== 1"/>
-                                            </template>
                                         </div>
                                     </td>
                                     <td x-text="`${asset.branch_name ?? 'Pusat'}`"></td>
@@ -160,7 +158,9 @@
 @endsection
 @push('script')
     <script defer>
-        $('.date').flatpickr();
+        $('.date').flatpickr({
+            static: true
+        });
 
         function assetsData() {
             return {

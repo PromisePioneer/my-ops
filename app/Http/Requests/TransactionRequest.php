@@ -83,8 +83,9 @@ class TransactionRequest extends FormRequest
             $formattedValue = str_replace(',', '.', $formattedValue);
             $unitPrice = (float)$formattedValue;
 
-            $subtractBetweenDebitAndCreditTransaction = $accountTransactionDebit - $accountTransactionCredit;
+            $subtractBetweenDebitAndCreditTransaction = (float)$accountTransactionDebit - (float)$accountTransactionCredit;
             $totalTransaction = $request->input('qty') * $unitPrice;
+
 
             if ($totalTransaction > $subtractBetweenDebitAndCreditTransaction) {
                 $fail('Saldo Kurang!');

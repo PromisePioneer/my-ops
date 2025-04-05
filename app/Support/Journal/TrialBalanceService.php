@@ -42,8 +42,8 @@ class TrialBalanceService
 
             return [
                 'account_name' => $account->name,
-                'debit' => $account->trial_balance_type === 'debit' ? 'Rp.' . number_format(($debit + $childDebit) - $childCredit, 2) : null,
-                'credit' => $account->trial_balance_type === 'credit' ? 'Rp.' . number_format($credit + $childCredit, 2) : null,
+                'debit' => $account->trial_balance_type === 'debit' ? 'Rp.' . number_format(($debit + $childDebit) - $childCredit, 2, '.', '.') : null,
+                'credit' => $account->trial_balance_type === 'credit' ? 'Rp.' . number_format($credit + $childCredit, 2, '.', '.') : null,
                 'balance' => 'Rp.' . number_format(($debit + $childDebit) - ($credit + $childCredit), 2),
             ];
         });
