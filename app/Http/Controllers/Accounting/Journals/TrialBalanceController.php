@@ -41,11 +41,11 @@ class TrialBalanceController extends Controller
         $totalDebit = 0;
         foreach ($test as $item) {
             if ($item['debit']) {
-                $totalDebit += (float)$item['balance_debit'];
+                $totalDebit += floatval($item['balance_debit']);
             }
 
             if ($item['credit']) {
-                $totalCredit += (float)$item['balance_credit'];
+                $totalCredit += floatval($item['balance_credit']);
             }
 
         }
