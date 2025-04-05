@@ -41,6 +41,7 @@ class TrialBalanceController extends Controller
         $totalDebit = 0;
         foreach ($test as $item) {
             if ($item['trial_balance_type'] === 'debit') {
+                var_dump($item['balance_debit']);
                 $totalDebit += floatval($item['balance_debit']);
             }
 
