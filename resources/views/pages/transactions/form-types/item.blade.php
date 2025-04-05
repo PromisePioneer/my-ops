@@ -41,7 +41,7 @@
             Harga Satuan
         </label>
         <input type="text" class="form-control form-control-solid" name="unit_price"
-               id="unit_price" :value="editVal?.unit_price" placeholder="Harga Satuan"/>
+               id="unit_price" :value="parseFloat(editVal?.unit_price)" placeholder="Harga Satuan"/>
     </div>
 </div>
 
