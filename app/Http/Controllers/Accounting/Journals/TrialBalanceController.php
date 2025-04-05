@@ -39,6 +39,8 @@ class TrialBalanceController extends Controller
         $test = $this->trialBalanceService->formattedData($query, $request);
         $totalDebit = floatval(0);
         $totalCredit = floatval(0);
+
+        dd($totalDebit);
         foreach ($test as $item) {
             if ($item['trial_balance_type'] === 'debit') {
                 $totalDebit += $item['balance_debit'];
