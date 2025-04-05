@@ -40,16 +40,15 @@ class TrialBalanceController extends Controller
         $totalCredit = 0;
         $totalDebit = 0;
         foreach ($test as $item) {
-            if ($item['debit']) {
+            if ($item['trial_balance_type'] === 'debit') {
                 $totalDebit += floatval($item['balance_debit']);
             }
 
-            if ($item['credit']) {
+            if ($item['trial_balance_type'] === 'credit') {
                 $totalCredit += floatval($item['balance_credit']);
             }
 
         }
-            dd($totalDebit);
         return response()->json([
             'trial_balances' => $this->trialBalanceService->data(),
             'total_debit' => number_format($totalDebit, 2, '.', '.'),
