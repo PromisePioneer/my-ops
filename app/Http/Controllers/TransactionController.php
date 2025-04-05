@@ -74,6 +74,8 @@ use Throwable;
     public function edit(Transaction $transaction): JsonResponse
     {
         $this->authorize('edit', Transaction::class);
+
+        $transaction->unit_price = number_format($transaction->unit_price, 2, '.', '.');
         return response()->json($transaction);
     }
 
