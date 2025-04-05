@@ -48,7 +48,7 @@ class TrialBalanceController extends Controller
                 $totalCredit += $item['balance_credit'];
             }
 
-            dd($totalCredit);
+            dd($totalDebit);
         }
         return response()->json([
             'trial_balances' => $this->trialBalanceService->data(),
