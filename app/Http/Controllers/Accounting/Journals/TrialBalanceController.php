@@ -37,8 +37,7 @@ class TrialBalanceController extends Controller
         $query = Account::with('children', 'accountTransaction')->whereNull('parent_id');
 
         $test = $this->trialBalanceService->formattedData($query, $request);
-        $totalCredit = 0;
-        $totalDebit = 0;
+
         foreach ($test as $item) {
             if ($item['trial_balance_type'] === 'debit') {
                 $totalDebit += floatval($item['balance_debit']);
