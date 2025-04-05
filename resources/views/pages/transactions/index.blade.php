@@ -226,7 +226,7 @@
     <script defer>
 
         Inputmask("numeric", {
-            radixPoint: ",",
+            radixPoint: ".",
             groupSeparator: ".",
             digits: 2,
             autoGroup: true,
