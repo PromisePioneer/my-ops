@@ -35,12 +35,10 @@ class TrialBalanceController extends Controller
 
         $totalDebit = $this->trialBalanceService->getTotalDebit($request)
             ->whereBetween('date', [$startDate, $endDate])
-            ->where('trial_balance_type', 'debit')
             ->sum('amount');
 
         $totalCredit = $this->trialBalanceService->getTotalCredit($request)
             ->whereBetween('date', [$startDate, $endDate])
-            ->where('trial_balance_type', 'credit')
             ->sum('amount');
 
         return response()->json([
