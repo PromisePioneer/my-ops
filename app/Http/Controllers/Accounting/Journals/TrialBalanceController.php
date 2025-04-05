@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Accounting\Journals;
 
 use App\Http\Controllers\Controller;
+use App\Models\Account;
 use App\Models\Master\Common\Branch;
 use App\Support\Journal\TrialBalanceService;
 use Carbon\Carbon;
@@ -33,18 +34,24 @@ class TrialBalanceController extends Controller
         $startDate = Carbon::now()->subYear()->endOfYear()->format('Y-m-d');
         $endDate = Carbon::now()->format('Y-m-d');
 
-        $totalDebit = $this->trialBalanceService->getTotalDebit($request)
-            ->whereBetween('date', [$startDate, $endDate])
-            ->sum('amount');
+        $query = Account::with('children', 'accountTransaction')->whereNull('parent_id');
 
-        $totalCredit = $this->trialBalanceService->getTotalCredit($request)
-            ->whereBetween('date', [$startDate, $endDate])
-            ->sum('amount');
+        $test = $this->trialBalanceService->formattedData($query, $request);
+        $totalCredit = 0;
+        $totalDebit = 0;
+        foreach ($test as $item) {
+            if ($item['debit']) {
+                $totalDebit += $item['balance_debit'];
+            }
 
+            if ($item['credit']) {
+                $totalCredit += $item['balance_credit'];
+            }
+        }
         return response()->json([
             'trial_balances' => $this->trialBalanceService->data(),
-            'total_debit' => 'Rp.' . number_format($totalDebit, 2, '.', '.'),
-            'total_credit' => 'Rp.' . number_format($totalCredit, 2, '.', '.'),
+            'total_debit' => number_format($totalDebit, 2, '.', '.'),
+            'total_credit' => number_format($totalCredit, 2, '.', '.'),
         ]);
     }
 
