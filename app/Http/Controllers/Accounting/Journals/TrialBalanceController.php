@@ -37,16 +37,16 @@ class TrialBalanceController extends Controller
         $query = Account::with('children', 'accountTransaction')->whereNull('parent_id');
 
         $test = $this->trialBalanceService->formattedData($query, $request);
-
+        $totalDebit = floatval(0);
+        $totalCredit = floatval(0);
         foreach ($test as $item) {
             if ($item['trial_balance_type'] === 'debit') {
-                $totalDebit += floatval($item['balance_debit']);
+                $totalDebit += $item['balance_debit'];
             }
 
             if ($item['trial_balance_type'] === 'credit') {
-                $totalCredit += floatval($item['balance_credit']);
+                $totalCredit += $item['balance_credit'];
             }
-
         }
         return response()->json([
             'trial_balances' => $this->trialBalanceService->data(),
