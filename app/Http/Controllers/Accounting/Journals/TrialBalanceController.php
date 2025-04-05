@@ -51,7 +51,7 @@ class TrialBalanceController extends Controller
         }
         return response()->json([
             'trial_balances' => $this->trialBalanceService->data(),
-            'total_debit' => number_format($totalDebit, 2, '.', '.'),
+            'total_debit' => $totalDebit,
             'total_credit' => number_format($totalCredit, 2, '.', '.'),
         ]);
     }
