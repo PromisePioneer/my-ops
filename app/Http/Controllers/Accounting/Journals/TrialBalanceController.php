@@ -37,7 +37,8 @@ class TrialBalanceController extends Controller
             ->whereBetween('date', [$startDate, $endDate])
             ->sum('amount');
 
-        $totalCredit = $this->trialBalanceService->getTotalCredit($request)->whereBetween('date', [Carbon::now()->subYear()->endOfYear()->format('Y-m-d'), Carbon::now()->format('Y-m-d')])
+        $totalCredit = $this->trialBalanceService->getTotalCredit($request)
+            ->whereBetween('date', [$startDate, $endDate])
             ->sum('amount');
 
         return response()->json([
