@@ -75,7 +75,11 @@ use Throwable;
     {
         $this->authorize('edit', Transaction::class);
 
-        $transaction->unit_price = number_format($transaction->unit_price, 2, '.', '.');
+        $formattedValue = str_replace('.', '', $transaction->unit_price);
+        $formattedValue = str_replace(',', '.', $formattedValue);
+        $unitPrice = (float)$formattedValue;
+//
+//        $transaction->unit_price = number_format($unitPrice, 2, '.', '.');
         return response()->json($transaction);
     }
 

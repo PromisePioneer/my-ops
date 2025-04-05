@@ -225,7 +225,8 @@
 @push('script')
     <script defer>
 
-        Inputmask("numeric", {
+
+        Inputmask("decimal", {
             radixPoint: ",",
             groupSeparator: ".",
             digits: 2,
