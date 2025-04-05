@@ -45,7 +45,7 @@ class TrialBalanceController extends Controller
         }
         return response()->json([
             'trial_balances' => $this->trialBalanceService->data(),
-            'total_debit' => $totalDebit,
+            'total_debit' => bcsub($totalDebit, '0', 2),
             'total_credit' => bcsub($totalCredit, '0', 2),
         ]);
     }
