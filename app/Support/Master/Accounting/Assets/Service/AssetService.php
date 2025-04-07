@@ -99,6 +99,7 @@ use function App\Helper\formatDate;
      */
     public function confirm(Request $request, Asset $asset): void
     {
+
         $description = sprintf(self::PURCHASE_ASSET_DESCRIPTION, $asset->unit, $asset->name);
         DB::transaction(function () use ($request, $description, $asset) {
             $this->depreciation($request, $asset);
