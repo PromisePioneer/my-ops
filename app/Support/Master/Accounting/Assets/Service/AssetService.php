@@ -43,8 +43,7 @@ use function App\Helper\formatDate;
                 'id' => $item->id,
                 'branch_name' => $item->branch->name ?? null,
                 'name' => $item->name,
-                'debit_account' => $item->debitAccount->name,
-                'credit_account' => $item->creditAccount->name,
+                'debit_account' => $item->debitAccount?->name ?? null,
                 'unit' => $item->unit,
                 'useful_life' => $item->useful_life,
                 'price_per_unit' => 'Rp.' . number_format($item->price_per_unit, 2, '.', '.'),
@@ -64,11 +63,11 @@ use function App\Helper\formatDate;
 
         if (!empty($search)) {
             $query->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%'.$search.'%')
+                $query->where('name', 'like', '%' . $search . '%')
                     ->orWhereHas('account', function ($query) use ($search) {
-                        $query->where('name', 'like', '%'.$search.'%')
-                            ->orWhere('code', 'like', '%'.$search.'%');
-                    })->orWhere('useful_life', 'like', '%'.$search.'%');
+                        $query->where('name', 'like', '%' . $search . '%')
+                            ->orWhere('code', 'like', '%' . $search . '%');
+                    })->orWhere('useful_life', 'like', '%' . $search . '%');
             });
         }
 
@@ -103,12 +102,6 @@ use function App\Helper\formatDate;
                 $asset->branch_id,
                 $description,
                 $asset->debit_account_id,
-                $asset->total_price,
-            );
-            $this->accountTransactionService->createCreditTransaction(
-                $asset->branch_id,
-                $description,
-                $asset->credit_account_id,
                 $asset->total_price,
             );
         });

@@ -30,23 +30,20 @@ class TrialBalanceController extends Controller
 
     public function data(Request $request): JsonResponse
     {
-
-        $startDate = Carbon::now()->subYear()->endOfYear()->format('Y-m-d');
-        $endDate = Carbon::now()->format('Y-m-d');
-
         $query = Account::with('children', 'accountTransaction')->whereNull('parent_id');
-
         $test = $this->trialBalanceService->formattedData($query, $request);
         $totalDebit = '0';
         $totalCredit = '0';
+
         foreach ($test as $item) {
             $totalDebit = bcadd($totalDebit, $item['balance_debit'], 2);
             $totalCredit = bcadd($totalCredit, $item['balance_credit'], 2);
         }
+
         return response()->json([
             'trial_balances' => $this->trialBalanceService->data(),
-            'total_debit' => bcsub($totalDebit, '0', 2),
-            'total_credit' => bcsub($totalCredit, '0', 2),
+            'total_debit' => 'Rp.' . number_format(bcsub($totalDebit, '0', 2), 2, '.', '.'),
+            'total_credit' => 'Rp.' . number_format(bcsub($totalCredit, '0', 2), 2, '.', '.'),
         ]);
     }
 

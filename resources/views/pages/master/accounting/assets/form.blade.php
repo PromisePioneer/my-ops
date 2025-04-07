@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="asset-modal" >
+<div class="modal fade" tabindex="-1" id="asset-modal">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
@@ -69,15 +69,6 @@
                             <input type="number" id="price_per_unit" name="price_per_unit"
                                    class="form-control form-control-solid"
                                    placeholder="Harga per unit" :value="editVal?.price_per_unit"/>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="name" class="required form-label">Akun Kas</label>
-                            <select name="credit_account_id"
-                                    id="selected-kas-account"
-                                    class="form-select form-select-solid kas-accounts-select2"
-                                    data-dropdown-parent="#asset-modal">
-                                <option></option>
-                            </select>
                         </div>
                     </div>
                 </div>
