@@ -404,6 +404,10 @@
                 },
                 openImage() {
                     const lightbox = new FsLightbox();
+                    const storage = "{{ Storage::url('')  }}"
+                    if (this.editVal) {
+                        lightbox.props.sources = [storage + this.imgsrc[0]];
+                    }
                     lightbox.props.sources = [this.imgsrc[0]];
                     lightbox.open();
                 },
