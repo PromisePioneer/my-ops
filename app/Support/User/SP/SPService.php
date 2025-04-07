@@ -194,6 +194,7 @@ use function App\Helper\convertToRoman;
                 'text' => $item->nip . ' ' . $item->name,
             ];
         })->toArray();
+
     }
 
     public function getSPPic(Request $request)
