@@ -2,6 +2,14 @@
 @section('page-title', 'Transaksi')
 @section('breadcrumbs', 'Transaksi')
 @section('content')
+    @push('styles')
+        <style>
+            .modal-body {
+                max-height: calc(100vh - 200px);
+                overflow-y: auto;
+            }
+        </style>
+    @endpush
     <div x-data="transactionData()">
         @include('pages.master.operational.items.form')
         @include('pages.transactions.form')
@@ -264,6 +272,8 @@
                 search: '',
                 editVal: null,
                 userList: [],
+                imgsrc: [],
+                attachments: [],
                 selectedConfirmationStatus: null,
                 form: document.getElementById('form-transactions'),
                 modalForm: new bootstrap.Modal(document.getElementById('modal-transactions')),
@@ -313,6 +323,22 @@
                     });
                     this.selectedCheckBox.shift();
                 },
+                previewFile() {
+                    let files = this.$refs.myFile.files;
+                    if (!files.length) return;
+
+                    Array.from(files).forEach(file => {
+                        if (!file.type.startsWith('image/')) return;
+
+                        let reader = new FileReader();
+                        reader.onload = e => {
+                            this.imgsrc = [];
+                            this.imgsrc.push(e.target.result);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                },
+
                 selectCheckBox(event) {
                     const checkboxId = event.target.value;
                     if (event.target.checked) {
@@ -377,19 +403,20 @@
                         this.buttonLoading = false;
                     }
                 },
-                openImage(imagePath) {
+                openImage() {
                     const lightbox = new FsLightbox();
-                    console.log(lightbox);
-                    if (imagePath === null) {
-                        const placeholders = 'assets/media/avatars/blank.png'
-                        const image = "{{ asset('') }}" + placeholders
-                        lightbox.props.sources = [image, image];
-                        lightbox.open();
-                    } else {
-                        const image = "{{ Storage::url('') }}" + imagePath;
-                        lightbox.props.sources = [image];
-                        lightbox.open();
-                    }
+                    console.log(document.getElementById('attachment').src)
+                    lightbox.props.sources = [this.imgsrc[0]];
+                    lightbox.open();
+                },
+                getBase64Image(img) {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0);
+                    const dataURL = canvas.toDataURL("image/png");
+                    return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
                 },
                 getImageURL(imagePath) {
                     if (imagePath === null) {
@@ -401,6 +428,7 @@
                 async edit(id) {
                     const resp = await axios.get(`/transactions/${id}`);
                     this.editVal = resp.data;
+                    this.imgsrc.push(this.editVal.attachment);
                     this.transactionType = this.editVal.type;
                     await this.selectedItem();
                     await this.selectedBranch();
@@ -476,6 +504,7 @@
                     });
                 },
                 async selectedBranch() {
+                    if (!this.editVal?.branch_id) return;
                     const selectedBranch = $('#selected-branch');
                     const response = await $.ajax({
                         type: 'GET',

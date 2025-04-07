@@ -3,9 +3,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Form Transaksi</h5>
-                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
+                <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
-                    <span class="svg-icon svg-icon-2x"></span>
+                     <span class="svg-icon svg-icon-2x">
+                        <i class="ki-duotone ki-technology-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </span>
                 </div>
             </div>
 

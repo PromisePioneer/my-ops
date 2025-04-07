@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\AccountTransaction;
+use App\Models\Master\Common\Branch;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
@@ -67,6 +68,7 @@ class TransactionRequest extends FormRequest
     {
         return static function ($value, $attribute, $fail) use ($request) {
             $date = Carbon::now();
+            $branch = Branch::where('id', $request->input('branch_id'))->first();
             $accountTransactionDebit = AccountTransaction::where('account_id', $request->credit_account_id)
                 ->where('branch_id', $request->input('branch_id'))
                 ->where('entries_type', 'debit')
@@ -88,7 +90,7 @@ class TransactionRequest extends FormRequest
 
 
             if ($totalTransaction > $subtractBetweenDebitAndCreditTransaction) {
-                $fail('Saldo Kurang!');
+                $fail('Saldo Kurang!,' . '<br>' . 'Saldo sisa : ' . 'Rp.' . number_format($subtractBetweenDebitAndCreditTransaction, 2, '.', '.') . '<br>' . 'Total Transaksi : ' . number_format($totalTransaction, 2, '.', '.'));
             }
 
             return true;

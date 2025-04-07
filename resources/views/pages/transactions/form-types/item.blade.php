@@ -26,7 +26,7 @@
 </div>
 
 <div class="row mb-10">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <label for="name" class="required form-label">
             Nama Barang
         </label>
@@ -36,27 +36,42 @@
         </select>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-4">
         <label for="name" class="required form-label">
             Harga Satuan
         </label>
         <input type="text" class="form-control form-control-solid" name="unit_price"
                id="unit_price" :value="parseFloat(editVal?.unit_price)" placeholder="Harga Satuan"/>
     </div>
-</div>
-
-
-<div class="row mb-10">
-    <div class="col-lg-6">
+    <div class="col-lg-4">
         <label for="name" class="required form-label">Qty</label>
         <input type="number" class="form-control form-control-solid" name="qty" id="qty"
                placeholder="Kuantitas" :value="editVal?.qty">
     </div>
 
+</div>
+
+
+<div class="row mb-10">
+
+
     <div class="col-lg-6">
         <label for="name" class="required form-label">Bukti Transaksi</label>
-        <input type="file" class="form-control form-control-solid" name="attachment" id="attachment"
-               placeholder="Bukti Transaksi" accept=".jpg,.png,.jpeg">
+        <input type="file" class="form-control form-control-solid" @change="previewFile"
+               accept="image/*" x-ref="myFile" name="attachment" id="attachment">
+    </div>
+
+
+    <div class="col-lg-6">
+        <label
+            :class="`${imgsrc.length > 0 ? 'col-form-label required fw-bold fs-6' : 'd-none'}`">
+            Preview (Klik Untuk Menghapus)
+        </label>
+        <template x-for="(src, index) in imgsrc" :key="index">
+            <div class="col-md-4">
+                <img :src="src" class="img-fluid" @click="openImage(src)">
+            </div>
+        </template>
     </div>
 
 </div>
