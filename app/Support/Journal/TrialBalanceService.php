@@ -108,8 +108,8 @@ class TrialBalanceService
 
         return [
             'trial_balance' => $this->formattedData($query, $request),
-            'total_debit' => number_format($this->getTotalDebit($request)->sum('amount'), 2),
-            'total_credit' => number_format($this->getTotalCredit($request)->sum('amount'), 2),
+            'total_debit' => 'Rp.' . number_format($this->getTotalDebit($request)->sum('amount'), 2, '.', '.'),
+            'total_credit' => 'Rp.' . number_format($this->getTotalCredit($request)->sum('amount'), 2, '.', '.'),
         ];
     }
 
