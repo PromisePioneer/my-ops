@@ -40,7 +40,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="name" class="required form-label">Jumlah Unit</label>
-                            <input type="number" id="unit" name="unit" class="form-control form-control-solid"
+                            <input type="text" id="unit" name="unit" class="form-control form-control-solid"
                                    placeholder="Jumlah unit" :value="editVal?.unit"/>
                         </div>
                     </div>
@@ -57,8 +57,8 @@
                             <label for="name" class="required form-label">Tanggal Perolehan</label>
                             <br>
                             <input type="date" id="date_received" name="date_received"
-                                   class="form-control form-control-solid date" style="width: 200px"
-                                   placeholder="Tanggal Perolehan" :value="editVal?.date_received"/>
+                                   class="form-control form-control-solid date"
+                                   placeholder=" Tanggal Perolehan" :value="editVal?.date_received"/>
                         </div>
                     </div>
 
@@ -66,7 +66,7 @@
                     <div class="row mb-7">
                         <div class="col-md-6">
                             <label for="name" class="required form-label">Harga / Unit</label>
-                            <input type="number" id="price_per_unit" name="price_per_unit"
+                            <input type="text" id="price_per_unit" name="price_per_unit"
                                    class="form-control form-control-solid"
                                    placeholder="Harga per unit" :value="editVal?.price_per_unit"/>
                         </div>

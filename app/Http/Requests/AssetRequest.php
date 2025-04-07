@@ -29,7 +29,7 @@ class AssetRequest extends FormRequest
             'name' => ['required'],
             'unit' => ['required', 'numeric'],
             'useful_life' => ['required'],
-            'price_per_unit' => ['required', 'numeric'],
+            'price_per_unit' => ['required'],
         ];
     }
 
@@ -46,7 +46,6 @@ class AssetRequest extends FormRequest
             'useful_life.required' => 'Masa manfaat tidak boleh kosong',
             'useful_life.numeric' => 'Masa manfaat harus berupa angka',
             'price_per_unit.required' => 'Harga per unit tidak boleh kosong',
-            'price_per_unit.numeric' => 'Harga per unit harus berupa angka',
             'date_recieved.required' => 'Tanggal Perolehan tidak boleh kosong',
             'date_recieved.date' => 'Tanggal Perolehan harus berupa tanggal',
         ];

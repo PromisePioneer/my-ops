@@ -236,6 +236,14 @@
         }).mask("#unit_price");
 
         $('.date').flatpickr();
+
+        document.addEventListener('focusin', (e) => {
+            if (e.target.closest(".flatpickr-calendar") !== null) {
+                e.stopImmediatePropagation();
+            }
+        });
+
+
         const transactionModal = new bootstrap.Modal(document.getElementById('modal-transactions'));
         const itemModal = document.getElementById('modal-item');
 

@@ -89,6 +89,7 @@ use function App\Helper\formatDate;
         $unitPriceformattedValue = str_replace(',', '.', $unitPriceformattedValue);
         $unitPrice = (float)$unitPriceformattedValue;
 
+        $data['price_per_unit'] = $unitPrice;
         $data['total_price'] = $unitPrice * $data['unit'];
         $data['residu'] = $data['total_price'] / $data['useful_life'];
         Asset::create($data);

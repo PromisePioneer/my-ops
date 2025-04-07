@@ -103,9 +103,9 @@
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
-                                                <input class="form-check-input" type="checkbox" :value="asset.id"
-                                                       :id="'checkbox-' + asset.id"
-                                                       :disabled="Number(deletePermission) !== 1"/>
+                                            <input class="form-check-input" type="checkbox" :value="asset.id"
+                                                   :id="'checkbox-' + asset.id"
+                                                   :disabled="Number(deletePermission) !== 1"/>
                                         </div>
                                     </td>
                                     <td x-text="`${asset.branch_name ?? 'Pusat'}`"></td>
@@ -158,8 +158,21 @@
 @endsection
 @push('script')
     <script defer>
-        $('.date').flatpickr({
-            static: true
+        Inputmask("decimal", {
+            radixPoint: ",",
+            groupSeparator: ".",
+            digits: 2,
+            autoGroup: true,
+            rightAlign: false,
+            allowMinus: false
+        }).mask("#price_per_unit");
+
+        $('.date').flatpickr();
+
+        document.addEventListener('focusin', (e) => {
+            if (e.target.closest(".flatpickr-calendar") !== null) {
+                e.stopImmediatePropagation();
+            }
         });
 
         function assetsData() {
