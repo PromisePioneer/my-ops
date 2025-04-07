@@ -332,9 +332,7 @@
 
                         let reader = new FileReader();
                         reader.onload = e => {
-                            this.imgsrc = [];
-                            this.imgsrc.push(e.target.result);
-                            console.log(this.e.target.result)
+                            this.imgsrc.splice(0, this.imgsrc.length, ...e.target.value);
                         };
                         reader.readAsDataURL(file);
                     });
