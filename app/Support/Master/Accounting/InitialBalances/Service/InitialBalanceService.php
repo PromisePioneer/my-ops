@@ -53,7 +53,7 @@ use Illuminate\Http\Request;
                 'id' => $account->id,
                 'code' => $account->code,
                 'account' => $account->code . ' ' . $account->name,
-                'initial_balance' => number_format($initialBalance, 2, '.', '.') ?? null,
+                'initial_balance' => 'Rp.' . number_format($initialBalance, 2, '.', '.') ?? null,
                 'sub_accounts' => $account->children->map(function ($subAccount) use ($request) {
                     return [
                         'id' => $subAccount->id,
