@@ -409,6 +409,7 @@
                     lightbox.open();
                 },
                 openImageList(imagePath) {
+                    console.log(imagePath);
                     const lightbox = new FsLightbox();
                     if (imagePath === null) {
                         const placeholders = 'assets/media/avatars/blank.png'
