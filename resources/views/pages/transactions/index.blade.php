@@ -333,7 +333,7 @@
                         let reader = new FileReader();
                         reader.onload = e => {
                             const url = "{{ Storage::url('') }}" + this.editVal.attachment
-                            this.imgsrc.splice(0, this.imgsrc.length, url ?? e.target.value);
+                            this.imgsrc = url ?? e.target.value;
                         };
                         reader.readAsDataURL(file);
                     });
