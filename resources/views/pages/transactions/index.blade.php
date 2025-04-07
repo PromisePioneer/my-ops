@@ -436,7 +436,8 @@
                 async edit(id) {
                     const resp = await axios.get(`/transactions/${id}`);
                     this.editVal = resp.data;
-                    this.imgsrc.push(this.editVal.attachment);
+                    const storage = "{{ Storage::url('') }}" + this.editVal.attachment;
+                    this.imgsrc.push(storage);
                     this.transactionType = this.editVal.type;
                     await this.selectedItem();
                     await this.selectedBranch();
