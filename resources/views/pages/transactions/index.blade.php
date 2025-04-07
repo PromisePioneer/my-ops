@@ -410,14 +410,13 @@
                 },
                 openImageList(imagePath) {
                     const lightbox = new FsLightbox();
-                    console.log(lightbox);
                     if (imagePath === null) {
                         const placeholders = 'assets/media/avatars/blank.png'
                         const image = "{{ asset('')  }}" + placeholders;
                         lightbox.props.sources = [image, image];
                         lightbox.open();
                     } else {
-                        const image = "<?php echo e(Storage::url('')); ?>" + imagePath;
+                        const image = "{{  Storage::url('') }}" + imagePath;
                         lightbox.props.sources = [image];
                         lightbox.open();
                     }
