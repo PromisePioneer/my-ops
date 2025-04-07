@@ -332,8 +332,8 @@
 
                         let reader = new FileReader();
                         reader.onload = e => {
-                            const storage = "{{ Storage::url('') }}";
-                            this.imgsrc.splice(0, this.imgsrc.length, storage + e.target.value);
+                            const storageURL = 'storage/' + e.target.value
+                            this.imgsrc.splice(0, this.imgsrc.length, storageURL);
                         };
                         reader.readAsDataURL(file);
                     });
