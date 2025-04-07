@@ -43,7 +43,7 @@ use function App\Helper\formatDate;
                 'id' => $item->id,
                 'branch_name' => $item->branch->name ?? null,
                 'name' => $item->name,
-                'debit_account' => $item->debitAccount?->name ?? null,
+                'debit_account' => $item->debitAccount?->name,
                 'unit' => $item->unit,
                 'useful_life' => $item->useful_life,
                 'price_per_unit' => 'Rp.' . number_format($item->price_per_unit, 2, '.', '.'),
@@ -138,6 +138,8 @@ use function App\Helper\formatDate;
                     $description,
                     $accounts->id,
                     $price,
+                    null,
+                    $date
                 );
             });
         }

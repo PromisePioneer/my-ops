@@ -3,16 +3,18 @@
 namespace App\Support\AccountTransactions;
 
 use App\Models\AccountTransaction;
+use Carbon\Carbon;
 
 class AccountTransactionService
 {
     public function createDebitTransaction(
-        ?int $branchId,
-        string $description,
-        ?int $accountId,
+        ?int      $branchId,
+        string    $description,
+        ?int      $accountId,
         float|int $amount,
-        $transactionId = null
-    ): void {
+                  $transactionId = null
+    ): void
+    {
         AccountTransaction::create([
             'date' => date('y-m-d'),
             'branch_id' => $branchId ?? null,
@@ -26,15 +28,17 @@ class AccountTransactionService
     }
 
     public function createCreditTransaction(
-        ?int $branchId,
-        string $description,
-        ?int $accountId,
+        ?int      $branchId,
+        string    $description,
+        ?int      $accountId,
         float|int $amount,
-        $transactionId = null
-    ): void {
+                  $transactionId = null,
+                  $date = null
+    ): void
+    {
         AccountTransaction::create([
             'branch_id' => $branchId,
-            'date' => date('y-m-d'),
+            'date' => Carbon::parse($date ?? date('Y-m-d'))->format('Y-m-d'),
             'account_id' => $accountId,
             'description' => $description,
             'transaction_type' => 'TR',
