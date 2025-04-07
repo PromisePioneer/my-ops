@@ -79,7 +79,7 @@
                                 <div class="row col-md-6">
                                     <label
                                         :class="`${imgsrc.length > 0 ? 'col-form-label required fw-bold fs-6' : 'd-none'}`">
-                                        Preview (Klik Untuk Menghapus)
+                                        Preview
                                     </label>
                                     <template x-for="(src, index) in imgsrc" :key="index">
                                         <div class="col-md-4">
