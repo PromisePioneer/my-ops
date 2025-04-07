@@ -152,7 +152,7 @@
                                 <td class="text-center">
                                     <a href="#">
                                         <div class="symbol-label">
-                                            <a href="#" @click="openImage(transaction.attachment)">
+                                            <a href="#" @click="openImageList(transaction.attachment)">
                                                 <img :src="getImageURL(transaction.attachment ?? null)"
                                                      alt="Image" class="w-100">
                                             </a>
@@ -405,18 +405,22 @@
                 },
                 openImage() {
                     const lightbox = new FsLightbox();
-                    console.log(document.getElementById('attachment').src)
                     lightbox.props.sources = [this.imgsrc[0]];
                     lightbox.open();
                 },
-                getBase64Image(img) {
-                    const canvas = document.createElement("canvas");
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext("2d");
-                    ctx.drawImage(img, 0, 0);
-                    const dataURL = canvas.toDataURL("image/png");
-                    return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+                openImageList(imagePath) {
+                    const lightbox = new FsLightbox();
+                    console.log(lightbox);
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        const image = "{{ asset('')  }}" + placeholders;
+                        lightbox.props.sources = [image, image];
+                        lightbox.open();
+                    } else {
+                        const image = "<?php echo e(Storage::url('')); ?>" + imagePath;
+                        lightbox.props.sources = [image];
+                        lightbox.open();
+                    }
                 },
                 getImageURL(imagePath) {
                     if (imagePath === null) {
