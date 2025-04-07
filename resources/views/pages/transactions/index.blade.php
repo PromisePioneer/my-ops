@@ -334,6 +334,7 @@
                         reader.onload = e => {
                             this.imgsrc = [];
                             this.imgsrc.push(e.target.result);
+                            console.log(this.e.target.result)
                         };
                         reader.readAsDataURL(file);
                     });
