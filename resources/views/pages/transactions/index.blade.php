@@ -90,7 +90,7 @@
                             <th class="min-w-125px text-center">Bukti Transaksi</th>
                             <th class="min-w-125px text-center">Status Konfirmasi</th>
                             <template
-                                    x-if="Number(editPermission) === 1 || Number(confirmPermission) === 1">
+                                x-if="Number(editPermission) === 1 || Number(confirmPermission) === 1">
                                 <th class="min-w-250px text-center">Actions</th>
                             </template>
                         </thead>
@@ -162,20 +162,20 @@
                                 <td class="text-center">
                                     <div class="d-flex flex-column align-items-center justify-content-center">
                                         <p class="fs-7">Status Transaksi : <span
-                                                    :class="transaction.locked_status === 1 ? 'text-info' : 'text-danger'"
-                                                    x-text="transaction.locked_status === 1 ? `Terkunci (${transaction.created_by})` : 'Belum Dikunci'"></span>
+                                                :class="transaction.locked_status === 1 ? 'text-info' : 'text-danger'"
+                                                x-text="transaction.locked_status === 1 ? `Terkunci (${transaction.created_by})` : 'Belum Dikunci'"></span>
                                         </p>
                                         <p class="fs-7">Dibuat Oleh : <span
-                                                    x-text="`${transaction.created_by}`"></span>
+                                                x-text="`${transaction.created_by}`"></span>
                                         </p>
 
                                         <template x-if="transaction.locked_status === 1">
                                             <p class="fs-7">Status Konfirmasi : <span
-                                                        :class="transaction.status === 'Diproses'
+                                                    :class="transaction.status === 'Diproses'
                                                         ? 'text-warning'
                                                         : transaction.status === 'Diterima' ? 'text-info'
                                                         : 'text-danger'"
-                                                        x-text="transaction.status"></span>
+                                                    x-text="transaction.status"></span>
 
                                             </p>
                                         </template>
@@ -184,7 +184,7 @@
                                 <template x-if="Number(editPermission) === 1 && transaction.locked_status === 0">
                                     <td>
                                         <div
-                                                class="d-flex flex-column align-items-center justify-content-center">
+                                            class="d-flex flex-column align-items-center justify-content-center">
                                             <template x-if="transaction.locked_status === 0">
                                                 <button class="btn btn-light-primary btn-sm mb-4"
                                                         @click="edit(transaction.id)"
@@ -332,8 +332,9 @@
 
                         let reader = new FileReader();
                         reader.onload = e => {
-                            const storageURL = "{{ Storage::url('') }}" + e.target.value
-                            this.imgsrc = [storageURL];
+                            const url = "{{ Storage::url('') }}" + this.editVal.attachment ?? e.target.value
+                            console.log(e.target.value);
+                            this.imgsrc.splice(0, this.imgsrc.length, url);
                         };
                         reader.readAsDataURL(file);
                     });
