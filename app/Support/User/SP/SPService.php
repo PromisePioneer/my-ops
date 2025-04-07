@@ -73,7 +73,7 @@ use function App\Helper\convertToRoman;
         $formattedData = $sp->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
-                'branch_name' => $item->branch->name ?? null,
+                'branch_name' => $item->user->branch->name ?? null,
                 'user_id' => "({$item->user->nip}) {$item->user->name}",
                 'sp_number' => $item->sp_number,
                 'date' => Carbon::parse($item->start_date)->format('d/m/Y') . ' - ' . Carbon::parse($item->end_date)->format('d/m/Y'),
