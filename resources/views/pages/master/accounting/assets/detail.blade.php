@@ -39,7 +39,7 @@
                         <tr>
                             <th>Harga perolehan</th>
                             <th>:</th>
-                            <th>Rp {{ number_format($asset->total_price)  }}</th>
+                            <th>Rp {{ number_format($asset->total_price, 2, '.', '.')  }}</th>
                         </tr>
                         <tr>
                             <th></th>

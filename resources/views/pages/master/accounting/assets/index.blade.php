@@ -261,7 +261,6 @@
                 async update(id) {
                     this.buttonLoading = true;
                     try {
-
                         await showAlert('success', 'Data berhasil disimpan')
                         this.modalEdit.hide();
                         this.formEdit.reset();

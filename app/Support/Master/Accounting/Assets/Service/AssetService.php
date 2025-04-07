@@ -39,6 +39,7 @@ use function App\Helper\formatDate;
     public function formattedData(LengthAwarePaginator $assetData): LengthAwarePaginator
     {
         $data = $assetData->getCollection()->map(function ($item) {
+
             return [
                 'id' => $item->id,
                 'branch_name' => $item->branch->name ?? null,
@@ -47,7 +48,7 @@ use function App\Helper\formatDate;
                 'unit' => $item->unit,
                 'useful_life' => $item->useful_life,
                 'price_per_unit' => 'Rp.' . number_format($item->price_per_unit, 2, '.', '.'),
-                'price_at_first_recieved' => number_format($item->price_at_first_recieved, 2),
+                'price_at_first_recieved' => number_format($item->price_at_first_recieved, 2, '.', '.'),
                 'status' => $item->status,
             ];
         });
@@ -83,7 +84,12 @@ use function App\Helper\formatDate;
     public function store(AssetRequest $request): void
     {
         $data = $request->validated();
-        $data['total_price'] = $data['price_per_unit'] * $data['unit'];
+
+        $unitPriceformattedValue = str_replace('.', '', $request->input('price_per_unit'));
+        $unitPriceformattedValue = str_replace(',', '.', $unitPriceformattedValue);
+        $unitPrice = (float)$unitPriceformattedValue;
+
+        $data['total_price'] = $unitPrice * $data['unit'];
         $data['residu'] = $data['total_price'] / $data['useful_life'];
         Asset::create($data);
     }
@@ -159,7 +165,7 @@ use function App\Helper\formatDate;
             return [
                 'id' => $query->id,
                 'depreciation_date' => formatDate($query->depreciation_date),
-                'depreciation_amount' => number_format($query->depreciation_amount, 2),
+                'depreciation_amount' => 'Rp.' . number_format($query->depreciation_amount, 2, '.', '.'),
             ];
         });
     }
