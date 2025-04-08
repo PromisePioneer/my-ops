@@ -23,11 +23,9 @@ class RoleHierarchySeeder extends Seeder
 
         $taxAdminSpv = Role::where('name', 'Tax Admin Supervisor')->first();
         $billingAdminSpv = Role::where('name', 'Billing Admin Supervisor')->first();
-        $inventoryControllerSpv = Role::where('name', 'Inventory Controller Supervisor')->first();
         $customerPaymentSpv = Role::where('name', 'Customer Payment Supervisor')->first();
         $financeAndAccountingSpv = Role::where('name', 'Finance & Accounting Supervisor')->first();
         $faSeniorStaff = Role::where('name', 'FA Senior Staff')->first();
-        $faStaff = Role::where('name', 'Finance & Accounting Staff')->first();
 
         $directorHierarchy = RoleHierarchy::create([
             'role_id' => $director->id,
