@@ -47,7 +47,7 @@
 
 @endsection
 @push('script')
-    <script src="https://cdn.balkan.app/orgchart.js"></script>
+    <script src="{{ url('assets/js/orgchart/orgchart.js') }}"></script>
     <script>
         function roleHierarchyData() {
             return {
