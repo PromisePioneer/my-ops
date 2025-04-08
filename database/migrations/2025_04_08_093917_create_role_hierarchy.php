@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('role_hierarchy', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('role_id')->constrained('users')
+            $table->foreignId('role_id')->constrained('roles')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->foreignId('parent_id')->nullable()->constrained('role_hierarchy')
