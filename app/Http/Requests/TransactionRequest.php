@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\AccountTransaction;
 use App\Models\Master\Common\Branch;
 use Carbon\Carbon;
+use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -33,10 +34,10 @@ class TransactionRequest extends FormRequest
                 Rule::requiredIf($request->type === 'Barang'),
                 Rule::exists('item_collections', 'id')],
             'qty' => ['required', 'numeric'],
-            'unit_price' => ['required'],
+            'unit_price' => ['required', $this->ifLessThanZero($request)],
             'debit_account_id' => ['required', Rule::exists('accounts', 'id')],
-            'credit_account_id' => ['required', Rule::exists('accounts', 'id'),],
-            'attachment' => ['required', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'credit_account_id' => ['required', Rule::exists('accounts', 'id'), $this->accountBalanceCheck($request)],
+            'attachment' => [Rule::requiredIf($this->route('transaction') === null), 'mimes:jpg,jpeg,png', 'max:2048'],
         ];
     }
 
@@ -64,11 +65,20 @@ class TransactionRequest extends FormRequest
     }
 
 
-    public function accountBalanceCheck(Request $request): \Closure
+    public function ifLessThanZero(Request $request): Closure
+    {
+        return static function ($value, $attribute, $fail) use ($request) {
+            if ($request->input('unit_price') <= 0) {
+                $fail('Harga harus lebih dari 0');
+            }
+        };
+    }
+
+
+    public function accountBalanceCheck(Request $request): Closure
     {
         return static function ($value, $attribute, $fail) use ($request) {
             $date = Carbon::now();
-            $branch = Branch::where('id', $request->input('branch_id'))->first();
             $accountTransactionDebit = AccountTransaction::where('account_id', $request->credit_account_id)
                 ->where('branch_id', $request->input('branch_id'))
                 ->where('entries_type', 'debit')
