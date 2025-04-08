@@ -332,8 +332,12 @@
 
                         let reader = new FileReader();
                         reader.onload = e => {
-                            const url = "{{ Storage::url('') }}" + this.editVal.attachment
-                            this.imgsrc = url ?? e.target.value;
+
+                            if (this.editVal) {
+                                this.imgsrc = "{{ Storage::url('') }}" + this.editVal?.attachment
+                            } else {
+                                this.imgsrc = e.target.result;
+                            }
                         };
                         reader.readAsDataURL(file);
                     });
@@ -409,7 +413,7 @@
                     if (this.editVal) {
                         lightbox.props.sources = [storage + this.imgsrc[0]];
                     }
-                    lightbox.props.sources = [this.imgsrc[0]];
+                    lightbox.props.sources = [this.imgsrc];
                     lightbox.open();
                 },
                 openImageList(imagePath) {
@@ -436,8 +440,7 @@
                 async edit(id) {
                     const resp = await axios.get(`/transactions/${id}`);
                     this.editVal = resp.data;
-                    const storage = "{{ Storage::url('') }}" + this.editVal.attachment;
-                    this.imgsrc.push(storage);
+                    this.imgsrc = "{{ Storage::url('') }}" + this.editVal.attachment;
                     this.transactionType = this.editVal.type;
                     await this.selectedItem();
                     await this.selectedBranch();

@@ -57,7 +57,7 @@
 
     <div class="col-lg-6">
         <label for="name" class="required form-label">Bukti Transaksi</label>
-        <input type="file" class="form-control form-control-solid" @change="previewFile"
+        <input type="file" class="form-control form-control-solid" @change="previewFile()"
                accept="image/*" x-ref="myFile" name="attachment" id="attachment">
     </div>
 
@@ -67,11 +67,9 @@
             :class="`${imgsrc.length > 0 ? 'col-form-label required fw-bold fs-6' : 'd-none'}`">
             Preview
         </label>
-        <template x-for="(src, index) in imgsrc" :key="index">
-            <div class="col-md-4">
-                <img :src="src" class="img-fluid" @click="openImage(src)">
-            </div>
-        </template>
+        <div class="col-md-4">
+            <img :src="imgsrc" class="img-fluid" @click="openImage(imgsrc)">
+        </div>
     </div>
 
 </div>

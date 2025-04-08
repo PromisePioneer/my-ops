@@ -185,8 +185,7 @@
                 id: "{{ $accountTransaction->id }}",
                 async init() {
                     const resp = await axios.get(`/account-transactions/data/${this.id}`);
-                    this.accountTransactions = resp.data
-                    console.log(this.accountTransactions);
+                    this.accountTransactions = resp.data;
                 },
                 async paginate(url) {
                     if (url) {
