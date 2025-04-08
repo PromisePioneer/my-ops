@@ -47,7 +47,7 @@
 
 @endsection
 @push('script')
-    <script src="{{ url('assets/js/orgchart/orgchart.js') }}"></script>
+    <script src="{{ url('assets/js/custom/orgchart/orgchart.js') }}"></script>
     <script>
         function roleHierarchyData() {
             return {
