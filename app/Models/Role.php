@@ -11,6 +11,7 @@ class Role extends SpatieRole
 {
 
     use Searchable;
+
     public function __construct()
     {
         parent::__construct();

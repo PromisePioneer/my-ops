@@ -453,7 +453,6 @@
                             await this.init();
                             this.selectedCheckBox = [];
                         } catch (error) {
-                            console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');
                         }
                     });
@@ -663,6 +662,7 @@
                         this.formConfirm.reset();
                         this.modalConfirm.hide();
                         await this.getTransactions();
+                        this.selectedCheckBox = [];
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))

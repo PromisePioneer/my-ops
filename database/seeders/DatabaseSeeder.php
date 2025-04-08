@@ -47,6 +47,7 @@ class DatabaseSeeder extends Seeder
             PSBSeeder::class,
             WeekHolidaySeeder::class,
             ContactSeeder::class,
+            RoleHierarchySeeder::class,
         ]);
     }
 }

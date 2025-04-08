@@ -60,6 +60,7 @@ use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollController;
 use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollHistoryController;
 use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollScheduleController;
 use App\Http\Controllers\HRIS\PermissionController;
+use App\Http\Controllers\HRIS\RoleHierarchyController;
 use App\Http\Controllers\Inventory\BoQ\BoqController;
 use App\Http\Controllers\Master\Accounting\AccountCategoryController;
 use App\Http\Controllers\Master\Accounting\AccountController;
@@ -147,6 +148,10 @@ Route::group(['middleware' => ['auth']], static function () {
     });
 
     Route::prefix('/manage-users')->group(function () {
+        Route::prefix('role-hierarchy')->group(function () {
+            Route::get('/', [RoleHierarchyController::class, 'index']);
+            Route::get('/data', [RoleHierarchyController::class, 'data']);
+        });
         Route::prefix('users')->group(function () {
             Route::get('/', [UserController::class, 'index']);
             Route::get('/data', [UserController::class, 'data']);
@@ -170,12 +175,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/filter', [UserController::class, 'filter']);
             Route::get('companies/selected/{user}', [UserController::class, 'getSelectedCompany']);
         });
-
         Route::prefix('identity-information')->group(function () {
             Route::get('/{user}', [IdentityInformationController::class, 'index']);
             Route::post('/{user}', [IdentityInformationController::class, 'update']);
         });
-
         Route::prefix('job-information')->group(function () {
             Route::get('/{user}', [JobInformationController::class, 'index']);
             Route::post('/{user}', [JobInformationController::class, 'update']);
@@ -183,14 +186,11 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/department/selected/{user}', [JobInformationController::class, 'getSelectedDepartment']);
             Route::get('/contract-file/{user}', [JobInformationController::class, 'contractFile']);
         });
-
-
         Route::prefix('educations')->group(function () {
             Route::get('/{user}', [EducationController::class, 'getRelatedUserEducation']);
             Route::post('/{user}', [EducationController::class, 'update']);
             Route::get('/view-file/{user}', [EducationController::class, 'viewFile']);
         });
-
         Route::prefix('education-certificates')->group(function () {
             Route::get('/{user}', [EducationCertificateController::class, 'getEducationCertificate']);
             Route::post('/store/{user}', [EducationCertificateController::class, 'store']);
@@ -199,7 +199,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::delete('destroy/{educationCertificate}', [EducationCertificateController::class, 'destroy']);
             Route::get('/view-file/{educationCertificate}', [EducationCertificateController::class, 'viewFile']);
         });
-
         Route::prefix('job-experiences')->group(function () {
             Route::get('/{user}', [JobExperiencesController::class, 'getRelatedUserJobExperience']);
             Route::post('/store/{user}', [JobExperiencesController::class, 'store']);
@@ -207,7 +206,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/update/{jobExperience}', [JobExperiencesController::class, 'update']);
             Route::delete('/destroy/{jobExperience}', [JobExperiencesController::class, 'destroy']);
         });
-
         Route::prefix('family-informations')->group(function () {
             Route::get('/{user}', [FamilyInformationController::class, 'getRelatedFamilyInformation']);
             Route::post('/{user}', [FamilyInformationController::class, 'updateOrCreate']);
@@ -216,7 +214,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/{user}', [HealthInformationController::class, 'getRelatedUserHealthInformation']);
             Route::post('/{user}', [HealthInformationController::class, 'updateOrCreate']);
         });
-
         Route::prefix('/permissions')->group(function () {
             Route::get('/', [PermissionController::class, 'index']);
             Route::get('/data', [PermissionController::class, 'permissionData']);
@@ -226,8 +223,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/destroy', [PermissionController::class, 'destroy']);
             Route::post('/update/{permission}', [PermissionController::class, 'update']);
         });
-
-
         Route::prefix('leaves')->group(function () {
             Route::post('/destroy', [LeaveAndPermissionController::class, 'destroy']);
             Route::get('/leaves-left', [LeaveAndPermissionController::class, 'getTotalLeavesLeft']);
@@ -244,7 +239,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/edit/{leaveAndPermission}', [LeaveAndPermissionController::class, 'edit']);
             Route::post('/update/{leaveAndPermission}', [LeaveAndPermissionController::class, 'update']);
         });
-
         Route::prefix('sp')->group(function () {
             Route::get('/', [SPController::class, 'index']);
             Route::get('/data', [SpController::class, 'data']);
@@ -266,8 +260,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/user/current-sp/{user}', [SPController::class, 'getCurrentSp']);
             Route::get('/show/{sp}', [SPController::class, 'show']);
         });
-
-
         Route::prefix('contract-management')->group(function () {
             Route::get('/', [ContractManagementController::class, 'index']);
             Route::get('/data', [ContractManagementController::class, 'data']);
@@ -280,8 +272,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/extend-contract/{user}', [ContractManagementController::class, 'extendContract']);
             Route::get('/contract-pdf/{user}', [ContractManagementController::class, 'contractFile']);
         });
-
-
         Route::prefix('sk')->group(function () {
             Route::get('/', [SKController::class, 'index']);
             Route::get('/data', [SKController::class, 'data']);
