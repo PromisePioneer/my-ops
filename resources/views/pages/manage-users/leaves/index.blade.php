@@ -170,6 +170,7 @@
                                                     <img :src="getImageURL(leave.sick_letter)" height="100"/>
                                                 </a>
                                             </td>
+                                            <td x-text="leave.created_at"></td>
                                             <template
                                                 x-if="leave.confirmation_status === 'Diterima' || leave.confirmation_status === 'Ditolak'">
                                                 <td>
@@ -203,7 +204,6 @@
                                                     </button>
                                                 </td>
                                             </template>
-                                            <td x-text="leave.created_at"></td>
                                         </tr>
                                     </template>
                                     </tbody>
