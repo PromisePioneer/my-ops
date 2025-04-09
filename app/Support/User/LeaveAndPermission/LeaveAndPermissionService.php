@@ -42,6 +42,11 @@ use function App\Helper\formatDate;
     private static function formattedData(LengthAwarePaginator $data): LengthAwarePaginator
     {
         $formattedData = $data->getCollection()->map(function ($item) {
+
+            $date = Carbon::parse($item->created_at)->locale('id');
+            $date->settings(['formatFunction' => 'translatedFormat']);
+
+
             return [
                 'id' => $item->id,
                 'user_id' => $item->user->id,
@@ -52,7 +57,7 @@ use function App\Helper\formatDate;
                 'reason' => $item->reason,
                 'confirmation_status' => $item->confirmation_status,
                 'sick_letter' => $item->sick_letter,
-                'created_at' => Carbon::parse($item->created_at)->locale('id')->format('D M Y H:i:s'),
+                'created_at' => $date->format('l, j F Y ; h:i a'),
             ];
         });
 
