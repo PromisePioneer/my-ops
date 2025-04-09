@@ -52,6 +52,7 @@ class AttendancesACLFilter
 
 
         if ($request->user()->hasRole('Mechanic Senior Staff')) {
+            dd('test');
             $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Mechanic Senior Staff', 'Mechanic Helper Staff']);
             })->whereNull('branch_id');
