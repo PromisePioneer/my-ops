@@ -28,16 +28,15 @@ class RoleHierarchySeeder extends Seeder
         $faSeniorStaff = Role::where('name', 'FA Senior Staff')->first();
 
 
-        $legal = Role::where('name', 'Legal & Corporate Commissioner');
-        $hr = Role::where('name', 'HR & Operational Staff');
-        $backbone = Role::where('name', 'Backbone Team Supervisor');
-        $stockerSpv = Role::where('name', 'Stocker Supervisor');
-        $vendorSpv = Role::where('name', 'Project Controller & Vendor Supervisor');
-        $qcSpv = Role::where('name', 'Quality Controller Supervisor');
-        $afterSaleCS = Role::where('name', 'After Sales Customer Service');
-//        Role::where('name', 'Trainer & Quality Control Staff');
-//        Role::where('name', 'Quality Control Staff');
-//        Role::where('name', 'Stocker Staff');
+        $legal = Role::where('name', 'Legal & Corporate Commissioner')->first();
+        $hr = Role::where('name', 'HR & Operational Staff')->first();
+        $backbone = Role::where('name', 'Backbone Team Supervisor')->first();
+        $stockerSpv = Role::where('name', 'Stocker Supervisor')->first();
+        $vendorSpv = Role::where('name', 'Project Controller & Vendor Supervisor')->first();
+        $qcSpv = Role::where('name', 'Quality Controller Supervisor')->first();
+        $afterSaleCS = Role::where('name', 'After Sales Customer Service')->first();
+        $programmer = Role::where('name', 'Programmer')->first();
+        $graphicDesigner = Role::where('name', 'Graphic Designer')->first();
 
 
         $directorHierarchy = RoleHierarchy::create([
@@ -64,12 +63,12 @@ class RoleHierarchySeeder extends Seeder
 
 
         $this->accounting($taxAdminSpv, $financeManagerHierarchy, $billingAdminSpv, $customerPaymentSpv, $financeAndAccountingSpv, $faSeniorStaff);
-        $this->operational($operationalManagerHierarchy, $hr, $legal, $backbone, $stockerSpv, $vendorSpv, $qcSpv, $afterSaleCS);
+        $this->operational($operationalManagerHierarchy, $hr, $legal, $backbone, $stockerSpv, $vendorSpv, $qcSpv, $afterSaleCS, $programmer, $graphicDesigner);
 
     }
 
 
-    public function operational($operationalManagerHierarchy, $hr, $legal, $backbone, $stockerSpv, $vendorSpv, $qcSpv, $afterSaleCS)
+    public function operational($operationalManagerHierarchy, $hr, $legal, $backbone, $stockerSpv, $vendorSpv, $qcSpv, $afterSaleCS, $programmer, $graphicDesigner)
     {
         // tax admin spv
         RoleHierarchy::create([
@@ -124,6 +123,26 @@ class RoleHierarchySeeder extends Seeder
 
         RoleHierarchy::create([
             'role_id' => $stockerSpv->id,
+            'parent_id' => $operationalManagerHierarchy->id,
+        ]);
+
+        RoleHierarchy::create([
+            'role_id' => $vendorSpv->id,
+            'parent_id' => $operationalManagerHierarchy->id,
+        ]);
+
+        RoleHierarchy::create([
+            'role_id' => $programmer->id,
+            'parent_id' => $operationalManagerHierarchy->id,
+        ]);
+
+        RoleHierarchy::create([
+            'role_id' => $programmer->id,
+            'parent_id' => $operationalManagerHierarchy->id,
+        ]);
+
+        RoleHierarchy::create([
+            'role_id' => $graphicDesigner->id,
             'parent_id' => $operationalManagerHierarchy->id,
         ]);
 
