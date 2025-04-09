@@ -2,46 +2,7 @@
 @section('page-title', 'Hirarki Jabatan')
 @section('breadcrumbs', 'Manajemen Karyawan - Hirarki Jabatan')
 @section('content')
-    {{--    <div x-data="roleHierarchyData()">--}}
-    {{--        <div>--}}
-    {{--            <template x-for="role in roleHierarchy" :key="role.id">--}}
-    {{--                <div>--}}
-
-    {{--                    <div class="d-flex flex-center justify-content-center mb-10">--}}
-    {{--                        <div class="card card-sm shadow-sm w-200px">--}}
-    {{--                            <div class="card-body">--}}
-    {{--                                <div class="d-flex flex-column">--}}
-    {{--                                    <a href="#"--}}
-    {{--                                       class="text-gray-800 text-center fw-bolder fs-4 text-hover-primary mb-1">--}}
-    {{--                                        <span x-text="role.role_name"></span>--}}
-    {{--                                    </a>--}}
-    {{--                                </div>--}}
-    {{--                            </div>--}}
-    {{--                        </div>--}}
-    {{--                    </div>--}}
-    {{--                    <div class="d-flex  justify-content-around align-items-center">--}}
-    {{--                        <template x-for="(role, index) in role.children" :key="index">--}}
-    {{--                            <div class="card card-sm shadow-sm w-300px">--}}
-    {{--                                <div class="card-body">--}}
-    {{--                                    <div class="d-flex flex-column">--}}
-    {{--                                        <a href="#"--}}
-    {{--                                           class="text-gray-800 text-center fw-bolder fs-4 text-hover-primary mb-1">--}}
-    {{--                                            <span x-text="role.role_name"></span>--}}
-    {{--                                        </a>--}}
-    {{--                                    </div>--}}
-    {{--                                </div>--}}
-    {{--                            </div>--}}
-    {{--                        </template>--}}
-    {{--                    </div>--}}
-
-    {{--                </div>--}}
-    {{--            </template>--}}
-    {{--        </div>--}}
-    {{--    </div>--}}
-
-
     <div x-data="roleHierarchyData()">
-
         <div id="tree"></div>
     </div>
 
@@ -55,18 +16,46 @@
                 roleHierarchy: [],
                 async init() {
                     await this.getRoleHierarchyData();
-                    new OrgChart("#tree", {
-                        template: "olivia",
+                    const chart = new OrgChart(document.getElementById('tree'), {
+                        template: "ana",
                         mode: 'light',
-                        nodeBinding: {
-                            field_0: "user_name",
-                            field_1: "role_name",
-                            img_0: "img" ?? "{{ asset('') }}" + 'assets/media/avatars/blank.png',
+                        layout: OrgChart.tree,
+                        mouseScrool: OrgChart.none,
+                        nodeMouseClick: OrgChart.action.edit,
+                        nodeMenu: {
+                            edit: {text: "Edit"},
+                            add: {text: "Add"},
+                            remove: {text: "Remove"}
                         },
-                        nodes: [
-                            ...this.roleHierarchy
-                        ]
+                        menu: {
+                            pdf: {text: "Export PDF"},
+                        },
+                        toolbar: {
+                            layout: true,
+                            fit: true,
+                            expandAll: false
+                        },
+                        nodeBinding: {
+                            field_0: "role_name",
+                        },
                     });
+
+
+                    chart.on('init', function (sender) {
+                        sender.config.editForm.addMore = null;
+                    });
+
+
+                    chart.load([
+                        ...this.roleHierarchy
+                    ])
+
+                    OrgChart.templates.myTemplate = Object.assign({}, OrgChart.templates.polina);
+                    OrgChart.templates.myTemplate.size = [100, 100];
+                    chart.on('init', function (sender) {
+                        sender.toolbarUI.showLayout();
+                    });
+
                 },
                 async getRoleHierarchyData() {
                     try {

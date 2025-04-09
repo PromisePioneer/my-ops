@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Scout\Searchable;
 use Spatie\Permission\Models\Role as SpatieRole;
 
@@ -33,5 +34,10 @@ class Role extends SpatieRole
     public function rolePermissionAndDepartments(): Builder
     {
         return Role::with('permissions', 'department');
+    }
+
+    public function roleHierarchy(): HasMany
+    {
+        return $this->hasMany(RoleHierarchy::class, 'role_id');
     }
 }

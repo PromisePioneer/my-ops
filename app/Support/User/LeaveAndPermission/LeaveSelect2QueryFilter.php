@@ -61,6 +61,7 @@ class LeaveSelect2QueryFilter
                     'Programmer',
                     'After Sales Customer Service',
                     'Project Controller & Vendor Supervisor',
+                    'Warehouse Security',
                 ]);
             });
 
