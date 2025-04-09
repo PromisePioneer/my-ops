@@ -44,9 +44,16 @@ class AttendancesACLFilter
         }
 
 
-        if ($request->user()->hasAnyRole('Head Of Electrical Engineer')) {
+        if ($request->user()->hasRole('Head Of Electrical Engineer')) {
             $query->whereHas('roles', function ($query) use ($request) {
-                $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer']);
+                $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer', 'Electrical Engineer']);
+            })->whereNull('branch_id');
+        }
+
+
+        if ($request->user()->hasRole('Mechanic Senior Staff')) {
+            $query->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Mechanic Senior Staff', 'Mechanic Helper Staff']);
             })->whereNull('branch_id');
         }
 
