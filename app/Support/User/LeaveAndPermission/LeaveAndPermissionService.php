@@ -52,7 +52,7 @@ use function App\Helper\formatDate;
                 'reason' => $item->reason,
                 'confirmation_status' => $item->confirmation_status,
                 'sick_letter' => $item->sick_letter,
-                'created_at' => Carbon::parse($item->created_at)->format('D M Y H:i:s'),
+                'created_at' => Carbon::parse($item->created_at)->locale('id_ID')->format('D M Y H:i:s'),
             ];
         });
 
