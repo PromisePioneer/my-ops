@@ -11,10 +11,11 @@
                 <div class="w-lg-500px bg-body rounded shadow-sm p-10 p-lg-15 mx-auto">
                     <form id="form" @submit.prevent="login()">
                         <div class="fv-row mb-10">
-                            <label class="form-label fs-6 fw-bolder text-dark">NIK (Nomor Induk Karyawan)</label>
-                            <input
-                                class="form-control form-control-lg form-control-solid @error('nip') is-invalid @enderror"
-                                type="text" name="nip" autocomplete="off"/>
+                            <label class="form-label fs-6 fw-bolder text-dark">NIK (Nomor Induk Karyawan) atau
+                                Email</label>
+                            <input id="email" type="text" class="form-control form-control-solid" name="email"
+                                   value="{{ old('email') }}"
+                                   required autofocus>
                             @error('nip')
                             <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
@@ -36,7 +37,8 @@
                         </div>
                         <div class="fv-row mb-10 float-end">
                             <div class="form-check form-check-custom form-check-solid">
-                                <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault" @click="clickToSeePassword()"/>
+                                <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault"
+                                       @click="clickToSeePassword()"/>
                                 <label class="form-check-label fw-bold" for="flexCheckDefault">
                                     Lihat Password
                                 </label>

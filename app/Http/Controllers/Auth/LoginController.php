@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
 use Illuminate\Validation\ValidationException;
+use Validator;
 
 class LoginController extends Controller
 {
@@ -45,7 +46,42 @@ class LoginController extends Controller
 
     public function username(): string
     {
-        return 'nip';
+        $field = (filter_var(request()->email, FILTER_VALIDATE_EMAIL) || !request()->email) ? 'email' : 'nip';
+        if ($field != 'email')
+            $field = is_numeric(request()->email) ? 'nip' : 'email';
+        request()->merge([$field => request()->email]);
+        return $field;
+    }
+
+
+    public function login(Request $request): Application|Redirector|RedirectResponse
+    {
+        $field = (filter_var($request->email, FILTER_VALIDATE_EMAIL) || !$request->email)
+            ? 'email'
+            : 'nip';
+
+        if ($field !== 'email') {
+            $field = is_numeric($request->email) ? 'nip' : 'email';
+        }
+
+        // Ubah input supaya sesuai field yang digunakan
+        $request->merge([$field => $request->email]);
+
+        // Validasi manual sesuai field
+        Validator::make($request->all(), [
+//            'email' => 'required|string', // ini adalah field input login (bisa nip/email)
+            'password' => 'required|string',
+        ])->validate();
+
+        // Login
+        if (Auth::attempt([$field => $request->$field, 'password' => $request->password], $request->filled('remember'))) {
+            $request->session()->regenerate();
+
+            return $this->authenticated($request, Auth::user())
+                ?: redirect()->intended($this->redirectPath());
+        }
+
+        return $this->sendFailedLoginResponse($request);
     }
 
     public function authenticated(Request $request, User $user): RedirectResponse|Redirector|Application
