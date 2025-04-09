@@ -5,6 +5,7 @@ namespace App\Support\User\LeaveAndPermission;
 use AllowDynamicProperties;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use function App\Helper\formatDate;
@@ -50,7 +51,8 @@ use function App\Helper\formatDate;
                 'leaves_status' => $item->leaves_status,
                 'reason' => $item->reason,
                 'confirmation_status' => $item->confirmation_status,
-                'sick_letter' => $item->sick_letter
+                'sick_letter' => $item->sick_letter,
+                'created_at' => formatDate($item->created_at),
             ];
         });
 

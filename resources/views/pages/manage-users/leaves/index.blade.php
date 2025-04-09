@@ -13,46 +13,46 @@
                             <h2 class="mb-0">Filter</h2>
                         </div>
                     </div>
-                        <div class="card-body pt-0">
-                            <div class="d-flex flex-column text-gray-600">
-                                <div class="d-flex align-items-center py-2">
-                                    @can('Filter Data Manajemen Cuti Berdasarkan Cabang')
-                                        <select class="form-select form-select-solid main-branches-select2"
-                                                name="branch_id" id="branch_id">
-                                        </select>
-                                    @endcan
-                                </div>
-                                <div class="d-flex align-items-center py-2">
-                                    <select class="form-select-solid form-select" name="confirmation_status"
-                                            id="confirmation_status" x-model="selectedConfirmationStatus">
-                                        <option selected>Pilih Status</option>
-                                        <option :value="`Diproses`">Diproses</option>
-                                        <option :value="`Diterima`">Diterima</option>
-                                        <option :value="`Ditolak`">Ditolak</option>
+                    <div class="card-body pt-0">
+                        <div class="d-flex flex-column text-gray-600">
+                            <div class="d-flex align-items-center py-2">
+                                @can('Filter Data Manajemen Cuti Berdasarkan Cabang')
+                                    <select class="form-select form-select-solid main-branches-select2"
+                                            name="branch_id" id="branch_id">
                                     </select>
-                                </div>
-                                <div class="d-flex align-items-center py-2">
-                                    <input type="number" name="year" id="year"
-                                           class="form-control form-control-solid"
-                                           placeholder="Filter Berdasarkan Tahun">
-                                </div>
-                                <div class="d-flex align-items-center py-2">
-                                    <select class="form-select form-select-solid"
-                                            name="month" id="month" data-control="select2"
-                                            data-placeholder="Pilih Bulan" data-allow-clear="true">
-                                        <option></option>
-                                        <template x-for="month in months" :key="index">
-                                            <option :value="month.number" x-text="month.name"></option>
-                                        </template>
-                                    </select>
-                                </div>
+                                @endcan
+                            </div>
+                            <div class="d-flex align-items-center py-2">
+                                <select class="form-select-solid form-select" name="confirmation_status"
+                                        id="confirmation_status" x-model="selectedConfirmationStatus">
+                                    <option selected>Pilih Status</option>
+                                    <option :value="`Diproses`">Diproses</option>
+                                    <option :value="`Diterima`">Diterima</option>
+                                    <option :value="`Ditolak`">Ditolak</option>
+                                </select>
+                            </div>
+                            <div class="d-flex align-items-center py-2">
+                                <input type="number" name="year" id="year"
+                                       class="form-control form-control-solid"
+                                       placeholder="Filter Berdasarkan Tahun">
+                            </div>
+                            <div class="d-flex align-items-center py-2">
+                                <select class="form-select form-select-solid"
+                                        name="month" id="month" data-control="select2"
+                                        data-placeholder="Pilih Bulan" data-allow-clear="true">
+                                    <option></option>
+                                    <template x-for="month in months" :key="index">
+                                        <option :value="month.number" x-text="month.name"></option>
+                                    </template>
+                                </select>
                             </div>
                         </div>
-                        <div class="card-footer pt-4 text-end">
-                            <button type="button" @click="filter()" class="btn btn-light btn-active-primary btn-sm">
-                                Filter
-                            </button>
-                        </div>
+                    </div>
+                    <div class="card-footer pt-4 text-end">
+                        <button type="button" @click="filter()" class="btn btn-light btn-active-primary btn-sm">
+                            Filter
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="flex-lg-row-fluid ms-lg-10">
@@ -116,6 +116,7 @@
                                         <th class="min-w-125px">Status Cuti</th>
                                         <th class="min-w-125px">Status Konfirmasi</th>
                                         <th class="min-w-125px">File Sakit</th>
+                                        <th class="min-w-125px">Tanggal Pengajuan</th>
                                         <th class="min-w-125px">Action</th>
                                     </thead>
                                     <tbody class=" fw-bold">
@@ -202,6 +203,7 @@
                                                     </button>
                                                 </td>
                                             </template>
+                                            <td x-text="leave.created_at"></td>
                                         </tr>
                                     </template>
                                     </tbody>
@@ -352,7 +354,7 @@
                 },
                 async paginate(url) {
                     try {
-                    if (url) {
+                        if (url) {
                             this.leaves = [];
                             this.isLoading = true;
                             const resp = await axios.get(`${url}`, {
@@ -365,12 +367,12 @@
                                 }
                             });
                             this.leaves = resp.data
-                    }
-                        } catch (e) {
-                            console.log(e);
-                        } finally {
-                            this.isLoading = false;
                         }
+                    } catch (e) {
+                        console.log(e);
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async selectedUserData(id) {
                     const self = this;
