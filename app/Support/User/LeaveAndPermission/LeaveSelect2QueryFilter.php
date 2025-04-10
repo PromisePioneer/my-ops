@@ -63,6 +63,7 @@ class LeaveSelect2QueryFilter
                     'After Sales Customer Service',
                     'Project Controller & Vendor Supervisor',
                     'Warehouse Security',
+                    'Graphic Designer & Socmed Admin'
                 ]);
             });
 
