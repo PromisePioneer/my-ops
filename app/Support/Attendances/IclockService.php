@@ -85,14 +85,14 @@ class IclockService
         }
     }
 
-    private function handleOperLog(array $lines): string
+    public function handleOperLog(array $lines): string
     {
         $count = count(array_filter($lines, fn($line) => !empty(trim($line))));
 
         return 'OK: ' . $count;
     }
 
-    private function prepareAttendanceData(string $line, Request $request): array
+    public function prepareAttendanceData(string $line, Request $request): array
     {
         $data = explode("\t", $line);
         return [
@@ -105,12 +105,12 @@ class IclockService
         ];
     }
 
-    private function validateAndFormatInteger($value): ?int
+    public function validateAndFormatInteger($value): ?int
     {
         return isset($value) && $value !== '' ? (int)$value : null;
     }
 
-    private function getShiftForUser(string $employeeId, $date, $status1)
+    public function getShiftForUser(string $employeeId, $date, $status1)
     {
         $dateTime = Carbon::parse($date);
 
@@ -158,8 +158,9 @@ class IclockService
         return $userShift ?? WorkTime::find(1);
     }
 
-    private function processAttendanceRecord(array $attendanceData, $shift): void
+    public function processAttendanceRecord(array $attendanceData, $shift): void
     {
+        Log::info($attendanceData);
         $date = Carbon::parse($attendanceData['timestamp']);
 
 
@@ -168,7 +169,7 @@ class IclockService
 
     }
 
-    private function processCheckIn(array $attendanceData, $shift, string $date): void
+    public function processCheckIn(array $attendanceData, $shift, string $date): void
     {
         if ($shift->workTime) {
             $startDateEmpSchedule = $shift->start_date ? Carbon::make($shift->start_date)->format('Y-m-d') : null;
@@ -182,7 +183,7 @@ class IclockService
         }
     }
 
-    private function isValidTimeToCheckIn($date, string $checkInStart, string $checkInEnd, $shiftName): bool
+    public function isValidTimeToCheckIn($date, string $checkInStart, string $checkInEnd, $shiftName): bool
     {
         if ($shiftName === 'Pagi' || $shiftName === 'Lapangan') {
             $actualCheckInTime = Carbon::parse($date)->toTimeString();
@@ -197,7 +198,7 @@ class IclockService
     }
 
 
-    private function processCheckOut(array $attendanceData, $shift, string $date, string $time): void
+    public function processCheckOut(array $attendanceData, $shift, string $date, string $time): void
     {
 
 
@@ -214,7 +215,7 @@ class IclockService
     }
 
 
-    private function isValidTimeCheckOut($date, string $checkOutStart, string $checkOutEnd, $shiftName, $employee_id): bool
+    public function isValidTimeCheckOut($date, string $checkOutStart, string $checkOutEnd, $shiftName, $employee_id): bool
     {
         if ($shiftName === 'Pagi' || $shiftName === 'Lapangan') {
             $actualCheckOutTime = Carbon::parse($date)->toTimeString();
@@ -231,7 +232,7 @@ class IclockService
         return $date->greaterThanOrEqualTo($checkOutStart) && $date->lessThanOrEqualTo($checkOutEnd);
     }
 
-    private function logError(Exception $exception): void
+    public function logError(Exception $exception): void
     {
         DB::table('error_logs')->insert([
             'data' => $exception->getMessage(),

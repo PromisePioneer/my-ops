@@ -6,6 +6,7 @@ use AllowDynamicProperties;
 use App\Models\AttendanceJobProgress;
 use App\Models\Attendances;
 use App\Models\FpDevice;
+use App\Support\Attendances\IclockService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -23,12 +24,14 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
     protected $endDate;
     public int $timeout = 0;
     protected AttendanceJobProgress $progress;
+    public IclockService $iclockService;
 
     /**
      * Create a new job instance.
      */
     public function __construct($fpDevice, $startDate, $endDate)
     {
+        $this->iclockService = new IclockService();
         $this->fpDevice = $fpDevice;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
@@ -62,7 +65,9 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
                             'timestamp' => $record['timestamp'],
                             'status1' => $record['type'],
                         ];
-                        Attendances::create($data);
+                        $shift = $this->iclockService->getShiftForUser($data['employee_id'], $data['timestamp'], $data['status1']);
+
+                        $this->iclockService->processAttendanceRecord($data, $shift);
                     }
                 }
                 $zk->disconnect();
