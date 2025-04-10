@@ -146,7 +146,7 @@ use Illuminate\Http\Request;
 
         $this->authorize('update', $account);
         $branchId = $request->branch_id ?? $request->user()->branch_id;
-        $data = AccountTransaction::where('account_id', $account->id)->where('branch_id', $branchId)->where('transaction_type', 'SA')->whereYear('date', Carbon::now()->subYear())->first() ?? $account;
+        $data = AccountTransaction::where('account_id', $account->id)->where('branch_id', $branchId)->where('transaction_type', 'SA')->where('entries_type', $request->input('entries_type'))->whereYear('date', Carbon::now()->subYear())->first() ?? $account;
 
         if ($data) {
             $data->amount = (float)$data?->amount;

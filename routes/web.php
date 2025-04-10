@@ -1249,6 +1249,7 @@ Route::group(['middleware' => ['auth']], static function () {
 
     Route::prefix('select2')->group(function () {
         Route::get('/main-branches-data', [BranchController::class, 'getMainBranches']);
+        Route::get('/sub-branches-data/{branch}', [BranchController::class, 'getSubBranches']);
         Route::get('/selected-branch/{branch}', [BranchController::class, 'selectedBranch']);
         Route::get('/companies-data', [CompanyController::class, 'getCompanies']);
         Route::get('/selected-company/{company}', [CompanyController::class, 'selectedCompany']);

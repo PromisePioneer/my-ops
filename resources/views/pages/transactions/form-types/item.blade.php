@@ -2,13 +2,26 @@
     @if(empty(Auth::user()->branch_id))
         <div class="col-md-6">
             <label for="branch_id" class="required form-label">Cabang</label>
-            <select name="branch_id" id="selected-branch"
-                    class="form-select form-select-solid main-branches-select2"
+            <select class="form-select form-select-solid main-branches-select2" id="selected-main-branch"
                     data-dropdown-parent="#modal-transactions">
                 <option></option>
             </select>
         </div>
+        <div class="col-md-6">
+            <div x-show="branchVal" x-cloak x-transition>
+                <label for="branch_id" class="required form-label">Sub Cabang</label>
+                <select name="branch_id" id="selected-branch"
+                        class="form-select form-select-solid sub-branches-select2"
+                        data-dropdown-parent="#modal-transactions">
+                    <option></option>
+                </select>
+            </div>
+        </div>
     @endif
+</div>
+
+
+<div class="row mb-10">
     <div class="col-md-6">
         <label for="date" class="required form-label">Tanggal</label>
         <input type="date" id="date" name="date" class="form-control-solid form-control date"
@@ -16,6 +29,7 @@
                :value="editVal?.date">
     </div>
 </div>
+
 <div class="row mb-10">
     <label for="detail" class="required form-label">
         Detail Transaksi

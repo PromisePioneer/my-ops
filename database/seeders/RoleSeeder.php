@@ -40,6 +40,9 @@ class RoleSeeder extends Seeder
         Role::create(['name' => 'Quality Control Staff']);
         Role::create(['name' => 'After Sales Customer Service']);
         Role::create(['name' => 'Stocker Staff']);
+        Role::create(['name' => 'Graphic Designer & Socmed Admin']);
+        Role::create(['name' => 'Mechanic Senior Staff']);
+        Role::create(['name' => 'Support']);
 
 
         //Warehouse

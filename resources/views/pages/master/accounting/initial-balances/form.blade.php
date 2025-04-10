@@ -29,6 +29,10 @@
                         <input type="text" class="form-control form-control-solid" :value="accountVal.name" disabled>
                     </div>
                     <div class="mb-10">
+                        <label for="account_id" class="required form-label">Tipe</label>
+                        <input type="text" class="form-control form-control-solid" name="entries_type" :value="entriesType" readonly>
+                    </div>
+                    <div class="mb-10">
                         <label for="name" class="required form-label">Saldo</label>
                         <input type="text" id="amount" name="amount" class="form-control form-control-solid"
                                placeholder="Saldo" :value="editVal.amount"/>

@@ -33,6 +33,17 @@ class BranchRepository implements BranchRepositoryInterface
     }
 
 
+    public function getSubBranches(Request $request, $mainBranchId): Collection
+    {
+        $search = $request->input('search');
+
+        return Branch::search($search)->query(function ($query) use ($mainBranchId) {
+            $query->where('parent_id', $mainBranchId);
+        })->get();
+
+    }
+
+
     public function getSelectedBranch(?int $branchId): ?Branch
     {
         return Branch::where('id', $branchId)->first();

@@ -71,6 +71,19 @@ use Illuminate\Pagination\LengthAwarePaginator;
     }
 
 
+    public function getSubBranches(Request $request, $mainBranchId)
+    {
+        $branches = $this->branchRepository->getSubBranches($request, $mainBranchId);
+        return $branches->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->name,
+            ];
+        });
+    }
+
+
+
     public function selectedBranch(?int $branchId): ?array
     {
         $branch = $this->branchRepository->getSelectedBranch($branchId);

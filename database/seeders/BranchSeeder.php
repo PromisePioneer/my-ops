@@ -16,17 +16,45 @@ class BranchSeeder extends Seeder
         $faker = Faker::create('id_ID');
 
         //Branch
-        Branch::create([
+        $dumai = Branch::create([
             'code' => '101',
             'name' => 'Dumai',
             'address' => 'Jalan Sultan Hasanuddin No. 8A Kelurahan Rimba Sekampung Kecamatan Dumai, Barat, Rimba Sekampung, Kec. Dumai Kota, Kota Dumai',
         ]);
+
+
+        Branch::create([
+            'name' => 'Pop Mampu',
+            'address' => '-',
+            'parent_id' => $dumai->id,
+        ]);
+
+        Branch::create([
+            'name' => 'Pop Pakning',
+            'address' => '-',
+            'parent_id' => $dumai->id,
+        ]);
+
+        Branch::create([
+            'name' => 'Pop Pelintung',
+            'address' => '-',
+            'parent_id' => $dumai->id,
+        ]);
+
+
+        Branch::create([
+            'name' => 'Pop Bukit Timah',
+            'address' => '-',
+            'parent_id' => $dumai->id,
+        ]);
+
 
         Branch::create([
             'code' => '102',
             'name' => 'Duri',
             'address' => 'Jalan Desa Harapan No. 25 , Kelurahan Air Jamban , Kecamatan Mandau Duri.',
         ]);
+
 
         Branch::create([
             'code' => '103',

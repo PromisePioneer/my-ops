@@ -70,7 +70,7 @@ use function App\Helper\formatDate;
 
     public function filter(Request $request): LengthAwarePaginator
     {
-        $query = Transaction::with('branch', 'unitType', 'debitAccount', 'creditAccount', 'confirmedBy', 'approvedBy', 'createdBy');
+        $query = Transaction::with('branch', 'branch.parent', 'unitType', 'debitAccount', 'creditAccount', 'confirmedBy', 'approvedBy', 'createdBy');
         $filter = TransactionQueryFilter::apply($query, $request)
             ->paginate(self::$perPage);
 
@@ -85,10 +85,12 @@ use function App\Helper\formatDate;
                 'id' => $item->id,
                 'type' => $item->type,
                 'branch_id' => $item->branch_id,
-                'branch_name' => $item->branch->name,
+                'branch_name' => $item->branch->name . ' - ' . $item->branch->parent->name,
                 'date' => formatDate($item->date),
                 'transaction_number' => $item->transaction_number,
                 'item_name' => $item->item?->name,
+                'qty' => $item->qty,
+                'unit_type' => $item->item->unitType->name,
                 'debit_account_id' => $item->debitAccount->id,
                 'debit' => $item->debitAccount->code . ' ' . $item->debitAccount->name,
                 'credit_account_id' => $item->creditAccount->id,
@@ -97,11 +99,10 @@ use function App\Helper\formatDate;
                 'total_price' => 'Rp.' . number_format($item->total_price, 2, '.', '.'),
                 'locked_status' => $item->locked_status,
                 'status' => $item->status,
-                'final_excuses' => $item->final_excuses,
                 'created_by' => $item->createdBy->name,
                 'approved_by' => $item->approvedBy?->name,
                 'attachment' => $item->attachment,
-
+                'final_notes' => $item->final_notes,
             ];
         });
 

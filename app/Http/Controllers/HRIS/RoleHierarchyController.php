@@ -32,7 +32,7 @@ use Illuminate\View\View;
 
     public function search(): JsonResponse
     {
-
+        return response()->json($this->roleHierarchyService->search());
     }
 
 

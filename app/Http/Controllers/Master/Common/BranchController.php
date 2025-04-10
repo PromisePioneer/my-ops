@@ -137,6 +137,12 @@ use Illuminate\View\View;
         return response()->json($branchService->getMainBranches($request));
     }
 
+
+    public function getSubBranches(Request $request, Branch $branch): JsonResponse
+    {
+        return response()->json($this->branchService->getSubBranches($request, $branch->id));
+    }
+
     public function selectedBranch(Branch $branch): JsonResponse
     {
         return response()->json($this->branchService->selectedBranch($branch?->id));

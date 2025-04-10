@@ -177,19 +177,6 @@ class AccountSeeder extends Seeder
             'trial_balance_type' => 'credit'
         ]);
 
-        $id23 = Account::create([
-            'code' => '310',
-            'name' => 'Modal Saham',
-            'trial_balance_type' => 'credit',
-            'category_id' => $modal,
-        ]);
-
-        $id24 = Account::create([
-            'code' => '311',
-            'name' => 'Modal Lainnya',
-            'trial_balance_type' => 'credit',
-        ]);
-
         $id25 = Account::create([
             'code' => '312',
             'name' => 'Saldo laba ditahan',

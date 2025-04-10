@@ -42,26 +42,36 @@ use Illuminate\Http\Request;
     {
         $data = $account->getCollection()->map(function ($account) use ($request) {
             if ($account->children->count() > 0) {
-                $initialBalance = $account->children->sum(function ($transaction) use ($request) {
-                    return $this->getFilteredTransactionSum($transaction, 'SA', $request);
+                $initialBalanceDebit = $account->children->sum(function ($transaction) use ($request) {
+                    return $this->getFilteredTransactionSum($transaction, 'SA', $request, 'debit');
+                });
+
+                $initialBalanceCredit = $account->children->sum(function ($transaction) use ($request) {
+                    return $this->getFilteredTransactionSum($transaction, 'SA', $request, 'credit');
                 });
             } else {
-                $initialBalance = $this->getFilteredTransactionSum($account, 'SA', $request);
+                $initialBalanceDebit = $this->getFilteredTransactionSum($account, 'SA', $request, 'debit');
+                $initialBalanceCredit = $this->getFilteredTransactionSum($account, 'SA', $request, 'credit');
             }
 
             return [
                 'id' => $account->id,
                 'code' => $account->code,
                 'account' => $account->code . ' ' . $account->name,
-                'initial_balance' => 'Rp.' . number_format($initialBalance, 2, '.', '.') ?? null,
+                'initial_balance_debit' => 'Rp.' . number_format($initialBalanceDebit, 2, '.', '.') ?? null,
+                'initial_balance_credit' => 'Rp.' . number_format($initialBalanceCredit, 2, '.', '.') ?? null,
                 'sub_accounts' => $account->children->map(function ($subAccount) use ($request) {
                     return [
                         'id' => $subAccount->id,
                         'parent_account_code' => $subAccount->parent->code,
                         'sub_account_code' => $subAccount->code,
                         'sub_account_name' => $subAccount->name,
-                        'initial_balance' => 'Rp.' . number_format(
-                                $this->getFilteredTransactionSum($subAccount, 'SA', $request), 2, '.', '.'
+                        'initial_balance_debit' => 'Rp.' . number_format(
+                                $this->getFilteredTransactionSum($subAccount, 'SA', $request, 'debit'), 2, '.', '.'
+                            )
+                            ?? null,
+                        'initial_balance_credit' => 'Rp.' . number_format(
+                                $this->getFilteredTransactionSum($subAccount, 'SA', $request, 'credit'), 2, '.', '.'
                             )
                             ?? null,
                     ];
@@ -76,11 +86,12 @@ use Illuminate\Http\Request;
     }
 
 
-    public function getFilteredTransactionSum($account, $type, ?Request $request): float
+    public function getFilteredTransactionSum($account, $type, ?Request $request, $entriesType = null): float
     {
         $transactions = $account->accountTransaction()
             ->whereYear('date', Carbon::now()->subYear())
-            ->where('transaction_type', $type);
+            ->where('transaction_type', $type)
+            ->where('entries_type', $entriesType);
 
         if ($request?->branch_id || $request->user()->branch_id) {
             $transactions->where('branch_id', $request->branch_id ?? $request->user()->branch_id);

@@ -79,14 +79,15 @@ class TransactionRequest extends FormRequest
     {
         return static function ($value, $attribute, $fail) use ($request) {
             $date = Carbon::now();
+            $mainBranch = Branch::find($request->input('branch_id'));
             $accountTransactionDebit = AccountTransaction::where('account_id', $request->credit_account_id)
-                ->where('branch_id', $request->input('branch_id'))
+                ->where('branch_id', $mainBranch->parent_id)
                 ->where('entries_type', 'debit')
                 ->whereBetween('date', [$date->copy()->subYear()->format('Y-m-d'), $date->format('Y-m-d')])
                 ->sum('amount');
 
             $accountTransactionCredit = AccountTransaction::where('account_id', $request->credit_account_id)
-                ->where('branch_id', $request->input('branch_id'))
+                ->where('branch_id', $mainBranch->parent_id)
                 ->where('entries_type', 'credit')
                 ->whereBetween('date', [$date->copy()->subYear()->format('Y-m-d'), $date->format('Y-m-d')])
                 ->sum('amount');

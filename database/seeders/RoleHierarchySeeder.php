@@ -13,30 +13,10 @@ class RoleHierarchySeeder extends Seeder
      */
     public function run(): void
     {
-
-
         $director = Role::where('name', 'Director')->first();
         $financeManagerRole = Role::where('name', 'FA & Tax Manager')->first();
         $operationalManagerRole = Role::where('name', 'Operational Manager')->first();
         $branchManagerRole = Role::where('name', 'Branch Manager')->first();
-
-
-        $taxAdminSpv = Role::where('name', 'Tax Admin Supervisor')->first();
-        $billingAdminSpv = Role::where('name', 'Billing Admin Supervisor')->first();
-        $customerPaymentSpv = Role::where('name', 'Customer Payment Supervisor')->first();
-        $financeAndAccountingSpv = Role::where('name', 'Finance & Accounting Supervisor')->first();
-        $faSeniorStaff = Role::where('name', 'FA Senior Staff')->first();
-
-
-        $legal = Role::where('name', 'Legal & Corporate Commissioner')->first();
-        $hr = Role::where('name', 'HR & Operational Staff')->first();
-        $backbone = Role::where('name', 'Backbone Team Supervisor')->first();
-        $stockerSpv = Role::where('name', 'Stocker Supervisor')->first();
-        $vendorSpv = Role::where('name', 'Project Controller & Vendor Supervisor')->first();
-        $qcSpv = Role::where('name', 'Quality Controller Supervisor')->first();
-        $afterSaleCS = Role::where('name', 'After Sales Customer Service')->first();
-        $programmer = Role::where('name', 'Programmer')->first();
-        $graphicDesigner = Role::where('name', 'Graphic Designer')->first();
 
 
         $directorHierarchy = RoleHierarchy::create([
@@ -44,142 +24,180 @@ class RoleHierarchySeeder extends Seeder
         ]);
 
 
-        $financeManagerHierarchy = RoleHierarchy::create([
-            'role_id' => $financeManagerRole->id,
-            'parent_id' => $directorHierarchy->id,
-        ]);
+        $this->accounting($financeManagerRole, $directorHierarchy);
+        $this->operational($operationalManagerRole, $directorHierarchy);
+        $this->branchManagerRoleHierarchy($branchManagerRole, $directorHierarchy);
+
+    }
 
 
-        $operationalManagerHierarchy = RoleHierarchy::create([
-            'role_id' => $operationalManagerRole->id,
-            'parent_id' => $directorHierarchy->id,
-        ]);
-
-
+    public function branchManagerRoleHierarchy($branchManagerRole, $directorHierarchy): void
+    {
         $branchManagerRoleHierarchy = RoleHierarchy::create([
             'role_id' => $branchManagerRole->id,
             'parent_id' => $directorHierarchy->id,
         ]);
 
 
-        $this->accounting($taxAdminSpv, $financeManagerHierarchy, $billingAdminSpv, $customerPaymentSpv, $financeAndAccountingSpv, $faSeniorStaff);
-        $this->operational($operationalManagerHierarchy, $hr, $legal, $backbone, $stockerSpv, $vendorSpv, $qcSpv, $afterSaleCS, $programmer, $graphicDesigner);
+        $accountingStaff = Role::where('name', 'Finance & Accounting Staff')->first();
+        $customerService = Role::where('name', 'Customer Service Staff')->first();
+        $stocker = Role::where('name', 'Stocker Staff')->first();
+        $headEngineer = Role::where('name', 'Head Engineer')->first();
+        $seniorEngineer = Role::where('name', 'Senior Engineer')->first();
+        $engineer = Role::where('name', 'Engineer')->first();
+        $support = Role::where('name', 'Support')->first();
 
+        $branch = [
+            $accountingStaff->id,
+            $customerService->id,
+            $stocker->id,
+            $headEngineer->id,
+            $seniorEngineer->id,
+            $engineer->id,
+            $support->id,
+        ];
+
+
+        foreach ($branch as $key => $value) {
+            RoleHierarchy::create([
+                'role_id' => $value,
+                'parent_id' => $branchManagerRoleHierarchy->id,
+            ]);
+        }
+
+        $headEngineerHierarchy = RoleHierarchy::where('parent_id', $branchManagerRoleHierarchy->id)
+            ->where('role_id', $headEngineer->id)
+            ->first();
+
+        $this->headEngineerHierarchy($headEngineerHierarchy);
     }
 
 
-    public function operational($operationalManagerHierarchy, $hr, $legal, $backbone, $stockerSpv, $vendorSpv, $qcSpv, $afterSaleCS, $programmer, $graphicDesigner)
+    public function operational($operationalManagerRole, $directorHierarchy): void
     {
-        // tax admin spv
-        RoleHierarchy::create([
-            'role_id' => $hr->id,
-            'parent_id' => $operationalManagerHierarchy->id,
+        $operationalManagerHierarchy = RoleHierarchy::create([
+            'role_id' => $operationalManagerRole->id,
+            'parent_id' => $directorHierarchy->id,
         ]);
 
+        $legal = Role::where('name', 'Legal & Corporate Commissioner')->first();
+        $hr = Role::where('name', 'HR & Operational Staff')->first();
+        $backboneSpv = Role::where('name', 'Backbone Team Supervisor')->first();
+        $stockerSpv = Role::where('name', 'Stocker Supervisor')->first();
+        $vendorSpv = Role::where('name', 'Project Controller & Vendor Supervisor')->first();
+        $qcSpv = Role::where('name', 'Quality Controller Supervisor')->first();
+        $afterSaleCS = Role::where('name', 'After Sales Customer Service')->first();
+        $programmer = Role::where('name', 'Programmer')->first();
+        $graphicDesigner = Role::where('name', 'Graphic Designer & Socmed Admin')->first();
+        $headEngineer = Role::where('name', 'Head Engineer')->first();
+        $warehouseStockerStaff = Role::where('name', 'Warehouse Stocker Staff')->first();
+        $warehouseSecurityStaff = Role::where('name', 'Warehouse Security')->first();
+        $custServiceLeader = Role::where('name', 'Customer Service Leader')->first();
+        $mechanicSeniorStaff = Role::where('name', 'Mechanic Senior Staff')->first();
+        $nocSpv = Role::where('name', 'NOC Supervisor')->first();
 
-        // billing admin spv
-        RoleHierarchy::create([
-            'role_id' => $hr->id,
-            'parent_id' => $operationalManagerHierarchy->id,
-        ]);
+        $operational = [
+            $legal->id,
+            $hr->id,
+            $backboneSpv->id,
+            $stockerSpv->id,
+            $qcSpv->id,
+            $afterSaleCS->id,
+            $programmer->id,
+            $graphicDesigner->id,
+            $vendorSpv->id,
+            $headEngineer->id,
+            $warehouseStockerStaff->id,
+            $warehouseSecurityStaff->id,
+            $custServiceLeader->id,
+            $mechanicSeniorStaff->id,
+            $nocSpv->id
+        ];
 
-        RoleHierarchy::create([
-            'role_id' => $legal->id,
-            'parent_id' => $operationalManagerHierarchy->id,
-        ]);
-
-        RoleHierarchy::create([
-            'role_id' => $backbone->id,
-            'parent_id' => $operationalManagerHierarchy->id,
-        ]);
-
-
-        RoleHierarchy::create([
-            'role_id' => $stockerSpv->id,
-            'parent_id' => $operationalManagerHierarchy->id,
-        ]);
-
-
-        RoleHierarchy::create([
-            'role_id' => $vendorSpv->id,
-            'parent_id' => $operationalManagerHierarchy->id,
-        ]);
+        foreach ($operational as $key => $value) {
+            RoleHierarchy::create([
+                'role_id' => $value,
+                'parent_id' => $operationalManagerHierarchy->id,
+            ]);
+        }
 
 
-        RoleHierarchy::create([
-            'role_id' => $qcSpv->id,
-            'parent_id' => $operationalManagerHierarchy->id,
-        ]);
+        $headEngineerHierarchy = RoleHierarchy::where('parent_id', $operationalManagerHierarchy->id)
+            ->where('role_id', $headEngineer->id)
+            ->first();
+        $nocSpvHierarchy = RoleHierarchy::where('parent_id', $operationalManagerHierarchy->id)
+            ->where('role_id', $nocSpv->id)
+            ->first();
 
-        RoleHierarchy::create([
-            'role_id' => $afterSaleCS->id,
-            'parent_id' => $operationalManagerHierarchy->id,
-        ]);
-
-        RoleHierarchy::create([
-            'role_id' => $qcSpv->id,
-            'parent_id' => $operationalManagerHierarchy->id,
-        ]);
-
-        RoleHierarchy::create([
-            'role_id' => $stockerSpv->id,
-            'parent_id' => $operationalManagerHierarchy->id,
-        ]);
-
-        RoleHierarchy::create([
-            'role_id' => $vendorSpv->id,
-            'parent_id' => $operationalManagerHierarchy->id,
-        ]);
-
-        RoleHierarchy::create([
-            'role_id' => $programmer->id,
-            'parent_id' => $operationalManagerHierarchy->id,
-        ]);
-
-        RoleHierarchy::create([
-            'role_id' => $programmer->id,
-            'parent_id' => $operationalManagerHierarchy->id,
-        ]);
-
-        RoleHierarchy::create([
-            'role_id' => $graphicDesigner->id,
-            'parent_id' => $operationalManagerHierarchy->id,
-        ]);
-
+        $this->headEngineerHierarchy($headEngineerHierarchy);
+        $this->nocHierarchy($nocSpvHierarchy);
     }
 
 
-    public function accounting($taxAdminSpv, $financeManagerHierarchy, $billingAdminSpv, $customerPaymentSpv, $financeAndAccountingSpv, $faSeniorStaff): void
+    public function accounting($financeManagerRole, $directorHierarchy): void
     {
-        // tax admin spv
-        RoleHierarchy::create([
-            'role_id' => $taxAdminSpv->id,
-            'parent_id' => $financeManagerHierarchy->id,
+        $financeManagerHierarchy = RoleHierarchy::create([
+            'role_id' => $financeManagerRole->id,
+            'parent_id' => $directorHierarchy->id,
         ]);
 
+        $taxAdminSpv = Role::where('name', 'Tax Admin Supervisor')->first();
+        $billingAdminSpv = Role::where('name', 'Billing Admin Supervisor')->first();
+        $customerPaymentSpv = Role::where('name', 'Customer Payment Supervisor')->first();
+        $financeAndAccountingSpv = Role::where('name', 'Finance & Accounting Supervisor')->first();
+        $faSeniorStaff = Role::where('name', 'FA Senior Staff')->first();
 
-        // billing admin spv
-        RoleHierarchy::create([
-            'role_id' => $billingAdminSpv->id,
-            'parent_id' => $financeManagerHierarchy->id,
-        ]);
+        $accounting = [
+            $taxAdminSpv->id,
+            $billingAdminSpv->id,
+            $customerPaymentSpv->id,
+            $financeAndAccountingSpv->id,
+            $faSeniorStaff->id
+        ];
 
-        RoleHierarchy::create([
-            'role_id' => $customerPaymentSpv->id,
-            'parent_id' => $financeManagerHierarchy->id,
-        ]);
-
-        RoleHierarchy::create([
-            'role_id' => $financeAndAccountingSpv->id,
-            'parent_id' => $financeManagerHierarchy->id,
-        ]);
-
-
-        RoleHierarchy::create([
-            'role_id' => $faSeniorStaff->id,
-            'parent_id' => $financeManagerHierarchy->id,
-        ]);
+        foreach ($accounting as $key => $value) {
+            RoleHierarchy::create([
+                'role_id' => $value,
+                'parent_id' => $financeManagerHierarchy->id,
+            ]);
+        }
     }
 
+
+    public function nocHierarchy($nocSpvHierarchy): void
+    {
+        $nocStaff = Role::where('name', 'NOC Staff')->first();
+
+        $data = [
+            $nocStaff->id,
+        ];
+
+
+        foreach ($data as $key => $value) {
+            RoleHierarchy::create([
+                'role_id' => $value,
+                'parent_id' => $nocSpvHierarchy->id,
+            ]);
+        }
+    }
+
+
+    public function headEngineerHierarchy($headEngineerHierarchy): void
+    {
+        $engineerRole = Role::where('name', 'Engineer')->first();
+        $seniorEngineer = Role::where('name', 'Senior Engineer')->first();
+
+        $data = [
+            $engineerRole->id,
+            $seniorEngineer->id
+        ];
+
+        foreach ($data as $key => $value) {
+            RoleHierarchy::create([
+                'role_id' => $value,
+                'parent_id' => $headEngineerHierarchy->id,
+            ]);
+        }
+    }
 
 }

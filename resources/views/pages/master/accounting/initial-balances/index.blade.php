@@ -99,10 +99,8 @@
                                             </div>
                                         </th>
                                         <th class="min-w-125px">Akun</th>
-                                        <th class="min-w-125px">Saldo</th>
-                                        <template x-if="branchId !== null">
-                                            <th class="min-w-125px">Actions</th>
-                                        </template>
+                                        <th class="min-w-125px">Saldo Debit</th>
+                                        <th class="min-w-125px">Saldo Kredit</th>
                                     </thead>
                                     <template x-if="isLoading">
                                         <tbody class="fw-bold">
@@ -145,22 +143,25 @@
                                             <td>
                                                 <a href="#" x-text="account.account"></a>
                                             </td>
-                                            <td x-text="account.initial_balance"></td>
                                             <td>
-                                                <template x-if="account?.sub_accounts?.length === 0">
-                                                    <template x-if="branchId !== null">
-                                                        <button class="btn btn-light-primary btn-sm"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#modal-initial-balance"
-                                                                @click="edit(account.account_id)"
-                                                                :disabled="account.initial_balance === null || Number(account.code) >= 400">
-                                                            <i class="ki-duotone ki-pencil fs-2">
-                                                                <span class="path1"></span>
-                                                                <span class="path2"></span>
-                                                            </i>
-                                                        </button>
-                                                    </template>
-                                                </template>
+                                                <div>
+                                                    <button class="btn btn-light-info btn-sm"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#modal-initial-balance"
+                                                            @click="edit(account.account_id, 'debit')"
+                                                            :disabled="Boolean(disabledAccountButton(branchId, account))">
+                                                        <span x-text="account.initial_balance_debit"></span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-light-danger btn-sm"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modal-initial-balance"
+                                                        @click="edit(account.account_id, 'credit')"
+                                                        :disabled="Boolean(disabledAccountButton(branchId, account))">
+                                                    <span x-text="account.initial_balance_credit"></span>
+                                                </button>
                                             </td>
                                         </tr>
                                         <template x-for="(subAccount, index) in account.sub_accounts"
@@ -180,20 +181,25 @@
                                                 </td>
                                                 <td placement="center"
                                                     x-text="`${subAccount.sub_account_code} ${subAccount.sub_account_name}`"></td>
-                                                <td x-text="subAccount.initial_balance"></td>
                                                 <td>
-                                                    <template x-if="Number(editPermission) === 1 && branchId !== ''">
-                                                        <button class="btn btn-light-primary btn-sm"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#modal-initial-balance"
-                                                                @click="edit(subAccount.id)"
-                                                                :disabled="subAccount.initial_balance === null || Number(subAccount.parent_account_code) >= 400">
-                                                            <i class="ki-duotone ki-pencil fs-2">
-                                                                <span class="path1"></span>
-                                                                <span class="path2"></span>
-                                                            </i>
-                                                        </button>
-                                                    </template>
+                                                    <button class="btn btn-light-info btn-sm"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#modal-initial-balance"
+                                                            @click="edit(subAccount.id, 'debit')"
+                                                            :disabled="Boolean(disabledSubAccountButton(branchId, subAccount))">
+                                                        <span x-text="subAccount.initial_balance_debit"></span>
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-light-danger btn-sm"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#modal-initial-balance"
+                                                            @click="edit(subAccount.id, 'credit')"
+                                                            :disabled="Boolean(disabledSubAccountButton(branchId, subAccount))">
+                                                        <span x-text="subAccount.initial_balance_credit"></span>
+                                                    </button>
+                                                </td>
+                                                <td>
                                                 </td>
                                             </tr>
                                         </template>
@@ -253,6 +259,7 @@
                 editVal: "",
                 accountVal: "",
                 branchVal: "",
+                entriesType: null,
                 form: document.getElementById('form-initial-balance'),
                 modalForm: new bootstrap.Modal(document.getElementById('modal-initial-balance')),
                 formDelete: document.getElementById('form-delete'),
@@ -261,7 +268,6 @@
                     await this.getMainBranches();
                 },
                 async getInitialBalances() {
-                    console.log(this.branchId)
                     this.isLoading = true;
                     try {
                         const resp = await axios.get('/master/accounting/initial-balances/data');
@@ -381,12 +387,14 @@
                         this.buttonLoading = false;
                     }
                 },
-                async edit(id) {
+                async edit(id, entriesType) {
+                    this.entriesType = entriesType;
                     const branch_id = $("#branch-id-filter").val();
                     this.editVal = [];
                     const resp = await axios.get(`/master/accounting/initial-balances/${id}`, {
                         params: {
-                            branch_id: branch_id
+                            branch_id: branch_id,
+                            entries_type: this.entriesType
                         }
                     });
                     this.editVal = resp.data;
@@ -408,6 +416,34 @@
                             await showAlert('error', 'Terjadi kesalahan');
                         }
                     });
+                },
+                disabledAccountButton(branchId, account) {
+                    if (this.branchId === '') {
+                        return true;
+                    } else if (account?.sub_accounts?.length > 0) {
+                        return true;
+                    }
+
+                    if (this.branchId !== '') {
+                        return false;
+                    }
+
+
+                    return null;
+                },
+                disabledSubAccountButton(branchId, subAccount) {
+                    if (this.branchId === '') {
+                        return true;
+                    } else if (subAccount?.sub_accounts?.length > 0) {
+                        return true;
+                    }
+
+                    if (this.branchId !== '') {
+                        return false;
+                    }
+
+
+                    return null;
                 },
                 async successResponse() {
                     await showAlert('success', 'Data berhasil disimpan')

@@ -134,7 +134,8 @@
                                         <span x-text="`Tgl ${transaction.date}`"></span>
                                         <span x-text="`No ${transaction.transaction_number}`"></span>
                                         <hr>
-                                        <span x-text="`Barang : ${transaction.item_name}`"></span>
+                                        <span class="text-decoration-underline"
+                                              x-text="`${transaction.qty} ${transaction.unit_type} ${transaction.item_name}`"></span>
                                         <span x-text="`Total Harga : ${transaction.total_price}`"></span>
                                     </div>
                                 </td>
@@ -168,17 +169,33 @@
                                         <p class="fs-7">Dibuat Oleh : <span
                                                 x-text="`${transaction.created_by}`"></span>
                                         </p>
-
-                                        <template x-if="transaction.locked_status === 1">
-                                            <p class="fs-7">Status Konfirmasi : <span
-                                                    :class="transaction.status === 'Diproses'
+                                        <div>
+                                            <template x-if="transaction.locked_status === 1">
+                                                <p class="fs-7">Status Konfirmasi : <span
+                                                        :class="transaction.status === 'Diproses'
                                                         ? 'text-warning'
                                                         : transaction.status === 'Diterima' ? 'text-info'
                                                         : 'text-danger'"
-                                                    x-text="transaction.status"></span>
+                                                        x-text="transaction.status"></span>
 
-                                            </p>
-                                        </template>
+                                                </p>
+                                            </template>
+                                        </div>
+                                        <div>
+                                            <template
+                                                x-if="transaction.status === 'Diterima' || transaction.status === 'Ditolak' || transaction.status === 'Revisi' ">
+                                                <div>
+                                                    <p class="fs-7 m-0">Catatan :
+                                                    </p>
+                                                    <p class="fs-7"
+                                                       :class="transaction.final_notes === 'Diterima'
+                                                        ? 'text-success'
+                                                        : transaction.final_notes === 'Ditolak' ? 'text-danger'
+                                                        : 'text-warning'"
+                                                       x-text="transaction.final_notes"></p>
+                                                </div>
+                                            </template>
+                                        </div>
                                     </div>
                                 </td>
                                 <template x-if="Number(editPermission) === 1 && transaction.locked_status === 0">
@@ -274,6 +291,7 @@
                 userList: [],
                 imgsrc: [],
                 attachments: [],
+                branchVal: false,
                 selectedConfirmationStatus: null,
                 form: document.getElementById('form-transactions'),
                 modalForm: new bootstrap.Modal(document.getElementById('modal-transactions')),
@@ -292,9 +310,9 @@
                     await this.itemCategories();
                 },
                 add() {
+                    this.transactionType = null
                     this.form.reset();
                     this.editVal = null;
-                    this.selectedBranch();
                     this.modalForm.show();
                 },
                 async paginationEndPoint(url) {
@@ -438,14 +456,30 @@
                     return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
                 },
                 async edit(id) {
+                    this.branchVal = true;
                     const resp = await axios.get(`/transactions/${id}`);
                     this.editVal = resp.data;
                     this.imgsrc = "{{ Storage::url('') }}" + this.editVal.attachment;
                     this.transactionType = this.editVal.type;
                     await this.selectedItem();
-                    await this.selectedBranch();
+                    await this.selectedMainBranches();
+                    await this.selectedSubBranch();
                     await this.selectedDebitAccount();
                     await this.selectedCreditAccount();
+                },
+                async selectedMainBranches() {
+                    if (!this.editVal?.branch_id) return;
+                    const selectedMainBranch = $('#selected-main-branch');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/select2/selected-branch/${this.editVal.branch.parent_id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedMainBranch.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
                 },
                 async destroy() {
                     console.log(this.selectedCheckBox);
@@ -461,6 +495,7 @@
                     });
                 },
                 async getMainBranches() {
+                    const self = this;
                     $(".main-branches-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Cabang",
@@ -472,6 +507,22 @@
                             processResults: data => ({results: data}),
                             cache: true
                         }
+                    }).on('select2:select', function (e) {
+                        console.log(e);
+                        self.branchVal = true;
+                        const selectedMainBranchId = e?.params?.data?.id ?? self.editVal.branch_id;
+                        $('.sub-branches-select2').select2({
+                            allowClear: true,
+                            placeholder: "Pilih Sub Cabang",
+                            ajax: {
+                                url: `/select2/sub-branches-data/${selectedMainBranchId}`,
+                                dataType: "json",
+                                type: "GET",
+                                data: params => ({search: params.term}),
+                                processResults: data => ({results: data}),
+                                cache: true
+                            }
+                        });
                     });
                 },
                 async getStockAccounts() {
@@ -514,16 +565,16 @@
                         }
                     });
                 },
-                async selectedBranch() {
+                async selectedSubBranch() {
                     if (!this.editVal?.branch_id) return;
-                    const selectedBranch = $('#selected-branch');
+                    const selectedSubBranch = $('#selected-branch');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
                         url: `/select2/selected-branch/${this.editVal.branch_id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
-                    selectedBranch.append(option).trigger('change').trigger({
+                    selectedSubBranch.append(option).trigger('change').trigger({
                         type: 'select2:select',
                         params: {results: response}
                     });
