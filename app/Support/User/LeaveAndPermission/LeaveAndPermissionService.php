@@ -70,13 +70,9 @@ use function App\Helper\formatDate;
     {
         $search = $request->input('search');
 
-        $query = LeaveAndPermission::search($search)->query(function ($query) {
-            $query->join('users', 'users.id', '=', 'leaves_and_permissions.user_id')
-                ->select('leaves_and_permissions.*', 'users.nip', 'users.name');
-        });
+        $query = LeaveAndPermission::search($search);
 
         $leaveACLFilter = LeaveACLFilter::apply($query, $request);
-
         return self::formattedData($leaveACLFilter->paginate(self::$perPage));
     }
 
