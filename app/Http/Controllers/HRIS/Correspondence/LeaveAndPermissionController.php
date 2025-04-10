@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Support\HelperService\HandleFileUploadService;
 use App\Support\User\LeaveAndPermission\CalculateUserLeaves;
 use App\Support\User\LeaveAndPermission\LeaveAndPermissionService;
+use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -83,12 +84,14 @@ use Throwable;
      */
     public function changeStatus(
         ManageUserLeaveAndPermissionRequest $request,
-        LeaveAndPermission  $leaveAndPermission
+        LeaveAndPermission                  $leaveAndPermission
     ): JsonResponse
     {
         $this->authorize('confirm', $leaveAndPermission);
         DB::transaction(function () use ($request, $leaveAndPermission) {
-            $empSchedule = EmployeeSchedule::whereBetween('start_date', [$request->start_date, $request->end_date])->orWhereBetween('end_date', [$request->start_date, $request->end_date])->get();
+            $empSchedule = EmployeeSchedule::whereBetween('start_date', [$request->start_date, $request->end_date])
+                ->orWhereBetween('end_date', [$request->start_date, $request->end_date])
+                ->get();
 
             $period = [];
 
@@ -123,6 +126,31 @@ use Throwable;
     }
 
 
+    public function importantLeavesDays(LeaveAndPermissionRequest $request)
+    {
+        if ($request->input('important_leaves') === 'Menikah') {
+            return 3;
+        }
+
+        if ($request->input('important_leaves') === 'Menikahkan Anak'
+            ||
+            $request->input('important_leaves') === 'Menikahkan Anak'
+            ||
+            $request->input('important_leaves') === 'Mengkhitankan Anak'
+            ||
+            $request->input('important_leaves') === 'Membaptis Anak'
+            ||
+            $request->input('important_leaves') === 'Istri Melahirkan'
+            ||
+            $request->input('important_leaves') === 'Anggota Keluarga Meninggal Dunia'
+        ) {
+            return 2;
+        }
+
+        return 1;
+    }
+
+
     /**
      * @throws Throwable
      */
@@ -130,12 +158,17 @@ use Throwable;
     {
         DB::transaction(function () use ($request) {
 
+            $endDate = $request->input('leaves_status') === 'Cuti Penting'
+                ? Carbon::parse($request->input('start_date'))->addDays($this->importantLeavesDays($request))
+                : $request->input('end_date');
+
             LeaveAndPermission::create([
                 'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
+                'end_date' => $endDate,
                 'user_id' => $request->user_id ?? $request->user()->id,
                 'reason' => $request->reason,
                 'leaves_status' => $request->leaves_status,
+                'important_leaves' => $request->input('important_leaves'),
                 'sick_letter' => $this->handleFileUploadService->upload(
                     $request,
                     'documents/leaves-and-permissions/sick-letter',

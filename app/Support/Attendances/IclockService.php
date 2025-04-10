@@ -7,6 +7,8 @@ use App\Models\DeviceLog;
 use App\Models\EmployeeSchedule;
 use App\Models\FingerLog;
 use App\Models\FpDevice;
+use App\Models\Master\Common\Branch;
+use App\Models\User;
 use App\Models\WorkTime;
 use Carbon\Carbon;
 use Exception;
@@ -153,7 +155,10 @@ class IclockService
                 ->whereDate('start_date', $dateTime)
                 ->first();
         }
-        return $userShift ?? WorkTime::find(11);
+
+        $user = User::where('absent_id', $employeeId)->first();
+        $ifBranchDuri = $user->branch_id === 2 ? WorkTime::find(14) : null;
+        return $userShift ?? $ifBranchDuri ?? WorkTime::find(11);
     }
 
     public function processAttendanceRecord(array $attendanceData, $shift): void

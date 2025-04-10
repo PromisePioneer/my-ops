@@ -99,7 +99,7 @@
                         </div>
                         <div class="py-5">
                             <div class="table-responsive">
-                                <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped"
+                                <table class="table align-middle table-row-dashed fs-6 gy-5 table-bordered"
                                        id="kt_table_users">
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
@@ -113,10 +113,10 @@
                                         <th class="min-w-125px">Nama</th>
                                         <th class="min-w-125px">Tanggal</th>
                                         <th class="min-w-125px">Alasan Cuti</th>
-                                        <th class="min-w-125px">Status Cuti</th>
-                                        <th class="min-w-125px">Status Konfirmasi</th>
+                                        <th class="min-w-125px">Tipe</th>
+                                        <th class="min-w-125px">Status</th>
                                         <th class="min-w-125px">File Sakit</th>
-                                        <th class="min-w-125px">Tanggal Pengajuan</th>
+                                        <th class="min-w-125px">TGL Pengajuan</th>
                                         <th class="min-w-125px">Action</th>
                                     </thead>
                                     <tbody class=" fw-bold">
@@ -152,8 +152,10 @@
                                                    x-text="leave.user_name"></a>
                                             </td>
                                             <td x-text="`${leave.start_date} - ${leave.end_date}`"></td>
-                                            <td x-text="leave.reason"></td>
-                                            <td x-text="leave.leaves_status"></td>
+                                            <td x-text="leave.reason ?? leave.important_leaves"></td>
+                                            <td>
+                                                <span x-text="leave.leaves_status"></span>
+                                            </td>
                                             <td>
                                                 <template x-if="leave.confirmation_status === 'Diproses'">
                                                     <span class="badge bg-warning">Diproses</span>
@@ -243,7 +245,7 @@
                 buttonLoading: false,
                 isLoading: false,
                 editVal: '',
-                sickLetter: false,
+                leavesStatus: false,
                 leaves: [],
                 search: '',
                 selectedCheckBox: [],

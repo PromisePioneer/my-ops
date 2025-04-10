@@ -60,12 +60,12 @@ class LeaveAndPermissionRequest extends FormRequest
                 $ifDateRangeHasLeaves
             ],
             'end_date' => [
-                'required',
+                Rule::requiredIf($request->leaves_status === 'Izin' || $request->leaves_status === 'Sakit' || $request->leaves_status === 'Cuti'),
                 'date',
                 'after_or_equal:start_date',
                 $this->validateEndDate($request, $getLeavesDaysInThisMonth, $getDiffDaysBetweenStartDateAndEndDate),
             ],
-            'reason' => ['required'],
+            'reason' => [Rule::requiredIf($request->leaves_status === 'Izin' || $request->leaves_status === 'Sakit' || $request->leaves_status === 'Cuti')],
             'leaves_status' => ['required'],
             'sick_letter' => [
                 Rule::requiredIf(fn() => $request->leaves_status === 'Sakit'),
@@ -259,6 +259,7 @@ class LeaveAndPermissionRequest extends FormRequest
             return null;
         };
     }
+
     /**
      * Custom validation messages.
      */

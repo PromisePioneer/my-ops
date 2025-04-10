@@ -57,6 +57,7 @@ use function App\Helper\formatDate;
                 'reason' => $item->reason,
                 'confirmation_status' => $item->confirmation_status,
                 'sick_letter' => $item->sick_letter,
+                'important_leaves' => $item->important_leaves,
                 'created_at' => $date->format('l, j F Y h:i A'),
             ];
         });

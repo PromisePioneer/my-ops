@@ -25,6 +25,7 @@ class LeaveAndPermission extends Model
         'sick_letter',
         'confirmation_reason',
         'acc_by',
+        'important_leaves'
     ];
 
 

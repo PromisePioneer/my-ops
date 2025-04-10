@@ -29,8 +29,30 @@
                                 x-model="sickLetter">
                             <option value="0" selected>Pilih</option>
                             <option value="Sakit" :selected="editVal.leaves_status === 'Sakit'">Sakit</option>
-                            <option value="Cuti" :selected="editVal.leaves_status === 'Cuti'">Cuti</option>
-                            <option value="Izin" :selected="editVal.leaves_status === 'Izin'">Izin</option>
+                            <option value="Cuti" :selected="editVal.leaves_status === 'Cuti'">Cuti tahunan</option>
+                            <option value="Cuti Menikah" :selected="editVal.leaves_status === 'Izin'">
+                                Cuti menikah (3 Hari)
+                            </option>
+                            <option value="Cuti Menikahkan Anak" :selected="editVal.leaves_status === 'Izin'">
+                                Cuti menikahkan anak (2 Hari)
+                            </option>
+                            <option value="Cuti Mengkhitankan Anak" :selected="editVal.leaves_status === 'Izin'">
+                                Cuti mengkhitankan anak (2 Hari)
+                            </option>
+                            <option value="Cuti Membaptis Anak" :selected="editVal.leaves_status === 'Izin'">
+                                Cuti membaptis anak (2 Hari)
+                            </option>
+                            <option value="Cuti Istri Melahirkan" :selected="editVal.leaves_status === 'Izin'">
+                                Cuti istri melahirkan atau keguguran kandungan (2 Hari)
+                            </option>
+                            <option value="Cuti Keluarga Meninggal Dunia" :selected="editVal.leaves_status === 'Izin'">
+                                Cuti Suami/istri, orang tua/mertua atau anak atau menantu meninggal dunia (2 Hari)
+                            </option>
+                            <option value="Cuti Anggota Keluarga Satu Rumah Meninggal Dunia"
+                                    :selected="editVal.leaves_status === 'Izin'">
+                                Cuti anggota keluarga dalam satu rumah meninggal dunia (1 Hari)
+                            </option>
+
                         </select>
                     </div>
                     <div class="mb-10" x-show="sickLetter === 'Sakit'" x-transition>
