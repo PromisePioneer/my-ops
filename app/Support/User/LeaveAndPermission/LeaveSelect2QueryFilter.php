@@ -41,6 +41,7 @@ class LeaveSelect2QueryFilter
                     'Legal & Corporate Commissioner',
                     'After Sales Customer Service',
                     'Project Controller & Vendor Supervisor',
+                    'Mechanic Senior Staff'
                 ]);
             });
         }
