@@ -68,7 +68,7 @@ use function App\Helper\formatDate;
 
     public function search(Request $request): LengthAwarePaginator
     {
-        $search = $request->input('search', '');
+        $search = $request->input('search');
 
         $query = LeaveAndPermission::search($search)->query(function ($query) {
             $query->join('users', 'users.id', '=', 'leaves_and_permissions.user_id')
