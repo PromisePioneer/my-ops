@@ -69,8 +69,14 @@ use function App\Helper\formatDate;
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-
-        $query = LeaveAndPermission::search($search);
+        $query = $this->leaveRepository->leavesMainQuery();
+        if (!empty($search)) {
+            $query = $query->where(function ($query) use ($search) {
+                $query->whereHas('users', function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                });
+            });
+        }
 
         $leaveACLFilter = LeaveACLFilter::apply($query, $request);
         return self::formattedData($leaveACLFilter->paginate(self::$perPage));
