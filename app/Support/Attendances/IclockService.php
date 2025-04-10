@@ -137,11 +137,11 @@ class IclockService
         }
 
 
-        if ($status1 === 1 && $dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '09:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '12:00:00'))){
+        if ($status1 === 1 && $dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '09:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '12:00:00'))) {
             $userShift = EmployeeSchedule::with('workTime')
-            ->where('employee_id', $employeeId)
-            ->whereDate('end_date', $dateTime->format('Y-m-d'))
-            ->first();
+                ->where('employee_id', $employeeId)
+                ->whereDate('end_date', $dateTime->format('Y-m-d'))
+                ->first();
 
 
         }
@@ -184,8 +184,6 @@ class IclockService
 
     private function isValidTimeToCheckIn($date, string $checkInStart, string $checkInEnd, $shiftName): bool
     {
-
-
         if ($shiftName === 'Pagi' || $shiftName === 'Lapangan') {
             $actualCheckInTime = Carbon::parse($date)->toTimeString();
             return $actualCheckInTime >= $checkInStart && $actualCheckInTime <= $checkInEnd;
@@ -210,8 +208,8 @@ class IclockService
         }
 
 
-        Attendances::create($attendanceData);
         if ($this->isValidTimeCheckOut($time, $shiftTimeToCheckOut ?? $shift->time_to_checkout, $shiftEndTimeToCheckOut ?? $shift->end_time_to_checkout, $shift?->name, $attendanceData['employee_id'])) {
+            Attendances::create($attendanceData);
         }
     }
 
