@@ -153,14 +153,11 @@ class IclockService
                 ->whereDate('start_date', $dateTime)
                 ->first();
         }
-
-
-        return $userShift ?? WorkTime::find(1);
+        return $userShift ?? WorkTime::find(11);
     }
 
     public function processAttendanceRecord(array $attendanceData, $shift): void
     {
-        Log::info($attendanceData);
         $date = Carbon::parse($attendanceData['timestamp']);
 
 
