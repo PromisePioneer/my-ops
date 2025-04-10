@@ -46,6 +46,7 @@ class LeaveACLFilter
                     'After Sales Customer Service',
                     'Project Controller & Vendor Supervisor',
                     'Head Of Electrical Engineer',
+                    'Mechanic Senior Staff'
                 ]);
             })->whereHas('user', function ($query) use ($request) {
                 $query->where('branch_id', 1)
