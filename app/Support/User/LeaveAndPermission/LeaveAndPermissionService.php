@@ -72,7 +72,7 @@ use function App\Helper\formatDate;
         $query = $this->leaveRepository->leavesMainQuery();
         if (!empty($search)) {
             $query = $query->where(function ($query) use ($search) {
-                $query->whereHas('users', function ($query) use ($search) {
+                $query->whereHas('user', function ($query) use ($search) {
                     $query->where('name', 'like', '%' . $search . '%');
                 });
             });
