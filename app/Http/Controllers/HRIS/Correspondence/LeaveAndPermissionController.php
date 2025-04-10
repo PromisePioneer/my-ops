@@ -26,10 +26,9 @@ use Throwable;
 {
     public function __construct()
     {
-        $this->manageUserLeaveAndPermissionService = new LeaveAndPermissionService();
+        $this->leaveAndPermissionService = new LeaveAndPermissionService();
         $this->user = new User();
         $this->calculateUserLeaves = new CalculateUserLeaves();
-        $this->handleFileUploadService = new HandleFileUploadService();
         $this->branch = new Branch();
     }
 
@@ -45,13 +44,13 @@ use Throwable;
 
     public function getUserData(Request $request): JsonResponse
     {
-        return response()->json($this->manageUserLeaveAndPermissionService->getUserData($request));
+        return response()->json($this->leaveAndPermissionService->getUserData($request));
     }
 
 
     public function filter(Request $request): JsonResponse
     {
-        return response()->json($this->manageUserLeaveAndPermissionService->filter($request));
+        return response()->json($this->leaveAndPermissionService->filter($request));
     }
 
     public function selectedUserData(LeaveAndPermission $leaveAndPermission): JsonResponse
@@ -65,7 +64,7 @@ use Throwable;
     public function data(Request $request): JsonResponse
     {
         $this->authorize('view', LeaveAndPermission::class);
-        $query = $this->manageUserLeaveAndPermissionService->data($request);
+        $query = $this->leaveAndPermissionService->data($request);
         return response()->json($query);
     }
 
@@ -75,7 +74,7 @@ use Throwable;
     public function search(Request $request): JsonResponse
     {
         $this->authorize('view', LeaveAndPermission::class);
-        return response()->json($this->manageUserLeaveAndPermissionService->search($request));
+        return response()->json($this->leaveAndPermissionService->search($request));
     }
 
 
@@ -125,60 +124,12 @@ use Throwable;
         return response()->json($this->calculateUserLeaves->calculate($request));
     }
 
-
-    public function importantLeavesDays(LeaveAndPermissionRequest $request)
-    {
-        if ($request->input('important_leaves') === 'Menikah') {
-            return 3;
-        }
-
-        if ($request->input('important_leaves') === 'Menikahkan Anak'
-            ||
-            $request->input('important_leaves') === 'Menikahkan Anak'
-            ||
-            $request->input('important_leaves') === 'Mengkhitankan Anak'
-            ||
-            $request->input('important_leaves') === 'Membaptis Anak'
-            ||
-            $request->input('important_leaves') === 'Istri Melahirkan'
-            ||
-            $request->input('important_leaves') === 'Anggota Keluarga Meninggal Dunia'
-        ) {
-            return 2;
-        }
-
-        return 1;
-    }
-
-
     /**
      * @throws Throwable
      */
     public function store(LeaveAndPermissionRequest $request): JsonResponse
     {
-        DB::transaction(function () use ($request) {
-
-            $endDate = $request->input('leaves_status') === 'Cuti Penting'
-                ? Carbon::parse($request->input('start_date'))->addDays($this->importantLeavesDays($request))
-                : $request->input('end_date');
-
-            LeaveAndPermission::create([
-                'start_date' => $request->start_date,
-                'end_date' => $endDate,
-                'user_id' => $request->user_id ?? $request->user()->id,
-                'reason' => $request->reason,
-                'leaves_status' => $request->leaves_status,
-                'important_leaves' => $request->input('important_leaves'),
-                'sick_letter' => $this->handleFileUploadService->upload(
-                    $request,
-                    'documents/leaves-and-permissions/sick-letter',
-                    'sick_letter'
-                ),
-            ]);
-
-        });
-
-
+        $this->leaveAndPermissionService->store($request);
         return response()->json(['message' => 'Data berhasil disimpan.']);
     }
 
@@ -190,15 +141,7 @@ use Throwable;
 
     public function update(LeaveAndPermissionRequest $request, LeaveAndPermission $leaveAndPermission): JsonResponse
     {
-        $leaveAndPermission->update([
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'user_id' => $request->user_id ?? $request->user()->id,
-            'reason' => $request->reason,
-            'leaves_status' => $request->leaves_status,
-            'sick_letter' => $request->sick_letter,
-        ]);
-
+        $this->leaveAndPermissionService->update($request, $leaveAndPermission);
         return response()->json(['message' => 'Data berhasil disimpan.']);
     }
 

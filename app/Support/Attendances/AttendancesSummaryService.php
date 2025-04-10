@@ -121,6 +121,7 @@ use Illuminate\Http\Request;
             $totalSick = $this->calculateLeaveDays($user, $startDate, $endDate, 'Sakit');
             $totalLeaves = $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti');
             $totalPermission = $this->calculateLeaveDays($user, $startDate, $endDate, 'Izin');
+            $totalImportantLeaves = $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti Penting');
             $totalMinutesLate = $this->calculateLate($user->attendancesSummary);
             $totalNotCheckIn = $user->attendancesSummary->whereNull('clock_in')->count();
             $totalNotCheckOut = $user->attendancesSummary
@@ -139,7 +140,7 @@ use Illuminate\Http\Request;
             })->count();
 
 
-            $totalPeriodOfWork -= ($totalLeaves + $totalSick + $totalPermission);
+            $totalPeriodOfWork -= ($totalLeaves + $totalSick + $totalPermission + $totalImportantLeaves);
 
             $attendedDates = $user->attendancesSummary->pluck('date')->toArray();
 
@@ -163,6 +164,7 @@ use Illuminate\Http\Request;
                 'total_sick' => $totalSick,
                 'total_permission' => $totalPermission,
                 'total_absent' => $totalAbsent,
+                'total_important_leaves' => $totalImportantLeaves
             ];
         });
 

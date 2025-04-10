@@ -97,6 +97,12 @@
                                             <td colspan="6">CUTI</td>
                                         </tr>
                                     </template>
+                                    <template x-if="attendance.important_leaves?.status === 'Cuti Penting'">
+                                        <tr class="bg-success text-center">
+                                            <td x-text="formatDate(attendance.date_period)"></td>
+                                            <td colspan="6">CUTI PENTING</td>
+                                        </tr>
+                                    </template>
                                     <template x-if="attendance.permission?.status === 'Izin'">
                                         <tr class="bg-danger text-white text-center">
                                             <td x-text="formatDate(attendance.date_period)"></td>
@@ -124,7 +130,7 @@
                                         </tr>
                                     </template>
                                     <template
-                                        x-if="!attendance?.leaves && !attendance?.permission && !attendance.sick && attendance.schedule === 'H' && !attendance.attendanceManualRequest">
+                                        x-if="!attendance?.leaves && !attendance?.permission && !attendance.sick && !attendance.important_leaves && attendance.schedule === 'H' && !attendance.attendanceManualRequest">
                                         <tr>
                                             <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
                                             <td class="text-center" x-text="attendance.clock_in"></td>

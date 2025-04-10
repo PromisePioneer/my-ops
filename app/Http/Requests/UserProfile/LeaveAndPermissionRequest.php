@@ -61,8 +61,6 @@ class LeaveAndPermissionRequest extends FormRequest
             ],
             'end_date' => [
                 Rule::requiredIf($request->leaves_status === 'Izin' || $request->leaves_status === 'Sakit' || $request->leaves_status === 'Cuti'),
-                'date',
-                'after_or_equal:start_date',
                 $this->validateEndDate($request, $getLeavesDaysInThisMonth, $getDiffDaysBetweenStartDateAndEndDate),
             ],
             'reason' => [Rule::requiredIf($request->leaves_status === 'Izin' || $request->leaves_status === 'Sakit' || $request->leaves_status === 'Cuti')],
@@ -268,9 +266,8 @@ class LeaveAndPermissionRequest extends FormRequest
         return [
             'start_date.required' => 'Tanggal awal tidak boleh kosong',
             'start_date.date' => 'Tanggal awal harus berupa tanggal',
-            'start_date.after' => 'Pengajuan cuti minimal 6 hari sebelum hari ini',
             'end_date.required' => 'Tanggal akhir tidak boleh kosong',
-            'end_date.date' => 'Tanggal akhir harus berupa tanggal',
+            'leaves_status' => 'Status Cuti tidak boleh kosong',
         ];
     }
 }

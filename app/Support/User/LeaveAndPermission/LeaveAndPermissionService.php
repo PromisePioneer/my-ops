@@ -3,8 +3,10 @@
 namespace App\Support\User\LeaveAndPermission;
 
 use AllowDynamicProperties;
+use App\Http\Requests\UserProfile\LeaveAndPermissionRequest;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
+use App\Support\HelperService\HandleFileUploadService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
@@ -18,6 +20,7 @@ use function App\Helper\formatDate;
     {
         $this->leaveAndPermission = new LeaveAndPermission();
         $this->leaveRepository = new LeaveRepository();
+        $this->handleFileUploadService = new HandleFileUploadService();
     }
 
     public function data(Request $request): LengthAwarePaginator
@@ -36,6 +39,23 @@ use function App\Helper\formatDate;
         $permissions = LeaveACLFilter::apply($filter, $request);
         $data = $permissions->paginate(self::$perPage);
         return self::formattedData($data);
+    }
+
+
+    public function search(Request $request): LengthAwarePaginator
+    {
+        $search = $request->input('search');
+        $query = $this->leaveRepository->leavesMainQuery();
+        if (!empty($search)) {
+            $query = $query->where(function ($query) use ($search) {
+                $query->whereHas('user', function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                });
+            });
+        }
+
+        $leaveACLFilter = LeaveACLFilter::apply($query, $request);
+        return self::formattedData($leaveACLFilter->paginate(self::$perPage));
     }
 
 
@@ -67,20 +87,47 @@ use function App\Helper\formatDate;
         return $data;
     }
 
-    public function search(Request $request): LengthAwarePaginator
-    {
-        $search = $request->input('search');
-        $query = $this->leaveRepository->leavesMainQuery();
-        if (!empty($search)) {
-            $query = $query->where(function ($query) use ($search) {
-                $query->whereHas('user', function ($query) use ($search) {
-                    $query->where('name', 'like', '%' . $search . '%');
-                });
-            });
-        }
 
-        $leaveACLFilter = LeaveACLFilter::apply($query, $request);
-        return self::formattedData($leaveACLFilter->paginate(self::$perPage));
+    public function store(LeaveAndPermissionRequest $request): void
+    {
+        $endDate = $request->input('leaves_status') === 'Cuti Penting'
+            ? Carbon::parse($request->input('start_date'))
+                ->addDays($this->importantLeavesDays($request))
+            : $request->input('end_date');
+
+        LeaveAndPermission::create([
+            'start_date' => $request->start_date,
+            'end_date' => $endDate,
+            'user_id' => $request->user_id ?? $request->user()->id,
+            'reason' => $request->reason,
+            'leaves_status' => $request->leaves_status,
+            'important_leaves' => $request->input('important_leaves'),
+            'sick_letter' => $this->handleFileUploadService->upload(
+                $request,
+                'documents/leaves-and-permissions/sick-letter',
+                'sick_letter'
+            ),
+        ]);
+
+
+    }
+
+
+    public function update(LeaveAndPermissionRequest $request, LeaveAndPermission $leaveAndPermission): void
+    {
+        $endDate = $request->input('leaves_status') === 'Cuti Penting'
+            ? Carbon::parse($request->input('start_date'))->addDays($this->importantLeavesDays($request))
+            : $request->input('end_date');
+
+
+        $leaveAndPermission->update([
+            'start_date' => $request->start_date,
+            'end_date' => $endDate,
+            'user_id' => $request->user_id ?? $request->user()->id,
+            'reason' => $request->reason,
+            'leaves_status' => $request->leaves_status,
+            'sick_letter' => $request->sick_letter,
+        ]);
     }
 
 
@@ -109,5 +156,31 @@ use function App\Helper\formatDate;
 
         return self::formattedData($leaves);
     }
+
+
+    public function importantLeavesDays(LeaveAndPermissionRequest $request)
+    {
+        if ($request->input('important_leaves') === 'Menikah') {
+            return 3;
+        }
+
+        if ($request->input('important_leaves') === 'Menikahkan Anak'
+            ||
+            $request->input('important_leaves') === 'Menikahkan Anak'
+            ||
+            $request->input('important_leaves') === 'Mengkhitankan Anak'
+            ||
+            $request->input('important_leaves') === 'Membaptis Anak'
+            ||
+            $request->input('important_leaves') === 'Istri Melahirkan'
+            ||
+            $request->input('important_leaves') === 'Anggota Keluarga Meninggal Dunia'
+        ) {
+            return 2;
+        }
+
+        return 1;
+    }
+
 
 }

@@ -31,8 +31,7 @@
                     <div class="table-responsive">
                         <table class="table align-middle table-bordered fs-6 gy-5 table-striped" id="kt_table_users">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="w-10px pe-2">No</th>
+                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0 text-center">
                                 <th class="min-w-125px">Tanggal</th>
                                 <th class="min-w-125px">Status (Cuti / Izin / Sakit)</th>
                                 <th class="min-w-125px">Keterangan</th>
@@ -60,11 +59,10 @@
                             </template>
                             <template x-for="(leave, index) in leaves?.data"
                                       :key="index">
-                                <tr>
-                                    <td x-text="startIndex + index++"></td>
+                                <tr class="text-center">
                                     <td x-text="`${leave.start_date} - ${leave.end_date}`"></td>
                                     <td x-text="leave.leaves_status"></td>
-                                    <td x-text="leave.reason"></td>
+                                    <td x-text="leave.reason ?? leave.important_leaves"></td>
                                     <td>
                                         <template x-if="leave.confirmation_status === 'Diproses'">
                                             <span class="badge bg-warning">Diproses</span>
@@ -119,7 +117,7 @@
                 isLoading: false,
                 leaves: [],
                 startIndex: 0,
-                sickLetter: null,
+                leavesStatus: null,
                 modalForm: new bootstrap.Modal(document.getElementById('modal-form')),
                 editVal: '',
                 search: '',
@@ -176,6 +174,7 @@
                 async edit(id) {
                     const resp = await axios.get(`/manage-users/leaves/edit/${id}`);
                     this.editVal = resp.data;
+                    this.leavesStatus = this.editVal.leaves_status
                 },
                 async save(id) {
                     this.buttonLoading = true;

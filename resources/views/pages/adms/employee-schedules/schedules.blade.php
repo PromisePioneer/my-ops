@@ -85,7 +85,6 @@
         }
 
 
-
         .fs-9 {
             font-size: .75rem !important
         }
@@ -246,6 +245,9 @@
                                     @endif
                                     @if($date['schedules_date']?->permission)
                                         <span class="fw-bolder text-dark">I</span>
+                                    @endif
+                                    @if($date['schedules_date']?->important_leaves)
+                                        <span class="fw-bolder text-dark">CP</span>
                                     @endif
                                 </a>
                             </td>

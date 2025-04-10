@@ -88,12 +88,14 @@ use Illuminate\Support\Collection;
         $allLeaves = $this->getLeaves($userIds);
         $allSick = $this->getSick($userIds);
         $allPermission = $this->getPermission($userIds);
+        $importantLeaves = $this->getImportantLeaves($userIds);
 
         $data = $userData->getCollection()->map(function ($item) use ($period, $allLeaves, $allSick, $allPermission) {
             $schedules = $item->employeeSchedules->keyBy('start_date');
             $leaves = $allLeaves[$item->id] ?? [];
             $sick = $allSick[$item->id] ?? [];
             $permission = $allPermission[$item->id] ?? [];
+            $importantLeaves = $allImportantLeaves[$item->id] ?? [];
 
             $dates = array_fill_keys($period->toArray(), []);
 
@@ -104,6 +106,7 @@ use Illuminate\Support\Collection;
                     'leaves' => $leaves[$date] ?? null,
                     'sick' => $sick[$date] ?? null,
                     'permission' => $permission[$date] ?? null,
+                    'importantLeaves' => $importantLeaves[$date] ?? null,
                 ];
             }
 
@@ -123,6 +126,7 @@ use Illuminate\Support\Collection;
                         'sick' => $date['sick'] ?? null,
                         'permission' => $date['permission'] ?? null,
                         'leaves' => $date['leaves'] ?? null,
+                        'important_leaves' => $date['importantLeaves'],
                     ];
                 })->values(),
                 'area' => $item->userHasArea?->area,
@@ -138,6 +142,11 @@ use Illuminate\Support\Collection;
     private function getLeaves(array $userIds): array
     {
         return $this->getLeaveData($userIds, 'Cuti');
+    }
+
+    private function getImportantLeaves(array $userIds): array
+    {
+        return $this->getLeaveData($userIds, 'Cuti Penting');
     }
 
     private function getSick(array $userIds): array

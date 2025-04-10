@@ -2,9 +2,8 @@
 @section('page-title', 'Data Cuti Karyawan')
 @section('content')
     <div x-data="leavesData()">
-        @include('pages.manage-users.leaves.modal.confirm')
-        @include('pages.manage-users.leaves.modal.create')
-        @include('pages.manage-users.leaves.modal.edit')
+        @include('pages.manage-users.leaves.confirm')
+        @include('pages.manage-users.leaves.form')
         <div class="d-flex flex-column flex-xl-row">
             <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
                 <div class="card card-flush">
@@ -71,7 +70,7 @@
                             <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                                 <button class="btn btn-light-primary btn-sm"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#modal-create"
+                                        data-bs-target="#modal-leaves"
                                 >
                                     Tambah
                                 </button>
@@ -198,7 +197,7 @@
                                                         </button>
                                                     </template>
                                                     <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                            data-bs-target="#modal-edit" @click="edit(leave.id)">
+                                                            data-bs-target="#modal-leaves" @click="edit(leave.id)">
                                                         <i class="ki-duotone ki-pencil fs-2">
                                                             <span class="path1"></span>
                                                             <span class="path2"></span>
@@ -237,10 +236,8 @@
                 viewDetailUserPermission: "{{ request()->user( )->can('Lihat Detail Data Karyawan') }}",
                 confirmPermission: "{{request()->user()->can('Konfirmasi Data Manajemen Cuti')}}",
                 userSessionId: "{{ Auth::id() }}",
-                modalCreate: new bootstrap.Modal(document.getElementById('modal-create')),
-                modalEdit: new bootstrap.Modal(document.getElementById('modal-edit')),
-                formCreate: document.getElementById('form-create'),
-                formEdit: document.getElementById('form-edit'),
+                modalForm: new bootstrap.Modal(document.getElementById('modal-leaves')),
+                form: document.getElementById('form-leaves'),
                 formDelete: document.getElementById('form-delete'),
                 buttonLoading: false,
                 isLoading: false,
@@ -378,11 +375,11 @@
                 },
                 async selectedUserData(id) {
                     const self = this;
-                    const selectedUser = $('#selectedUser');
+                    const selectedUser = $('#selected-user');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/manage-users/leaves/users/selected/${id}`,
+                        url: `/select2/selected-user/${id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedUser.append(option).trigger('change').trigger({
@@ -421,52 +418,19 @@
                         self.leavesLeft = resp.data
                     });
                 },
-                async save() {
+                async save(id = null) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/manage-users/leaves/', new FormData(this.formCreate)).then(async () => {
-                            await showAlert('success', 'Data berhasil disimpan')
-                            this.formCreate.reset();
-                            this.modalCreate.hide();
-                            this.leavesLeft = 0;
-                            $('.users-select2').val('').trigger('change');
-                            const resp = await axios.get(`${this.leaves.path}?page=${this.leaves.current_page}`, {
-                                params: {
-                                    search: this.search,
-                                    branch_id: document.getElementById('branch_id').value,
-                                    year: document.getElementById('year').value,
-                                    month: document.getElementById('month').value,
-                                    confirmation_status: this.selectedConfirmationStatus,
-                                }
-                            });
-                            this.leaves = resp.data
-                        })
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
-                async update(id) {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post(`/manage-users/leaves/update/${id}`, new FormData(this.formEdit)).then(async () => {
-                            await showAlert('success', 'Data berhasil disimpan')
-                            this.formEdit.reset();
-                            this.modalEdit.hide();
-                            this.leavesLeft = 0;
-                            const resp = await axios.get(`${this.leaves.path}?page=${this.leaves.current_page}`, {
-                                params: {
-                                    search: this.search,
-                                    branch_id: document.getElementById('branch_id').value,
-                                    year: document.getElementById('year').value,
-                                    month: document.getElementById('month').value,
-                                    confirmation_status: this.selectedConfirmationStatus,
-                                }
-                            });
-                            this.leaves = resp.data
-                        })
+
+                        if (!id) {
+                            await axios.post('/manage-users/leaves/', new FormData(this.form)).then(async () => {
+                                await this.successResponse();
+                            })
+                        } else {
+                            await axios.post(`/manage-users/leaves/update/${id}`, new FormData(this.form)).then(async () => {
+                                await this.successResponse();
+                            })
+                        }
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
@@ -477,6 +441,7 @@
                 async edit(id) {
                     const resp = await axios.get(`/manage-users/leaves/edit/${id}`);
                     this.editVal = resp.data;
+                    this.leavesStatus = this.editVal.leaves_status
                     await this.selectedUserData(this.editVal.id);
                 },
                 async confirm(id) {
@@ -556,6 +521,23 @@
                         lightbox.props.sources = [image];
                         lightbox.open();
                     }
+                },
+                async successResponse() {
+                    await showAlert('success', 'Data berhasil disimpan')
+                    this.form.reset();
+                    this.modalForm.hide();
+                    this.leavesLeft = 0;
+                    $('.users-select2').val('').trigger('change');
+                    const resp = await axios.get(`${this.leaves.path}?page=${this.leaves.current_page}`, {
+                        params: {
+                            search: this.search,
+                            branch_id: document.getElementById('branch_id').value,
+                            year: document.getElementById('year').value,
+                            month: document.getElementById('month').value,
+                            confirmation_status: this.selectedConfirmationStatus,
+                        }
+                    });
+                    this.leaves = resp.data
                 },
             }
         }
