@@ -125,6 +125,7 @@ use Illuminate\Http\Request;
         $formattedValue = str_replace(',', '.', str_replace('.', '', $rawAmount));
         $amount = number_format((float)$formattedValue, 4, '.', '');
 
+
         AccountTransaction::query()->updateOrCreate([
             'branch_id' => $request->branch_id ?? $request->user()->branch_id,
             'account_id' => $request->account_id,
@@ -132,7 +133,7 @@ use Illuminate\Http\Request;
         ], [
             'date' => Carbon::now()->subYear()->endOfYear(),
             'transaction_type' => 'SA',
-            'amount' => $amount,
+            'amount' => $amount ?? 0,
         ]);
 
         return response()->json(['message' => 'Saldo awal berhasil ditambahkan.']);
