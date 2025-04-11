@@ -133,7 +133,7 @@ use Illuminate\Http\Request;
         ], [
             'date' => Carbon::now()->subYear()->endOfYear(),
             'transaction_type' => 'SA',
-            'amount' => $amount ?? 0,
+            'amount' => (float)$amount ?? 0,
         ]);
 
         return response()->json(['message' => 'Saldo awal berhasil ditambahkan.']);
