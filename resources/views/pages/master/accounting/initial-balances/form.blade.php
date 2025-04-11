@@ -18,7 +18,7 @@
                 <div class="modal-body">
                     @if(empty(Auth::user()->branch_id))
                         <div class="mb-10">
-                            <label for="account_id" class="required form-label">Akun</label>
+                            <label for="account_id" class="required form-label">Cabang</label>
                             <input type="hidden" name="branch_id" :value="branchVal.id">
                             <input type="text" class="form-control form-control-solid" :value="branchVal.name" disabled>
                         </div>
@@ -30,7 +30,8 @@
                     </div>
                     <div class="mb-10">
                         <label for="account_id" class="required form-label">Tipe</label>
-                        <input type="text" class="form-control form-control-solid" name="entries_type" :value="entriesType" readonly>
+                        <input type="text" class="form-control form-control-solid" name="entries_type"
+                               :value="entriesType" readonly>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Saldo</label>
