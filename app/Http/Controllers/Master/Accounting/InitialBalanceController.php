@@ -123,8 +123,6 @@ use Illuminate\Http\Request;
         $this->authorize('create', AccountTransaction::class);
         $rawAmount = $request->input('amount');
 
-
-        dd($rawAmount);
         $formattedValue = str_replace(',', '.', str_replace('.', '', $rawAmount));
         $amount = number_format((float)$formattedValue, 4, '.', '');
 
