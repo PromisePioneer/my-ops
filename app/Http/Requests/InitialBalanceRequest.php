@@ -88,17 +88,17 @@ class InitialBalanceRequest extends FormRequest
 
 
             if ($request->input('entries_type') === 'debit') {
-                $totalInitialBalance = bcsub($amount, $creditInitialBalance->amount, 2);
+                $totalInitialBalance = bcsub($amount, $creditInitialBalance?->amount, 2);
             }
 
 
             if ($request->input('entries_type') === 'credit') {
-                $totalInitialBalance = bcsub($debitInitialBalance->amount, $amount, 2);
+                $totalInitialBalance = bcsub($debitInitialBalance?->amount, $amount, 2);
             }
 
-//            if ($totalInitialBalance < 0) {
-//                $fail('Transaksi tidak balance');
-//            }
+            if ($totalInitialBalance < 0) {
+                $fail('Transaksi tidak balance');
+            }
         };
     }
 
