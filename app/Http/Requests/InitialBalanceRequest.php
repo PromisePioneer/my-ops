@@ -96,9 +96,9 @@ class InitialBalanceRequest extends FormRequest
                 $totalInitialBalance = bcsub($debitInitialBalance->amount, $amount, 2);
             }
 
-//            if ($totalInitialBalance < 0) {
-//                $fail('Transaksi tidak balance');
-//            }
+            if ($totalInitialBalance < 0) {
+                $fail('Transaksi tidak balance');
+            }
         };
     }
 
