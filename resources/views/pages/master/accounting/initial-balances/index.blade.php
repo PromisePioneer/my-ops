@@ -148,7 +148,7 @@
                                                     <button class="btn btn-light-info btn-sm"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#modal-initial-balance"
-                                                            @click="edit(account.account_id, 'debit')"
+                                                            @click="edit(account.id, 'debit')"
                                                             :disabled="Boolean(disabledAccountButton(branchId, account))">
                                                         <span x-text="account.initial_balance_debit"></span>
                                                     </button>
@@ -158,7 +158,7 @@
                                                 <button class="btn btn-light-danger btn-sm"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#modal-initial-balance"
-                                                        @click="edit(account.account_id, 'credit')"
+                                                        @click="edit(account.id, 'credit')"
                                                         :disabled="Boolean(disabledAccountButton(branchId, account))">
                                                     <span x-text="account.initial_balance_credit"></span>
                                                 </button>

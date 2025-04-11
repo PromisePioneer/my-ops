@@ -146,7 +146,6 @@ use Illuminate\Http\Request;
      */
     public function edit(Request $request, Account $account): JsonResponse
     {
-
         $this->authorize('update', $account);
         $branchId = $request->branch_id ?? $request->user()->branch_id;
         $data = AccountTransaction::where('account_id', $account->id)->where('branch_id', $branchId)->where('transaction_type', 'SA')->where('entries_type', $request->input('entries_type'))->whereYear('date', Carbon::now()->subYear())->first() ?? $account;
