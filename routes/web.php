@@ -700,7 +700,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/filter', [StockController::class, 'goodsFilter']);
                 Route::get('/show/{goods}', [StockController::class, 'show']);
                 Route::get('/detail/{stock}', [StockController::class, 'detail']);
-                Route::get('/branch/data/{goods}', [StockController::class, 'getMainBranchWithStock']);
+                Route::get('/branch/data/{itemCollection}', [StockController::class, 'getMainBranchWithStock']);
             });
 
             Route::prefix('consumed-stocks')->group(function () {
@@ -1271,6 +1271,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/selected-contact/{contact}', [ContactController::class, 'selectedContact']);
         Route::get('/service-categories-data', [ServiceCategoryManagerController::class, 'getServiceCategories']);
         Route::get('/selected-service-category/{serviceCategory}', [ServiceCategoryManagerController::class, 'selectedServiceCategory']);
+
         Route::get('/skl-data', [SKLController::class, 'getSKL']);
         Route::get('/selected-skl/{skl}', [SKLController::class, 'selectedSKL']);
         Route::get('/purchase-orders-data', [PurchaseOrderController::class, 'getPurchaseOrders']);
@@ -1287,6 +1288,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/kas-and-leverages-accounts-data', [AccountController::class, 'kasAndLeverageAccounts']);
         Route::get('/kas-accounts-data', [AccountController::class, 'kasAccounts']);
         Route::get('/stock-accounts-data', [AccountController::class, 'stockAccounts']);
+        Route::get('/branches-data', [BranchController::class, 'getAllBranch']);
     });
 
 

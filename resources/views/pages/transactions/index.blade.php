@@ -350,12 +350,7 @@
 
                         let reader = new FileReader();
                         reader.onload = e => {
-
-                            if (this.editVal) {
-                                this.imgsrc = "{{ Storage::url('') }}" + this.editVal?.attachment
-                            } else {
-                                this.imgsrc = e.target.result;
-                            }
+                            this.imgsrc = e.target.result;
                         };
                         reader.readAsDataURL(file);
                     });

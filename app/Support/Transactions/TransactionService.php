@@ -158,6 +158,13 @@ use function App\Helper\formatDate;
             'total_price' => $unitPrice * $request->input('qty'),
             'debit_account_id' => $request->input('debit_account_id'),
             'credit_account_id' => $request->input('credit_account_id'),
+            'created_by' => $request->user()->id,
+            'attachment' => $this->handleUploadService->upload(
+                $request,
+                'documents/transaction/item-transactions/',
+                'attachment',
+                $transaction->attachment
+            ),
         ]);
     }
 

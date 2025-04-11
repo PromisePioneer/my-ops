@@ -32,8 +32,6 @@ class UsedStockRequest extends FormRequest
                 Rule::exists('branches', 'id'),
 
             ],
-            'debit_account_id' => ['required', Rule::exists('accounts', 'id')],
-            'credit_account_id' => ['required', Rule::exists('accounts', 'id')],
             'qty' => ['required', 'numeric', $this->isStockExists($request)]
         ];
     }

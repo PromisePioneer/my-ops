@@ -70,8 +70,6 @@ use Illuminate\View\View;
     }
 
 
-
-
     public function destroy(Request $request, Stock $goodsStock): JsonResponse
     {
         $this->authorize('view', Stock::class);
@@ -97,18 +95,27 @@ use Illuminate\View\View;
     }
 
 
-    public function getMainBranchWithStock(ItemCollection $goods)
+    public function getMainBranchWithStock(ItemCollection $itemCollection)
     {
-        $this->authorize('view', Stock::class);
-        $branch = Branch::whereHas('stock', function ($query) use ($goods) {
-            $query->where('item_id', $goods->id);
-        })->get();
 
-        return $branch->map(function ($item) {
+        $this->authorize('view', Stock::class);
+        $branch = Branch::with('stock', 'children')->get();
+
+
+        return $branch->map(function ($item) use ($itemCollection) {
             return [
-                'id' => $item->id,
-                'text' => $item->name . ' - ' . 'Stock : ' . $item->stock->sum('qty'),
+                'id' => $item?->id,
+                'text' => $item?->name,
+                'children' => $item->children->map(function ($child) use ($itemCollection) {
+                    return [
+                        'id' => $child?->id,
+                        'text' => $child->name . ' - ' . 'Stock : ' . $child->stock->where('item_id', $itemCollection->id)->sum('qty'),
+                    ];
+                })
             ];
         });
     }
 }
+
+
+//

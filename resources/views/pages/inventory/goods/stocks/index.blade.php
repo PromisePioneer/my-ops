@@ -13,7 +13,7 @@
                         </div>
                         <div class="card-body pt-0">
                             <select name="branch_id_filter" id="branch_id_filter"
-                                    class="form-select form-select-solid main-branches-select2">
+                                    class="form-select form-select-solid branches-select2">
                             </select>
                         </div>
                         <div class="card-footer pt-4 text-end">
@@ -138,7 +138,7 @@
                             await this.getGoodsStock();
                             await this.debitAccounts();
                             await this.creditAccounts();
-                            await this.getMainBranches();
+                            await this.getAllBranch();
                         },
                         async getGoodsStock() {
                             this.isLoading = true;
@@ -152,12 +152,12 @@
                                 this.isLoading = false;
                             }
                         },
-                        async getMainBranches() {
-                            $(".main-branches-select2").select2({
+                        async getAllBranch() {
+                            $(".branches-select2").select2({
                                 allowClear: true,
                                 placeholder: "Pilih Cabang",
                                 ajax: {
-                                    url: `/select2/main-branches-data`,
+                                    url: `/select2/branches-data`,
                                     dataType: "JSON",
                                     type: "GET",
                                     data: params => ({search: params.term}),
@@ -167,6 +167,7 @@
                             });
                         },
                         async getMainBranchesWithStock(id) {
+                            console.log(id);
                             $(".main-branches-select2").select2({
                                 allowClear: true,
                                 placeholder: "Pilih Cabang",

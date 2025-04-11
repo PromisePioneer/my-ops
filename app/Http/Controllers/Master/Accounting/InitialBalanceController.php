@@ -124,12 +124,13 @@ use Illuminate\Http\Request;
         $rawAmount = $request->input('amount');
         $formattedValue = str_replace(',', '.', str_replace('.', '', $rawAmount));
         $amount = number_format((float)$formattedValue, 4, '.', '');
+
         AccountTransaction::query()->updateOrCreate([
             'branch_id' => $request->branch_id ?? $request->user()->branch_id,
             'account_id' => $request->account_id,
+            'entries_type' => $request->entries_type,
         ], [
             'date' => Carbon::now()->subYear()->endOfYear(),
-            'entries_type' => 'Debit',
             'transaction_type' => 'SA',
             'amount' => $amount,
         ]);

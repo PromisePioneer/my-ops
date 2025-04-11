@@ -46,6 +46,21 @@ class BranchRepository implements BranchRepositoryInterface
 
     public function getSelectedBranch(?int $branchId): ?Branch
     {
-        return Branch::where('id', $branchId)->first();
+        return Branch::with('branch')->where('id', $branchId)->first();
+    }
+
+
+    public function getAllBranch(Request $request)
+    {
+        $search = $request->input('search');
+        $branch = Branch::with('parent')->where('parent_id', null);
+
+
+        if (!empty($search)) {
+            $branch->where('name', 'like' . '%' . $search . '%');
+        }
+
+
+        return $branch->get();
     }
 }

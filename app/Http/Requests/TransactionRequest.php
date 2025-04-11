@@ -6,6 +6,7 @@ use App\Models\AccountTransaction;
 use App\Models\Master\Common\Branch;
 use Carbon\Carbon;
 use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -23,7 +24,7 @@ class TransactionRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(Request $request): array
     {
@@ -37,7 +38,9 @@ class TransactionRequest extends FormRequest
             'unit_price' => ['required', $this->ifLessThanZero($request)],
             'debit_account_id' => ['required', Rule::exists('accounts', 'id')],
             'credit_account_id' => ['required', Rule::exists('accounts', 'id'), $this->accountBalanceCheck($request)],
-            'attachment' => [Rule::requiredIf($this->route('transaction') === null), 'mimes:jpg,jpeg,png', 'max:2048'],
+            'attachment' => [
+//                Rule::requiredIf(!$request->route('transaction')),
+                'mimes:jpg,jpeg,png', 'max:2048'],
         ];
     }
 
@@ -79,7 +82,7 @@ class TransactionRequest extends FormRequest
     {
         return static function ($value, $attribute, $fail) use ($request) {
             $date = Carbon::now();
-            $mainBranch = Branch::find($request->input('branch_id'));
+            $mainBranch = Branch::with('parent')->find($request->input('branch_id'));
             $accountTransactionDebit = AccountTransaction::where('account_id', $request->credit_account_id)
                 ->where('branch_id', $mainBranch->parent_id)
                 ->where('entries_type', 'debit')
@@ -97,6 +100,7 @@ class TransactionRequest extends FormRequest
             $unitPrice = (float)$formattedValue;
 
             $subtractBetweenDebitAndCreditTransaction = (float)$accountTransactionDebit - (float)$accountTransactionCredit;
+
             $totalTransaction = $request->input('qty') * $unitPrice;
 
 

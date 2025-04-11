@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\ItemCollection;
+use App\Models\Master\Common\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -31,21 +32,17 @@ class StockService
 
     public function filter(Request $request): LengthAwarePaginator
     {
-        $branchId = $request->branch_id;
+
+        $branch = Branch::find($request->branch_id);
         $warehouseId = $request->warehouse_id;
-        $data = ItemCollection::with('goodsStock', 'goodsStock.po');
+        $data = ItemCollection::with('goodsStock');
 
-        if ($branchId) {
-            $data->with('goodsStock', function ($query) use ($branchId) {
-                $query->where('branch_id', $branchId);
+        if ($branch) {
+            $data->with('goodsStock', function ($query) use ($branch) {
+                $query->where('branch_id', $branch->id);
             });
         }
 
-        if ($warehouseId) {
-            $data->with('goodsStock', function ($query) use ($warehouseId) {
-                $query->where('warehouse_id', $warehouseId);
-            });
-        }
 
         return self::formattedGoodsData($data->paginate(self::$perPage));
     }
@@ -75,4 +72,5 @@ class StockService
         $goodsData->setCollection($data);
         return $goodsData;
     }
+
 }

@@ -83,7 +83,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
     }
 
 
-
     public function selectedBranch(?int $branchId): ?array
     {
         $branch = $this->branchRepository->getSelectedBranch($branchId);
@@ -93,5 +92,24 @@ use Illuminate\Pagination\LengthAwarePaginator;
             'code' => $branch?->code,
             'name' => $branch?->name
         ];
+    }
+
+
+    public function getAllBranch(Request $request)
+    {
+        $branches = $this->branchRepository->getAllBranch($request);
+
+        return $branches->map(function ($branch) {
+            return [
+                'id' => $branch?->id,
+                'text' => $branch?->name,
+                'children' => $branch->children->map(function ($child) {
+                    return [
+                        'id' => $child?->id,
+                        'text' => $child->parent->name . '-' . $child?->name,
+                    ];
+                })
+            ];
+        });
     }
 }

@@ -30,7 +30,8 @@ use Illuminate\Http\Request;
         $search = $request->input('search');
         $query = Account::with('accountTransaction', 'children')->whereNull('parent_id');
         if (!empty($search)) {
-            $query->where('name', 'like', '%' . $search . '%')->orWhere('code', 'like', '%' . $search . '%');
+            $query->where('name', 'like', '%' . $search . '%')
+                ->orWhere('code', 'like', '%' . $search . '%');
         }
 
         $data = $query->paginate(self::$perPage);
@@ -93,7 +94,7 @@ use Illuminate\Http\Request;
             ->where('transaction_type', $type)
             ->where('entries_type', $entriesType);
 
-        if ($request?->branch_id || $request->user()->branch_id) {
+        if ($request?->branch_id || $request?->user()->branch_id) {
             $transactions->where('branch_id', $request->branch_id ?? $request->user()->branch_id);
         }
         return $transactions->sum('amount');

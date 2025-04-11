@@ -449,6 +449,7 @@
                     await showAlert('success', 'Data berhasil disimpan')
                     this.form.reset();
                     this.modalForm.hide();
+                    this.entriesType = null;
                     const resp = await axios.get(`${this.initialBalances.path}?page=${this.initialBalances.current_page}`, {
                         params: {
                             branch_id: this.branchId
