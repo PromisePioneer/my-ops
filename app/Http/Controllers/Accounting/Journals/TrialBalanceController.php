@@ -31,11 +31,11 @@ class TrialBalanceController extends Controller
     public function data(Request $request): JsonResponse
     {
         $query = Account::with('children', 'accountTransaction')->whereNull('parent_id');
-        $test = $this->trialBalanceService->formattedData($query, $request);
+        $trialBalance = $this->trialBalanceService->formattedData($query, $request);
         $totalDebit = '0';
         $totalCredit = '0';
 
-        foreach ($test as $item) {
+        foreach ($trialBalance as $item) {
             $totalDebit = bcadd($totalDebit, $item['balance_debit'], 2);
             $totalCredit = bcadd($totalCredit, $item['balance_credit'], 2);
         }

@@ -40,9 +40,24 @@ use Illuminate\Http\Request;
      */
     public function data(Request $request): JsonResponse
     {
+
         $this->authorize('view', AccountTransaction::class);
-        $data = $this->initialBalanceService->data($request);
-        return response()->json($data);
+        $query = Account::with('children', 'accountTransaction')->whereNull('parent_id');
+        $initialBalance = $this->initialBalanceService->formattedTotalInitialBalanceData($query, $request);
+        $totalDebit = '0';
+        $totalCredit = '0';
+
+
+        foreach ($initialBalance as $item) {
+            (float)$totalDebit += $item['initial_balance_debit'];
+            (float)$totalCredit += $item['initial_balance_credit'];
+        }
+
+        return response()->json([
+            'initial_balances' => $this->initialBalanceService->data($request),
+            'total_debit' => 'Rp.' . number_format(bcsub($totalDebit, '0', 2), 2, '.', '.'),
+            'total_credit' => 'Rp.' . number_format(bcsub($totalCredit, '0', 2), 2, '.', '.'),
+        ]);
     }
 
 

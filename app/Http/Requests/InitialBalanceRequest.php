@@ -31,7 +31,7 @@ class InitialBalanceRequest extends FormRequest
         return [
             'branch_id' => [Rule::requiredIf(empty($request->user()->branch_id)), 'exists:branches,id'],
             'account_id' => ['required', 'exists:accounts,id', $this->uniqueYear($request)],
-            'amount' => ['required', $this->isTransactionBalance($request)],
+            'amount' => ['required'],
         ];
     }
 
@@ -70,37 +70,5 @@ class InitialBalanceRequest extends FormRequest
             return null;
         };
     }
-
-
-    public function isTransactionBalance(Request $request): Closure
-    {
-        return static function ($attribute, $value, $fail) use ($request) {
-            $rawAmount = $request->input('amount');
-            $formattedValue = str_replace(',', '.', str_replace('.', '', $rawAmount));
-            $amount = number_format((float)$formattedValue, 4, '.', '');
-
-            $totalInitialBalance = 0;
-            $date = Carbon::now()->subYear()->endOfYear();
-            $creditInitialBalance = AccountTransaction::where('transaction_type', 'SA')->whereYear('date', $date)->whereMonth('date', $date)->where('branch_id', $request->input('branch_id'))->where('entries_type', 'credit')->where('account_id', $request->input('account_id'))->first();
-
-
-            $debitInitialBalance = AccountTransaction::where('transaction_type', 'SA')->whereYear('date', $date)->whereMonth('date', $date)->where('branch_id', $request->input('branch_id'))->where('entries_type', 'debit')->where('account_id', $request->input('account_id'))->first();
-
-
-            if ($request->input('entries_type') === 'debit') {
-                $totalInitialBalance = bcsub($amount, $creditInitialBalance?->amount, 2);
-            }
-
-
-            if ($request->input('entries_type') === 'credit') {
-                $totalInitialBalance = bcsub($debitInitialBalance?->amount, $amount, 2);
-            }
-
-            if ($totalInitialBalance < 0) {
-                $fail('Transaksi tidak balance');
-            }
-        };
-    }
-
 
 }
