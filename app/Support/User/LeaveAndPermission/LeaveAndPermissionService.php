@@ -116,7 +116,7 @@ use function App\Helper\formatDate;
     public function update(LeaveAndPermissionRequest $request, LeaveAndPermission $leaveAndPermission): void
     {
         $endDate = $request->input('leaves_status') === 'Cuti Penting'
-            ? Carbon::parse($request->input('start_date'))->addDays($this->importantLeavesDays($request))
+            ? Carbon::parse($request->input('start_date'))->addDays($this->importantLeavesDays($request) - 1)
             : $request->input('end_date');
 
 
