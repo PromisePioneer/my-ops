@@ -9,6 +9,6 @@ class SPRepository
 {
     public function mainQuery(): Builder
     {
-        return SP::with('createdBy', 'user', 'branch');
+        return SP::with('createdBy', 'user', 'user.branch');
     }
 }
