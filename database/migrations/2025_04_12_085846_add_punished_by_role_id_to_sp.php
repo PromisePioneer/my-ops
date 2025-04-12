@@ -19,11 +19,13 @@ return new class extends Migration {
                 ->cascadeOnUpdate();
             $table->foreignId('known_by_user_id')
                 ->after('punished_by_role_id')
+                ->nullable()
                 ->constrained('users')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->foreignId('known_by_role_id')
                 ->after('known_by_user_id')
+                ->nullable()
                 ->constrained('roles')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
