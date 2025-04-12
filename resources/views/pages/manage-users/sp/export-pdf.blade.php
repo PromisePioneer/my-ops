@@ -85,6 +85,23 @@
         .ms-n3 {
             margin-left: -.75rem !important
         }
+
+        .d-flex {
+            display: flex !important
+        }
+
+        .align-items-center {
+            align-items: center !important
+        }
+
+        .justify-content-around {
+            justify-content: space-around !important
+        }
+
+        .mt-10 {
+            margin-top: 2.5rem !important
+        }
+
     </style>
 </head>
 
@@ -277,7 +294,7 @@
                 @endif
 
                 <br>
-                @if($punishedBy->hasRole('Operational Manager'))
+                @if($sp->punishedByRole->name === 'Operational Manager')
                     <div style="margin-right: 30px;float: right">
                         <table>
                             <tr>
@@ -290,7 +307,7 @@
                                 <th style="text-align: center; padding: 8px;">
                                     <p style="font-size: 12px; margin: 0;">
                                         <img
-                                            src="data:image/png;base64, {!! base64_encode(QrCode::format('png')->size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                            src="data:image/svg+xml;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
                                             width="100px" height="70px">
                                     </p>
                                 </th>
@@ -310,9 +327,8 @@
                         </table>
                     </div>
                 @endif
-
-                @if($punishedBy->hasAnyRole(['Branch Manager']))
-                    <div class="heading-separator table-heading-container">
+                @if($sp->punishedByRole->name === 'Branch Manager')
+                    <div class="d-flex align-items-center justify-content-around mt-10">
                         <table>
                             <tr>
                                 <th style="text-align: center; padding: 8px;">
@@ -324,7 +340,7 @@
                                 <th style="text-align: center; padding: 8px;">
                                     <p style="font-size: 12px; margin: 0;">
                                         <img
-                                            src="data:image/png;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                            src="data:image/svg+xml;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
                                             width="100px" height="70px">
                                     </p>
                                 </th>
@@ -333,18 +349,16 @@
                             <tr>
                                 <th style="text-align: center; padding: 8px 8px 0 8px;">
                                     <p style="font-size: 12px; margin: 0; text-decoration: underline">
-                                        {{ $punishedBy?->name }}
+                                        {{ $sp->punishedBy?->name }}
                                     </p>
                                 </th>
                             </tr>
                             <tr style="padding: 0">
                                 <th style="text-align: center; padding: 8px;">
-                                    <p style="font-size: 12px; margin: 0;">{{ $punishedBy?->roles[0]?->name }}</p>
+                                    <p style="font-size: 12px; margin: 0;">{{ $sp->punishedByRole?->name }}</p>
                                 </th>
                             </tr>
                         </table>
-                    </div>
-                    <div class="heading-separator table-heading-container">
                         <table>
                             <tr>
                                 <th style="text-align: center; padding: 8px;">
@@ -356,7 +370,7 @@
                                 <th style="text-align: center; padding: 8px;">
                                     <p style="font-size: 12px; margin: 0;">
                                         <img
-                                            src="data:image/png;base64, {!! base64_encode(QrCode::size(10)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
+                                            src="data:image/svg+xml;base64, {!! base64_encode(QrCode::size(100)->generate(url('/manage-users/sp/export-pdf/' . $sp->id))) !!} "
                                             width="100px" height="70px">
                                     </p>
                                 </th>
@@ -376,7 +390,6 @@
                             </tr>
                         </table>
                     </div>
-                    <div class="clearfix"></div>
                 @endif
 
                 <footer>

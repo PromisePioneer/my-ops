@@ -43,7 +43,7 @@ class UserSeeder extends Seeder
         ]);
 
 
-        User::factory()->create([
+        $operationalManager = User::factory()->create([
             'absent_id' => 2,
             'nip' => 2,
             'join_date' => $faker->date(),
@@ -113,5 +113,10 @@ class UserSeeder extends Seeder
         $superAdminRole = Role::create(['name' => 'Super Admin']);
         $superAdmin = User::where('name', 'Super Admin')->first();
         $superAdmin->assignRole($superAdminRole);
+
+
+        $operationalManagerRole = Role::where('name', 'Operational Manager')->first();
+        $operationalManager->assignRole($operationalManagerRole);
+
     }
 }

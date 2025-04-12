@@ -21,6 +21,7 @@ use Throwable;
 #[AllowDynamicProperties] class SPController extends Controller
 {
     public readonly int $perPage;
+
     public function __construct()
     {
         $this->SPService = new SPService();
@@ -178,23 +179,34 @@ use Throwable;
     public function exportToPDF(SP $sp): Response
     {
         $this->authorize('viewDetail', $sp);
-        $punishedBy = User::with('roles')->where('id', $sp->punished_by)->first();
         $operationalManager = User::role('Operational Manager')->with('roles')->first();
 
         $spReasonList = json_decode($sp?->list_of_reason);
 
         $view = view('pages.manage-users.sp.export-pdf',
-            compact('sp', 'punishedBy', 'operationalManager', 'spReasonList'));
+            compact('sp', 'operationalManager', 'spReasonList'));
 
 
         $pdf = Browsershot::html($view)
-            ->setChromePath('/usr/bin/chromium')
-            ->noSandbox()
-            ->waitUntilNetworkIdle()
+            ->setOption('executablePath', env('BROWSERSHOT_CHROME_PATH'))
+            ->addChromiumArguments([
+                'headless',
+                'no-sandbox',
+                'disable-setuid-sandbox',
+                'disable-crash-reporter',
+                'disable-gpu',
+                'disable-software-rasterizer',
+                'disable-background-networking',
+                'disable-dev-shm-usage',
+                'disable-extensions'
+            ])
+            ->setDelay(200)
             ->ignoreHttpsErrors()
             ->format('A4')
             ->setEnvironmentOptions([
-                'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
+                'CHROME_CONFIG_HOME' => php_uname('s') === 'Windows NT'
+                    ? storage_path('app\\chrome\\config') // Path Windows
+                    : storage_path('app/chrome/.config')  // Path Linux/Mac
             ])->pdf();
 
 

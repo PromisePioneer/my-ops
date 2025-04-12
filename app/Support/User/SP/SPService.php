@@ -80,6 +80,9 @@ use function App\Helper\convertToRoman;
                 'expired' => Carbon::parse($item->end_date)->greaterThan(Carbon::now()),
                 'sp_type' => $item->sp_type,
                 'punished_by' => $item->punishedBy?->name,
+                'punished_by_role' => $item->punishedByRole?->name,
+                'known_by' => $item->knownBy?->name,
+                'known_by_role' => $item->knownByRole?->name,
                 'created_by' => $item->createdBy->name,
             ];
         })->values();
@@ -96,11 +99,14 @@ use function App\Helper\convertToRoman;
             ->first();
 
 
-        $punishedBy = User::where('id', $request->punished_by)->first();
+        $knownBy = User::whereHas('roles', function ($query) {
+            $query->where('name', 'Operational Manager');
+        })->first();
 
+        $punishedBy = User::with('roles')->where('id', $request->punished_by)->first();
 
         $endDate = Carbon::parse($request->start_date)->addMonths(6);
-        DB::transaction(function () use ($request, $currentSP, $endDate) {
+        DB::transaction(function () use ($request, $currentSP, $endDate, $punishedBy, $knownBy) {
             $sp = SP::create([
                 'start_date' => $request->start_date,
                 'end_date' => $endDate,
@@ -109,7 +115,10 @@ use function App\Helper\convertToRoman;
                 'sp_type' => $request->input('sp_type'),
                 'created_by' => $request->user()->id,
                 'list_of_reason' => json_encode($request['data']),
-                'punished_by' => $request->punished_by
+                'punished_by' => $request->punished_by,
+                'punished_by_role_id' => $punishedBy->roles[0]->id,
+                'known_by_user_id' => $knownBy->id,
+                'known_by_role_id' => $knownBy->roles[0]->id,
             ]);
 
             if ($currentSP) {

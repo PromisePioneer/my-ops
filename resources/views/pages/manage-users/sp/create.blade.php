@@ -38,18 +38,16 @@
                                     </div>
                                 </div>
                             </div>
-                            @if(!empty(Auth::user()->branch_id))
-                                <div class="col-lg-6">
-                                    <div class="mb-5">
-                                        <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">
-                                            Yang Memberi Sanksi
-                                        </label>
-                                        <select name="punished_by" class="form-select form-select-solid sp-pic">
-                                            <option></option>
-                                        </select>
-                                    </div>
+                            <div class="col-lg-6">
+                                <div class="mb-5">
+                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">
+                                        Yang Memberi Sanksi
+                                    </label>
+                                    <select name="punished_by" class="form-select form-select-solid sp-pic">
+                                        <option></option>
+                                    </select>
                                 </div>
-                            @endif
+                            </div>
                         </div>
                         <div class="table-responsive mb-20">
                             <table class="table g-5 gs-0 mb-0 fw-bolder text-gray-700" data-kt-element="items">

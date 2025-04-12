@@ -10,13 +10,13 @@ class SPACLFilter
 {
     public static function apply(Builder|EloquentBuilder $query, Request $request): EloquentBuilder|Builder
     {
-        if ($request->user()->hasAnyRole('NOC Supervisor', 'NOC Staff')) {
+        if ($request->user()->hasRole('NOC Supervisor', 'NOC Staff')) {
             $query->whereHas('user.roles', function ($query) {
                 $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
             });
         }
 
-        if ($request->user()->hasAnyRole(['Head Engineer', 'Senior Engineer'])) {
+        if ($request->user()->hasRole(['Head Engineer', 'Senior Engineer'])) {
             $query->whereHas('userHasArea', function ($query) use ($request) {
                 $query->where('area_id', $request->user()->userHasArea->area_id);
             })->where(function ($query) use ($request) {
@@ -24,7 +24,7 @@ class SPACLFilter
             });
         }
 
-        if ($request->user()->hasAnyRole('Customer Service Leader')) {
+        if ($request->user()->hasRole('Customer Service Leader')) {
             $query->whereHas('user.roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff', 'After Sales Customer Service']);
             })->where(function ($query) use ($request) {
@@ -33,7 +33,7 @@ class SPACLFilter
         }
 
 
-        if ($request->user()->hasAnyRole('Finance & Accounting Supervisor')) {
+        if ($request->user()->hasRole('Finance & Accounting Supervisor')) {
             $query->whereHas('user.roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff', 'Stocker Staff', 'Inventory Controller Supervisor']);
             })->where(function ($query) use ($request) {
@@ -42,7 +42,7 @@ class SPACLFilter
         }
 
 
-        if ($request->user()->hasAnyRole('Head Of Electrical Engineer')) {
+        if ($request->user()->hasRole('Head Of Electrical Engineer')) {
             $query->whereHas('user.roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer']);
             })->whereNull('branch_id');
