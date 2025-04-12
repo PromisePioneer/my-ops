@@ -131,7 +131,7 @@
                                         </tr>
                                         </tbody>
                                     </template>
-                                    <template x-if="!isLoading && initialBalances.data?.length === 0">
+                                    <template x-if="!isLoading && initialBalances.initial_balances.data?.length === 0">
                                         <tbody class="fw-bold">
                                         <tr>
                                             <td colspan="9">
@@ -315,7 +315,7 @@
                             },
                         });
 
-                        this.initialBalances = resp.data
+                        this.initialBalances.initial_balances = resp.data
                     } catch (error) {
                         console.log(error);
                     }
