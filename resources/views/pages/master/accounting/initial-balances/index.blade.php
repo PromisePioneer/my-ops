@@ -89,8 +89,23 @@
                                 </button>
                             </form>
                             <div class="table-responsive">
-                                <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped"
-                                       id="kt_table_users">
+                                <table class="table align-middle fs-6 gy-5 table-bordered">
+                                    <thead>
+                                    <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <td colspan="2" class="min-w-125px">Total Saldo Debit</td>
+                                        <td colspan="2" class="min-w-125px">Total Saldo Kredit</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="fw-bolder">
+                                    <tr class="text-center">
+                                        <td colspan="2" x-text="initialBalances.total_debit"></td>
+                                        <td colspan="2" x-text="initialBalances.total_credit"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table align-middle fs-6 gy-5 table-bordered">
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                         <th class="w-10px pe-2">
@@ -101,6 +116,7 @@
                                         <th class="min-w-125px">Akun</th>
                                         <th class="min-w-125px">Saldo Debit</th>
                                         <th class="min-w-125px">Saldo Kredit</th>
+                                    </tr>
                                     </thead>
                                     <template x-if="isLoading">
                                         <tbody class="fw-bold">
@@ -115,7 +131,7 @@
                                         </tr>
                                         </tbody>
                                     </template>
-                                    <template x-if="!isLoading && initialBalances.data?.length === 0">
+                                    <template x-if="!isLoading && initialBalances.initial_balances.data?.length === 0">
                                         <tbody class="fw-bold">
                                         <tr>
                                             <td colspan="9">
@@ -124,8 +140,11 @@
                                         </tr>
                                         </tbody>
                                     </template>
-                                    <template x-for="(account, index) in initialBalances?.data" :key="index">
+                                    <template x-for="(account, index) in initialBalances?.initial_balances?.data"
+                                              :key="index">
                                         <tbody style="cursor:pointer" class="fw-bold">
+                                        <tr>
+                                        </tr>
                                         <tr>
                                             <td>
                                                 <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -145,23 +164,27 @@
                                             </td>
                                             <td>
                                                 <div>
-                                                    <button class="btn btn-light-info btn-sm"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#modal-initial-balance"
-                                                            @click="edit(account.id, 'debit')"
-                                                            :disabled="Boolean(disabledAccountButton(branchId, account))">
-                                                        <span x-text="account.initial_balance_debit"></span>
-                                                    </button>
+                                                    <template x-if="account.trial_balance_type === 'debit'">
+                                                        <button class="btn btn-light-info btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modal-initial-balance"
+                                                                @click="edit(account.id, 'debit')"
+                                                                :disabled="Boolean(disabledAccountButton(branchId, account))">
+                                                            <span x-text="account.initial_balance_debit"></span>
+                                                        </button>
+                                                    </template>
                                                 </div>
                                             </td>
                                             <td>
-                                                <button class="btn btn-light-danger btn-sm"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#modal-initial-balance"
-                                                        @click="edit(account.id, 'credit')"
-                                                        :disabled="Boolean(disabledAccountButton(branchId, account))">
-                                                    <span x-text="account.initial_balance_credit"></span>
-                                                </button>
+                                                <template x-if="account.trial_balance_type === 'credit'">
+                                                    <button class="btn btn-light-danger btn-sm"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#modal-initial-balance"
+                                                            @click="edit(account.id, 'credit')"
+                                                            :disabled="Boolean(disabledAccountButton(branchId, account))">
+                                                        <span x-text="account.initial_balance_credit"></span>
+                                                    </button>
+                                                </template>
                                             </td>
                                         </tr>
                                         <template x-for="(subAccount, index) in account.sub_accounts"
@@ -182,22 +205,26 @@
                                                 <td placement="center"
                                                     x-text="`${subAccount.sub_account_code} ${subAccount.sub_account_name}`"></td>
                                                 <td>
-                                                    <button class="btn btn-light-info btn-sm"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#modal-initial-balance"
-                                                            @click="edit(subAccount.id, 'debit')"
-                                                            :disabled="Boolean(disabledSubAccountButton(branchId, subAccount))">
-                                                        <span x-text="subAccount.initial_balance_debit"></span>
-                                                    </button>
+                                                    <template x-if="subAccount.trial_balance_type === 'debit'">
+                                                        <button class="btn btn-light-info btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modal-initial-balance"
+                                                                @click="edit(subAccount.id, 'debit')"
+                                                                :disabled="Boolean(disabledSubAccountButton(branchId, subAccount))">
+                                                            <span x-text="subAccount.initial_balance_debit"></span>
+                                                        </button>
+                                                    </template>
                                                 </td>
                                                 <td>
-                                                    <button class="btn btn-light-danger btn-sm"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#modal-initial-balance"
-                                                            @click="edit(subAccount.id, 'credit')"
-                                                            :disabled="Boolean(disabledSubAccountButton(branchId, subAccount))">
-                                                        <span x-text="subAccount.initial_balance_credit"></span>
-                                                    </button>
+                                                    <template x-if="subAccount.trial_balance_type === 'credit'">
+                                                        <button class="btn btn-light-danger btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modal-initial-balance"
+                                                                @click="edit(subAccount.id, 'credit')"
+                                                                :disabled="Boolean(disabledSubAccountButton(branchId, subAccount))">
+                                                            <span x-text="subAccount.initial_balance_credit"></span>
+                                                        </button>
+                                                    </template>
                                                 </td>
                                                 <td>
                                                 </td>
@@ -207,7 +234,7 @@
                                 </table>
                             </div>
                             <ul class="pagination float-end mb-4 mt-4">
-                                <template x-for="pagination in initialBalances.links">
+                                <template x-for="pagination in initialBalances?.initial_balances?.links">
                                     <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                         <button class="page-link" @click="paginationEndPoint(pagination.url)"
                                                 x-html="pagination.label">
@@ -288,7 +315,7 @@
                             },
                         });
 
-                        this.initialBalances = resp.data
+                        this.initialBalances.initial_balances = resp.data
                     } catch (error) {
                         console.log(error);
                     }
@@ -450,7 +477,7 @@
                     this.form.reset();
                     this.modalForm.hide();
                     this.entriesType = null;
-                    const resp = await axios.get(`${this.initialBalances.path}?page=${this.initialBalances.current_page}`, {
+                    const resp = await axios.get(`${this.initialBalances.initial_balances.path}?page=${this.initialBalances.initial_balances.current_page}`, {
                         params: {
                             branch_id: this.branchId
                         }
