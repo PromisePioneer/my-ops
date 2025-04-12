@@ -92,7 +92,7 @@ use function App\Helper\formatDate;
     {
         $endDate = $request->input('leaves_status') === 'Cuti Penting'
             ? Carbon::parse($request->input('start_date'))
-                ->addDays($this->importantLeavesDays($request))
+                ->addDays($this->importantLeavesDays($request) - 1)
             : $request->input('end_date');
 
         LeaveAndPermission::create([
