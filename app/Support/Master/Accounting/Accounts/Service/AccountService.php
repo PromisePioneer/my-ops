@@ -120,12 +120,25 @@ use Illuminate\Http\Request;
             ->get();
 
 
-        return $query->map(function ($c) {
-            return [
-                'id' => $c->id,
-                'text' => $c->code . ' ' . $c->name,
-            ];
-        })->toArray();
+        $results = [];
+
+        foreach ($query as $c) {
+            if (count($c->children) === 0) {
+                $results[] = [
+                    'id' => $c->id,
+                    'text' => $c->code . ' ' . $c->name,
+                ];
+            }
+
+            foreach ($c->children as $child) {
+                $results[] = [
+                    'id' => $child->id,
+                    'text' => $child->code . ' ' . $child->name,
+                ];
+            }
+        }
+
+        return $results;
     }
 
 

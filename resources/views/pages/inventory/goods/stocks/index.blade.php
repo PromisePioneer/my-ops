@@ -123,6 +123,7 @@
         @endsection
         @push('script')
             <script>
+
                 function goodsStockData() {
                     return {
                         buttonLoading: false,
@@ -132,6 +133,7 @@
                         isLoading: false,
                         startIndex: null,
                         stockDetail: null,
+                        itemTypes: null,
                         form: document.getElementById('form-used-item'),
                         modal: new bootstrap.Modal(document.getElementById('modal-used-item')),
                         async init() {
@@ -177,7 +179,7 @@
                                     type: "GET",
                                     data: params => ({search: params.term}),
                                     processResults: data => ({results: data}),
-                                    cache: true
+                                    cache: false
                                 }
                             });
                         },
@@ -211,9 +213,12 @@
                             }
                         },
                         async showStockDetail(id) {
+                            console.log(id);
                             const resp = await axios.get(`/inventory/goods/stock/show/${id}`);
                             this.stockDetail = resp.data;
+                            this.itemTypes = this.stockDetail.category.name
                             await this.getMainBranchesWithStock(id);
+                            console.log(this.itemTypes)
                         },
                         async debitAccounts() {
                             $(".debit-accounts-select2").select2({
@@ -251,6 +256,7 @@
                                 this.form.reset();
                                 this.modal.hide();
                                 await this.init();
+                                $(".main-branches-select2").val(null).trigger("change");
                             } catch (error) {
                                 const respError = error.response.data.errors;
                                 Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));

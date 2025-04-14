@@ -291,6 +291,7 @@
                 userList: [],
                 imgsrc: [],
                 attachments: [],
+                isAset: false,
                 branchVal: false,
                 selectedConfirmationStatus: null,
                 form: document.getElementById('form-transactions'),
@@ -308,6 +309,7 @@
                     await this.getStockAccounts();
                     await this.getItemCollections();
                     await this.itemCategories();
+                    await this.getAssetAccounts();
                 },
                 add() {
                     this.transactionType = null
@@ -461,6 +463,7 @@
                     await this.selectedSubBranch();
                     await this.selectedDebitAccount();
                     await this.selectedCreditAccount();
+                    await this.getAssetAccounts();
                 },
                 async selectedMainBranches() {
                     if (!this.editVal?.branch_id) return;
@@ -639,6 +642,21 @@
                         }
                     });
                 },
+                async getAssetAccounts() {
+                    $(".asset-accounts-select2").select2({
+                        allowClear: true,
+                        tags: true,
+                        placeholder: "Pilih Akun",
+                        ajax: {
+                            url: '/select2/asset-accounts-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
                 async getItemCollections() {
                     $(".items-select2").select2({
                         allowClear: true,
@@ -689,6 +707,7 @@
                     }
                 },
                 async itemCategories() {
+                    const self = this;
                     $(".item-category-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Kategori Barang",
@@ -700,6 +719,13 @@
                             data: params => ({search: params.term}),
                             processResults: data => ({results: data}),
                             cache: true
+                        }
+                    }).on('change', () => {
+                        const data = $(".item-category-select2 option:selected").text();
+                        if (data === 'ASET') {
+                            self.isAset = true;
+                        } else {
+                            self.isAset = false;
                         }
                     });
                 },

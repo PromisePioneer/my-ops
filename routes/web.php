@@ -505,9 +505,9 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/data', [ItemCollectionController::class, 'data']);
                 Route::get('/search', [ItemCollectionController::class, 'search']);
                 Route::post('/', [ItemCollectionController::class, 'store']);
-                Route::get('/{item}', [ItemCollectionController::class, 'edit']);
+                Route::get('/{itemCollection}', [ItemCollectionController::class, 'edit']);
                 Route::post('/destroy', [ItemCollectionController::class, 'destroy']);
-                Route::post('/update/{goods}', [ItemCollectionController::class, 'update']);
+                Route::post('/update/{itemCollection}', [ItemCollectionController::class, 'update']);
             });
 
 
@@ -698,7 +698,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/data', [StockController::class, 'data']);
                 Route::get('/search', [StockController::class, 'goodsSearch']);
                 Route::get('/filter', [StockController::class, 'goodsFilter']);
-                Route::get('/show/{goods}', [StockController::class, 'show']);
+                Route::get('/show/{itemCollection}', [StockController::class, 'show']);
                 Route::get('/detail/{stock}', [StockController::class, 'detail']);
                 Route::get('/branch/data/{itemCollection}', [StockController::class, 'getMainBranchWithStock']);
             });

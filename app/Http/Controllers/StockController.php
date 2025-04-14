@@ -63,10 +63,10 @@ use Illuminate\View\View;
     }
 
 
-    public function show(ItemCollection $goods): JsonResponse
+    public function show(ItemCollection $itemCollection): JsonResponse
     {
         $this->authorize('view', Stock::class);
-        return response()->json($goods);
+        return response()->json($itemCollection->load('category'));
     }
 
 
@@ -99,7 +99,7 @@ use Illuminate\View\View;
     {
 
         $this->authorize('view', Stock::class);
-        $branch = Branch::with('stock', 'children')->get();
+        $branch = Branch::with('stock', 'children')->whereNull('parent_id')->get();
 
 
         return $branch->map(function ($item) use ($itemCollection) {

@@ -19,7 +19,7 @@
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama</label>
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama Barang" :value="editVal?.name ?? ''"/>
+                               placeholder="Nama Barang" :value="editVal?.name"/>
                     </div>
                     <div class="mb-10">
                         <label for="category_id" class="required form-label">Kategori</label>
@@ -34,6 +34,14 @@
                         <label for="unit_type_id" class="required form-label">Satuan</label>
                         <select name="unit_type_id" id="selected-unit-type"
                                 class="form-select form-select-solid unit-types-select2"
+                                data-dropdown-parent="#modal-item">
+                            <option></option>
+                        </select>
+                    </div>
+                    <div class="mb-10" x-show="isAset" x-transition x-cloak>
+                        <label for="unit_type_id" class="required form-label">Akun Aset (Jika Masuk Aset)</label>
+                        <select name="asset_account_id" id="selected-asset-account"
+                                class="form-select form-select-solid asset-accounts-select2"
                                 data-dropdown-parent="#modal-item">
                             <option></option>
                         </select>

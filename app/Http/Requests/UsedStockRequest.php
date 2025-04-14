@@ -56,7 +56,7 @@ class UsedStockRequest extends FormRequest
             $branchId = $request->user()->branch_id ?? $request->branch_id;
             $stock = Stock::where('branch_id', $branchId)->where('item_id', $request->goods_id)->first();
 
-            if ($stock->qty < $request->qty) {
+            if (empty($stock) || $stock?->qty < $request?->qty) {
                 return $fail('Stok barang tidak mencukupi');
             }
 

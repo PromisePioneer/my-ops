@@ -18,7 +18,8 @@ class ItemCollection extends Model
         'name',
         'category_id',
         'unit_type_id',
-        'material'
+        'material',
+        'asset_account_id'
     ];
 
 

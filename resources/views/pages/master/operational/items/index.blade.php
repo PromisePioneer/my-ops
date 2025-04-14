@@ -141,6 +141,7 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
+                isAset: false,
                 needSN: false,
                 hasSNOnItem: false,
                 modalForm: new bootstrap.Modal(document.getElementById('modal-item')),
@@ -154,6 +155,7 @@
                     await this.getGoods();
                     await this.getItemCategories();
                     await this.getUnitTypes();
+                    await this.getAssetAccounts();
                 },
                 add() {
                     this.editVal = '';
@@ -239,6 +241,7 @@
                     }
                 },
                 async getItemCategories() {
+                    const self = this;
                     $(".item-category-select2").select2({
                         allowClear: true,
                         placeholder: 'Pilih Kategori',
@@ -250,6 +253,41 @@
                         },
                         ajax: {
                             url: '/select2/item-categories-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    }).on('change', (e) => {
+                        const data = $(".item-category-select2 option:selected").text();
+                        if (data === 'ASET') {
+                            self.isAset = true;
+                        } else {
+                            self.isAset = false;
+                        }
+                    });
+                },
+                async selectedAssetAccount() {
+                    if (this.editVal.asset_account_id === null) return;
+                    const selectedAssetAccount = $('#selected-asset-account');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/select2/selected-account/${this.editVal.asset_account_id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedAssetAccount.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
+                async getAssetAccounts() {
+                    $(".asset-accounts-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Akun Aset',
+                        ajax: {
+                            url: '/select2/asset-accounts-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -338,8 +376,10 @@
                 async edit(id) {
                     const resp = await axios.get(`/master/operational/items/${id}`);
                     this.editVal = resp.data;
+
                     await this.selectedItemCategory();
                     await this.selectedUnitType();
+                    await this.selectedAssetAccount();
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {

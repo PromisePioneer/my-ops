@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Master\Operational;
 
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Master\Operational\Item\ItemRequest;
+use App\Http\Requests\Master\Operational\Item\ItemCollectionRequest;
 use App\Models\ItemCategory;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\UnitType;
@@ -40,10 +40,11 @@ use Illuminate\View\View;
         return response()->json($goods);
     }
 
-    public function store(ItemRequest $request): JsonResponse
+    public function store(ItemCollectionRequest $request): JsonResponse
     {
         $unitType = UnitType::where('id', $request->unit_type_id)->first();
         $category = ItemCategory::where('id', $request->category_id)->first();
+
 
         if (empty($category)) {
             $categoryId = ItemCategory::create([
@@ -60,7 +61,8 @@ use Illuminate\View\View;
         ItemCollection::create([
             'name' => $request->name,
             'category_id' => $categoryId->id ?? $request->category_id,
-            'unit_type_id' => $unitTypeId->id ?? $request->unit_type_id
+            'unit_type_id' => $unitTypeId->id ?? $request->unit_type_id,
+            'asset_account_id' => $category->name === 'ASET' ? $request->asset_account_id : null,
         ]);
 
         return response()->json([
@@ -69,17 +71,22 @@ use Illuminate\View\View;
     }
 
 
-    public function edit(ItemCollection $goods): JsonResponse
+    public function edit(ItemCollection $itemCollection): JsonResponse
     {
-        return response()->json($goods);
+        return response()->json($itemCollection);
     }
 
 
-    public function update(ItemCollection $goods, ItemRequest $request): JsonResponse
+    public function update(ItemCollection $itemCollection, ItemCollectionRequest $request): JsonResponse
     {
-        $goods->update([
+
+        $category = ItemCategory::where('id', $request->category_id)->first();
+
+        $itemCollection->update([
             'name' => $request->name,
             'category_id' => $request->category_id,
+            'unit_type_id' => $request->unit_type_id,
+            'asset_account_id' => $category->name === 'ASET' ? $request->asset_account_id : null,
         ]);
 
         return response()->json([
@@ -94,11 +101,11 @@ use Illuminate\View\View;
         $explodeID = explode(',', $implodeID);
         $goods->whereIn('id', $explodeID)->delete();
 
+
         return response()->json([
             'message' => 'data berhasil dihapus',
         ], 200);
     }
-
 
 
     public function getGoods(Request $request)

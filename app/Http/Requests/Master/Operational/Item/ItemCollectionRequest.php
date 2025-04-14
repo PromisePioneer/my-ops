@@ -2,11 +2,13 @@
 
 namespace App\Http\Requests\Master\Operational\Item;
 
+use App\Models\ItemCategory;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-class ItemRequest extends FormRequest
+class ItemCollectionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,12 +23,16 @@ class ItemRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array|string>
      */
-    public function rules(): array
+    public function rules(Request $request): array
     {
+
+        $category = ItemCategory::where('id', $request->category_id)->first();
+
         return [
-            'name' => ['required', 'string', Rule::unique('item_collections', 'name')],
+            'name' => ['required', 'string', Rule::unique('item_collections', 'name')->ignore($request->route('itemCollection'))],
             'unit_type_id' => ['required', 'string'],
             'category_id' => ['required', 'string'],
+            'asset_account_id' => [Rule::requiredIf($category->name === "ASET")],
         ];
     }
 
@@ -40,6 +46,7 @@ class ItemRequest extends FormRequest
             'category_id.required' => 'Kategori tidak boleh kosong',
             'category_id.exists' => 'Kategori tidak ditemukan',
             'unit_type_id.exists' => 'Tipe satuan tidak ditemukan',
+            'asset_account_id.required' => 'Asset account tidak boleh kosong jika kategori yang dipilih aset',
         ];
     }
 }

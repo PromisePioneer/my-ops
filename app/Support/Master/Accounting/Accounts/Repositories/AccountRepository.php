@@ -16,9 +16,8 @@ class AccountRepository implements AccountRepositoryInterface
 
     public function getKasAndLeverageAccounts(Builder $query): Builder
     {
-        return $query->with('children')->whereHas('parent', function (Builder $query) {
-            $query->where('code', '111');
-        })->orderBy('code')
+        return $query->with('children')->with('children')
+            ->whereIn('code', ['111', '211', '221', '222', '223'])->orderBy('code')
             ->select('id', 'name', 'code');
     }
 
