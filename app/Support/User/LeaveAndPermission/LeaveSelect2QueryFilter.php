@@ -17,16 +17,7 @@ class LeaveSelect2QueryFilter
                 $query->whereNull('branch_id')->orWhere('branch_id', 1);
             });
         }
-        if ($request->user()->hasRole('Director')) {
-            $query->whereHas('roles', function ($query) {
-                $query->whereIn('name', [
-                    'Branch Manager',
-                    'Operational Manager',
-                    'FA & Tax Manager',
-                    'NOC Supervisor',
-                ]);
-            });
-        }
+
 
         if ($request->user()->hasRole('Operational Manager')) {
             $query->whereHas('roles', function ($query) {

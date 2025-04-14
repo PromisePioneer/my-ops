@@ -20,17 +20,6 @@ class LeaveACLFilter
             });
         }
 
-        if ($request->user()->hasRole('Director')) {
-            $query->whereHas('user.roles', function ($query) {
-                $query->whereIn('name', [
-                    'Branch Manager',
-                    'Operational Manager',
-                    'FA & Tax Manager',
-                    'NOC Supervisor',
-                ]);
-            });
-        }
-
 
         if ($request->user()->hasRole('Operational Manager')) {
             $query->whereHas('user.roles', function ($query) {
