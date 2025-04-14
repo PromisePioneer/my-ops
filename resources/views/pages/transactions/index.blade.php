@@ -487,6 +487,7 @@
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                             this.selectedCheckBox = [];
+                            this.uncheckAfterSuccessfulEvent();
                         } catch (error) {
                             await showAlert('error', 'Terjadi kesalahan');
                         }
@@ -506,7 +507,6 @@
                             cache: true
                         }
                     }).on('select2:select', function (e) {
-                        console.log(e);
                         self.branchVal = true;
                         const selectedMainBranchId = e?.params?.data?.id ?? self.editVal.branch_id;
                         $('.sub-branches-select2').select2({
@@ -722,11 +722,7 @@
                         }
                     }).on('change', () => {
                         const data = $(".item-category-select2 option:selected").text();
-                        if (data === 'ASET') {
-                            self.isAset = true;
-                        } else {
-                            self.isAset = false;
-                        }
+                        self.isAset = data === 'ASET';
                     });
                 },
                 async confirm() {
@@ -738,6 +734,7 @@
                         this.modalConfirm.hide();
                         await this.getTransactions();
                         this.selectedCheckBox = [];
+                        this.uncheckAfterSuccessfulEvent();
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
@@ -759,6 +756,15 @@
                         selectedIds.includes(transaction.id.toString()) && transaction.locked_status === 1
                     );
                 },
+                uncheckAfterSuccessfulEvent() {
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach((checkbox) => {
+                        checkbox.checked = this.selectAll;
+                        if (this.selectAll) {
+                            this.selectedCheckBox.push(checkbox.value);
+                        }
+                    });
+                }
             }
         }
     </script>
