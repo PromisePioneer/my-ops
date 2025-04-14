@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::table('item_collections', function (Blueprint $table) {
             $table->foreignId('asset_account_id')
                 ->nullable()
+                ->after('unit_type_id')
                 ->constrained('accounts')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
