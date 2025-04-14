@@ -75,6 +75,9 @@ use Throwable;
                 ]);
 
 
+                $stock->decrement('qty', $request->qty);
+
+
                 ConsumedStock::create([
                     'branch_id' => empty($request->user()->branch_id)
                         ? $request->input('branch_id')
