@@ -29,7 +29,7 @@ use Illuminate\View\View;
 
     public function data(): JsonResponse
     {
-        $goods = ItemCollection::with('category', 'unitType')->paginate(self::$perPage);
+        $goods = ItemCollection::with('category', 'unitType', 'assetAccount')->paginate(self::$perPage);
         return response()->json($goods);
     }
 

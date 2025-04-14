@@ -44,4 +44,10 @@ class ItemCollection extends Model
     {
         return $this->belongsTo(ItemCategory::class, 'category_id');
     }
+
+
+    public function assetAccount(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'asset_account_id');
+    }
 }

@@ -98,7 +98,16 @@
                                         </div>
                                     </td>
                                     <td x-text="item.name"></td>
-                                    <td x-text="item.category?.name"></td>
+                                    <td>
+
+                                        <template x-if="item.asset_account === null">
+                                            <span x-text="item.category?.name"></span>
+                                        </template>
+                                        <template x-if="item.asset_account !== null">
+                                                <span
+                                                    x-text="`${item.category?.name} - ${item.asset_account?.name}`"></span>
+                                        </template>
+                                    </td>
                                     <td x-text="item.unit_type?.name"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
