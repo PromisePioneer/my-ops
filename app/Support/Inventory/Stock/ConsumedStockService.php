@@ -27,6 +27,12 @@ use Throwable;
     }
 
 
+    public function data(Stock $stock)
+    {
+        ConsumedStock::where('');
+    }
+
+
     /**
      * @throws Throwable
      */
@@ -83,7 +89,7 @@ use Throwable;
                         ? $request->input('branch_id')
                         : $request->user()->branch_id,
                     'stock_id' => $stock->id,
-                    'debit_account_id' => $request->debit_account_id,
+                    'debit_account_id' => $goods->asset_account_id,
                     'credit_account_id' => $transaction->debit_account_id,
                     'qty' => $request->qty,
                     'submitted_by' => $request->user()->id,
