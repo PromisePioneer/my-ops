@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
 
     /*
     |--------------------------------------------------------------------------
@@ -20,7 +20,7 @@ return array(
      */
     'convert_entities' => true,
 
-    'options' => array(
+    'options' => [
         /**
          * The location of the DOMPDF font directory
          *
@@ -280,7 +280,7 @@ return array(
         "enable_html5_parser" => true,
 
 
-    ),
+    ],
 
 
-);
+];
