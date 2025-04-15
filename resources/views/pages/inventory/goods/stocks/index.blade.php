@@ -133,7 +133,6 @@
                         isLoading: false,
                         startIndex: null,
                         stockDetail: null,
-                        itemTypes: null,
                         form: document.getElementById('form-used-item'),
                         modal: new bootstrap.Modal(document.getElementById('modal-used-item')),
                         async init() {
@@ -216,9 +215,7 @@
                             console.log(id);
                             const resp = await axios.get(`/inventory/goods/stock/show/${id}`);
                             this.stockDetail = resp.data;
-                            this.itemTypes = this.stockDetail.category.name
                             await this.getMainBranchesWithStock(id);
-                            console.log(this.itemTypes)
                         },
                         async debitAccounts() {
                             $(".debit-accounts-select2").select2({

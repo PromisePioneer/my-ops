@@ -37,16 +37,6 @@
                         </div>
                     </div>
 
-                    <div x-show="itemTypes === 'ASET'" x-transition x-cloak>
-                        <div class=" col-lg-6">
-                            <label for="name" class="required form-label">Akun Debit</label>
-                            <select name="debit_account_id" id=""
-                                    class="form-select form-select-solid debit-accounts-select2"
-                                    data-dropdown-parent="#modal-used-item">
-                                <option value=""></option>
-                            </select>
-                        </div>
-                    </div>
 
                     <input type="hidden" name="goods_id" id="goods_id" :value="stockDetail?.id">
                 </div>
