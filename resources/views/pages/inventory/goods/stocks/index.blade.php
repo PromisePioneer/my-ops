@@ -2,6 +2,7 @@
 @section('content')
     <div x-data="goodsStockData()">
         @include('pages.inventory.goods.stocks.form')
+        @include('pages.inventory.goods.stocks.consumed-stocks')
         <div class="d-flex flex-column flex-xl-row">
             @can('Filter Stok Barang Berdasarkan Cabang')
                 <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
@@ -89,7 +90,12 @@
                                         <tbody class="fw-bold text-center">
                                         <tr>
                                             <td x-text="startIndex + index++"></td>
-                                            <td x-text="item.name"></td>
+                                            <td>
+                                                <a href="#" data-bs-toggle="modal"
+                                                   data-bs-target="#modal-consumed-stock"
+                                                   data-bs-modal="modal"
+                                                   x-text="item.name" @click="getConsumedStock(item.id)"></a>
+                                            </td>
                                             <td x-text="item.category_name"></td>
                                             <td>
                                                 <button class="btn btn-link btn-sm text-primary"
@@ -128,11 +134,13 @@
                     return {
                         buttonLoading: false,
                         goodsStock: [],
+                        consumedStock: [],
                         search: '',
                         placement: null,
                         isLoading: false,
                         startIndex: null,
                         stockDetail: null,
+                        consumedStockModal: new bootstrap.Modal(document.getElementById('modal-consumed-stock')),
                         form: document.getElementById('form-used-item'),
                         modal: new bootstrap.Modal(document.getElementById('modal-used-item')),
                         async init() {
@@ -146,6 +154,18 @@
                             try {
                                 const resp = await axios.get('/inventory/goods/stock/data');
                                 this.goodsStock = resp.data;
+                                this.startIndex = resp.data.from;
+                            } catch (e) {
+                                console.log(e)
+                            } finally {
+                                this.isLoading = false;
+                            }
+                        },
+                        async getConsumedStock(id) {
+                            this.isLoading = true;
+                            try {
+                                const resp = await axios.get(`/inventory/goods/consumed-stocks/data/${id}`);
+                                this.consumedStock = resp.data;
                                 this.startIndex = resp.data.from;
                             } catch (e) {
                                 console.log(e)
@@ -212,10 +232,9 @@
                             }
                         },
                         async showStockDetail(id) {
-                            console.log(id);
+                            await this.getMainBranchesWithStock(id);
                             const resp = await axios.get(`/inventory/goods/stock/show/${id}`);
                             this.stockDetail = resp.data;
-                            await this.getMainBranchesWithStock(id);
                         },
                         async debitAccounts() {
                             $(".debit-accounts-select2").select2({

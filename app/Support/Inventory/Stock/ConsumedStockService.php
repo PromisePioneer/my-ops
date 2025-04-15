@@ -13,13 +13,16 @@ use App\Models\Stock;
 use App\Models\Transaction;
 use App\Support\AccountTransactions\AccountTransactionService;
 use Carbon\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Throwable;
+use function App\Helper\formatDate;
 
 #[AllowDynamicProperties] class ConsumedStockService
 {
 
     private const string ACCOUNT_TRANSACTION_DETAIL = 'Pemakaian %s %s %s';
+    private static int $perPage = 10;
 
     public function __construct()
     {
@@ -27,9 +30,31 @@ use Throwable;
     }
 
 
-    public function data(Stock $stock)
+    public function data(ItemCollection $itemCollection): LengthAwarePaginator
     {
-        ConsumedStock::where('');
+        $consumedStock = ConsumedStock::with('stock.item', 'branch')
+            ->whereHas('stock.item', function ($query) use ($itemCollection) {
+                $query->where('item_id', $itemCollection->id);
+            })->paginate(self::$perPage);
+
+        return self::formattedData($consumedStock);
+    }
+
+
+    public function formattedData(LengthAwarePaginator $consumedStock): LengthAwarePaginator
+    {
+        $data = $consumedStock->getCollection()->map(callback: function ($item) {
+            return [
+                'id' => $item->id,
+                'date' => formatDate($item->created_at),
+                'branch_name' => $item->branch->name . ' - ' . $item->branch->parent->name,
+                'item_name' => $item->stock->item->name ?? null,
+                'qty' => $item->qty . ' ' . $item->stock->item->unitType->name,
+            ];
+        });
+
+        $consumedStock->setCollection($data);
+        return $consumedStock;
     }
 
 
@@ -66,7 +91,7 @@ use Throwable;
             if ($asset) {
                 $asset->increment('unit', $request->qty);
             } else {
-                $usefulLife = $this->usefulLife(Account::where('id', $transaction->credit_account_id)->first()->code, $goods->material);
+                $usefulLife = $this->usefulLife(Account::where('id', $goods->asset_account_id)->first()->code, $goods->material);
                 $branch = Branch::with('parent')->where('id', $request->input('branch_id'))->first();
                 Asset::create([
                     'branch_id' => $request->input('branch_id'),
@@ -156,6 +181,7 @@ use Throwable;
 
     public function usefulLife($code, $goodsMaterial): ?int
     {
+
         if ($code === '121') {
             return null;
         }
@@ -168,13 +194,15 @@ use Throwable;
             return 8;
         }
 
-        if ($code === '125' && $goodsMaterial === 'Besi') {
+        if ($code === '125' && $goodsMaterial === 'Besi' || $code === '126' && $goodsMaterial === 'Besi') {
             return 8;
         }
 
-        if ($code === '125' && $goodsMaterial === '8 Tahun') {
-            return 8;
+        if ($code === '125' && $goodsMaterial === 'Non Besi' || $code === '126' && $goodsMaterial === 'Non Besi') {
+            return 4;
         }
+
+
         return null;
     }
 }

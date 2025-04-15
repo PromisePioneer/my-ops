@@ -62,6 +62,7 @@
                                 </th>
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Kategori</th>
+                                <th class="min-w-125px">Material</th>
                                 <th class="min-w-125px">Satuan</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
@@ -108,6 +109,7 @@
                                                     x-text="`${item.category?.name} - ${item.asset_account?.name}`"></span>
                                         </template>
                                     </td>
+                                    <td x-text="item.material"></td>
                                     <td x-text="item.unit_type?.name"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"

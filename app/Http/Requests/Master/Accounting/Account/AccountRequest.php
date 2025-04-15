@@ -23,10 +23,13 @@ class AccountRequest extends FormRequest
                 'required',
                 Rule::unique('accounts', 'code')->ignore($this->route('account')),
             ],
-            'beginning_balances' => ['nullable', 'numeric'],
             'parent_id' => [
                 'nullable',
             ],
+            'trial_balance_type' => [
+                'required',
+                'in:debit,credit'
+            ]
         ];
     }
 
@@ -37,6 +40,8 @@ class AccountRequest extends FormRequest
             'name.unique' => 'Nama sudah terdaftar',
             'code.required' => 'Kode tidak boleh kosong',
             'code.unique' => 'Kode sudah terdaftar',
+            'trial_balance_type.required' => 'Tipe Saldo Awal / Neraca tidak boleh kosong',
+            'trial_balance_type.in' => 'Tipe Saldo Awal / Neraca tidak valid!',
         ];
     }
 }

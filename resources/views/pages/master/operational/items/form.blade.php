@@ -38,6 +38,17 @@
                             <option></option>
                         </select>
                     </div>
+
+                    <div class="mb-10">
+                        <label for="unit_type_id" class="required form-label">Satuan</label>
+                        <select name="material"
+                                class="form-select form-select-solid">
+                            <option value="Besi" :selected="editVal?.material === 'Besi'">Besi</option>
+                            <option value="Non Besi" :selected="editVal?.material === 'Non Besi'">Non Besi</option>
+                        </select>
+                    </div>
+
+
                     <div class="mb-10" x-show="isAset" x-transition x-cloak>
                         <label for="unit_type_id" class="required form-label">Akun Aset (Jika Masuk Aset)</label>
                         <select name="asset_account_id" id="selected-asset-account"

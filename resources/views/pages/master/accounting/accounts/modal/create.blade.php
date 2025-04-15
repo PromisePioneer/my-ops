@@ -26,6 +26,16 @@
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
                                placeholder="Nama akun"/>
                     </div>
+
+
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Tipe Saldo Awal / Neraca Saldo</label>
+                        <select name="trial_balance_type" id="" class="form-select form-select-solid">
+                            <option value="" selected>Pilih</option>
+                            <option value="debit">Debit</option>
+                            <option value="credit">Kredit</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="modal-footer">

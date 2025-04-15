@@ -704,6 +704,7 @@ Route::group(['middleware' => ['auth']], static function () {
             });
 
             Route::prefix('consumed-stocks')->group(function () {
+                Route::get('/data/{itemCollection}', [ConsumedStockController::class, 'data']);
                 Route::post('/', [ConsumedStockController::class, 'store']);
             });
         });

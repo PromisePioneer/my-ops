@@ -46,11 +46,13 @@ use Illuminate\Http\Request;
                 'account_id' => $account->id,
                 'account_code' => $account->code,
                 'account_name' => $account->name,
+                'trial_balance_type' => $account->trial_balance_type,
                 'sub_accounts' => $account->children->map(static function ($subAccount) {
                     return [
                         'sub_account_id' => $subAccount->id,
                         'sub_account_code' => $subAccount->code,
                         'sub_account_name' => $subAccount->name,
+                        'trial_balance_type' => $subAccount->trial_balance_type,
                     ];
                 }),
             ];

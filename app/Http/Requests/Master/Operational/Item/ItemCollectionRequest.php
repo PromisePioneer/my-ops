@@ -32,6 +32,7 @@ class ItemCollectionRequest extends FormRequest
             'name' => ['required', 'string', Rule::unique('item_collections', 'name')->ignore($request->route('itemCollection'))],
             'unit_type_id' => ['required', 'string'],
             'category_id' => ['required', 'string'],
+            'material' => ['required', Rule::in(['Besi', 'Non Besi'])],
             'asset_account_id' => [Rule::requiredIf($category->name === "ASET")],
         ];
     }

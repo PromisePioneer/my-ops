@@ -21,7 +21,7 @@ class Account extends Model
         'name',
         'code',
         'parent_id',
-        'beginning_balances',
+        'trial_balance_type',
     ];
 
 
@@ -71,7 +71,7 @@ class Account extends Model
             ->limit(5);
 
         if ($search !== '') {
-            $query->where('name', 'like', '%'.$search.'%');
+            $query->where('name', 'like', '%' . $search . '%');
         }
         $account = $query->get();
 
@@ -92,7 +92,7 @@ class Account extends Model
             ->select('id', 'name');
 
         if ($search !== '') {
-            $query->where('name', 'like', '%'.$search.'%');
+            $query->where('name', 'like', '%' . $search . '%');
         }
         $account = $query->get();
 
@@ -112,14 +112,14 @@ class Account extends Model
             ->select('id', 'name', 'code');
 
         if ($search !== '') {
-            $query->where('name', 'like', '%'.$search.'%');
+            $query->where('name', 'like', '%' . $search . '%');
         }
         $account = $query->get();
 
         return $account->map(function ($c) {
             return [
                 'id' => $c->id,
-                'text' => $c->code.' '.$c->name,
+                'text' => $c->code . ' ' . $c->name,
             ];
         })->toArray();
     }
@@ -142,7 +142,7 @@ class Account extends Model
 
         if ($search !== '') {
             $account->whereBetween('code', ['121', '126'])
-                ->where('name', 'like', '%'.$search.'%');
+                ->where('name', 'like', '%' . $search . '%');
         }
 
         return $account->get()->map(function ($item) {
@@ -164,7 +164,7 @@ class Account extends Model
             });
 
         if (!empty($search)) {
-            $account->where('name', 'like', '%'.$search.'%');
+            $account->where('name', 'like', '%' . $search . '%');
         }
 
         return $account->get()->map(function ($account) {
@@ -209,7 +209,7 @@ class Account extends Model
             });
 
         if (!empty($search)) {
-            $account->where('name', 'like', '%'.$search.'%');
+            $account->where('name', 'like', '%' . $search . '%');
         }
 
         return $account->get()->map(function ($account) {

@@ -63,6 +63,7 @@ use Illuminate\View\View;
             'category_id' => $categoryId->id ?? $request->category_id,
             'unit_type_id' => $unitTypeId->id ?? $request->unit_type_id,
             'asset_account_id' => $category->name === 'ASET' ? $request->asset_account_id : null,
+            'material' => $request->material
         ]);
 
         return response()->json([
@@ -87,6 +88,7 @@ use Illuminate\View\View;
             'category_id' => $request->category_id,
             'unit_type_id' => $request->unit_type_id,
             'asset_account_id' => $category->name === 'ASET' ? $request->asset_account_id : null,
+            'material' => $request->material
         ]);
 
         return response()->json([

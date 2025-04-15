@@ -93,6 +93,9 @@ use Throwable;
     public function edit(Asset $asset): JsonResponse
     {
         $this->authorize('update', $asset);
+
+
+
         return response()->json($asset);
     }
 

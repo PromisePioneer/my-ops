@@ -183,14 +183,14 @@
                                         </div>
                                         <div>
                                             <template
-                                                x-if="transaction.status === 'Diterima' || transaction.status === 'Ditolak' || transaction.status === 'Revisi' ">
+                                                x-if="transaction.status === 'Ditolak' || transaction.status === 'Revisi' ">
                                                 <div>
                                                     <p class="fs-7 m-0">Catatan :
                                                     </p>
                                                     <p class="fs-7"
-                                                       :class="transaction.final_notes === 'Diterima'
-                                                        ? 'text-success'
-                                                        : transaction.final_notes === 'Ditolak' ? 'text-danger'
+                                                       :class="transaction.status === 'Ditolak'
+                                                        ? 'text-danger'
+                                                        : transaction.status === 'Revisi' ? 'text-danger'
                                                         : 'text-warning'"
                                                        x-text="transaction.final_notes"></p>
                                                 </div>

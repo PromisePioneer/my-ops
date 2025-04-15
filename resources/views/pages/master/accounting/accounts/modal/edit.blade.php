@@ -26,6 +26,15 @@
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
                                placeholder="Nama akun" :value="editVal.name"/>
                     </div>
+
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Tipe Saldo Awal / Neraca Saldo</label>
+                        <select name="trial_balance_type" id="" class="form-select form-select-solid">
+                            <option value="" selected>Pilih</option>
+                            <option value="debit" :selected="editVal.trial_balance_type ==='debit'">Debit</option>
+                            <option value="credit" :selected="editVal.trial_balance_type ==='credit'">Kredit</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="modal-footer">

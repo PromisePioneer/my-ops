@@ -68,7 +68,7 @@
                             <label for="name" class="required form-label">Harga / Unit</label>
                             <input type="text" id="price_per_unit" name="price_per_unit"
                                    class="form-control form-control-solid"
-                                   placeholder="Harga per unit" :value="editVal?.price_per_unit"/>
+                                   placeholder="Harga per unit" :value="parseFloat(editVal?.price_per_unit)"/>
                         </div>
                     </div>
                 </div>
