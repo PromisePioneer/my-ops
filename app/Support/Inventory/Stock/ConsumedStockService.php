@@ -30,13 +30,9 @@ use function App\Helper\formatDate;
     }
 
 
-    public function data(ItemCollection $itemCollection): LengthAwarePaginator
+    public function data(): LengthAwarePaginator
     {
-        $consumedStock = ConsumedStock::with('stock.item', 'branch')
-            ->whereHas('stock.item', function ($query) use ($itemCollection) {
-                $query->where('item_id', $itemCollection->id);
-            })->paginate(self::$perPage);
-
+        $consumedStock = ConsumedStock::with('stock.item', 'branch', 'submittedBy')->paginate(self::$perPage);
         return self::formattedData($consumedStock);
     }
 
@@ -44,12 +40,17 @@ use function App\Helper\formatDate;
     public function formattedData(LengthAwarePaginator $consumedStock): LengthAwarePaginator
     {
         $data = $consumedStock->getCollection()->map(callback: function ($item) {
+            $date = Carbon::parse($item->created_at)->locale('id');
+            $date->settings(['formatFunction' => 'translatedFormat']);
+
+
             return [
                 'id' => $item->id,
-                'date' => formatDate($item->created_at),
+                'date' => $date->format('l, j F Y h:i A'),
                 'branch_name' => $item->branch->name . ' - ' . $item->branch->parent->name,
                 'item_name' => $item->stock->item->name ?? null,
                 'qty' => $item->qty . ' ' . $item->stock->item->unitType->name,
+                'submitted_by' => $item->submittedBy->name,
             ];
         });
 

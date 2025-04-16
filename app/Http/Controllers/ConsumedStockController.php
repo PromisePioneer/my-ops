@@ -31,26 +31,13 @@ use Throwable;
 
     public function index(): View
     {
-        return view('used_stock.index');
+        return view('pages.inventory.goods.stocks.consumed-stocks.index');
     }
 
 
-    public function assetAccount(Request $request)
+    public function data(): JsonResponse
     {
-        $search = $request->input('search');
-        $account = Account::whereBetween('code', ['121', '126']);
-
-        if ($search !== '') {
-            $account->whereBetween('code', ['121', '126'])
-                ->where('name', 'like', '%' . $search . '%');
-        }
-
-        return $account->get()->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'text' => $item->name,
-            ];
-        })->toArray();
+        return response()->json($this->consumedStockService->data());
     }
 
     /**

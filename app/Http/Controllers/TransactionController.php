@@ -7,7 +7,7 @@ use App\Http\Requests\TransactionConfirmationRequest;
 use App\Http\Requests\TransactionRequest;
 use App\Models\Master\Common\Branch;
 use App\Models\Transaction;
-use App\Support\Transactions\TransactionService;
+use App\Support\Transactions\Services\TransactionService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,10 +34,10 @@ use Throwable;
     /**
      * @throws AuthorizationException
      */
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
         $this->authorize('view', Transaction::class);
-        return response()->json($this->transactionService->data());
+        return response()->json($this->transactionService->data($request));
     }
 
     /**

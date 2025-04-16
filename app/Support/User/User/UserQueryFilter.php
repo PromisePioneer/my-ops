@@ -2,6 +2,7 @@
 
 namespace App\Support\User\User;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 

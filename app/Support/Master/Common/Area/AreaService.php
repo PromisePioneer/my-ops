@@ -32,10 +32,15 @@ use Illuminate\Pagination\LengthAwarePaginator;
             $query->where('name', 'like', '%' . $search . '%')
                 ->orWhereHas('branch', function ($query) use ($search) {
                     $query->where('name', 'like', '%' . $search . '%');
-                });
-        })->paginate(self::$perPage);
+                })->orWhereHas('department', function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                })->orWhere('name', 'like', '%' . $search . '%');
+        });
 
-        return self::formattedData($area);
+
+        $areaFilter = AreaACLQuery::apply($area, $request)->paginate(self::$perPage);
+
+        return self::formattedData($areaFilter);
     }
 
 

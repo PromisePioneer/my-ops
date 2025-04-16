@@ -11,7 +11,7 @@ class RoleHierarchyService
 {
     private static int $perPage = 10;
 
-    public function data(): Collection
+    public function data()
     {
         $data = RoleHierarchy::with('role', 'children')->get();
         return self::formattedData($data);
@@ -20,13 +20,22 @@ class RoleHierarchyService
 
     private static function formattedData($data)
     {
-        return $data->map(function ($roleHierarchy) {
+        return $data->filter(function ($item) {
+            return $item->children->isNotEmpty();
+        })->map(function ($item) {
             return [
-                'id' => $roleHierarchy->id,
-                'role_name' => $roleHierarchy->role->name,
-                'pid' => $roleHierarchy->parent_id,
+                'id' => $item->id,
+                'name' => $item->role->name,
+                'parent_id' => $item->parent_id,
+                'children' => $item->children->map(function ($child) {
+                    return [
+                        'id' => $child->id,
+                        'name' => $child->role->name,
+                        'parent_id' => $child->parent_id,
+                    ];
+                }),
             ];
-        });
+        })->values();
     }
 
 

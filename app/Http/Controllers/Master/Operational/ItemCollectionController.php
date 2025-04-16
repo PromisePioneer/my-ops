@@ -36,8 +36,20 @@ use Illuminate\View\View;
     public function search(Request $request): JsonResponse
     {
         $search = $request->input('search');
-        $goods = ItemCollection::search($search)->paginate(self::$perPage);
+        $goods = ItemCollection::search($search)->query(function ($query) {
+            $query->join('item_categories', 'item_categories.id', '=', 'item_collections.category_id')
+                ->join('accounts', 'item_collections.asset_account_id', 'accounts.id')
+                ->join('unit_types', 'unit_types.id', '=', 'item_collections.unit_type_id')
+                ->orderBy('item_collections.name')
+                ->select('item_collections.*', 'item_categories.name as category_name', 'unit_types.name as unit_type_name', 'accounts.name as asset_account_name');
+        })->paginate(self::$perPage);
         return response()->json($goods);
+    }
+
+
+    public function formattedData()
+    {
+
     }
 
     public function store(ItemCollectionRequest $request): JsonResponse

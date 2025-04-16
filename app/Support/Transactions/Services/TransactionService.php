@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\Transactions;
+namespace App\Support\Transactions\Services;
 
 use AllowDynamicProperties;
 use App\Http\Requests\TransactionConfirmationRequest;
@@ -9,6 +9,7 @@ use App\Models\Stock;
 use App\Models\Transaction;
 use App\Support\AccountTransactions\AccountTransactionService;
 use App\Support\HelperService\HandleFileUploadService;
+use App\Support\Transactions\Repositories\TransactionRepository;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -24,6 +25,7 @@ use function App\Helper\formatDate;
     {
         $this->accountTransactionService = new AccountTransactionService();
         $this->handleUploadService = new HandleFileUploadService();
+        $this->transactionRepository = new TransactionRepository();
     }
 
     public function generateTransactionNumber(Request $request): string
@@ -48,23 +50,20 @@ use function App\Helper\formatDate;
     }
 
 
-    public function data(): LengthAwarePaginator
+    public function data(Request $request): LengthAwarePaginator
     {
-        $data = Transaction::with('branch', 'unitType', 'debitAccount', 'creditAccount', 'item')
-            ->paginate(self::$perPage);
-
-        return self::formattedData($data);
+        $data = $this->transactionRepository->getTransactions();
+        $filter = TransactionACLFilter::apply($data, $request)->paginate(self::$perPage);
+        return self::formattedData($filter);
     }
 
 
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $data = Transaction::search($search)->query(function ($query) {
-            $query->with('transactionType', 'transactionType.debitAccount', 'transactionType.creditAccount');
-        })->paginate(self::$perPage);
-
-        return self::formattedData($data);
+        $data = Transaction::search($search);
+        $filter = TransactionACLFilter::apply($data, $request)->paginate(self::$perPage);
+        return self::formattedData($filter);
     }
 
 
@@ -85,7 +84,7 @@ use function App\Helper\formatDate;
                 'id' => $item->id,
                 'type' => $item->type,
                 'branch_id' => $item->branch_id,
-                'branch_name' => $item->branch->name . ' - ' . $item->branch->parent->name,
+                'branch_name' => $item?->branch?->name ?? $item->name,
                 'date' => formatDate($item->date),
                 'transaction_number' => $item->transaction_number,
                 'item_name' => $item->item?->name,

@@ -51,6 +51,9 @@ class PermissionSeeder extends Seeder
         $this->generalLedger();
 
 
+        $this->transactions();
+
+
         //income-transaction
         $this->offeringLetter();
         $this->fab();
@@ -106,7 +109,7 @@ class PermissionSeeder extends Seeder
         $this->workTime();
         $this->employeeSchedule();
         $this->attendancesSummary();
-        $this->transactions();
+
         $this->attendanceManualRequests();
     }
 
@@ -1003,7 +1006,7 @@ class PermissionSeeder extends Seeder
             'Input Pemakaian Stok Barang',
         ];
 
-        foreach ($permissions as $permission){
+        foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);
         }
     }

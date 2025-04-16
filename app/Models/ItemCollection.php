@@ -19,14 +19,18 @@ class ItemCollection extends Model
         'category_id',
         'unit_type_id',
         'material',
-        'asset_account_id'
+        'asset_account_id',
+
     ];
 
 
     public function toSearchableArray(): array
     {
         return [
-            'name' => $this->name
+            'name' => $this->name,
+            'category_name.name' => '',
+            'unit_type_name.name' => '',
+            'asset_account_name.name' => ''
         ];
     }
 

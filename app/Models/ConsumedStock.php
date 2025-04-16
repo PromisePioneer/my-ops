@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ConsumedStock extends Model
 {
-protected $table = 'consumed_stocks';
+    protected $table = 'consumed_stocks';
     protected $fillable = [
         'branch_id',
         'stock_id',
@@ -19,11 +19,10 @@ protected $table = 'consumed_stocks';
     ];
 
 
-    public function goods(): BelongsTo
+    public function stock(): BelongsTo
     {
-        return $this->belongsTo(ItemCollection::class, 'goods_stock_id');
+        return $this->belongsTo(Stock::class, 'stock_id');
     }
-
 
     public function branch(): BelongsTo
     {

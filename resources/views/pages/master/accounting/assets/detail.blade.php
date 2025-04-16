@@ -105,8 +105,8 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-if="!isLoading && assetDepreciationData.data?.length === 0">
-                                <tr>
+                            <template x-if="!isLoading && assetDepreciationData?.length === 0">
+                                <tr class="fw-bolder">
                                     <td colspan="9">
                                         <center>Data Tidak Ditemukan</center>
                                     </td>

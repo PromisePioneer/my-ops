@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\Transactions;
+namespace App\Support\Transactions\Services;
 
 use Illuminate\Database\Eloquent\Builder as Eloquentbuilder;
 use Illuminate\Database\Query\Builder;

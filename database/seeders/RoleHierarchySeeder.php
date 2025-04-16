@@ -17,6 +17,7 @@ class RoleHierarchySeeder extends Seeder
         $financeManagerRole = Role::where('name', 'FA & Tax Manager')->first();
         $operationalManagerRole = Role::where('name', 'Operational Manager')->first();
         $branchManagerRole = Role::where('name', 'Branch Manager')->first();
+        $generalManagerRole = Role::where('name', 'General Manager')->first();
 
 
         $directorHierarchy = RoleHierarchy::create([
@@ -24,10 +25,27 @@ class RoleHierarchySeeder extends Seeder
         ]);
 
 
+        $this->generalManagerHierarchy($generalManagerRole, $directorHierarchy);
         $this->accounting($financeManagerRole, $directorHierarchy);
         $this->operational($operationalManagerRole, $directorHierarchy);
         $this->branchManagerRoleHierarchy($branchManagerRole, $directorHierarchy);
 
+    }
+
+
+    public function generalManagerHierarchy($generalManagerRole, $directorHierarchy): void
+    {
+        $generalManagerRoleHierarchy = RoleHierarchy::create([
+            'role_id' => $generalManagerRole->id,
+            'parent_id' => $directorHierarchy->id,
+        ]);
+
+        $inventoryControllerSpv = Role::where('name', 'Inventory Controller Supervisor')->first();
+
+        RoleHierarchy::create([
+            'role_id' => $inventoryControllerSpv->id,
+            'parent_id' => $generalManagerRoleHierarchy->id,
+        ]);
     }
 
 
