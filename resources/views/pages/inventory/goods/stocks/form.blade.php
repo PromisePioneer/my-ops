@@ -19,10 +19,20 @@
 
             <form id="form-used-item" @submit.prevent="save()">
                 <div class="modal-body">
-                    <div class="row mb-10">
+                    <div class="row mb-4">
+                        <div class="col-lg-6" x-model="ifMutated">
+                            <label for="name" class="required form-label">Tipe</label>
+                            <select name="type" id="type"
+                                    class="form-select form-select-solid">
+                                <option selected>Pilih</option>
+                                <option value="Mutasi">Mutasi Barang</option>
+                                <option value="Pemakaian">Pemakaian Barang</option>
+                            </select>
+                        </div>
                         @if(empty(Auth::user()->branch_id))
                             <div class="col-lg-6">
-                                <label for="name" class="required form-label">Cabang</label>
+                                <label for="name" class="required form-label"
+                                       x-text="`Cabang ${ifMutated == 'Mutasi' ? 'Awal' : ''}`"></label>
                                 <select name="branch_id" id="branch_id"
                                         class="form-select form-select-solid main-branches-select2"
                                         data-dropdown-parent="#modal-used-item">
@@ -30,14 +40,24 @@
                                 </select>
                             </div>
                         @endif
+                    </div>
+
+                    <div class="row mb-10">
                         <div class="col-lg-6">
-                            <label for="name" class="required form-label">Jumlah Pemakaian</label>
+                            <label for="name" class="required form-label"
+                                   x-text="`Jumlah Barang Yang ${ifMutated == 'Mutasi' ? 'Dimutasi' : 'Dipakai'}`"></label>
                             <input type="number" class="form-control form-control-solid" name="qty" id="qty"
                                    placeholder="Jumlah Pemakaian">
                         </div>
+                        <div class="col-lg-6" x-show="ifMutated == 'Mutasi'" x-transition x-cloak>
+                            <label for="name" class="required form-label">Cabang Tujuan</label>
+                            <select name="destination_branch_id" id="destination_branch_id"
+                                    class="form-select form-select-solid main-branches-select2"
+                                    data-dropdown-parent="#modal-used-item">
+                                <option></option>
+                            </select>
+                        </div>
                     </div>
-
-
                     <input type="hidden" name="goods_id" id="goods_id" :value="stockDetail?.id">
                 </div>
 

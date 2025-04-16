@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
-use App\Http\Requests\UsedStockRequest;
+use App\Http\Requests\ConsumedStockRequest;
 use App\Models\Account;
 use App\Models\Asset;
 use App\Models\ConsumedStock;
@@ -43,7 +43,7 @@ use Throwable;
     /**
      * @throws Throwable
      */
-    public function store(UsedStockRequest $request, AccountTransactionService $accountTransactionService): JsonResponse
+    public function store(ConsumedStockRequest $request, AccountTransactionService $accountTransactionService): JsonResponse
     {
         $this->authorize('create', ConsumedStock::class);
         $this->consumedStockService->store($request);

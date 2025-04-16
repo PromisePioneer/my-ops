@@ -131,7 +131,7 @@
                         buttonLoading: false,
                         goodsStock: [],
                         consumedStock: [],
-
+                        ifMutated: null,
                         search: '',
                         placement: null,
                         isLoading: false,
@@ -144,6 +144,10 @@
                             await this.debitAccounts();
                             await this.creditAccounts();
                             await this.getAllBranch();
+                            this.modal.addEventListener('hidden.bs.modal', () => {
+                                this.form.reset();
+                                this.ifMutated = null;
+                            });
                         },
                         async getGoodsStock() {
                             this.isLoading = true;

@@ -9,7 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-class UsedStockRequest extends FormRequest
+class ConsumedStockRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -32,6 +32,9 @@ class UsedStockRequest extends FormRequest
                 Rule::exists('branches', 'id'),
 
             ],
+            'destination_branch_id' => [
+                Rule::requiredIf($request->type === 'Mutasi'),
+            ],
             'qty' => ['required', 'numeric', $this->isStockExists($request)]
         ];
     }
@@ -42,10 +45,7 @@ class UsedStockRequest extends FormRequest
         return [
             'branch_id.required' => 'Cabang tidak boleh kosong',
             'branch_id.exists' => 'Cabang tidak ditemukan',
-            'debit_account_id.required' => 'Akun debit tidak boleh kosong',
-            'debit_account_id.exists' => 'Akun debit tidak ditemukan',
-            'credit_account_id.required' => 'Akun kredit tidak boleh kosong',
-            'credit_account_id.exists' => 'Akun kredit tidak ditemukan'
+            'destination_branch_id.required' => 'Cabang tujuan tidak boleh kosong',
         ];
     }
 

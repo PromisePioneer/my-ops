@@ -701,6 +701,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/show/{itemCollection}', [StockController::class, 'show']);
                 Route::get('/detail/{stock}', [StockController::class, 'detail']);
                 Route::get('/branch/data/{itemCollection}', [StockController::class, 'getMainBranchWithStock']);
+                Route::get('/branch/data/{itemCollection}', [StockController::class, 'getMainBranchWithStock']);
             });
 
             Route::prefix('consumed-stocks')->group(function () {

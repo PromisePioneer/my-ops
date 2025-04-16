@@ -3,7 +3,7 @@
 namespace App\Support\Inventory\Stock;
 
 use AllowDynamicProperties;
-use App\Http\Requests\UsedStockRequest;
+use App\Http\Requests\ConsumedStockRequest;
 use App\Models\Account;
 use App\Models\Asset;
 use App\Models\ConsumedStock;
@@ -21,7 +21,8 @@ use function App\Helper\formatDate;
 #[AllowDynamicProperties] class ConsumedStockService
 {
 
-    private const string ACCOUNT_TRANSACTION_DETAIL = 'Pemakaian %s %s %s';
+    private const string ACCOUNT_TRANSACTION_CONSUMED_ITEM_DETAIL = 'Pemakaian %s %s %s';
+    private const string ACCOUNT_TRANSACTION_MUTATION_ITEM_DETAIL = 'Mutasi %s %s %s , dari %s - %s ke %s - %s';
     private static int $perPage = 10;
 
     public function __construct()
@@ -62,7 +63,7 @@ use function App\Helper\formatDate;
     /**
      * @throws Throwable
      */
-    public function store(UsedStockRequest $request)
+    public function store(ConsumedStockRequest $request)
     {
         DB::transaction(function () use ($request) {
             $stock = Stock::where('branch_id', $request->branch_id)
@@ -74,14 +75,58 @@ use function App\Helper\formatDate;
                 ->where('id', $request->input('goods_id'))
                 ->first();
 
-            if ($goods->category->name === 'JUAL') {
-                $this->ifSellItem($request, $goods, $stock, $transaction);
-            }
 
-            if ($goods->category->name === 'ASET') {
+            if ($request->input('type') === 'Pemakaian') {
+                $this->ifSellItem($request, $goods, $stock, $transaction);
                 $this->ifAsetItem($request, $goods, $stock, $transaction);
             }
+
+
+            if ($request->input('type') === 'Mutasi') {
+                $this->mutation($request, $goods, $stock, $transaction);
+            }
         });
+    }
+
+
+    public function mutation($request, $goods, $stock, $transaction): void
+    {
+        $stock->decrement('qty', $request->qty);
+        $destinationBranch = Branch::with('parent')->where('id', $request->input('destination_branch_id'))->first();
+        $initialBranch = Branch::with('parent')->where('id', $request->input('branch_id'))->first();
+        $destinationBranchStock = Stock::where('branch_id', $request->input('destination_branch_id'))->first();
+
+
+        if (empty($destinationBranchStock)) {
+            Stock::create([
+                'transaction_id' => $transaction->id,
+                'branch_id' => $request->input('destination_branch_id'),
+                'item_id' => $goods->id,
+                'qty' => $request->qty,
+            ]);
+        } else {
+            $destinationBranchStock->increment('qty', $request->qty);
+        }
+
+        if ($destinationBranch->parent->id !== $initialBranch->parent->id) {
+            $this->accountTransactionService->createDebitTransaction(
+                $destinationBranch->parent->id,
+                sprintf(self::ACCOUNT_TRANSACTION_MUTATION_ITEM_DETAIL, $goods->name, $request->qty, $goods->unitType->name, $initialBranch->parent->name, $initialBranch->name, $destinationBranch->parent->name, $destinationBranch->name),
+                $transaction->debit_account_id,
+                $transaction->unit_price * $request->qty,
+                $transaction->id,
+            );
+
+            $this->accountTransactionService->createCreditTransaction(
+                $initialBranch->parent->id,
+                sprintf(self::ACCOUNT_TRANSACTION_MUTATION_ITEM_DETAIL, $goods->name, $request->qty, $goods->unitType->name, $initialBranch->parent->name, $initialBranch->name, $destinationBranch->parent->name, $destinationBranch->name),
+                $transaction->debit_account_id,
+                $transaction->unit_price * $request->qty,
+                $transaction->id,
+            );
+        }
+
+
     }
 
 
@@ -124,7 +169,7 @@ use function App\Helper\formatDate;
 
                 $this->accountTransactionService->createDebitTransaction(
                     $branch->parent->id,
-                    sprintf(self::ACCOUNT_TRANSACTION_DETAIL, $goods->name, $request->qty, $goods->unitType->name),
+                    sprintf(self::ACCOUNT_TRANSACTION_CONSUMED_ITEM_DETAIL, $goods->name, $request->qty, $goods->unitType->name),
                     $goods->asset_account_id,
                     $transaction->unit_price * $request->qty,
                     $transaction->id,
@@ -132,7 +177,7 @@ use function App\Helper\formatDate;
 
                 $this->accountTransactionService->createCreditTransaction(
                     $branch->parent->id,
-                    sprintf(self::ACCOUNT_TRANSACTION_DETAIL, $goods->name, $request->qty, $goods->unitType->name),
+                    sprintf(self::ACCOUNT_TRANSACTION_CONSUMED_ITEM_DETAIL, $goods->name, $request->qty, $goods->unitType->name),
                     $transaction->debit_account_id,
                     $transaction->unit_price * $request->qty,
                     $transaction->id
@@ -145,38 +190,42 @@ use function App\Helper\formatDate;
 
     public function ifSellItem($request, $goods, $stock, $transaction): void
     {
-        $debitAccount = Account::where('code', '501-01')->first();
-        $branch = Branch::with('parent')->where('id', $request->input('branch_id'))->first();
 
-        ConsumedStock::create([
-            'branch_id' => empty($request->user()->branch_id)
-                ? $request->input('branch_id')
-                : $request->user()->branch_id,
-            'stock_id' => $stock->id,
-            'debit_account_id' => $debitAccount->id,
-            'credit_account_id' => $transaction->debit_account_id,
-            'qty' => $request->qty,
-            'submitted_by' => $request->user()->id,
-        ]);
+        if ($goods->category->name === 'JUAL') {
+            $debitAccount = Account::where('code', '501-01')->first();
+            $branch = Branch::with('parent')->where('id', $request->input('branch_id'))->first();
+
+            ConsumedStock::create([
+                'branch_id' => empty($request->user()->branch_id)
+                    ? $request->input('branch_id')
+                    : $request->user()->branch_id,
+                'stock_id' => $stock->id,
+                'debit_account_id' => $debitAccount->id,
+                'credit_account_id' => $transaction->debit_account_id,
+                'qty' => $request->qty,
+                'submitted_by' => $request->user()->id,
+            ]);
 
 
-        $stock->decrement('qty', $request->qty);
+            $stock->decrement('qty', $request->qty);
 
-        $this->accountTransactionService->createDebitTransaction(
-            $branch->parent->id,
-            sprintf(self::ACCOUNT_TRANSACTION_DETAIL, $goods->name, $request->qty, $goods->unitType->name),
-            $debitAccount->id,
-            $transaction->unit_price * $request->qty,
-            $transaction->id,
-        );
+            $this->accountTransactionService->createDebitTransaction(
+                $branch->parent->id,
+                sprintf(self::ACCOUNT_TRANSACTION_CONSUMED_ITEM_DETAIL, $goods->name, $request->qty, $goods->unitType->name),
+                $debitAccount->id,
+                $transaction->unit_price * $request->qty,
+                $transaction->id,
+            );
 
-        $this->accountTransactionService->createCreditTransaction(
-            $branch->parent->id,
-            sprintf(self::ACCOUNT_TRANSACTION_DETAIL, $goods->name, $request->qty, $goods->unitType->name),
-            $transaction->debit_account_id,
-            $transaction->unit_price * $request->qty,
-            $transaction->id
-        );
+            $this->accountTransactionService->createCreditTransaction(
+                $branch->parent->id,
+                sprintf(self::ACCOUNT_TRANSACTION_CONSUMED_ITEM_DETAIL, $goods->name, $request->qty, $goods->unitType->name),
+                $transaction->debit_account_id,
+                $transaction->unit_price * $request->qty,
+                $transaction->id
+            );
+
+        }
     }
 
 

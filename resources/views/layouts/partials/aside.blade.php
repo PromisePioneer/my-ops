@@ -259,7 +259,7 @@
                                     Kategori Barang
                                 </x-dropdown-menu-item>
                             @endcan
-                            @can('Lihat Menu Kategori Barang')
+                            @can('Lihat Menu Barang')
                                 <x-dropdown-menu-item
                                     :active="request()->segment(3) === 'items'"
                                     href="{{ url('/master/operational/items') }}">

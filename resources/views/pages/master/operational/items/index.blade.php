@@ -101,16 +101,16 @@
                                     <td x-text="item.name"></td>
                                     <td>
 
-                                        <template x-if="item.asset_account === null">
-                                            <span x-text="item.category?.name"></span>
+                                        <template x-if="item.asset_account_name === null">
+                                            <span x-text="item.category_name"></span>
                                         </template>
-                                        <template x-if="item.asset_account !== null">
+                                        <template x-if="item.asset_account_name !== null">
                                                 <span
-                                                    x-text="`${item.category?.name} - ${item.asset_account?.name}`"></span>
+                                                    x-text="`${item.category_name} - ${item.asset_account_name}`"></span>
                                         </template>
                                     </td>
                                     <td x-text="item.material"></td>
-                                    <td x-text="item.unit_type?.name"></td>
+                                    <td x-text="item.unit_type_name"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-item" @click="edit(item.id)">
@@ -144,6 +144,8 @@
     <script defer>
         function itemData() {
             return {
+                editPermission: "{{ request()->user()->can('Edit Data Barang') }}",
+                deletePermission: "{{ request()->user()->can('Hapus Data Barang') }}",
                 items: [],
                 isLoading: false,
                 buttonLoading: false,

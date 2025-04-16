@@ -8,18 +8,17 @@ use App\Http\Requests\Master\Operational\Item\ItemCollectionRequest;
 use App\Models\ItemCategory;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\UnitType;
+use App\Support\Master\Operational\ItemCollections\Service\ItemCollectionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 #[AllowDynamicProperties] class ItemCollectionController extends Controller
 {
-    private static int $perPage = 10;
 
     public function __construct()
     {
-        $this->goodsCategory = new ItemCategory();
-        $this->unitType = new UnitType();
+        $this->itemCollectionService = new ItemCollectionService();
     }
 
     public function index(): View
@@ -29,55 +28,18 @@ use Illuminate\View\View;
 
     public function data(): JsonResponse
     {
-        $goods = ItemCollection::with('category', 'unitType', 'assetAccount')->paginate(self::$perPage);
-        return response()->json($goods);
+        return response()->json($this->itemCollectionService->data());
     }
 
     public function search(Request $request): JsonResponse
     {
-        $search = $request->input('search');
-        $goods = ItemCollection::search($search)->query(function ($query) {
-            $query->join('item_categories', 'item_categories.id', '=', 'item_collections.category_id')
-                ->join('accounts', 'item_collections.asset_account_id', 'accounts.id')
-                ->join('unit_types', 'unit_types.id', '=', 'item_collections.unit_type_id')
-                ->orderBy('item_collections.name')
-                ->select('item_collections.*', 'item_categories.name as category_name', 'unit_types.name as unit_type_name', 'accounts.name as asset_account_name');
-        })->paginate(self::$perPage);
-        return response()->json($goods);
+        return response()->json($this->itemCollectionService->search($request));
     }
 
-
-    public function formattedData()
-    {
-
-    }
 
     public function store(ItemCollectionRequest $request): JsonResponse
     {
-        $unitType = UnitType::where('id', $request->unit_type_id)->first();
-        $category = ItemCategory::where('id', $request->category_id)->first();
-
-
-        if (empty($category)) {
-            $categoryId = ItemCategory::create([
-                'name' => $request->category_id
-            ]);
-        }
-
-        if (empty($unitType)) {
-            $unitTypeId = UnitType::create([
-                'name' => $request->unit_type_id
-            ]);
-        }
-
-        ItemCollection::create([
-            'name' => $request->name,
-            'category_id' => $categoryId->id ?? $request->category_id,
-            'unit_type_id' => $unitTypeId->id ?? $request->unit_type_id,
-            'asset_account_id' => $category->name === 'ASET' ? $request->asset_account_id : null,
-            'material' => $request->material
-        ]);
-
+        $this->itemCollectionService->store($request);
         return response()->json([
             'message' => 'Data berhasil disimpan.'
         ]);
@@ -92,17 +54,7 @@ use Illuminate\View\View;
 
     public function update(ItemCollection $itemCollection, ItemCollectionRequest $request): JsonResponse
     {
-
-        $category = ItemCategory::where('id', $request->category_id)->first();
-
-        $itemCollection->update([
-            'name' => $request->name,
-            'category_id' => $request->category_id,
-            'unit_type_id' => $request->unit_type_id,
-            'asset_account_id' => $category->name === 'ASET' ? $request->asset_account_id : null,
-            'material' => $request->material
-        ]);
-
+        $this->itemCollectionService->update($itemCollection, $request);
         return response()->json([
             'message' => 'Data berhasil disimpan.'
         ]);

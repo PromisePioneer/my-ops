@@ -19,8 +19,7 @@ class ItemCollection extends Model
         'category_id',
         'unit_type_id',
         'material',
-        'asset_account_id',
-
+        'asset_account_id'
     ];
 
 
@@ -28,9 +27,10 @@ class ItemCollection extends Model
     {
         return [
             'name' => $this->name,
-            'category_name.name' => '',
-            'unit_type_name.name' => '',
-            'asset_account_name.name' => ''
+            'material' => $this->material,
+            'unit_types.name' => '',
+            'item_categories.name' => '',
+            'accounts.name' => '',
         ];
     }
 
