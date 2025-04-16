@@ -258,6 +258,7 @@
                                 await axios.post('/inventory/goods/consumed-stocks', new FormData(this.form));
                                 await showAlert('success', 'Data berhasil disimpan');
                                 this.form.reset();
+                                this.ifMutated = null;
                                 this.modal.hide();
                                 await this.init();
                                 $(".main-branches-select2").val(null).trigger("change");

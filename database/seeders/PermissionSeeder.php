@@ -1014,10 +1014,10 @@ class PermissionSeeder extends Seeder
     public function itemCollections(): void
     {
         $permissions = [
-            'Lihat Menu Barang',
-            'Tambah Data Barang',
-            'Edit Data Barang',
-            'Hapus Data Barang',
+            'Lihat Menu Daftar Barang',
+            'Tambah Data Daftar Barang',
+            'Edit Data Daftar Barang',
+            'Hapus Data Daftar Barang',
         ];
 
 

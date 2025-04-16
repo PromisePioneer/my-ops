@@ -20,7 +20,7 @@ class ItemCollectionRepository
     public function searchItemCollection(QueryBuilder|EloquentBuilder $query): QueryBuilder|EloquentBuilder
     {
         return $query->join('item_categories', 'item_categories.id', 'item_collections.category_id')
-            ->join('accounts', 'item_collections.asset_account_id', 'accounts.id')
+            ->leftjoin('accounts', 'item_collections.asset_account_id', 'accounts.id')
             ->join('unit_types', 'unit_types.id', 'item_collections.unit_type_id')
             ->select('item_collections.*', 'item_collections.name as item_collection_name', 'item_categories.name', 'unit_types.name', 'accounts.name')
             ->orderBy('item_collections.name');

@@ -10,6 +10,7 @@ use App\Support\StockService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 
@@ -106,9 +107,16 @@ use Illuminate\View\View;
                 'id' => $item?->id,
                 'text' => $item?->name,
                 'children' => $item->children->map(function ($child) use ($itemCollection) {
+                    if (empty(Auth::user()->branch_id)) {
+                        $totalQty = $child->name . ' - ' . 'Stock : ' . $child->stock->where('item_id', $itemCollection->id)->sum('qty');
+                    } else {
+                        $totalQty = $child->name;
+                    }
+
+
                     return [
                         'id' => $child?->id,
-                        'text' => $child->name . ' - ' . 'Stock : ' . $child->stock->where('item_id', $itemCollection->id)->sum('qty'),
+                        'text' => $totalQty,
                     ];
                 })
             ];
