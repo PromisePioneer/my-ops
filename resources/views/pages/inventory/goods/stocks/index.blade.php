@@ -131,6 +131,7 @@
                         buttonLoading: false,
                         goodsStock: [],
                         consumedStock: [],
+
                         search: '',
                         placement: null,
                         isLoading: false,
