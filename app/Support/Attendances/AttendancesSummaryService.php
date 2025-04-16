@@ -179,7 +179,7 @@ use Illuminate\Http\Request;
         $periodEnd = Carbon::parse($endDate);
         $totalDays = 0;
 
-        foreach ($user->leaveAndPermissions->where('leaves_status', $type) as $leave) {
+        foreach ($user->leaveAndPermissions->where('leaves_status', $type)->where('confirmation_status', 'Diterima') as $leave) {
             $leaveStart = Carbon::parse($leave->start_date);
             $leaveEnd = Carbon::parse($leave->end_date);
 
@@ -211,7 +211,6 @@ use Illuminate\Http\Request;
             $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
 
 
-            // If the difference is greater than 3 minutes, count it as late
             $lateMinutes = $checkInToUse->diffInMinutes($actualCheckIn);
 
             if ($lateMinutes > 3) {
