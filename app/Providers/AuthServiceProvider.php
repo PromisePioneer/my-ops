@@ -16,6 +16,7 @@ use App\Models\Company;
 use App\Models\Department;
 use App\Models\EmployeeSchedule;
 use App\Models\Fab;
+use App\Models\ItemCollection;
 use App\Models\LeaveAndPermission;
 use App\Models\Master\Common\Branch;
 use App\Models\Master\Common\Contact;
@@ -47,6 +48,7 @@ use App\Policies\DepartmentPolicy;
 use App\Policies\EmployeeSchedulePolicy;
 use App\Policies\FabPolicy;
 use App\Policies\InitialBalancePolicy;
+use App\Policies\ItemCollectionPolicy;
 use App\Policies\LeaveAndPermissionPolicy;
 use App\Policies\NationalHolidayPolicy;
 use App\Policies\OfferingLetterPolicy;
@@ -106,7 +108,8 @@ class AuthServiceProvider extends ServiceProvider
         PSB::class => PSBPolicy::class,
         EmployeeSchedule::class => EmployeeSchedulePolicy::class,
         Transaction::class => TransactionPolicy::class,
-        AttendanceManualRequest::class => AttendanceManualRequestPolicy::class
+        AttendanceManualRequest::class => AttendanceManualRequestPolicy::class,
+        ItemCollection::class => ItemCollectionPolicy::class,
     ];
 
     /**

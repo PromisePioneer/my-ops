@@ -9,9 +9,11 @@ use App\Models\ItemCategory;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\UnitType;
 use App\Support\Master\Operational\ItemCollections\Service\ItemCollectionService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Throwable;
 
 #[AllowDynamicProperties] class ItemCollectionController extends Controller
 {
@@ -26,19 +28,32 @@ use Illuminate\View\View;
         return view('pages.master.operational.items.index');
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function data(): JsonResponse
     {
+        $this->authorize('view', ItemCollection::class);
         return response()->json($this->itemCollectionService->data());
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function search(Request $request): JsonResponse
     {
+        $this->authorize('search', ItemCollection::class);
         return response()->json($this->itemCollectionService->search($request));
     }
 
 
+    /**
+     * @throws Throwable
+     * @throws AuthorizationException
+     */
     public function store(ItemCollectionRequest $request): JsonResponse
     {
+        $this->authorize('store', ItemCollection::class);
         $this->itemCollectionService->store($request);
         return response()->json([
             'message' => 'Data berhasil disimpan.'
@@ -46,14 +61,22 @@ use Illuminate\View\View;
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function edit(ItemCollection $itemCollection): JsonResponse
     {
+        $this->authorize('update', $itemCollection);
         return response()->json($itemCollection);
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function update(ItemCollection $itemCollection, ItemCollectionRequest $request): JsonResponse
     {
+        $this->authorize('update', $itemCollection);
         $this->itemCollectionService->update($itemCollection, $request);
         return response()->json([
             'message' => 'Data berhasil disimpan.'
@@ -61,11 +84,12 @@ use Illuminate\View\View;
     }
 
 
-    public function destroy(Request $request, ItemCollection $goods): JsonResponse
+    public function destroy(Request $request, ItemCollection $itemCollection): JsonResponse
     {
+        $this->authorize('delete', $itemCollection);
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
-        $goods->whereIn('id', $explodeID)->delete();
+        $itemCollection->whereIn('id', $explodeID)->delete();
 
 
         return response()->json([

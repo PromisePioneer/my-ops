@@ -17,19 +17,21 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-                    <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                    @can('Tambah Data Daftar Barang')
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            <button type="button" class="btn btn-light-primary btn-sm" @click="add()"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-item">
-                                <i class="ki-duotone ki-message-add fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                </i> Tambah
-                            </button>
+                            <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                                <button type="button" class="btn btn-light-primary btn-sm" @click="add()"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-item">
+                                    <i class="ki-duotone ki-message-add fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i> Tambah
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    @endcan
                 </div>
             </div>
             <div class="card-body py-3">
@@ -37,7 +39,7 @@
                     <form id="form-delete" @submit.prevent="destroy()">
                         <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
-                                x-show="selectedCheckBox.length > 0"
+                                x-show="selectedCheckBox.length > 0 && Number(deletePermission) ===  1"
                                 x-transition x-cloak>
                             <i class="ki-duotone ki-trash-square fs-2">
                                 <span class="path1"></span>
@@ -100,7 +102,6 @@
                                     </td>
                                     <td x-text="item.name"></td>
                                     <td>
-
                                         <template x-if="item.asset_account_name === null">
                                             <span x-text="item.category_name"></span>
                                         </template>
@@ -144,8 +145,8 @@
     <script defer>
         function itemData() {
             return {
-                editPermission: "{{ request()->user()->can('Edit Data Barang') }}",
-                deletePermission: "{{ request()->user()->can('Hapus Data Barang') }}",
+                editPermission: "{{ request()->user()->can('Edit Data Daftar Barang') }}",
+                deletePermission: "{{ request()->user()->can('Hapus Data Daftar Barang') }}",
                 items: [],
                 isLoading: false,
                 buttonLoading: false,
@@ -274,11 +275,7 @@
                         }
                     }).on('change', (e) => {
                         const data = $(".item-category-select2 option:selected").text();
-                        if (data === 'ASET') {
-                            self.isAset = true;
-                        } else {
-                            self.isAset = false;
-                        }
+                        self.isAset = data === 'ASET';
                     });
                 },
                 async selectedAssetAccount() {
