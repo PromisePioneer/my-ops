@@ -103,7 +103,6 @@ class TransactionRequest extends FormRequest
 
             $totalTransaction = $request->input('qty') * $unitPrice;
 
-
             if ($totalTransaction > $subtractBetweenDebitAndCreditTransaction) {
                 $fail('Saldo Kurang!,' . '<br>' . 'Saldo sisa : ' . 'Rp.' . number_format($subtractBetweenDebitAndCreditTransaction, 2, '.', '.') . '<br>' . 'Total Transaksi : ' . number_format($totalTransaction, 2, '.', '.'));
             }

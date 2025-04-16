@@ -27,9 +27,9 @@ class GeneralJournalController extends Controller
         return view('pages.journals.general-journal.index');
     }
 
-    public function data(Request $request): JsonResponse
+    public function data(): JsonResponse
     {
-        return response()->json($this->generalJournalService->data($request));
+        return response()->json($this->generalJournalService->data());
     }
 
     public function getBranchData(Request $request): JsonResponse

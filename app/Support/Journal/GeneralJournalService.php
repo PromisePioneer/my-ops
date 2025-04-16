@@ -25,10 +25,11 @@ class GeneralJournalService
         return $generalJournal->map(function ($item) {
             return [
                 'id' => $item->id,
+                'branch_name' => $item->branch->name,
                 'date' => $item->date,
-                'amount' => 'Rp.'.number_format($item->amount, 2),
+                'amount' => 'Rp.' . number_format($item->amount, 2),
                 'type' => $item->entries_type,
-                'account' => $item->account->code.' '.$item->account->name,
+                'account' => $item->account->code . ' ' . $item->account->name,
                 'description' => $item->description,
             ];
         });

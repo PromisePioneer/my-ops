@@ -67,6 +67,7 @@
                                        id="kt_roles_view_table">
                                     <thead>
                                     <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="min-w-125px text-center">Cabang</th>
                                         <th class="min-w-125px text-center">Tanggal</th>
                                         <th class="min-w-125px text-center">Akun</th>
                                         <th class="min-w-125px text-center">Deskripsi</th>
@@ -95,6 +96,7 @@
                                     </template>
                                     <template x-for="(journal, index) in generalJournal" :key="index">
                                         <tr>
+                                            <td class="text-center" x-text="journal.branch_name"></td>
                                             <td class="text-center" x-text="journal.date"></td>
                                             <td x-text="journal.account"></td>
                                             <td x-text="journal.description"></td>
