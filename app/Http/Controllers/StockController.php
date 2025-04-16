@@ -97,7 +97,6 @@ use Illuminate\View\View;
 
     public function getMainBranchWithStock(ItemCollection $itemCollection)
     {
-
         $this->authorize('view', Stock::class);
         $branch = Branch::with('stock', 'children')->whereNull('parent_id')->get();
 
@@ -116,6 +115,3 @@ use Illuminate\View\View;
         });
     }
 }
-
-
-//

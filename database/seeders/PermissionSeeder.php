@@ -38,7 +38,7 @@ class PermissionSeeder extends Seeder
         //operational master data
         $this->supplier();
         $this->goodsCategory();
-        $this->joinClosureCode();
+        $this->itemCollections();
 
         // Inventory Controller
         $this->BoQ();
@@ -1005,6 +1005,21 @@ class PermissionSeeder extends Seeder
         $permissions = [
             'Input Pemakaian Stok Barang',
         ];
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+    }
+
+    public function itemCollections(): void
+    {
+        $permissions = [
+            'Lihat Menu Barang',
+            'Tambah Data Barang',
+            'Edit Data Barang',
+            'Hapus Data Barang',
+        ];
+
 
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);
