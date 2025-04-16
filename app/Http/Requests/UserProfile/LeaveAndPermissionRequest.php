@@ -63,7 +63,7 @@ class LeaveAndPermissionRequest extends FormRequest
                 Rule::requiredIf($request->leaves_status === 'Izin' || $request->leaves_status === 'Sakit' || $request->leaves_status === 'Cuti'),
                 $this->validateEndDate($request, $getLeavesDaysInThisMonth, $getDiffDaysBetweenStartDateAndEndDate),
             ],
-            'reason' => [Rule::requiredIf($request->leaves_status === 'Izin' || $request->leaves_status === 'Sakit' || $request->leaves_status === 'Cuti')],
+            'reason' => [Rule::requiredIf($request->leaves_status === 'Izin' || $request->leaves_status === 'Sakit')],
             'leaves_status' => ['required'],
             'sick_letter' => [
                 Rule::requiredIf(fn() => $request->leaves_status === 'Sakit'),
