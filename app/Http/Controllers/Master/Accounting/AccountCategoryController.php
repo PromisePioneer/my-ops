@@ -39,6 +39,12 @@ use Illuminate\View\View;
     }
 
 
+    public function search(Request $request): JsonResponse
+    {
+        return response()->json($this->accountCategoryService->search($request));
+    }
+
+
     /**
      * @throws AuthorizationException
      */

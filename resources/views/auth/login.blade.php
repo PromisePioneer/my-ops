@@ -26,14 +26,25 @@
                             <div class="d-flex flex-stack mb-2">
                                 <label class="form-label fw-bolder text-dark fs-6 mb-0">Password</label>
                             </div>
-                            <input
-                                class="form-control form-control-lg form-control-solid @error('password') is-invalid @enderror"
-                                type="password" name="password" id="password" autocomplete="off"/>
-                            @error('password')
-                            <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                            @enderror
+
+                            <div class="position-relative mb-3">
+                                <input
+                                    class="form-control form-control-lg form-control-solid @error('password') is-invalid @enderror"
+                                    type="password" name="password" id="password" autocomplete="off"/>
+                                @error('password')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+
+                                <span @click="clickToSeePassword()" class="btn btn-sm btn-icon position-absolute translate-middle top-50 end-0 me-n2"
+                                      data-kt-password-meter-control="visibility">
+                    <i class="ki-duotone ki-eye-slash fs-1"><span class="path1"></span><span class="path2"></span><span
+                            class="path3"></span><span class="path4"></span></i>
+                    <i class="ki-duotone ki-eye d-none fs-1"><span class="path1"></span><span class="path2"></span><span
+                            class="path3"></span></i>
+            </span>
+                            </div>
                         </div>
                         <div class="fv-row mb-10 float-end">
                             <div class="form-check form-check-custom form-check-solid">

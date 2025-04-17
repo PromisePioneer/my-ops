@@ -3,7 +3,7 @@
 namespace App\Support\Master\Accounting\AccountCategories\Service;
 
 use App\Models\AccountCategory;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class AccountCategoryService
@@ -35,5 +35,16 @@ class AccountCategoryService
 
         $data->setCollection($accountCategory);
         return $data;
+    }
+
+    public function search(Request $request): LengthAwarePaginator
+    {
+        $search = $request->input('search');
+        $data = AccountCategory::with('children')->when(!empty($search), function ($query) use ($search) {
+            $query->orWhereHas('children', function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })->orWhere('name', 'like', '%' . $search . '%');
+        })->paginate(self::$perPage);
+        return self::formattedData($data);
     }
 }

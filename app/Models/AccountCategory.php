@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Scout\Searchable;
 
 class AccountCategory extends Model
 {
+    use Searchable;
     protected $table = 'account_categories';
     protected $fillable = ['name', 'parent_id'];
 
