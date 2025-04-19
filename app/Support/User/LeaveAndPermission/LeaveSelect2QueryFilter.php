@@ -120,6 +120,15 @@ class LeaveSelect2QueryFilter
         }
 
 
+        if ($request->user()->hasRole('Inventory Controller Supervisor')) {
+            $query->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Stocker Staff', 'Inventory Controller Supervisor']);
+            })->where(function ($query) use ($request) {
+                $query->where('active', 1)->whereNull('branch_id')->orWhereIn('branch_id', [1]);
+            });
+        }
+
+
         if ($request->user()->hasAnyRole('Head Of Electrical Engineer')) {
             $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer', 'Electrical Engineer']);

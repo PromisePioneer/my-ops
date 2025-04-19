@@ -104,6 +104,17 @@ class LeaveACLFilter
         }
 
 
+        if ($request->user()->hasAnyRole('Inventory Controller Supervisor')) {
+            $query->whereHas('user.roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Stocker Staff', 'Inventory Controller Supervisor']);
+            })->where(function ($query) use ($request) {
+                $query->whereHas('branch', function ($query) use ($request) {
+                    $query->whereNull('branch_id')->orWhereIn('branch_id', [1])->where('active', 1);
+                });
+            });
+        }
+
+
         if ($request->user()->hasAnyRole('Head Of Electrical Engineer')) {
             $query->whereHas('user.roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer']);
