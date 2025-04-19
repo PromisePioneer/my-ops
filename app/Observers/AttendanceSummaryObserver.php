@@ -121,6 +121,13 @@ class AttendanceSummaryObserver
                 ->first()?->start_date;
         }
 
+        if ( $attendances->status1 === 1 && $timestamp->between(Carbon::parse($timestamp->copy()->format('Y-m-d') . '03:00:00'), Carbon::parse($timestamp->copy()->format('Y-m-d') . '06:00:00'))) {
+            $userShift = EmployeeSchedule::with('workTime')
+                ->where('employee_id', $attendances->employee_id)
+                ->whereDate('end_date', $timestamp->format('Y-m-d'))
+                ->first()?->start_date;
+        }
+
 
         if ($attendances->status1 === 1 && $timestamp->between(Carbon::parse($timestamp->copy()->format('Y-m-d') . '09:00:00'), Carbon::parse($timestamp->copy()->format('Y-m-d') . '12:00:00'))) {
             $userShift = EmployeeSchedule::with('workTime')
