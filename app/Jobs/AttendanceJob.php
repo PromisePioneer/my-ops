@@ -65,7 +65,8 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
                             'timestamp' => $record['timestamp'],
                             'status1' => $record['type'],
                         ];
-                        Attendances::create($data);
+                        $shift = $this->iclockService->getShiftForUser($data['employee_id'], $data['timestamp'], $data['status1']);
+                        $this->iclockService->processAttendanceRecord($data, $shift);
                     }
                 }
                 $zk->disconnect();
