@@ -997,7 +997,6 @@ class PermissionSeeder extends Seeder
             Permission::create(['name' => $permission]);
         }
         $branchManager = Role::where('name', 'Branch Manager')->first();
-        $branchManager->givePermissionTo($permissions);
     }
 
     public function consumedStock(): void

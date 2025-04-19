@@ -109,7 +109,7 @@ class LeaveACLFilter
                 $query->whereIn('name', ['Stocker Staff', 'Inventory Controller Supervisor']);
             })->where(function ($query) use ($request) {
                 $query->whereHas('branch', function ($query) use ($request) {
-                    $query->whereNull('branch_id')->orWhereIn('branch_id', [1])->where('active', 1);
+                    $query->where('branch_id', [1])->where('active', 1);
                 });
             });
         }
