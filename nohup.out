@@ -1,0 +1,6 @@
+  2025-02-10 21:11:07 App\Jobs\AttendanceJob ......................... RUNNING
+  2025-02-10 21:12:07 App\Jobs\AttendanceJob ....................... 59dt FAIL
+  2025-02-12 09:00:19 App\Jobs\AttendanceJob ......................... RUNNING
+  2025-02-12 09:00:47 App\Jobs\AttendanceJob ....................... 27dt DONE
+  2025-02-13 01:40:55 App\Jobs\AttendanceJob ......................... RUNNING
+  2025-02-13 01:41:55 App\Jobs\AttendanceJob ....................... 1mnt FAIL
