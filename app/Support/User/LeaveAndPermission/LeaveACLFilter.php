@@ -108,7 +108,7 @@ class LeaveACLFilter
             $query->whereHas('user.roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Stocker Staff', 'Inventory Controller Supervisor']);
             })->where(function ($query) use ($request) {
-                $query->whereHas('branch', function ($query) use ($request) {
+                $query->whereHas('user.branch', function ($query) use ($request) {
                     $query->where('branch_id', [1])->where('active', 1);
                 });
             });
