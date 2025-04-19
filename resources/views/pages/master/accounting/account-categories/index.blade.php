@@ -240,7 +240,7 @@
                 async searchData() {
                     this.isLoading = true;
                     try {
-                        const response = await axios.get('/master/accounting/accountCategories/search', {
+                        const response = await axios.get('/master/accounting/account-categories/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -323,7 +323,7 @@
                 async updateParent(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/master/accounting/accountCategories/update/${id}`,
+                        await axios.post(`/master/accounting/account-categories/update/${id}`,
                             new FormData(this.formEdit))
                         await showAlert('success', 'Data berhasil diubah')
                         this.formEdit.reset();
