@@ -7,7 +7,6 @@ use App\Models\DeviceLog;
 use App\Models\EmployeeSchedule;
 use App\Models\FingerLog;
 use App\Models\FpDevice;
-use App\Models\Master\Common\Branch;
 use App\Models\User;
 use App\Models\WorkTime;
 use Carbon\Carbon;
@@ -136,6 +135,14 @@ class IclockService
                     ->first();
             }
 
+        }
+
+
+        if ($status1 === 1 && $dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '03:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '06:00:00'))) {
+            $userShift = EmployeeSchedule::with('workTime')
+                ->where('employee_id', $employeeId)
+                ->whereDate('end_date', $dateTime->format('Y-m-d'))
+                ->first();
         }
 
 
