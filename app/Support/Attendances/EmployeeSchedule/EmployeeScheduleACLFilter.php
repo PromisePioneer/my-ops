@@ -50,6 +50,14 @@ class EmployeeScheduleACLFilter
             });
         }
 
+        if ($request->user()->hasRole('Inventory Controller Supervisor')) {
+            $query->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Stocker Staff', 'Inventory Controller Supervisor']);
+            })->where(function ($query) use ($request) {
+                $query->whereNull('branch_id')->orWhereIn('branch_id', [1])->where('active', 1);;
+            });
+        }
+
 
         if ($request->user()->hasRole('Head Of Electrical Engineer')) {
             $query->whereHas('roles', function ($query) use ($request) {
