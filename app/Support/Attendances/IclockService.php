@@ -121,25 +121,15 @@ class IclockService
 
         $userShift = null;
 
-        if ($dateTime->greaterThan($startOfTime)) {
-            if ($dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '23:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '23:59:59'))) {
-                $userShift = EmployeeSchedule::with('workTime')
-                    ->where('employee_id', $employeeId)
-                    ->whereDate('start_date', $dateTime->format('Y-m-d'))
-                    ->first();
-            }
 
-            if ($dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '00:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '02:00:00'))) {
-                $userShift = EmployeeSchedule::with('workTime')
-                    ->where('employee_id', $employeeId)
-                    ->whereDate('end_date', $dateTime->format('Y-m-d'))
-                    ->first();
-            }
-
+        if ($dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '23:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '23:59:59'))) {
+            $userShift = EmployeeSchedule::with('workTime')
+                ->where('employee_id', $employeeId)
+                ->whereDate('start_date', $dateTime->format('Y-m-d'))
+                ->first();
         }
 
-
-        if ($status1 === 1 && $dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '03:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '06:00:00'))) {
+        if ($dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '00:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '02:00:00'))) {
             $userShift = EmployeeSchedule::with('workTime')
                 ->where('employee_id', $employeeId)
                 ->whereDate('end_date', $dateTime->format('Y-m-d'))
@@ -147,7 +137,15 @@ class IclockService
         }
 
 
-        if ($status1 === 1 && $dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '09:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '12:00:00'))) {
+        if ($dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '03:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '06:00:00'))) {
+            $userShift = EmployeeSchedule::with('workTime')
+                ->where('employee_id', $employeeId)
+                ->whereDate('end_date', $dateTime->format('Y-m-d'))
+                ->first();
+        }
+
+
+        if ($dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '09:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '12:00:00'))) {
             $userShift = EmployeeSchedule::with('workTime')
                 ->where('employee_id', $employeeId)
                 ->whereDate('end_date', $dateTime->format('Y-m-d'))
@@ -156,7 +154,15 @@ class IclockService
 
         }
 
-        if ($status1 === 1 && $dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '03:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '06:00:00'))) {
+
+        if ($dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '17:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '20:00:00'))) {
+            $userShift = EmployeeSchedule::with('workTime')
+                ->where('employee_id', $employeeId)
+                ->whereDate('start_date', $dateTime->format('Y-m-d'))
+                ->first();
+        }
+
+        if ($dateTime->between(Carbon::parse($dateTime->copy()->format('Y-m-d') . '03:00:00'), Carbon::parse($dateTime->copy()->format('Y-m-d') . '06:00:00'))) {
             $userShift = EmployeeSchedule::with('workTime')
                 ->where('employee_id', $employeeId)
                 ->whereDate('end_date', $dateTime->format('Y-m-d'))
@@ -171,17 +177,20 @@ class IclockService
                 ->first();
         }
 
-        $user = User::where('absent_id', $employeeId)->first();
+
+        $user = User::with('branch')->where('absent_id', $employeeId)->first();
+
+
         return $userShift ?? WorkTime::find(11);
     }
 
     public function processAttendanceRecord(array $attendanceData, $shift): void
     {
         $date = Carbon::parse($attendanceData['timestamp']);
-        $shiftTimeToCheckIn = Carbon::make($shift->start_date . ' ' . $shift->workTime?->time_to_checkin);
-        $shiftEndTimeToCheckIn = Carbon::make($shift->start_date . ' ' . $shift?->workTime?->end_time_to_checkin);
-        $shiftTimeToCheckOut = Carbon::make($shift->end_date . ' ' . $shift->workTime?->time_to_checkout);
-        $shiftEndTimeToCheckOut = Carbon::make($shift->end_date . ' ' . $shift?->workTime?->end_time_to_checkout);
+        $shiftTimeToCheckIn = $shift->start_date ? Carbon::make($shift->start_date . ' ' . $shift->workTime?->time_to_checkin) : null;
+        $shiftEndTimeToCheckIn = $shift->start_date ? Carbon::make($shift->start_date . ' ' . $shift?->workTime?->end_time_to_checkin) : null;
+        $shiftTimeToCheckOut = $shift->start_date ? Carbon::make($shift->end_date . ' ' . $shift->workTime?->time_to_checkout) : null;
+        $shiftEndTimeToCheckOut = $shift->start_date ? Carbon::make($shift->end_date . ' ' . $shift?->workTime?->end_time_to_checkout) : null;
 
         if ($shift?->workTime?->name === 'Malam') {
             $startDateEmpSchedule = $shift->start_date ? Carbon::make($shift->start_date)->format('Y-m-d') : null;
@@ -194,24 +203,40 @@ class IclockService
         $isCheckIn = $this->isValidTimeToCheckIn($date, $shiftTimeToCheckIn ?? $shift->time_to_checkin, $shiftEndTimeToCheckIn ?? $shift->end_time_to_checkin, $shift?->name);
         $isCheckOut = $this->isValidTimeCheckOut($date, $shiftTimeToCheckOut ?? $shift->time_to_checkout, $shiftEndTimeToCheckOut ?? $shift->end_time_to_checkout, $shift?->name, $attendanceData['employee_id']);
 
-        $attendancesSummary = $this->findOrCreateSummary($attendanceData, $shift, $date);
 
-        if (!$attendancesSummary->clock_in && $isCheckIn) {
-            $attendancesSummary->clock_in = $date;
+        if ($isCheckIn || $isCheckOut) {
+            $attendancesSummary = $this->findOrCreateSummary($attendanceData, $shift, $date);
+            if (!$attendancesSummary->clock_in && $isCheckIn) {
+                $attendancesSummary->clock_in = $date;
+            }
+            if (!$attendancesSummary->clock_out && $isCheckOut) {
+                $attendancesSummary->clock_out = $date;
+            }
+            $attendancesSummary->save();
+        } else {
+            Log::warning('Data dilewati karena tidak masuk tanggal', [
+                'timestamp' => $date,
+                'employee_id' => $attendanceData['employee_id'],
+            ]);
         }
-        if (!$attendancesSummary->clock_out && $isCheckOut) {
-            $attendancesSummary->clock_out = $date;
-        }
-
-        $attendancesSummary->save();
-
     }
 
     public function findOrCreateSummary(array $attendanceData, $shift, string $date)
     {
 
+        $user = User::with('branch')->where('absent_id', $attendanceData['employee_id'])->first();
 
-        $shift = $shift->workTime?->id ?? WorkTime::find(11)->id;
+        if ($user) {
+            $ifBranchDuri = $user?->branch_id === 2 ? WorkTime::find(14)?->id : null;
+            $isEngineer = $user->hasAnyRole([
+                'Engineer',
+                'Senior Engineer',
+                'KU Engineer',
+                'Quality Control Staff',
+                'Warehouse Security'
+            ]) ? WorkTime::find(12)?->id : null;
+        }
+        $shift = $shift->workTime?->id ?? $ifBranchDuri ?? $isEngineer ?? WorkTime::find(11)->id;
 
         $date = Carbon::parse($date);
 
@@ -267,6 +292,15 @@ class IclockService
                 ->whereDate('end_date', $timestamp->format('Y-m-d'))
                 ->first()?->start_date;
         }
+
+
+        if ($timestamp->between(Carbon::parse($timestamp->copy()->format('Y-m-d') . '17:00:00'), Carbon::parse($timestamp->copy()->format('Y-m-d') . '20:00:00'))) {
+            $userShift = EmployeeSchedule::with('workTime')
+                ->where('employee_id', $employeeId)
+                ->whereDate('start_date', $timestamp->format('Y-m-d'))
+                ->first()?->start_date;
+        }
+
 
         if (!$userShift) {
             $userShift = EmployeeSchedule::with('workTime')
