@@ -56,7 +56,7 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
                 $endDate = Carbon::parse($this->endDate)->endOfDay();
                 foreach ($item as $record) {
                     $recordDate = Carbon::parse(substr($record['timestamp'], 0, 10));
-                    if ($recordDate->greaterThanOrEqualTo($startDate) && $recordDate->lessThanOrEqualTo($endDate)) {
+                    if ($recordDate->between($startDate, $endDate)) {
                         $data = [
                             'sn' => $this->fpDevice->serial_number,
                             'table' => 'ATTLOG',
@@ -65,11 +65,17 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
                             'timestamp' => $record['timestamp'],
                             'status1' => $record['type'],
                         ];
-                        $shift = $this->iclockService->getShiftForUser($data['employee_id'], $data['timestamp'], $data['status1']);
+
+
+                        $shift = $this->iclockService->getShiftForUser(
+                            $data['employee_id'],
+                            $data['timestamp'],
+                            $data['status1']
+                        );
                         $this->iclockService->processAttendanceRecord($data, $shift);
+                        Log::info($data);
                     }
                 }
-                $zk->disconnect();
             }
             $this->progress->update(['status' => 'Sukses']);
         } catch (\Exception $e) {

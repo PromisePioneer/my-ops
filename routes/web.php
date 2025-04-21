@@ -106,11 +106,11 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
 
 
 Route::get('/test', function () {
-    $zk = new ZKTeco('103.141.255.223');
+    ini_set('max_execution_time', 300);
+    $zk = new ZKTeco('103.211.160.26');
     $connected = $zk->connect();
     $attendanceLog = $zk->getAttendance();
 
-    dd($attendanceLog);
 });
 
 Route::get('/', function () {

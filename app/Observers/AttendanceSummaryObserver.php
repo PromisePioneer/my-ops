@@ -26,12 +26,6 @@ class AttendanceSummaryObserver
             return;
         }
 
-//        $weekHoliday = WeekHoliday::where('user_id', $user->id)->where('day', $timestamp->dayName)->first();
-//
-//        if ($weekHoliday) {
-//            return;
-//        }
-
         $attendancesSummary = $this->findOrCreateSummary($attendances, $workTime, $timestamp);
 
         if ($attendances->status1 === 0 && !$attendancesSummary->clock_in) {
