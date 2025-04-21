@@ -30,7 +30,7 @@ class AttendanceSummaryDetailService
     }
 
 
-    public function data(Request $request, int $empId, $startDates = null, $endDates = null)
+    public function data(Request $request, ?int $empId, $startDates = null, $endDates = null)
     {
 
         $startDate = $startDates ?? $this->financialClosePeriodService->startDate();

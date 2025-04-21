@@ -23,6 +23,7 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
     protected $startDate;
     protected $endDate;
     public int $timeout = 0;
+    public $tries = 3;
     protected AttendanceJobProgress $progress;
     public IclockService $iclockService;
 
@@ -73,7 +74,6 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
                             $data['status1']
                         );
                         $this->iclockService->processAttendanceRecord($data, $shift);
-                        Log::info($data);
                     }
                 }
             }
