@@ -23,16 +23,20 @@ class LeaveSelect2QueryFilter
             $query->whereHas('roles', function ($query) {
                 $query->whereIn('name', [
                     'Head Engineer',
+                    'Senior Engineer',
+                    'Engineer',
                     'KU Head Engineer',
+                    'KU Engineer',
                     'Quality Controller Supervisor',
                     'Backbone Team Supervisor',
                     'Trainer & Quality Control Staff',
                     'Stocker Supervisor',
                     'Programmer',
-                    'Legal & Corporate Commissioner',
                     'After Sales Customer Service',
                     'Project Controller & Vendor Supervisor',
-                    'Mechanic Senior Staff'
+                    'Warehouse Security',
+                    'Graphic Designer & Socmed Admin',
+                    'Warehouse Supervisor'
                 ]);
             });
         }
@@ -54,7 +58,8 @@ class LeaveSelect2QueryFilter
                     'After Sales Customer Service',
                     'Project Controller & Vendor Supervisor',
                     'Warehouse Security',
-                    'Graphic Designer & Socmed Admin'
+                    'Graphic Designer & Socmed Admin',
+                    'Warehouse Supervisor'
                 ]);
             });
 
@@ -86,7 +91,6 @@ class LeaveSelect2QueryFilter
                     'Welding Senior Engineer',
                     'Warehouse Stocker Staff',
                     'Customer Service Leader',
-                    ''
                 ]);
             });
         }
@@ -107,6 +111,13 @@ class LeaveSelect2QueryFilter
                 $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff', 'After Sales Customer Service']);
             })->where(function ($query) use ($request) {
                 $query->where('active', 1)->whereNull('branch_id')->orWhereIn('branch_id', [1]);
+            });
+        }
+
+
+        if ($request->user()->hasRole('Warehouse Supervisor')) {
+            return $query->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Warehouse Stocker Staff', 'Warehouse Security']);
             });
         }
 

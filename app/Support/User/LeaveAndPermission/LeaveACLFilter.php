@@ -83,6 +83,13 @@ class LeaveACLFilter
             });
         }
 
+
+        if ($request->user()->hasRole('Warehouse Supervisor')) {
+            return $query->whereHas('user.roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Warehouse Stocker Staff', 'Warehouse Security']);
+            });
+        }
+
         if ($request->user()->hasAnyRole('Customer Service Leader')) {
             return $query->whereHas('user.roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff', 'After Sales Customer Service']);
