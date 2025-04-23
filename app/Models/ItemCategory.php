@@ -14,6 +14,8 @@ class ItemCategory extends Model
     protected $table = 'item_categories';
     protected $fillable = [
         'name',
+        'notes',
+        'description',
     ];
 
     public function toSearchableArray(): array

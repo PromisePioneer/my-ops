@@ -22,6 +22,7 @@ use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\AttendanceManualRequestController;
 use App\Http\Controllers\BAAController;
 use App\Http\Controllers\ConsumedStockController;
+use App\Http\Controllers\DraftStockController;
 use App\Http\Controllers\GoodsCategoryController;
 use App\Http\Controllers\GoodsPurchaseOrderController;
 use App\Http\Controllers\GoodsTransactionController;
@@ -709,6 +710,11 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/data', [ConsumedStockController::class, 'data']);
                 Route::post('/', [ConsumedStockController::class, 'store']);
             });
+
+
+            Route::prefix('draft-stocks')->group(function () {
+                Route::get('/get-qty', [DraftStockController::class, 'getQty']);
+            });
         });
 
 
@@ -996,6 +1002,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/user/selected/{workTime}', [WorkTimeController::class, 'getSelectedUserWorkTime']);
             Route::get('/detail/data/{workTime}', [WorkTimeController::class, 'detailData']);
             Route::get('/detail/data/search/{workTime}', [WorkTimeController::class, 'searchDetailData']);
+
         });
 
         Route::prefix('/attendances-summary')->group(function () {

@@ -30,6 +30,17 @@
                         </select>
                     </div>
 
+
+                    <div class="mb-10">
+                        <label for="unit_type_id" class="required form-label">Tipe</label>
+                        <select name="type"
+                                class="form-select form-select-solid">
+                            <option value="" selected>Pilih Tipe Barang</option>
+                            <option value="ASET" :selected="editVal.type === 'ASET'">Aset</option>
+                            <option value="JUAL" :selected="editVal.type === 'JUAL'">Jual</option>
+                        </select>
+                    </div>
+
                     <div class="mb-10">
                         <label for="unit_type_id" class="required form-label">Satuan</label>
                         <select name="unit_type_id" id="selected-unit-type"
@@ -38,6 +49,7 @@
                             <option></option>
                         </select>
                     </div>
+
 
                     <div class="mb-10">
                         <label for="unit_type_id" class="required form-label">Satuan</label>
@@ -57,7 +69,15 @@
                             <option></option>
                         </select>
                     </div>
+
+
+                    <div class="mb-10">
+                        <label for="unit_type_id" class="required form-label">Reorder Level</label>
+                        <input type="number" class="form-control form-control-solid" name="reorder_level"
+                               id="reorder_level" placeholder="Reorder Level" :value="editVal?.reorder_level">
+                    </div>
                 </div>
+
 
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">

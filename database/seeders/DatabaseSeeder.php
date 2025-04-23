@@ -41,7 +41,7 @@ class DatabaseSeeder extends Seeder
             AttendancesSummarySeeder::class,
             ItemCategoriesSeeder::class,
             WarehouseSeeder::class,
-            GoodsSeeder::class,
+            ItemCollectionSeeder::class,
             SupplierSeeder::class,
             AreaSeeder::class,
             PSBSeeder::class,

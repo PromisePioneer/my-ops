@@ -15,7 +15,6 @@ use App\Models\User;
 use App\Models\WorkTime;
 use App\Support\Attendances\AttendancesSummaryService;
 use App\Support\Attendances\AttendanceSummaryDetailService;
-use App\Support\FpDeviceCommandService;
 use App\Support\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -34,7 +33,6 @@ use Illuminate\View\View;
         $this->branch = new Branch();
         $this->role = new Role();
         $this->fpDevice = new FpDevice();
-        $this->FpDeviceCommandService = new FpDeviceCommandService();
     }
 
 

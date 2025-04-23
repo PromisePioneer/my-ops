@@ -13,6 +13,7 @@ return new class extends Migration {
         Schema::create('item_collections', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->enum('type', ['ASET', 'JUAL']);
             $table->foreignId('category_id')
                 ->constrained('item_categories')
                 ->cascadeOnDelete();
@@ -20,6 +21,7 @@ return new class extends Migration {
                 ->constrained('unit_types')
                 ->cascadeOnDelete();
             $table->enum('material', ['Besi', 'Non besi']);
+            $table->double('reorder_level');
             $table->timestamps();
         });
     }

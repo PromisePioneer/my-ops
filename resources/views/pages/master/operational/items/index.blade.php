@@ -100,7 +100,12 @@
                                                    :id="'checkbox-' + item.id"/>
                                         </div>
                                     </td>
-                                    <td x-text="item.name"></td>
+                                    <td>
+                                        <span x-text="item.name"></span>
+                                        <span
+                                            :class="item.type === 'ASET' ? 'badge badge top-100 start-0 badge-warning ms-2' : 'badge badge top-100 start-0 badge-danger ms-2'"
+                                            x-text="item.type"></span>
+                                    </td>
                                     <td>
                                         <template x-if="item.asset_account_name === null">
                                             <span x-text="item.category_name"></span>

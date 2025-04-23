@@ -5,8 +5,8 @@ namespace App\Support\Transactions\Services;
 use AllowDynamicProperties;
 use App\Http\Requests\TransactionConfirmationRequest;
 use App\Http\Requests\TransactionRequest;
+use App\Models\DraftStock;
 use App\Models\Master\Common\Branch;
-use App\Models\Stock;
 use App\Models\Transaction;
 use App\Support\AccountTransactions\AccountTransactionService;
 use App\Support\HelperService\HandleFileUploadService;
@@ -196,26 +196,13 @@ use function App\Helper\formatDate;
 
             if ($request->input('status') === 'Diterima') {
                 foreach ($explodeID as $transactionId) {
-
-
                     $transaction = Transaction::where('id', $transactionId)->first();
                     $branch = Branch::with('parent')->where('id', $transaction->branch_id)->first();
-                    $stocks = Stock::where('item_id', $transaction->item_id)
-                        ->where('transaction_id', $transaction->id)
-                        ->where('branch_id', $transaction->branch_id);
-
-                    if ($transaction->type === 'Barang' && $stocks->exists()) {
-                        $stocks->update([
-                            'qty' => $stocks->first()->qty + $transaction->qty
-                        ]);
-                    } else {
-                        Stock::create([
-                            'branch_id' => $transaction->branch_id,
-                            'transaction_id' => $transaction->id,
-                            'item_id' => $transaction->item_id,
-                            'qty' => $transaction->qty,
-                        ]);
-                    }
+                    DraftStock::create([
+                        'item_id' => $transaction->item_id,
+                        'transaction_id' => $transaction->id,
+                        'qty' => $transaction->qty
+                    ]);
 
                     $this->accountTransactionService->createDebitTransaction(
                         $branch->parent->id,

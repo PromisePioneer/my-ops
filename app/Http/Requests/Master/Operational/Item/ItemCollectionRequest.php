@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Master\Operational\Item;
 
 use App\Models\ItemCategory;
+use App\Models\Master\Common\UnitType;
+use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
@@ -29,11 +31,24 @@ class ItemCollectionRequest extends FormRequest
         $category = ItemCategory::where('id', $request->category_id)->first();
 
         return [
-            'name' => ['required', 'string', Rule::unique('item_collections', 'name')->ignore($request->route('itemCollection'))],
+            'name' => [
+                'required',
+                'string',
+                Rule::unique('item_collections', 'name')
+                    ->ignore($request->route('itemCollection')),
+                $this->getRulesForCategory1($request),
+                $this->getRulesForCategory3($request)
+            ],
             'unit_type_id' => ['required', 'string'],
             'category_id' => ['required', 'string'],
-            'material' => ['required', Rule::in(['Besi', 'Non Besi'])],
-            'asset_account_id' => [Rule::requiredIf($category->name === "ASET")],
+            'material' => [
+                'required',
+                Rule::in(['Besi', 'Non Besi'])
+            ],
+            'asset_account_id' => [
+                Rule::requiredIf($category->name === "ASET")
+            ],
+            'type' => ['required', Rule::in('ASET', 'JUAL')],
         ];
     }
 
@@ -49,5 +64,34 @@ class ItemCollectionRequest extends FormRequest
             'unit_type_id.exists' => 'Tipe satuan tidak ditemukan',
             'asset_account_id.required' => 'Asset account tidak boleh kosong jika kategori yang dipilih aset',
         ];
+    }
+
+
+    private static function getRulesForCategory1(Request $request): Closure
+    {
+        return static function ($attribute, $value, $fail) use ($request) {
+            $unitType = UnitType::find($request->unit_type_id);
+            $category = ItemCategory::find($request->category_id);
+
+            if ($category->name === 'Kategori 1' && $unitType->name !== 'Meter') {
+                return $fail('Tipe satuan harus Meter jika kategori yang dipilih Kategori 1');
+            }
+
+            return null;
+        };
+    }
+
+
+    private static function getRulesForCategory3(Request $request): Closure
+    {
+        return static function ($attribute, $value, $fail) use ($request) {
+            $category = ItemCategory::find($request->category_id);
+
+            if ($category->name === 'Kategori 3' && $request->type !== 'ASET') {
+                return $fail('Kategori 3 harus bertipe ASET');
+            }
+
+            return null;
+        };
     }
 }

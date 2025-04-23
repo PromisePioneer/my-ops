@@ -16,10 +16,12 @@ class ItemCollection extends Model
     protected $table = 'item_collections';
     protected $fillable = [
         'name',
+        'type',
         'category_id',
         'unit_type_id',
         'material',
-        'asset_account_id'
+        'asset_account_id',
+        'reorder_level',
     ];
 
 
@@ -53,5 +55,11 @@ class ItemCollection extends Model
     public function assetAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'asset_account_id');
+    }
+
+
+    public function draftStock(): HasMany
+    {
+        return $this->hasMany(DraftStock::class, 'item_id');
     }
 }

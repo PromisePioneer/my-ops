@@ -10,11 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('item_categories', function (Blueprint $table) {
+        Schema::create('list_of_items', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('notes');
-            $table->text('description');
+            $table->foreignId('transaction_id');
+            $table->foreignId('item_id')
+                ->constrained('item_collections')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->integer('code');
+            $table->enum('condition', ['Baik', 'Rusak']);
             $table->timestamps();
         });
     }
@@ -24,7 +28,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('item_categories');
+        Schema::dropIfExists('list_of_items');
     }
 };

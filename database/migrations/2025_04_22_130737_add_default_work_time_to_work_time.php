@@ -10,12 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('item_categories', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->text('notes');
-            $table->text('description');
-            $table->timestamps();
+        Schema::table('work_time', function (Blueprint $table) {
+            $table->boolean('is_default')->default(false)->after('end_time_to_checkout');
         });
     }
 
@@ -24,7 +20,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('item_categories');
+        Schema::table('work_time', function (Blueprint $table) {
+            //
+        });
     }
 };

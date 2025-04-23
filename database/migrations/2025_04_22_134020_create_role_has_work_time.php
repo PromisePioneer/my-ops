@@ -10,11 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('item_categories', function (Blueprint $table) {
+        Schema::create('role_has_work_time', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('notes');
-            $table->text('description');
+            $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('work_time_id')->constrained('work_time')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }
@@ -24,7 +23,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('item_categories');
+        Schema::dropIfExists('role_has_work_time');
     }
 };

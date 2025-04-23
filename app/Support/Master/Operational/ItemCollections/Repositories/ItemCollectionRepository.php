@@ -12,7 +12,7 @@ class ItemCollectionRepository
     public function getItemCollection(): Builder
     {
         return ItemCollection::with('category', 'unitType', 'assetAccount')
-            ->select('id', 'name as item_collection_name', 'category_id', 'unit_type_id', 'asset_account_id', 'material')
+            ->select('id', 'name as item_collection_name', 'category_id', 'unit_type_id', 'asset_account_id', 'material', 'type', 'reorder_level')
             ->orderBy('item_collection_name');
     }
 

@@ -8,7 +8,6 @@ use App\Models\ItemCategory;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\UnitType;
 use App\Support\Master\Operational\ItemCollections\Repositories\ItemCollectionRepository;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -52,6 +51,8 @@ use Throwable;
                 'category_name' => $item->category?->name ?? $item->category_name,
                 'asset_account_name' => $item->assetAccount?->name ?? $item->accounts,
                 'material' => $item->material,
+                'type' => $item->type,
+                'reorder_level' => $item->reorder_level
             ];
         });
 
@@ -92,7 +93,6 @@ use Throwable;
                 'material' => $request->material
             ]);
         });
-
     }
 
 
