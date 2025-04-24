@@ -2,13 +2,9 @@
 
 namespace App\Http\Requests\UserProfile;
 
-use App\Models\EmployeeSchedule;
 use App\Models\LeaveAndPermission;
-use App\Models\User;
-use App\Models\WeekHoliday;
 use App\Support\User\LeaveAndPermission\CalculateUserLeaves;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Database\Eloquent\Model;
@@ -42,26 +38,18 @@ class LeaveAndPermissionRequest extends FormRequest
     public function rules(Request $request): array
     {
         $getStartDate = $this->getStartDate($request);
-        $getLatestDate = $this->getLatestDate($request);
         $getDiproses = $this->getDiproses($request);
-
-        $getLeavesDaysInThisMonth = $this->calculateLeaveDaysInThisMonth($getStartDate, $getLatestDate);
-        $getDiffDaysBetweenStartDateAndEndDate = $this->calculateDiffDays($request->start_date, $request->end_date);
-        $ifDateRangeHasWeekHoliday = $this->ifDateRangeHasWeekHoliday($request);
-        $ifDateRangeHasLeaves = $this->ifDateRangeHasLeaves($request);
+        $ifTotalCutiIsLargerThanSix = $this->ifTotalCutiIsLargerThanSix($request);
 
 
         return [
             'start_date' => [
                 'required',
                 'date',
-//                $this->validateStartDate($request, $getDiproses),
-//                $ifDateRangeHasWeekHoliday,
-                $ifDateRangeHasLeaves
+                $ifTotalCutiIsLargerThanSix
             ],
             'end_date' => [
                 Rule::requiredIf($request->leaves_status === 'Izin' || $request->leaves_status === 'Sakit' || $request->leaves_status === 'Cuti'),
-                $this->validateEndDate($request, $getLeavesDaysInThisMonth, $getDiffDaysBetweenStartDateAndEndDate),
             ],
             'reason' => [Rule::requiredIf($request->leaves_status === 'Izin' || $request->leaves_status === 'Sakit')],
             'leaves_status' => ['required'],
@@ -78,24 +66,70 @@ class LeaveAndPermissionRequest extends FormRequest
      */
     private function getStartDate(Request $request): Model|LeaveAndPermission|null
     {
-        return LeaveAndPermission::where('user_id', $request->user()->id)
+
+        return LeaveAndPermission::where('user_id', $request->user_id ?? $request->user()->id)
             ->where('confirmation_status', 'Diterima')
             ->whereMonth('start_date', Carbon::now()->month)
             ->whereMonth('end_date', Carbon::now()->month)
             ->first();
     }
 
-    /**
-     * Get the latest date of the most recent leave in the current month.
-     */
-    private function getLatestDate(Request $request): Model|LeaveAndPermission|null
+
+    public function getTotalLeavesDayInThisMonth(): float|int
     {
-        return LeaveAndPermission::where('user_id', $request->user()->id)
+        $periodStart = Carbon::now()->startOfMonth();
+        $periodEnd = Carbon::now()->endOfMonth();
+        $totalDays = 0;
+
+
+        $getLeaves = LeaveAndPermission::where('leaves_status', 'Cuti')
             ->where('confirmation_status', 'Diterima')
             ->whereMonth('start_date', Carbon::now()->month)
             ->whereMonth('end_date', Carbon::now()->month)
-            ->latest()
-            ->first();
+            ->get();
+
+        foreach ($getLeaves as $leave) {
+            $leaveStart = Carbon::parse($leave->start_date);
+            $leaveEnd = Carbon::parse($leave->end_date);
+
+            $overlapStart = $leaveStart->max($periodStart);
+            $overlapEnd = $leaveEnd->min($periodEnd);
+
+            if ($overlapStart->gt($overlapEnd)) continue;
+
+            $totalDays += $overlapStart->diffInDays($overlapEnd) + 1;
+        }
+
+        return $totalDays;
+    }
+
+
+    public function ifTotalCutiIsLargerThanSix($request): Closure
+    {
+        $totalLeavesInThisMonth = $this->getTotalLeavesDayInThisMonth();
+        $totalLeavesRemaining = $this->calculateUserLeaves->calculate($request);
+
+        return static function ($attribute, $value, $fail) use ($request, $totalLeavesInThisMonth, $totalLeavesRemaining) {
+            $leaveIn1MonthQuota = 6;
+            $startDate = Carbon::parse($request->start_date);
+            $endDate = Carbon::parse($request->end_date);
+            $leavesPeriod = $startDate->diffInDays($endDate) + 1;
+            $totalLeavesInThisMonthAndTotalLeavesPeriod = $leavesPeriod + $totalLeavesInThisMonth;
+            if ($totalLeavesInThisMonthAndTotalLeavesPeriod > $leaveIn1MonthQuota) {
+                return $fail(
+                    'Jumlah cuti dalam satu bulan tidak boleh lebih dari 6 hari,
+                     jumlah cuti tersisa untuk bulan ini :
+                      ' . $leaveIn1MonthQuota - $totalLeavesInThisMonth . ' Hari'
+                );
+            };
+
+
+            if ($totalLeavesRemaining === 0) {
+                return $fail('Jatah Cuti sudah habis');
+            }
+
+            return null;
+        };
     }
 
     /**
@@ -111,152 +145,6 @@ class LeaveAndPermissionRequest extends FormRequest
             ->first();
     }
 
-    /**
-     * Calculate the total number of leave days taken in the current month.
-     */
-    private function calculateLeaveDaysInThisMonth($getStartDate, $getLatestDate): int
-    {
-        return Carbon::parse($getStartDate?->start_date)->diffInDays($getLatestDate?->end_date);
-    }
-
-    /**
-     * Calculate the difference in days between the start date and end date of the request.
-     */
-    private function calculateDiffDays($startDate, $endDate): int
-    {
-        return Carbon::parse($startDate)->diffInDays($endDate);
-    }
-
-    /**
-     * Validate the start date.
-     */
-    private function validateStartDate(Request $request, $getDiproses): Closure
-    {
-        return function ($attribute, $value, $fail) use ($request, $getDiproses) {
-            $minimumDate = Carbon::now()->addDays(6);
-
-            if ($value < $minimumDate && $request->leaves_status === 'Cuti') {
-                return $fail('Pengajuan cuti minimal 7 hari sebelum tanggal mulai cuti');
-            }
-
-            if ($request->leaves_status === 'Cuti' && $this->calculateUserLeaves->calculate($request) <= 0) {
-                return $fail('Jatah cuti anda telah habis');
-            }
-
-            if ($getDiproses && $request->leaves_status === 'Cuti') {
-                return $fail('Cuti anda masih ada yang di proses!');
-            }
-
-            return null;
-        };
-    }
-
-    /**
-     * Validate the end date.
-     */
-    private function validateEndDate(
-        Request $request,
-                $getLeavesDaysInThisMonth,
-                $getDiffDaysBetweenStartDateAndEndDate
-    ): Closure
-    {
-        return static function ($attribute, $value, $fail) use (
-            $request,
-            $getLeavesDaysInThisMonth,
-            $getDiffDaysBetweenStartDateAndEndDate
-        ) {
-            $diffInDays = Carbon::parse($request->start_date)->diffInDays($value);
-
-            if ($diffInDays > 6 && $request->leaves_status === 'Cuti') {
-                return $fail('Pengajuan cuti maksimal 6 hari');
-            }
-
-            if ($getDiffDaysBetweenStartDateAndEndDate + 1 > 6 && $request->leaves_status === 'Cuti') {
-                return $fail('Jatah cuti bulan ini telah habis');
-            }
-
-            if ($getLeavesDaysInThisMonth + $getDiffDaysBetweenStartDateAndEndDate + 1 > 6 && $request->leaves_status === 'Cuti' && Carbon::parse(
-                    $value
-                )->month === Carbon::now()->month) {
-                return $fail('Jatah cuti bulan ini telah habis');
-            }
-
-            return null;
-        };
-    }
-
-
-    public function ifDateRangeHasWeekHoliday($request): Closure
-    {
-
-        return static function ($attribute, $value, $fail) use ($request) {
-
-            $user = User::find($request->user_id);
-
-            $getHolidayFromEmployeeSchedule = EmployeeSchedule::where('employee_id', $user->absent_id)
-                ->whereDate('start_date', $request->start_date)
-                ->orWhereDate('end_date', $request->end_date)
-                ->first();
-            $getHolidayFromWeekHoliday = WeekHoliday::where('user_id', $request->user_id)->first()?->week_holiday;
-
-            $weekHoliday = Carbon::make($getHolidayFromEmployeeSchedule?->start_date)->dayName ?? $getHolidayFromWeekHoliday;
-
-            if (!$weekHoliday) {
-                return null;
-            }
-
-            $datePeriod = CarbonPeriod::create($request->start_date, $request->end_date);
-
-            foreach ($datePeriod as $date) {
-                if (Carbon::parse($date->format('Y-m-d'))->dayName === $weekHoliday) {
-                    return $fail('Tanggal cuti tidak boleh ada minggu libur');
-                }
-            }
-
-            return null;
-        };
-    }
-
-
-    public function ifDateRangeHasLeaves($request): Closure
-    {
-        return static function ($attribute, $value, $fail) use ($request) {
-            if ($request->route('leaveAndPermission')) {
-                return null;
-            }
-
-            $user = User::find($request->user_id ?? $request->user()->id);
-
-            $getLeaves = LeaveAndPermission::where('user_id', $user->id)
-                ->where('confirmation_status', '!=', 'Ditolak')
-                ->where(function ($query) use ($request) {
-                    $query->whereBetween('start_date', [$request->start_date, $request->end_date])
-                        ->orWhereBetween('end_date', [$request->start_date, $request->end_date]);
-                })->get();
-
-            $leavePeriods = [];
-
-            foreach ($getLeaves as $dates) {
-                $period = CarbonPeriod::create($dates->start_date, $dates->end_date);
-                foreach ($period as $date) {
-                    $formattedDate = $date->format('Y-m-d');
-                    $leavePeriods[$formattedDate] = [
-                        'date' => $formattedDate,
-                        'leaves_status' => $dates->leaves_status,
-                    ];
-                }
-            }
-
-
-            foreach ($leavePeriods as $date) {
-                if ($date['date'] === $request->start_date || $date['date'] === $request->end_date) {
-                    $word = "Anda sudah mengajukan" . " " . $dates->leaves_status . " " . "pada tanggal " . implode(', ', array_keys($leavePeriods));
-                    return $fail($word);
-                }
-            }
-            return null;
-        };
-    }
 
     /**
      * Custom validation messages.
