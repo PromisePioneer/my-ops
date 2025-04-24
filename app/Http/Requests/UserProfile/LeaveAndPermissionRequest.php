@@ -75,7 +75,7 @@ class LeaveAndPermissionRequest extends FormRequest
     }
 
 
-    public function getTotalLeavesDayInThisMonth(): float|int
+    public function getTotalLeavesDayInThisMonth(Request $request): float|int
     {
         $periodStart = Carbon::now()->startOfMonth();
         $periodEnd = Carbon::now()->endOfMonth();
@@ -83,9 +83,9 @@ class LeaveAndPermissionRequest extends FormRequest
 
 
         $getLeaves = LeaveAndPermission::where('leaves_status', 'Cuti')
+            ->where('user_id', $request->user_id ?? $request->user()->id)
             ->where('confirmation_status', 'Diterima')
             ->whereMonth('start_date', Carbon::now()->month)
-            ->whereMonth('end_date', Carbon::now()->month)
             ->get();
 
         foreach ($getLeaves as $leave) {
@@ -93,20 +93,25 @@ class LeaveAndPermissionRequest extends FormRequest
             $leaveEnd = Carbon::parse($leave->end_date);
 
             $overlapStart = $leaveStart->max($periodStart);
+
             $overlapEnd = $leaveEnd->min($periodEnd);
+
+
 
             if ($overlapStart->gt($overlapEnd)) continue;
 
             $totalDays += $overlapStart->diffInDays($overlapEnd) + 1;
         }
 
+
+
         return $totalDays;
     }
 
 
-    public function ifTotalCutiIsLargerThanSix($request): Closure
+    public function ifTotalCutiIsLargerThanSix(Request $request): Closure
     {
-        $totalLeavesInThisMonth = $this->getTotalLeavesDayInThisMonth();
+        $totalLeavesInThisMonth = $this->getTotalLeavesDayInThisMonth($request);
         $totalLeavesRemaining = $this->calculateUserLeaves->calculate($request);
 
         return static function ($attribute, $value, $fail) use ($request, $totalLeavesInThisMonth, $totalLeavesRemaining) {
@@ -115,6 +120,9 @@ class LeaveAndPermissionRequest extends FormRequest
             $endDate = Carbon::parse($request->end_date);
             $leavesPeriod = $startDate->diffInDays($endDate) + 1;
             $totalLeavesInThisMonthAndTotalLeavesPeriod = $leavesPeriod + $totalLeavesInThisMonth;
+
+
+
             if ($totalLeavesInThisMonthAndTotalLeavesPeriod > $leaveIn1MonthQuota) {
                 return $fail(
                     'Jumlah cuti dalam satu bulan tidak boleh lebih dari 6 hari,
