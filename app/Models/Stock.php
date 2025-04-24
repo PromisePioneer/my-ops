@@ -10,6 +10,7 @@ class Stock extends Model
     protected $table = 'stocks';
     protected $fillable = [
         'transaction_id',
+        'draft_stock_id',
         'branch_id',
         'item_id',
         'qty',

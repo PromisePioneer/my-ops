@@ -713,6 +713,9 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
             Route::prefix('draft-stocks')->group(function () {
+                Route::get('/', [DraftStockController::class, 'index']);
+                Route::get('/data', [DraftStockController::class, 'data']);
+                Route::post('/', [DraftStockController::class, 'store']);
                 Route::get('/get-qty', [DraftStockController::class, 'getQty']);
             });
         });

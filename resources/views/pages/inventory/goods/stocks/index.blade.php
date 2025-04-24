@@ -89,7 +89,8 @@
                         <!--end::Title-->
                         <!--begin::Toolbar-->
                         <div class="card-toolbar">
-                            <a href="#" class="btn btn-sm btn-light" data-bs-toggle="tooltip" data-bs-dismiss="click"
+                            <a href="{{ url('inventory/goods/draft-stocks') }}" class="btn btn-sm btn-light"
+                               data-bs-toggle="tooltip" data-bs-dismiss="click"
                                data-bs-custom-class="tooltip-inverse"
                                data-bs-original-title="Logistics App is coming soon" data-kt-initialized="1">Lihat
                                 Selengkapnya</a>
@@ -103,7 +104,7 @@
                                    role="tab">
                                     <span class="nav-text text-gray-800 fw-bold fs-6 mb-3">Belum Diberi kode</span>
                                     <span
-                                        class="bullet-custom position-absolute z-index-2 bottom-0 w-100 h-4px bg-primary rounded"></span>
+                                            class="bullet-custom position-absolute z-index-2 bottom-0 w-100 h-4px bg-primary rounded"></span>
                                 </a>
                             </li>
                             <li class="nav-item col-6 mx-0 px-0" role="presentation">
@@ -112,7 +113,7 @@
                                    tabindex="-1" role="tab">
                                     <span class="nav-text text-gray-800 fw-bold fs-6 mb-3">Sudah Boleh Reorder</span>
                                     <span
-                                        class="bullet-custom position-absolute z-index-2 bottom-0 w-100 h-4px bg-primary rounded"></span>
+                                            class="bullet-custom position-absolute z-index-2 bottom-0 w-100 h-4px bg-primary rounded"></span>
                                 </a>
                             </li>
                             <span class="position-absolute z-index-1 bottom-0 w-100 h-4px bg-light rounded"></span>
@@ -143,7 +144,7 @@
                                                 <span class="text-gray-800 fw-bold d-block fs-4">#5635-342808</span>
                                             </div>
                                             <span
-                                                class="badge badge-lg badge-light-success fw-bold my-2 fs-8">Delivered</span>
+                                                    class="badge badge-lg badge-light-success fw-bold my-2 fs-8">Delivered</span>
                                         </div>
                                     </div>
                                     <div class="timeline">
@@ -158,7 +159,7 @@
                                             <div class="timeline-content m-0">
                                                 <span class="fs-6 text-gray-500 fw-semibold d-block">KLM Cargo</span>
                                                 <span
-                                                    class="fs-6 fw-bold text-gray-800">Schipol Airport, Amsterdam</span>
+                                                        class="fs-6 fw-bold text-gray-800">Schipol Airport, Amsterdam</span>
                                             </div>
                                         </div>
                                         <div class="timeline-item align-items-center">
@@ -171,9 +172,9 @@
                                             </div>
                                             <div class="timeline-content m-0">
                                                 <span
-                                                    class="fs-6 text-gray-500 fw-semibold d-block">Singapore Cargo</span>
+                                                        class="fs-6 text-gray-500 fw-semibold d-block">Singapore Cargo</span>
                                                 <span
-                                                    class="fs-6 fw-bold text-gray-800">Changi Airport, Singapore</span>
+                                                        class="fs-6 fw-bold text-gray-800">Changi Airport, Singapore</span>
                                             </div>
                                         </div>
                                     </div>
