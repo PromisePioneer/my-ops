@@ -6,7 +6,6 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Models\FingerLog;
 use App\Support\Attendances\IclockService;
-use App\Support\FpDeviceCommandService;
 use Illuminate\Http\Request;
 use Throwable;
 
@@ -20,13 +19,12 @@ use Throwable;
     public function __construct()
     {
         $this->iclockService = new IclockService();
-        $this->FpDeviceCommandService = new FpDeviceCommandService();
     }
 
 
     public function getRequest(Request $request): string
     {
-        return $this->FpDeviceCommandService->queryAttendanceLog();
+        return "OK";
     }
 
     public function handshake(Request $request): string
