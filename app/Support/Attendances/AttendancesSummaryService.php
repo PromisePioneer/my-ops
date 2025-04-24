@@ -133,7 +133,7 @@ use Illuminate\Http\Request;
 
             $leaves = LeaveAndPermission::where('user_id', $user->id)
                 ->whereBetween('start_date', [$startDate, $endDate])
-                ->orwhereBetween('end_date', [$startDate, $endDate])
+                ->whereBetween('end_date', [$startDate, $endDate])
                 ->where('confirmation_status', 'Diterima')
                 ->get();
 
@@ -159,12 +159,12 @@ use Illuminate\Http\Request;
             }
 
 
-            $totalPeriodOfWork = collect($periods)->reject(function ($period) use ($leaves, $weekHoliday, $employeeHolidayDates) {
-                return $weekHoliday?->day === $period->dayName || in_array($period->format('Y-m-d'), $employeeHolidayDates) || in_array($period->format('Y-m-d'), $leaves);
+            $totalPeriodOfWork = collect($periods)->reject(function ($period) use ($weekHoliday, $employeeHolidayDates, $leaves) {
+                return $weekHoliday?->day === $period->dayName || in_array($period->format('Y-m-d'), $employeeHolidayDates);
             })->count();
 
 
-            $totalPeriodOfWork -= ($totalLeaves + $totalSick + $totalPermission + $totalImportantLeaves);
+//            $totalPeriodOfWork -= ($totalLeaves + $totalSick + $totalPermission + $totalImportantLeaves);
 
             $attendedDates = $user->attendancesSummary->pluck('date')->toArray();
 
