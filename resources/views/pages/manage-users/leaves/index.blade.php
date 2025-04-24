@@ -442,7 +442,7 @@
                     const resp = await axios.get(`/manage-users/leaves/edit/${id}`);
                     this.editVal = resp.data;
                     this.leavesStatus = this.editVal.leaves_status
-                    await this.selectedUserData(this.editVal.id);
+                    await this.selectedUserData(this.editVal.user_id);
                 },
                 async confirm(id) {
                     this.buttonLoading = true;
@@ -527,6 +527,7 @@
                     this.form.reset();
                     this.modalForm.hide();
                     this.leavesLeft = 0;
+                    this.editVal = '';
                     $('.users-select2').val('').trigger('change');
                     const resp = await axios.get(`${this.leaves.path}?page=${this.leaves.current_page}`, {
                         params: {
