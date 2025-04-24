@@ -4,6 +4,7 @@ namespace App\Support\Attendances;
 
 use AllowDynamicProperties;
 use App\Models\EmployeeSchedule;
+use App\Models\LeaveAndPermission;
 use App\Models\User;
 use App\Models\WeekHoliday;
 use App\Support\HelperService\FinancialClosePeriodService;
@@ -111,12 +112,13 @@ use Illuminate\Http\Request;
             ->get()
             ->groupBy('employee_id');
 
+
         $periods = CarbonPeriod::create($startDate, $endDate)->toArray();
         $totalWorkDays = count($periods);
 
         $data = $user->getCollection()->map(function ($user) use ($startDate, $endDate, $weekHolidays, $employeeSchedules, $periods, $totalWorkDays) {
 
-
+            $leavePeriods = [];
             $totalPresent = $user->attendancesSummary->count();
             $totalSick = $this->calculateLeaveDays($user, $startDate, $endDate, 'Sakit');
             $totalLeaves = $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti');
@@ -129,14 +131,36 @@ use Illuminate\Http\Request;
                 ->whereNull('clock_out')->count();
 
 
+            $leaves = LeaveAndPermission::where('user_id', $user->id)
+                ->whereBetween('start_date', [$startDate, $endDate])
+                ->orwhereBetween('end_date', [$startDate, $endDate])
+                ->where('confirmation_status', 'Diterima')
+                ->get();
+
+
+
             $weekHoliday = $weekHolidays[$user->id] ?? null;
             $employeeHolidays = $employeeSchedules[$user->absent_id] ?? collect();
 
             $employeeHolidayDates = $employeeHolidays->pluck('start_date')->toArray();
 
 
-            $totalPeriodOfWork = collect($periods)->reject(function ($period) use ($weekHoliday, $employeeHolidayDates) {
-                return $weekHoliday?->day === $period->dayName || in_array($period->format('Y-m-d'), $employeeHolidayDates);
+            foreach ($leaves as $dates) {
+                $leavePeriods = array_merge(
+                    CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
+                );
+            }
+
+
+            $leaves = [];
+            foreach ($leavePeriods as $date) {
+                $formattedDate = Carbon::parse($date)->format('Y-m-d');
+                $leaves[] = $formattedDate;
+            }
+
+
+            $totalPeriodOfWork = collect($periods)->reject(function ($period) use ($leaves, $weekHoliday, $employeeHolidayDates) {
+                return $weekHoliday?->day === $period->dayName || in_array($period->format('Y-m-d'), $employeeHolidayDates) || in_array($period->format('Y-m-d'), $leaves);
             })->count();
 
 
@@ -148,6 +172,7 @@ use Illuminate\Http\Request;
                 ->filter(fn($period) => $period->lessThan(Carbon::today()))
                 ->reject(fn($period) => $weekHoliday?->day === $period->dayName || in_array($period->format('Y-m-d'), $employeeHolidayDates))
                 ->reject(fn($period) => in_array($period->format('Y-m-d'), $attendedDates))
+                ->reject(fn($period) => in_array($period->format('Y-m-d'), $leaves))
                 ->count();
 
             return [
