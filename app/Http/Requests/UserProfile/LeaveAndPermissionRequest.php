@@ -97,12 +97,10 @@ class LeaveAndPermissionRequest extends FormRequest
             $overlapEnd = $leaveEnd->min($periodEnd);
 
 
-
             if ($overlapStart->gt($overlapEnd)) continue;
 
             $totalDays += $overlapStart->diffInDays($overlapEnd) + 1;
         }
-
 
 
         return $totalDays;
@@ -122,7 +120,6 @@ class LeaveAndPermissionRequest extends FormRequest
             $totalLeavesInThisMonthAndTotalLeavesPeriod = $leavesPeriod + $totalLeavesInThisMonth;
 
 
-
             if ($totalLeavesInThisMonthAndTotalLeavesPeriod > $leaveIn1MonthQuota) {
                 return $fail(
                     'Jumlah cuti dalam satu bulan tidak boleh lebih dari 6 hari,
@@ -132,7 +129,7 @@ class LeaveAndPermissionRequest extends FormRequest
             };
 
 
-            if ($totalLeavesRemaining === 0) {
+            if ($totalLeavesRemaining === 0 && $request->leaves_status === 'Cuti') {
                 return $fail('Jatah Cuti sudah habis');
             }
 
