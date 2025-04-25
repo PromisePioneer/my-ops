@@ -22,6 +22,8 @@ class ItemCollection extends Model
         'material',
         'asset_account_id',
         'reorder_level',
+        'must_have_code',
+        'is_code_listed',
     ];
 
 

@@ -120,12 +120,15 @@
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane fade show active" id="kt_list_widget_10_tab_1" role="tabpanel">
-                                <div class="m-0 border border-dashed border-gray-400 p-5">
-                                    <div class="d-flex align-items-center flex-row-fluid justify-content-between">
-                                        <a href="#" class="fs-6 fw-bolder text-black">GPON</a>
-                                        <span class="text-gray-800 fw-bold d-block fs-4">1000 Unit</span>
+                                <template x-for="stock in draftStock"
+                                          :key="stock.id">
+                                    <div class="m-0 border border-dashed border-gray-400 p-5">
+                                        <div class="d-flex align-items-center flex-row-fluid justify-content-between">
+                                            <a href="#" class="fs-6 fw-bolder text-black" x-text="stock.name"></a>
+                                            <span class="text-gray-800 fw-bold d-block fs-4" x-text="stock.total"></span>
+                                        </div>
                                     </div>
-                                </div>
+                                </template>
                             </div>
                             <div class="tab-pane fade" id="kt_list_widget_10_tab_2" role="tabpanel">
                                 <div class="m-0">

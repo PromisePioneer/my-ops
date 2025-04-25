@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Master\Operational;
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Operational\Item\ItemCollectionRequest;
-use App\Models\ItemCategory;
 use App\Models\ItemCollection;
-use App\Models\Master\Common\UnitType;
 use App\Support\Master\Operational\ItemCollections\Service\ItemCollectionService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -44,6 +42,15 @@ use Throwable;
     {
         $this->authorize('search', ItemCollection::class);
         return response()->json($this->itemCollectionService->search($request));
+    }
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function filter(Request $request): JsonResponse
+    {
+        $this->authorize('view', ItemCollection::class);
+        return response()->json($this->itemCollectionService->filter($request));
     }
 
 

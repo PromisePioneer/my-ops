@@ -14,7 +14,7 @@ class DraftStockService
     private static int $perPage = 10;
     public function getDraftStockQty()
     {
-        $itemData = ItemCollection::with('draftStock')->limit(10)->get();
+        $itemData = ItemCollection::whereHas('draftStock')->limit(10)->get();
         return $itemData->map(function ($itemData) {
             return [
                 'id' => $itemData->id,
@@ -29,7 +29,9 @@ class DraftStockService
         $items = DraftStock::with('item', 'item.category', 'transaction')
             ->wherehas('item.category', function ($query) {
                 $query->where('name', '!=', 'Kategori 4');
-            })->paginate(self::$perPage);
+            })->where('qty', '>', 0)
+            ->orderBy('created_at')
+            ->paginate(self::$perPage);
         return self::formattedData($request, $items);
     }
 
@@ -41,7 +43,7 @@ class DraftStockService
                 'id' => $query->id,
                 'transaction_number' => $query->transaction->transaction_number,
                 'name' => $query->item->name,
-                'qty' => $query->sum('qty') . ' ' . $query->item->unitType->name,
+                'qty' => $query->qty . ' ' . $query->item->unitType->name,
             ];
         });
 

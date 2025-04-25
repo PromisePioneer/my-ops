@@ -21,6 +21,8 @@ return new class extends Migration {
                 ->cascadeOnUpdate()
                 ->cascadeOnUpdate();
             $table->string('code');
+            $table->enum('condition', ['Rusak', 'Baik', 'Diperbaiki']);
+            $table->foreignId('created_by')->constrained('users');
             $table->timestamps();
         });
     }

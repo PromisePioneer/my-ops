@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
+use App\Models\DraftStock;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\Branch;
 use App\Models\Stock;
@@ -119,6 +120,23 @@ use Illuminate\View\View;
                         'text' => $totalQty,
                     ];
                 })
+            ];
+        });
+    }
+
+
+    public function getStockBasedOnDraftStock(DraftStock $draftStock)
+    {
+        $stock = Stock::with('transaction', 'branch', 'item')
+            ->where('draft_stock_id', $draftStock->id)
+            ->get();
+        return $stock->map(function ($stock) {
+            return [
+                'id' => $stock->id,
+                'transaction_number' => $stock->transaction->transaction_number,
+                'name' => $stock->item->name,
+                'qty' => $stock->qty . ' ' . $stock->item->unitType->name,
+                'condition' => $stock->condition
             ];
         });
     }

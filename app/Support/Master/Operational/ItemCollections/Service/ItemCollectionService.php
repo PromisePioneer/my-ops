@@ -30,6 +30,14 @@ use Throwable;
     }
 
 
+    public function filter(Request $request): LengthAwarePaginator
+    {
+        $query = $this->itemCollectionRepository->getItemCollection();
+        $filter = ItemCollectionFilter::apply($query, $request)->paginate(self::$perPage);
+        return $this->formattedData($filter);
+    }
+
+
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
@@ -89,7 +97,7 @@ use Throwable;
                 'name' => $request->name,
                 'category_id' => $categoryId->id ?? $request->category_id,
                 'unit_type_id' => $unitTypeId->id ?? $request->unit_type_id,
-                'asset_account_id' => $category->name === 'ASET' ? $request->asset_account_id : null,
+                'asset_account_id' => $request->type === 'ASET' ? $request->asset_account_id : null,
                 'material' => $request->material
             ]);
         });
@@ -104,7 +112,7 @@ use Throwable;
             'name' => $request->name,
             'category_id' => $request->category_id,
             'unit_type_id' => $request->unit_type_id,
-            'asset_account_id' => $category->name === 'ASET' ? $request->asset_account_id : null,
+            'asset_account_id' => $request->type === 'ASET' ? $request->asset_account_id : null,
             'material' => $request->material
         ]);
     }

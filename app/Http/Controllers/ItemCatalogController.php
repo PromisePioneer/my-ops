@@ -1,0 +1,58 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use AllowDynamicProperties;
+use App\Http\Requests\ItemCatalogRequest;
+use App\Models\DraftStock;
+use App\Models\ItemCatalog;
+use App\Support\Inventory\Stock\DraftStock\Service\ItemCatalogService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Throwable;
+
+#[AllowDynamicProperties] class ItemCatalogController extends Controller
+{
+
+    public function __construct()
+    {
+        $this->itemCatalogService = new ItemCatalogService();
+    }
+
+    public function index()
+    {
+
+    }
+
+
+    public function getCatalogByDraftStockId(Request $request, DraftStock $draftStock): JsonResponse
+    {
+        return response()->json($this->itemCatalogService->findByDraftStockId($draftStock, $request));
+    }
+
+
+    /**
+     * @throws Throwable
+     */
+    public function storeByDraftStockId(ItemCatalogRequest $request, DraftStock $draftStock): JsonResponse
+    {
+        $this->itemCatalogService->storeByDraftStockId($request, $draftStock);
+        return response()->json(['message' => 'data berhasil disimpan']);
+    }
+
+    public function edit(ItemCatalog $itemCatalog): JsonResponse
+    {
+        return response()->json($itemCatalog);
+    }
+
+
+    /**
+     * @throws Throwable
+     */
+    public function update(ItemCatalogRequest $request, ItemCatalog $itemCatalog): JsonResponse
+    {
+        $this->itemCatalogService->update($request, $itemCatalog);
+        return response()->json(['message' => 'Data berhasil disimpan']);
+    }
+
+}

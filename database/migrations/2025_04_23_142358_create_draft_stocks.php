@@ -15,12 +15,12 @@ return new class extends Migration {
             $table->foreignId('branch_id')->constrained('branches')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-            $table->foreignId('item_id')
-                ->constrained('item_collections')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
             $table->foreignId('transaction_id')
                 ->constrained('transactions')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('item_id')
+                ->constrained('item_collections')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->double('qty');

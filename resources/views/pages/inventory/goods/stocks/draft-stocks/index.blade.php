@@ -2,6 +2,7 @@
 @section('page-title', 'Barang Masuk yang Belum Diproses')
 @section('content')
     <div x-data="draftStockData()">
+        @include('pages.inventory.goods.stocks.draft-stocks.generate-code')
         <div class="d-flex flex-column flex-xl-row">
             <div class="flex-column flex-lg-row-auto w-100 w-lg-250px mb-10">
                 <div class="card card-flush">
@@ -55,6 +56,7 @@
                                                        @click="toggleAllCheckBox()">
                                             </div>
                                         </th>
+                                        <th class="min-w-125px text-center">No.Transaksi</th>
                                         <th class="min-w-125px text-center">Nama Barang</th>
                                         <th class="min-w-125px text-center">Belum Terdata</th>
                                         <th class="min-w-125px text-center">Actions</th>
@@ -81,14 +83,15 @@
                                     <template x-for="(stock, index) in draftStocks?.data" :key="stock.id">
                                         <tr>
                                             <td x-text="startIndex + index++"></td>
+                                            <td class="text-center" x-text="stock.transaction_number"></td>
                                             <td class="text-center" x-text="stock.name"></td>
                                             <td class="text-center" x-text="stock.qty"></td>
                                             <td class="text-center">
-                                                <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                        data-bs-target="#modal-edit" @click="edit(branch.id)">
+                                                <a :href="`/inventory/goods/draft-stocks/detail/${stock.id}`"
+                                                   class="btn btn-light-primary btn-sm">
                                                     <x-icons.plus></x-icons.plus>
                                                     Buat Kode
-                                                </button>
+                                                </a>
                                             </td>
                                         </tr>
                                     </template>

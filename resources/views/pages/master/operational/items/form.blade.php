@@ -16,6 +16,25 @@
 
             <form id="form-item" @submit.prevent="saveItem(editVal?.id ?? null)">
                 <div class="modal-body">
+
+                    <div class="d-flex justify-content-end align-items-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="form-check form-switch form-check-custom form-check-solid me-10">
+                                <input class="form-check-input" type="checkbox" value="" id="must_have_code"/>
+                                <label class="form-check-label" for="must_have_code">
+                                    Barang Memiliki Kode
+                                </label>
+                            </div>
+                            <div class="form-check form-switch form-check-custom form-check-solid">
+                                <input class="form-check-input" type="checkbox" value="" id="is_code_listed"/>
+                                <label class="form-check-label" for="is_code_listed">
+                                    Kode tertera di barang
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama</label>
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
@@ -31,13 +50,13 @@
                     </div>
 
 
-                    <div class="mb-10">
+                    <div class="mb-10" x-model="isAset">
                         <label for="unit_type_id" class="required form-label">Tipe</label>
                         <select name="type"
                                 class="form-select form-select-solid">
-                            <option value="" selected>Pilih Tipe Barang</option>
-                            <option value="ASET" :selected="editVal.type === 'ASET'">Aset</option>
-                            <option value="JUAL" :selected="editVal.type === 'JUAL'">Jual</option>
+                            <option value="" selected disabled>Pilih Tipe Barang</option>
+                            <option value="ASET" :selected="isAset === 'ASET'">Aset</option>
+                            <option value="JUAL" :selected="isAset === 'JUAL'">Jual</option>
                         </select>
                     </div>
 
