@@ -301,8 +301,7 @@
                                     Stok Barang
                                 </x-dropdown-menu-item>
                                 <x-dropdown-menu-item
-                                    :active="request()->is('inventory/goods*')"
-                                    href="{{ url('inventory/goods/stock') }}">
+                                    href="#">
                                     Pemakaian Barang
                                 </x-dropdown-menu-item>
                                 <x-dropdown-menu-item
