@@ -47,7 +47,7 @@ class ItemCollectionRequest extends FormRequest
                 Rule::in(['Besi', 'Non Besi'])
             ],
             'asset_account_id' => [
-                Rule::requiredIf($category->type === "ASET")
+                Rule::requiredIf($request->type === "ASET")
             ],
             'type' => ['required', Rule::in('ASET', 'JUAL')],
         ];
