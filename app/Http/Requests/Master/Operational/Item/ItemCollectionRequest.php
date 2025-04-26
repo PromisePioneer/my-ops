@@ -63,7 +63,7 @@ class ItemCollectionRequest extends FormRequest
             'category_id.required' => 'Kategori tidak boleh kosong',
             'category_id.exists' => 'Kategori tidak ditemukan',
             'unit_type_id.exists' => 'Tipe satuan tidak ditemukan',
-            'asset_account_id.required' => 'Asset account tidak boleh kosong jika kategori yang dipilih aset',
+            'asset_account_id.required' => 'Akun aset tidak boleh kosong jika tipe yang dipilih aset',
         ];
     }
 
