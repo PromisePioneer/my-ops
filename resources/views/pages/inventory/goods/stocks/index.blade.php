@@ -32,7 +32,7 @@
                                    data-bs-toggle="pill" href="#kt_list_widget_10_tab_2" aria-selected="false"
                                    tabindex="-1" role="tab">
                                         <span
-                                            class="nav-text text-gray-800 fw-bold fs-6 mb-3">Sudah Boleh Reorder</span>
+                                            class="nav-text text-gray-800 fw-bold fs-6 mb-3">Harus Reorder</span>
                                     <span
                                         class="bullet-custom position-absolute z-index-2 bottom-0 w-100 h-4px bg-primary rounded"></span>
                                 </a>
