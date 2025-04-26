@@ -23,8 +23,6 @@ use App\Http\Controllers\AttendanceManualRequestController;
 use App\Http\Controllers\BAAController;
 use App\Http\Controllers\ConsumedStockController;
 use App\Http\Controllers\DraftStockController;
-use App\Http\Controllers\GoodsCategoryController;
-use App\Http\Controllers\GoodsTransactionController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
 use App\Http\Controllers\HRIS\Attendances\FpDevicesController;
@@ -142,10 +140,12 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/filter', [TransactionController::class, 'filter']);
         Route::get('/search', [TransactionController::class, 'search']);
         Route::post('/', [TransactionController::class, 'store']);
+        Route::get('/item-transaction-qty-in-this-month', [TransactionController::class, 'getItemTransactionQtyInThisMonth']);
         Route::get('/{transaction}', [TransactionController::class, 'edit']);
         Route::post('/{transaction}', [TransactionController::class, 'update']);
         Route::post('/lock-transaction/{transaction}', [TransactionController::class, 'lockTransaction']);
         Route::post('/confirm/{transaction}', [TransactionController::class, 'confirm']);
+
     });
 
     Route::prefix('/manage-users')->group(function () {
@@ -672,6 +672,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/branch/data/{itemCollection}', [StockController::class, 'getMainBranchWithStock']);
                 Route::get('/branch/data/{itemCollection}', [StockController::class, 'getMainBranchWithStock']);
                 Route::get('/stock-based-on-draft-stock/{draftStock}', [StockController::class, 'getStockBasedOnDraftStock']);
+                Route::get('/must-reorder', [StockController::class, 'getMustReorderStocks']);
             });
 
             Route::prefix('consumed-stocks')->group(function () {

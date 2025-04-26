@@ -141,4 +141,10 @@ use Illuminate\View\View;
             ];
         });
     }
+
+
+    public function getMustReorderStocks(Request $request): JsonResponse
+    {
+        return response()->json($this->stockService->getMustReorderStocks($request));
+    }
 }

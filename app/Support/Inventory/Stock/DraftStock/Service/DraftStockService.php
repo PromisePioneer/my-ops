@@ -28,7 +28,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
             return [
                 'id' => $itemData->id,
                 'name' => $itemData->name,
-                'total' => $itemData->draftStock->sum('qty'),
+                'total' => number_format($itemData->draftStock->sum('qty'), 2, '.', '.'),
             ];
         });
     }

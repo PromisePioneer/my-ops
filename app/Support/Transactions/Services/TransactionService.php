@@ -246,4 +246,15 @@ use function App\Helper\formatDate;
     }
 
 
+    public function getItemTransactionQtyInThisMonth(): string
+    {
+        $data = Transaction::where('type', 'Barang')
+            ->whereMonth('date', Carbon::now()->month)
+            ->where('status', 'Diterima')
+            ->sum('qty');
+
+        return number_format($data, 2, '.', '.');
+    }
+
+
 }
