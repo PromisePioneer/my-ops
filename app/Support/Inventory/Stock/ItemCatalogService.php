@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\Inventory\Stock\DraftStock\Service;
+namespace App\Support\Inventory\Stock;
 
 use AllowDynamicProperties;
 use App\Http\Requests\ItemCatalogRequest;
@@ -98,7 +98,8 @@ use Throwable;
 
 
         DB::transaction(function () use ($oldStock, $newStock, $request, $itemCatalog) {
-            if ($oldStock->condition !== $newStock?->condition || $oldStock->condition !== $request->condition) {
+
+            if ($oldStock?->condition !== $newStock?->condition || $oldStock?->condition !== $request->condition) {
                 $oldStock->decrement('qty');
                 if (!empty($newStock)) {
                     $newStock->increment('qty');
@@ -113,6 +114,7 @@ use Throwable;
                     ]);
                 }
             }
+
 
             $itemCatalog->update([
                 'code' => $request->code,

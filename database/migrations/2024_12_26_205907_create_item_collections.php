@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->enum('type', ['ASET', 'JUAL']);
+            $table->string('code')->nullable();
             $table->foreignId('category_id')
                 ->constrained('item_categories')
                 ->cascadeOnDelete();

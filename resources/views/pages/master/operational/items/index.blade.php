@@ -146,8 +146,9 @@
                                             <td x-text="item.material"></td>
                                             <td x-text="item.unit_type_name"></td>
                                             <td>
-                                                <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                        data-bs-target="#modal-item" @click="edit(item.id)">
+                                                <button class="btn btn-light-primary btn-sm"
+                                                        data-bs-target="#modal-item" data-bs-toggle="modal"
+                                                        @click="edit(item.id)">
                                                     <i class="ki-duotone ki-pencil fs-2">
                                                         <span class="path1"></span>
                                                         <span class="path2"></span>
@@ -190,8 +191,8 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                isAset: false,
-                needSN: false,
+                isAset: null,
+                itemMustHaveCode: false,
                 hasSNOnItem: false,
                 modalForm: new bootstrap.Modal(document.getElementById('modal-item')),
                 form: document.getElementById('form-item'),
@@ -209,6 +210,7 @@
                 add() {
                     this.editVal = '';
                     this.form.reset();
+                    this.itemMustHaveCode = false;
                     $('#selected-category').val('').trigger('change');
                     $('#selected-unit-type').val('').trigger('change');
                 },
@@ -436,8 +438,8 @@
                 async edit(id) {
                     const resp = await axios.get(`/master/operational/items/${id}`);
                     this.editVal = resp.data;
-
-
+                    this.itemMustHaveCode = this.editVal.must_have_code === 1;
+                    console.log(this.itemMustHaveCode);
                     await this.selectedItemCategory();
                     await this.selectedUnitType();
                     await this.selectedAssetAccount();

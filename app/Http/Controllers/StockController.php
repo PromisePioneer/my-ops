@@ -129,6 +129,7 @@ use Illuminate\View\View;
     {
         $stock = Stock::with('transaction', 'branch', 'item')
             ->where('draft_stock_id', $draftStock->id)
+            ->where('item_id', $draftStock->item_id)
             ->get();
         return $stock->map(function ($stock) {
             return [

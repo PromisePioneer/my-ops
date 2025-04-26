@@ -296,7 +296,7 @@
                         @endslot
                         @slot('menuItem')
                             <x-dropdown-menu-item
-                                :active="request()->is('inventory/goods/stock*')"
+                                :active="request()->is('inventory/goods*')"
                                 href="{{ url('inventory/goods/stock') }}">
                                 Stok Barang
                             </x-dropdown-menu-item>

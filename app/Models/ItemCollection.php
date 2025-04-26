@@ -17,6 +17,7 @@ class ItemCollection extends Model
     protected $fillable = [
         'name',
         'type',
+        'code',
         'category_id',
         'unit_type_id',
         'material',

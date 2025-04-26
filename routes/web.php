@@ -685,11 +685,13 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/', [DraftStockController::class, 'index']);
                 Route::get('/data', [DraftStockController::class, 'data']);
                 Route::post('/', [DraftStockController::class, 'store']);
+                Route::get('/filter', [DraftStockController::class, 'filter']);
                 Route::get('/get-qty', [DraftStockController::class, 'getQty']);
                 Route::get('/show/{draftStock}', [DraftStockController::class, 'show']);
 
                 Route::prefix('detail')->group(function () {
                     Route::get('/{draftStock}', [DraftStockController::class, 'detail']);
+                    Route::get('/generate-code/{draftStock}', [DraftStockController::class, 'generateCodeIfCodeNotListedOnItem']);
                     Route::get('/item-catalog/data/{draftStock}', [ItemCatalogController::class, 'getCatalogByDraftStockId']);
                     Route::post('/item-catalog/save/{draftStock}', [ItemCatalogController::class, 'storeByDraftStockId']);
                 });

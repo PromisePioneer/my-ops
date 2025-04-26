@@ -38,7 +38,7 @@
                     <tbody class="text-center">
                     <tr>
                         <td x-text="draftStock.transaction?.transaction_number"></td>
-                        <td x-text="draftStock.item?.name"></td>
+                        <td x-text="draftStock?.item?.name"></td>
                         <td x-text="draftStock.qty"></td>
                     </tr>
                     </tbody>
@@ -187,12 +187,14 @@
                 itemCatalog: [],
                 startIndex: null,
                 stocks: [],
+                autoGenerateCode: null,
                 generateCodeModal: new bootstrap.Modal(document.getElementById('modal-generate-code')),
                 generateCodeForm: document.getElementById('form-generate-code'),
                 async init() {
                     await this.getDraftStock();
                     await this.getItemCatalog();
                     await this.getStock();
+                    await this.generateCodeIfCodeNotListedOnItem();
                 },
                 async add() {
                     this.editVal = '';
@@ -207,6 +209,13 @@
                         console.log(e);
                     } finally {
                         this.isLoading = false;
+                    }
+                },
+                async generateCodeIfCodeNotListedOnItem() {
+                    const resp = await axios.get(`/inventory/goods/draft-stocks/detail/generate-code/${this.draftStockId}`);
+
+                    if (!this.editVal && this.draftStock?.item?.must_have_code === 1 && this.draftStock?.item?.is_code_listed === 0) {
+                        this.autoGenerateCode = resp.data;
                     }
                 },
                 async generateItemCatalogCode(id) {

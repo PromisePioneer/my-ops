@@ -19,14 +19,16 @@
                     <div class="mb-10">
                         <label for="name" class="required form-label">Kode / SN</label>
                         <input type="text" id="code" name="code" class="form-control form-control-solid"
-                               placeholder="Kode" :value="editVal?.code"/>
+                               :readonly="draftStock?.item?.must_have_code === 1 && draftStock?.item?.is_code_listed === 0"
+                               placeholder="Kode" :value="autoGenerateCode ?? editVal?.code"/>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Kondisi</label>
                         <select name="condition" id="condition" class="form-select form-select-solid">
                             <option value="Rusak" :selected="editVal?.condition === 'Rusak'">Rusak</option>
                             <option value="Baik" :selected="editVal?.condition === 'Baik'">Baik</option>
-                            <option value="Diperbaiki" :selected="editVal?.condition === 'Diperbaiki'">Diperbaiki</option>
+                            <option value="Diperbaiki" :selected="editVal?.condition === 'Diperbaiki'">Diperbaiki
+                            </option>
                         </select>
                     </div>
                 </div>

@@ -123,8 +123,39 @@
                 buttonLoading: false,
                 startIndex: null,
                 search: '',
+                editVal: '',
                 async init() {
                     await this.getDraftStocks();
+                    await this.getMainBranches();
+                },
+                async getMainBranches() {
+                    $(".main-branches-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Cabang',
+                        ajax: {
+                            url: '/select2/main-branches-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async filter() {
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/inventory/goods/draft-stocks/filter', {
+                            params: {
+                                branch_id: $('#branch-id-filter').val()
+                            }
+                        });
+                        this.draftStocks = resp.data;
+                    } catch (e) {
+
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async getDraftStocks() {
                     this.isLoading = true

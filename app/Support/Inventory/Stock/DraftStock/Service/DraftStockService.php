@@ -1,17 +1,26 @@
 <?php
 
-namespace App\Support\Inventory\Stock;
+namespace App\Support\Inventory\Stock\DraftStock\Service;
 
-use App\Models\DraftStock;
+use AllowDynamicProperties;
 use App\Models\ItemCollection;
+use App\Support\Inventory\Stock\DraftStock\Repository\DraftStockServiceRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class DraftStockService
+#[AllowDynamicProperties] class DraftStockService
 {
 
 
     private static int $perPage = 10;
+
+
+    public function __construct()
+    {
+        $this->draftStockRepostitory = new DraftStockServiceRepository();
+    }
+
+
     public function getDraftStockQty()
     {
         $itemData = ItemCollection::whereHas('draftStock')->limit(10)->get();
@@ -26,13 +35,16 @@ class DraftStockService
 
     public function data(Request $request): LengthAwarePaginator
     {
-        $items = DraftStock::with('item', 'item.category', 'transaction')
-            ->wherehas('item.category', function ($query) {
-                $query->where('name', '!=', 'Kategori 4');
-            })->where('qty', '>', 0)
-            ->orderBy('created_at')
-            ->paginate(self::$perPage);
+        $items = $this->draftStockRepostitory->getDraftStockQuery()->paginate(self::$perPage);
         return self::formattedData($request, $items);
+    }
+
+
+    public function filter(Request $request)
+    {
+        $query = $this->draftStockRepostitory->getDraftStockQuery();
+        $filter = DraftStockQueryFilter::apply($query, $request)->paginate(self::$perPage);
+        return self::formattedData($request, $filter);
     }
 
 

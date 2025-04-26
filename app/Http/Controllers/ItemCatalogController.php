@@ -6,7 +6,7 @@ use AllowDynamicProperties;
 use App\Http\Requests\ItemCatalogRequest;
 use App\Models\DraftStock;
 use App\Models\ItemCatalog;
-use App\Support\Inventory\Stock\DraftStock\Service\ItemCatalogService;
+use App\Support\Inventory\Stock\ItemCatalogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Throwable;
