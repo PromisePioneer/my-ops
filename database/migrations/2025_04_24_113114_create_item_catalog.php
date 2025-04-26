@@ -10,19 +10,19 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('stocks', function (Blueprint $table) {
+        Schema::create('item_catalog', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('transaction_id')
-                ->constrained('transactions')
-                ->cascadeOnDelete();
-            $table->foreignId('branch_id')
-                ->constrained('branches')
-                ->cascadeOnDelete();
             $table->foreignId('item_id')
                 ->constrained('item_collections')
                 ->cascadeOnDelete()
-                ->cascadeOnDelete();
-            $table->integer('qty');
+                ->cascadeOnUpdate();
+            $table->foreignId('draft_stock_id')
+                ->constrained('draft_stocks')
+                ->cascadeOnUpdate()
+                ->cascadeOnUpdate();
+            $table->string('code');
+            $table->enum('condition', ['Rusak', 'Baik', 'Diperbaiki']);
+            $table->foreignId('created_by')->constrained('users');
             $table->timestamps();
         });
     }
@@ -32,7 +32,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('goods_stock');
+        Schema::dropIfExists('item_catalog');
     }
 };

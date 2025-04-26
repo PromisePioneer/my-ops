@@ -7,6 +7,7 @@ use App\Http\Requests\TransactionConfirmationRequest;
 use App\Http\Requests\TransactionRequest;
 use App\Models\DraftStock;
 use App\Models\Master\Common\Branch;
+use App\Models\Stock;
 use App\Models\Transaction;
 use App\Support\AccountTransactions\AccountTransactionService;
 use App\Support\HelperService\HandleFileUploadService;
@@ -196,13 +197,33 @@ use function App\Helper\formatDate;
 
             if ($request->input('status') === 'Diterima') {
                 foreach ($explodeID as $transactionId) {
-                    $transaction = Transaction::where('id', $transactionId)->first();
+                    $transaction = Transaction::with('item.category')->where('id', $transactionId)->first();
                     $branch = Branch::with('parent')->where('id', $transaction->branch_id)->first();
-                    DraftStock::create([
-                        'item_id' => $transaction->item_id,
-                        'transaction_id' => $transaction->id,
-                        'qty' => $transaction->qty
-                    ]);
+
+                    if ($transaction->item->category->name !== 'Kategori 4') {
+                        $draftStock = DraftStock::create([
+                            'item_id' => $transaction->item_id,
+                            'branch_id' => $transaction->branch_id,
+                            'transaction_id' => $transaction->id,
+                            'qty' => $transaction->qty
+                        ]);
+
+                        Stock::create([
+                            'transaction_id' => $transaction->id,
+                            'branch_id' => $branch->id,
+                            'item_id' => $transaction->branch_id,
+                            'draft_stock_id' => $draftStock->id,
+                            'qty' => 0,
+                        ]);
+                    } else {
+                        Stock::create([
+                            'transaction_id' => $transaction->id,
+                            'branch_id' => $branch->id,
+                            'item_id' => $transaction->branch_id,
+                            'qty' => 0,
+                        ]);
+                    }
+
 
                     $this->accountTransactionService->createDebitTransaction(
                         $branch->parent->id,
@@ -222,6 +243,17 @@ use function App\Helper\formatDate;
                 }
             }
         });
+    }
+
+
+    public function getItemTransactionQtyInThisMonth(): string
+    {
+        $data = Transaction::where('type', 'Barang')
+            ->whereMonth('date', Carbon::now()->month)
+            ->where('status', 'Diterima')
+            ->sum('qty');
+
+        return number_format($data, 2, '.', '.');
     }
 
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
+use App\Models\DraftStock;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\Branch;
 use App\Models\Stock;
@@ -121,5 +122,29 @@ use Illuminate\View\View;
                 })
             ];
         });
+    }
+
+
+    public function getStockBasedOnDraftStock(DraftStock $draftStock)
+    {
+        $stock = Stock::with('transaction', 'branch', 'item')
+            ->where('draft_stock_id', $draftStock->id)
+            ->where('item_id', $draftStock->item_id)
+            ->get();
+        return $stock->map(function ($stock) {
+            return [
+                'id' => $stock->id,
+                'transaction_number' => $stock->transaction->transaction_number,
+                'name' => $stock->item->name,
+                'qty' => $stock->qty . ' ' . $stock->item->unitType->name,
+                'condition' => $stock->condition
+            ];
+        });
+    }
+
+
+    public function getMustReorderStocks(Request $request): JsonResponse
+    {
+        return response()->json($this->stockService->getMustReorderStocks($request));
     }
 }

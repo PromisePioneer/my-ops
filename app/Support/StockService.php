@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Models\DraftStock;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\Branch;
 use Illuminate\Http\Request;
@@ -62,6 +63,7 @@ class StockService
 
             return [
                 'id' => $item->id,
+                'type' => $item->type,
                 'total_stock' => $stock,
                 'category_name' => $item->category->name,
                 'name' => $item->name,
@@ -71,6 +73,34 @@ class StockService
 
         $goodsData->setCollection($data);
         return $goodsData;
+    }
+
+
+    public function getMustReorderStocks(Request $request)
+    {
+        $data = ItemCollection::with('goodsStock')->when(!empty($request->user()->branch_id), function ($query) use ($request) {
+            $query->whereHas('goodsStock', function ($query) use ($request) {
+                $query->where('branch_id', $request->user()->branch_id);
+            });
+        })->get();
+
+        return $data->map(function ($query) {
+            $draftStock = DraftStock::where('item_id', $query->id)->sum('qty');
+            $reorderLevel = $query->reorder_level;
+            $stock = $query->goodsStock->sum('qty');
+            $totalStock = $draftStock + $stock;
+
+
+            if ($totalStock < $reorderLevel) {
+                return [
+                    'id' => $query->id,
+                    'name' => $query->name,
+                    'stock' => number_format($totalStock, 2, '.', '.'),
+                    'reorder_level' => $reorderLevel,
+                ];
+            }
+            return;
+        })->filter()->values();
     }
 
 }

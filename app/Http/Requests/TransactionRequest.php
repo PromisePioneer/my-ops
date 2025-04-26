@@ -39,7 +39,7 @@ class TransactionRequest extends FormRequest
             'debit_account_id' => ['required', Rule::exists('accounts', 'id')],
             'credit_account_id' => ['required', Rule::exists('accounts', 'id'), $this->accountBalanceCheck($request)],
             'attachment' => [
-//                Rule::requiredIf(!$request->route('transaction')),
+                Rule::requiredIf($this->route('transaction') === null),
                 'mimes:jpg,jpeg,png', 'max:2048'],
         ];
     }

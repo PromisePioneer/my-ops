@@ -17,11 +17,14 @@ class ItemCollection extends Model
     protected $fillable = [
         'name',
         'type',
+        'code',
         'category_id',
         'unit_type_id',
         'material',
         'asset_account_id',
         'reorder_level',
+        'must_have_code',
+        'is_code_listed',
     ];
 
 

@@ -10,20 +10,24 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('draft_stocks', function (Blueprint $table) {
+        Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('branch_id')->constrained('branches')
-                ->cascadeOnUpdate()
-                ->cascadeOnDelete();
             $table->foreignId('transaction_id')
                 ->constrained('transactions')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+                ->cascadeOnDelete();
+            $table->foreignId('branch_id')
+                ->constrained('branches')
+                ->cascadeOnDelete();
             $table->foreignId('item_id')
                 ->constrained('item_collections')
                 ->cascadeOnDelete()
+                ->cascadeOnDelete();
+            $table->foreignId('draft_stock_id')
+                ->constrained('draft_stocks')
+                ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->double('qty');
+            $table->integer('qty');
+            $table->enum('condition', ['Rusak', 'Baik', 'Diperbaiki']);
             $table->timestamps();
         });
     }
@@ -33,6 +37,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('draft_items');
+        Schema::disableForeignKeyConstraints();
+        Schema::dropIfExists('goods_stock');
     }
 };

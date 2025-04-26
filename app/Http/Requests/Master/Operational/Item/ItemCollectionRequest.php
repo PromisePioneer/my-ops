@@ -39,6 +39,7 @@ class ItemCollectionRequest extends FormRequest
                 $this->getRulesForCategory1($request),
                 $this->getRulesForCategory3($request)
             ],
+            'code' => [Rule::requiredIf($request->must_have_code === 'on' && !$request->is_code_listed)],
             'unit_type_id' => ['required', 'string'],
             'category_id' => ['required', 'string'],
             'material' => [

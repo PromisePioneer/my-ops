@@ -30,6 +30,14 @@ use Throwable;
     }
 
 
+    public function filter(Request $request): LengthAwarePaginator
+    {
+        $query = $this->itemCollectionRepository->getItemCollection();
+        $filter = ItemCollectionFilter::apply($query, $request)->paginate(self::$perPage);
+        return $this->formattedData($filter);
+    }
+
+
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
@@ -69,6 +77,7 @@ use Throwable;
 
         DB::transaction(function () use ($request) {
 
+
             $category = ItemCategory::find($request->category_id);
             $unitType = UnitType::find($request->unit_type_id);
 
@@ -89,8 +98,11 @@ use Throwable;
                 'name' => $request->name,
                 'category_id' => $categoryId->id ?? $request->category_id,
                 'unit_type_id' => $unitTypeId->id ?? $request->unit_type_id,
-                'asset_account_id' => $category->name === 'ASET' ? $request->asset_account_id : null,
-                'material' => $request->material
+                'code' => $request->code,
+                'asset_account_id' => $request->type === 'ASET' ? $request->asset_account_id : null,
+                'material' => $request->material,
+                'must_have_code' => $request->must_have_code === 'on',
+                'is_code_listed' => $request->is_code_listed === 'on',
             ]);
         });
     }
@@ -104,8 +116,12 @@ use Throwable;
             'name' => $request->name,
             'category_id' => $request->category_id,
             'unit_type_id' => $request->unit_type_id,
-            'asset_account_id' => $category->name === 'ASET' ? $request->asset_account_id : null,
-            'material' => $request->material
+            'code' => $request->code,
+            'asset_account_id' => $request->type === 'ASET' ? $request->asset_account_id : null,
+            'material' => $request->material,
+            'must_have_code' => $request->must_have_code === 'on',
+            'is_code_listed' => $request->is_code_listed === 'on',
+
         ]);
     }
 

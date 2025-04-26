@@ -23,9 +23,6 @@ use App\Http\Controllers\AttendanceManualRequestController;
 use App\Http\Controllers\BAAController;
 use App\Http\Controllers\ConsumedStockController;
 use App\Http\Controllers\DraftStockController;
-use App\Http\Controllers\GoodsCategoryController;
-use App\Http\Controllers\GoodsPurchaseOrderController;
-use App\Http\Controllers\GoodsTransactionController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
 use App\Http\Controllers\HRIS\Attendances\FpDevicesController;
@@ -63,6 +60,7 @@ use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollScheduleContr
 use App\Http\Controllers\HRIS\PermissionController;
 use App\Http\Controllers\HRIS\RoleHierarchyController;
 use App\Http\Controllers\Inventory\BoQ\BoqController;
+use App\Http\Controllers\ItemCatalogController;
 use App\Http\Controllers\Master\Accounting\AccountCategoryController;
 use App\Http\Controllers\Master\Accounting\AccountController;
 use App\Http\Controllers\Master\Accounting\Asset\AssetController;
@@ -142,10 +140,12 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/filter', [TransactionController::class, 'filter']);
         Route::get('/search', [TransactionController::class, 'search']);
         Route::post('/', [TransactionController::class, 'store']);
+        Route::get('/item-transaction-qty-in-this-month', [TransactionController::class, 'getItemTransactionQtyInThisMonth']);
         Route::get('/{transaction}', [TransactionController::class, 'edit']);
         Route::post('/{transaction}', [TransactionController::class, 'update']);
         Route::post('/lock-transaction/{transaction}', [TransactionController::class, 'lockTransaction']);
         Route::post('/confirm/{transaction}', [TransactionController::class, 'confirm']);
+
     });
 
     Route::prefix('/manage-users')->group(function () {
@@ -504,6 +504,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::prefix('/items')->group(function () {
                 Route::get('/', [ItemCollectionController::class, 'index']);
                 Route::get('/data', [ItemCollectionController::class, 'data']);
+                Route::get('/filter', [ItemCollectionController::class, 'filter']);
                 Route::get('/search', [ItemCollectionController::class, 'search']);
                 Route::post('/', [ItemCollectionController::class, 'store']);
                 Route::get('/{itemCollection}', [ItemCollectionController::class, 'edit']);
@@ -661,39 +662,6 @@ Route::group(['middleware' => ['auth']], static function () {
 
     Route::prefix('inventory')->group(function () {
         Route::prefix('goods')->group(function () {
-            Route::prefix('po')->group(function () {
-                Route::get('/', [GoodsPurchaseOrderController::class, 'index']);
-                Route::get('/data', [GoodsPurchaseOrderController::class, 'data']);
-                Route::get('/search', [GoodsPurchaseOrderController::class, 'search']);
-                Route::get('/filter', [GoodsPurchaseOrderController::class, 'filter']);
-                Route::get('/create', [GoodsPurchaseOrderController::class, 'create']);
-                Route::get('/supplier/data', [GoodsPurchaseOrderController::class, 'getSupplierData']);
-                Route::get('/supplier/selected/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'selectedSupplier']);
-                Route::get('/branch/data', [GoodsPurchaseOrderController::class, 'getBranchData']);
-                Route::get('/branch/selected/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'selectedBranch']);
-                Route::post('/store', [GoodsPurchaseOrderController::class, 'store']);
-                Route::get('/edit/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'edit']);
-                Route::post('/update/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'update']);
-                Route::get('/detail/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'detail']);
-                Route::post('/confirm/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'confirm']);
-                Route::get('/goods/data', [GoodsPurchaseOrderController::class, 'getItem']);
-                Route::get('/goods/selected/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'selectedItem']);
-                Route::get('/warehouses/data', [GoodsPurchaseOrderController::class, 'getWarehouseData']);
-                Route::post('/destroy', [GoodsPurchaseOrderController::class, 'destroy']);
-                Route::get('/warehouses/selected/{goodsPurchaseOrder}', [GoodsPurchaseOrderController::class, 'selectedWarehouse']);
-            });
-            Route::prefix('goods-transaction')->group(function () {
-                Route::get('/', [GoodsTransactionController::class, 'index']);
-                Route::get('/data', [GoodsTransactionController::class, 'data']);
-                Route::get('/create', [GoodsTransactionController::class, 'create']);
-                Route::get('/goods/data', [GoodsTransactionController::class, 'getGoodsData']);
-                Route::get('/branches/data', [GoodsTransactionController::class, 'getBranchData']);
-                Route::get('/warehouses/data', [GoodsTransactionController::class, 'getWarehouseData']);
-                Route::get('/stock/data/{goods}', [GoodsTransactionController::class, 'getStock']);
-                Route::get('/stock/selected', [GoodsTransactionController::class, 'selectedStock']);
-                Route::post('/store', [GoodsTransactionController::class, 'store']);
-            });
-
             Route::prefix('stock')->group(function () {
                 Route::get('/', [StockController::class, 'index']);
                 Route::get('/data', [StockController::class, 'data']);
@@ -703,6 +671,8 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/detail/{stock}', [StockController::class, 'detail']);
                 Route::get('/branch/data/{itemCollection}', [StockController::class, 'getMainBranchWithStock']);
                 Route::get('/branch/data/{itemCollection}', [StockController::class, 'getMainBranchWithStock']);
+                Route::get('/stock-based-on-draft-stock/{draftStock}', [StockController::class, 'getStockBasedOnDraftStock']);
+                Route::get('/must-reorder', [StockController::class, 'getMustReorderStocks']);
             });
 
             Route::prefix('consumed-stocks')->group(function () {
@@ -713,7 +683,25 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
             Route::prefix('draft-stocks')->group(function () {
+                Route::get('/', [DraftStockController::class, 'index']);
+                Route::get('/data', [DraftStockController::class, 'data']);
+                Route::post('/', [DraftStockController::class, 'store']);
+                Route::get('/filter', [DraftStockController::class, 'filter']);
                 Route::get('/get-qty', [DraftStockController::class, 'getQty']);
+                Route::get('/show/{draftStock}', [DraftStockController::class, 'show']);
+
+                Route::prefix('detail')->group(function () {
+                    Route::get('/{draftStock}', [DraftStockController::class, 'detail']);
+                    Route::get('/generate-code/{draftStock}', [DraftStockController::class, 'generateCodeIfCodeNotListedOnItem']);
+                    Route::get('/item-catalog/data/{draftStock}', [ItemCatalogController::class, 'getCatalogByDraftStockId']);
+                    Route::post('/item-catalog/save/{draftStock}', [ItemCatalogController::class, 'storeByDraftStockId']);
+                });
+            });
+
+
+            Route::prefix('item-catalog')->group(function () {
+                Route::get('/{itemCatalog}', [ItemCatalogController::class, 'edit']);
+                Route::post('/{itemCatalog}', [ItemCatalogController::class, 'update']);
             });
         });
 

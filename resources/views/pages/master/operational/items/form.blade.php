@@ -16,11 +16,43 @@
 
             <form id="form-item" @submit.prevent="saveItem(editVal?.id ?? null)">
                 <div class="modal-body">
+
+                    <div class="d-flex justify-content-end align-items-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="form-check form-switch form-check-custom form-check-solid me-10"
+                                 x-model="itemMustHaveCode">
+                                <input class="form-check-input" type="checkbox" :checked="editVal?.must_have_code === 1"
+                                       id="mustHaveCode"
+                                       name="must_have_code"/>
+                                <label class="form-check-label" for="mustHaveCode">
+                                    Barang Memiliki Kode
+                                </label>
+                            </div>
+                            <div class="form-check form-switch form-check-custom form-check-solid">
+                                <input class="form-check-input" type="checkbox" id="isCodeListed"
+                                       name="is_code_listed" :checked="editVal?.is_code_listed === 1"/>
+                                <label class="form-check-label" for="isCodeListed">
+                                    Kode tertera di barang
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div class="mb-10">
                         <label for="name" class="required form-label">Nama</label>
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
                                placeholder="Nama Barang" :value="editVal?.name"/>
                     </div>
+
+
+                    <div class="mb-10">
+                        <label for="name" class="form-label">Kode (Jika Barang memiliki kode dan kode tidak tertera di
+                            barang)</label>
+                        <input type="text" id="code" name="code" class="form-control form-control-solid"
+                               placeholder="Kode Barang" :value="editVal?.code"/>
+                    </div>
+
                     <div class="mb-10">
                         <label for="category_id" class="required form-label">Kategori</label>
                         <select name="category_id" id="selected-item-category"
@@ -34,8 +66,8 @@
                     <div class="mb-10">
                         <label for="unit_type_id" class="required form-label">Tipe</label>
                         <select name="type"
-                                class="form-select form-select-solid">
-                            <option value="" selected>Pilih Tipe Barang</option>
+                                class="form-select form-select-solid" x-model="isAset">
+                            <option value="" selected disabled>Pilih Tipe Barang</option>
                             <option value="ASET" :selected="editVal.type === 'ASET'">Aset</option>
                             <option value="JUAL" :selected="editVal.type === 'JUAL'">Jual</option>
                         </select>
@@ -60,8 +92,7 @@
                         </select>
                     </div>
 
-
-                    <div class="mb-10" x-show="isAset" x-transition x-cloak>
+                    <div class="mb-10" x-show="isAset === 'ASET' || editVal.type === 'ASET'" x-transition x-cloak>
                         <label for="unit_type_id" class="required form-label">Akun Aset (Jika Masuk Aset)</label>
                         <select name="asset_account_id" id="selected-asset-account"
                                 class="form-select form-select-solid asset-accounts-select2"

@@ -295,16 +295,21 @@
                             Inventory Controller
                         @endslot
                         @slot('menuItem')
-                            <x-dropdown-menu-item
-                                :active="request()->is('inventory/goods/stock*')"
-                                href="{{ url('inventory/goods/stock') }}">
-                                Stok Barang
-                            </x-dropdown-menu-item>
-                            <x-dropdown-menu-item
-                                :active="request()->is('inventory/goods/consumed-stocks*')"
-                                href="{{ url('inventory/goods/consumed-stocks') }}">
-                                Riwayat Pemakaian Barang
-                            </x-dropdown-menu-item>
+                                <x-dropdown-menu-item
+                                    :active="request()->is('inventory/goods*')"
+                                    href="{{ url('inventory/goods/stock') }}">
+                                    Stok Barang
+                                </x-dropdown-menu-item>
+                                <x-dropdown-menu-item
+                                    :active="request()->is('inventory/goods*')"
+                                    href="{{ url('inventory/goods/stock') }}">
+                                    Pemakaian Barang
+                                </x-dropdown-menu-item>
+                                <x-dropdown-menu-item
+                                    :active="request()->is('inventory/goods/consumed-stocks*')"
+                                    href="{{ url('inventory/goods/consumed-stocks') }}">
+                                    Riwayat Pemakaian Barang
+                                </x-dropdown-menu-item>
                         @endslot
                     </x-dropdown-menu>
                 @endcanany

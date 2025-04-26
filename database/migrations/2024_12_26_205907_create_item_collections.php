@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->enum('type', ['ASET', 'JUAL']);
+            $table->string('code')->nullable();
             $table->foreignId('category_id')
                 ->constrained('item_categories')
                 ->cascadeOnDelete();
@@ -22,6 +23,8 @@ return new class extends Migration {
                 ->cascadeOnDelete();
             $table->enum('material', ['Besi', 'Non besi']);
             $table->double('reorder_level');
+            $table->boolean('must_have_code')->default(false);
+            $table->boolean('is_code_listed')->default(false);
             $table->timestamps();
         });
     }

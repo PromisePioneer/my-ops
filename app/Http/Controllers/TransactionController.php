@@ -153,4 +153,10 @@ use Throwable;
             'message' => 'data berhasil dihapus'
         ]);
     }
+
+
+    public function getItemTransactionQtyInThisMonth(): JsonResponse
+    {
+        return response()->json($this->transactionService->getItemTransactionQtyInThisMonth());
+    }
 }

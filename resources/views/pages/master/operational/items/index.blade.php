@@ -2,144 +2,175 @@
 @section('page-title', 'Master Operasional - Barang')
 @section('content')
     <div x-data="itemData()">
-        <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.master.operational.items.form')
-            @include('pages.master.operational.item-categories.form')
-            @include('pages.master.common.unit-types.form')
-            <div class="card-header border-0 pt-6">
-                <div class="card-title">
-                    <div class="d-flex align-items-center position-relative my-1">
-                        <span class="svg-icon svg-icon-1 position-absolute ms-6">
-                           <i class="bi bi-search"></i>
-                        </span>
-                        <input type="text" name="search" x-model="search" @input.debounce="searchData()"
-                               class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
+        <div class="d-flex flex-column flex-xl-row">
+            <div class="flex-column flex-lg-row-auto w-100 w-lg-250px mb-10">
+                <div class="card card-flush">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2 class="mb-0">Filter</h2>
+                        </div>
                     </div>
+                    <form id="form-filter" @submit.prevent="filter()">
+                        <div class="card-body pt-0">
+                            <div class="d-flex flex-column text-gray-600">
+                                <div class="d-flex align-items-center py-2">
+                                    <select class="form-select form-select-solid item-category-select2"
+                                            name="branch_id" id="item-category-id-filter">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer pt-4 text-end">
+                            <button type="submit" class="btn btn-light btn-active-primary btn-sm">
+                                Filter
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <div class="card-toolbar">
-                    @can('Tambah Data Daftar Barang')
-                        <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                                <button type="button" class="btn btn-light-primary btn-sm" @click="add()"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modal-item">
-                                    <i class="ki-duotone ki-message-add fs-2">
+            </div>
+            <div class="flex-lg-row-fluid ms-lg-10">
+                <div class="card card-xl-stretch mb-5 mb-xl-8">
+                    @include('pages.master.operational.items.form')
+                    @include('pages.master.operational.item-categories.form')
+                    @include('pages.master.common.unit-types.form')
+                    <div class="card-header border-0 pt-6">
+                        <div class="card-title">
+                            <div class="d-flex align-items-center position-relative my-1">
+                            <span class="svg-icon svg-icon-1 position-absolute ms-6">
+                               <i class="bi bi-search"></i>
+                            </span>
+                                <input type="text" name="search" x-model="search" @input.debounce="searchData()"
+                                       class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            @can('Tambah Data Daftar Barang')
+                                <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                                    <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                                        <button type="button" class="btn btn-light-primary btn-sm" @click="add()"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modal-item">
+                                            <i class="ki-duotone ki-message-add fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                            </i> Tambah
+                                        </button>
+                                    </div>
+                                </div>
+                            @endcan
+                        </div>
+                    </div>
+                    <div class="card-body py-3">
+                        <div class="col-12">
+                            <form id="form-delete" @submit.prevent="destroy()">
+                                <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                                <button type="submit" class="btn btn-light-danger btn-sm mt-5"
+                                        x-show="selectedCheckBox.length > 0 && Number(deletePermission) ===  1"
+                                        x-transition x-cloak>
+                                    <i class="ki-duotone ki-trash-square fs-2">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
                                         <span class="path3"></span>
-                                    </i> Tambah
+                                        <span class="path4"></span>
+                                    </i>
+                                    Hapus
                                 </button>
-                            </div>
+                            </form>
                         </div>
-                    @endcan
-                </div>
-            </div>
-            <div class="card-body py-3">
-                <div class="col-12">
-                    <form id="form-delete" @submit.prevent="destroy()">
-                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
-                        <button type="submit" class="btn btn-light-danger btn-sm mt-5"
-                                x-show="selectedCheckBox.length > 0 && Number(deletePermission) ===  1"
-                                x-transition x-cloak>
-                            <i class="ki-duotone ki-trash-square fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                                <span class="path4"></span>
-                            </i>
-                            Hapus
-                        </button>
-                    </form>
-                </div>
-                <div class="py-5">
-                    <div class="table-responsive">
-                        <table class="table align-middle table-bordered fs-6 gy-5" id="kt_table_users">
-                            <thead>
-                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="w-10px pe-2">
-                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                        <input class="form-check-input" type="checkbox"
-                                               @click="toggleAllCheckBox()">
-                                    </div>
-                                </th>
-                                <th class="min-w-125px">Nama</th>
-                                <th class="min-w-125px">Kategori</th>
-                                <th class="min-w-125px">Material</th>
-                                <th class="min-w-125px">Satuan</th>
-                                <th class="min-w-125px">Actions</th>
-                            </thead>
-                            <template x-if="isLoading">
-                                <tbody class="fw-bold">
-                                <tr>
-                                    <td colspan="9">
-                                        <div style="text-align: center;">
-                                            <div class="spinner-border" role="status">
-                                                <span class="visually-hidden">Loading...</span>
+                        <div class="py-5">
+                            <div class="table-responsive">
+                                <table class="table align-middle table-bordered fs-6 gy-5" id="kt_table_users">
+                                    <thead>
+                                    <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                        <th class="w-10px pe-2">
+                                            <div
+                                                class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                                <input class="form-check-input" type="checkbox"
+                                                       @click="toggleAllCheckBox()">
                                             </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </template>
-                            <template x-if="!isLoading && items.data?.length === 0">
-                                <tbody class="fw-bold">
-                                <tr>
-                                    <td colspan="9">
-                                        <center>Data Tidak Ditemukan</center>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </template>
-                            <template x-for="item in items?.data" :key="item.id">
-                                <tbody class="fw-bold text-center">
-                                <tr>
-                                    <td>
-                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                             @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="item.id"
-                                                   :id="'checkbox-' + item.id"/>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span x-text="item.name"></span>
-                                        <span
-                                            :class="item.type === 'ASET' ? 'badge badge top-100 start-0 badge-warning ms-2' : 'badge badge top-100 start-0 badge-danger ms-2'"
-                                            x-text="item.type"></span>
-                                    </td>
-                                    <td>
-                                        <template x-if="item.asset_account_name === null">
-                                            <span x-text="item.category_name"></span>
-                                        </template>
-                                        <template x-if="item.asset_account_name !== null">
+                                        </th>
+                                        <th class="min-w-125px">Nama</th>
+                                        <th class="min-w-125px">Kategori</th>
+                                        <th class="min-w-125px">Material</th>
+                                        <th class="min-w-125px">Satuan</th>
+                                        <th class="min-w-125px">Actions</th>
+                                    </thead>
+                                    <template x-if="isLoading">
+                                        <tbody class="fw-bold">
+                                        <tr>
+                                            <td colspan="9">
+                                                <div style="text-align: center;">
+                                                    <div class="spinner-border" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </template>
+                                    <template x-if="!isLoading && items.data?.length === 0">
+                                        <tbody class="fw-bold">
+                                        <tr>
+                                            <td colspan="9">
+                                                <center>Data Tidak Ditemukan</center>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </template>
+                                    <template x-for="item in items?.data" :key="item.id">
+                                        <tbody class="fw-bold text-center">
+                                        <tr>
+                                            <td>
+                                                <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                                     @click="selectCheckBox($event)">
+                                                    <input class="form-check-input" type="checkbox" :value="item.id"
+                                                           :id="'checkbox-' + item.id"/>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span x-text="item.name"></span>
                                                 <span
-                                                    x-text="`${item.category_name} - ${item.asset_account_name}`"></span>
-                                        </template>
-                                    </td>
-                                    <td x-text="item.material"></td>
-                                    <td x-text="item.unit_type_name"></td>
-                                    <td>
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-item" @click="edit(item.id)">
-                                            <i class="ki-duotone ki-pencil fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
+                                                    :class="item.type === 'ASET' ? 'badge badge top-100 start-0 badge-warning ms-2' : 'badge badge top-100 start-0 badge-danger ms-2'"
+                                                    x-text="item.type"></span>
+                                            </td>
+                                            <td>
+                                                <template x-if="item.asset_account_name === null">
+                                                    <span x-text="item.category_name"></span>
+                                                </template>
+                                                <template x-if="item.asset_account_name !== null">
+                                                    <span
+                                                        x-text="`${item.category_name} - ${item.asset_account_name}`"></span>
+                                                </template>
+                                            </td>
+                                            <td x-text="item.material"></td>
+                                            <td x-text="item.unit_type_name"></td>
+                                            <td>
+                                                <button class="btn btn-light-primary btn-sm"
+                                                        data-bs-target="#modal-item" data-bs-toggle="modal"
+                                                        @click="edit(item.id)">
+                                                    <i class="ki-duotone ki-pencil fs-2">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                    </i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </template>
+                                </table>
+                            </div>
+                            <ul class="pagination float-end mb-4 mt-4">
+                                <template x-for="pagination in items.links">
+                                    <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                        <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                                x-html="pagination.label">
                                         </button>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </template>
-                        </table>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
                     </div>
-                    <ul class="pagination float-end mb-4 mt-4">
-                        <template x-for="pagination in items.links">
-                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                <button class="page-link" @click="paginationEndPoint(pagination.url)"
-                                        x-html="pagination.label">
-                                </button>
-                            </li>
-                        </template>
-                    </ul>
                 </div>
             </div>
         </div>
@@ -160,8 +191,8 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                isAset: false,
-                needSN: false,
+                isAset: null,
+                itemMustHaveCode: false,
                 hasSNOnItem: false,
                 modalForm: new bootstrap.Modal(document.getElementById('modal-item')),
                 form: document.getElementById('form-item'),
@@ -179,6 +210,7 @@
                 add() {
                     this.editVal = '';
                     this.form.reset();
+                    this.itemMustHaveCode = false;
                     $('#selected-category').val('').trigger('change');
                     $('#selected-unit-type').val('').trigger('change');
                 },
@@ -191,6 +223,21 @@
                         console.log(e)
                     } finally {
                         this.isLoading = false;
+                    }
+                },
+                async filter() {
+                    try {
+                        const resp = await axios.get('/master/operational/items/filter', {
+                            params: {
+                                category_id: $('#item-category-id-filter').val(),
+                                search: this.search
+                            }
+                        });
+                        this.items = resp.data
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+
                     }
                 },
                 async searchData() {
@@ -391,7 +438,8 @@
                 async edit(id) {
                     const resp = await axios.get(`/master/operational/items/${id}`);
                     this.editVal = resp.data;
-
+                    this.itemMustHaveCode = this.editVal.must_have_code === 1;
+                    console.log(this.itemMustHaveCode);
                     await this.selectedItemCategory();
                     await this.selectedUnitType();
                     await this.selectedAssetAccount();
