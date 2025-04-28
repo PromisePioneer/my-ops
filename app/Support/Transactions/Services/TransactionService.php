@@ -212,7 +212,8 @@ use function App\Helper\formatDate;
                             'transaction_id' => $transaction->id,
                             'branch_id' => $branch->id,
                             'item_id' => $transaction->branch_id,
-                            'qty' => 0,
+                            'qty' => $transaction->qty,
+                            'condition' => 'Baik'
                         ]);
                     }
 
