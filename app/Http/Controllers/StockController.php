@@ -149,18 +149,11 @@ use Illuminate\View\View;
     }
 
 
-    public function getStockWithCode(Request $request)
+    public function getStockWithCode()
     {
-
-        $ids = $request->get('ids', []);
         $stock = Stock::with('item', 'itemCatalog')
-            ->whereHas('itemCatalog', function ($query) use ($ids) {
-                if (!empty($ids)) {
-                    $query->whereNotIn('id', $ids);
-                }
-            })
-            ->whereNotNull('item_catalog_id')
             ->whereIn('condition', ['Baik', 'Diperbaiki'])
+            ->whereNotNull('item_catalog_id')
             ->get();
 
 
@@ -169,7 +162,27 @@ use Illuminate\View\View;
                 'id' => $item->id,
                 'item_catalog_id' => $item->itemCatalog->id,
                 'code' => $item->itemCatalog->code,
-                'text' => $item->itemCatalog->item->name . ' - ' . $item->itemCatalog->code . ' - ' . $item->condition,
+                'text' => "{$item->itemCatalog->item->name}-{$item->itemCatalog->code} Kondisi: {$item->condition}",
+            ];
+        });
+    }
+
+
+    public function getStockWithoutCode(Request $request)
+    {
+//        dd($request->get('ids', []));
+        $stock = Stock::with('item')
+            ->whereNull('item_catalog_id')
+            ->whereNotIn('id', $request->get('ids', []))
+            ->whereIn('condition', ['Baik', 'Diperbaiki'])
+            ->get();
+
+
+        return $stock->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'name' => $item->item->name,
+                'text' => $item->item->name . ' Stok : ' . $item->qty . ' - ' . $item->condition,
             ];
         });
     }

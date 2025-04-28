@@ -1295,6 +1295,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/stock-accounts-data', [AccountController::class, 'stockAccounts']);
         Route::get('/branches-data', [BranchController::class, 'getAllBranch']);
         Route::get('/stock-with-codes-data', [StockController::class, 'getStockWithCode']);
+        Route::get('/stock-without-codes-data', [StockController::class, 'getStockWithoutCode']);
     });
 
 

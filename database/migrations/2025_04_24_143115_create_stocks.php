@@ -28,7 +28,7 @@ return new class extends Migration {
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->integer('qty');
-            $table->enum('condition', ['Rusak', 'Baik', 'Diperbaiki']);
+            $table->enum('condition', ['Rusak', 'Baik', 'Diperbaiki'])->default('Baik');
             $table->timestamps();
         });
     }
