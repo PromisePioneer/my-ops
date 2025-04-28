@@ -16,9 +16,8 @@ return new class extends Migration {
                 ->constrained('item_collections')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignId('draft_stock_id')
-                ->constrained('draft_stocks')
-                ->cascadeOnUpdate()
+            $table->foreignId('draft_stock_id')->constrained('draft_stocks')
+                ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->string('code');
             $table->enum('condition', ['Rusak', 'Baik', 'Diperbaiki']);

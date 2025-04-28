@@ -128,7 +128,7 @@ use Illuminate\View\View;
     public function getStockBasedOnDraftStock(DraftStock $draftStock)
     {
         $stock = Stock::with('transaction', 'branch', 'item')
-            ->where('draft_stock_id', $draftStock->id)
+            ->where('branch_id', $draftStock->branch_id)
             ->where('item_id', $draftStock->item_id)
             ->get();
         return $stock->map(function ($stock) {
@@ -146,5 +146,31 @@ use Illuminate\View\View;
     public function getMustReorderStocks(Request $request): JsonResponse
     {
         return response()->json($this->stockService->getMustReorderStocks($request));
+    }
+
+
+    public function getStockWithCode(Request $request)
+    {
+
+        $ids = $request->get('ids', []);
+        $stock = Stock::with('item', 'itemCatalog')
+            ->whereHas('itemCatalog', function ($query) use ($ids) {
+                if (!empty($ids)) {
+                    $query->whereNotIn('id', $ids);
+                }
+            })
+            ->whereNotNull('item_catalog_id')
+            ->whereIn('condition', ['Baik', 'Diperbaiki'])
+            ->get();
+
+
+        return $stock->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'item_catalog_id' => $item->itemCatalog->id,
+                'code' => $item->itemCatalog->code,
+                'text' => $item->itemCatalog->item->name . ' - ' . $item->itemCatalog->code . ' - ' . $item->condition,
+            ];
+        });
     }
 }
