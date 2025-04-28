@@ -80,6 +80,7 @@ use App\Http\Controllers\Master\Operational\ItemCollectionController;
 use App\Http\Controllers\Master\Operational\PSBController;
 use App\Http\Controllers\Master\Operational\SupplierController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\StockWithdrawalController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UnitTypeController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
@@ -673,6 +674,12 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/branch/data/{itemCollection}', [StockController::class, 'getMainBranchWithStock']);
                 Route::get('/stock-based-on-draft-stock/{draftStock}', [StockController::class, 'getStockBasedOnDraftStock']);
                 Route::get('/must-reorder', [StockController::class, 'getMustReorderStocks']);
+            });
+
+
+            Route::prefix('/stock-withdrawals')->group(function () {
+                Route::get('/', [StockWithdrawalController::class, 'index']);
+                Route::get('/create', [StockWithdrawalController::class, 'create']);;
             });
 
             Route::prefix('consumed-stocks')->group(function () {
@@ -1287,6 +1294,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/kas-accounts-data', [AccountController::class, 'kasAccounts']);
         Route::get('/stock-accounts-data', [AccountController::class, 'stockAccounts']);
         Route::get('/branches-data', [BranchController::class, 'getAllBranch']);
+        Route::get('/stock-with-codes-data', [StockController::class, 'getStockWithCode']);
     });
 
 

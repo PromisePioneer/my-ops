@@ -83,26 +83,26 @@
             <div class="row col-xl-8">
                 <div class="col-md-6 mb-md-5 mb-xl-10">
                     <div class="card overflow-hidden mb-xl-10">
-                            <div class="card-body d-flex justify-content-between flex-column px-0 pb-0">
-                                <div class="mb-4 px-9">
-                                    <div class="d-flex align-items-center mb-2">
+                        <div class="card-body d-flex justify-content-between flex-column px-0 pb-0">
+                            <div class="mb-4 px-9">
+                                <div class="d-flex align-items-center mb-2">
                                         <span class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2"
                                               x-text="incomingItemTransactionQtyInThisMonth"></span>
-                                    </div>
-                                    <span class="fs-6 fw-semibold text-gray-500">Barang Masuk</span>
                                 </div>
+                                <span class="fs-6 fw-semibold text-gray-500">Barang Masuk</span>
                             </div>
                         </div>
+                    </div>
                     <div class="card card-flush mb-lg-10">
-                            <div class="card-header pt-5">
-                                <div class="card-title d-flex flex-column">
-                                    <span class="fs-2hx fw-bold text-gray-900 me-2 lh-1 ls-n2">69,700</span>
-                                    <span class="text-gray-500 pt-1 fw-semibold fs-6">Barang Kembali</span>
-                                </div>
-                            </div>
-                            <div class="card-body d-flex align-items-end pt-0">
+                        <div class="card-header pt-5">
+                            <div class="card-title d-flex flex-column">
+                                <span class="fs-2hx fw-bold text-gray-900 me-2 lh-1 ls-n2">69,700</span>
+                                <span class="text-gray-500 pt-1 fw-semibold fs-6">Barang Kembali</span>
                             </div>
                         </div>
+                        <div class="card-body d-flex align-items-end pt-0">
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-6 mb-md-5 mb-xl-10">
                     <div class="card overflow-hidden  mb-5 mb-xl-10">
@@ -112,20 +112,20 @@
                                     <span class="fs-2hx fw-bold text-gray-800 me-2 lh-1 ls-n2">47,769,700</span>
                                     <span
                                         class="d-flex align-items-end text-gray-500 fs-6 fw-semibold">Tons</span>
-                                    </div>
-                                    <span class="fs-6 fw-semibold text-gray-500">Barang Keluar</span>
                                 </div>
+                                <span class="fs-6 fw-semibold text-gray-500">Barang Keluar</span>
                             </div>
                         </div>
-                        <div class="card card-flush mb-lg-10">
-                            <div class="card-header pt-5">
-                                <div class="card-title d-flex flex-column">
-                                    <span class="fs-2hx fw-bold text-gray-900 me-2 lh-1 ls-n2">69,700</span>
-                                    <span class="text-gray-500 pt-1 fw-semibold fs-6">Total Stok</span>
-                                </div>
+                    </div>
+                    <div class="card card-flush mb-lg-10">
+                        <div class="card-header pt-5">
+                            <div class="card-title d-flex flex-column">
+                                <span class="fs-2hx fw-bold text-gray-900 me-2 lh-1 ls-n2">69,700</span>
+                                <span class="text-gray-500 pt-1 fw-semibold fs-6">Total Stok</span>
                             </div>
-                            <div class="card-body d-flex align-items-end pt-0"></div>
                         </div>
+                        <div class="card-body d-flex align-items-end pt-0"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -163,7 +163,7 @@
                                         <th class="min-w-125px text-center">Stok</th>
                                         <th class="min-w-125px text-center">Actions</th>
                                     </thead>
-                                    <tbody class="fw-bold">
+                                    <tbody class="fw-bold text-center">
                                     <template x-if="isLoading">
                                         <tr>
                                             <td colspan="9">
@@ -194,14 +194,23 @@
                                             <td class="text-center" x-text="stock.category_name"></td>
                                             <td class="text-center" x-text="stock.total_stock"></td>
                                             <td>
-                                                <a href="#"
+                                                <a href=""
+                                                   class="btn btn-light-info btn-sm mb-4">
+                                                    <i class="ki-duotone ki-information fs-2">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                        <span class="path3"></span>
+                                                    </i>
+                                                    Pemakaian Barang
+                                                </a>
+                                                <a href=""
                                                    class="btn btn-light-info btn-sm">
                                                     <i class="ki-duotone ki-information fs-2">
                                                         <span class="path1"></span>
                                                         <span class="path2"></span>
                                                         <span class="path3"></span>
                                                     </i>
-                                                    Detail
+                                                    Mutasi Barang
                                                 </a>
                                             </td>
                                         </tr>

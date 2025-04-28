@@ -11,7 +11,7 @@ class Stock extends Model
     protected $table = 'stocks';
     protected $fillable = [
         'transaction_id',
-        'draft_stock_id',
+        'item_catalog_id',
         'branch_id',
         'item_id',
         'qty',
@@ -32,5 +32,11 @@ class Stock extends Model
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+
+    public function itemCatalog(): BelongsTo
+    {
+        return $this->belongsTo(ItemCatalog::class, 'item_catalog_id');
     }
 }

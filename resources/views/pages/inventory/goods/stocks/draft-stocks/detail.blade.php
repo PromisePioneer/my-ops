@@ -50,6 +50,7 @@
                         <th class="min-w-125px text-center">No. Transaksi</th>
                         <th class="min-w-125px text-center">Nama</th>
                         <th class="min-w-125px text-center">Qty</th>
+                        <th class="min-w-125px text-center">Kondisi</th>
                     </tr>
                     </thead>
                     <template x-if="isLoading">

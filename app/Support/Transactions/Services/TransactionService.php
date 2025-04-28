@@ -201,19 +201,11 @@ use function App\Helper\formatDate;
                     $branch = Branch::with('parent')->where('id', $transaction->branch_id)->first();
 
                     if ($transaction->item->category->name !== 'Kategori 4') {
-                        $draftStock = DraftStock::create([
+                        DraftStock::create([
                             'item_id' => $transaction->item_id,
                             'branch_id' => $transaction->branch_id,
                             'transaction_id' => $transaction->id,
                             'qty' => $transaction->qty
-                        ]);
-
-                        Stock::create([
-                            'transaction_id' => $transaction->id,
-                            'branch_id' => $branch->id,
-                            'item_id' => $transaction->branch_id,
-                            'draft_stock_id' => $draftStock->id,
-                            'qty' => 0,
                         ]);
                     } else {
                         Stock::create([

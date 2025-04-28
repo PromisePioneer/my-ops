@@ -54,11 +54,12 @@ use Throwable;
     {
         DB::transaction(function () use ($request, $draftStock) {
             $draftStock->load('transaction');
-            $stock = Stock::where('draft_stock_id', $draftStock->id)
+            $stock = Stock::where('item_id', $draftStock->item_id)
+                ->where('branch_id', $draftStock->branch_id)
                 ->where('condition', $request->input('condition'))
                 ->first();
 
-            ItemCatalog::create([
+            $itemCatalog = ItemCatalog::create([
                 'item_id' => $draftStock->item_id,
                 'draft_stock_id' => $draftStock->id,
                 'code' => $request->code,
@@ -68,13 +69,14 @@ use Throwable;
 
             $draftStock->decrement('qty');
 
+
             if ($stock) {
                 $stock->increment('qty');
             } else {
                 Stock::create([
                     'branch_id' => $draftStock->branch_id,
-                    'transaction_id' => $draftStock->transaction->id,
-                    'draft_stock_id' => $draftStock->id,
+                    'transaction_id' => $draftStock->transaction_id,
+                    'item_catalog_id' => $itemCatalog->id,
                     'item_id' => $draftStock->item_id,
                     'qty' => 1,
                     'condition' => $request->condition
@@ -89,10 +91,11 @@ use Throwable;
      */
     public function update(ItemCatalogRequest $request, ItemCatalog $itemCatalog): void
     {
-        $oldStock = Stock::where('draft_stock_id', $itemCatalog->draft_stock_id)
+        $oldStock = Stock::where('item_catalog_id', $itemCatalog->id)
             ->where('condition', $itemCatalog->condition)
             ->first();
-        $newStock = Stock::where('draft_stock_id', $itemCatalog->draft_stock_id)
+
+        $newStock = Stock::where('item_catalog_id', $itemCatalog->id)
             ->where('condition', $request->condition)
             ->first();
 
@@ -107,7 +110,7 @@ use Throwable;
                     Stock::create([
                         'branch_id' => $itemCatalog->draftStock->branch_id,
                         'transaction_id' => $itemCatalog->draftStock->transaction->id,
-                        'draft_stock_id' => $itemCatalog->draft_stock_id,
+                        'item_catalog_id' => $itemCatalog->id,
                         'item_id' => $itemCatalog->item_id,
                         'qty' => 1,
                         'condition' => $request->condition

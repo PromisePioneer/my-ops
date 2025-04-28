@@ -15,7 +15,6 @@ class DraftStockQueryFilter
         if ($request->filled('branch_id')) {
             $branchId = $request->input('branch_id');
 
-            // Get all branch IDs: parent + children
             $branchIds = Branch::where('id', $branchId)
                 ->orWhere('parent_id', $branchId)
                 ->pluck('id');
