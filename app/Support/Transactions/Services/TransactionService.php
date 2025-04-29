@@ -211,7 +211,7 @@ use function App\Helper\formatDate;
                         Stock::create([
                             'transaction_id' => $transaction->id,
                             'branch_id' => $branch->id,
-                            'item_id' => $transaction->branch_id,
+                            'item_id' => $transaction->item_id,
                             'qty' => $transaction->qty,
                             'condition' => 'Baik'
                         ]);

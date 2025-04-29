@@ -8,7 +8,6 @@
     </style>
 
     <div class="d-flex flex-column flex-lg-row" x-data="generateStockWithdrawals">
-        @include('pages.master.common.contacts.form')
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
                 <form id="form" @submit.prevent="save()">
@@ -36,17 +35,17 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <template x-for="(field,index) in itemWithCodeFields " :key="index">
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td class="pe-7" style='text-align:center; vertical-align:middle'>
-                                            <select name=""
+                                            <input type="hidden" name="itemWithCodeFields[]" id="stock_with_codes"
+                                                   :value="JSON.stringify(itemWithCodeFields)">
+                                            <select
                                                     class="form-select form-select-solid stock-with-codes-select2"
                                                     multiple>
                                                 <option></option>
                                             </select>
                                         </td>
                                     </tr>
-                                </template>
                                 </tbody>
                             </table>
                         </div>
@@ -66,7 +65,8 @@
                                 <template x-for="(field,index) in itemWithoutCodeFields " :key="index">
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td class="pe-7" style='text-align:center; vertical-align:middle'>
-                                            <select x-model="field.stock_id" name=""
+                                            <select x-model="field.stock_id"
+                                                    :name="`itemWithoutCodeFields[${index}][stock_id]`"
                                                     :id="`stock-without-codes-select2-${index}`"
                                                     class="form-select form-select-solid">
                                                 <option></option>
@@ -74,7 +74,8 @@
                                         </td>
                                         <td class="ps-0" style='text-align:center; vertical-align:middle'>
                                             <input class="form-control form-control-solid" type="number" min="1"
-                                                   x-model="field.qty" :name="`data[${index}][qty]`" placeholder="1"
+                                                   x-model="field.qty" :name="`itemWithoutCodeFields[${index}][qty]`"
+                                                   placeholder="1"
                                                    value="1"/>
                                         </td>
                                         <td class="pt-5 text-end" style='text-align:center; vertical-align:middle'>
@@ -107,9 +108,10 @@
                     </div>
 
                     <div class="float-end">
-                        <a href="{{ url('/income-transactions/invoice') }}" class="btn btn-sm btn-light">Cancel</a>
+                        <a href="{{ url('/inventory/goods/stock-withdrawals') }}"
+                           class="btn btn-sm btn-light">Cancel</a>
                         <button type="submit" class="btn btn-sm btn-primary" :disabled="buttonLoading"
-                                x-text="buttonLoading ? 'Loading...' : 'Generate Invoice'"></button>
+                                x-text="buttonLoading ? 'Loading...' : 'Simpan'"></button>
                     </div>
                 </form>
             </div>
@@ -127,22 +129,15 @@
                 editVal: '',
                 buttonLoading: false,
                 form: document.getElementById('form'),
-                contactForm: document.getElementById('contact-form'),
-                contactModal: new bootstrap.Modal(document.getElementById('contact-modal')),
                 itemWithCodes: [],
-                itemWithCodeFields: [{
-                    code: '',
-                }],
+                itemWithCodeFields: [],
                 itemWithoutCodeFields: [{
                     stock_id: '',
                     qty: '',
                 }],
                 async init() {
                     await this.getUserData();
-                    for (const val of this.itemWithCodeFields) {
-                        const index = this.itemWithCodeFields.indexOf(val);
-                        await this.getStockWithCodesData(index);
-                    }
+                    await this.getStockWithCodesData();
 
                     for (const val of this.itemWithoutCodeFields) {
                         const index = this.itemWithoutCodeFields.indexOf(val);
@@ -154,7 +149,7 @@
                         placeholder: "Pilih Teknisi",
                         allowClear: true,
                         ajax: {
-                            url: '/select2/users-data',
+                            url: '/select2/user-has-areas-data',
                             dataType: "json",
                             type: "GET",
                             data: (params) => ({search: params.term}),
@@ -163,7 +158,7 @@
                         }
                     });
                 },
-                async getStockWithCodesData(index) {
+                async getStockWithCodesData() {
                     const self = this;
                     $(`.stock-with-codes-select2`).select2({
                             allowClear: true,
@@ -180,7 +175,12 @@
                             }
                         }
                     ).on('select2:select', function (e) {
-                        self.itemWithCodeFields[index].code = e.params.data.code;
+                        self.itemWithCodeFields.push({
+                            code: e.params.data.code,
+                            stock_id: e.params.data.stock_id
+                        });
+
+                        console.log(self.itemWithCodeFields);
                     });
                 },
                 removeItemWithoutCode(index) {
@@ -220,7 +220,9 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/income-transactions/invoice/generate-invoice/`, new FormData(this.form))
+                        let formData = new FormData(this.form);
+                        formData.append('item_with_codes', JSON.stringify(this.itemWithCodeFields));
+                        await axios.post(`/inventory/goods/stock-withdrawals/store`, new FormData(this.form))
                         await showAlert('success', 'Data berhasil disimpan').then(() => {
                             window.location.href = '/income-transactions/invoice';
                         })

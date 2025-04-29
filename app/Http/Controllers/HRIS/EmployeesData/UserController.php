@@ -197,4 +197,10 @@ use Maatwebsite\Excel\Facades\Excel;
     {
         return response()->json($this->userService->selectedUser($user));
     }
+
+
+    public function getUserHasArea(Request $request): JsonResponse
+    {
+        return response()->json($this->userService->getUserHasArea($request));
+    }
 }

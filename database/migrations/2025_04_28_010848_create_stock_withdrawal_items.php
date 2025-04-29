@@ -16,9 +16,6 @@ return new class extends Migration {
                 ->constrained('stock_withdrawals')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignId('item_id')->constrained('item_collections')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
             $table->foreignId('stock_id')
                 ->constrained('stocks')
                 ->cascadeOnDelete()
@@ -34,6 +31,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('stock_withdrawal_items');
     }
 };

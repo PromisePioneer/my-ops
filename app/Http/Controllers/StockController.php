@@ -157,12 +157,25 @@ use Illuminate\View\View;
             ->get();
 
 
-        return $stock->map(function ($item) {
+        return $stock->map(function ($stock) {
+            $itemCatalog = [];
+
+            foreach ($stock->itemCatalog->get() as $value) {
+                $itemCatalog[] = [
+                    'id' => $value->id,
+                    'stock_id' => $stock->id,
+                    'code' => $value->code,
+                    'text' => "[{$value->item->name}] [{$value->code}] [{$value->condition}]",
+                ];
+            }
+
+
+
+
             return [
-                'id' => $item->id,
-                'item_catalog_id' => $item->itemCatalog->id,
-                'code' => $item->itemCatalog->code,
-                'text' => "{$item->itemCatalog->item->name}-{$item->itemCatalog->code} Kondisi: {$item->condition}",
+                'id' => $stock->id,
+                'text' => $stock->item->name,
+                'children' => $itemCatalog
             ];
         });
     }

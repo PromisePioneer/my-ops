@@ -12,13 +12,22 @@ return new class extends Migration {
     {
         Schema::create('stock_withdrawals', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('branch_id')->constrained('branches')
+            $table->foreignId('branch_id')
+                ->constrained('branches')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->date('date');
             $table->string('description');
-            $table->foreignId('kca_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('stocker_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('kca_id')
+                ->nullable()
+                ->constrained('users')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('stocker_id')
+                ->nullable()
+                ->constrained('users')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->timestamps();
         });
     }
@@ -28,6 +37,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('stock_withdrawals');
     }
 };

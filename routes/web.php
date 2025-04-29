@@ -679,7 +679,9 @@ Route::group(['middleware' => ['auth']], static function () {
 
             Route::prefix('/stock-withdrawals')->group(function () {
                 Route::get('/', [StockWithdrawalController::class, 'index']);
-                Route::get('/create', [StockWithdrawalController::class, 'create']);;
+                Route::get('/data', [StockWithdrawalController::class, 'data']);
+                Route::get('/create', [StockWithdrawalController::class, 'create']);
+                Route::post('/store', [StockWithdrawalController::class, 'store']);
             });
 
             Route::prefix('consumed-stocks')->group(function () {
@@ -1296,6 +1298,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/branches-data', [BranchController::class, 'getAllBranch']);
         Route::get('/stock-with-codes-data', [StockController::class, 'getStockWithCode']);
         Route::get('/stock-without-codes-data', [StockController::class, 'getStockWithoutCode']);
+        Route::get('/user-has-areas-data', [UserController::class, 'getUserHasArea']);
     });
 
 
