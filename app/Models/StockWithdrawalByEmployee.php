@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StockWithdrawalByEmployee extends Model
 {
-    protected $table = 'stock_withdrawal_by_employee';
+    protected $table = 'stock_withdrawals_by_employee';
     protected $fillable = [
         'stock_withdrawal_id',
         'user_id',

@@ -10,7 +10,7 @@ class StockWithdrawalItem extends Model
     protected $table = 'stock_withdrawal_items';
     protected $fillable = [
         'stock_withdrawal_id',
-        'item_catalog_id',
+        'stock_id',
         'qty',
     ];
 

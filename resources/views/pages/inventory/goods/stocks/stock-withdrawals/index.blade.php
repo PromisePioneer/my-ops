@@ -2,7 +2,7 @@
 @section('page-title', 'Pemakaian Barang')
 @section('breadcrumbs', 'Inventory Controller - Pemakaian Barang')
 @section('content')
-    <div x-data="sklData()">
+    <div x-data="stockWithdrawalData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -54,9 +54,10 @@
                                                @click="toggleAllCheckBox()" :disabled="Number(deletePermission) !== 1">
                                     </div>
                                 </th>
+                                <th class="min-w-125px">Cabang</th>
                                 <th class="min-w-125px">Tanggal</th>
-                                <th class="min-w-125px">Area</th>
-                                <th class="min-w-125px">KCA</th>
+                                <th class="min-w-125px">Deskripsi</th>
+                                <th class="min-w-125px">Karyawan</th>
                                 <th class="min-w-125px">Status</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
@@ -73,7 +74,7 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-if="!isLoading && skl.data?.length === 0">
+                            <template x-if="!isLoading && stockWithdrawals.data?.length === 0">
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td colspan="9">
@@ -82,8 +83,8 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-for="service in skl?.data" :key="service.id">
-                                <tbody class="fw-bold text-center">
+                            <template x-for="stockWithdrawal in stockWithdrawals?.data" :key="stockWithdrawal.id">
+                                <tbody class="fw-bold ">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -93,18 +94,28 @@
                                                    :disabled="Number(deletePermission) !== 1"/>
                                         </div>
                                     </td>
-                                    <td x-text="service.name"></td>
-                                    <template x-if="Number(editPermission) === 1">
+                                    <td class="text-center" x-text="stockWithdrawal.branch_name"></td>
+                                    <td class="text-center" x-text="stockWithdrawal.date"></td>
+                                    <td class="text-center" x-text="stockWithdrawal.description"></td>
+                                    <td>
+                                        <ul>
+                                            <template x-for="employee in stockWithdrawal?.employees" :key="employee.id">
+                                                <li><a href="#" x-text="employee.name"></a></li>
+                                            </template>
+                                        </ul>
+                                    </td>
                                         <td>
-                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-skl" @click="edit(service.id)">
-                                                <i class="ki-duotone ki-pencil fs-2">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
-                                            </button>
+
                                         </td>
-                                    </template>
+                                    <td class="text-center">
+                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#modal-skl" @click="edit(service.id)">
+                                            <i class="ki-duotone ki-pencil fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </button>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </template>
@@ -130,6 +141,20 @@
         function stockWithdrawalData() {
             return {
                 isLoading: false,
+                stockWithdrawals: [],
+                async init() {
+                    await this.getStockWithdrawals();
+                },
+                async getStockWithdrawals() {
+                    try {
+                        const resp = await axios.get('/inventory/goods/stock-withdrawals/data');
+                        this.stockWithdrawals = resp.data;
+                    } catch (e) {
+                        console.log(e);
+                    } finally {
+                        this.isLoading = false;
+                    }
+                }
             }
         }
     </script>

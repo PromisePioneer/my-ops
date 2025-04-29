@@ -6,6 +6,7 @@ use AllowDynamicProperties;
 use App\Http\Requests\User\UserRequest;
 use App\Models\User;
 use App\Models\WeekHoliday;
+use App\Support\HelperService\UserSelect2QueryFilter;
 use App\Support\Master\Common\Branch\Service\BranchService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -193,5 +194,22 @@ use Throwable;
             'id' => $data->id,
             'name' => $data->name
         ];
+    }
+
+
+    public function getUserHasArea(Request $request)
+    {
+        $search = $request->input('search');
+        $user = User::search($search)->query(function ($query) use ($request) {
+            $newQuery = $query->where('active', true);
+            UserSelect2QueryFilter::apply($newQuery, $request);
+        })->get();
+
+        return $user->map(function ($query) {
+            return [
+                'id' => $query->id,
+                'text' => $query->name
+            ];
+        });
     }
 }
