@@ -205,7 +205,7 @@
                 bersangkutan.
             </p>
             @endif
-            @if($sp->sp_type === 'SP-1' || $sp->sp_type === 'SP-2')
+            @if($sp->sp_type === 'SP-1')
                 <div>
                     <p class="fs-9 mb-2">
                         Sehubungan sikap indisipliner dan pelanggaran terhadap tata tertib perusahaan yang saudara
@@ -245,6 +245,7 @@
                                 </li>
                             </ol>
                         </li>
+
                     </ol>
 
 
@@ -252,8 +253,66 @@
                         Demikian Surat Peringatan ini dibuat agar dapat diperhatikan dan ditaati oleh yang
                         bersangkutan.
                     </p>
-                    @endif
                 </div>
+            @endif
+
+            @if ($sp->sp_type === 'SP-2')
+            <div>
+                <p class="fs-9 mb-2">
+                    Sehubungan sikap indisipliner dan pelanggaran terhadap tata tertib perusahaan yang saudara
+                    lakukan, yaitu sebagai berikut :
+                </p>
+                <ol class="fs-9 mb-2 ms-n3">
+                    @foreach($spReasonList as $spReason)
+                        <li>{{ $spReason->list_of_reason }}</li>
+                    @endforeach
+                </ol>
+                <p class="fs-9 mb-2">
+                    Maka dengan ini saudara dikenakan. Adapun ketentuan
+                    <span style="color: red">{{ $sp->sp_type }}</span> yang telah ditetapkan oleh manajemen untuk
+                    saudara
+                    adalah sebagai
+                    berikut:
+                </p>
+                <ol style="line-height: 1.7em" class="fs-9 ms-n3 mb-4">
+                    <li>Surat Peringatan Kedua berlaku untuk 6 (enam) bulan kedepan sejak diterbitkan.</li>
+                    <li>Jika didapati saudara kembali melakukan tindakan indispliner dan/atau pelanggaran tata
+                        tertib,
+                        sehingga saudara dianggap meremehkan peraturan dan peringatan yang berlaku, maka
+                        perusahaan akan memberikan Surat Peringatan Kedua/Ketiga hingga pemutusan hubungan
+                        kerja sesuai kualifikasi pada peraturan perusahaan yang berlaku.
+                    </li>
+                    <li>
+                        Sanksi yang diberikan kepada saudara yaitu:
+                        <ol type="a">
+                            <li>Tidak mendapatkan bonus selama 12 (dua belas) bulan.</li>
+                            <li>Penundaan kenaikan gaji selama 12 (dua belas) bulan.</li>
+                            <li> Berjanji untuk tidak mengulangi kesalahan yang telah dilakukan sesuai yang
+                                disebutkan di
+                                Surat Peringatan ini.
+                            </li>
+                            <li>Berpotensi dilakukannya Demosi dan/atau Mutasi hingga Penurunan Gaji apabila kerap
+                                mengulangi kesalahan.
+                            </li>
+                        </ol>
+                    </li>
+                    @if ($sp->user->name == "RINA LOVELY SIMANJUNTAK")
+                    <li>
+                        Sanksi lainnya:
+                        <ol type="a">
+                            <li>mengembalikan uang sejumlah uang yg telah diambil.</li>
+                        </ol>
+                    </li>
+                    @endif
+                </ol>
+
+
+                <p class="fs-9 ">
+                    Demikian Surat Peringatan ini dibuat agar dapat diperhatikan dan ditaati oleh yang
+                    bersangkutan.
+                </p>
+            </div>
+            @endif
 
                 @if($sp->sp_type === 'SP-3')
                     <div class="fs-9 mb-2">
@@ -315,13 +374,13 @@
                             <tr>
                                 <th style="text-align: center; padding: 8px 8px 0 8px;">
                                     <p style="font-size: 12px; margin: 0; text-decoration: underline">
-                                        {{ $punishedBy?->name }}
+                                        {{ $sp->punishedBy?->name }}
                                     </p>
                                 </th>
                             </tr>
                             <tr style="padding: 0">
                                 <th style="text-align: center; padding: 8px;">
-                                    <p style="font-size: 12px; margin: 0;">{{ $punishedBy?->roles[0]?->name }}</p>
+                                    <p style="font-size: 12px; margin: 0;">{{ $sp->punishedByRole?->name }}</p>
                                 </th>
                             </tr>
                         </table>

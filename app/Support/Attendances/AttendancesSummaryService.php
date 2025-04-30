@@ -49,7 +49,7 @@ use Illuminate\Http\Request;
                 'weekHoliday:user_id,day',
                 'company:id,name',
             ])
-            ->where('active', 1)
+            // ->where('active', 1)
             ->orderBy('absent_id');
 
         $data = AttendancesACLFilter::apply($query, $request);

@@ -53,12 +53,20 @@ use function App\Helper\convertToRoman;
     {
         $search = $request->input('search');
 
-        $sp = SP::search($search)->query(function ($query) use ($request) {
-            $data = $query->join('users', 'users.id', '=', 'sp.user_id');
-            SPACLFilter::apply($data, $request);
-        })->paginate(self::$perPage);
+        $query = $this->SPRepository->mainQuery();
 
-        return self::formattedData($sp);
+
+        if(!empty($search)){
+            $query->whereHas('user', function($query) use($search) {
+                $query->where('name', 'like' , '%' . $search . '%' );
+            });
+        }
+
+
+        $filter = SPACLFilter::apply($query, $request)->paginate(self::$perPage);
+
+
+        return self::formattedData($filter);
     }
 
 

@@ -236,6 +236,7 @@
                     try {
                         const resp = await axios.get('/adms/employee-schedules/data', {
                             params: {
+                                search: this.search,
                                 startDate: start_date,
                                 endDate: end_date
                             }
@@ -254,6 +255,7 @@
                     try {
                         const resp = await axios.get('/adms/employee-schedules/national-holidays', {
                             params: {
+                                search: this.search,
                                 startDate: start_date,
                                 endDate: end_date
                             }
@@ -271,6 +273,7 @@
 
                     const resp = await axios.get('/adms/employee-schedules/filter', {
                         params: {
+                            search: this.search,
                             start_date: startDate,
                             end_date: endDate,
                         }
@@ -299,6 +302,7 @@
                             this.isLoading = true;
                             const resp = await axios.get(`${url}`, {
                                 params: {
+                                    search: this.search,
                                     start_date: startDate,
                                     end_date: endDate,
                                 }
