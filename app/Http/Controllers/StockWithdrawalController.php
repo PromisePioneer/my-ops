@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
+use App\Http\Requests\StockWithdrawalRequest;
 use App\Support\Inventory\Stock\StockWithdrawal\Service\StockWithdrawalService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Throwable;
 
 #[AllowDynamicProperties] class StockWithdrawalController extends Controller
 {
@@ -46,7 +48,10 @@ use Illuminate\View\View;
     }
 
 
-    public function store(Request $request): JsonResponse
+    /**
+     * @throws Throwable
+     */
+    public function store(StockWithdrawalRequest $request): JsonResponse
     {
         $this->stockWithdrawalService->store($request);
         return response()->json([

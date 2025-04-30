@@ -26,7 +26,7 @@ class ItemCatalog extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function transaction()
+    public function transaction(): BelongsTo
     {
         return $this->belongsTo(Transaction::class, 'transaction_id');
     }

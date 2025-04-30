@@ -122,7 +122,7 @@
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4 mt-4">
-                        <template x-for="pagination in skl.links">
+                        <template x-for="pagination in stockWithdrawals.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                 <button class="page-link" @click="paginationEndPoint(pagination.url)"
                                         x-html="pagination.label">
@@ -142,6 +142,7 @@
             return {
                 isLoading: false,
                 stockWithdrawals: [],
+                search: '',
                 async init() {
                     await this.getStockWithdrawals();
                 },
@@ -154,7 +155,25 @@
                     } finally {
                         this.isLoading = false;
                     }
-                }
+                },
+                async paginationEndPoint(url) {
+                    if (url) {
+                        this.stockWithdrawals = [];
+                        this.isLoading = true;
+                        try {
+                            const resp = await axios.get(`${url}`, {
+                                params: {
+                                    search: this.search,
+                                }
+                            });
+                            this.stockWithdrawals = resp.data
+                        } catch (e) {
+                            console.log(e)
+                        } finally {
+                            this.isLoading = false
+                        }
+                    }
+                },
             }
         }
     </script>

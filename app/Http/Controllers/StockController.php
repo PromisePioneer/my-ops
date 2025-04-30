@@ -150,7 +150,7 @@ use Illuminate\View\View;
 
     public function getStockWithCode()
     {
-        $stock = Stock::with('item', 'itemCatalog')
+        $stock = Stock::with('item', 'itemCatalog')->whereHas('itemCatalog')
             ->whereIn('condition', ['Baik', 'Diperbaiki'])
             ->get();
 
@@ -182,10 +182,9 @@ use Illuminate\View\View;
 
     public function getStockWithoutCode(Request $request)
     {
-//        dd($request->get('ids', []));
-        $stock = Stock::with('item')
-            ->whereNull('item_catalog_id')
-            ->whereNotIn('id', $request->get('ids', []))
+        $stock = Stock::with('item')->whereHas('item.category', function ($query) {
+            $query->where('name', 'Kategori 4');
+        })->whereNotIn('id', $request->get('ids', []))
             ->whereIn('condition', ['Baik', 'Diperbaiki'])
             ->get();
 

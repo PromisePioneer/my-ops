@@ -208,6 +208,7 @@ use function App\Helper\formatDate;
                     } else {
                         Stock::create([
                             'transaction_id' => $transaction->id,
+                            'branch_id' => $transaction->branch_id,
                             'item_id' => $transaction->item_id,
                             'qty' => $transaction->qty,
                             'condition' => 'Baik'

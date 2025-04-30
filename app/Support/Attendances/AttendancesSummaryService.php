@@ -171,7 +171,7 @@ use Illuminate\Http\Request;
             $attendedDates = $user->attendancesSummary->pluck('date')->toArray();
 
             $totalAbsent = collect($periods)
-                ->filter(fn($period) => $period->lessThan(Carbon::today()))
+//                ->filter(fn($period) => $period->lessThan(Carbon::today()))
                 ->reject(fn($period) => $weekHoliday?->day === $period->dayName || in_array($period->format('Y-m-d'), $employeeHolidayDates))
                 ->reject(fn($period) => in_array($period->format('Y-m-d'), $attendedDates))
                 ->reject(fn($period) => in_array($period->format('Y-m-d'), $leaveDates))

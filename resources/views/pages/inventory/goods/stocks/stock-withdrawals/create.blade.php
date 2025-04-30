@@ -10,14 +10,14 @@
     <div class="d-flex flex-column flex-lg-row" x-data="generateStockWithdrawals">
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
             <div class="card p-10">
-                <form id="form" @submit.prevent="save()">
+                <form id="form" @submit.prevent="save()" enctype="multipart/form-data">
                     <div class="card-body p-12">
                         <div class="row gx-10 mb-5">
                             <div class="col-lg-6">
                                 <div class="form-group row mb-6">
                                     <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Teknisi</label>
                                     <div class="col-lg-11 fv-row">
-                                        <select name="user_id[]" id="user_id"
+                                        <select name="user_id[]" id="users"
                                                 class="form-select form-select-solid users-select2" multiple>
                                             <option></option>
                                         </select>
@@ -37,9 +37,7 @@
                                 <tbody>
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td class="pe-7" style='text-align:center; vertical-align:middle'>
-                                            <input type="hidden" name="itemWithCodeFields[]" id="stock_with_codes"
-                                                   :value="JSON.stringify(itemWithCodeFields)">
-                                            <select
+                                            <select name="itemWithCodeFields[]"
                                                     class="form-select form-select-solid stock-with-codes-select2"
                                                     multiple>
                                                 <option></option>
@@ -224,7 +222,7 @@
                         formData.append('item_with_codes', JSON.stringify(this.itemWithCodeFields));
                         await axios.post(`/inventory/goods/stock-withdrawals/store`, new FormData(this.form))
                         await showAlert('success', 'Data berhasil disimpan').then(() => {
-                            window.location.href = '/income-transactions/invoice';
+                            window.location.href = '/inventory/goods/stock-withdrawals';
                         })
                     } catch (error) {
                         const respError = error.response.data.errors;

@@ -54,11 +54,10 @@ use Throwable;
     {
         DB::transaction(function () use ($request, $draftStock) {
             $draftStock->load('transaction');
-            $stock = Stock::where('item_id', $draftStock->item_id)
-                ->where('transaction_id', $draftStock->transaction_id)
-                ->where('branch_id', $draftStock->branch_id)
+            $stock = Stock::where('transaction_id', $draftStock->transaction_id)
                 ->where('condition', $request->input('condition'))
                 ->first();
+
 
 
             $draftStock->decrement('qty');
@@ -82,7 +81,8 @@ use Throwable;
             } else {
                 $stock->increment('qty');
                 ItemCatalog::create([
-                    'item_id' => $draftStock->item_id,
+                    'transaction_id' => $draftStock->transaction_id,
+                    'item_id' => $draftStock->transaction->item_id,
                     'stock_id' => $stock->id,
                     'code' => $request->code,
                     'condition' => $request->condition,

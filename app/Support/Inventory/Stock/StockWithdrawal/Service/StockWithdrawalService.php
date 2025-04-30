@@ -3,6 +3,8 @@
 namespace App\Support\Inventory\Stock\StockWithdrawal\Service;
 
 use AllowDynamicProperties;
+use App\Http\Requests\StockWithdrawalRequest;
+use App\Models\ItemCatalog;
 use App\Models\Stock;
 use App\Models\StockWithdrawal;
 use App\Models\StockWithdrawalByEmployee;
@@ -60,7 +62,7 @@ use Throwable;
     /**
      * @throws Throwable
      */
-    public function store(Request $request): void
+    public function store(StockWithdrawalRequest $request): void
     {
         DB::transaction(function () use ($request) {
             $stockWithdrawal = StockWithdrawal::create([
@@ -78,32 +80,27 @@ use Throwable;
     {
 
 
-        foreach ($request->itemWithCodeFields as $value) {
-            $itemWithCodeFields = json_decode($value, true);
-
-            foreach ($itemWithCodeFields as $key => $itemWithCodeField) {
-                $itemWithCodeFieldStock = Stock::with('itemCatalog')
-                    ->where('id', $itemWithCodeField['stock_id'])
-                    ->first();
-                $itemWithCodeFieldStock->decrement('qty');
-
-
-                $removeItemCatalog = $itemWithCodeFieldStock->itemCatalog->where('code', $itemWithCodeField['code'])->get();
-
-                $test = StockWithdrawalItem::create([
+        if ($request->has('itemWithCodeFields')) {
+            foreach ($request->itemWithCodeFields as $value) {
+                $itemCatalog = ItemCatalog::find($value);
+                Stock::where('id', $itemCatalog->stock_id)->delete();
+                StockWithdrawalItem::create([
                     'stock_withdrawal_id' => $stockWithdrawal->id,
-                    'code' => $itemWithCodeField['code'],
-                    'stock_id' => $itemWithCodeField['stock_id'],
+                    'stock_id' => $itemCatalog->stock_id,
+                    'code' => $itemCatalog->code,
                     'qty' => 1,
                 ]);
             }
         }
 
-        foreach ($request['itemWithoutCodeFields'] as $key => $value) {
-            $stockWithoutCode = Stock::with('item', 'itemCatalog')->where('id', $value['stock_id'])->first();
-            $value['stock_withdrawal_id'] = $stockWithdrawal->id;
-            $value['stock_id'] = $stockWithoutCode->id;
-            StockWithdrawalItem::create($value);
+        if ($request['itemWithoutCodeFields']) {
+            foreach ($request['itemWithoutCodeFields'] as $key => $value) {
+                $stockWithoutCode = Stock::with('item', 'itemCatalog')->where('id', $value['stock_id'])->first();
+                $stockWithoutCode->decrement('qty');
+                $value['stock_withdrawal_id'] = $stockWithdrawal->id;
+                $value['stock_id'] = $stockWithoutCode->id;
+                StockWithdrawalItem::create($value);
+            }
         }
     }
 
@@ -111,11 +108,13 @@ use Throwable;
     public function stockWithdrawalEmployeeStoreAndUpdate($stockWithdrawal, $request): void
     {
 
-        foreach ($request->user_id as $userId) {
-            StockWithdrawalByEmployee::create([
-                'stock_withdrawal_id' => $stockWithdrawal->id,
-                'user_id' => $userId,
-            ]);
+        if ($request->has('user_id')) {
+            foreach ($request->user_id as $userId) {
+                StockWithdrawalByEmployee::create([
+                    'stock_withdrawal_id' => $stockWithdrawal->id,
+                    'user_id' => $userId,
+                ]);
+            }
         }
     }
 }
