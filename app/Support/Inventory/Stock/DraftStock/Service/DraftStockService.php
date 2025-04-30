@@ -3,7 +3,7 @@
 namespace App\Support\Inventory\Stock\DraftStock\Service;
 
 use AllowDynamicProperties;
-use App\Models\ItemCollection;
+use App\Models\DraftStock;
 use App\Support\Inventory\Stock\DraftStock\Repository\DraftStockServiceRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -23,12 +23,12 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
     public function getDraftStockQty()
     {
-        $itemData = ItemCollection::whereHas('draftStock')->limit(10)->get();
+        $itemData = DraftStock::with('transaction')->limit(10)->get();
         return $itemData->map(function ($itemData) {
             return [
                 'id' => $itemData->id,
-                'name' => $itemData->name,
-                'total' => number_format($itemData->draftStock->sum('qty'), 2, '.', '.'),
+                'name' => $itemData->transaction->item->name,
+                'total' => number_format($itemData->sum('qty'), 2, '.', '.'),
             ];
         });
     }
@@ -54,8 +54,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
             return [
                 'id' => $query->id,
                 'transaction_number' => $query->transaction->transaction_number,
-                'name' => $query->item->name,
-                'qty' => $query->qty . ' ' . $query->item->unitType->name,
+                'name' => $query->transaction->item->name,
+                'qty' => $query->qty . ' ' . $query->transaction->item->unitType->name,
             ];
         });
 

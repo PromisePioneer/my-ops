@@ -12,15 +12,8 @@ return new class extends Migration {
     {
         Schema::create('draft_stocks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('branch_id')->constrained('branches')
-                ->cascadeOnUpdate()
-                ->cascadeOnDelete();
             $table->foreignId('transaction_id')
                 ->constrained('transactions')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->foreignId('item_id')
-                ->constrained('item_collections')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->double('qty');

@@ -61,27 +61,32 @@ use Throwable;
                 ->first();
 
 
-            $itemCatalog = ItemCatalog::create([
-                'item_id' => $draftStock->item_id,
-                'draft_stock_id' => $draftStock->id,
-                'code' => $request->code,
-                'condition' => $request->condition,
-                'created_by' => $request->user()->id,
-            ]);
-
             $draftStock->decrement('qty');
 
-
-            if ($stock) {
-                $stock->increment('qty');
-            } else {
-                Stock::create([
-                    'branch_id' => $draftStock->branch_id,
+            if (!$stock) {
+                $newStock = Stock::create([
+                    'branch_id' => $draftStock->transaction->branch_id,
                     'transaction_id' => $draftStock->transaction_id,
-                    'item_catalog_id' => $itemCatalog->id,
-                    'item_id' => $draftStock->item_id,
+                    'item_id' => $draftStock->transaction->item_id,
                     'qty' => 1,
                     'condition' => $request->condition
+                ]);
+
+                ItemCatalog::create([
+                    'tranasction_id' => $draftStock->transaction_id,
+                    'stock_id' => $newStock->id,
+                    'code' => $request->code,
+                    'condition' => $request->condition,
+                    'created_by' => $request->user()->id,
+                ]);
+            } else {
+                $stock->increment('qty');
+                ItemCatalog::create([
+                    'item_id' => $draftStock->item_id,
+                    'stock_id' => $stock->id,
+                    'code' => $request->code,
+                    'condition' => $request->condition,
+                    'created_by' => $request->user()->id,
                 ]);
             }
         });

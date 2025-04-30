@@ -38,7 +38,7 @@
                     <tbody class="text-center">
                     <tr>
                         <td x-text="draftStock.transaction?.transaction_number"></td>
-                        <td x-text="draftStock?.item?.name"></td>
+                        <td x-text="draftStock?.transaction.item?.name"></td>
                         <td x-text="draftStock.qty"></td>
                     </tr>
                     </tbody>
