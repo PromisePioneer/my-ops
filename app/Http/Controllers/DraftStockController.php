@@ -44,7 +44,7 @@ use Illuminate\View\View;
 
     public function show(DraftStock $draftStock): JsonResponse
     {
-        $draftStock->load('item', 'branch', 'transaction');
+        $draftStock->load('branch', 'transaction', 'transaction.item');
         return response()->json($draftStock);
     }
 
@@ -57,7 +57,10 @@ use Illuminate\View\View;
     public function generateCodeIfCodeNotListedOnItem(DraftStock $draftStock): string
     {
         $draftStock->load('branch.parent', 'item');
-        $latestItemCatalog = ItemCatalog::with('draftStock.branch.parent', 'item')->where('draft_stock_id', $draftStock->id)->latest()->first();
+        $latestItemCatalog = ItemCatalog::with('draftStock.branch.parent', 'item')
+            ->where('transaction_id', $draftStock->transaction_id)
+            ->latest()
+            ->first();
 
         $month = date('m');
         $year = date('y');

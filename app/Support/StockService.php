@@ -84,17 +84,21 @@ class StockService
             });
         })->get();
 
-        return $data->map(function ($query) {
-            $draftStock = DraftStock::where('item_id', $query->id)->sum('qty');
-            $reorderLevel = $query->reorder_level;
-            $stock = $query->goodsStock->sum('qty');
+        return $data->map(function ($item) {
+            $draftStock = DraftStock::with('transaction')
+                ->whereHas('transaction.item', function ($query) use ($item) {
+                    $query->where('id', $item->id);
+                })->sum('qty');
+
+            $reorderLevel = $item->reorder_level;
+            $stock = $item->goodsStock->sum('qty');
             $totalStock = $draftStock + $stock;
 
 
             if ($totalStock < $reorderLevel) {
                 return [
-                    'id' => $query->id,
-                    'name' => $query->name,
+                    'id' => $item->id,
+                    'name' => $item->name,
                     'stock' => number_format($totalStock, 2, '.', '.'),
                     'reorder_level' => $reorderLevel,
                 ];

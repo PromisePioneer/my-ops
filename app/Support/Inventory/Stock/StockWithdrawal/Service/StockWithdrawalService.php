@@ -79,33 +79,24 @@ use Throwable;
 
 
         foreach ($request->itemWithCodeFields as $value) {
-            $test = json_decode($value, true);
+            $itemWithCodeFields = json_decode($value, true);
 
-            dd($test);
-        }
-
-
-        $test = json_decode($request->itemWithCodeFields, true);
-        foreach ($request['itemWithCodeFields'] as $key => $value) {
-
-            $stockWithCode = Stock::with('item', 'itemCatalog')->whereHas('itemCatalog', function ($query) use ($value) {
-                $query->where('code', $value['code']);
-            })->where('id', $value['stock_id'])->first();
+            foreach ($itemWithCodeFields as $key => $itemWithCodeField) {
+                $itemWithCodeFieldStock = Stock::with('itemCatalog')
+                    ->where('id', $itemWithCodeField['stock_id'])
+                    ->first();
+                $itemWithCodeFieldStock->decrement('qty');
 
 
-            $codes = [];
+                $removeItemCatalog = $itemWithCodeFieldStock->itemCatalog->where('code', $itemWithCodeField['code'])->get();
 
-            foreach ($stockWithCode->itemCatalog->get() as $item) {
-                $codes [] = $item->code;
-                $value['item_catalog_code'] = $item->code;
-                $value['stock_withdrawal_id'] = $stockWithdrawal->id;
-                $value['stock_id'] = $stockWithCode->id;
-//                $value['qty'] = 1;
-                StockWithdrawalItem::create($value);
+                $test = StockWithdrawalItem::create([
+                    'stock_withdrawal_id' => $stockWithdrawal->id,
+                    'code' => $itemWithCodeField['code'],
+                    'stock_id' => $itemWithCodeField['stock_id'],
+                    'qty' => 1,
+                ]);
             }
-
-
-            dd($codes);
         }
 
         foreach ($request['itemWithoutCodeFields'] as $key => $value) {
