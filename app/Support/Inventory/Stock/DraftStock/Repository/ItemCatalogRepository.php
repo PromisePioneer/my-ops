@@ -9,6 +9,6 @@ class ItemCatalogRepository
 {
     public function getItemCatalogByDraftStockId(DraftStock $draftStock)
     {
-        return ItemCatalog::with('item', 'createdBy');
+        return ItemCatalog::with('transaction', 'transaction.item', 'createdBy');
     }
 }

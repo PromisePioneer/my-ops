@@ -16,13 +16,7 @@ class ItemCatalog extends Model
         'created_by'
     ];
 
-
-    public function item(): BelongsTo
-    {
-        return $this->belongsTo(ItemCollection::class, 'item_id');
-    }
-
-    public function itemCatalog(): BelongsTo
+    public function stock(): BelongsTo
     {
         return $this->belongsTo(Stock::class, 'stock_id');
     }
@@ -30,5 +24,10 @@ class ItemCatalog extends Model
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class, 'transaction_id');
     }
 }

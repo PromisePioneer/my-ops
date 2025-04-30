@@ -128,8 +128,7 @@ use Illuminate\View\View;
     public function getStockBasedOnDraftStock(DraftStock $draftStock)
     {
         $stock = Stock::with('transaction', 'branch', 'item')
-            ->where('branch_id', $draftStock->branch_id)
-            ->where('item_id', $draftStock->item_id)
+            ->where('transaction_id', $draftStock->transaction_id)
             ->get();
         return $stock->map(function ($stock) {
             return [
@@ -153,19 +152,19 @@ use Illuminate\View\View;
     {
         $stock = Stock::with('item', 'itemCatalog')
             ->whereIn('condition', ['Baik', 'Diperbaiki'])
-            ->whereNotNull('item_catalog_id')
             ->get();
 
 
         return $stock->map(function ($stock) {
             $itemCatalog = [];
 
-            foreach ($stock->itemCatalog->get() as $value) {
+
+            foreach ($stock->itemCatalog as $value) {
                 $itemCatalog[] = [
                     'id' => $value->id,
                     'stock_id' => $stock->id,
                     'code' => $value->code,
-                    'text' => "[{$value->item->name}] [{$value->code}] [{$value->condition}]",
+                    'text' => "[{$stock->item->name}] [{$value->code}] [{$value->condition}]",
                 ];
             }
 

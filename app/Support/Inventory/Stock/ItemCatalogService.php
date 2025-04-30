@@ -34,7 +34,7 @@ use Throwable;
         $data = $catalog->getCollection()->map(function ($query) {
             return [
                 'id' => $query->id,
-                'item_name' => $query->item->name,
+                'item_name' => $query->transaction->item->name,
                 'code' => $query->code,
                 'condition' => $query->condition,
                 'created_at' => $query->created_at,
@@ -73,7 +73,7 @@ use Throwable;
                 ]);
 
                 ItemCatalog::create([
-                    'tranasction_id' => $draftStock->transaction_id,
+                    'transaction_id' => $draftStock->transaction_id,
                     'stock_id' => $newStock->id,
                     'code' => $request->code,
                     'condition' => $request->condition,
@@ -98,17 +98,16 @@ use Throwable;
      */
     public function update(ItemCatalogRequest $request, ItemCatalog $itemCatalog): void
     {
-        $itemCatalog->load('draftStock');
+        $itemCatalog->load('transaction');
 
-        $oldStock = Stock::where('item_catalog_id', $itemCatalog->id)
-            ->where('item_id', $itemCatalog->item_id)
+        $oldStock = Stock::where('transaction_id', $itemCatalog->transaction_id)
+            ->where('branch_id', $itemCatalog->transaction->branch_id)
             ->where('condition', $itemCatalog->condition)
             ->lockForUpdate()
             ->first();
 
-        $newStock = Stock::where('item_catalog_id', $itemCatalog->id)
-            ->where('item_id', $itemCatalog->item_id)
-            ->where('branch_id', $itemCatalog->draftStock->branch_id)
+        $newStock = Stock::where('transaction_id', $itemCatalog->transaction_id)
+            ->where('branch_id', $itemCatalog->transaction->branch_id)
             ->where('condition', $request->condition)
             ->lockForUpdate()
             ->first();
@@ -117,16 +116,28 @@ use Throwable;
                 if ($oldStock->condition !== $newStock->condition || $oldStock->condition !== $request->condition) {
                     $oldStock->decrement('qty');
                     $newStock->increment('qty');
+                    $itemCatalog->update([
+                        'stock_id' => $newStock->id,
+                        'code' => $request->code,
+                        'condition' => $request->condition,
+                        'created_by' => $request->user()->id
+                    ]);
                 }
             } else {
                 $oldStock->decrement('qty');
-                Stock::create([
-                    'branch_id' => $itemCatalog->draftStock->branch_id,
-                    'transaction_id' => $itemCatalog->draftStock->transaction->id,
-                    'item_catalog_id' => $itemCatalog->id,
-                    'item_id' => $itemCatalog->item_id,
+                $newStockIfNotExists = Stock::create([
+                    'branch_id' => $itemCatalog->transaction->branch_id,
+                    'transaction_id' => $itemCatalog->transaction_id,
+                    'item_id' => $itemCatalog->transaction->item_id,
                     'qty' => 1,
                     'condition' => $request->condition
+                ]);
+
+                $itemCatalog->update([
+                    'stock_id' => $newStockIfNotExists->id,
+                    'code' => $request->code,
+                    'condition' => $request->condition,
+                    'created_by' => $request->user()->id
                 ]);
             }
 

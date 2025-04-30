@@ -5,13 +5,13 @@ namespace App\Models;
 use App\Models\Master\Common\Branch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Stock extends Model
 {
     protected $table = 'stocks';
     protected $fillable = [
         'transaction_id',
-        'item_catalog_id',
         'branch_id',
         'item_id',
         'qty',
@@ -35,8 +35,8 @@ class Stock extends Model
     }
 
 
-    public function itemCatalog(): BelongsTo
+    public function itemCatalog(): HasMany
     {
-        return $this->belongsTo(ItemCatalog::class, 'item_catalog_id');
+        return $this->hasMany(ItemCatalog::class, 'stock_id');
     }
 }
