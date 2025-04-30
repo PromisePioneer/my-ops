@@ -4,6 +4,7 @@ namespace App\Support\Attendances;
 
 use AllowDynamicProperties;
 use App\Models\EmployeeSchedule;
+use App\Models\LeaveAndPermission;
 use App\Models\User;
 use App\Models\WeekHoliday;
 use App\Support\HelperService\FinancialClosePeriodService;
@@ -49,7 +50,7 @@ use Illuminate\Http\Request;
                 'weekHoliday:user_id,day',
                 'company:id,name',
             ])
-            // ->where('active', 1)
+            ->where('active', 1)
             ->orderBy('absent_id');
 
         $data = AttendancesACLFilter::apply($query, $request);
@@ -140,6 +141,31 @@ use Illuminate\Http\Request;
             })->count();
 
 
+            $getLeaves = LeaveAndPermission::where('user_id', $user->id)
+                ->whereBetween('start_date', [$startDate, $endDate])
+                ->orWhereBetween('end_date', [$startDate, $endDate])
+                ->get();
+
+            $leavePeriods = [];
+
+
+            foreach ($getLeaves as $dates) {
+                $leavePeriods = array_merge(
+                    $leavePeriods,
+                    CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
+                );
+            }
+
+            $leaveDates = [];
+            foreach ($leavePeriods as $date) {
+                $formattedDate = Carbon::parse($date)->format('Y-m-d');
+                $leaveDates[] = $formattedDate;
+            }
+
+
+
+
+
             $totalPeriodOfWork -= ($totalLeaves + $totalSick + $totalPermission + $totalImportantLeaves);
 
             $attendedDates = $user->attendancesSummary->pluck('date')->toArray();
@@ -148,7 +174,8 @@ use Illuminate\Http\Request;
                 ->filter(fn($period) => $period->lessThan(Carbon::today()))
                 ->reject(fn($period) => $weekHoliday?->day === $period->dayName || in_array($period->format('Y-m-d'), $employeeHolidayDates))
                 ->reject(fn($period) => in_array($period->format('Y-m-d'), $attendedDates))
-                    ->count();
+                ->reject(fn($period) => in_array($period->format('Y-m-d'), $leaveDates))
+                ->count();
 
             return [
                 'id' => $user->id,
@@ -164,7 +191,7 @@ use Illuminate\Http\Request;
                 'total_sick' => $totalSick,
                 'total_permission' => $totalPermission,
                 'total_absent' => $totalAbsent,
-                'total_important_leaves' => $totalImportantLeaves
+                'total_important_leaves' => $totalImportantLeaves,
             ];
         });
 
