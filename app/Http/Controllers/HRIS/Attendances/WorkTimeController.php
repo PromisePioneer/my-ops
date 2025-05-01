@@ -131,13 +131,11 @@ use Illuminate\View\View;
         return response()->json(['message' => 'data berhasil dihapus']);
     }
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function detail(WorkTime $workTime): View
+
+    public function setGlobalDefaultWorkTime(WorkTime $workTime): JsonResponse
     {
-        $this->authorize('viewDetail', WorkTime::class);
-        return view('pages.adms.work-time.detail', compact('workTime'));
+        $this->workTimeService->setGlobalDefaultWorkTime($workTime);
+        return response()->json(['message' => 'Data berhasil disimpan']);
     }
 
 

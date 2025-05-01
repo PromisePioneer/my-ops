@@ -56,7 +56,7 @@ class AttendancesACLFilter
         if ($request->user()->hasRole('Head Of Electrical Engineer')) {
             $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer', 'Electrical Engineer']);
-            })->whereNull('branch_id');
+            });
         }
 
 
