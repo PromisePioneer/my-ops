@@ -234,7 +234,7 @@ class IclockService
                 'KU Engineer',
                 'Quality Control Staff',
                 'Warehouse Security'
-            ]) ? WorkTime::find(12)?->id : null;
+            ]) ? WorkTime::find(12)->id : null;
         }
         $shift = $shift->workTime?->id ?? $ifBranchDuri ?? $isEngineer ?? WorkTime::find(11)->id;
 
