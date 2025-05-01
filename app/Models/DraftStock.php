@@ -10,16 +10,9 @@ class DraftStock extends Model
 {
     protected $table = 'draft_stocks';
     protected $fillable = [
-        'branch_id',
-        'item_id',
         'transaction_id',
         'qty',
     ];
-
-    public function item(): BelongsTo
-    {
-        return $this->belongsTo(ItemCollection::class, 'item_id');
-    }
 
 
     public function transaction(): BelongsTo

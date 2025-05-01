@@ -60,9 +60,8 @@ class ItemCollection extends Model
         return $this->belongsTo(Account::class, 'asset_account_id');
     }
 
-
-    public function draftStock(): HasMany
+    public function transaction(): HasMany
     {
-        return $this->hasMany(DraftStock::class, 'item_id');
+        return $this->hasMany(Transaction::class, 'item_id');
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Requests\UserProfile\LeaveAndPermissionRequest;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
 use App\Support\HelperService\HandleFileUploadService;
+use App\Support\HelperService\UserSelect2QueryFilter;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
@@ -136,7 +137,7 @@ use function App\Helper\formatDate;
         $search = $request->input('search');
         $users = User::search($search)->query(function ($query) use ($request) {
             $newQuery = $query->where('active', true);
-            LeaveSelect2QueryFilter::apply($newQuery, $request);
+            UserSelect2QueryFilter::apply($newQuery, $request);
         })->get();
 
         return $users->map(function ($item) {

@@ -202,17 +202,16 @@ use function App\Helper\formatDate;
 
                     if ($transaction->item->category->name !== 'Kategori 4') {
                         DraftStock::create([
-                            'item_id' => $transaction->item_id,
-                            'branch_id' => $transaction->branch_id,
                             'transaction_id' => $transaction->id,
                             'qty' => $transaction->qty
                         ]);
                     } else {
                         Stock::create([
                             'transaction_id' => $transaction->id,
-                            'branch_id' => $branch->id,
-                            'item_id' => $transaction->branch_id,
-                            'qty' => 0,
+                            'branch_id' => $transaction->branch_id,
+                            'item_id' => $transaction->item_id,
+                            'qty' => $transaction->qty,
+                            'condition' => 'Baik'
                         ]);
                     }
 

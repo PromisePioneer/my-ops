@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Support\User\LeaveAndPermission;
+namespace App\Support\HelperService;
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 
-class LeaveSelect2QueryFilter
+class UserSelect2QueryFilter
 {
     public static function apply(Builder|EloquentBuilder $query, Request $request): EloquentBuilder|Builder
     {

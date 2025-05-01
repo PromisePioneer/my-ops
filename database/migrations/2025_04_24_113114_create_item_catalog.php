@@ -10,13 +10,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('item_catalog', function (Blueprint $table) {
+        Schema::create('item_catalogs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('item_id')
-                ->constrained('item_collections')
+            $table->foreignId('transaction_id')
+                ->constrained('transactions')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignId('draft_stock_id')->constrained('draft_stocks')
+            $table->foreignId('stock_id')
+                ->constrained('stocks')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->string('code');

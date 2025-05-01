@@ -22,13 +22,8 @@ return new class extends Migration {
                 ->constrained('item_collections')
                 ->cascadeOnDelete()
                 ->cascadeOnDelete();
-            $table->foreignId('item_catalog_id')
-                ->nullable()
-                ->constrained('item_catalog')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
             $table->integer('qty');
-            $table->enum('condition', ['Rusak', 'Baik', 'Diperbaiki']);
+            $table->enum('condition', ['Rusak', 'Baik', 'Diperbaiki'])->default('Baik');
             $table->timestamps();
         });
     }

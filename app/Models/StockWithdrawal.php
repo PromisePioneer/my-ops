@@ -5,14 +5,13 @@ namespace App\Models;
 use App\Models\Master\Common\Branch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class StockWithdrawal extends Model
 {
     protected $table = 'stock_withdrawals';
     protected $fillable = [
         'branch_id',
-        'date',
-        'description',
         'date',
         'description',
         'kca_id',
@@ -36,4 +35,11 @@ class StockWithdrawal extends Model
     {
         return $this->belongsTo(User::class, 'stocker_id');
     }
+
+
+    public function stockWithdrawalByEmployee(): HasMany
+    {
+        return $this->hasMany(StockWithdrawalByEmployee::class, 'stock_withdrawal_id');
+    }
+
 }

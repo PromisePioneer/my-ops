@@ -128,8 +128,7 @@ use Illuminate\View\View;
     public function getStockBasedOnDraftStock(DraftStock $draftStock)
     {
         $stock = Stock::with('transaction', 'branch', 'item')
-            ->where('branch_id', $draftStock->branch_id)
-            ->where('item_id', $draftStock->item_id)
+            ->where('transaction_id', $draftStock->transaction_id)
             ->get();
         return $stock->map(function ($stock) {
             return [
@@ -149,17 +148,43 @@ use Illuminate\View\View;
     }
 
 
-    public function getStockWithCode(Request $request)
+    public function getStockWithCode()
     {
+        $stock = Stock::with('item', 'itemCatalog')->whereHas('itemCatalog')
+            ->whereIn('condition', ['Baik', 'Diperbaiki'])
+            ->get();
 
-        $ids = $request->get('ids', []);
-        $stock = Stock::with('item', 'itemCatalog')
-            ->whereHas('itemCatalog', function ($query) use ($ids) {
-                if (!empty($ids)) {
-                    $query->whereNotIn('id', $ids);
-                }
-            })
-            ->whereNotNull('item_catalog_id')
+
+        return $stock->map(function ($stock) {
+            $itemCatalog = [];
+
+
+            foreach ($stock->itemCatalog as $value) {
+                $itemCatalog[] = [
+                    'id' => $value->id,
+                    'stock_id' => $stock->id,
+                    'code' => $value->code,
+                    'text' => "[{$stock->item->name}] [{$value->code}] [{$value->condition}]",
+                ];
+            }
+
+
+
+
+            return [
+                'id' => $stock->id,
+                'text' => $stock->item->name,
+                'children' => $itemCatalog
+            ];
+        });
+    }
+
+
+    public function getStockWithoutCode(Request $request)
+    {
+        $stock = Stock::with('item')->whereHas('item.category', function ($query) {
+            $query->where('name', 'Kategori 4');
+        })->whereNotIn('id', $request->get('ids', []))
             ->whereIn('condition', ['Baik', 'Diperbaiki'])
             ->get();
 
@@ -167,9 +192,8 @@ use Illuminate\View\View;
         return $stock->map(function ($item) {
             return [
                 'id' => $item->id,
-                'item_catalog_id' => $item->itemCatalog->id,
-                'code' => $item->itemCatalog->code,
-                'text' => $item->itemCatalog->item->name . ' - ' . $item->itemCatalog->code . ' - ' . $item->condition,
+                'name' => $item->item->name,
+                'text' => $item->item->name . ' Stok : ' . $item->qty . ' - ' . $item->condition,
             ];
         });
     }
