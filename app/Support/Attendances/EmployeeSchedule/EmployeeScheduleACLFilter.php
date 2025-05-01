@@ -85,6 +85,12 @@ class EmployeeScheduleACLFilter
             });
         }
 
+        if ($request->user()->hasRole('Mechanic Senior Staff')) {
+            $query->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', ['Mechanic Senior Staff', 'Mechanic Helper Staff']);
+            });
+        }
+
         if ($request->user()->company_id === 3) {
             $query->whereHas('company', function ($query) use ($request) {
                 $query->where('id', $request->user()->company_id);

@@ -98,10 +98,17 @@ use Throwable;
             $user = User::create($data);
             $user->syncRoles($request->roles);
 
-            WeekHoliday::create([
-                'user_id' => $user->id,
-                'day' => $request->day
-            ]);
+
+            $day = ['Sening', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+            if (in_array($request->input('day'), $day)) {
+                WeekHoliday::updateOrCreate([
+                    'user_id' => $user->id,
+                ], [
+                    'day' => $request->day
+                ]);
+            }
+
+
         });
     }
 
@@ -124,11 +131,14 @@ use Throwable;
             $user->update($data);
             $user->syncRoles($request->roles);
 
-            WeekHoliday::updateOrCreate([
-                'user_id' => $user->id,
-            ], [
-                'day' => $request->day
-            ]);
+            $day = ['Sening', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+            if (in_array($request->input('day'), $day)) {
+                WeekHoliday::updateOrCreate([
+                    'user_id' => $user->id,
+                ], [
+                    'day' => $request->day
+                ]);
+            }
         });
     }
 

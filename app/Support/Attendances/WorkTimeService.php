@@ -5,6 +5,7 @@ namespace App\Support\Attendances;
 use App\Models\WorkTime;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class WorkTimeService
 {
@@ -38,6 +39,7 @@ class WorkTimeService
                 'end_time_to_checkin' => $item->end_time_to_checkin,
                 'time_to_checkout' => $item->time_to_checkout,
                 'end_time_to_checkout' => $item->end_time_to_checkout,
+                'is_default' => $item->is_default,
             ];
         });
 
@@ -68,5 +70,13 @@ class WorkTimeService
             'id' => $workTime->id,
             'name' => $workTime->name
         ];
+    }
+
+    public function setGlobalDefaultWorkTime(WorkTime $workTime): void
+    {
+        DB::transaction(function () use ($workTime) {
+            WorkTime::where('is_default', true)->update(['is_default' => false]);
+            $workTime->update(['is_default' => true]);
+        });
     }
 }

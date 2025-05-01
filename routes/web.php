@@ -993,11 +993,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/{workTime}', [WorkTimeController::class, 'edit']);
             Route::post('/{workTime}', [WorkTimeController::class, 'update']);
             Route::post('/detail/data/destroy', [WorkTimeController::class, 'destroyDetailWorktimeUser']);
-            Route::post('assign-work-time/{workTime}', [WorkTimeController::class, 'assignWorkTime']);
             Route::get('/user/selected/{workTime}', [WorkTimeController::class, 'getSelectedUserWorkTime']);
-            Route::get('/detail/data/{workTime}', [WorkTimeController::class, 'detailData']);
-            Route::get('/detail/data/search/{workTime}', [WorkTimeController::class, 'searchDetailData']);
-
+            Route::post('/set-global-default-work-time/{workTime}', [WorkTimeController::class, 'setGlobalDefaultWorkTime']);
         });
 
         Route::prefix('/attendances-summary')->group(function () {

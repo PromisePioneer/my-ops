@@ -55,12 +55,10 @@
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Nama</th>
-                                <th class="min-w-125px">Jam Masuk</th>
-                                <th class="min-w-125px">Jam Pulang</th>
-                                <th class="min-w-125px">Mulai Check In</th>
-                                <th class="min-w-125px">Akhir Check In</th>
-                                <th class="min-w-125px">Mulai Check Out</th>
-                                <th class="min-w-125px">Akhir Check Out</th>
+                                <th class="min-w-125px">Jam Kerja</th>
+                                <th class="min-w-125px">Batas Checkin</th>
+                                <th class="min-w-125px">Batas Checkout</th>
+                                <th class="min-w-125px">Jam Kerja Default</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class=" fw-bold text-center">
@@ -94,17 +92,19 @@
                                     <td>
                                         <a href="#" x-text="shift.name"></a>
                                     </td>
-                                    <td x-text="shift.clock_in"></td>
-                                    <td x-text="shift.clock_out"></td>
-                                    <td x-text="shift.time_to_checkin"></td>
-                                    <td x-text="shift.end_time_to_checkin"></td>
-                                    <td x-text="shift.time_to_checkout"></td>
-                                    <td x-text="shift.end_time_to_checkout"></td>
+                                    <td x-text="`${shift.clock_in} - ${shift.clock_out}`"></td>
+                                    <td x-text="`${shift.time_to_checkin} - ${shift.end_time_to_checkin}`"></td>
+                                    <td x-text="`${shift.time_to_checkout} - ${shift.end_time_to_checkout}`"></td>
+                                    <td>
+                                        <input type="checkbox" class="form-check-input"
+                                               :checked="shift.is_default === 1"
+                                               @click="setGlobalDefaultWorkTime(shift.id)">
+                                    </td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-work-time" @click="edit(shift.id)">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
                                     </td>
                                 </tr>
                             </template>
@@ -113,7 +113,7 @@
                     </div>
                     <div class="d-flex justify-content-between align-items-center mt-4">
                         <span class="text-danger">
-                           Note: Jika karyawan tidak dijadwalkan dalam jam kerja tertentu maka jam kerja akan diset secara otomatis ke default
+                           Note: Jam Kerja Default adalah jam kerja yang akan digunakan untuk pengguna yang belum memiliki jam kerja yang diatur sendiri.
                         </span>
                         <ul class="pagination">
                             <template x-for="pagination in shifts?.links">
@@ -176,6 +176,18 @@
                         this.startIndex = this.shifts.from;
                     } catch (error) {
                         console.log(error)
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+                async setGlobalDefaultWorkTime(id) {
+                    this.isLoading = true;
+                    try {
+                        await axios.post(`/adms/work-time/set-global-default-work-time/${id}`);
+                        await showAlert('success', 'Data berhasil disimpan');
+                        await this.init();
+                    } catch (e) {
+                        console.log(e)
                     } finally {
                         this.isLoading = false;
                     }

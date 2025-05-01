@@ -87,26 +87,14 @@ use Throwable;
 
 
         $pdf = Browsershot::html($view)
-            ->setOption('executablePath', env('BROWSERSHOT_CHROME_PATH'))
-            ->addChromiumArguments([
-                'headless',
-                'no-sandbox',
-                'disable-setuid-sandbox',
-                'disable-crash-reporter',
-                'disable-gpu',
-                'disable-software-rasterizer',
-                'disable-background-networking',
-                'disable-dev-shm-usage',
-                'disable-extensions'
-            ])
-            ->setDelay(200)
-            ->ignoreHttpsErrors()
-            ->format('A4')
-            ->setEnvironmentOptions([
-                'CHROME_CONFIG_HOME' => php_uname('s') === 'Windows NT'
-                    ? storage_path('app\\chrome\\config') // Path Windows
-                    : storage_path('app/chrome/.config')  // Path Linux/Mac
-            ])->pdf();
+        ->setChromePath('/usr/bin/chromium')
+        ->noSandbox()
+        ->waitUntilNetworkIdle()
+        ->ignoreHttpsErrors()
+        ->format('A4')
+        ->setEnvironmentOptions([
+            'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
+        ])->pdf();
 
 
         return new Response($pdf, 200, [

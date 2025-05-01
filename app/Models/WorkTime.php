@@ -21,6 +21,7 @@ class WorkTime extends Model
         'end_time_to_checkin',
         'time_to_checkout',
         'end_time_to_checkout',
+        'is_default',
     ];
 
 

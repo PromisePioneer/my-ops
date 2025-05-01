@@ -55,6 +55,9 @@ class AttendanceSummaryDetailService
         $getImportantLeaves = $this->getImportantLeaves($user, $startDate, $endDate);
 
 
+
+
+
         $dates = [];
         foreach ($period as $date) {
             $formattedDate = $date->format('Y-m-d');
@@ -86,6 +89,8 @@ class AttendanceSummaryDetailService
             $weekHoliday = WeekHoliday::where('user_id', $user->id)->where('day', Carbon::parse($item['attendancesDate'])->dayName)->first();
             $isHoliday = $weekHoliday?->is_holiday ? 'L' : 'H';
             $empSchedule = $item['employeeSchedule']?->status ?? $isHoliday;
+
+
 
 
             return [
@@ -182,6 +187,7 @@ class AttendanceSummaryDetailService
             })->get();
 
 
+
         $importantLeavesPeriod = [];
 
         foreach ($leaveAndPermission as $dates) {
@@ -191,16 +197,16 @@ class AttendanceSummaryDetailService
             );
         }
 
-        $leaves = [];
+        $importantLeaves = [];
         foreach ($importantLeavesPeriod as $date) {
             $formattedDate = Carbon::parse($date)->format('Y-m-d');
-            $importantLeavesPeriod[$formattedDate] = collect([
+            $importantLeaves[$formattedDate] = collect([
                 'leaves_date' => $formattedDate,
                 'status' => 'Cuti Penting',
             ]);
         }
 
-        return $importantLeavesPeriod;
+        return $importantLeaves;
     }
 
 
@@ -253,7 +259,7 @@ class AttendanceSummaryDetailService
 
             if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
                 $lateness = $newExpectedCheckIn ? $newExpectedCheckIn->diffInMinutes($actualCheckIn) : $expectedCheckIn->diffInMinutes($actualCheckIn);
-                return (int)$lateness . " menit";
+                return round($lateness) . " menit";
             }
         }
         return null;
@@ -282,6 +288,8 @@ class AttendanceSummaryDetailService
         $getLeaves = $this->getLeaves($user, $startDate, $endDate);
         $getSick = $this->getSick($user, $startDate, $endDate);
         $getPermission = $this->getPermission($user, $startDate, $endDate);
+        $getImportantLeaves = $this->getImportantLeaves($user, $startDate, $endDate);
+
 
         $dates = [];
 
@@ -290,6 +298,7 @@ class AttendanceSummaryDetailService
             $leaveDetails = $getLeaves[$formattedDate] ?? null;
             $sickDetails = $getSick[$formattedDate] ?? null;
             $permissionDetails = $getPermission[$formattedDate] ?? null;
+            $importantLeavesDetails = $getImportantLeaves[$formattedDate] ?? null;
             $dates[$formattedDate] = collect([
                 'attendancesDate' => $formattedDate,
                 'attendanceData' => $attendancesData->get($formattedDate),
@@ -297,6 +306,7 @@ class AttendanceSummaryDetailService
                 'leaves' => $leaveDetails,
                 'sick' => $sickDetails,
                 'permission' => $permissionDetails,
+                'importantLeaves' => $importantLeavesDetails,
             ]);
         }
 
