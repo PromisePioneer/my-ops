@@ -228,6 +228,7 @@ class IclockService
 
         if ($user) {
             $ifBranchDuri = $user?->branch_id === 2 ? WorkTime::find(14)?->id : null;
+            $isCleaningServicePku = $user->hasRole('Cleaning Service') ? WorkTime::find(15)->id : null;
             $isEngineer = $user->hasAnyRole([
                 'Engineer',
                 'Senior Engineer',
@@ -236,7 +237,7 @@ class IclockService
                 'Warehouse Security'
             ]) ? WorkTime::find(12)->id : null;
         }
-        $shift = $shift->workTime?->id ?? $ifBranchDuri ?? $isEngineer ?? WorkTime::find(11)->id;
+        $shift = $shift->workTime?->id ?? $ifBranchDuri ?? $isCleaningServicePku ?? $isEngineer ?? WorkTime::find(11)->id;
 
         $date = Carbon::parse($date);
 

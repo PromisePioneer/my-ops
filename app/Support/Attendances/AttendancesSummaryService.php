@@ -183,7 +183,7 @@ use Illuminate\Http\Request;
                 'user_name' => $user->name,
                 'profile_pic' => $user->profile_pic,
                 'role' => $user->roles[0]->name ?? '',
-                'total_minutes_late' => (int)$totalMinutesLate,
+                'total_minutes_late' => round($totalMinutesLate,2),
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
                 'total_present' => $totalPresent . '/' . $totalPeriodOfWork,
@@ -237,11 +237,11 @@ use Illuminate\Http\Request;
 
             $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
 
-
-            $lateMinutes = $checkInToUse->diffInMinutes($actualCheckIn);
-
-            if ($lateMinutes > 3) {
-                $totalLate += $lateMinutes;
+            if ($actualCheckIn->greaterThan($checkInToUse)) {
+                $lateSeconds = $checkInToUse->diffInSeconds($actualCheckIn, false);
+                if($lateSeconds > 160){
+                    $totalLate += $lateSeconds;
+                }
             }
         }
         return $totalLate;

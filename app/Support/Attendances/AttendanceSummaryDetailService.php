@@ -258,8 +258,10 @@ class AttendanceSummaryDetailService
             }
 
             if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
-                $lateness = $newExpectedCheckIn ? $newExpectedCheckIn->diffInMinutes($actualCheckIn) : $expectedCheckIn->diffInMinutes($actualCheckIn);
-                return round($lateness) . " menit";
+                $lateness = $newExpectedCheckIn ? $newExpectedCheckIn->diffInSeconds($actualCheckIn) : $expectedCheckIn->diffInSeconds($actualCheckIn);
+                if($lateness > 160){
+                    return round($lateness / 60, 2) . " menit";
+                }
             }
         }
         return null;
