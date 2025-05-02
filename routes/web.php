@@ -682,6 +682,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/data', [StockWithdrawalController::class, 'data']);
                 Route::get('/create', [StockWithdrawalController::class, 'create']);
                 Route::post('/store', [StockWithdrawalController::class, 'store']);
+                Route::get('/show/{stockWithdrawal}', [StockWithdrawalController::class, 'show']);
             });
 
             Route::prefix('consumed-stocks')->group(function () {

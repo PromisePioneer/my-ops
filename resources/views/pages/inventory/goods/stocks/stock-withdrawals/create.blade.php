@@ -15,7 +15,8 @@
                         <div class="row gx-10 mb-5">
                             <div class="col-lg-6">
                                 <div class="form-group row mb-6">
-                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Teknisi</label>
+                                    <label
+                                        class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Karyawan</label>
                                     <div class="col-lg-11 fv-row">
                                         <select name="user_id[]" id="users"
                                                 class="form-select form-select-solid users-select2" multiple>
@@ -24,8 +25,27 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-lg-6">
+                                <label
+                                    class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Pilih Opsi</label>
+                                <div class="form-check form-switch form-check-custom form-check-solid me-10 mb-4">
+                                    <input class="form-check-input" type="checkbox"
+                                           id="itemWithCodeOption"
+                                           name="item_with_code_option" x-model="itemWithCode"/>
+                                    <label class="form-check-label" for="itemWithCodeOption">
+                                        Barang memiliki kode
+                                    </label>
+                                </div>
+                                <div class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" id="itemWithoutCodeOption"
+                                           name="item_without_code_option" x-model="itemWithoutCode"/>
+                                    <label class="form-check-label" for="itemWithoutCodeOption">
+                                        Barang tidak memiliki kode
+                                    </label>
+                                </div>
+                            </div>
                         </div>
-                        <div class="table-responsive mb-10">
+                        <div class="table-responsive mb-10" x-show="itemWithCode">
                             <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Barang Berkode</label>
                             <table class="table fw-bolder text-gray-700"
                                    data-kt-element="items">
@@ -35,19 +55,19 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
-                                        <td class="pe-7" style='text-align:center; vertical-align:middle'>
-                                            <select name="itemWithCodeFields[]"
-                                                    class="form-select form-select-solid stock-with-codes-select2"
-                                                    multiple>
-                                                <option></option>
-                                            </select>
-                                        </td>
-                                    </tr>
+                                <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
+                                    <td class="pe-7" style='text-align:center; vertical-align:middle'>
+                                        <select name="itemWithCodeFields[]"
+                                                class="form-select form-select-solid stock-with-codes-select2"
+                                                multiple>
+                                            <option></option>
+                                        </select>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <div class="table-responsive mb-20">
+                        <div class="table-responsive mb-20" x-show="itemWithoutCode">
                             <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
                                 Barang Tidak Berkode
                             </label>
@@ -101,7 +121,7 @@
                         <div class="mb-10">
                             <label class="form-label fs-6 fw-bolder text-gray-700">Catatan</label>
                             <textarea name="description" class="form-control form-control-solid" rows="3"
-                                      placeholder="Thanks for your business"></textarea>
+                                      placeholder="cth : Penggunaan untuk maintenance"></textarea>
                         </div>
                     </div>
 
@@ -124,15 +144,14 @@
 
         function generateStockWithdrawals() {
             return {
+                itemWithCode: false,
+                itemWithoutCode: false,
                 editVal: '',
                 buttonLoading: false,
                 form: document.getElementById('form'),
                 itemWithCodes: [],
                 itemWithCodeFields: [],
-                itemWithoutCodeFields: [{
-                    stock_id: '',
-                    qty: '',
-                }],
+                itemWithoutCodeFields: [],
                 async init() {
                     await this.getUserData();
                     await this.getStockWithCodesData();
@@ -144,7 +163,7 @@
                 },
                 async getUserData() {
                     $(".users-select2").select2({
-                        placeholder: "Pilih Teknisi",
+                        placeholder: "Pilih Karyawan",
                         allowClear: true,
                         ajax: {
                             url: '/select2/user-has-areas-data',
@@ -238,8 +257,7 @@
                         })
                     })
 
-
-                    if (this.itemWithoutCodeFields[this.itemWithoutCodeFields.length - 1].qty !== "" && this.itemWithoutCodeFields[this.itemWithoutCodeFields.length - 1].stock_id !== "") {
+                    if (this.itemWithoutCodeFields.length > 1 && this.itemWithoutCodeFields[this.itemWithoutCodeFields.length - 1].qty !== "" && this.itemWithoutCodeFields[this.itemWithoutCodeFields.length - 1].stock_id !== "") {
                         this.itemWithoutCodeFields.push({
                             stock_id: '',
                             qty: '',

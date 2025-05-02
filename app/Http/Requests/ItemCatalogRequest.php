@@ -26,7 +26,9 @@ class ItemCatalogRequest extends FormRequest
     {
         $validateDraftStock = $this->ifDraftStockQtyLessThanOrEqualThan0();
         return [
-            'code' => ['required', $validateDraftStock],
+            'code' => ['required', $validateDraftStock,
+                Rule::unique('item_catalogs', 'code')
+                    ->ignore($this->route('itemCatalog'), 'id')],
             'condition' => ['required', Rule::in('Rusak', 'Baik', 'Diperbaiki')]
         ];
     }
@@ -49,7 +51,6 @@ class ItemCatalogRequest extends FormRequest
         $draftStock = $this->route('draftStock') ?? null;
 
         return static function ($attribute, $value, $fail) use ($draftStock) {
-
             if ($draftStock?->qty <= 0 && !empty($draftStock)) {
                 return $fail('Semua barang telah diberikan kode.');
             }

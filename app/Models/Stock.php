@@ -15,7 +15,8 @@ class Stock extends Model
         'branch_id',
         'item_id',
         'qty',
-        'condition'
+        'condition',
+        'on_hold_qty',
     ];
 
 

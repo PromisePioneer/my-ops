@@ -465,6 +465,7 @@
                         lightbox.open();
                     }
                 },
+
             }
         }
     </script>

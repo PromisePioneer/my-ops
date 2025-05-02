@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
 use App\Http\Requests\StockWithdrawalRequest;
+use App\Models\StockWithdrawal;
 use App\Support\Inventory\Stock\StockWithdrawal\Service\StockWithdrawalService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,6 +29,36 @@ use Throwable;
     public function data(Request $request): JsonResponse
     {
         return response()->json($this->stockWithdrawalService->data($request));
+    }
+
+
+    public function show(StockWithdrawal $stockWithdrawal): JsonResponse
+    {
+        $stockWithdrawal->load('stockWithdrawalItem', 'stockWithdrawalByEmployee', 'stockWithdrawalItem.stock.item', 'stockWithdrawalByEmployee.user.roles');
+
+        $stockWithdrawalItem = $stockWithdrawal->stockWithdrawalItem->map(function ($item) {
+            return [
+                'item_name' => $item->stock->item->name,
+                'code' => $item->code,
+                'qty' => $item->qty,
+            ];
+        });
+
+
+        $stockWithdrawalByEmployee = $stockWithdrawal->stockWithdrawalByEmployee->map(function ($item) {
+            return [
+                'name' => $item->user->name,
+                'roles' => $item->user->roles->pluck('name')->implode(', '),
+                'nik' => $item->user->nip,
+                'profile_pic' => $item->user->profile_pic,
+            ];
+        });
+
+
+        return response()->json([
+            'stock_withdrawal_items' => $stockWithdrawalItem,
+            'stock_withdrawal_by_employee' => $stockWithdrawalByEmployee,
+        ]);
     }
 
 

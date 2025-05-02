@@ -16,14 +16,14 @@ class StockWithdrawalItem extends Model
     ];
 
 
-    public function stockWithdrawal(): BelongsTo
+    public function stock(): BelongsTo
     {
-        return $this->belongsTo(StockWithdrawal::class, 'stock_withdrawal_id');
+        return $this->belongsTo(Stock::class, 'stock_id');
     }
 
 
-    public function itemCatalog()
+    public function stockWithdrawal(): BelongsTo
     {
-        return $this->belongsTo(ItemCatalog::class, 'item_catalog_id');
+        return $this->belongsTo(StockWithdrawal::class, 'stock_withdrawal_id');
     }
 }

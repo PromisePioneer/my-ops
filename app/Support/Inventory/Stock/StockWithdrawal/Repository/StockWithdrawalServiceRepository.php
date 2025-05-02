@@ -9,6 +9,6 @@ class StockWithdrawalServiceRepository
 {
     public function getStockWithDrawalQuery(): Builder
     {
-        return StockWithdrawal::with('branch', 'stocker', 'kca', 'stockWithdrawalByEmployee');
+        return StockWithdrawal::with('branch', 'stocker', 'kca', 'stockWithdrawalByEmployee', 'stockWithdrawalItem');
     }
 }

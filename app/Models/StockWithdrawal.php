@@ -15,7 +15,7 @@ class StockWithdrawal extends Model
         'date',
         'description',
         'kca_id',
-        'stocker_id'
+        'stocker_id',
     ];
 
 
@@ -40,6 +40,12 @@ class StockWithdrawal extends Model
     public function stockWithdrawalByEmployee(): HasMany
     {
         return $this->hasMany(StockWithdrawalByEmployee::class, 'stock_withdrawal_id');
+    }
+
+
+    public function stockWithdrawalItem()
+    {
+        return $this->hasMany(StockWithdrawalItem::class, 'stock_withdrawal_id');
     }
 
 }

@@ -42,13 +42,6 @@ use Throwable;
                 'branch_name' => $stockWithdrawal->branch->name,
                 'date' => $stockWithdrawal->date,
                 'description' => $stockWithdrawal->description,
-                'employees' => $stockWithdrawal->stockWithdrawalByEmployee->map(function ($query) {
-                    $query->load('user');
-                    return [
-                        'id' => $query->id,
-                        'name' => "{$query->user->nip} {$query->user->name}"
-                    ];
-                }),
                 'pic' => $stockWithdrawal->kca?->name ?? null,
                 'stocker' => $stockWithdrawal->stocker?->name ?? null,
             ];
@@ -69,6 +62,7 @@ use Throwable;
                 'branch_id' => $request->user()->branch_id ?? 1,
                 'date' => Carbon::now()->format('Y-m-d'),
                 'description' => $request->input('description'),
+                'kca_id' => $request->user()->id,
             ]);
             $this->stockWithdrawalEmployeeStoreAndUpdate($stockWithdrawal, $request);
             $this->stockWithdrawalItemStoreOrUpdate($stockWithdrawal, $request);
@@ -78,12 +72,19 @@ use Throwable;
 
     public function stockWithdrawalItemStoreOrUpdate($stockWithdrawal, $request): void
     {
-
-
         if ($request->has('itemWithCodeFields')) {
             foreach ($request->itemWithCodeFields as $value) {
                 $itemCatalog = ItemCatalog::find($value);
-                Stock::where('id', $itemCatalog->stock_id)->delete();
+                Stock::where('id', $itemCatalog->stock_id)->increment('on_hold_qty');
+                ItemCatalog::create([
+                    'transaction_id' => $itemCatalog->transaction_id,
+                    'stock_id' => $itemCatalog->stock_id,
+                    'code' => $itemCatalog->code,
+                    'condition' => $itemCatalog->condition,
+                    'created_by' => $itemCatalog->created_by,
+                    'status' => 'Dibawa'
+                ]);
+                $itemCatalog->delete();
                 StockWithdrawalItem::create([
                     'stock_withdrawal_id' => $stockWithdrawal->id,
                     'stock_id' => $itemCatalog->stock_id,

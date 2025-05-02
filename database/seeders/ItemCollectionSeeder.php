@@ -26,6 +26,16 @@ class ItemCollectionSeeder extends Seeder
         ]);
 
 
+        ItemCollection::create([
+            'name' => 'KU 96 Core',
+            'category_id' => ItemCategory::where('name', 'Kategori 1')->first()->id,
+            'unit_type_id' => UnitType::where('name', 'Meter')->first()->id,
+            'material' => 'Non Besi',
+            'type' => 'ASET',
+            'reorder_level' => 100,
+        ]);
+
+
         //kategori 1 jual
         ItemCollection::create([
             'name' => 'DW',

@@ -13,7 +13,8 @@ class ItemCatalog extends Model
         'stock_id',
         'code',
         'condition',
-        'created_by'
+        'created_by',
+        'status'
     ];
 
     public function stock(): BelongsTo

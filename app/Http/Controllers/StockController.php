@@ -127,16 +127,16 @@ use Illuminate\View\View;
 
     public function getStockBasedOnDraftStock(DraftStock $draftStock)
     {
-        $stock = Stock::with('transaction', 'branch', 'item')
-            ->where('transaction_id', $draftStock->transaction_id)
-            ->get();
+        $stock = Stock::with('transaction', 'branch', 'item')->where('transaction_id', $draftStock->id)->get();
         return $stock->map(function ($stock) {
             return [
                 'id' => $stock->id,
                 'transaction_number' => $stock->transaction->transaction_number,
                 'name' => $stock->item->name,
                 'qty' => $stock->qty . ' ' . $stock->item->unitType->name,
-                'condition' => $stock->condition
+                'condition' => $stock->condition,
+                'on_hold_qty' => $stock->on_hold_qty . ' ' . $stock->item->unitType->name,
+                'available_qty' => $stock->qty - $stock->on_hold_qty . ' ' . $stock->item->unitType->name,
             ];
         });
     }
@@ -150,7 +150,7 @@ use Illuminate\View\View;
 
     public function getStockWithCode()
     {
-        $stock = Stock::with('item', 'itemCatalog')->whereHas('itemCatalog')
+        $stock = Stock::with('item', 'itemCatalog')
             ->whereIn('condition', ['Baik', 'Diperbaiki'])
             ->get();
 
@@ -159,16 +159,14 @@ use Illuminate\View\View;
             $itemCatalog = [];
 
 
-            foreach ($stock->itemCatalog as $value) {
+            foreach ($stock->itemCatalog->where('status', 'Tersedia') as $value) {
                 $itemCatalog[] = [
                     'id' => $value->id,
                     'stock_id' => $stock->id,
                     'code' => $value->code,
-                    'text' => "[{$stock->item->name}] [{$value->code}] [{$value->condition}]",
+                    'text' => 'SN: ' . $value->code,
                 ];
             }
-
-
 
 
             return [

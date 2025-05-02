@@ -1,5 +1,5 @@
 @extends('layouts.template')
-@section('page-title', 'Barang Masuk yang Belum Diproses')
+@section('page-title', 'Pengkodean ' . $draftStock->transaction->item->name)
 @section('content')
     <div x-data="generateStockCode()">
         @include('pages.inventory.goods.stocks.draft-stocks.generate-code')
@@ -7,7 +7,7 @@
 
             <div class="card-body">
                 <div class="d-flex">
-                    <h3 class="card-title mb-10">Informasi barang (Belum di proses)</h3>
+                    <h3 class="card-title mb-10">{{ $draftStock->transaction->item->name }} tidak ada kode</h3>
                     <div class="ms-auto">
                         <a href="{{ url('inventory/goods/draft-stocks') }}" class="btn btn-sm btn-light">
                             Kembali
@@ -49,7 +49,9 @@
                     <tr>
                         <th class="min-w-125px text-center">No. Transaksi</th>
                         <th class="min-w-125px text-center">Nama</th>
-                        <th class="min-w-125px text-center">Qty</th>
+                        <th class="min-w-125px text-center">Total Stok</th>
+                        <th class="min-w-125px text-center">Stok Dibawa</th>
+                        <th class="min-w-125px text-center">Stock Gudang</th>
                         <th class="min-w-125px text-center">Kondisi</th>
                     </tr>
                     </thead>
@@ -78,6 +80,8 @@
                         <tr>
                             <td x-text="stock.transaction_number"></td>
                             <td x-text="stock.name"></td>
+                            <td x-text="stock.qty"></td>
+                            <td x-text="stock.on_hold_qty"></td>
                             <td x-text="stock.qty"></td>
                             <td>
                                 <template x-if="stock.condition === 'Rusak'">
@@ -115,6 +119,7 @@
                         <th class="w-10px pe-2">No</th>
                         <th class="min-w-125px text-center">Kode</th>
                         <th class="min-w-125px text-center">Kondisi</th>
+                        <th class="min-w-125px text-center">Status</th>
                         <th class="min-w-125px text-center">Diinput Oleh</th>
                         <th class="min-w-125px text-center">Action</th>
                     </tr>
@@ -157,6 +162,7 @@
                                     <span class="badge bg-light-warning text-warning">Sdg Diperbaiki</span>
                                 </template>
                             </td>
+                            <td x-text="item.status"></td>
                             <td x-text="item.created_by"></td>
                             <td>
                                 <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"

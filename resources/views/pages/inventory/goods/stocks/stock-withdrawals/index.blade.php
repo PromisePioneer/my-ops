@@ -3,6 +3,7 @@
 @section('breadcrumbs', 'Inventory Controller - Pemakaian Barang')
 @section('content')
     <div x-data="stockWithdrawalData()">
+        @include('pages.inventory.goods.stocks.stock-withdrawals.detail')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -51,14 +52,12 @@
                                 <th class="w-10px pe-2">
                                     <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
                                         <input class="form-check-input" type="checkbox"
-                                               @click="toggleAllCheckBox()" :disabled="Number(deletePermission) !== 1">
+                                               @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Cabang</th>
                                 <th class="min-w-125px">Tanggal</th>
                                 <th class="min-w-125px">Deskripsi</th>
-                                <th class="min-w-125px">Karyawan</th>
-                                <th class="min-w-125px">Status</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -89,31 +88,18 @@
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="service.id"
-                                                   :id="'checkbox-' + service.id"
-                                                   :disabled="Number(deletePermission) !== 1"/>
+                                            <input class="form-check-input" type="checkbox" :value="stockWithdrawal.id"
+                                                   :id="'checkbox-' + stockWithdrawal.id"/>
                                         </div>
                                     </td>
                                     <td class="text-center" x-text="stockWithdrawal.branch_name"></td>
                                     <td class="text-center" x-text="stockWithdrawal.date"></td>
                                     <td class="text-center" x-text="stockWithdrawal.description"></td>
-                                    <td>
-                                        <ul>
-                                            <template x-for="employee in stockWithdrawal?.employees" :key="employee.id">
-                                                <li><a href="#" x-text="employee.name"></a></li>
-                                            </template>
-                                        </ul>
-                                    </td>
-                                        <td>
-
-                                        </td>
                                     <td class="text-center">
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-skl" @click="edit(service.id)">
-                                            <i class="ki-duotone ki-pencil fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
+                                                data-bs-target="#modal-stock-withdrawal-detail"
+                                                @click="showDetail(stockWithdrawal.id)">
+                                            <i class="fa-solid fa-circle-info"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -143,6 +129,8 @@
                 isLoading: false,
                 stockWithdrawals: [],
                 search: '',
+                stockWithdrawalDetail: {},
+                selectedCheckBox: [],
                 async init() {
                     await this.getStockWithdrawals();
                 },
@@ -172,6 +160,35 @@
                         } finally {
                             this.isLoading = false
                         }
+                    }
+                },
+                async showDetail(id) {
+                    try {
+                        const resp = await axios.get(`/inventory/goods/stock-withdrawals/show/${id}`);
+                        this.stockWithdrawalDetail = resp.data;
+                    } catch (e) {
+                        console.log(e)
+                    }
+                },
+                getImageURL(imagePath) {
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        return "{{ asset('') }}" + placeholders;
+                    }
+                    return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
+                },
+                openImage(imagePath) {
+                    const lightbox = new FsLightbox();
+                    console.log(lightbox);
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        const image = "{{ asset('') }}" + placeholders
+                        lightbox.props.sources = [image, image];
+                        lightbox.open();
+                    } else {
+                        const image = "{{ Storage::url('') }}" + imagePath;
+                        lightbox.props.sources = [image];
+                        lightbox.open();
                     }
                 },
             }

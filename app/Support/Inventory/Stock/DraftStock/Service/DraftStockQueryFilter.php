@@ -13,14 +13,14 @@ class DraftStockQueryFilter
     public static function apply(Builder|EloquentBuilder $query, Request $request): EloquentBuilder|Builder
     {
         if ($request->filled('branch_id')) {
-            $branchId = $request->input('branch_id');
-
-            $branchIds = Branch::where('id', $branchId)
-                ->orWhere('parent_id', $branchId)
-                ->pluck('id');
-
-            $query->with('branch.parent')
-                ->whereIn('branch_id', $branchIds);
+            $branch = Branch::with('children')->find($request->input('branch_id'));
+            $children = [];
+            foreach ($branch->children as $child) {
+                $children[] = $child->id;
+            }
+            $query->whereHas('transaction', function ($query) use ($children) {
+                $query->whereIn('branch_id', $children);
+            });
         }
 
         return $query;

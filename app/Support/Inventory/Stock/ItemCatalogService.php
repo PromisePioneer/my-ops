@@ -38,7 +38,8 @@ use Throwable;
                 'code' => $query->code,
                 'condition' => $query->condition,
                 'created_at' => $query->created_at,
-                'created_by' => $query->createdBy->name
+                'created_by' => $query->createdBy->name,
+                'status' => $query->status,
             ];
         });
 
@@ -57,7 +58,6 @@ use Throwable;
             $stock = Stock::where('transaction_id', $draftStock->transaction_id)
                 ->where('condition', $request->input('condition'))
                 ->first();
-
 
 
             $draftStock->decrement('qty');
