@@ -49,9 +49,7 @@ use Illuminate\Http\Request;
                 'roles:id,name',
                 'weekHoliday:user_id,day',
                 'company:id,name',
-            ])->whereHas('roles', function($query) {
-                $query->whereNot('name', 'Vendor');
-            })
+            ])
             ->where('active', 1)
             ->orderBy('absent_id');
 
@@ -173,32 +171,11 @@ use Illuminate\Http\Request;
             $attendedDates = $user->attendancesSummary->pluck('date')->toArray();
 
             $totalAbsent = collect($periods)
-    ->filter(function ($period) {
-        // Only count days up to yesterday
-        return $period->lessThan(Carbon::today());
-    })
-    ->reject(function ($period) use ($weekHoliday, $employeeHolidayDates) {
-        // Reject if it's a weekly holiday
-        if ($weekHoliday && $weekHoliday->day === $period->dayName) {
-            return true;
-        }
-
-        // Reject if it's in employee holidays
-        if (in_array($period->format('Y-m-d'), $employeeHolidayDates)) {
-            return true;
-        }
-
-        return false;
-    })
-    ->reject(function ($period) use ($attendedDates) {
-        // Reject if employee was present
-        return in_array($period->format('Y-m-d'), $attendedDates);
-    })
-    ->reject(function ($period) use ($leaveDates) {
-        // Reject if employee was on leave/permission
-        return in_array($period->format('Y-m-d'), $leaveDates);
-    })
-    ->count();
+                ->filter(fn($period) => $period->lessThan(Carbon::today()))
+                ->reject(fn($period) => $weekHoliday?->day === $period->dayName || in_array($period->format('Y-m-d'), $employeeHolidayDates))
+                ->reject(fn($period) => in_array($period->format('Y-m-d'), $attendedDates))
+                ->reject(fn($period) => in_array($period->format('Y-m-d'), $leaveDates))
+                ->count();
 
             return [
                 'id' => $user->id,
@@ -206,7 +183,7 @@ use Illuminate\Http\Request;
                 'user_name' => $user->name,
                 'profile_pic' => $user->profile_pic,
                 'role' => $user->roles[0]->name ?? '',
-                'total_minutes_late' => round($totalMinutesLate),
+                'total_minutes_late' => (int)$totalMinutesLate,
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
                 'total_present' => $totalPresent . '/' . $totalPeriodOfWork,
@@ -249,30 +226,25 @@ use Illuminate\Http\Request;
     {
         $totalLate = 0;
         foreach ($attendanceSummary as $attendance) {
-
-            if(empty($attendance?->clock_in)){
-                continue;
-            }
-
-
-            $actualCheckIn = Carbon::make($attendance?->clock_in);
+            $actualCheckIn = Carbon::make($attendance?->clock_in ?? $attendance->date);
             $workDate = $attendance?->date;
             $expectedCheckIn = Carbon::parse("$workDate {$attendance->workTime?->clock_in}");
-            $newExpectedCheckIn = null;
 
+            $newExpectedCheckIn = null;
             if ($attendance->workTime?->name === "Malam") {
-                $newExpectedCheckIn = $expectedCheckIn->copy()->addDay();
+                $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
             }
 
             $checkInToUse = $newExpectedCheckIn ?? $expectedCheckIn;
 
-            if ($actualCheckIn->greaterThan($checkInToUse)) {
-                $lateSeconds = $checkInToUse->diffInSeconds($actualCheckIn, false);
-                $totalLate += $lateSeconds;
+
+            $lateMinutes = $checkInToUse->diffInMinutes($actualCheckIn);
+
+            if ($lateMinutes > 3) {
+                $totalLate += $lateMinutes;
             }
         }
-
-        return $totalLate / 60;
+        return $totalLate;
     }
 
 

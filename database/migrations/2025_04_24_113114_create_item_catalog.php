@@ -10,18 +10,19 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('item_catalog', function (Blueprint $table) {
+        Schema::create('item_catalogs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('item_id')
-                ->constrained('item_collections')
+            $table->foreignId('transaction_id')
+                ->constrained('transactions')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignId('draft_stock_id')
-                ->constrained('draft_stocks')
-                ->cascadeOnUpdate()
+            $table->foreignId('stock_id')
+                ->constrained('stocks')
+                ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->string('code');
             $table->enum('condition', ['Rusak', 'Baik', 'Diperbaiki']);
+            $table->enum('status', ['Tersedia', 'Terpakai', 'Dibawa'])->default('Tersedia');
             $table->foreignId('created_by')->constrained('users');
             $table->timestamps();
         });

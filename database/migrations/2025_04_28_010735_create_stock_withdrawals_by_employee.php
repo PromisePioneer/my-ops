@@ -10,15 +10,16 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('list_of_items', function (Blueprint $table) {
+        Schema::create('stock_withdrawals_by_employee', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('transaction_id');
-            $table->foreignId('item_id')
-                ->constrained('item_collections')
+            $table->foreignId('stock_withdrawal_id')
+                ->constrained('stock_withdrawals')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->integer('code');
-            $table->enum('condition', ['Baik', 'Rusak']);
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('list_of_items');
+        Schema::dropIfExists('stock_withdrawals_by_employee');
     }
 };

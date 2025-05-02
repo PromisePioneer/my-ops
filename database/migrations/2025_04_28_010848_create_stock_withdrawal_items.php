@@ -10,14 +10,17 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('picking_stock_has_items', function (Blueprint $table) {
+        Schema::create('stock_withdrawal_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('picking_stock_id')
-                ->constrained('picking_stocks')
-                ->cascadeOnDelete();
+            $table->foreignId('stock_withdrawal_id')
+                ->constrained('stock_withdrawals')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->foreignId('stock_id')
                 ->constrained('stocks')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->string('code')->nullable();
             $table->double('qty');
             $table->timestamps();
         });
@@ -28,6 +31,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('picking_stock_has_item');
+        Schema::disableForeignKeyConstraints();
+        Schema::dropIfExists('stock_withdrawal_items');
     }
 };

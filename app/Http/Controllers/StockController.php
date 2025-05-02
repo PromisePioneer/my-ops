@@ -127,17 +127,16 @@ use Illuminate\View\View;
 
     public function getStockBasedOnDraftStock(DraftStock $draftStock)
     {
-        $stock = Stock::with('transaction', 'branch', 'item')
-            ->where('draft_stock_id', $draftStock->id)
-            ->where('item_id', $draftStock->item_id)
-            ->get();
+        $stock = Stock::with('transaction', 'branch', 'item')->where('transaction_id', $draftStock->id)->get();
         return $stock->map(function ($stock) {
             return [
                 'id' => $stock->id,
                 'transaction_number' => $stock->transaction->transaction_number,
                 'name' => $stock->item->name,
                 'qty' => $stock->qty . ' ' . $stock->item->unitType->name,
-                'condition' => $stock->condition
+                'condition' => $stock->condition,
+                'on_hold_qty' => $stock->on_hold_qty . ' ' . $stock->item->unitType->name,
+                'available_qty' => $stock->qty - $stock->on_hold_qty . ' ' . $stock->item->unitType->name,
             ];
         });
     }
@@ -146,5 +145,54 @@ use Illuminate\View\View;
     public function getMustReorderStocks(Request $request): JsonResponse
     {
         return response()->json($this->stockService->getMustReorderStocks($request));
+    }
+
+
+    public function getStockWithCode()
+    {
+        $stock = Stock::with('item', 'itemCatalog')
+            ->whereIn('condition', ['Baik', 'Diperbaiki'])
+            ->get();
+
+
+        return $stock->map(function ($stock) {
+            $itemCatalog = [];
+
+
+            foreach ($stock->itemCatalog->where('status', 'Tersedia') as $value) {
+                $itemCatalog[] = [
+                    'id' => $value->id,
+                    'stock_id' => $stock->id,
+                    'code' => $value->code,
+                    'text' => 'SN: ' . $value->code,
+                ];
+            }
+
+
+            return [
+                'id' => $stock->id,
+                'text' => $stock->item->name,
+                'children' => $itemCatalog
+            ];
+        });
+    }
+
+
+    public function getStockWithoutCode(Request $request)
+    {
+        $stock = Stock::with('item')->whereHas('item.category', function ($query) {
+            $query->where('name', 'Kategori 4');
+        })->whereNotIn('id', $request->get('ids', []))
+            ->whereIn('condition', ['Baik', 'Diperbaiki'])
+            ->get();
+
+
+        return $stock->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'name' => $item->item->name,
+                'text' => $item->item->name . ' Stok : ' . $item->qty . ' - ' . $item->condition,
+            ];
+        });
     }
 }

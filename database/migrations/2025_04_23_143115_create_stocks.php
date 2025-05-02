@@ -22,12 +22,9 @@ return new class extends Migration {
                 ->constrained('item_collections')
                 ->cascadeOnDelete()
                 ->cascadeOnDelete();
-            $table->foreignId('draft_stock_id')
-                ->constrained('draft_stocks')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
             $table->integer('qty');
-            $table->enum('condition', ['Rusak', 'Baik', 'Diperbaiki']);
+            $table->enum('condition', ['Rusak', 'Baik'])->default('Baik');
+            $table->double('on_hold_qty')->default(0);
             $table->timestamps();
         });
     }
@@ -38,6 +35,6 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('goods_stock');
+        Schema::dropIfExists('stocks');
     }
 };
