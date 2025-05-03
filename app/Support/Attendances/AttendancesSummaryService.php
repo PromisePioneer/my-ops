@@ -134,8 +134,6 @@ use Illuminate\Http\Request;
 
     public function formattedData($weeklyLatenessMap, LengthAwarePaginator $user, $startDate, $endDate): LengthAwarePaginator
     {
-
-        // Ambil semua user IDs dan absent_ids
         $userIds = $user->getCollection()->pluck('id');
         $absentIds = $user->getCollection()->pluck('absent_id');
 
@@ -180,21 +178,19 @@ use Illuminate\Http\Request;
             $employeeHolidayDates = $employeeHolidays->pluck('start_date')->toArray();
 
 
-            $totalPeriodOfWork = collect($periods)->reject(function ($period) use ($weekHoliday, $employeeHolidayDates) {
-                return $weekHoliday?->day === $period->dayName || in_array($period->format('Y-m-d'), $employeeHolidayDates);
-            })->count();
-
-
             $getLeaves = LeaveAndPermission::where('user_id', $user->id)
                 ->whereBetween('start_date', [$startDate, $endDate])
-                ->orWhereBetween('end_date', [$startDate, $endDate])
                 ->get();
+
+
+            $firstStartDate = $getLeaves->min('start_date');
+            $lastEndDate = $getLeaves->max('end_date');
 
             $leavePeriods = [];
             foreach ($getLeaves as $dates) {
                 $leavePeriods = array_merge(
                     $leavePeriods,
-                    CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
+                    CarbonPeriod::create($firstStartDate, $lastEndDate)->toArray()
                 );
             }
 
@@ -205,22 +201,34 @@ use Illuminate\Http\Request;
             }
 
 
-            $totalPeriodOfWork -= ($totalLeaves + $totalSick + $totalPermission + $totalImportantLeaves);
+            $totalPeriodOfWork = collect($periods)
+            ->reject(function ($period) use ($weekHoliday, $employeeHolidayDates) {
+                if (in_array($period->format('Y-m-d'), $employeeHolidayDates)) {
+                    return true;
+                } else {
+                    return $period?->dayName === $weekHoliday?->day;
+                }
+            })->reject(function ($period) use ($leaveDates, $leavePeriods) {
+                return in_array($period->format('Y-m-d'), $leaveDates);
+            })->count();
+
 
 
             $attendedDates = $user->attendancesSummary->pluck('date')->toArray();
             $totalAbsent = collect($periods)
-                    ->reject(function ($period) use ($leaveDates, $leavePeriods) {
+                    ->reject(function ($period) {
+                    // Jangan hitung hari di masa depan
+                    return $period->greaterThanOrEqualTo(Carbon::today());
+                    })->reject(function ($period) use ($leaveDates, $leavePeriods) {
                         return in_array($period->format('Y-m-d'), $leaveDates);
                     })->reject(function ($period) use ($attendedDates) {
                         return in_array($period->format('Y-m-d'), $attendedDates);
                     })->reject(function ($period) use ($employeeHolidayDates, $weekHoliday) {
                         if (in_array($period->format('Y-m-d'), $employeeHolidayDates)) {
                             return true;
-                        } else {
-                            return $period->dayName === $weekHoliday->day;
                         }
-                    })->count() + 1;
+                        return $period?->dayName === $weekHoliday?->day;
+                    })->count();
 
             return [
                 'id' => $user->id,
@@ -311,8 +319,11 @@ use Illuminate\Http\Request;
 
         foreach ($users as $user) {
             $attendancesGroupedByWeek = collect($user->attendancesSummary)
-                ->groupBy(function ($attendance) {
-                    return Carbon::parse($attendance->date)->endOfWeek()->format('Y-m-d');
+                ->groupBy(function ($item) use($startDate) {
+                    $date = Carbon::parse($item['attendancesDate']);
+                    $diffInDays = $startDate->diffInDays($date);
+                    $groupNumber = floor($diffInDays / 7);
+                    return $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
                 });
 
             foreach ($attendancesGroupedByWeek as $weekEndDate => $attendances) {

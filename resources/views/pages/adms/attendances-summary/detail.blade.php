@@ -125,13 +125,6 @@
                                             <td class="text-center" colspan="5">LIBUR</td>
                                         </tr>
                                     </template>
-                                    <template x-if="attendance.weekly_lateness !== null">
-                                        <tr class="bg-black text-center">
-                                            <td class="text-center" style="color: red">TERLAMBAT MINGGUAN</td>
-                                            <td class="text-center" style="color: red" colspan="5"
-                                                x-text="`${attendance.weekly_lateness} Menit`"></td>
-                                        </tr>
-                                    </template>
                                     <template x-if="attendance.attendanceManualRequest?.status === 'Pengecualian'">
                                         <tr class="text-white text-center" style="background-color: #0dcaf0">
                                             <td x-text="formatDate(attendance.date_period)"></td>
@@ -161,6 +154,13 @@
                                             </template>
                                         </tr>
 
+                                    </template>
+                                    <template x-if="attendance.weekly_lateness !== null">
+                                        <tr class="bg-black text-center">
+                                            <td class="text-center" style="color: red">TERLAMBAT MINGGUAN</td>
+                                            <td class="text-center" style="color: red" colspan="5"
+                                                x-text="`${attendance.weekly_lateness} Menit`"></td>
+                                        </tr>
                                     </template>
                                     </tbody>
                                 </template>

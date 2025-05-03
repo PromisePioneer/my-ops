@@ -79,9 +79,13 @@ class AttendanceSummaryDetailService
             ]);
         }
 
-        $weeklyAttendances = collect($dates)->groupBy(function ($item) {
-            return Carbon::parse($item['attendancesDate'])->endOfWeek()->format('Y-m-d');
+        $weeklyAttendances = collect($dates)->groupBy(function ($item) use($startDate) {
+            $date = Carbon::parse($item['attendancesDate']);
+            $diffInDays = $startDate->diffInDays($date);
+            $groupNumber = floor($diffInDays / 7);
+            return $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
         });
+
 
 
         $weekLatenessMap = [];
@@ -120,17 +124,17 @@ class AttendanceSummaryDetailService
 
             // Then decide if we should count lateness for this week
             if ($weekLatenessTotal > 900) {
-                $weekLatenessMap[$weekEndDate] = $weekLatenessTotal / 60;
+                $weekLatenessMap[$weekEndDate] = number_format($weekLatenessTotal / 60);
             }
         }
 
         $weeklyLateness = $weekLatenessMap;
-        return self::formattedData(collect($dates), $weeklyLateness, $empId);
+        return self::formattedData(collect($dates), $weeklyLateness, $empId, $startDate);
     }
 
-    public function formattedData($attendanceSummary, $weeklyLatenessMap, $empId)
+    public function formattedData($attendanceSummary, $weeklyLatenessMap, $empId, $startDate)
     {
-        return $attendanceSummary->map(function ($item) use ($empId, $weeklyLatenessMap) {
+        return $attendanceSummary->map(function ($item) use ($empId, $weeklyLatenessMap, $startDate) {
             $userWorktime = WorkTime::where('id', $item['attendanceData']?->work_time_id)->first()
                 ?? null;
 
@@ -139,7 +143,10 @@ class AttendanceSummaryDetailService
             $isHoliday = $weekHoliday?->is_holiday ? 'L' : 'H';
             $empSchedule = $item['employeeSchedule']?->status ?? $isHoliday;
             $attendanceDate = Carbon::parse($item['attendancesDate']);
-            $weekEndDate = $attendanceDate->copy()->endOfWeek()->format('Y-m-d');
+            $diffInDays = $startDate->diffInDays($attendanceDate);
+            $groupNumber = floor($diffInDays / 7);
+            $weekEndDate =  $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
+
 
             $totalWeeklyLateness = $weeklyLatenessMap[$weekEndDate] ?? 0;
 
@@ -184,7 +191,7 @@ class AttendanceSummaryDetailService
         }
 
 
-        return $total / 60;
+        return number_format($total / 60);
 
     }
 
@@ -339,7 +346,7 @@ class AttendanceSummaryDetailService
 
             if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
                 $lateness = $newExpectedCheckIn ? $newExpectedCheckIn->diffInSeconds($actualCheckIn) : $expectedCheckIn->diffInSeconds($actualCheckIn);
-                return $lateness / 60;
+                return number_format($lateness / 60);
             }
         }
         return null;
@@ -391,8 +398,11 @@ class AttendanceSummaryDetailService
         }
 
 
-        $weeklyAttendances = collect($dates)->groupBy(function ($item) {
-            return Carbon::parse($item['attendancesDate'])->endOfWeek()->format('Y-m-d');
+        $weeklyAttendances = collect($dates)->groupBy(function ($item) use($startDate) {
+            $date = Carbon::parse($item['attendancesDate']);
+            $diffInDays = $startDate->diffInDays($date);
+            $groupNumber = floor($diffInDays / 7);
+            return $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
         });
 
 
@@ -433,14 +443,14 @@ class AttendanceSummaryDetailService
 
             // Then decide if we should count lateness for this week
             if ($weekLatenessTotal > 900) {
-                $weekLatenessMap[$weekEndDate] = $weekLatenessTotal / 60;
+                $weekLatenessMap[$weekEndDate] = number_format($weekLatenessTotal / 60);
             }
         }
 
         $weeklyLateness = $weekLatenessMap;
 
 
-        return self::formattedData($weeklyLateness, collect($dates), $user->absent_id);
+        return self::formattedData(collect($dates),$weeklyLateness, $user->absent_id, $startDate);
     }
 
 }
