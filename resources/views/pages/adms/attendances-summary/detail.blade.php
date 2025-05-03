@@ -106,7 +106,11 @@
                                     <template x-if="attendance.permission?.status === 'Izin'">
                                         <tr class="bg-danger text-white text-center">
                                             <td x-text="formatDate(attendance.date_period)"></td>
-                                            <td colspan="6">IZIN</td>
+                                            <td colspan="6">
+                                                <span>IZIN</span>
+
+
+                                            </td>
                                         </tr>
                                     </template>
                                     <template x-if="attendance?.sick?.status === 'Sakit'">
@@ -118,10 +122,16 @@
                                     <template x-if="attendance.schedule === 'L'">
                                         <tr class="bg-warning text-center">
                                             <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
-                                            <td colspan="6">LIBUR</td>
+                                            <td class="text-center" colspan="5">LIBUR</td>
                                         </tr>
                                     </template>
-
+                                    <template x-if="attendance.weekly_lateness !== null">
+                                        <tr class="bg-black text-center">
+                                            <td class="text-center" style="color: red">TERLAMBAT MINGGUAN</td>
+                                            <td class="text-center" style="color: red" colspan="5"
+                                                x-text="`${attendance.weekly_lateness} Menit`"></td>
+                                        </tr>
+                                    </template>
                                     <template x-if="attendance.attendanceManualRequest?.status === 'Pengecualian'">
                                         <tr class="text-white text-center" style="background-color: #0dcaf0">
                                             <td x-text="formatDate(attendance.date_period)"></td>
@@ -135,8 +145,11 @@
                                             <td class="text-center" x-text="formatDate(attendance.date_period)"></td>
                                             <td class="text-center" x-text="attendance.clock_in"></td>
                                             <td class="text-center" x-text="attendance.clock_out"></td>
-                                            <td class="text-center" x-text="attendance.late"></td>
+                                            <td class="text-center"
+                                                x-text="`${attendance.late ? attendance.late + ' Menit' : ''}`">
+                                            </td>
                                             <td class="text-center" x-text="attendance.work_time"></td>
+
                                             <template x-if="Number(correctionPermission) === 1">
                                                 <td class="text-center">
                                                     <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
@@ -147,6 +160,7 @@
                                                 </td>
                                             </template>
                                         </tr>
+
                                     </template>
                                     </tbody>
                                 </template>
@@ -174,12 +188,61 @@
                 endDates: "{{ $endDate }}",
                 id: "{{ $user->id }}",
                 correctionVal: null,
+                totalLateIn1Week: 0,
                 runningCommands: [],
                 formCorrection: document.getElementById('form-attendance-correction'),
                 modalCorrection: new bootstrap.Modal(document.getElementById('modal-attendance-correction')),
                 async init() {
                     await this.getAttendanceSummaryRecords();
                     await this.getWorkTimes();
+                    console.log(this.lateWeek())
+                },
+                lateWeek() {
+                    const perWeek = {};
+                    for (const date in this.attendancesSummaryRecords) {
+                        const record = this.attendancesSummaryRecords[date];
+                        if (!record) continue;
+
+                        const week = this.getISOWeek(date);
+                        if (!perWeek[week]) {
+                            perWeek[week] = {
+                                totalLate: 0,
+                            };
+                        }
+                        perWeek[week].totalLate += +record.late;
+                    }
+
+                    const perWeekArray = Object.entries(perWeek).map(([week, data]) => ({
+                        date: week, ...data
+                    }));
+
+                    for (const key in perWeekArray) {
+                        perWeekArray[key].totalLate = perWeekArray[key].totalLate > 15 ? perWeekArray[key].totalLate : 0;
+                    }
+
+                    console.log(perWeekArray)
+
+                    for (const attendanceDate in this.attendancesSummaryRecords) {
+
+                        perWeekArray.map((val) => {
+                            if (attendanceDate == val.date) {
+                                this.attendancesSummaryRecords[attendanceDate] = ({
+                                    ...this.attendancesSummaryRecords[attendanceDate], ...val
+                                });
+                            }
+                        })
+                    }
+
+
+                    return this.attendancesSummaryRecords;
+                },
+                getISOWeek(dateStr) {
+                    const date = new Date(dateStr);
+                    const dayNum = date.getUTCDay() || 7;
+                    date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+                    const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+                    const weekNo = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+                    return `${date.toISOString().split('T')[0]}`;
                 },
                 async getAttendanceSummaryRecords() {
                     try {
@@ -187,6 +250,7 @@
                         this.attendancesSummaryRecords = [];
                         const resp = await axios.get(`/adms/attendances-summary/detail/data/${this.id}/${this.startDates}/${this.endDates}`);
                         this.attendancesSummaryRecords = resp.data;
+                        const perWeekArray = this.lateWeek();
                     } catch (e) {
                         console.log(e)
                     } finally {

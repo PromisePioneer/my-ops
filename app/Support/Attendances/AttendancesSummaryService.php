@@ -7,6 +7,7 @@ use App\Models\EmployeeSchedule;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
 use App\Models\WeekHoliday;
+use App\Models\WorkTime;
 use App\Support\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -29,7 +30,7 @@ use Illuminate\Http\Request;
         $query = User::select('id', 'nip', 'name', 'profile_pic', 'active', 'absent_id')
             ->with([
                 'attendancesSummary' => function ($query) {
-                    $query->select('employee_id', 'date', 'clock_in', 'clock_out', 'work_time_id')
+                    $query->select('date', 'employee_id', 'date', 'clock_in', 'clock_out', 'work_time_id')
                         ->whereBetween('date', [$this->startDate, $this->endDate])
                         ->with('workTime:id,clock_in,name');
                 },
@@ -53,9 +54,45 @@ use Illuminate\Http\Request;
             ->where('active', 1)
             ->orderBy('absent_id');
 
+
+        $users = $query->get();
+        $weeklyLatenessMap = [];
+
+        foreach ($users as $user) {
+            $attendancesGroupedByWeek = collect($user->attendancesSummary)
+                ->groupBy(function ($attendance) {
+                    return Carbon::parse($attendance->date)->endOfWeek()->format('Y-m-d');
+                });
+
+            foreach ($attendancesGroupedByWeek as $weekEndDate => $attendances) {
+                $weekLatenessTotal = 0;
+
+                foreach ($attendances as $attendance) {
+                    $workTime = $attendance->workTime;
+                    if (!$workTime || !$attendance->clock_in) continue;
+
+                    $expectedCheckIn = Carbon::parse("{$attendance->date} {$workTime->clock_in}");
+                    $actualCheckIn = Carbon::parse($attendance->clock_in);
+
+                    if ($workTime->name === "Malam") {
+                        $expectedCheckIn->addDay();
+                    }
+
+                    if ($actualCheckIn->greaterThan($expectedCheckIn)) {
+                        $lateness = $expectedCheckIn->diffInSeconds($actualCheckIn);
+                        $weekLatenessTotal += $lateness;
+                    }
+                }
+
+                if ($weekLatenessTotal > 900) {
+                    $weeklyLatenessMap[$user->id][$weekEndDate] = $weekLatenessTotal / 60;
+                }
+            }
+        }
+
         $data = AttendancesACLFilter::apply($query, $request);
         $attendanceSummary = $data->paginate(self::$perPage)->onEachSide(1);
-        return self::formattedData($attendanceSummary, $this->startDate, $this->endDate);
+        return self::formattedData($weeklyLatenessMap, $attendanceSummary, $this->startDate, $this->endDate);
     }
 
 
@@ -95,9 +132,8 @@ use Illuminate\Http\Request;
     }
 
 
-    public function formattedData(LengthAwarePaginator $user, $startDate, $endDate): LengthAwarePaginator
+    public function formattedData($weeklyLatenessMap, LengthAwarePaginator $user, $startDate, $endDate): LengthAwarePaginator
     {
-
 
         // Ambil semua user IDs dan absent_ids
         $userIds = $user->getCollection()->pluck('id');
@@ -115,7 +151,16 @@ use Illuminate\Http\Request;
         $periods = CarbonPeriod::create($startDate, $endDate)->toArray();
         $totalWorkDays = count($periods);
 
-        $data = $user->getCollection()->map(function ($user) use ($startDate, $endDate, $weekHolidays, $employeeSchedules, $periods, $totalWorkDays) {
+        $data = $user->getCollection()->map(function ($user) use ($weeklyLatenessMap, $startDate, $endDate, $weekHolidays, $employeeSchedules, $periods, $totalWorkDays) {
+
+
+            $weeklyLate = $weeklyLatenessMap[$user->id] ?? collect([]);
+
+
+            $totalMinutesLate = 0;
+            foreach ($weeklyLate as $late) {
+                $totalMinutesLate += $late;
+            }
 
 
             $totalPresent = $user->attendancesSummary->count();
@@ -123,7 +168,6 @@ use Illuminate\Http\Request;
             $totalLeaves = $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti');
             $totalPermission = $this->calculateLeaveDays($user, $startDate, $endDate, 'Izin');
             $totalImportantLeaves = $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti Penting');
-            $totalMinutesLate = $this->calculateLate($user->attendancesSummary);
             $totalNotCheckIn = $user->attendancesSummary->whereNull('clock_in')->count();
             $totalNotCheckOut = $user->attendancesSummary
                 ->where('date', '!=', Carbon::today()->format('Y-m-d'))
@@ -147,8 +191,6 @@ use Illuminate\Http\Request;
                 ->get();
 
             $leavePeriods = [];
-
-
             foreach ($getLeaves as $dates) {
                 $leavePeriods = array_merge(
                     $leavePeriods,
@@ -163,19 +205,22 @@ use Illuminate\Http\Request;
             }
 
 
-
-
-
             $totalPeriodOfWork -= ($totalLeaves + $totalSick + $totalPermission + $totalImportantLeaves);
 
-            $attendedDates = $user->attendancesSummary->pluck('date')->toArray();
 
+            $attendedDates = $user->attendancesSummary->pluck('date')->toArray();
             $totalAbsent = collect($periods)
-                ->filter(fn($period) => $period->lessThan(Carbon::today()))
-                ->reject(fn($period) => $weekHoliday?->day === $period->dayName || in_array($period->format('Y-m-d'), $employeeHolidayDates))
-                ->reject(fn($period) => in_array($period->format('Y-m-d'), $attendedDates))
-                ->reject(fn($period) => in_array($period->format('Y-m-d'), $leaveDates))
-                ->count();
+                    ->reject(function ($period) use ($leaveDates, $leavePeriods) {
+                        return in_array($period->format('Y-m-d'), $leaveDates);
+                    })->reject(function ($period) use ($attendedDates) {
+                        return in_array($period->format('Y-m-d'), $attendedDates);
+                    })->reject(function ($period) use ($employeeHolidayDates, $weekHoliday) {
+                        if (in_array($period->format('Y-m-d'), $employeeHolidayDates)) {
+                            return true;
+                        } else {
+                            return $period->dayName === $weekHoliday->day;
+                        }
+                    })->count() + 1;
 
             return [
                 'id' => $user->id,
@@ -183,7 +228,7 @@ use Illuminate\Http\Request;
                 'user_name' => $user->name,
                 'profile_pic' => $user->profile_pic,
                 'role' => $user->roles[0]->name ?? '',
-                'total_minutes_late' => round($totalMinutesLate,2),
+                'total_minutes_late' => number_format($totalMinutesLate),
                 'total_not_check_in' => $totalNotCheckIn,
                 'total_not_check_out' => $totalNotCheckOut,
                 'total_present' => $totalPresent . '/' . $totalPeriodOfWork,
@@ -239,12 +284,12 @@ use Illuminate\Http\Request;
 
             if ($actualCheckIn->greaterThan($checkInToUse)) {
                 $lateSeconds = $checkInToUse->diffInSeconds($actualCheckIn, false);
-                if($lateSeconds > 160){
+                if ($lateSeconds > 160) {
                     $totalLate += $lateSeconds;
                 }
             }
         }
-        return $totalLate;
+        return $totalLate / 60;
     }
 
 
@@ -261,11 +306,46 @@ use Illuminate\Http\Request;
         ], 'branch')->where('active', 1);
 
 
+        $users = $query->get();
+        $weeklyLatenessMap = [];
+
+        foreach ($users as $user) {
+            $attendancesGroupedByWeek = collect($user->attendancesSummary)
+                ->groupBy(function ($attendance) {
+                    return Carbon::parse($attendance->date)->endOfWeek()->format('Y-m-d');
+                });
+
+            foreach ($attendancesGroupedByWeek as $weekEndDate => $attendances) {
+                $weekLatenessTotal = 0;
+
+                foreach ($attendances as $attendance) {
+                    $workTime = $attendance->workTime;
+                    if (!$workTime || !$attendance->clock_in) continue;
+
+                    $expectedCheckIn = Carbon::parse("{$attendance->date} {$workTime->clock_in}");
+                    $actualCheckIn = Carbon::parse($attendance->clock_in);
+
+                    if ($workTime->name === "Malam") {
+                        $expectedCheckIn->addDay();
+                    }
+
+                    if ($actualCheckIn->greaterThan($expectedCheckIn)) {
+                        $lateness = $expectedCheckIn->diffInSeconds($actualCheckIn);
+                        $weekLatenessTotal += $lateness;
+                    }
+                }
+
+                if ($weekLatenessTotal > 900) {
+                    $weeklyLatenessMap[$user->id][$weekEndDate] = $weekLatenessTotal / 60;
+                }
+            }
+        }
+
+
         $filter = AttendanceQueryFilter::apply($query, $request);
         $aclFilter = AttendancesACLFilter::apply($filter, $request);
-
         $attendanceSummary = $aclFilter->paginate(self::$perPage)->onEachSide(1);
-        return self::formattedData($attendanceSummary, $startDate, $endDate);
+        return self::formattedData($weeklyLatenessMap, $attendanceSummary, $startDate, $endDate);
     }
 
 
@@ -280,7 +360,7 @@ use Illuminate\Http\Request;
         $search = $request->input('search');
 
 
-        $users = User::search($search)->query(function ($query) use ($startDate, $endDate, $request) {
+        $query = User::search($search)->query(function ($query) use ($startDate, $endDate, $request) {
             $query = $query->with([
                 'attendancesSummary' => function ($query) use ($startDate, $endDate, $request) {
                     $query->whereBetween('date', [$startDate, $endDate]);
@@ -290,7 +370,42 @@ use Illuminate\Http\Request;
         });
 
 
-        $user = $users->paginate(self::$perPage)->onEachSide(1);
-        return self::formattedData($user, $startDate, $endDate);
+        $users = $query->get();
+        $weeklyLatenessMap = [];
+
+        foreach ($users as $user) {
+            $attendancesGroupedByWeek = collect($user->attendancesSummary)
+                ->groupBy(function ($attendance) {
+                    return Carbon::parse($attendance->date)->endOfWeek()->format('Y-m-d');
+                });
+
+            foreach ($attendancesGroupedByWeek as $weekEndDate => $attendances) {
+                $weekLatenessTotal = 0;
+
+                foreach ($attendances as $attendance) {
+                    $workTime = $attendance->workTime;
+                    if (!$workTime || !$attendance->clock_in) continue;
+
+                    $expectedCheckIn = Carbon::parse("{$attendance->date} {$workTime->clock_in}");
+                    $actualCheckIn = Carbon::parse($attendance->clock_in);
+
+                    if ($workTime->name === "Malam") {
+                        $expectedCheckIn->addDay();
+                    }
+
+                    if ($actualCheckIn->greaterThan($expectedCheckIn)) {
+                        $lateness = $expectedCheckIn->diffInSeconds($actualCheckIn);
+                        $weekLatenessTotal += $lateness;
+                    }
+                }
+
+                if ($weekLatenessTotal > 900) {
+                    $weeklyLatenessMap[$user->id][$weekEndDate] = $weekLatenessTotal / 60;
+                }
+            }
+        }
+
+
+        return self::formattedData($weeklyLatenessMap, $query->paginate(self::$perPage)->onEachSide(1), $startDate, $endDate);
     }
 }
