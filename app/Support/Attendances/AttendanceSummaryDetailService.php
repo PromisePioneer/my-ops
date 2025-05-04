@@ -52,8 +52,8 @@ class AttendanceSummaryDetailService
         $employeeSchedule = EmployeeSchedule::where('employee_id', $empId)
             ->whereBetween('start_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])->orderBy('start_date', 'asc')->get()->keyBy('start_date');
 
-
         $user = User::where('absent_id', $empId)->first();
+        $weekHoliday = WeekHoliday::where('user_id', $user->id)->first();
         $period = CarbonPeriod::create($startDate, $endDate);
         $getLeaves = $this->getLeaves($user, $startDate, $endDate);
         $getSick = $this->getSick($user, $startDate, $endDate);
@@ -115,9 +115,11 @@ class AttendanceSummaryDetailService
                         $lateness = $newExpectedCheckIn ?
                             $newExpectedCheckIn->diffInSeconds($actualCheckIn) :
                             $expectedCheckIn->diffInSeconds($actualCheckIn);
+                            if($day['employeeSchedule']?->status !== 'L' || $weekHoliday->day !== Carbon::parse($day['attendancesDate'])->dayName){
+                                $weekLatenessDetails[$day['attendancesDate']] = $lateness;
+                                $weekLatenessTotal += $lateness;
+                            }
 
-                        $weekLatenessDetails[$day['attendancesDate']] = $lateness;
-                        $weekLatenessTotal += $lateness;
                     }
                 }
             }
@@ -433,8 +435,6 @@ class AttendanceSummaryDetailService
                         $lateness = $newExpectedCheckIn ?
                             $newExpectedCheckIn->diffInSeconds($actualCheckIn) :
                             $expectedCheckIn->diffInSeconds($actualCheckIn);
-
-                        // Store all lateness values for this week, regardless of threshold
                         $weekLatenessDetails[$day['attendancesDate']] = $lateness;
                         $weekLatenessTotal += $lateness;
                     }

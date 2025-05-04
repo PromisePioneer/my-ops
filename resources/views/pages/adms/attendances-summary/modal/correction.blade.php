@@ -33,14 +33,14 @@
                     <div class="mb-10">
                         <label for="name" class="required form-label">Clock In</label>
                         <input type="datetime-local" id="clock_in" name="clock_in"
-                               class="form-control form-control-solid"
+                               class="form-control form-control-solid" step="1"
                                placeholder="Nama Cabang" :value="correctionVal?.clock_in"/>
                     </div>
 
                     <div class="mb-10">
                         <label for="name" class="required form-label">Clock Out</label>
                         <input type="datetime-local" id="clock_out" name="clock_out"
-                               class="form-control form-control-solid"
+                               class="form-control form-control-solid" step="1"
                                placeholder="Nama Cabang" :value="correctionVal?.clock_out"/>
                     </div>
                 </div>
