@@ -150,8 +150,6 @@ class IclockService
                 ->where('employee_id', $employeeId)
                 ->whereDate('end_date', $dateTime->format('Y-m-d'))
                 ->first();
-
-
         }
 
 
@@ -180,9 +178,21 @@ class IclockService
 
         $user = User::with('branch')->where('absent_id', $employeeId)->first();
 
+        if ($user) {
+            $ifBranchDuri = $user?->branch_id === 2 ? WorkTime::find(14) : null;
+            // $isCleaningServicePku = $user->hasRole('Cleaning Service') ? WorkTime::find(15)?->id : null;
+            $isEngineer = $user->hasAnyRole([
+                'Engineer',
+                'Senior Engineer',
+                'KU Engineer',
+                'Quality Control Staff',
+                'Warehouse Security'
+            ]) ? WorkTime::find(12) : null;
+        }
 
-        return $userShift ?? WorkTime::find(11);
+        return $userShift ?? $ifBranchDuri ?? $isEngineer ?? WorkTime::find(11);
     }
+
 
     public function processAttendanceRecord(array $attendanceData, $shift): void
     {
@@ -216,7 +226,8 @@ class IclockService
         } else {
             Log::warning('Data dilewati karena tidak masuk tanggal', [
                 'timestamp' => $date,
-                'employee_id' => $attendanceData['employee_id'],
+                'employee_id' => $attendanceData,
+                'shift' => $shift
             ]);
         }
     }
@@ -228,16 +239,16 @@ class IclockService
 
         if ($user) {
             $ifBranchDuri = $user?->branch_id === 2 ? WorkTime::find(14)?->id : null;
-            $isCleaningServicePku = $user->hasRole('Cleaning Service') ? WorkTime::find(15)->id : null;
+            // $isCleaningServicePku = $user->hasRole('Cleaning Service') ? WorkTime::find(15)?->id : null;
             $isEngineer = $user->hasAnyRole([
                 'Engineer',
                 'Senior Engineer',
                 'KU Engineer',
                 'Quality Control Staff',
                 'Warehouse Security'
-            ]) ? WorkTime::find(12)->id : null;
+            ]) ? WorkTime::find(12)?->id : null;
         }
-        $shift = $shift->workTime?->id ?? $ifBranchDuri ?? $isCleaningServicePku ?? $isEngineer ?? WorkTime::find(11)->id;
+        $shift = $shift->workTime?->id ?? $ifBranchDuri ?? $isEngineer ?? WorkTime::find(11)->id;
 
         $date = Carbon::parse($date);
 
