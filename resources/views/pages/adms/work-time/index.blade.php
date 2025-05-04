@@ -54,12 +54,12 @@
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
                                     </div>
                                 </th>
+                                <th class="min-w-125px">Cabang</th>
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Jam Kerja</th>
                                 <th class="min-w-125px">Batas Checkin</th>
                                 <th class="min-w-125px">Batas Checkout</th>
                                 <th class="min-w-125px">Jam Kerja Default</th>
-                                <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class=" fw-bold text-center">
                             <template x-if="isLoading">
@@ -89,6 +89,7 @@
                                                    :id="'checkbox-' + shift.id"/>
                                         </div>
                                     </td>
+                                    <td x-text="shift.branch_name ?? 'Pusat'"></td>
                                     <td>
                                         <a href="#" x-text="shift.name"></a>
                                     </td>
@@ -99,12 +100,6 @@
                                         <input type="checkbox" class="form-check-input"
                                                :checked="shift.is_default === 1"
                                                @click="setGlobalDefaultWorkTime(shift.id)">
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-work-time" @click="edit(shift.id)">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
                                     </td>
                                 </tr>
                             </template>
@@ -259,11 +254,6 @@
                     const resp = await axios.get(`/adms/work-time/${id}`);
                     this.editVal = resp.data;
                 },
-                async assignUserShift(id) {
-                    this.shiftId = id;
-                    await this.getUserData();
-                    await this.selectedUserShift();
-                },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
@@ -276,21 +266,18 @@
                         }
                     });
                 },
-
-                async selectedUserShift() {
-                    const selectedUserShift = $('#selectedUserShift');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/adms/work-time/user/selected/${this.shiftId}`,
-                    });
-
-                    response.forEach(user => {
-                        const option = new Option(user.name, user.id, true, true);
-                        selectedUserShift.append(option).trigger('change').trigger({
-                            type: 'select2:select',
-                            params: {results: user}
-                        });
+                async getMainBranches() {
+                    $(".main-branches-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Cabang',
+                        ajax: {
+                            url: '/select2/main-branches-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
                     });
                 },
             }

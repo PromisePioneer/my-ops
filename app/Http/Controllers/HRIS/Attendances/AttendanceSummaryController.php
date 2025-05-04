@@ -33,6 +33,9 @@ use Illuminate\View\View;
         $this->branch = new Branch();
         $this->role = new Role();
         $this->fpDevice = new FpDevice();
+        $this->financialClosePeriodService = new FinancialClosePeriodService();
+        $this->startDate = $this->financialClosePeriodService->startDate();
+        $this->endDate = $this->financialClosePeriodService->endDate();
     }
 
 
@@ -42,7 +45,9 @@ use Illuminate\View\View;
     public function index(): View
     {
         $this->authorize('view', AttendancesSummary::class);
-        return view('pages.adms.attendances-summary.index');
+        $startDate = Carbon::parse($this->startDate)->format('d/m/Y');
+        $endDate = Carbon::parse($this->endDate)->format('d/m/Y');
+        return view('pages.adms.attendances-summary.index', compact('startDate', 'endDate'));
     }
 
 

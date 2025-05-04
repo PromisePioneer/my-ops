@@ -113,6 +113,13 @@
                                                 <td class="text-center" x-text="userAttendance.work_time"></td>
                                             </tr>
                                         </template>
+                                        <template x-if="userAttendance.weekly_lateness !== null">
+                                            <tr class="bg-black text-center">
+                                                <td class="text-center" style="color: red">TERLAMBAT MINGGUAN</td>
+                                                <td class="text-center" style="color: red" colspan="5"
+                                                    x-text="`${userAttendance.weekly_lateness} Menit`"></td>
+                                            </tr>
+                                        </template>
                                         </tbody>
                                     </template>
                                 </table>
@@ -133,6 +140,7 @@
 @push('script')
     <script>
         $('.date').flatpickr();
+
         function userAttendanceRecordsData() {
             return {
                 isLoading: false,

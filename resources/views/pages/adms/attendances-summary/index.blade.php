@@ -1,54 +1,11 @@
 @extends('layouts.template')
 @section('content')
     <div x-data="attendancesSummary()">
-        <div class="card shadow-sm mb-4">
-            <div class="card-header">
-                <h3 class="card-title">Filter</h3>
-            </div>
-            <div class="card-body">
-                <div class="row mb-4 justify-content-center">
-                    <div class="col-lg-4">
-                        @can('Filter Data Riwayat Absensi Berdasarkan Cabang')
-                            <label for="name" class="form-label">Cabang</label>
-                            <select class="form-select form-select-solid form-select-sm main-branches-select2"
-                                    name="branch_id"
-                                    id="branch_id">
-                                <option></option>
-                            </select>
-                        @endcan
-                    </div>
-                    <div class="col-lg-4">
-                        <label for="name" class="form-label">Jabatan</label>
-                        <select class="form-select form-select-solid form-select-sm roles-select2" name="role_id"
-                                id="role_id"></select>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-lg-4">
-                        <label for="name" class="form-label">Tanggal Awal</label>
-                        <input type="date" x-model="startDates"
-                               class="form-control form-control-solid form-control-sm me-3 date"
-                               id="start_dates"
-                               name="start_date" placeholder="Tanggal awal">
-                    </div>
-                    <div class="col-lg-4">
-                        <label for="name" class="form-label">Tanggal Akhir</label>
-                        <input type="date" class="form-control form-control-solid form-control-sm me-3 date"
-                               id="end_dates" x-model="endDates"
-                               name="end_date" placeholder="Tanggal akhir">
-                    </div>
-                </div>
-                <div class="float-end mt-10">
-                    <button class="btn btn-light-primary btn-sm" @click="filter()">Filter</button>
-                </div>
-            </div>
-        </div>
-
-
+        @include('pages.adms.attendances-summary.drawer.filter')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
-                    <div class="d-flex align-items-center position-relative my-1">
+                    <div class="d-flex align-items-center position-relative">
                         <span class="svg-icon svg-icon-1 position-absolute ms-6">
                            <i class="bi bi-search"></i>
                         </span>
@@ -56,14 +13,9 @@
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
                 </div>
-                {{--                <div class="card-toolbar">--}}
-                {{--                    <div class="d-flex justify-content-end align-items-center" data-kt-user-table-toolbar="base">--}}
-                {{--                        <a href="{{ url('adms/attendances-summary/attendance-manual-requests') }}"--}}
-                {{--                           class="btn btn-light-info btn-sm">--}}
-                {{--                            Pengajuan Absensi (Manual)--}}
-                {{--                        </a>--}}
-                {{--                    </div>--}}
-                {{--                </div>--}}
+                <div class="card-toolbar">
+                    <button id="kt_drawer_example_basic_button" class="btn btn-info btn-sm">Filter</button>
+                </div>
             </div>
             <div class="card-body py-3">
                 <div class="py-5">
@@ -119,73 +71,64 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <div class="table-responsive">
-                                                <table class="table table-row-bordered">
-                                                    <tr class="bg-gray-100 text-center">
-                                                        <td class="min-w-125px">Terlambat (Menit)</td>
-                                                        <td class="min-w-125px">:</td>
-                                                        <td class="min-w-125px"
-                                                            x-text="`${attendance.total_minutes_late}`"></td>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <table class="table table-sm mb-0">
+                                                    <tr>
+                                                        <td>Terlambat (Menit)</td>
+                                                        <td>:</td>
+                                                        <td x-text="attendance.total_minutes_late"></td>
                                                     </tr>
-                                                    <tr class="bg-gray-100 text-center">
-                                                        <td class="min-w-125px">Total Hadir (Hari)</td>
-                                                        <td class="min-w-125px">:</td>
-                                                        <td class="min-w-125px"
-                                                            x-text="`${attendance.total_present}`"></td>
+                                                    <tr>
+                                                        <td>Total Hadir (Hari)</td>
+                                                        <td>:</td>
+                                                        <td x-text="attendance.total_present"></td>
                                                     </tr>
-                                                    <tr class="bg-gray-100 text-center">
-                                                        <td class="min-w-125px">Tdk Checkin</td>
-                                                        <td class="min-w-125px">:</td>
-                                                        <td class="min-w-125px"
-                                                            x-text="`${attendance.total_not_check_in}`"></td>
+                                                    <tr>
+                                                        <td>Tdk Checkin</td>
+                                                        <td>:</td>
+                                                        <td x-text="attendance.total_not_check_in"></td>
                                                     </tr>
-                                                    <tr class="bg-gray-100 text-center">
-                                                        <td class="min-w-125px">Tdk Checkout</td>
-                                                        <td class="min-w-125px">:</td>
-                                                        <td class="min-w-125px"
-                                                            x-text="`${attendance.total_not_check_out}`"></td>
+                                                    <tr>
+                                                        <td>Tdk Checkout</td>
+                                                        <td>:</td>
+                                                        <td x-text="attendance.total_not_check_out"></td>
                                                     </tr>
                                                 </table>
                                             </div>
-                                            <div class="table-responsive">
-                                                <table class="table table-row-bordered">
-                                                    <tr class="bg-gray-100 text-center">
-                                                        <td class="min-w-125px">Cuti</td>
-                                                        <td class="min-w-125px">:</td>
-                                                        <td class="min-w-125px"
-                                                            x-text="`${attendance.total_leaves}`"></td>
+                                            <div class="col-md-6 mb-2">
+                                                <table class="table table-sm text-center mb-0">
+                                                    <tr>
+                                                        <td>Cuti</td>
+                                                        <td>:</td>
+                                                        <td x-text="attendance.total_leaves"></td>
                                                     </tr>
-                                                    <tr class="bg-gray-100 text-center">
-                                                        <td class="min-w-125px">Izin</td>
-                                                        <td class="min-w-125px">:</td>
-                                                        <td class="min-w-125px"
-                                                            x-text="`${attendance.total_permission}`"></td>
+                                                    <tr>
+                                                        <td>Izin</td>
+                                                        <td>:</td>
+                                                        <td x-text="attendance.total_permission"></td>
                                                     </tr>
-                                                    <tr class="bg-gray-100 text-center">
-                                                        <td class="min-w-125px">Sakit</td>
-                                                        <td class="min-w-125px">:</td>
-                                                        <td class="min-w-125px"
-                                                            x-text="`${attendance.total_sick}`"></td>
+                                                    <tr>
+                                                        <td>Sakit</td>
+                                                        <td>:</td>
+                                                        <td x-text="attendance.total_sick"></td>
                                                     </tr>
-                                                    <tr class="bg-gray-100 text-center">
-                                                        <td class="min-w-125px">Cuti Penting</td>
-                                                        <td class="min-w-125px">:</td>
-                                                        <td class="min-w-125px"
-                                                            x-text="`${attendance.total_important_leaves}`"></td>
+                                                    <tr>
+                                                        <td>Cuti Penting</td>
+                                                        <td>:</td>
+                                                        <td x-text="attendance.total_important_leaves"></td>
                                                     </tr>
-                                                    <tr class="bg-gray-100 text-center">
-                                                        <td class="min-w-125px">Alfa</td>
-                                                        <td class="min-w-125px">:</td>
-                                                        <td class="min-w-125px"
-                                                            x-text="`${attendance.total_absent}`"></td>
+                                                    <tr>
+                                                        <td>Alfa</td>
+                                                        <td>:</td>
+                                                        <td x-text="attendance.total_absent"></td>
                                                     </tr>
                                                 </table>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <a :href="`/adms/attendances-summary/detail/${attendance.id}/${startDates}/${endDates}`"
+                                        <a :href="`/adms/attendances-summary/detail/${attendance.id}/${formatDate(startDate)}/${formatDate(endDate)}`"
                                            class="btn btn-light-primary btn-sm">
                                             <i class="fa-solid fa-circle-info"></i>
                                         </a>
@@ -213,22 +156,30 @@
 @push('script')
     <script>
 
-        $('.date').flatpickr();
+        const startDate = "{{ $startDate }}";
+        const endDate = "{{ $endDate }}";
+
+
+        $(document).ready(function () {
+            flatpickr(".date-picker", {
+                mode: "range",
+                dateFormat: "d/m/Y",
+                defaultDate: [`${startDate}`, `${endDate}`],
+            });
+        });
 
         function attendancesSummary() {
             return {
-                startDates: null,
-                endDates: null,
                 buttonLoading: false,
                 isLoading: false,
                 attendanceSummary: null,
                 startIndex: null,
                 search: '',
                 months: [],
+                date: document.getElementById('date')?.value ?? '',
                 attendanceSummaryDetail: [],
                 async init() {
                     await this.getAttendanceSummary();
-                    await this.getMonths();
                     await this.getMainBranches();
                     await this.getRoles();
                     await this.getDepartmentData();
@@ -261,6 +212,7 @@
                         }
                     });
                 },
+
                 async getRoles() {
                     $(".roles-select2").select2({
                         allowClear: true,
@@ -303,20 +255,16 @@
                     }
                 },
                 async filter() {
-                    const startDate = document.getElementById('start_dates')?.value ?? '';
-                    const endDate = document.getElementById('end_dates')?.value ?? '';
-                    const branch_id = $('#branch_id').val();
-                    const role_id = $('#role_id').val()
                     try {
                         this.attendanceSummary = [];
                         this.isLoading = true;
                         const resp = await axios.get(`/adms/attendances-summary/filter`, {
                             params: {
                                 search: this.search,
-                                start_date: startDate,
-                                end_date: endDate,
-                                branch_id: branch_id,
-                                role_id: role_id
+                                start_date: this.formatDate(this.date.split('to').map(part => part.trim())[0]),
+                                end_date: this.formatDate(this.date.split('to').map(part => part.trim())[1]),
+                                branch_id: $('#branch_id').val(),
+                                role_id: $('#role_id').val()
                             }
                         });
                         this.attendanceSummary = resp.data;
@@ -325,22 +273,6 @@
                     } finally {
                         this.isLoading = false;
                     }
-                },
-                getMonths() {
-                    this.months = [
-                        {"value": 1, "name": "Januari"},
-                        {"value": 2, "name": "Februari"},
-                        {"value": 3, "name": "Maret"},
-                        {"value": 4, "name": "April"},
-                        {"value": 5, "name": "Mei"},
-                        {"value": 6, "name": "Juni"},
-                        {"value": 7, "name": "Juli"},
-                        {"value": 8, "name": "Agustus"},
-                        {"value": 9, "name": "September"},
-                        {"value": 10, "name": "Oktober"},
-                        {"value": 11, "name": "November"},
-                        {"value": 12, "name": "Desember"}
-                    ]
                 },
                 async getAttendanceSummary() {
                     this.isLoading = true;
@@ -350,57 +282,6 @@
                         this.startIndex = this.attendanceSummary.from;
                     } catch (e) {
                         console.log(e)
-                    } finally {
-                        this.isLoading = false;
-                    }
-                },
-                async additionalFilter() {
-                    this.isLoading = true;
-                    const startDate = document.getElementById('start_dates')?.value ?? '';
-                    const endDate = document.getElementById('end_dates')?.value ?? '';
-                    const branch_id = $('#branch_id').val();
-                    const role_id = $('#role_id').val()
-                    try {
-                        const resp = await axios.get('/adms/attendances-summary/additional-filter', {
-                            params: {
-                                start_date: startDate,
-                                end_date: endDate,
-                                department_id: department,
-                                branch_id: branch_id,
-                                role_id: role_id,
-                            }
-                        })
-
-                        this.attendanceSummary = resp.data
-                    } catch (e) {
-                        console.log(e);
-                    } finally {
-                        this.isLoading = false;
-                    }
-                },
-                async filterDate() {
-                    this.isLoading = true;
-                    const startDate = document.getElementById('start_dates');
-                    const endDate = document.getElementById('end_dates');
-                    const department = $('#department_id').val();
-                    const branch_id = $('#branch_id').val();
-                    const role_id = $('#role_id').val();
-                    try {
-                        const resp = await axios.get('/adms/attendances-summary/filter-date', {
-                            params: {
-                                search: this.search,
-                                start_date: startDate,
-                                end_date: endDate,
-                                department: department,
-                                branch_id: branch_id,
-                                role: role_id,
-                            }
-                        });
-                        this.attendanceSummary = resp.data;
-                        this.startIndex = this.attendanceSummary.from;
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
                     } finally {
                         this.isLoading = false;
                     }
@@ -417,9 +298,8 @@
                         const response = await axios.get('/adms/attendances-summary/search', {
                             params: {
                                 search: this.search,
-                                start_date: startDate,
-                                end_date: endDate,
-                                department: department,
+                                start_date: this.startDate,
+                                end_date: this.endDate,
                                 branch_id: branch_id,
                                 role_id: role_id
                             },
@@ -431,11 +311,6 @@
                     } finally {
                         this.isLoading = false;
                     }
-                },
-                formatDate(val) {
-                    const [month, year] = val.split('-');
-                    const date = new Date(year, month - 1, 1);
-                    return `${this.getMonthName(date.getMonth())} ${date.getFullYear()}`;
                 },
                 getMonthName(monthIndex) {
                     const monthNames = [
@@ -465,7 +340,17 @@
                         lightbox.open();
                     }
                 },
+                formatDate(dateStr) {
+                    // Check if dateStr is null or undefined, and return a fallback if it is
+                    if (!dateStr) {
+                        return '';
+                    }
 
+                    // Split the date string into components
+                    const [day, month, year] = dateStr.split('/');
+                    // Return properly formatted date with backticks for template literal
+                    return `${year}-${month}-${day}`;
+                }
             }
         }
     </script>

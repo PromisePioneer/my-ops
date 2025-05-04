@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Master\Common\Branch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Scout\Searchable;
 
@@ -32,6 +34,11 @@ class WorkTime extends Model
         ];
     }
 
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
 
     public function employeeSchedules(): HasOne
     {

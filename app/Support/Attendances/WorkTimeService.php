@@ -14,7 +14,7 @@ class WorkTimeService
 
     public function data(): LengthAwarePaginator
     {
-        $data = WorkTime::paginate(self::$perPage);
+        $data = WorkTime::with('branch')->paginate(self::$perPage);
         return self::formattedData($data);
     }
 
@@ -32,6 +32,7 @@ class WorkTimeService
         $data = $workTime->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
+                'branch_name' => $item->branch,
                 'name' => $item->name,
                 'clock_in' => $item->clock_in,
                 'clock_out' => $item->clock_out,
