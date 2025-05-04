@@ -128,8 +128,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <a :href="`/adms/attendances-summary/detail/${attendance.id}/${formatDate(startDate)}/${formatDate(endDate)}`"
-                                           class="btn btn-light-primary btn-sm">
+                                        <a :href="getDetailUrl(attendance.id)" class="btn btn-light-primary btn-sm">
                                             <i class="fa-solid fa-circle-info"></i>
                                         </a>
                                     </td>
@@ -228,11 +227,6 @@
                     });
                 },
                 async paginationEndPointForAttendanceSummary(url) {
-                    const startDate = document.getElementById('start_dates')?.value ?? '';
-                    const endDate = document.getElementById('end_dates')?.value ?? '';
-                    const branchId = $('#branch_id').val();
-                    const roleId = $('#role_id').val();
-
                     try {
                         if (url) {
                             this.attendanceSummary = [];
@@ -240,10 +234,10 @@
                             const resp = await axios.get(`${url}`, {
                                 params: {
                                     search: this.search,
-                                    start_date: startDate,
-                                    end_date: endDate,
-                                    branch_id: branchId,
-                                    role_id: roleId
+                                    start_date: this.formatDate(this.date.split('to').map(part => part.trim())[0]),
+                                    end_date: this.formatDate(this.date.split('to').map(part => part.trim())[1]),
+                                    branch_id: $('#branch_id').val(),
+                                    role_id: $('#role_id').val()
                                 }
                             });
                             this.attendanceSummary = resp.data
@@ -287,21 +281,16 @@
                     }
                 },
                 async searchData() {
-                    const startDate = document.getElementById('start_dates')?.value;
-                    const endDate = document.getElementById('end_dates')?.value;
-                    const department = $('#department_id').val();
-                    const branch_id = $('#branch_id').val();
-                    const role_id = $('#role_id').val();
                     try {
                         this.attendanceSummary = [];
                         this.isLoading = true;
                         const response = await axios.get('/adms/attendances-summary/search', {
                             params: {
                                 search: this.search,
-                                start_date: this.startDate,
-                                end_date: this.endDate,
-                                branch_id: branch_id,
-                                role_id: role_id
+                                start_date: this.formatDate(this.date.split('to').map(part => part.trim())[0]),
+                                end_date: this.formatDate(this.date.split('to').map(part => part.trim())[1]),
+                                branch_id: $('#branch_id').val(),
+                                role_id: $('#role_id').val()
                             },
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -311,13 +300,6 @@
                     } finally {
                         this.isLoading = false;
                     }
-                },
-                getMonthName(monthIndex) {
-                    const monthNames = [
-                        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-                        "Juli", "Agustus", "September", "Oktober", "November", "December"
-                    ];
-                    return monthNames[monthIndex];
                 },
                 getImageURL(imagePath) {
                     if (imagePath === null) {
@@ -341,15 +323,18 @@
                     }
                 },
                 formatDate(dateStr) {
-                    // Check if dateStr is null or undefined, and return a fallback if it is
                     if (!dateStr) {
                         return '';
                     }
-
-                    // Split the date string into components
                     const [day, month, year] = dateStr.split('/');
-                    // Return properly formatted date with backticks for template literal
                     return `${year}-${month}-${day}`;
+                },
+                getDetailUrl(attendanceId) {
+                    const startDate = this.date.split('to').map(part => part.trim())[0];
+                    const endDate = this.date.split('to').map(part => part.trim())[1];
+
+                    const string = `/adms/attendances-summary/detail/${attendanceId}/${this.formatDate(startDate)}/${this.formatDate(endDate)}`
+                    return string.trim();
                 }
             }
         }
