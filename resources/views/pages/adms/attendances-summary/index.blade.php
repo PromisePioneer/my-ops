@@ -94,6 +94,11 @@
                                                         <td>:</td>
                                                         <td x-text="attendance.total_not_check_out"></td>
                                                     </tr>
+                                                    <tr>
+                                                        <td>Alfa</td>
+                                                        <td>:</td>
+                                                        <td x-text="attendance.total_absent"></td>
+                                                    </tr>
                                                 </table>
                                             </div>
                                             <div class="col-md-6 mb-2">
@@ -119,9 +124,9 @@
                                                         <td x-text="attendance.total_important_leaves"></td>
                                                     </tr>
                                                     <tr>
-                                                        <td>Alfa</td>
+                                                        <td>Lembur</td>
                                                         <td>:</td>
-                                                        <td x-text="attendance.total_absent"></td>
+                                                        <td x-text="attendance.total_overtime"></td>
                                                     </tr>
                                                 </table>
                                             </div>

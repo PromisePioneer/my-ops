@@ -59,6 +59,7 @@ class AttendanceSummaryDetailService
         $getSick = $this->getSick($user, $startDate, $endDate);
         $getPermission = $this->getPermission($user, $startDate, $endDate);
         $getImportantLeaves = $this->getImportantLeaves($user, $startDate, $endDate);
+        $getOvertimes = $this->getOvertimes($user, $startDate, $endDate);
 
 
         $dates = [];
@@ -68,6 +69,7 @@ class AttendanceSummaryDetailService
             $sickDetails = $getSick[$formattedDate] ?? null;
             $permissionDetails = $getPermission[$formattedDate] ?? null;
             $importantLeavesDetails = $getImportantLeaves[$formattedDate] ?? null;
+            $overtimesDetails = $getOvertimes[$formattedDate] ?? null;
             $dates[$formattedDate] = collect([
                 'attendancesDate' => $formattedDate,
                 'attendanceData' => $attendancesData->get($formattedDate),
@@ -75,11 +77,12 @@ class AttendanceSummaryDetailService
                 'leaves' => $leaveDetails,
                 'sick' => $sickDetails,
                 'permission' => $permissionDetails,
-                'importantLeaves' => $importantLeavesDetails
+                'importantLeaves' => $importantLeavesDetails,
+                'overtimes' => $overtimesDetails,
             ]);
         }
 
-        $weeklyAttendances = collect($dates)->groupBy(function ($item) use($startDate) {
+        $weeklyAttendances = collect($dates)->groupBy(function ($item) use ($startDate) {
             $date = Carbon::parse($item['attendancesDate']);
             $diffInDays = $startDate->diffInDays($date);
             $groupNumber = floor($diffInDays / 7);
@@ -87,14 +90,11 @@ class AttendanceSummaryDetailService
         });
 
 
-
         $weekLatenessMap = [];
-        // Calculate weekly lateness for each week
         foreach ($weeklyAttendances as $weekEndDate => $weekDays) {
             $weekLatenessTotal = 0;
             $weekLatenessDetails = [];
 
-            // First collect all lateness values for the week
             foreach ($weekDays as $day) {
                 $userWorktime = null;
                 if (isset($day['attendanceData'])) {
@@ -145,7 +145,7 @@ class AttendanceSummaryDetailService
             $attendanceDate = Carbon::parse($item['attendancesDate']);
             $diffInDays = $startDate->diffInDays($attendanceDate);
             $groupNumber = floor($diffInDays / 7);
-            $weekEndDate =  $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
+            $weekEndDate = $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
 
 
             $totalWeeklyLateness = $weeklyLatenessMap[$weekEndDate] ?? 0;
@@ -162,7 +162,8 @@ class AttendanceSummaryDetailService
                 'leaves' => $item['leaves'] ?? null,
                 'sick' => $item['sick'] ?? null,
                 'permission' => $item['permission'] ?? null,
-                'important_leaves' => $item['importantLeaves'] ?? null
+                'important_leaves' => $item['importantLeaves'] ?? null,
+                'overtimes' => $item['overtimes'] ?? null
             ];
         });
     }
@@ -376,6 +377,7 @@ class AttendanceSummaryDetailService
         $getSick = $this->getSick($user, $startDate, $endDate);
         $getPermission = $this->getPermission($user, $startDate, $endDate);
         $getImportantLeaves = $this->getImportantLeaves($user, $startDate, $endDate);
+        $getOvertimes = $this->getOvertimes($user, $startDate, $endDate);
 
 
         $dates = [];
@@ -386,6 +388,7 @@ class AttendanceSummaryDetailService
             $sickDetails = $getSick[$formattedDate] ?? null;
             $permissionDetails = $getPermission[$formattedDate] ?? null;
             $importantLeavesDetails = $getImportantLeaves[$formattedDate] ?? null;
+            $overtimesDetails = $getOvertimes[$formattedDate] ?? null;
             $dates[$formattedDate] = collect([
                 'attendancesDate' => $formattedDate,
                 'attendanceData' => $attendancesData->get($formattedDate),
@@ -394,11 +397,12 @@ class AttendanceSummaryDetailService
                 'sick' => $sickDetails,
                 'permission' => $permissionDetails,
                 'importantLeaves' => $importantLeavesDetails,
+                'overtimes' => $overtimesDetails,
             ]);
         }
 
 
-        $weeklyAttendances = collect($dates)->groupBy(function ($item) use($startDate) {
+        $weeklyAttendances = collect($dates)->groupBy(function ($item) use ($startDate) {
             $date = Carbon::parse($item['attendancesDate']);
             $diffInDays = $startDate->diffInDays($date);
             $groupNumber = floor($diffInDays / 7);
@@ -450,7 +454,39 @@ class AttendanceSummaryDetailService
         $weeklyLateness = $weekLatenessMap;
 
 
-        return self::formattedData(collect($dates),$weeklyLateness, $user->absent_id, $startDate);
+        return self::formattedData(collect($dates), $weeklyLateness, $user->absent_id, $startDate);
+    }
+
+    private function getOvertimes($user, mixed $startDate, mixed $endDate): array
+    {
+        $leaveAndPermission = LeaveAndPermission::where('user_id', $user->id)
+            ->where('leaves_status', 'Lembur')
+            ->where('confirmation_status', 'Diterima')
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('start_date', [$startDate, $endDate])
+                    ->orWhereBetween('end_date', [$startDate, $endDate]);
+            })->get();
+
+
+        $leavePeriods = [];
+
+        foreach ($leaveAndPermission as $dates) {
+            $leavePeriods = array_merge(
+                $leavePeriods,
+                CarbonPeriod::create($dates->start_date, $dates->end_date)->toArray()
+            );
+        }
+
+        $leaves = [];
+        foreach ($leavePeriods as $date) {
+            $formattedDate = Carbon::parse($date)->format('Y-m-d');
+            $leaves[$formattedDate] = collect([
+                'leaves_date' => $formattedDate,
+                'status' => 'Lembur',
+            ]);
+        }
+
+        return $leaves;
     }
 
 }

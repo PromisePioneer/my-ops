@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('leaves_and_permissions', function (Blueprint $table) {
-            $table->enum('leaves_status', ['Sakit', 'Cuti', 'Izin', 'Cuti Penting'])->change();
+            $table->enum('leaves_status', ['Sakit', 'Cuti', 'Izin', 'Cuti Penting', 'Lembur'])->change();
             $table->enum('important_leaves', ['Menikah', 'Menikahkan Anak', 'Mengkhitankan Anak', 'Membaptis Anak', 'Istri Melahirkan', 'Anggota Keluarga Meninggal Dunia', 'Anggota Keluarga Dalam Satu Rumah Meninggal Dunia'])->after('leaves_status')->nullable();
             $table->text('reason')->nullable()->change();
         });

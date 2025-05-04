@@ -29,6 +29,7 @@
                             <option value="Cuti Penting" :selected="editVal?.leaves_status === 'Cuti Penting'">Cuti
                                 Penting
                             </option>
+                            <option value="Lembur" :selected="editVal?.leaves_status === 'Lembur'">Lembur</option>
                         </select>
                     </div>
                     <div class="mb-10">

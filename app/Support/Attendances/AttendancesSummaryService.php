@@ -147,9 +147,8 @@ use Illuminate\Http\Request;
             ->groupBy('employee_id');
 
         $periods = CarbonPeriod::create($startDate, $endDate)->toArray();
-        $totalWorkDays = count($periods);
 
-        $data = $user->getCollection()->map(function ($user) use ($weeklyLatenessMap, $startDate, $endDate, $weekHolidays, $employeeSchedules, $periods, $totalWorkDays) {
+        $data = $user->getCollection()->map(function ($user) use ($weeklyLatenessMap, $startDate, $endDate, $weekHolidays, $employeeSchedules, $periods) {
 
 
             $weeklyLate = $weeklyLatenessMap[$user->id] ?? collect([]);
@@ -165,6 +164,7 @@ use Illuminate\Http\Request;
             $totalSick = $this->calculateLeaveDays($user, $startDate, $endDate, 'Sakit');
             $totalLeaves = $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti');
             $totalPermission = $this->calculateLeaveDays($user, $startDate, $endDate, 'Izin');
+            $totalOvertime = $this->calculateOvertime($user, $startDate, $endDate, 'Lembur');
             $totalImportantLeaves = $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti Penting');
             $totalNotCheckIn = $user->attendancesSummary->whereNull('clock_in')->count();
             $totalNotCheckOut = $user->attendancesSummary
@@ -202,33 +202,31 @@ use Illuminate\Http\Request;
 
 
             $totalPeriodOfWork = collect($periods)
-            ->reject(function ($period) use ($weekHoliday, $employeeHolidayDates) {
-                if (in_array($period->format('Y-m-d'), $employeeHolidayDates)) {
-                    return true;
-                } else {
-                    return $period?->dayName === $weekHoliday?->day;
-                }
-            })->reject(function ($period) use ($leaveDates, $leavePeriods) {
-                return in_array($period->format('Y-m-d'), $leaveDates);
-            })->count();
-
+                ->reject(function ($period) use ($weekHoliday, $employeeHolidayDates) {
+                    if (in_array($period->format('Y-m-d'), $employeeHolidayDates)) {
+                        return true;
+                    } else {
+                        return $period?->dayName === $weekHoliday?->day;
+                    }
+                })->reject(function ($period) use ($leaveDates, $leavePeriods) {
+                    return in_array($period->format('Y-m-d'), $leaveDates);
+                })->count();
 
 
             $attendedDates = $user->attendancesSummary->pluck('date')->toArray();
             $totalAbsent = collect($periods)
-                    ->reject(function ($period) {
-                    // Jangan hitung hari di masa depan
+                ->reject(function ($period) {
                     return $period->greaterThanOrEqualTo(Carbon::today());
-                    })->reject(function ($period) use ($leaveDates, $leavePeriods) {
-                        return in_array($period->format('Y-m-d'), $leaveDates);
-                    })->reject(function ($period) use ($attendedDates) {
-                        return in_array($period->format('Y-m-d'), $attendedDates);
-                    })->reject(function ($period) use ($employeeHolidayDates, $weekHoliday) {
-                        if (in_array($period->format('Y-m-d'), $employeeHolidayDates)) {
-                            return true;
-                        }
-                        return $period?->dayName === $weekHoliday?->day;
-                    })->count();
+                })->reject(function ($period) use ($leaveDates, $leavePeriods) {
+                    return in_array($period->format('Y-m-d'), $leaveDates);
+                })->reject(function ($period) use ($attendedDates) {
+                    return in_array($period->format('Y-m-d'), $attendedDates);
+                })->reject(function ($period) use ($employeeHolidayDates, $weekHoliday) {
+                    if (in_array($period->format('Y-m-d'), $employeeHolidayDates)) {
+                        return true;
+                    }
+                    return $period?->dayName === $weekHoliday?->day;
+                })->count();
 
             return [
                 'id' => $user->id,
@@ -245,6 +243,7 @@ use Illuminate\Http\Request;
                 'total_permission' => $totalPermission,
                 'total_absent' => $totalAbsent,
                 'total_important_leaves' => $totalImportantLeaves,
+                'total_overtime' => $totalOvertime,
             ];
         });
 
@@ -319,7 +318,7 @@ use Illuminate\Http\Request;
 
         foreach ($users as $user) {
             $attendancesGroupedByWeek = collect($user->attendancesSummary)
-                ->groupBy(function ($item) use($startDate) {
+                ->groupBy(function ($item) use ($startDate) {
                     $date = Carbon::parse($item['attendancesDate']);
                     $diffInDays = $startDate->diffInDays($date);
                     $groupNumber = floor($diffInDays / 7);
@@ -418,5 +417,26 @@ use Illuminate\Http\Request;
 
 
         return self::formattedData($weeklyLatenessMap, $query->paginate(self::$perPage)->onEachSide(1), $startDate, $endDate);
+    }
+
+    private function calculateOvertime($user, $startDate, $endDate, string $type)
+    {
+        $periodStart = Carbon::parse($startDate);
+        $periodEnd = Carbon::parse($endDate);
+        $totalDays = 0;
+
+        foreach ($user->leaveAndPermissions->where('leaves_status', $type)->where('confirmation_status', 'Diterima') as $leave) {
+            $leaveStart = Carbon::parse($leave->start_date);
+            $leaveEnd = Carbon::parse($leave->end_date);
+
+            $overlapStart = $leaveStart->max($periodStart);
+            $overlapEnd = $leaveEnd->min($periodEnd);
+
+            if ($overlapStart->gt($overlapEnd)) continue;
+
+            $totalDays += $overlapStart->diffInDays($overlapEnd) + 1;
+        }
+
+        return $totalDays;
     }
 }
