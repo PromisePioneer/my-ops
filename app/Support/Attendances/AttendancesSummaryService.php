@@ -166,7 +166,6 @@ use Illuminate\Http\Request;
             $totalPermission = $this->calculateLeaveDays($user, $startDate, $endDate, 'Izin');
             $totalOvertime = $this->calculateOvertime($user, $startDate, $endDate, 'Lembur');
             $totalImportantLeaves = $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti Penting');
-            $totalNotCheckIn = $user->attendancesSummary->whereNull('clock_in')->count();
             $totalNotCheckOut = $user->attendancesSummary
                 ->where('date', '!=', Carbon::today()->format('Y-m-d'))
                 ->whereNull('clock_out')->count();
@@ -214,6 +213,9 @@ use Illuminate\Http\Request;
 
 
             $attendedDates = $user->attendancesSummary->pluck('date')->toArray();
+            $notCheckIn = $user->attendancesSummary->where('clock_in', null)->pluck('date')->toArray();
+            $notCheckOut = $user->attendancesSummary->where('clock_out', null)->pluck('date')->toArray();
+
             $totalAbsent = collect($periods)
                 ->reject(function ($period) {
                     return $period->greaterThanOrEqualTo(Carbon::today());
@@ -226,6 +228,40 @@ use Illuminate\Http\Request;
                         return true;
                     }
                     return $period?->dayName === $weekHoliday?->day;
+                })->count();
+
+
+            $totalNotCheckIn = collect($periods)
+                ->reject(function ($period) {
+                    return $period->greaterThanOrEqualTo(Carbon::today());
+                })->reject(function ($period) use ($leaveDates, $leavePeriods) {
+                    return in_array($period->format('Y-m-d'), $leaveDates);
+                })
+                ->reject(function ($period) use ($employeeHolidayDates, $weekHoliday) {
+                    if (in_array($period->format('Y-m-d'), $employeeHolidayDates)) {
+                        return true;
+                    }
+                    return $period?->dayName === $weekHoliday?->day;
+                })
+                ->filter(function ($period) use ($user, $notCheckIn) {
+                    return in_array($period->format('Y-m-d'), $notCheckIn);
+                })->count();
+
+
+            $totalNotCheckOut = collect($periods)
+                ->reject(function ($period) {
+                    return $period->greaterThanOrEqualTo(Carbon::today());
+                })->reject(function ($period) use ($leaveDates, $leavePeriods) {
+                    return in_array($period->format('Y-m-d'), $leaveDates);
+                })
+                ->reject(function ($period) use ($employeeHolidayDates, $weekHoliday) {
+                    if (in_array($period->format('Y-m-d'), $employeeHolidayDates)) {
+                        return true;
+                    }
+                    return $period?->dayName === $weekHoliday?->day;
+                })
+                ->filter(function ($period) use ($user, $notCheckOut) {
+                    return in_array($period->format('Y-m-d'), $notCheckOut);
                 })->count();
 
             return [
@@ -291,7 +327,7 @@ use Illuminate\Http\Request;
 
             if ($actualCheckIn->greaterThan($checkInToUse)) {
                 $lateSeconds = $checkInToUse->diffInSeconds($actualCheckIn, false);
-                    $totalLate += $lateSeconds;
+                $totalLate += $lateSeconds;
             }
         }
         return $totalLate / 60;
@@ -380,12 +416,12 @@ use Illuminate\Http\Request;
         ], 'branch');
 
 
-        if(!empty($search)){
-          $query->where('name', 'like', '%' . $search . '%');
+        if (!empty($search)) {
+            $query->where('name', 'like', '%' . $search . '%');
         }
 
 
-        $realQuery =  AttendancesACLFilter::apply($query, $request);
+        $realQuery = AttendancesACLFilter::apply($query, $request);
 
 
         $users = $realQuery->get();
@@ -404,8 +440,8 @@ use Illuminate\Http\Request;
 
                     $user = User::where('absent_id', $attendance->employee_id)->first();
                     $employeeSchedule = EmployeeSchedule::where('employee_id', $user->absent_id)
-                    ->whereDate('start_date', $attendance->date)
-                    ->first();
+                        ->whereDate('start_date', $attendance->date)
+                        ->first();
                     $weekHoliday = WeekHoliday::where('user_id', $user->id)->first();
 
 
@@ -420,12 +456,10 @@ use Illuminate\Http\Request;
                     }
 
 
-
-
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                         $lateness = $expectedCheckIn->diffInSeconds($actualCheckIn);
-                        if($employeeSchedule?->status !== 'L' || $weekHoliday->day !== Carbon::parse($attendance->date)->dayName)
-                        $weekLatenessTotal += $lateness;
+                        if ($employeeSchedule?->status !== 'L' || $weekHoliday->day !== Carbon::parse($attendance->date)->dayName)
+                            $weekLatenessTotal += $lateness;
                     }
                 }
 

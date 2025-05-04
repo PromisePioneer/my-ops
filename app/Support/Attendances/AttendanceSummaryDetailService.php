@@ -418,7 +418,6 @@ class AttendanceSummaryDetailService
             $weekLatenessTotal = 0;
             $weekLatenessDetails = [];
 
-            // First collect all lateness values for the week
             foreach ($weekDays as $day) {
                 $userWorktime = null;
                 if (isset($day['attendanceData'])) {
@@ -445,7 +444,6 @@ class AttendanceSummaryDetailService
                 }
             }
 
-            // Then decide if we should count lateness for this week
             if ($weekLatenessTotal > 900) {
                 $weekLatenessMap[$weekEndDate] = number_format($weekLatenessTotal / 60);
             }

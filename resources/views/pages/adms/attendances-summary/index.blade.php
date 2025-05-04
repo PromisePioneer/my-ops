@@ -14,7 +14,13 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-                    <button id="kt_drawer_example_basic_button" class="btn btn-info btn-sm">Filter</button>
+                    <button id="kt_drawer_example_basic_button" class="btn btn-light-info btn-sm">
+                        <i class="ki-duotone ki-filter-square">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                        Filter
+                    </button>
                 </div>
             </div>
             <div class="card-body py-3">
