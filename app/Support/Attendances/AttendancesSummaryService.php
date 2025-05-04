@@ -291,9 +291,7 @@ use Illuminate\Http\Request;
 
             if ($actualCheckIn->greaterThan($checkInToUse)) {
                 $lateSeconds = $checkInToUse->diffInSeconds($actualCheckIn, false);
-                if ($lateSeconds > 160) {
                     $totalLate += $lateSeconds;
-                }
             }
         }
         return $totalLate / 60;
@@ -370,17 +368,27 @@ use Illuminate\Http\Request;
         $search = $request->input('search');
 
 
-        $query = User::search($search)->query(function ($query) use ($startDate, $endDate, $request) {
-            $query = $query->with([
-                'attendancesSummary' => function ($query) use ($startDate, $endDate, $request) {
-                    $query->whereBetween('date', [$startDate, $endDate]);
-                }
-            ], 'branch');
-            AttendancesACLFilter::apply($query, $request);
-        });
+        $query = User::with([
+            'attendancesSummary' => function ($query) use ($startDate, $endDate, $request) {
+                $query->whereBetween('date', [$startDate, $endDate]);
+            },
+            'employeeSchedules' => function ($query) {
+                $query->select('employee_id', 'start_date', 'status')
+                    ->where('start_date', '<=', $this->startDate)
+                    ->orderBy('start_date', 'asc');
+            },
+        ], 'branch');
 
 
-        $users = $query->get();
+        if(!empty($search)){
+          $query->where('name', 'like', '%' . $search . '%');
+        }
+
+
+        $realQuery =  AttendancesACLFilter::apply($query, $request);
+
+
+        $users = $realQuery->get();
         $weeklyLatenessMap = [];
 
         foreach ($users as $user) {
@@ -393,6 +401,14 @@ use Illuminate\Http\Request;
                 $weekLatenessTotal = 0;
 
                 foreach ($attendances as $attendance) {
+
+                    $user = User::where('absent_id', $attendance->employee_id)->first();
+                    $employeeSchedule = EmployeeSchedule::where('employee_id', $user->absent_id)
+                    ->whereDate('start_date', $attendance->date)
+                    ->first();
+                    $weekHoliday = WeekHoliday::where('user_id', $user->id)->first();
+
+
                     $workTime = $attendance->workTime;
                     if (!$workTime || !$attendance->clock_in) continue;
 
@@ -403,8 +419,12 @@ use Illuminate\Http\Request;
                         $expectedCheckIn->addDay();
                     }
 
+
+
+
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                         $lateness = $expectedCheckIn->diffInSeconds($actualCheckIn);
+                        if($employeeSchedule?->status !== 'L' || $weekHoliday->day !== Carbon::parse($attendance->date)->dayName)
                         $weekLatenessTotal += $lateness;
                     }
                 }
