@@ -175,7 +175,7 @@
                 startIndex: null,
                 search: '',
                 months: [],
-                date: document.getElementById('date')?.value ?? '',
+                date: document.getElementById('date')?.value,
                 attendanceSummaryDetail: [],
                 async init() {
                     await this.getAttendanceSummary();
@@ -330,11 +330,14 @@
                     return `${year}-${month}-${day}`;
                 },
                 getDetailUrl(attendanceId) {
-                    const startDate = this.date.split('to').map(part => part.trim())[0];
-                    const endDate = this.date.split('to').map(part => part.trim())[1];
+                    // Get the date value directly from the input element to ensure it's current
+                    const dateValue = document.getElementById('date')?.value || '';
+                    const dateParts = dateValue.split('to').map(part => part.trim());
 
-                    const string = `/adms/attendances-summary/detail/${attendanceId}/${this.formatDate(startDate)}/${this.formatDate(endDate)}`
-                    return string.trim();
+                    const startDate = this.formatDate(dateParts[0]);
+                    const endDate = this.formatDate(dateParts[1]);
+
+                    return `/adms/attendances-summary/detail/${attendanceId}/${startDate}/${endDate}`;
                 }
             }
         }
