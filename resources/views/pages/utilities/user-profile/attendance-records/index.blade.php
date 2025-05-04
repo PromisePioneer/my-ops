@@ -95,6 +95,15 @@
                                                 <td colspan="5" class=" border border-3">SAKIT</td>
                                             </tr>
                                         </template>
+                                        <template x-if="attendance?.overtimes?.status === 'Lembur'">
+                                            <tr class="text-center"
+                                                style="background-color: #f3e8ff;
+                                            text-align: center;">
+                                                <td class="text-center" style="color: #6b21a8;"
+                                                    x-text="formatDate(attendance.date_period)"></td>
+                                                <td colspan="5" style="color: #6b21a8;">LEMBUR</td>
+                                            </tr>
+                                        </template>
                                         <template x-if="userAttendance.schedule === 'L'">
                                             <tr class="bg-warning text-center">
                                                 <td class="text-center  border border-3"
