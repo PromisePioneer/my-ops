@@ -412,7 +412,7 @@
 
                 getTdClass(dates) {
                     // Check for leave, sick, or permission status
-                    if (dates.leaves || dates.sick || dates.permission) {
+                    if (dates.leaves || dates.sick || dates.permission || dates.important_leaves) {
                         return 'text-center border border-black text-black bg-warning p-0 fw-bolder';
                     }
 
