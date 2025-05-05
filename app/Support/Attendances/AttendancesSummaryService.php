@@ -7,7 +7,6 @@ use App\Models\EmployeeSchedule;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
 use App\Models\WeekHoliday;
-use App\Models\WorkTime;
 use App\Support\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -52,7 +51,7 @@ use Illuminate\Http\Request;
                 'company:id,name',
             ])
             ->where('active', 1)
-            ->orderBy('absent_id');
+            ->orderBy('name');
 
 
         $users = $query->get();
@@ -132,7 +131,7 @@ use Illuminate\Http\Request;
     }
 
 
-    public function formattedData($weeklyLatenessMap, $attendancesSummary, $startDate, $endDate)
+    public function formattedData($weeklyLatenessMap, $attendancesSummary, $startDate, $endDate, $request = null)
     {
         $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage();
 
@@ -286,7 +285,21 @@ use Illuminate\Http\Request;
         });
 
 
-        $sorted = $data->sortByDesc('total_absent')->values();
+        $sorted = $data;
+
+        if ($request?->sorting === 'Alfa') {
+            $sorted = $data->sortByDesc('total_absent')->values();
+        }
+
+        if ($request?->sorting === 'Sakit') {
+            $sorted = $data->sortByDesc('total_sick')->values();
+        }
+
+        if ($request?->sorting === 'Izin') {
+            $sorted = $data->sortByDesc('total_permission')->values();
+        }
+
+
 
 
         return new \Illuminate\Pagination\LengthAwarePaginator(
@@ -358,7 +371,7 @@ use Illuminate\Http\Request;
             'attendancesSummary' => function ($query) use ($startDate, $endDate, $request) {
                 $query->whereBetween('date', [$startDate, $endDate]);
             }
-        ], 'branch')->where('active', 1);
+        ], 'branch')->where('active', 1)->orderBy('name');;
 
 
         $users = $query->get();
@@ -403,7 +416,7 @@ use Illuminate\Http\Request;
         $filter = AttendanceQueryFilter::apply($query, $request);
         $aclFilter = AttendancesACLFilter::apply($filter, $request);
         $attendanceSummary = $aclFilter->get();
-        return self::formattedData($weeklyLatenessMap, $attendanceSummary, $startDate, $endDate);
+        return self::formattedData($weeklyLatenessMap, $attendanceSummary, $startDate, $endDate, $request);
     }
 
 
