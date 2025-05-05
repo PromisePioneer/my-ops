@@ -269,7 +269,8 @@
                                 start_date: this.formatDate(this.date.split('to').map(part => part.trim())[0]),
                                 end_date: this.formatDate(this.date.split('to').map(part => part.trim())[1]),
                                 branch_id: $('#branch_id').val(),
-                                role_id: $('#role_id').val()
+                                role_id: $('#role_id').val(),
+                                sorting: document.getElementById('sorting').value
                             }
                         });
                         this.attendanceSummary = resp.data;

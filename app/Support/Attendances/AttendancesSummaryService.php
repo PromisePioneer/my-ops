@@ -284,7 +284,9 @@ use Illuminate\Http\Request;
         });
 
 
-        $user->setCollection($data);
+        $sorted = $data->sortByDesc('total_absent')->values();
+
+        $user->setCollection($sorted);
         return $user;
     }
 

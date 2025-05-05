@@ -12,7 +12,6 @@
         <div class="card-header">
             <h3 class="card-title">Filter</h3>
             <div class="card-toolbar">
-                <!--begin::Close-->
                 <div class="btn btn-sm btn-icon btn-active-light-danger"
                      id="kt_drawer_example_permanent_close">
                     <span class="svg-icon fs-1">
@@ -22,9 +21,7 @@
                      </i>
                     </span>
                 </div>
-                <!--end::Close-->
             </div>
-            <!--end::Card toolbar-->
         </div>
         <div class="card-body">
             <div class="row">
@@ -45,6 +42,16 @@
                     <input type="text" name="date" id="date" x-model="date"
                            class="form-control form-control-solid form-control-lg date-picker"
                            placeholder="Tgl awal - akhir"/>
+                </div>
+                <div class="mb-4">
+                    <select name="sorting" class="form-select form-select-solid form-select-sm" id="sorting"
+                            data-control="select2"
+                            data-placeholder="Urutkan Berdasarkan" data-allow-clear="true">
+                        <option></option>
+                        <option class="Alfa">Alfa</option>
+                        <option class="Izin">Izin</option>
+                        <option class="Sakit">Sakit</option>
+                    </select>
                 </div>
                 <button class="btn btn-light-primary btn-sm" @click="filter()">Filter</button>
             </div>
