@@ -295,6 +295,9 @@ use Illuminate\Http\Request;
             self::$perPage,
             $currentPage,
             ['path' => request()->url(), 'query' => request()->query()]
+
+
+
         );
     }
 
