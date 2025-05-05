@@ -2,6 +2,7 @@
 @section('page-title', 'Master Operasional - Kategori Barang')
 @section('content')
     <div x-data="itemCategoriesData()">
+        @include('pages.master.operational.item-categories.description-drawer')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             @include('pages.master.operational.item-categories.form')
             <div class="card-header border-0 pt-6">
@@ -14,6 +15,7 @@
                                class="form-control form-control-solid w-250px ps-14" placeholder="Search...">
                     </div>
                 </div>
+
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
@@ -58,6 +60,8 @@
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Nama</th>
+                                <th class="min-w-125px">Barang Aset</th>
+                                <th class="min-w-125px">Barang Jual</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -94,11 +98,34 @@
                                     </td>
                                     <td x-text="category.name"></td>
                                     <td>
+                                        <ul>
+
+                                            <template x-for="assetItem in category.asset_items" :key="assetItem.id">
+                                                <li x-text="assetItem.name"></li>
+                                            </template>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul>
+
+                                            <template x-for="sellItems in category.sell_items" :key="sellItems.id">
+                                                <li x-text="sellItems.name"></li>
+                                            </template>
+                                        </ul>
+                                    </td>
+                                    <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-item-category" @click="edit(category.id)">
                                             <i class="ki-duotone ki-pencil fs-2">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
+                                            </i>
+                                        </button>
+                                        <button id="item_category_description_drawer" class="btn btn-light-info btn-sm">
+                                            <i class="ki-duotone ki-information fs-2" @click="edit(category.id)">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
                                             </i>
                                         </button>
                                     </td>
@@ -236,6 +263,16 @@
                     this.modalForm.hide();
                     const resp = await axios.get(`${this.itemCategories.path}?page=${this.itemCategories.current_page}`);
                     this.itemCategories = resp.data
+                },
+                async show(id) {
+                    this.isLoading = true;
+                    try {
+
+                    } catch (e) {
+                        console.log(e);
+                    } finally {
+                        this.isLoading = false;
+                    }
                 }
             }
         }

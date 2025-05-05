@@ -59,6 +59,8 @@
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Nama</th>
+                                <th class="min-w-125px">Telepon</th>
+                                <th class="min-w-125px">Negara</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -94,12 +96,22 @@
                                         </div>
                                     </td>
                                     <td x-text="supplier.name"></td>
+                                    <td x-text="supplier.phone_number"></td>
+                                    <td x-text="supplier.country"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-supplier" @click="edit(supplier.id)">
-                                            <i class="ki-duotone ki-pencil fs-2">
+                                            <i class="ki-duotone ki-pencil fs-3">
                                                 <span class="path1"></span>
                                                 <span class="path2"></span>
+                                            </i>
+                                        </button>
+                                        <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#modal-supplier" @click="show(supplier.id)">
+                                            <i class="ki-duotone ki-information fs-3">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
                                             </i>
                                         </button>
                                     </td>
@@ -111,7 +123,7 @@
                     <ul class="pagination float-end mb-4 mt-4">
                         <template x-for="pagination in suppliers.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                <button class="page-link" @click="paginate](pagination.url)"
+                                <button class="page-link" @click="paginate(pagination.url)"
                                         x-html="pagination.label">
                                 </button>
                             </li>
@@ -155,6 +167,7 @@
                 async searchData() {
                     this.isLoading = true;
                     try {
+                        this.suppliers = [];
                         const response = await axios.get('/master/operational/suppliers/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
@@ -167,14 +180,23 @@
                     }
                 },
                 async paginate(url) {
-                    if (url) {
-                        const resp = await axios.get(`${url}`, {
-                            params: {
-                                search: this.search
-                            }
-                        });
-                        this.suppliers = resp.data
+                    this.isLoading = true;
+                    try {
+                        if (url) {
+                            this.suppliers = [];
+                            const resp = await axios.get(`${url}`, {
+                                params: {
+                                    search: this.search
+                                }
+                            });
+                            this.suppliers = resp.data
+                        }
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
                     }
+
                 },
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
@@ -204,6 +226,7 @@
                     this.buttonLoading = true;
                     try {
                         if (!id) {
+                            console.log('tete')
                             await axios.post('/master/operational/suppliers', new FormData(this.form))
                                 .then(async () => {
                                     await this.successResponse();

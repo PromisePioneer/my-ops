@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="modal-supplier">
+<div class="modal fade" id="modal-supplier">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -14,8 +14,8 @@
                 </div>
             </div>
 
-            <form id="form-supplier" @submit.prevent="saveSupplier(editVal?.id ?? null)">
-                <div class="modal-body overflow-auto">
+            <div class="modal-body">
+                <form id="form-supplier" @submit.prevent="saveSupplier(editVal?.id ?? null)">
                     <div class="card-title mb-4">
                         <h3 class="fw-bolder text-decoration-underline">A. Informasi Identitas</h3>
                     </div>
@@ -172,21 +172,21 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
-                        <i class="ki-duotone ki-click fs-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                            <span class="path3"></span>
-                            <span class="path4"></span>
-                            <span class="path5"></span>
-                        </i>
-                        <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
-                    </button>
-                </div>
-            </form>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
+                            <i class="ki-duotone ki-click fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                                <span class="path5"></span>
+                            </i>
+                            <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
