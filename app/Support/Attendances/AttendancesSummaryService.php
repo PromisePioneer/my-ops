@@ -91,7 +91,7 @@ use Illuminate\Http\Request;
         }
 
         $data = AttendancesACLFilter::apply($query, $request);
-        $attendanceSummary = $data->paginate(self::$perPage)->onEachSide(1);
+        $attendanceSummary = $data->get();
         return self::formattedData($weeklyLatenessMap, $attendanceSummary, $this->startDate, $this->endDate);
     }
 
@@ -132,16 +132,12 @@ use Illuminate\Http\Request;
     }
 
 
-    public function formattedData($weeklyLatenessMap, LengthAwarePaginator $user, $startDate, $endDate): LengthAwarePaginator
+    public function formattedData($weeklyLatenessMap, $attendancesSummary, $startDate, $endDate)
     {
-
         $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage();
-        $perPage = $user->perPage();
-        $users = $user->getCollection();
 
-
-        $userIds = $user->getCollection()->pluck('id');
-        $absentIds = $user->getCollection()->pluck('absent_id');
+        $userIds = $attendancesSummary->pluck('id');
+        $absentIds = $attendancesSummary->pluck('absent_id');
 
         $weekHolidays = WeekHoliday::whereIn('user_id', $userIds)
             ->get()
@@ -154,7 +150,7 @@ use Illuminate\Http\Request;
 
         $periods = CarbonPeriod::create($startDate, $endDate)->toArray();
 
-        $data = $user->getCollection()->map(function ($user) use ($weeklyLatenessMap, $startDate, $endDate, $weekHolidays, $employeeSchedules, $periods) {
+        $data = $attendancesSummary->map(function ($user) use ($weeklyLatenessMap, $startDate, $endDate, $weekHolidays, $employeeSchedules, $periods) {
 
 
             $weeklyLate = $weeklyLatenessMap[$user->id] ?? collect([]);
@@ -289,13 +285,14 @@ use Illuminate\Http\Request;
             ];
         });
 
-        // Sort the data
+
         $sorted = $data->sortByDesc('total_absent')->values();
 
+
         return new \Illuminate\Pagination\LengthAwarePaginator(
-            $sorted->forPage($currentPage, $perPage),
+            $sorted->forPage($currentPage, self::$perPage),
             $sorted->count(),
-            $perPage,
+            self::$perPage,
             $currentPage,
             ['path' => request()->url(), 'query' => request()->query()]
         );
@@ -323,7 +320,8 @@ use Illuminate\Http\Request;
     }
 
 
-    public function calculateLate($attendanceSummary): float|int|null
+    public
+    function calculateLate($attendanceSummary): float|int|null
     {
         $totalLate = 0;
         foreach ($attendanceSummary as $attendance) {
@@ -401,7 +399,7 @@ use Illuminate\Http\Request;
 
         $filter = AttendanceQueryFilter::apply($query, $request);
         $aclFilter = AttendancesACLFilter::apply($filter, $request);
-        $attendanceSummary = $aclFilter->paginate(self::$perPage)->onEachSide(1);
+        $attendanceSummary = $aclFilter->get();
         return self::formattedData($weeklyLatenessMap, $attendanceSummary, $startDate, $endDate);
     }
 
