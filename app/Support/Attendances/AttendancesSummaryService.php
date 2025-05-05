@@ -134,6 +134,12 @@ use Illuminate\Http\Request;
 
     public function formattedData($weeklyLatenessMap, LengthAwarePaginator $user, $startDate, $endDate): LengthAwarePaginator
     {
+
+        $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage();
+        $perPage = $user->perPage();
+        $users = $user->getCollection();
+
+
         $userIds = $user->getCollection()->pluck('id');
         $absentIds = $user->getCollection()->pluck('absent_id');
 
@@ -283,11 +289,16 @@ use Illuminate\Http\Request;
             ];
         });
 
-
+        // Sort the data
         $sorted = $data->sortByDesc('total_absent')->values();
 
-        $user->setCollection($sorted);
-        return $user;
+        return new \Illuminate\Pagination\LengthAwarePaginator(
+            $sorted->forPage($currentPage, $perPage),
+            $sorted->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
     }
 
     private function calculateLeaveDays($user, $startDate, $endDate, $type): float|int
