@@ -98,7 +98,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-10">
-                                <label for="unit_type_id" class="required form-label">Satuan</label>
+                                <label for="unit_type_id" class="required form-label">Material</label>
                                 <select name="material"
                                         class="form-select form-select-solid">
                                     <option value="Besi" :selected="editVal?.material === 'Besi'">Besi</option>
