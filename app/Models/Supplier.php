@@ -12,7 +12,22 @@ class Supplier extends Model
 
     protected $table = 'suppliers';
     protected $fillable = [
+        'code',
         'name',
+        'address',
+        'city',
+        'province',
+        'country',
+        'postal_code',
+        'fax',
+        'email',
+        'phone_number',
+        'bank_account_number',
+        'bank_account_name',
+        'bank_name',
+        'npwp',
+        'description',
+        'tax_type',
     ];
 
 
