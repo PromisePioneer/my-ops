@@ -16,7 +16,6 @@
 
             <form id="form-item" @submit.prevent="saveItem(editVal?.id ?? null)">
                 <div class="modal-body">
-
                     <div class="d-flex justify-content-end align-items-center">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="form-check form-switch form-check-custom form-check-solid me-10"
@@ -39,73 +38,97 @@
                     </div>
 
 
-                    <div class="mb-10">
-                        <label for="name" class="required form-label">Nama</label>
-                        <input type="text" id="name" name="name" class="form-control form-control-solid"
-                               placeholder="Nama Barang" :value="editVal?.name"/>
+                    <div class="row mt-10">
+                        <div class="col-md-6">
+                            <div class="mb-10">
+                                <label for="name" class="required form-label">Nama</label>
+                                <input type="text" id="name" name="name" class="form-control form-control-solid"
+                                       placeholder="Nama Barang" :value="editVal?.name"/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-10">
+                                <label for="name" class="form-label">Kode (Jika Barang memiliki kode)</label>
+                                <input type="text" id="code" name="code" class="form-control form-control-solid"
+                                       placeholder="Kode Barang" :value="editVal?.code"/>
+                            </div>
+                        </div>
                     </div>
 
 
-                    <div class="mb-10">
-                        <label for="name" class="form-label">Kode (Jika Barang memiliki kode dan kode tidak tertera di
-                            barang)</label>
-                        <input type="text" id="code" name="code" class="form-control form-control-solid"
-                               placeholder="Kode Barang" :value="editVal?.code"/>
-                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-10">
+                                <label for="category_id" class="required form-label">Kategori</label>
+                                <select name="category_id" id="selected-item-category"
+                                        class="form-select form-select-solid item-category-select2"
+                                        data-dropdown-parent="#modal-item">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-10">
+                                <label for="unit_type_id" class="required form-label">Tipe</label>
+                                <select name="type"
+                                        class="form-select form-select-solid" id="type" x-model="isAset">
+                                    <option value="">Pilih Tipe Barang</option>
+                                    <option value="JUAL" :selected="isAset === 'JUAL'">Jual</option>
+                                    <option value="ASET" :selected="isAset === 'ASET'">Aset</option>
+                                </select>
+                            </div>
 
-                    <div class="mb-10">
-                        <label for="category_id" class="required form-label">Kategori</label>
-                        <select name="category_id" id="selected-item-category"
-                                class="form-select form-select-solid item-category-select2"
-                                data-dropdown-parent="#modal-item">
-                            <option></option>
-                        </select>
-                    </div>
-
-
-                    <div class="mb-10">
-                        <label for="unit_type_id" class="required form-label">Tipe</label>
-                        <select name="type"
-                                class="form-select form-select-solid" x-model="isAset">
-                            <option value="" selected disabled>Pilih Tipe Barang</option>
-                            <option value="ASET" :selected="editVal.type === 'ASET'">Aset</option>
-                            <option value="JUAL" :selected="editVal.type === 'JUAL'">Jual</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-10">
-                        <label for="unit_type_id" class="required form-label">Satuan</label>
-                        <select name="unit_type_id" id="selected-unit-type"
-                                class="form-select form-select-solid unit-types-select2"
-                                data-dropdown-parent="#modal-item">
-                            <option></option>
-                        </select>
+                        </div>
                     </div>
 
 
-                    <div class="mb-10">
-                        <label for="unit_type_id" class="required form-label">Satuan</label>
-                        <select name="material"
-                                class="form-select form-select-solid">
-                            <option value="Besi" :selected="editVal?.material === 'Besi'">Besi</option>
-                            <option value="Non Besi" :selected="editVal?.material === 'Non Besi'">Non Besi</option>
-                        </select>
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <div class="mb-10">
+                                <label for="unit_type_id" class="required form-label">Satuan</label>
+                                <select name="unit_type_id" id="selected-unit-type"
+                                        class="form-select form-select-solid unit-types-select2"
+                                        data-dropdown-parent="#modal-item">
+                                    <option></option>
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-10">
+                                <label for="unit_type_id" class="required form-label">Satuan</label>
+                                <select name="material"
+                                        class="form-select form-select-solid">
+                                    <option value="Besi" :selected="editVal?.material === 'Besi'">Besi</option>
+                                    <option value="Non Besi" :selected="editVal?.material === 'Non Besi'">Non Besi
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mb-10" x-show="isAset === 'ASET' || editVal.type === 'ASET'" x-transition x-cloak>
-                        <label for="unit_type_id" class="required form-label">Akun Aset (Jika Masuk Aset)</label>
-                        <select name="asset_account_id" id="selected-asset-account"
-                                class="form-select form-select-solid asset-accounts-select2"
-                                data-dropdown-parent="#modal-item">
-                            <option></option>
-                        </select>
-                    </div>
 
-
-                    <div class="mb-10">
-                        <label for="unit_type_id" class="required form-label">Reorder Level</label>
-                        <input type="number" class="form-control form-control-solid" name="reorder_level"
-                               id="reorder_level" placeholder="Reorder Level" :value="editVal?.reorder_level">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-10">
+                                <label for="unit_type_id" class="required form-label">Reorder Level</label>
+                                <input type="number" class="form-control form-control-solid" name="reorder_level"
+                                       id="reorder_level" placeholder="Reorder Level" :value="editVal?.reorder_level">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-10" x-show="isAset === 'ASET'" x-transition x-cloak>
+                                <label for="unit_type_id" class="required form-label">Akun Aset (Jika Masuk
+                                    Aset)</label>
+                                <select name="asset_account_id" id="selected-asset-account"
+                                        class="form-select form-select-solid asset-accounts-select2"
+                                        data-dropdown-parent="#modal-item">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

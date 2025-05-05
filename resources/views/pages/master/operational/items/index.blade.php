@@ -439,10 +439,16 @@
                     const resp = await axios.get(`/master/operational/items/${id}`);
                     this.editVal = resp.data;
                     this.itemMustHaveCode = this.editVal.must_have_code === 1;
-                    console.log(this.itemMustHaveCode);
+
+                    $('#selected-asset-account').val('').trigger('change');
+
+
                     await this.selectedItemCategory();
                     await this.selectedUnitType();
                     await this.selectedAssetAccount();
+                    this.$nextTick(() => {
+                        this.isAset = this.editVal.type;
+                    })
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {

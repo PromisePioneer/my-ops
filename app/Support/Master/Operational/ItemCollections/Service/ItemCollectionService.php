@@ -103,6 +103,8 @@ use Throwable;
                 'material' => $request->material,
                 'must_have_code' => $request->must_have_code === 'on',
                 'is_code_listed' => $request->is_code_listed === 'on',
+                'reorder_level' => $request->reorder_level,
+                'type' => $request->type,
             ]);
         });
     }
@@ -117,11 +119,12 @@ use Throwable;
             'category_id' => $request->category_id,
             'unit_type_id' => $request->unit_type_id,
             'code' => $request->code,
+            'type' => $request->type,
             'asset_account_id' => $request->type === 'ASET' ? $request->asset_account_id : null,
             'material' => $request->material,
             'must_have_code' => $request->must_have_code === 'on',
             'is_code_listed' => $request->is_code_listed === 'on',
-
+            'reorder_level' => $request->reorder_level,
         ]);
     }
 
