@@ -88,9 +88,9 @@ use Illuminate\Support\Collection;
         $allLeaves = $this->getLeaves($userIds);
         $allSick = $this->getSick($userIds);
         $allPermission = $this->getPermission($userIds);
-        $importantLeaves = $this->getImportantLeaves($userIds);
+        $allImportantLeaves = $this->getImportantLeaves($userIds);
 
-        $data = $userData->getCollection()->map(function ($item) use ($period, $allLeaves, $allSick, $allPermission) {
+        $data = $userData->getCollection()->map(function ($item) use ($period, $allLeaves, $allSick, $allPermission, $allImportantLeaves) {
             $schedules = $item->employeeSchedules->keyBy('start_date');
             $leaves = $allLeaves[$item->id] ?? [];
             $sick = $allSick[$item->id] ?? [];
@@ -126,7 +126,7 @@ use Illuminate\Support\Collection;
                         'sick' => $date['sick'] ?? null,
                         'permission' => $date['permission'] ?? null,
                         'leaves' => $date['leaves'] ?? null,
-                        'important_leaves' => $date['importantLeaves'],
+                        'important_leaves' => $date['importantLeaves'] ?? null,
                     ];
                 })->values(),
                 'area' => $item->userHasArea?->area,

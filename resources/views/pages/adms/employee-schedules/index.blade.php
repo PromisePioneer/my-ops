@@ -144,8 +144,8 @@
                                                     class="btn btn-link btn-sm text-decoration-underline"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#modal-create"
-                                                    :disabled="Number(createPermission) !== 1 || dates.leaves || dates.sick || dates.permission"
-                                                    @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.period_dates ??  dates.period_date )"
+                                                    :disabled="Number(createPermission) !== 1 || dates.leaves || dates.sick || dates.permission || dates.important_leaves"
+                                                    @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.period_dates ??  dates.period_date)"
                                             >
                                                 <template
                                                     x-if="!dates.leaves && !dates.sick && !dates.permission && dates.schedules_date?.status === 'H' && dates.is_holiday === null">
@@ -157,11 +157,14 @@
                                                     <span>L</span>
                                                 </template>
                                                 <template
-                                                    x-if="!dates?.work_time_schedules && !dates.is_holiday && !dates.schedules_date && !dates.leaves && !dates.sick && !dates.permission">
+                                                    x-if="!dates?.work_time_schedules && !dates.is_holiday && !dates.schedules_date && !dates.leaves && !dates.sick && !dates.permission && !dates.important_leaves">
                                                     <span>P</span>
                                                 </template>
                                                 <template x-if="dates.leaves">
                                                     <span class="fw-bolder text-black">C</span>
+                                                </template>
+                                                <template x-if="dates.important_leaves">
+                                                    <span class="fw-bolder text-black">CP</span>
                                                 </template>
                                                 <template x-if="dates.sick">
                                                     <span class="fw-bolder text-black">S</span>
