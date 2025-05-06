@@ -281,6 +281,7 @@
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
+                @canany('Lihat Menu Inventory')
                 <x-menu-sections>Inventory</x-menu-sections>
                 <x-dropdown-menu :active="request()->is('inventory/*')">
                     @slot('parentIcon')
@@ -311,6 +312,7 @@
                         </x-dropdown-menu-item>
                     @endslot
                 </x-dropdown-menu>
+                @endcanany
 
 
                 @canany(['Lihat Menu Jurnal Umum', 'Lihat Menu Buku Besar', 'Lihat Menu Neraca Saldo'])
