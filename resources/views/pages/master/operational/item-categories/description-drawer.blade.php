@@ -25,10 +25,10 @@
         </div>
         <div class="card-body">
             <p class="fw-bolder mb-0">Deskripsi</p>
-            <p x-text="editVal.description"></p>
+            <p x-text="itemCategoryDescription.description"></p>
 
             <p class="fw-bolder mb-0">Penjelasan</p>
-            <p x-text="editVal.notes"></p>
+            <p x-text="itemCategoryDescription.notes"></p>
         </div>
     </div>
 

@@ -1297,6 +1297,8 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/stock-with-codes-data', [StockController::class, 'getStockWithCode']);
         Route::get('/stock-without-codes-data', [StockController::class, 'getStockWithoutCode']);
         Route::get('/user-has-areas-data', [UserController::class, 'getUserHasArea']);
+        Route::get('/suppliers-data', [SupplierController::class, 'getSuppliers']);
+        Route::get('/selected-supplier/{supplier}', [SupplierController::class, 'selectedSupplier']);
     });
 
 

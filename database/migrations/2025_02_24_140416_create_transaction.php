@@ -14,6 +14,10 @@ return new class extends Migration {
             $table->foreignId('branch_id')
                 ->constrained('branches')
                 ->cascadeOnDelete();
+            $table->foreignId('supplier_id')
+                ->constrained('suppliers')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->date('date');
             $table->foreignId('item_id')
                 ->nullable()

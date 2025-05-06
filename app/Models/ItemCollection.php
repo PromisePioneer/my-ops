@@ -33,9 +33,6 @@ class ItemCollection extends Model
         return [
             'name' => $this->name,
             'material' => $this->material,
-            'unit_types.name' => '',
-            'item_categories.name' => '',
-            'accounts.name' => '',
         ];
     }
 

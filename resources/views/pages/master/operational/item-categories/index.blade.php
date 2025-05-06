@@ -158,6 +158,7 @@
                 buttonLoading: false,
                 selectedCheckBox: [],
                 selectAll: false,
+                itemCategoryDescription: '',
                 singleChecked: false,
                 search: '',
                 editVal: '',
@@ -236,6 +237,7 @@
                 async edit(id) {
                     const resp = await axios.get(`/master/operational/item-categories/${id}`);
                     this.editVal = resp.data;
+                    this.itemCategoryDescription = resp.data;
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {

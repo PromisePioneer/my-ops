@@ -59,4 +59,26 @@ class SupplierController extends Controller
             'message' => 'data berhasil dihapus',
         ], 200);
     }
+
+
+    public function getSuppliers(Request $request)
+    {
+        $search = $request->input('search');
+        $supplier = Supplier::search($search)->get();
+        return $supplier->map(function ($query) {
+            return [
+                'id' => $query->id,
+                'text' => $query->name
+            ];
+        });
+    }
+
+
+    public function selectedSupplier(Supplier $supplier): array
+    {
+        return [
+            'id' => $supplier->id,
+            'name' => $supplier->name
+        ];
+    }
 }

@@ -1,5 +1,5 @@
 <div class="modal fade" id="modal-supplier">
-    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Form Supplier</h5>
@@ -80,7 +80,7 @@
                                       id="address"
                                       name="address"
                                       placeholder="Alamat"
-                                      x-text="editVal.address">
+                                      x-text="editVal?.address">
                             </textarea>
                         </div>
                     </div>
