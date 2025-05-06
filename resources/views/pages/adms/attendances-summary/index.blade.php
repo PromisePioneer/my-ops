@@ -139,8 +139,12 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <a :href="getDetailUrl(attendance.id)" class="btn btn-light-primary btn-sm">
-                                            <i class="fa-solid fa-circle-info"></i>
+                                        <a :href="getDetailUrl(attendance.id)" class="btn btn-light-primary btn-sm" target="_blank">
+                                            <i class="ki-duotone ki-information fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                            </i>
                                         </a>
                                     </td>
                                 </tr>

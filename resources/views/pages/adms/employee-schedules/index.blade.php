@@ -157,7 +157,7 @@
                                                     <span>L</span>
                                                 </template>
                                                 <template
-                                                    x-if="!dates?.work_time_schedules && !dates.is_holiday && !dates.schedules_date && !dates.leaves && !dates.sick && !dates.permission && !dates.important_leaves">
+                                                    x-if="!dates?.work_time_schedules && !dates.is_holiday && !dates.schedules_date && !dates.leaves && !dates.sick && !dates.permission && !dates.important_leaves && !dates.overtime">
                                                     <span>P</span>
                                                 </template>
                                                 <template x-if="dates.leaves">
@@ -171,6 +171,9 @@
                                                 </template>
                                                 <template x-if="dates.permission">
                                                     <span class="fw-bolder text-black">I</span>
+                                                </template>
+                                                <template x-if="dates.overtime">
+                                                    <span class="fw-bolder text-black">LBR</span>
                                                 </template>
                                             </button>
                                         </td>
@@ -411,8 +414,7 @@
                 },
 
                 getTdClass(dates) {
-                    // Check for leave, sick, or permission status
-                    if (dates.leaves || dates.sick || dates.permission || dates.important_leaves) {
+                    if (dates.leaves || dates.sick || dates.permission || dates.important_leaves || dates.overtime) {
                         return 'text-center border border-black text-black bg-warning p-0 fw-bolder';
                     }
 
