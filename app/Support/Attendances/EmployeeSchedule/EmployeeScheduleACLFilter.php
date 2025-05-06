@@ -42,6 +42,31 @@ class EmployeeScheduleACLFilter
         }
 
 
+        if ($request->user()->hasRole('Customer Service Supervisor')) {
+            $query->whereHas('roles', function ($query) {
+                $query->whereIn('name', [
+                    'Customer Service Leader',
+                    'Customer Service Staff',
+                    'Head Engineer',
+                    'Senior Engineer',
+                    'Engineer',
+                    'KU Head Engineer',
+                    'KU Engineer',
+                    'Quality Controller Supervisor',
+                    'Backbone Team Supervisor',
+                    'Trainer & Quality Control Staff',
+                    'Stocker Supervisor',
+                    'Programmer',
+                    'After Sales Customer Service',
+                    'Project Controller & Vendor Supervisor',
+                    'Warehouse Security',
+                    'Graphic Designer & Socmed Admin',
+                    'Warehouse Supervisor'
+                ]);
+            });
+        }
+
+
         if ($request->user()->hasRole('Finance & Accounting Supervisor')) {
             $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff', 'Stocker Staff', 'Inventory Controller Supervisor']);
