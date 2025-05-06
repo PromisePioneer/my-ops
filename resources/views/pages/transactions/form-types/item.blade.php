@@ -28,6 +28,13 @@
                placeholder="Tanggal Transaksi"
                :value="editVal?.date">
     </div>
+    <div class="col-md-6">
+        <label for="date" class="required form-label">Supplier</label>
+        <select name="supplier_id" id="supplier_id" data-dropdown-parent="#modal-transactions"
+                class="form-select form-select-solid suppliers-select2">
+            <option></option>
+        </select>
+    </div>
 </div>
 
 <div class="row mb-10">
@@ -67,15 +74,11 @@
 
 
 <div class="row mb-10">
-
-
     <div class="col-lg-6">
         <label for="name" class="required form-label">Bukti Transaksi</label>
         <input type="file" class="form-control form-control-solid" @change="previewFile()"
                accept="image/*" x-ref="myFile" name="attachment" id="attachment">
     </div>
-
-
     <div class="col-lg-6">
         <label
             :class="`${imgsrc.length > 0 ? 'col-form-label required fw-bold fs-6' : 'd-none'}`">

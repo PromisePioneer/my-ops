@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\AccountCategory;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -42,7 +41,6 @@ class DatabaseSeeder extends Seeder
             ItemCategoriesSeeder::class,
             WarehouseSeeder::class,
             ItemCollectionSeeder::class,
-            SupplierSeeder::class,
             AreaSeeder::class,
             PSBSeeder::class,
             WeekHolidaySeeder::class,

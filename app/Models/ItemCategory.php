@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Laravel\Scout\Searchable;
 
@@ -27,31 +28,8 @@ class ItemCategory extends Model
     }
 
 
-    public function getData(Request $request): array
+    public function itemCollections(): HasMany
     {
-        $search = $request->input('search');
-        $query = self::orderby('name', 'asc');
-        if ($search !== '') {
-            $query->where('name', 'like', '%' . $request->search . '%')
-                ->where('name', 'like', '%' . $request->search . '%');
-        }
-        $contact = $query->get(['id', 'name']);
-
-        return $contact->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'text' => $item->name,
-            ];
-        })->toArray();
-    }
-
-    public function getSelectedData(int $itemCategory): array
-    {
-        $contact = self::where('id', $itemCategory)->first();
-
-        return [
-            'id' => $contact->id,
-            'name' => $contact->name,
-        ];
+        return $this->hasMany(ItemCollection::class, 'category_id');
     }
 }

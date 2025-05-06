@@ -28,9 +28,7 @@ class SupplierController extends Controller
     public function search(Request $request): JsonResponse
     {
         $search = $request->input('search');
-        $supplier = Supplier::when(!empty($search), function ($query) use ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
-        })->orderBy('name')->paginate(self::$perPage);
+        $supplier = Supplier::search($search)->paginate(self::$perPage);
 
         return response()->json($supplier);
     }
@@ -60,5 +58,27 @@ class SupplierController extends Controller
         return response()->json([
             'message' => 'data berhasil dihapus',
         ], 200);
+    }
+
+
+    public function getSuppliers(Request $request)
+    {
+        $search = $request->input('search');
+        $supplier = Supplier::search($search)->get();
+        return $supplier->map(function ($query) {
+            return [
+                'id' => $query->id,
+                'text' => $query->name
+            ];
+        });
+    }
+
+
+    public function selectedSupplier(Supplier $supplier): array
+    {
+        return [
+            'id' => $supplier->id,
+            'name' => $supplier->name
+        ];
     }
 }

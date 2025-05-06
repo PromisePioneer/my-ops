@@ -154,7 +154,6 @@
                 formDelete: document.getElementById('form-delete'),
                 async init() {
                     await this.contactData();
-                    await this.filterByBranch();
                 },
                 async searchData() {
                     try {

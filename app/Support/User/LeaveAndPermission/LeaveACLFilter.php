@@ -24,18 +24,23 @@ class LeaveACLFilter
         if ($request->user()->hasRole('Operational Manager')) {
             $query->whereHas('user.roles', function ($query) {
                 $query->whereIn('name', [
+                    'Customer Service Leader',
+                    'Customer Service Staff',
                     'Head Engineer',
+                    'Senior Engineer',
+                    'Engineer',
                     'KU Head Engineer',
+                    'KU Engineer',
                     'Quality Controller Supervisor',
                     'Backbone Team Supervisor',
                     'Trainer & Quality Control Staff',
                     'Stocker Supervisor',
                     'Programmer',
-                    'Legal & Corporate Commissioner',
                     'After Sales Customer Service',
                     'Project Controller & Vendor Supervisor',
-                    'Head Of Electrical Engineer',
-                    'Mechanic Senior Staff',
+                    'Warehouse Security',
+                    'Graphic Designer & Socmed Admin',
+                    'Warehouse Supervisor'
                 ]);
             })->whereHas('user', function ($query) use ($request) {
                 $query->where('branch_id', 1)
@@ -107,6 +112,31 @@ class LeaveACLFilter
             })->where(function ($query) use ($request) {
                 $query->whereNull('branch_id')->orWhereIn('branch_id', [1])
                     ->where('active', 1);
+            });
+        }
+
+
+        if ($request->user()->hasRole('Customer Service Supervisor')) {
+            $query->whereHas('user.roles', function ($query) {
+                $query->whereIn('name', [
+                    'Customer Service Leader',
+                    'Customer Service Staff',
+                    'Head Engineer',
+                    'Senior Engineer',
+                    'Engineer',
+                    'KU Head Engineer',
+                    'KU Engineer',
+                    'Quality Controller Supervisor',
+                    'Backbone Team Supervisor',
+                    'Trainer & Quality Control Staff',
+                    'Stocker Supervisor',
+                    'Programmer',
+                    'After Sales Customer Service',
+                    'Project Controller & Vendor Supervisor',
+                    'Warehouse Security',
+                    'Graphic Designer & Socmed Admin',
+                    'Warehouse Supervisor'
+                ]);
             });
         }
 

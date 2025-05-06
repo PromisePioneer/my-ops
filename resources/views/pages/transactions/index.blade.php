@@ -4,16 +4,18 @@
 @section('content')
     @push('styles')
         <style>
-            .modal-body {
-                max-height: calc(100vh - 200px);
-                overflow-y: auto;
+            .modal {
+                overflow: auto !important;
             }
         </style>
     @endpush
+
+
     <div x-data="transactionData()">
         @include('pages.master.operational.items.form')
         @include('pages.transactions.form')
         @include('pages.transactions.confirm-modal')
+        @include('pages.master.operational.supplier.form')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 ">
                 <div class="card-title">
@@ -268,9 +270,18 @@
             }
         });
 
-
         const transactionModal = new bootstrap.Modal(document.getElementById('modal-transactions'));
         const itemModal = document.getElementById('modal-item');
+        const supplierModal = document.getElementById('modal-supplier')
+
+
+        itemModal.addEventListener('hidden.bs.modal', e => {
+            transactionModal.show();
+        });
+
+        supplierModal.addEventListener('hidden.bs.modal', e => {
+            transactionModal.show();
+        });
 
         function transactionData() {
             return {
@@ -284,14 +295,15 @@
                 buttonLoading: false,
                 startIndex: null,
                 selectedCheckBox: [],
+                itemMustHaveCode: false,
                 selectAll: false,
                 singleChecked: false,
                 search: '',
-                editVal: null,
+                editVal: '',
                 userList: [],
                 imgsrc: [],
                 attachments: [],
-                isAset: false,
+                isAset: null,
                 branchVal: false,
                 selectedConfirmationStatus: null,
                 form: document.getElementById('form-transactions'),
@@ -301,6 +313,8 @@
                 formDelete: document.getElementById('form-delete'),
                 formConfirm: document.getElementById('form-confirm'),
                 modalConfirm: new bootstrap.Modal(document.getElementById('modal-confirm')),
+                supplierModal: new bootstrap.Modal(document.getElementById('modal-supplier')),
+                supplierForm: document.getElementById('form-supplier'),
                 async init() {
                     await this.getTransactions();
                     await this.getMainBranches();
@@ -310,6 +324,7 @@
                     await this.getItemCollections();
                     await this.itemCategories();
                     await this.getAssetAccounts();
+                    await this.getSuppliers();
                 },
                 add() {
                     this.transactionType = null
@@ -356,6 +371,21 @@
                         };
                         reader.readAsDataURL(file);
                     });
+                },
+                async saveSupplier() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/master/operational/suppliers', new FormData(this.supplierForm))
+                            .then(async () => {
+                                await showAlert('success', 'data berhasil disimpan');
+                                await this.supplierForm.reset();
+                            })
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
                 },
 
                 selectCheckBox(event) {
@@ -523,6 +553,28 @@
                         });
                     });
                 },
+                async getSuppliers() {
+                    const self = this;
+                    $(".suppliers-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Supplier",
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-supplier">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
+                        ajax: {
+                            url: '/select2/suppliers-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    })
+                }
+                ,
                 async getStockAccounts() {
                     $(".stock-accounts-select2").select2({
                         allowClear: true,
@@ -590,6 +642,19 @@
                         params: {results: response}
                     });
                 },
+                async selectedSupplier() {
+                    const selectedSupplier = $('#selected-supplier');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/select2/selected-supplier/${this.editVal.supplier_id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedSupplier.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
                 async selectedCreditAccount() {
                     const selectedCreditAccount = $('#selected-credit-account');
                     const response = await $.ajax({
@@ -645,7 +710,6 @@
                 async getAssetAccounts() {
                     $(".asset-accounts-select2").select2({
                         allowClear: true,
-                        tags: true,
                         placeholder: "Pilih Akun",
                         ajax: {
                             url: '/select2/asset-accounts-data',

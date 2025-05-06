@@ -1,5 +1,5 @@
 <div class="modal fade" tabindex="-1" id="modal-transactions">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Form Transaksi</h5>
@@ -14,8 +14,8 @@
                 </div>
             </div>
 
+            <div class="modal-body">
             <form id="form-transactions" @submit.prevent="save(editVal?.id)" enctype="multipart/form-data">
-                <div class="modal-body">
                     <div class="row mb-4">
                         <template x-if="editVal === null">
                             <div class="col-lg-6">
@@ -46,7 +46,6 @@
                     <div x-show="transactionType === 'Barang'" x-transition x-cloak>
                         @include('pages.transactions.form-types.item')
                     </div>
-                </div>
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Close</button>
@@ -62,6 +61,9 @@
                     </button>
                 </div>
             </form>
+            </div>
+
+
         </div>
     </div>
 </div>

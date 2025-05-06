@@ -663,6 +663,7 @@ Route::group(['middleware' => ['auth']], static function () {
 
     Route::prefix('inventory')->group(function () {
         Route::prefix('goods')->group(function () {
+
             Route::prefix('stock')->group(function () {
                 Route::get('/', [StockController::class, 'index']);
                 Route::get('/data', [StockController::class, 'data']);
@@ -711,7 +712,7 @@ Route::group(['middleware' => ['auth']], static function () {
 
             Route::prefix('item-catalog')->group(function () {
                 Route::get('/{itemCatalog}', [ItemCatalogController::class, 'edit']);
-                Route::post('/{itemCatalog}', [ItemCatalogController::class, 'update']);
+                Route::post('/destroy/{itemCatalog}', [ItemCatalogController::class, 'destroy']);
             });
         });
 
@@ -1297,6 +1298,8 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/stock-with-codes-data', [StockController::class, 'getStockWithCode']);
         Route::get('/stock-without-codes-data', [StockController::class, 'getStockWithoutCode']);
         Route::get('/user-has-areas-data', [UserController::class, 'getUserHasArea']);
+        Route::get('/suppliers-data', [SupplierController::class, 'getSuppliers']);
+        Route::get('/selected-supplier/{supplier}', [SupplierController::class, 'selectedSupplier']);
     });
 
 

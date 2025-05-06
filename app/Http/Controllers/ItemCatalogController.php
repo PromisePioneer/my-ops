@@ -49,9 +49,9 @@ use Throwable;
     /**
      * @throws Throwable
      */
-    public function update(ItemCatalogRequest $request, ItemCatalog $itemCatalog): JsonResponse
+    public function destroy(ItemCatalog $itemCatalog): JsonResponse
     {
-        $this->itemCatalogService->update($request, $itemCatalog);
+        $this->itemCatalogService->destroy($itemCatalog);
         return response()->json(['message' => 'Data berhasil disimpan']);
     }
 
