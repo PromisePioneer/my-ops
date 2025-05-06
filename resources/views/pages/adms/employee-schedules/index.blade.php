@@ -144,8 +144,8 @@
                                                     class="btn btn-link btn-sm text-decoration-underline"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#modal-create"
-                                                    :disabled="Number(createPermission) !== 1 || dates.leaves || dates.sick || dates.permission"
-                                                    @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.period_dates ??  dates.period_date )"
+                                                    :disabled="Number(createPermission) !== 1 || dates.leaves || dates.sick || dates.permission || dates.important_leaves"
+                                                    @click="getSchedules(employeeSchedule.absent_id, dates.schedules_date?.period_dates ??  dates.period_date)"
                                             >
                                                 <template
                                                     x-if="!dates.leaves && !dates.sick && !dates.permission && dates.schedules_date?.status === 'H' && dates.is_holiday === null">
@@ -157,17 +157,23 @@
                                                     <span>L</span>
                                                 </template>
                                                 <template
-                                                    x-if="!dates?.work_time_schedules && !dates.is_holiday && !dates.schedules_date && !dates.leaves && !dates.sick && !dates.permission">
+                                                    x-if="!dates?.work_time_schedules && !dates.is_holiday && !dates.schedules_date && !dates.leaves && !dates.sick && !dates.permission && !dates.important_leaves && !dates.overtime">
                                                     <span>P</span>
                                                 </template>
                                                 <template x-if="dates.leaves">
                                                     <span class="fw-bolder text-black">C</span>
+                                                </template>
+                                                <template x-if="dates.important_leaves">
+                                                    <span class="fw-bolder text-black">CP</span>
                                                 </template>
                                                 <template x-if="dates.sick">
                                                     <span class="fw-bolder text-black">S</span>
                                                 </template>
                                                 <template x-if="dates.permission">
                                                     <span class="fw-bolder text-black">I</span>
+                                                </template>
+                                                <template x-if="dates.overtime">
+                                                    <span class="fw-bolder text-black">LBR</span>
                                                 </template>
                                             </button>
                                         </td>
@@ -408,8 +414,7 @@
                 },
 
                 getTdClass(dates) {
-                    // Check for leave, sick, or permission status
-                    if (dates.leaves || dates.sick || dates.permission) {
+                    if (dates.leaves || dates.sick || dates.permission || dates.important_leaves || dates.overtime) {
                         return 'text-center border border-black text-black bg-warning p-0 fw-bolder';
                     }
 

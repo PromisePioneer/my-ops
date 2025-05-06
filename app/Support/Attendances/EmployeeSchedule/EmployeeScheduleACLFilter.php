@@ -43,10 +43,11 @@ class EmployeeScheduleACLFilter
 
 
         if ($request->user()->hasRole('Customer Service Supervisor')) {
-            $query->whereHas('roles', function ($query) {
+            $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', [
                     'Customer Service Leader',
                     'Customer Service Staff',
+                    'After Sales Customer Service',
                     'Head Engineer',
                     'Senior Engineer',
                     'Engineer',
