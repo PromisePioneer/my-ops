@@ -2,16 +2,23 @@
 
 namespace App\Http\Controllers\Master\Operational;
 
+use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Master\Operational\ItemCategory\ItemCategoryRequest;
 use App\Models\ItemCategory;
+use App\Support\Master\Operational\ItemCategory\Service\ItemCategoryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-class ItemCategoryController extends Controller
+#[AllowDynamicProperties] class ItemCategoryController extends Controller
 {
-    private static int $perPage = 10;
+
+
+    public function __construct()
+    {
+        $this->itemCategoryService = new ItemCategoryService();
+    }
 
     public function index(): View
     {
@@ -21,16 +28,13 @@ class ItemCategoryController extends Controller
 
     public function data(): JsonResponse
     {
-        $data = ItemCategory::query()->orderBy('name')->paginate(self::$perPage);
-        return response()->json($data);
+        return response()->json($this->itemCategoryService->data());
     }
 
 
     public function search(Request $request): JsonResponse
     {
-        $search = $request->input('search');
-        $data = ItemCategory::search($search)->paginate(self::$perPage);
-        return response()->json($data);
+        return response()->json($this->itemCategoryService->search($request));
     }
 
     public function store(ItemCategoryRequest $request): JsonResponse

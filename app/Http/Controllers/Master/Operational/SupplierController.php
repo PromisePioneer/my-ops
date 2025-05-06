@@ -28,9 +28,7 @@ class SupplierController extends Controller
     public function search(Request $request): JsonResponse
     {
         $search = $request->input('search');
-        $supplier = Supplier::when(!empty($search), function ($query) use ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
-        })->orderBy('name')->paginate(self::$perPage);
+        $supplier = Supplier::search($search)->paginate(self::$perPage);
 
         return response()->json($supplier);
     }
