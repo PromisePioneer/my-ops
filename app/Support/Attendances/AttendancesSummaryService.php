@@ -57,29 +57,51 @@ use Illuminate\Http\Request;
         $users = $query->get();
         $weeklyLatenessMap = [];
 
-        foreach ($users as $user) {
-            $attendancesGroupedByWeek = collect($user->attendancesSummary)
-                ->groupBy(function ($attendance) {
-                    return Carbon::parse($attendance->date)->endOfWeek()->format('Y-m-d');
-                });
+        $weeklyLatenessMap = [];
 
-            foreach ($attendancesGroupedByWeek as $weekEndDate => $attendances) {
+        foreach ($users as $user) {
+            $attendances = $user->attendancesSummary;
+
+            $attendancesGroupedByWeek = collect($attendances)->groupBy(function ($item) {
+                $date = Carbon::parse($item['attendancesDate']);
+                $diffInDays = $this->startDate->diffInDays($date);
+                $groupNumber = (int)($diffInDays / 7); // tetap
+                return $this->startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString(); // Minggu berakhir
+            });
+
+            foreach ($attendancesGroupedByWeek as $weekEndDate => $weekAttendances) {
                 $weekLatenessTotal = 0;
 
-                foreach ($attendances as $attendance) {
+                foreach ($weekAttendances as $attendance) {
                     $workTime = $attendance->workTime;
-                    if (!$workTime || !$attendance->clock_in) continue;
+                    if (!$workTime || !$attendance->clock_in) {
+                        continue;
+                    }
 
                     $expectedCheckIn = Carbon::parse("{$attendance->date} {$workTime->clock_in}");
                     $actualCheckIn = Carbon::parse($attendance->clock_in);
 
-                    if ($workTime->name === "Malam") {
-                        $expectedCheckIn->addDay();
+
+                    $newExpectedCheckIn = null;
+                    if ($workTime->name === 'malam') {
+                        $newExpectedCheckIn = $expectedCheckIn->copy()->addDay();
                     }
 
+                    $employeeSchedule = EmployeeSchedule::where('employee_id', $user->absent_id)
+                        ->whereDate('start_date', $attendance->date)
+                        ->first();
+
+                    $weekHoliday = WeekHoliday::where('user_id', $user->id)
+                        ->where('day', Carbon::parse($attendance->date)->dayName)
+                        ->first();
+
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
-                        $lateness = $expectedCheckIn->diffInSeconds($actualCheckIn);
-                        $weekLatenessTotal += $lateness;
+                        if (($employeeSchedule?->status !== 'L') && !$weekHoliday) {
+                            $latenessInSeconds = $newExpectedCheckIn ?
+                                $newExpectedCheckIn->diffInSeconds($actualCheckIn) :
+                                $expectedCheckIn->diffInSeconds($actualCheckIn);
+                            $weekLatenessTotal += $latenessInSeconds;
+                        }
                     }
                 }
 
@@ -300,15 +322,12 @@ use Illuminate\Http\Request;
         }
 
 
-
-
         return new \Illuminate\Pagination\LengthAwarePaginator(
             $sorted->forPage($currentPage, self::$perPage),
             $sorted->count(),
             self::$perPage,
             $currentPage,
             ['path' => request()->url(), 'query' => request()->query()]
-
 
 
         );
@@ -377,32 +396,51 @@ use Illuminate\Http\Request;
         $users = $query->get();
         $weeklyLatenessMap = [];
 
-        foreach ($users as $user) {
-            $attendancesGroupedByWeek = collect($user->attendancesSummary)
-                ->groupBy(function ($item) use ($startDate) {
-                    $date = Carbon::parse($item['attendancesDate']);
-                    $diffInDays = $startDate->diffInDays($date);
-                    $groupNumber = floor($diffInDays / 7);
-                    return $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
-                });
+        $weeklyLatenessMap = [];
 
-            foreach ($attendancesGroupedByWeek as $weekEndDate => $attendances) {
+        foreach ($users as $user) {
+            $attendances = $user->attendancesSummary;
+
+            $attendancesGroupedByWeek = collect($attendances)->groupBy(function ($item) use ($startDate) {
+                $date = Carbon::parse($item['attendancesDate']);
+                $diffInDays = $startDate->diffInDays($date);
+                $groupNumber = (int)($diffInDays / 7); // tetap
+                return $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString(); // Minggu berakhir
+            });
+
+            foreach ($attendancesGroupedByWeek as $weekEndDate => $weekAttendances) {
                 $weekLatenessTotal = 0;
 
-                foreach ($attendances as $attendance) {
+                foreach ($weekAttendances as $attendance) {
                     $workTime = $attendance->workTime;
-                    if (!$workTime || !$attendance->clock_in) continue;
+                    if (!$workTime || !$attendance->clock_in) {
+                        continue;
+                    }
 
                     $expectedCheckIn = Carbon::parse("{$attendance->date} {$workTime->clock_in}");
                     $actualCheckIn = Carbon::parse($attendance->clock_in);
 
-                    if ($workTime->name === "Malam") {
-                        $expectedCheckIn->addDay();
+
+                    $newExpectedCheckIn = null;
+                    if ($workTime->name === 'malam') {
+                        $newExpectedCheckIn = $expectedCheckIn->copy()->addDay();
                     }
 
+                    $employeeSchedule = EmployeeSchedule::where('employee_id', $user->absent_id)
+                        ->whereDate('start_date', $attendance->date)
+                        ->first();
+
+                    $weekHoliday = WeekHoliday::where('user_id', $user->id)
+                        ->where('day', Carbon::parse($attendance->date)->dayName)
+                        ->first();
+
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
-                        $lateness = $expectedCheckIn->diffInSeconds($actualCheckIn);
-                        $weekLatenessTotal += $lateness;
+                        if (($employeeSchedule?->status !== 'L') && !$weekHoliday) {
+                            $latenessInSeconds = $newExpectedCheckIn ?
+                                $newExpectedCheckIn->diffInSeconds($actualCheckIn) :
+                                $expectedCheckIn->diffInSeconds($actualCheckIn);
+                            $weekLatenessTotal += $latenessInSeconds;
+                        }
                     }
                 }
 
@@ -411,7 +449,6 @@ use Illuminate\Http\Request;
                 }
             }
         }
-
 
         $filter = AttendanceQueryFilter::apply($query, $request);
         $aclFilter = AttendancesACLFilter::apply($filter, $request);
@@ -455,38 +492,48 @@ use Illuminate\Http\Request;
         $weeklyLatenessMap = [];
 
         foreach ($users as $user) {
-            $attendancesGroupedByWeek = collect($user->attendancesSummary)
-                ->groupBy(function ($attendance) {
-                    return Carbon::parse($attendance->date)->endOfWeek()->format('Y-m-d');
-                });
+            $attendances = $user->attendancesSummary;
 
-            foreach ($attendancesGroupedByWeek as $weekEndDate => $attendances) {
+            $attendancesGroupedByWeek = collect($attendances)->groupBy(function ($item) use ($startDate) {
+                $date = Carbon::parse($item['attendancesDate']);
+                $diffInDays = $startDate->diffInDays($date);
+                $groupNumber = (int)($diffInDays / 7); // tetap
+                return $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString(); // Minggu berakhir
+            });
+
+            foreach ($attendancesGroupedByWeek as $weekEndDate => $weekAttendances) {
                 $weekLatenessTotal = 0;
 
-                foreach ($attendances as $attendance) {
-
-                    $user = User::where('absent_id', $attendance->employee_id)->first();
-                    $employeeSchedule = EmployeeSchedule::where('employee_id', $user->absent_id)
-                        ->whereDate('start_date', $attendance->date)
-                        ->first();
-                    $weekHoliday = WeekHoliday::where('user_id', $user->id)->first();
-
-
+                foreach ($weekAttendances as $attendance) {
                     $workTime = $attendance->workTime;
-                    if (!$workTime || !$attendance->clock_in) continue;
+                    if (!$workTime || !$attendance->clock_in) {
+                        continue;
+                    }
 
                     $expectedCheckIn = Carbon::parse("{$attendance->date} {$workTime->clock_in}");
                     $actualCheckIn = Carbon::parse($attendance->clock_in);
 
-                    if ($workTime->name === "Malam") {
-                        $expectedCheckIn->addDay();
+
+                    $newExpectedCheckIn = null;
+                    if ($workTime->name === 'malam') {
+                        $newExpectedCheckIn = $expectedCheckIn->copy()->addDay();
                     }
 
+                    $employeeSchedule = EmployeeSchedule::where('employee_id', $user->absent_id)
+                        ->whereDate('start_date', $attendance->date)
+                        ->first();
+
+                    $weekHoliday = WeekHoliday::where('user_id', $user->id)
+                        ->where('day', Carbon::parse($attendance->date)->dayName)
+                        ->first();
 
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
-                        $lateness = $expectedCheckIn->diffInSeconds($actualCheckIn);
-                        if ($employeeSchedule?->status !== 'L' || $weekHoliday->day !== Carbon::parse($attendance->date)->dayName)
-                            $weekLatenessTotal += $lateness;
+                        if (($employeeSchedule?->status !== 'L') && !$weekHoliday) {
+                            $latenessInSeconds = $newExpectedCheckIn ?
+                                $newExpectedCheckIn->diffInSeconds($actualCheckIn) :
+                                $expectedCheckIn->diffInSeconds($actualCheckIn);
+                            $weekLatenessTotal += $latenessInSeconds;
+                        }
                     }
                 }
 
