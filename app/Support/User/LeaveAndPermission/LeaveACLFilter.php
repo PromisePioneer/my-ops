@@ -154,6 +154,32 @@ class LeaveACLFilter
         }
 
 
+        if ($request->user()->hasRole('Customer Service Supervisor')) {
+            $query->whereHas('user.roles', function ($query) use ($request) {
+                $query->whereIn('name', [
+                    'Customer Service Leader',
+                    'Customer Service Staff',
+                    'After Sales Customer Service',
+                    'Head Engineer',
+                    'Senior Engineer',
+                    'Engineer',
+                    'KU Head Engineer',
+                    'KU Engineer',
+                    'Quality Controller Supervisor',
+                    'Backbone Team Supervisor',
+                    'Trainer & Quality Control Staff',
+                    'Stocker Supervisor',
+                    'Programmer',
+                    'After Sales Customer Service',
+                    'Project Controller & Vendor Supervisor',
+                    'Warehouse Security',
+                    'Graphic Designer & Socmed Admin',
+                    'Warehouse Supervisor'
+                ]);
+            });
+        }
+
+
         if ($request->user()->hasRole('Quality Controller Supervisor')) {
             $query->whereHas('user.roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Quality Controller Supervisor', 'Quality Control Staff']);
