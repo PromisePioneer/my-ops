@@ -58,7 +58,7 @@
                     <template x-if="isLoading">
                         <tbody class="fw-bolder">
                         <tr>
-                            <td colspan="9">
+                            <td colspan="7">
                                 <div style="text-align: center;">
                                     <div class="spinner-border" role="status">
                                         <span class="visually-hidden">Loading...</span>
@@ -70,7 +70,7 @@
                     </template>
                     <template x-if="!isLoading && stocks.length === 0">
                         <tr>
-                            <td colspan="9">
+                            <td colspan="6">
                                 <center>Data Tidak Ditemukan</center>
                             </td>
                         </tr>
@@ -127,7 +127,7 @@
                     <template x-if="isLoading">
                         <tbody class="fw-bolder">
                         <tr>
-                            <td colspan="5">
+                            <td colspan="6">
                                 <div style="text-align: center;">
                                     <div class="spinner-border" role="status">
                                         <span class="visually-hidden">Loading...</span>
@@ -140,7 +140,7 @@
                     <template x-if="!isLoading && itemCatalog.data?.length === 0">
                         <tbody>
                         <tr>
-                            <td colspan="5">
+                            <td colspan="6">
                                 <center>Data Tidak Ditemukan</center>
                             </td>
                         </tr>
@@ -165,11 +165,13 @@
                             <td x-text="item.status"></td>
                             <td x-text="item.created_by"></td>
                             <td>
-                                <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                        data-bs-target="#modal-generate-code" @click="edit(item.id)">
-                                    <i class="ki-duotone ki-pencil fs-2">
+                                <button class="btn btn-light-danger btn-sm" @click="destroy(item.id)">
+                                    <i class="ki-duotone ki-trash fs-3">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
+                                        <span class="path3"></span>
+                                        <span class="path4"></span>
+                                        <span class="path5"></span>
                                     </i>
                                 </button>
                             </td>
@@ -187,7 +189,6 @@
         function generateStockCode() {
             return {
                 buttonLoading: false,
-                editVal: '',
                 draftStock: {},
                 isLoading: false,
                 draftStockId: "{{ $draftStock->id }}",
@@ -272,6 +273,19 @@
                     } finally {
                         this.isLoading = false
                     }
+                },
+                async destroy(id) {
+                    showConfirmModal("Anda yakin?", "Data yang dihapus tidak akan dapat kembali.", "Ya, Konfirmasi!", async () => {
+                        try {
+                            await axios.post(`/inventory/goods/item-catalog/destroy/${id}`);
+                            await showAlert('success', 'Data sukses dihapus').then(() => {
+                                location.reload();
+                            });
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
                 }
             }
         }

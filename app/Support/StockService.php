@@ -95,16 +95,8 @@ class StockService
             $totalStock = $draftStock + $stock;
 
 
-            if ($totalStock < $reorderLevel) {
-                return [
-                    'id' => $item->id,
-                    'name' => $item->name,
-                    'stock' => number_format($totalStock, 2, '.', '.'),
-                    'reorder_level' => $reorderLevel,
-                ];
-            }
-            return;
-        })->filter()->values();
+            return $totalStock < $reorderLevel ? $item->count() : null;
+        });
     }
 
 }

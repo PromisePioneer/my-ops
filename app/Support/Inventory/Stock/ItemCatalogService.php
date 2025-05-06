@@ -96,7 +96,7 @@ use Throwable;
     /**
      * @throws Throwable
      */
-    public function update(ItemCatalogRequest $request, ItemCatalog $itemCatalog): void
+    public function destroy(ItemCatalog $itemCatalog): void
     {
         $itemCatalog->load('transaction');
 
@@ -106,47 +106,18 @@ use Throwable;
             ->lockForUpdate()
             ->first();
 
-        $newStock = Stock::where('transaction_id', $itemCatalog->transaction_id)
+
+        $draftStock = DraftStock::where('transaction_id', $itemCatalog->id)
             ->where('branch_id', $itemCatalog->transaction->branch_id)
-            ->where('condition', $request->condition)
+            ->where('condition', $itemCatalog->condition)
             ->lockForUpdate()
             ->first();
-        DB::transaction(function () use ($oldStock, $newStock, $request, $itemCatalog) {
-            if (!empty($newStock && $oldStock)) {
-                if ($oldStock->condition !== $newStock->condition || $oldStock->condition !== $request->condition) {
-                    $oldStock->decrement('qty');
-                    $newStock->increment('qty');
-                    $itemCatalog->update([
-                        'stock_id' => $newStock->id,
-                        'code' => $request->code,
-                        'condition' => $request->condition,
-                        'created_by' => $request->user()->id
-                    ]);
-                }
-            } else {
+
+        DB::transaction(function () use ($oldStock, $itemCatalog) {
+            if (!empty($oldStock)) {
                 $oldStock->decrement('qty');
-                $newStockIfNotExists = Stock::create([
-                    'branch_id' => $itemCatalog->transaction->branch_id,
-                    'transaction_id' => $itemCatalog->transaction_id,
-                    'item_id' => $itemCatalog->transaction->item_id,
-                    'qty' => 1,
-                    'condition' => $request->condition
-                ]);
-
-                $itemCatalog->update([
-                    'stock_id' => $newStockIfNotExists->id,
-                    'code' => $request->code,
-                    'condition' => $request->condition,
-                    'created_by' => $request->user()->id
-                ]);
+                $itemCatalog->delete();
             }
-
-
-            $itemCatalog->update([
-                'code' => $request->code,
-                'condition' => $request->condition,
-                'created_by' => $request->user()->id,
-            ]);
         });
     }
 }

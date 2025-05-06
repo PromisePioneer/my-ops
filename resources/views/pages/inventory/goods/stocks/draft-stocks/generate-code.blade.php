@@ -14,7 +14,7 @@
                 </div>
             </div>
 
-            <form id="form-generate-code" @submit.prevent="generateItemCatalogCode(editVal?.id)">
+            <form id="form-generate-code" @submit.prevent="generateItemCatalogCode()">
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Kode / SN</label>
@@ -25,10 +25,8 @@
                     <div class="mb-10">
                         <label for="name" class="required form-label">Kondisi</label>
                         <select name="condition" id="condition" class="form-select form-select-solid">
-                            <option value="Rusak" :selected="editVal?.condition === 'Rusak'">Rusak</option>
-                            <option value="Baik" :selected="editVal?.condition === 'Baik'">Baik</option>
-                            <option value="Diperbaiki" :selected="editVal?.condition === 'Diperbaiki'">Diperbaiki
-                            </option>
+                            <option value="Baik">Baik</option>
+                            <option value="Rusak" >Rusak</option>
                         </select>
                     </div>
                 </div>
