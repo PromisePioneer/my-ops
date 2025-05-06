@@ -62,7 +62,7 @@ use Illuminate\Support\Collection;
         }
 
         $data = $user->paginate(self::$perPage);
-        return self::formattedData($data);
+        return self::formattedData($data, $startDate, $endDate);
     }
 
     public function filterByDate($request)
@@ -89,13 +89,15 @@ use Illuminate\Support\Collection;
         $allSick = $this->getSick($userIds);
         $allPermission = $this->getPermission($userIds);
         $allImportantLeaves = $this->getImportantLeaves($userIds);
+        $allOvertime = $this->getOvertime($userIds);
 
-        $data = $userData->getCollection()->map(function ($item) use ($period, $allLeaves, $allSick, $allPermission, $allImportantLeaves) {
+        $data = $userData->getCollection()->map(function ($item) use ($period, $allLeaves, $allSick, $allPermission, $allImportantLeaves, $allOvertime) {
             $schedules = $item->employeeSchedules->keyBy('start_date');
             $leaves = $allLeaves[$item->id] ?? [];
             $sick = $allSick[$item->id] ?? [];
             $permission = $allPermission[$item->id] ?? [];
             $importantLeaves = $allImportantLeaves[$item->id] ?? [];
+            $overtime = $allOvertime[$item->id] ?? [];
 
             $dates = array_fill_keys($period->toArray(), []);
 
@@ -107,6 +109,7 @@ use Illuminate\Support\Collection;
                     'sick' => $sick[$date] ?? null,
                     'permission' => $permission[$date] ?? null,
                     'importantLeaves' => $importantLeaves[$date] ?? null,
+                    'overtime' => $overtime[$date] ?? null
                 ];
             }
 
@@ -127,6 +130,7 @@ use Illuminate\Support\Collection;
                         'permission' => $date['permission'] ?? null,
                         'leaves' => $date['leaves'] ?? null,
                         'important_leaves' => $date['importantLeaves'] ?? null,
+                        'overtime' => $date['overtime'] ?? null,
                     ];
                 })->values(),
                 'area' => $item->userHasArea?->area,
@@ -157,6 +161,11 @@ use Illuminate\Support\Collection;
     private function getPermission(array $userIds): array
     {
         return $this->getLeaveData($userIds, 'Izin');
+    }
+
+    private function getOvertime(array $userIds): array
+    {
+        return $this->getLeaveData($userIds, 'Lembur');
     }
 
     private function getLeaveData(array $userIds, string $type): array

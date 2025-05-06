@@ -23,14 +23,10 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
     public function getDraftStockQty()
     {
-        $itemData = DraftStock::with('transaction')->limit(10)->get();
-        return $itemData->map(function ($itemData) {
-            return [
-                'id' => $itemData->id,
-                'name' => $itemData->transaction->item->name,
-                'total' => number_format($itemData->sum('qty'), 2, '.', '.'),
-            ];
-        });
+        $itemData = DraftStock::with('transaction')
+            ->sum('qty');
+
+        return $itemData;
     }
 
     public function data(Request $request): LengthAwarePaginator

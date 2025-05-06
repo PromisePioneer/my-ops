@@ -21,6 +21,18 @@
                         <input type="text" id="name" name="name" class="form-control form-control-solid"
                                placeholder="Nama" :value="editVal?.name ?? ''"/>
                     </div>
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Deskripsi</label>
+                        <textarea type="text" id="description" name="description"
+                                  class="form-control form-control-solid" data-kt-autosize="true"
+                                  placeholder="Deskripsi"></textarea>
+                    </div>
+                    <div class="mb-10">
+                        <label for="name" class="required form-label">Catatan</label>
+                        <textarea type="text" id="notes" name="notes"
+                                  class="form-control form-control-solid" data-kt-autosize="true"
+                                  placeholder="Deskripsi"></textarea>
+                    </div>
                 </div>
 
                 <div class="modal-footer">

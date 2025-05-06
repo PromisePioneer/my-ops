@@ -17,6 +17,7 @@ class Transaction extends Model
     protected $fillable = [
         'transaction_number',
         'branch_id',
+        'supplier_id',
         'date',
         'item_id',
         'qty',
@@ -84,5 +85,11 @@ class Transaction extends Model
     public function draftStock(): HasMany
     {
         return $this->hasMany(Transaction::class, 'item_id');
+    }
+
+
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_id');
     }
 }

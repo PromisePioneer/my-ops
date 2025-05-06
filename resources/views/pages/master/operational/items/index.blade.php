@@ -2,6 +2,7 @@
 @section('page-title', 'Master Operasional - Barang')
 @section('content')
     <div x-data="itemData()">
+        @include('pages.master.operational.item-categories.description-drawer')
         <div class="d-flex flex-column flex-xl-row">
             <div class="flex-column flex-lg-row-auto w-100 w-lg-250px mb-10">
                 <div class="card card-flush">
@@ -136,6 +137,11 @@
                                             </td>
                                             <td>
                                                 <template x-if="item.asset_account_name === null">
+                                                    <button class="btn btn-light-info btn-sm"
+                                                            id="item_category_description_drawer"
+                                                            @click="showItemCategoryDescription(item.category_id)"
+                                                            x-text="item.category_name">
+                                                    </button>
                                                     <span x-text="item.category_name"></span>
                                                 </template>
                                                 <template x-if="item.asset_account_name !== null">
@@ -194,6 +200,7 @@
                 isAset: null,
                 itemMustHaveCode: false,
                 hasSNOnItem: false,
+                itemCategoryDescription: '',
                 modalForm: new bootstrap.Modal(document.getElementById('modal-item')),
                 form: document.getElementById('form-item'),
                 itemCategoryModal: new bootstrap.Modal(document.getElementById('modal-item-category')),
@@ -470,6 +477,14 @@
                     this.modalForm.hide();
                     const resp = await axios.get(`${this.items.path}?page=${this.items.current_page}`);
                     this.items = resp.data
+                },
+                async showItemCategoryDescription(id) {
+                    try {
+                        const resp = await axios.get(`/master/operational/item-categories/${id}`);
+                        this.itemCategoryDescription = resp.data;
+                    } catch (e) {
+                        console.log(e);
+                    }
                 }
             }
         }
