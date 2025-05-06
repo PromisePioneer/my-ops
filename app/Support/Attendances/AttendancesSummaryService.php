@@ -65,8 +65,8 @@ use Illuminate\Http\Request;
             $attendancesGroupedByWeek = collect($attendances)->groupBy(function ($item) {
                 $date = Carbon::parse($item['attendancesDate']);
                 $diffInDays = $this->startDate->diffInDays($date);
-                $groupNumber = (int)($diffInDays / 7); // tetap
-                return $this->startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString(); // Minggu berakhir
+                $groupNumber = (int)($diffInDays / 7);
+                return $this->startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
             });
 
             foreach ($attendancesGroupedByWeek as $weekEndDate => $weekAttendances) {
@@ -404,8 +404,8 @@ use Illuminate\Http\Request;
             $attendancesGroupedByWeek = collect($attendances)->groupBy(function ($item) use ($startDate) {
                 $date = Carbon::parse($item['attendancesDate']);
                 $diffInDays = $startDate->diffInDays($date);
-                $groupNumber = (int)($diffInDays / 7); // tetap
-                return $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString(); // Minggu berakhir
+                $groupNumber = (int)($diffInDays / 7);
+                return $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
             });
 
             foreach ($attendancesGroupedByWeek as $weekEndDate => $weekAttendances) {
@@ -497,8 +497,8 @@ use Illuminate\Http\Request;
             $attendancesGroupedByWeek = collect($attendances)->groupBy(function ($item) use ($startDate) {
                 $date = Carbon::parse($item['attendancesDate']);
                 $diffInDays = $startDate->diffInDays($date);
-                $groupNumber = (int)($diffInDays / 7); // tetap
-                return $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString(); // Minggu berakhir
+                $groupNumber = (int)($diffInDays / 7);
+                return $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
             });
 
             foreach ($attendancesGroupedByWeek as $weekEndDate => $weekAttendances) {
