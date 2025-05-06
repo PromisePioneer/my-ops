@@ -379,11 +379,8 @@ use Illuminate\Http\Request;
 
         foreach ($users as $user) {
             $attendancesGroupedByWeek = collect($user->attendancesSummary)
-                ->groupBy(function ($item) use ($startDate) {
-                    $date = Carbon::parse($item['attendancesDate']);
-                    $diffInDays = $startDate->diffInDays($date);
-                    $groupNumber = floor($diffInDays / 7);
-                    return $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
+                ->groupBy(function ($attendance) {
+                    return Carbon::parse($attendance->date)->endOfWeek()->format('Y-m-d');
                 });
 
             foreach ($attendancesGroupedByWeek as $weekEndDate => $attendances) {
@@ -456,9 +453,12 @@ use Illuminate\Http\Request;
 
         foreach ($users as $user) {
             $attendancesGroupedByWeek = collect($user->attendancesSummary)
-                ->groupBy(function ($attendance) {
-                    return Carbon::parse($attendance->date)->endOfWeek()->format('Y-m-d');
-                });
+            ->groupBy(function ($item) use ($startDate) {
+                $date = Carbon::parse($item['attendancesDate']);
+                $diffInDays = $startDate->diffInDays($date);
+                $groupNumber = floor($diffInDays / 7);
+                return $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
+            });
 
             foreach ($attendancesGroupedByWeek as $weekEndDate => $attendances) {
                 $weekLatenessTotal = 0;
