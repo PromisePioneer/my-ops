@@ -257,12 +257,11 @@
                         })
                     })
 
-                    if (this.itemWithoutCodeFields.length > 1 && this.itemWithoutCodeFields[this.itemWithoutCodeFields.length - 1].qty !== "" && this.itemWithoutCodeFields[this.itemWithoutCodeFields.length - 1].stock_id !== "") {
-                        this.itemWithoutCodeFields.push({
+
+                    this.itemWithoutCodeFields.push({
                             stock_id: '',
                             qty: '',
                         });
-                    }
                 },
                 calculateTotal(index) {
                     const quantity = this.fields[index].qty;

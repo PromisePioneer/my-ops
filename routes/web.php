@@ -587,11 +587,15 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/leaves/data', [UserProfileController::class, 'leavesData']);
             Route::get('/leaves/search', [UserProfileController::class, 'searchLeaves']);
 
-
             Route::prefix('attendance-records')->group(function () {
                 Route::get('/', [AttendanceRecordController::class, 'index']);
                 Route::get('/data/{user?}', [AttendanceRecordController::class, 'data']);
                 Route::get('/filter/{user?}', [AttendanceRecordController::class, 'filter']);
+            });
+
+            Route::prefix('/carried-stock')->group(function () {
+                Route::get('/', [UserProfileController::class, 'carriedStockPage']);
+                Route::get('/data', [UserProfileController::class, 'getCarriedStock']);
             });
         });
     });
@@ -683,7 +687,9 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/data', [StockWithdrawalController::class, 'data']);
                 Route::get('/create', [StockWithdrawalController::class, 'create']);
                 Route::post('/store', [StockWithdrawalController::class, 'store']);
+                Route::get('/edit/{stockWithdrawal}', [StockWithdrawalController::class, 'edit']);
                 Route::get('/show/{stockWithdrawal}', [StockWithdrawalController::class, 'show']);
+                Route::delete('/destroy/{stockWithdrawal}', [StockWithdrawalController::class, 'destroy']);
             });
 
             Route::prefix('consumed-stocks')->group(function () {

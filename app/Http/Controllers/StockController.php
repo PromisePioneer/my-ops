@@ -127,7 +127,8 @@ use Illuminate\View\View;
 
     public function getStockBasedOnDraftStock(DraftStock $draftStock)
     {
-        $stock = Stock::with('transaction', 'branch', 'item')->where('transaction_id', $draftStock->id)->get();
+        $stock = Stock::with('transaction', 'branch', 'item')
+            ->where('transaction_id', $draftStock->transaction_id)->get();
         return $stock->map(function ($stock) {
             return [
                 'id' => $stock->id,
@@ -151,6 +152,9 @@ use Illuminate\View\View;
     public function getStockWithCode()
     {
         $stock = Stock::with('item', 'itemCatalog')
+            ->whereHas('item.category', function ($query) {
+                $query->where('name', '!=', 'Kategori 4');
+            })
             ->whereIn('condition', ['Baik', 'Diperbaiki'])
             ->get();
 
