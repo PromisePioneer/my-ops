@@ -4,7 +4,7 @@ namespace App\Support\UserProfileService;
 
 use AllowDynamicProperties;
 use App\Http\Requests\AttendancesSummaryFilterByDateRequest;
-use App\Support\Attendances\AttendanceSummaryDetailService;
+use App\Support\Attendances\AttendanceSummary\AttendanceSummaryDetailService;
 use App\Support\HelperService\FinancialClosePeriodService;
 use Illuminate\Http\Request;
 

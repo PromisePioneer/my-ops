@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\Attendances;
+namespace App\Support\Attendances\AttendanceSummary;
 
 use App\Http\Requests\AttendancesSummaryFilterByDateRequest;
 use App\Models\AttendancesSummary;
@@ -13,7 +13,6 @@ use App\Support\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 
 class AttendanceSummaryDetailService
 {
@@ -22,12 +21,6 @@ class AttendanceSummaryDetailService
     public function __construct()
     {
         $this->financialClosePeriodService = new FinancialClosePeriodService();
-    }
-
-    public static function concatenateExpectedCheckInTime($attendance, $userWorkTime): string
-    {
-        $expectedCheckInTime = $userWorkTime->clock_in;
-        return Carbon::parse($attendance->timestamp)->format('Y-m-d') . ' ' . $expectedCheckInTime;
     }
 
 
@@ -82,16 +75,30 @@ class AttendanceSummaryDetailService
             ]);
         }
 
-        $weeklyAttendances = collect($dates)->groupBy(function ($item) use ($startDate) {
-            $date = Carbon::parse($item['attendancesDate']);
-            $diffInDays = $startDate->diffInDays($date);
-            $groupNumber = floor($diffInDays / 7);
-            return $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
-        });
+        $datesCollection = collect($dates)->values(); // buang key, biar indexing rapih
+        $weeklyAttendances = collect();
+        $totalDays = $datesCollection->count();
+        $chunkSize = 7;
+
+
+        for ($i = 0; $i < $totalDays; $i += $chunkSize) {
+            $chunk = $datesCollection->slice($i, $chunkSize);
+            $lastDateInChunk = Carbon::parse($chunk->last()['attendancesDate']);
+
+            if ($i + $chunkSize >= $totalDays) {
+                $key = $endDate->toDateString(); // <= minggu terakhir
+            } else {
+                $key = $lastDateInChunk->toDateString();
+            }
+
+            $weeklyAttendances->put($key, $chunk);
+        }
 
 
         $weekLatenessMap = [];
         foreach ($weeklyAttendances as $weekEndDate => $weekDays) {
+
+
             $weekLatenessTotal = 0;
             $weekLatenessDetails = [];
 
@@ -115,28 +122,28 @@ class AttendanceSummaryDetailService
                         $lateness = $newExpectedCheckIn ?
                             $newExpectedCheckIn->diffInSeconds($actualCheckIn) :
                             $expectedCheckIn->diffInSeconds($actualCheckIn);
-                            if($day['employeeSchedule']?->status !== 'L' || $weekHoliday->day !== Carbon::parse($day['attendancesDate'])->dayName){
-                                $weekLatenessDetails[$day['attendancesDate']] = $lateness;
-                                $weekLatenessTotal += $lateness;
-                            }
+                        if ($day['employeeSchedule']?->status !== 'L' || $weekHoliday->day !== Carbon::parse($day['attendancesDate'])->dayName) {
+                            $weekLatenessDetails[$day['attendancesDate']] = $lateness;
+                            $weekLatenessTotal += $lateness;
+                        }
 
                     }
                 }
             }
 
-            // Then decide if we should count lateness for this week
+
             if ($weekLatenessTotal > 900) {
                 $weekLatenessMap[$weekEndDate] = number_format($weekLatenessTotal / 60);
             }
         }
 
         $weeklyLateness = $weekLatenessMap;
-        return self::formattedData(collect($dates), $weeklyLateness, $empId, $startDate);
+        return self::formattedData(collect($dates), $weeklyLateness, $empId, $startDate, $endDate);
     }
 
-    public function formattedData($attendanceSummary, $weeklyLatenessMap, $empId, $startDate)
+    public function formattedData($attendanceSummary, $weeklyLatenessMap, $empId, $startDate, $endDate)
     {
-        return $attendanceSummary->map(function ($item) use ($empId, $weeklyLatenessMap, $startDate) {
+        return $attendanceSummary->map(function ($item) use ($empId, $weeklyLatenessMap, $startDate, $endDate) {
             $userWorktime = WorkTime::where('id', $item['attendanceData']?->work_time_id)->first()
                 ?? null;
 
@@ -146,15 +153,22 @@ class AttendanceSummaryDetailService
             $empSchedule = $item['employeeSchedule']?->status ?? $isHoliday;
             $attendanceDate = Carbon::parse($item['attendancesDate']);
             $diffInDays = $startDate->diffInDays($attendanceDate);
-            $groupNumber = floor($diffInDays / 7);
-            $weekEndDate = $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
+            $weekIndex = floor($diffInDays / 7);
+            $weekStart = $startDate->copy()->addDays($weekIndex * 7);
+            $weekEnd = $weekStart->copy()->addDays(6);
 
+            // Jika minggu terakhir, pakai endDate sebagai key
+            if ($weekEnd->greaterThan($endDate)) {
+                $weekEnd = $endDate->copy();
+            }
 
-            $totalWeeklyLateness = $weeklyLatenessMap[$weekEndDate] ?? 0;
+            $weekEndKey = $weekEnd->toDateString();
+            $totalWeeklyLateness = $weeklyLatenessMap[$weekEndKey] ?? 0;
+
 
             return [
                 'id' => $item['attendanceData']?->id,
-                'weekly_lateness' => $item['attendancesDate'] == $weekEndDate ? $totalWeeklyLateness : null,
+                'weekly_lateness' => $item['attendancesDate'] == $weekEndKey ? $totalWeeklyLateness : null,
                 'date_period' => $item['attendancesDate'],
                 'clock_in' => Carbon::make($item['attendanceData']?->clock_in)?->format('d/m/Y H:i:s') ?? null,
                 'clock_out' => Carbon::make($item['attendanceData']?->clock_out)?->format('d/m/Y H:i:s') ?? null,
@@ -168,34 +182,6 @@ class AttendanceSummaryDetailService
                 'overtimes' => $item['overtimes'] ?? null
             ];
         });
-    }
-
-
-    public function calculateWeeklyLateTotal($value, $userWorktime = null)
-    {
-        $total = 0;
-        if (!empty($userWorktime) && !empty($value['attendanceData']?->clock_in)) {
-            $workDate = $value['attendanceData']?->date;
-            $expectedCheckIn = Carbon::parse("$workDate {$userWorktime->clock_in}");
-            $actualCheckIn = Carbon::parse($value['attendanceData']?->clock_in);
-
-
-            $newExpectedCheckIn = null;
-            if ($userWorktime->name === "Malam") {
-                $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
-            }
-
-            if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
-                $lateness = $newExpectedCheckIn ? $newExpectedCheckIn->diffInSeconds($actualCheckIn) : $expectedCheckIn->diffInSeconds($actualCheckIn);
-                if ($lateness > 900) {
-                    $total += $lateness;
-                }
-            }
-        }
-
-
-        return number_format($total / 60);
-
     }
 
 
@@ -413,10 +399,8 @@ class AttendanceSummaryDetailService
 
 
         $weekLatenessMap = [];
-        // Calculate weekly lateness for each week
         foreach ($weeklyAttendances as $weekEndDate => $weekDays) {
             $weekLatenessTotal = 0;
-            $weekLatenessDetails = [];
 
             foreach ($weekDays as $day) {
                 $userWorktime = null;
@@ -438,7 +422,6 @@ class AttendanceSummaryDetailService
                         $lateness = $newExpectedCheckIn ?
                             $newExpectedCheckIn->diffInSeconds($actualCheckIn) :
                             $expectedCheckIn->diffInSeconds($actualCheckIn);
-                        $weekLatenessDetails[$day['attendancesDate']] = $lateness;
                         $weekLatenessTotal += $lateness;
                     }
                 }
@@ -452,7 +435,7 @@ class AttendanceSummaryDetailService
         $weeklyLateness = $weekLatenessMap;
 
 
-        return self::formattedData(collect($dates), $weeklyLateness, $user->absent_id, $startDate);
+        return self::formattedData(collect($dates), $weeklyLateness, $user->absent_id, $startDate, $endDate);
     }
 
     private function getOvertimes($user, mixed $startDate, mixed $endDate): array

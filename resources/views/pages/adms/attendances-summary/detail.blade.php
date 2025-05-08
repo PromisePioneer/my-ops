@@ -204,54 +204,6 @@
                 async init() {
                     await this.getAttendanceSummaryRecords();
                     await this.getWorkTimes();
-                    console.log(this.lateWeek())
-                },
-                lateWeek() {
-                    const perWeek = {};
-                    for (const date in this.attendancesSummaryRecords) {
-                        const record = this.attendancesSummaryRecords[date];
-                        if (!record) continue;
-
-                        const week = this.getISOWeek(date);
-                        if (!perWeek[week]) {
-                            perWeek[week] = {
-                                totalLate: 0,
-                            };
-                        }
-                        perWeek[week].totalLate += +record.late;
-                    }
-
-                    const perWeekArray = Object.entries(perWeek).map(([week, data]) => ({
-                        date: week, ...data
-                    }));
-
-                    for (const key in perWeekArray) {
-                        perWeekArray[key].totalLate = perWeekArray[key].totalLate > 15 ? perWeekArray[key].totalLate : 0;
-                    }
-
-                    console.log(perWeekArray)
-
-                    for (const attendanceDate in this.attendancesSummaryRecords) {
-
-                        perWeekArray.map((val) => {
-                            if (attendanceDate == val.date) {
-                                this.attendancesSummaryRecords[attendanceDate] = ({
-                                    ...this.attendancesSummaryRecords[attendanceDate], ...val
-                                });
-                            }
-                        })
-                    }
-
-
-                    return this.attendancesSummaryRecords;
-                },
-                getISOWeek(dateStr) {
-                    const date = new Date(dateStr);
-                    const dayNum = date.getUTCDay() || 7;
-                    date.setUTCDate(date.getUTCDate() + 4 - dayNum);
-                    const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-                    const weekNo = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
-                    return `${date.toISOString().split('T')[0]}`;
                 },
                 async getAttendanceSummaryRecords() {
                     try {
@@ -259,7 +211,6 @@
                         this.attendancesSummaryRecords = [];
                         const resp = await axios.get(`/adms/attendances-summary/detail/data/${this.id}/${this.startDates}/${this.endDates}`);
                         this.attendancesSummaryRecords = resp.data;
-                        const perWeekArray = this.lateWeek();
                     } catch (e) {
                         console.log(e)
                     } finally {

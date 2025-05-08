@@ -4,7 +4,7 @@ namespace App\Support;
 
 use AllowDynamicProperties;
 use App\Models\User;
-use App\Support\Attendances\AttendancesSummaryService;
+use App\Support\Attendances\AttendanceSummary\AttendancesSummaryService;
 use App\Support\HelperService\FinancialClosePeriodService;
 use Illuminate\Support\Collection;
 
