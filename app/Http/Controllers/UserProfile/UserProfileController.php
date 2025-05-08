@@ -11,6 +11,7 @@ use App\Models\JobInformation;
 use App\Models\SP;
 use App\Models\User;
 use App\Support\HelperService\HandleFileUploadService;
+use App\Support\Inventory\Stock\StockWithdrawal\Service\StockWithdrawalService;
 use App\Support\User\LeaveAndPermission\LeaveAndPermissionService;
 use App\Support\User\SP\SPService;
 use Illuminate\Http\JsonResponse;
@@ -28,6 +29,7 @@ use Illuminate\View\View;
         $this->sp = new SP();
         $this->SPService = new SPService();
         $this->leaveAndPermissionService = new LeaveAndPermissionService();
+        $this->stockWithdrawalService = new StockWithdrawalService();
     }
 
     public function index(): View
@@ -94,6 +96,17 @@ use Illuminate\View\View;
     public function leavesData(Request $request): JsonResponse
     {
         return response()->json($this->leaveAndPermissionService->getOwnleaves($request));
+    }
+
+
+    public function carriedStockPage(): View
+    {
+        return view('pages.utilities.user-profile.carried-stock.index');
+    }
+
+    public function getCarriedStock(): JsonResponse
+    {
+        return response()->json($this->stockWithdrawalService->getCarriedStock());
     }
 
 }

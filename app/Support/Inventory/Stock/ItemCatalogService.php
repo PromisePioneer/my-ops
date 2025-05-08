@@ -7,6 +7,8 @@ use App\Http\Requests\ItemCatalogRequest;
 use App\Models\DraftStock;
 use App\Models\ItemCatalog;
 use App\Models\Stock;
+use App\Models\StockWithdrawal;
+use App\Models\StockWithdrawalItem;
 use App\Support\Inventory\Stock\DraftStock\Repository\ItemCatalogRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -107,17 +109,33 @@ use Throwable;
             ->first();
 
 
-        $draftStock = DraftStock::where('transaction_id', $itemCatalog->id)
-            ->where('branch_id', $itemCatalog->transaction->branch_id)
-            ->where('condition', $itemCatalog->condition)
-            ->lockForUpdate()
-            ->first();
-
         DB::transaction(function () use ($oldStock, $itemCatalog) {
             if (!empty($oldStock)) {
+                $draftStock = DraftStock::whereHas('transaction', function ($query) use ($itemCatalog) {
+                    $query->where('id', $itemCatalog->transaction_id)
+                        ->where('branch_id', $itemCatalog->transaction->branch_id);
+                })->increment('qty');
+
+
                 $oldStock->decrement('qty');
                 $itemCatalog->delete();
             }
+        });
+    }
+
+
+    public function getSelectedItemCatalogByStockWithdrawalId(StockWithdrawal $stockWithdrawal)
+    {
+        $data = StockWithdrawalItem::with('stock', 'stock.transaction.item')->whereHas('stock.transaction.item.category', function ($query) {
+            $query->where('name', '!=', 'Kategori 4');
+        })->where('stock_withdrawal_id', $stockWithdrawal->id)->get();
+
+        return $data->map(function ($query) {
+
+            return [
+                'id' => $query->id,
+                'code' => "SN: {$query->code}"
+            ];
         });
     }
 }

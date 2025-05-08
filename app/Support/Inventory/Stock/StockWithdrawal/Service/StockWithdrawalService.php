@@ -97,7 +97,7 @@ use Throwable;
         if ($request['itemWithoutCodeFields']) {
             foreach ($request['itemWithoutCodeFields'] as $key => $value) {
                 $stockWithoutCode = Stock::with('item', 'itemCatalog')->where('id', $value['stock_id'])->first();
-                $stockWithoutCode->decrement('qty');
+                $stockWithoutCode->decrement('qty', $value['qty']);
                 $value['stock_withdrawal_id'] = $stockWithdrawal->id;
                 $value['stock_id'] = $stockWithoutCode->id;
                 StockWithdrawalItem::create($value);
@@ -117,5 +117,46 @@ use Throwable;
                 ]);
             }
         }
+    }
+
+
+    public function getUsers(StockWithdrawal $stockWithdrawal)
+    {
+        $data = StockWithdrawalByEmployee::with('user')
+            ->where('stock_withdrawal_id', $stockWithdrawal->id)
+            ->get();
+
+
+        return $data->map(function ($query) {
+            return [
+                'id' => $query->id,
+                'name' => $query->user->name
+            ];
+        });
+    }
+
+    public function getCarriedStock()
+    {
+        $data = StockWithdrawal::with('stockWithdrawalByEmployee', 'stockWithdrawalItem', 'stockWithdrawalItem.stock.item')->whereHas('stockWithdrawalByEmployee', function ($query) {
+            $query->where('user_id', auth()->user()->id);
+        })->where('date', Carbon::now()->format('Y-m-d'))->paginate(self::$perPage);
+
+        $carriedStock = $data->flatMap(function ($query) {
+
+            return $query->stockWithdrawalItem->map(function ($item) use ($query) {
+                $item->load('stock.item');
+                return [
+                    'id' => $item->id,
+                    'name' => $item->stock->item->name,
+                    'code' => $item->code,
+                    'stock_withdrawal_id' => $item->stock_withdrawal_id,
+                    'qty' => $item->qty,
+                    'status' => $query->status
+                ];
+            });
+        });
+
+        $data->setCollection($carriedStock);
+        return $data;
     }
 }

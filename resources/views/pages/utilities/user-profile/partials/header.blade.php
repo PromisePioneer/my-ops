@@ -61,6 +61,10 @@
                        href="{{ url('utility/user-profile/profile-detail') }}">Detail Profil</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link text-active-primary me-6 {{ Request::segment(3) === 'carried-stock' ? 'active' : '' }}"
+                       href="{{ url('utility/user-profile/carried-stock') }}">Barang Saya</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link text-active-primary me-6 {{ Request::segment(3) === 'notification-detail' ? 'active' : '' }}"
                        href="{{ url('utility/user-profile/notification-detail') }}">Aktifitas</a>
                 </li>
@@ -72,6 +76,7 @@
                     <a class="nav-link text-active-primary me-6 {{ Request::segment(3) === 'leaves' ? 'active' : '' }}"
                        href="{{ url('utility/user-profile/leaves') }}">Riwayat Cuti</a>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link text-active-primary me-6 {{ Request::segment(3) === 'attendance-records' ? 'active' : '' }}"
                        href="{{ url('utility/user-profile/attendance-records') }}">Riwayat Absensi</a>

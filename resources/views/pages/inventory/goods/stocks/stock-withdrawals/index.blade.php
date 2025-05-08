@@ -96,10 +96,24 @@
                                     <td class="text-center" x-text="stockWithdrawal.date"></td>
                                     <td class="text-center" x-text="stockWithdrawal.description"></td>
                                     <td class="text-center">
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                        <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-stock-withdrawal-detail"
                                                 @click="showDetail(stockWithdrawal.id)">
-                                            <i class="fa-solid fa-circle-info"></i>
+                                            <i class="ki-duotone ki-information fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                            </i>
+                                        </button>
+                                        <button class="btn btn-light-danger btn-sm"
+                                                @click="destroy(stockWithdrawal.id)">
+                                            <i class="ki-duotone ki-trash fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                                <span class="path4"></span>
+                                                <span class="path5"></span>
+                                            </i>
                                         </button>
                                     </td>
                                 </tr>
@@ -191,6 +205,18 @@
                         lightbox.open();
                     }
                 },
+                async destroy(id) {
+                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                        try {
+                            await axios.delete(`/inventory/goods/stock-withdrawals/destroy/${id}`);
+                            await showAlert('success', 'Data sukses dihapus');
+                            await this.init();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
+                }
             }
         }
     </script>

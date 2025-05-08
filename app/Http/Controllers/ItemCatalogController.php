@@ -6,6 +6,7 @@ use AllowDynamicProperties;
 use App\Http\Requests\ItemCatalogRequest;
 use App\Models\DraftStock;
 use App\Models\ItemCatalog;
+use App\Models\StockWithdrawal;
 use App\Support\Inventory\Stock\ItemCatalogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -53,6 +54,12 @@ use Throwable;
     {
         $this->itemCatalogService->destroy($itemCatalog);
         return response()->json(['message' => 'Data berhasil disimpan']);
+    }
+
+
+    public function getSelectedItemCatalogByStockWithdrawalId(StockWithdrawal $stockWithdrawal): JsonResponse
+    {
+        return response()->json($this->itemCatalogService->getSelectedItemCatalogByStockWithdrawalId($stockWithdrawal));
     }
 
 }

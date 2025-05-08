@@ -58,8 +58,8 @@
                                         <tbody>
                                         <template x-for="item in stockWithdrawalDetail.stock_withdrawal_items">
                                             <tr>
-                                                <td x-text="item.item_name"></td>
                                                 <td x-text="item.code ?? '-'"></td>
+                                                <td x-text="item.item_name"></td>
                                                 <td x-text="item.qty"></td>
                                             </tr>
                                         </template>
