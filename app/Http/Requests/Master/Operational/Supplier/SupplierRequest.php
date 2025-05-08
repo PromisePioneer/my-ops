@@ -39,7 +39,7 @@ class SupplierRequest extends FormRequest
             'bank_name' => ['required'],
             'npwp' => ['nullable'],
             'description' => ['nullable'],
-            'tax_type' => ['required', Rule::in('PPN', 'PPH 23')],
+            'tax_type' => ['required', Rule::in('PKP', 'NON PKP')],
         ];
     }
 

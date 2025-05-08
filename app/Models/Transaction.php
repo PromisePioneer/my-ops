@@ -33,6 +33,7 @@ class Transaction extends Model
         'final_notes',
         'approved_by',
         'attachment',
+        'tax_invoice'
     ];
 
 

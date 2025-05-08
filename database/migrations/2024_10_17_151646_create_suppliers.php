@@ -27,7 +27,7 @@ return new class extends Migration {
             $table->string('bank_name')->nullable();
             $table->string('npwp')->nullable();
             $table->string('description')->nullable();
-            $table->enum('tax_type', ['PPN', 'PPH 23']);
+            $table->enum('tax_type', ['PKP', 'NON PKP']);
             $table->timestamps();
         });
     }

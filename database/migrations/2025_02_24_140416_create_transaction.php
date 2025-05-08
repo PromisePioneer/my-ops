@@ -29,6 +29,7 @@ return new class extends Migration {
             $table->decimal('total_price', 15, 4);
             $table->text('detail');
             $table->string('attachment');
+            $table->string('tax_invoice');
             $table->foreignId('debit_account_id')
                 ->constrained('accounts')
                 ->cascadeOnDelete();

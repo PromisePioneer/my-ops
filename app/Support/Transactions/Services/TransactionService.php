@@ -5,9 +5,11 @@ namespace App\Support\Transactions\Services;
 use AllowDynamicProperties;
 use App\Http\Requests\TransactionConfirmationRequest;
 use App\Http\Requests\TransactionRequest;
+use App\Models\Account;
 use App\Models\DraftStock;
 use App\Models\Master\Common\Branch;
 use App\Models\Stock;
+use App\Models\TaxSetting;
 use App\Models\Transaction;
 use App\Support\AccountTransactions\AccountTransactionService;
 use App\Support\HelperService\HandleFileUploadService;
@@ -137,6 +139,11 @@ use function App\Helper\formatDate;
                 'documents/transaction/item-transactions/',
                 'attachment',
             ),
+            'tax_invoice' => $this->handleUploadService->upload(
+                $request,
+                'documents/transaction/tax-invoice/',
+                'tax_invoice',
+            )
         ]);
     }
 
@@ -197,8 +204,10 @@ use function App\Helper\formatDate;
             ]);
 
             if ($request->input('status') === 'Diterima') {
+                $ppnAccount = Account::where('code', '115-01')->first();
+                $taxSetting = TaxSetting::where('name', 'PPN')->first();
                 foreach ($explodeID as $transactionId) {
-                    $transaction = Transaction::with('item.category')->where('id', $transactionId)->first();
+                    $transaction = Transaction::with('item.category', 'supplier')->where('id', $transactionId)->first();
                     $branch = Branch::with('parent')->where('id', $transaction->branch_id)->first();
 
                     if ($transaction->item->category->name !== 'Kategori 4') {
@@ -217,6 +226,9 @@ use function App\Helper\formatDate;
                     }
 
 
+                    $ppnTotal = ($taxSetting->rate / 100) * $transaction->total_price;
+
+
                     $this->accountTransactionService->createDebitTransaction(
                         $branch->parent->id,
                         $transaction->detail,
@@ -231,6 +243,16 @@ use function App\Helper\formatDate;
                         $transaction->credit_account_id,
                         $transaction->total_price,
                         $transaction->id
+                    );
+
+
+                    //ppn
+                    $this->accountTransactionService->createDebitTransaction(
+                        $branch->parent->id,
+                        $transaction->detail,
+                        $ppnAccount->id,
+                        $ppnTotal,
+                        $transaction->id,
                     );
                 }
             }

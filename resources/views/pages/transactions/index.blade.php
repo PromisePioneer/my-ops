@@ -301,7 +301,8 @@
                 search: '',
                 editVal: '',
                 userList: [],
-                imgsrc: [],
+                attachmentImgSrc: [],
+                taxInvoiceImgSrc: [],
                 attachments: [],
                 isAset: null,
                 branchVal: false,
@@ -358,8 +359,9 @@
                     });
                     this.selectedCheckBox.shift();
                 },
-                previewFile() {
-                    let files = this.$refs.myFile.files;
+
+                previewAttachmentFile() {
+                    let files = this.$refs.attachmentFile.files;
                     if (!files.length) return;
 
                     Array.from(files).forEach(file => {
@@ -367,7 +369,21 @@
 
                         let reader = new FileReader();
                         reader.onload = e => {
-                            this.imgsrc = e.target.result;
+                            this.attachmentImgSrc = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                },
+                previewTaxInvoiceFile() {
+                    let files = this.$refs.taxInvoiceFile.files;
+                    if (!files.length) return;
+
+                    Array.from(files).forEach(file => {
+                        if (!file.type.startsWith('image/')) return;
+
+                        let reader = new FileReader();
+                        reader.onload = e => {
+                            this.taxInvoiceImgSrc = e.target.result;
                         };
                         reader.readAsDataURL(file);
                     });
@@ -452,13 +468,22 @@
                         this.buttonLoading = false;
                     }
                 },
-                openImage() {
+                openAttachmentImage() {
                     const lightbox = new FsLightbox();
                     const storage = "{{ Storage::url('')  }}"
                     if (this.editVal) {
-                        lightbox.props.sources = [storage + this.imgsrc[0]];
+                        lightbox.props.sources = [storage + this.attachmentImgSrc[0]];
                     }
-                    lightbox.props.sources = [this.imgsrc];
+                    lightbox.props.sources = [this.attachmentImgSrc];
+                    lightbox.open();
+                },
+                openTaxInvoiceImage() {
+                    const lightbox = new FsLightbox();
+                    const storage = "{{ Storage::url('')  }}"
+                    if (this.editVal) {
+                        lightbox.props.sources = [storage + this.taxInvoiceImgSrc[0]];
+                    }
+                    lightbox.props.sources = [this.taxInvoiceImgSrc];
                     lightbox.open();
                 },
                 openImageList(imagePath) {

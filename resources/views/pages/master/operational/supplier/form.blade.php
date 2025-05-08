@@ -162,11 +162,11 @@
                             <div class="mb-4">
                                 <label for="name" class="required form-label">Pajak</label>
                                 <select name="tax_type" id="tax_type" class="form-select form-select-solid">
-                                    <option value="PPN" :selected="editVal?.tax_type ==='PPN'">
-                                        PPN
+                                    <option value="PKP" :selected="editVal?.tax_type ==='PKP'">
+                                        PKP
                                     </option>
-                                    <option value="PPH 23" :selected="editVal?.tax_type ==='PPH 23'">
-                                        PPH 23
+                                    <option value="NON PKP" :selected="editVal?.tax_type ==='NON PKP'">
+                                        NON PKP
                                     </option>
                                 </select>
                             </div>

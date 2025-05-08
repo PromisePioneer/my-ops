@@ -76,16 +76,34 @@
 <div class="row mb-10">
     <div class="col-lg-6">
         <label for="name" class="required form-label">Bukti Transaksi</label>
-        <input type="file" class="form-control form-control-solid" @change="previewFile()"
-               accept="image/*" x-ref="myFile" name="attachment" id="attachment">
+        <input type="file" class="form-control form-control-solid" @change="previewAttachmentFile()"
+               accept="image/*" x-ref="attachmentFile" name="attachment" id="attachment">
     </div>
     <div class="col-lg-6">
+        <label for="name" class="required form-label">Faktur Pajak</label>
+        <input type="file" class="form-control form-control-solid" @change="previewTaxInvoiceFile()"
+               accept="image/*" x-ref="taxInvoiceFile" name="tax_invoice" id="tax_invoice">
+    </div>
+</div>
+
+
+<div class="row mb-10">
+    <div class="col-lg-6">
         <label
-            :class="`${imgsrc.length > 0 ? 'col-form-label required fw-bold fs-6' : 'd-none'}`">
+            :class="`${attachmentImgSrc.length > 0 ? 'col-form-label required fw-bold fs-6' : 'd-none'}`">
             Preview
         </label>
         <div class="col-md-4">
-            <img :src="imgsrc" class="img-fluid" @click="openImage(imgsrc)">
+            <img :src="attachmentImgSrc" class="img-fluid" @click="openAttachmentImage(attachmentImgSrc)">
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <label
+            :class="`${taxInvoiceImgSrc.length > 0 ? 'col-form-label required fw-bold fs-6' : 'd-none'}`">
+            Preview
+        </label>
+        <div class="col-md-4">
+            <img :src="taxInvoiceImgSrc" class="img-fluid" @click="openTaxInvoiceImage(taxInvoiceImgSrc)">
         </div>
     </div>
 
