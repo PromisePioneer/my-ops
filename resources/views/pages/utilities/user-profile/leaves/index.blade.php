@@ -18,7 +18,7 @@
                             <button class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-form"
-                                    @click="add()"
+                                    {{-- @click="add()" --}}
                             >
                                 Tambah
                             </button>
@@ -117,13 +117,14 @@
                 isLoading: false,
                 leaves: [],
                 startIndex: 0,
-                leavesStatus: null,
+                leavesStatus: false,
                 modalForm: new bootstrap.Modal(document.getElementById('modal-form')),
                 editVal: '',
                 search: '',
                 form: document.getElementById('form'),
                 leavesLeft: 0,
                 userId: "{{ Auth::id() }}",
+                sickLetter: null,
                 async init() {
                     await this.getOwnLeaves();
                     await this.getLeavesLeft();
@@ -176,9 +177,11 @@
                     this.editVal = resp.data;
                     this.leavesStatus = this.editVal.leaves_status
                 },
-                async save(id) {
+                async save(id =null) {
                     this.buttonLoading = true;
                     try {
+                        console.log(id);
+
                         if (!id) {
                             await axios.post('/manage-users/leaves/', new FormData(this.form))
                                 .then(async () => {

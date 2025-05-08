@@ -160,7 +160,8 @@ class LeaveAndPermissionRequest extends FormRequest
             'start_date.required' => 'Tanggal awal tidak boleh kosong',
             'start_date.date' => 'Tanggal awal harus berupa tanggal',
             'end_date.required' => 'Tanggal akhir tidak boleh kosong',
-            'leaves_status' => 'Status Cuti tidak boleh kosong',
+            'leaves_status.required' => 'Status Cuti tidak boleh kosong',
+            'sick_letter.required' => 'Surat Sakit tidak boleh kosong.'
         ];
     }
 }

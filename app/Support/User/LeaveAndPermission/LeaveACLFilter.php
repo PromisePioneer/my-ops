@@ -49,17 +49,6 @@ class LeaveACLFilter
         }
 
 
-        if ($request->user()->hasRole('General Manager')) {
-            $query->whereHas('user.roles', function ($query) {
-                $query->whereIn('name', [
-                    'Inventory Controller Supervisor',
-                    'Stocker Supervisor',
-                    'Stocker Staff',
-                ]);
-            });
-        }
-
-
         if ($request->user()->hasRole('FA & Tax Manager')) {
             $query->whereHas('user.roles', function ($query) {
                 $query->whereIn('name', [

@@ -97,15 +97,7 @@ class UserSelect2QueryFilter
 
 
 
-        if ($request->user()->hasRole('General Manager')) {
-            $query->whereHas('roles', function ($query) {
-                $query->whereIn('name', [
-                    'Inventory Controller Supervisor',
-                    'Stocker Supervisor',
-                    'Stocker Staff',
-                ]);
-            });
-        }
+
 
         if ($request->user()->hasRole('Customer Service Supervisor')) {
             $query->whereHas('roles', function ($query) use ($request) {
