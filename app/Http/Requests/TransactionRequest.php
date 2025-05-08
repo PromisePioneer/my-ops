@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\AccountTransaction;
 use App\Models\Master\Common\Branch;
+use App\Models\Supplier;
 use Carbon\Carbon;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -28,6 +29,9 @@ class TransactionRequest extends FormRequest
      */
     public function rules(Request $request): array
     {
+        $supplier = Supplier::where('id', $request->supplier_id)->first();
+
+
         return [
             'branch_id' => [Rule::exists('branches', 'id')],
             'detail' => ['required'],
@@ -42,7 +46,7 @@ class TransactionRequest extends FormRequest
                 Rule::requiredIf($this->route('transaction') === null),
                 'mimes:jpg,jpeg,png', 'max:2048'],
             'tax_invoice' => [
-                Rule::requiredIf($this->route('transaction') === null),
+                Rule::requiredIf($supplier->tax_type === 'PKP'),
                 'mimes:jpg,jpeg,png', 'max:2048'],
         ];
     }
@@ -54,8 +58,8 @@ class TransactionRequest extends FormRequest
             'branch_id.required' => 'Cabang tidak boleh kosong',
             'branch_id.exists' => 'Cabang tidak ditemukan',
             'detail.required' => 'Detail tidak boleh kosong',
-            'goods_id.required' => 'Barang tidak boleh kosong',
-            'goods_id.exists' => 'Barang tidak ditemukan',
+            'item_id.required' => 'Barang tidak boleh kosong',
+            'item_id.exists' => 'Barang tidak ditemukan',
             'qty.required' => 'Qty tidak boleh kosong',
             'qty.numeric' => 'Qty harus berupa angka',
             'unit_price.required' => 'Harga tidak boleh kosong',

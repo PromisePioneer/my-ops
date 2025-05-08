@@ -79,7 +79,7 @@
         <input type="file" class="form-control form-control-solid" @change="previewAttachmentFile()"
                accept="image/*" x-ref="attachmentFile" name="attachment" id="attachment">
     </div>
-    <div class="col-lg-6">
+    <div class="col-lg-6" x-show="PKP" x-cloak x-transition>
         <label for="name" class="required form-label">Faktur Pajak</label>
         <input type="file" class="form-control form-control-solid" @change="previewTaxInvoiceFile()"
                accept="image/*" x-ref="taxInvoiceFile" name="tax_invoice" id="tax_invoice">

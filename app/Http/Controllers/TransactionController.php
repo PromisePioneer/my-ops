@@ -6,6 +6,7 @@ use AllowDynamicProperties;
 use App\Http\Requests\TransactionConfirmationRequest;
 use App\Http\Requests\TransactionRequest;
 use App\Models\Master\Common\Branch;
+use App\Models\Supplier;
 use App\Models\Transaction;
 use App\Support\Transactions\Services\TransactionService;
 use Illuminate\Auth\Access\AuthorizationException;

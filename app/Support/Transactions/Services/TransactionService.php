@@ -253,13 +253,15 @@ use function App\Helper\formatDate;
 
 
                     //ppn
-                    $this->accountTransactionService->createDebitTransaction(
-                        $branch->parent->id,
-                        $transaction->detail,
-                        $ppnAccount->id,
-                        $ppnTotal,
-                        $transaction->id,
-                    );
+                    if ($transaction->supplier->tax_type === 'PKP') {
+                        $this->accountTransactionService->createDebitTransaction(
+                            $branch->parent->id,
+                            $transaction->detail,
+                            $ppnAccount->id,
+                            $ppnTotal,
+                            $transaction->id,
+                        );
+                    }
                 }
             }
         });

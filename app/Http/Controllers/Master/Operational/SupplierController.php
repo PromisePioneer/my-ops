@@ -78,7 +78,8 @@ class SupplierController extends Controller
     {
         return [
             'id' => $supplier->id,
-            'name' => $supplier->name
+            'name' => $supplier->name,
+            'tax_type' => $supplier->tax_type
         ];
     }
 }

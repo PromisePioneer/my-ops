@@ -291,6 +291,7 @@
                 finalApprovePermission: "{{ request()->user()->can('Final Approve Data Transaksi') }}",
                 transactions: [],
                 isLoading: true,
+                PKP: false,
                 transactionType: null,
                 buttonLoading: false,
                 startIndex: null,
@@ -597,9 +598,11 @@
                             processResults: data => ({results: data}),
                             cache: true
                         }
-                    })
-                }
-                ,
+                    }).on('select2:select', async function (e) {
+                        const resp = await axios.get(`/select2/selected-supplier/${e.params.data.id}`);
+                        self.PKP = resp.data.tax_type === 'PKP';
+                    });
+                },
                 async getStockAccounts() {
                     $(".stock-accounts-select2").select2({
                         allowClear: true,
