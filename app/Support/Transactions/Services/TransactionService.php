@@ -174,6 +174,12 @@ use function App\Helper\formatDate;
                 'attachment',
                 $transaction->attachment
             ),
+            'tax_invoice' => $this->handleUploadService->upload(
+                $request,
+                'documents/transaction/tax-invoice/',
+                'tax_invoice',
+                $transaction->tax_invoice,
+            )
         ]);
     }
 

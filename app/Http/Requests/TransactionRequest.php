@@ -41,6 +41,9 @@ class TransactionRequest extends FormRequest
             'attachment' => [
                 Rule::requiredIf($this->route('transaction') === null),
                 'mimes:jpg,jpeg,png', 'max:2048'],
+            'tax_invoice' => [
+                Rule::requiredIf($this->route('transaction') === null),
+                'mimes:jpg,jpeg,png', 'max:2048'],
         ];
     }
 
@@ -64,6 +67,8 @@ class TransactionRequest extends FormRequest
             'attachment.required' => 'Bukti Transaksi tidak boleh kosong',
             'attachment.mimes' => 'Bukti Transaksi harus berupa jpg,jpeg,png',
             'attachment.max' => 'Ukuran Bukti Transaksi maksimal 2 Mb',
+            'tax_invoice.required' => 'Faktur Pajak tidak boleh kosong',
+            'tax_invoice.mimes' => 'Faktur Pajak harus berupa jpg,jpeg,png',
         ];
     }
 
