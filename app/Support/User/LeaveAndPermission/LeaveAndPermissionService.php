@@ -127,7 +127,12 @@ use function App\Helper\formatDate;
             'user_id' => $request->user_id ?? $request->user()->id,
             'reason' => $request->reason,
             'leaves_status' => $request->leaves_status,
-            'sick_letter' => $request->sick_letter,
+            'sick_letter' => $this->handleFileUploadService->upload(
+                $request,
+                'documents/leaves-and-permissions/sick-letter',
+                'sick_letter',
+                $leaveAndPermission->sick_letter
+            ),
         ]);
     }
 
