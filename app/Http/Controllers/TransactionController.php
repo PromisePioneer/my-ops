@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use AllowDynamicProperties;
 use App\Http\Requests\TransactionConfirmationRequest;
 use App\Http\Requests\TransactionRequest;
-use App\Models\Master\Common\Branch;
-use App\Models\Supplier;
 use App\Models\Transaction;
 use App\Support\Transactions\Services\TransactionService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -75,7 +73,6 @@ use Throwable;
      */
     public function edit(Transaction $transaction): JsonResponse
     {
-        $mainBranch = Branch::where('id', $transaction->branch->parent->id);
         $this->authorize('edit', Transaction::class);
         return response()->json($transaction);
     }

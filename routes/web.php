@@ -59,6 +59,7 @@ use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollHistoryContro
 use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollScheduleController;
 use App\Http\Controllers\HRIS\PermissionController;
 use App\Http\Controllers\HRIS\RoleHierarchyController;
+use App\Http\Controllers\InitialInventoryBalanceController;
 use App\Http\Controllers\Inventory\BoQ\BoqController;
 use App\Http\Controllers\ItemCatalogController;
 use App\Http\Controllers\Master\Accounting\AccountCategoryController;
@@ -422,7 +423,6 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
         Route::prefix('/accounting')->group(function () {
-
             Route::prefix('account-categories')->group(function () {
                 Route::get('/', [AccountCategoryController::class, 'index']);
                 Route::get('/data', [AccountCategoryController::class, 'data']);
@@ -461,6 +461,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 );
                 Route::post('/destroy', [InitialBalanceController::class, 'destroy']);
             });
+
             Route::prefix('tax-settings')->group(function () {
                 Route::get('/', [TaxSettingController::class, 'index']);
                 Route::get('/data', [TaxSettingController::class, 'data']);
@@ -487,6 +488,17 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/detail/{asset}', [AssetController::class, 'detail']);
                 Route::get('/detail/data/{asset}', [AssetController::class, 'depreciationData']);
                 Route::post('/import', [AssetController::class, 'import']);
+            });
+
+            Route::prefix('initial-inventory-balances')->group(function () {
+                Route::get('/', [InitialInventoryBalanceController::class, 'index']);
+                Route::get('/data', [InitialInventoryBalanceController::class, 'data']);
+                Route::get('/search', [InitialInventoryBalanceController::class, 'search']);
+                Route::post('/', [InitialInventoryBalanceController::class, 'store']);
+                Route::post('/destroy', [InitialInventoryBalanceController::class, 'destroy']);
+                Route::post('/confirm', [InitialInventoryBalanceController::class, 'confirm']);
+                Route::get('/{initialInventoryBalance}', [InitialInventoryBalanceController::class, 'edit']);
+                Route::post('/{initialInventoryBalance}', [InitialInventoryBalanceController::class, 'update']);
             });
         });
 
@@ -534,6 +546,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::post('/{psb}', [PSBController::class, 'update']);
                 Route::post('/destroy', [PSBController::class, 'destroy']);
             });
+
         });
     });
 

@@ -17,6 +17,7 @@ class Stock extends Model
         'qty',
         'condition',
         'on_hold_qty',
+        'initial_balance_inventory_id',
     ];
 
 

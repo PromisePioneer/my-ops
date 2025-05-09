@@ -1,5 +1,5 @@
 @extends('layouts.template')
-@section('page-title', 'Pengkodean ' . $draftStock->transaction->item->name)
+@section('page-title', 'Pengkodean ' . $draftStock->transaction?->item->name ?? $draftStock->initialInventoryBalance->item->name)
 @section('content')
     <div x-data="generateStockCode()">
         @include('pages.inventory.goods.stocks.draft-stocks.generate-code')
@@ -7,7 +7,8 @@
 
             <div class="card-body">
                 <div class="d-flex">
-                    <h3 class="card-title mb-10">{{ $draftStock->transaction->item->name }} tidak ada kode</h3>
+                    <h3 class="card-title mb-10">{{ $draftStock->transaction->item->name ?? $draftStock->transaction?->item->name ?? $draftStock->initialInventoryBalance->item->name }}
+                        tidak ada kode</h3>
                     <div class="ms-auto">
                         <a href="{{ url('inventory/goods/draft-stocks') }}" class="btn btn-sm btn-light">
                             Kembali

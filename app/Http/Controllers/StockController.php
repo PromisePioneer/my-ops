@@ -128,11 +128,11 @@ use Illuminate\View\View;
     public function getStockBasedOnDraftStock(DraftStock $draftStock)
     {
         $stock = Stock::with('transaction', 'branch', 'item')
-            ->where('transaction_id', $draftStock->transaction_id)->get();
+            ->where('transaction_id', $draftStock->transaction_id)->orWhere('initial_balance_inventory_id', $draftStock->initial_balance_inventory_id)->get();
         return $stock->map(function ($stock) {
             return [
                 'id' => $stock->id,
-                'transaction_number' => $stock->transaction->transaction_number,
+                'transaction_number' => $stock->transaction?->transaction_number ?? 'Persediaan Awal',
                 'name' => $stock->item->name,
                 'qty' => $stock->qty . ' ' . $stock->item->unitType->name,
                 'condition' => $stock->condition,

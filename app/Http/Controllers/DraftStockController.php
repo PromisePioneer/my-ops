@@ -50,6 +50,7 @@ use Illuminate\View\View;
 
     public function detail(DraftStock $draftStock): View
     {
+        $draftStock->load('transaction', 'initialInventoryBalance');
         return view('pages.inventory.goods.stocks.draft-stocks.detail', compact('draftStock'));
     }
 
@@ -57,7 +58,7 @@ use Illuminate\View\View;
     public function generateCodeIfCodeNotListedOnItem(DraftStock $draftStock): string
     {
         $draftStock->load('transaction.branch.parent', 'transaction.item');
-        $latestItemCatalog = ItemCatalog::with('transaction.branch.parent', 'transaction.item')
+        $latestItemCatalog = ItemCatalog::with('transaction.branch.parent', 'transaction.item', 'initialInventoryBalance.branch.parent')
             ->where('transaction_id', $draftStock->transaction_id)
             ->latest()
             ->first();
@@ -69,8 +70,10 @@ use Illuminate\View\View;
             $convertInvNumberToArray = explode('.', $latestItemCatalog->code);
             $startingNumber = end($convertInvNumberToArray);
             $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
+            $branchCode = $latestItemCatalog->transaction->branch->parent->code ?? $latestItemCatalog->initialInventoryBalance->branch->parent->code;
+            $itemCode = $latestItemCatalog->transaction->item->code ?? $latestItemCatalog->initialInventoryBalance->item->code;
 
-            return $month . '.' . $year . '.' . $latestItemCatalog->transaction->item->code . '-' . $latestItemCatalog->transaction->branch->parent->code . '.' . $startValue;
+            return $month . '.' . $year . '.' . $itemCode . '-' . $branchCode . '.' . $startValue;
         }
 
         $startingNumber = '000';

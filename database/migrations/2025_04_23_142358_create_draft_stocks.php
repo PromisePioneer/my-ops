@@ -13,7 +13,13 @@ return new class extends Migration {
         Schema::create('draft_stocks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('transaction_id')
+                ->nullable()
                 ->constrained('transactions')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('initial_balance_inventory_id')
+                ->nullable()
+                ->constrained('initial_inventory_balance')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->double('qty');

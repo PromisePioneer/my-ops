@@ -459,7 +459,9 @@
                     return null;
                 },
                 disabledSubAccountButton(branchId, subAccount) {
-                    if (this.branchId === '') {
+                    if (this.branchId === '' || this.branchId === null
+                        || subAccount.sub_account_code === '112-01'
+                        || subAccount.sub_account_code === '112-02') {
                         return true;
                     } else if (subAccount?.sub_accounts?.length > 0) {
                         return true;

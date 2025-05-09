@@ -11,6 +11,7 @@ class DraftStock extends Model
     protected $table = 'draft_stocks';
     protected $fillable = [
         'transaction_id',
+        'initial_balance_inventory_id',
         'qty',
     ];
 
@@ -23,5 +24,11 @@ class DraftStock extends Model
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
+    }
+
+
+    public function initialInventoryBalance(): BelongsTo
+    {
+        return $this->belongsTo(InitialInventoryBalance::class, 'initial_balance_inventory_id');
     }
 }
