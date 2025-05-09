@@ -4,7 +4,6 @@ namespace App\Support\Attendances\AttendanceSummary;
 
 use AllowDynamicProperties;
 use App\Models\EmployeeSchedule;
-use App\Models\User;
 use App\Models\WeekHoliday;
 use App\Support\Attendances\AttendanceQueryFilter;
 use App\Support\Attendances\AttendancesACLFilter;
@@ -17,6 +16,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
+
 #[AllowDynamicProperties] class AttendancesSummaryService
 {
     private static int $perPage = 10;
@@ -35,11 +35,10 @@ use Illuminate\Http\Request;
     public function data(Request $request): LengthAwarePaginator
     {
         $query = $this->attendancesSummaryRepository->getAttendancesSummary($this->startDate, $this->endDate);
-        $users = $query->get();
         $attendanceSummary = AttendancesACLFilter::apply($query, $request)->paginate(self::$perPage);
-        $weeklyLateCount = $this->weeklyLateCount($users);
-        $userIds = $users->pluck('id');
-        $absentIds = $users->pluck('absent_id');
+        $weeklyLateCount = $this->weeklyLateCount($attendanceSummary);
+        $userIds = $attendanceSummary->getCollection()->pluck('id');
+        $absentIds = $attendanceSummary->getCollection()->pluck('absent_id');
         $weekHolidays = $this->weekHolidayRepository->getBasedOnUserId($userIds);
         $employeeSchedules = $this->employeeScheduleRepository->getBasedOnPeriodsAndAbsentId($this->startDate, $this->endDate, $absentIds);
         $periods = CarbonPeriod::create($this->startDate, $this->endDate)->toArray();
@@ -64,10 +63,8 @@ use Illuminate\Http\Request;
         if (!empty($search)) {
             $query->where('name', 'like', '%' . $search . '%');
         }
-
-        $users = $query->get();
         $attendanceSummary = AttendancesACLFilter::apply($query, $request)->paginate(self::$perPage);
-        $weeklyLateCount = $this->weeklyLateCount($users);
+        $weeklyLateCount = $this->weeklyLateCount($attendanceSummary);
         $userIds = $attendanceSummary->getCollection()->pluck('id');
         $absentIds = $attendanceSummary->getCollection()->pluck('absent_id');
         $weekHolidays = $this->weekHolidayRepository->getBasedOnUserId($userIds);
@@ -87,11 +84,9 @@ use Illuminate\Http\Request;
 
         $query = $this->attendancesSummaryRepository->getAttendancesSummary($startDate, $endDate);
 
-
-        $users = $query->get();
         $filterQuery = AttendanceQueryFilter::apply($query, $request);
         $attendanceSummary = AttendancesACLFilter::apply($filterQuery, $request)->paginate(self::$perPage);
-        $weeklyLateCount = $this->weeklyLateCount($users);
+        $weeklyLateCount = $this->weeklyLateCount($attendanceSummary);
         $userIds = $attendanceSummary->getCollection()->pluck('id');
         $absentIds = $attendanceSummary->getCollection()->pluck('absent_id');
         $weekHolidays = $this->weekHolidayRepository->getBasedOnUserId($userIds);
@@ -115,10 +110,11 @@ use Illuminate\Http\Request;
             $request
         ) {
 
+
             $weekHoliday = $weekHolidays[$user->id] ?? null;
             $employeeHolidays = $employeeSchedules[$user->absent_id] ?? collect();
             $employeeHolidayDates = $employeeHolidays->pluck('start_date')->toArray();
-            $leaveDates = $this->getLeaveDates($user->id, $startDate, $endDate);
+            $leaveDates = $this->getLeaveDates($user->leaveAndPermissions, $startDate, $endDate);
             $notCheckIn = $user->attendancesSummary->where('clock_in', null)->pluck('date')->toArray();
             $notCheckOut = $user->attendancesSummary->where('clock_out', null)->pluck('date')->toArray();
 
@@ -212,16 +208,13 @@ use Illuminate\Http\Request;
     }
 
 
-    public function getLeaveDates($userId, $startDate, $endDate): array
+    public function getLeaveDates($leaveAndPermissions, $startDate, $endDate): array
     {
-        $getLeaves = $this->leaveAndPermissionRepository->getBasedOnPeriodAndUserId($userId, $startDate, $endDate);
 
-        $firstLeaveStartDate = $this->leaveAndPermissionRepository
-            ->getBasedOnPeriodAndUserId($userId, $startDate, $endDate)
-            ->min('start_date');
-        $lastLeaveEndDate = $this->leaveAndPermissionRepository
-            ->getBasedOnPeriodAndUserId($userId, $startDate, $endDate)
-            ->max('end_date');
+        $getLeaves = $leaveAndPermissions->whereBetween('start_date', [$startDate, $endDate]);
+
+        $firstLeaveStartDate = $leaveAndPermissions->min('start_date');
+        $lastLeaveEndDate = $leaveAndPermissions->max('end_date');
 
         $leavePeriods = [];
         foreach ($getLeaves as $ignored) {
