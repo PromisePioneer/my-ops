@@ -25,18 +25,21 @@ use Throwable;
         $this->itemCatalogRepository = new ItemCatalogRepository();
     }
 
-    public function findByDraftStockId(DraftStock $draftStock, Request $request): LengthAwarePaginator
+    public function findByDraftStockId(): LengthAwarePaginator
     {
-        $catalog = $this->itemCatalogRepository->getItemCatalogByDraftStockId($draftStock)->paginate(self::$perPage);
+        $catalog = $this->itemCatalogRepository->getItemCatalogByDraftStockId()->paginate(self::$perPage);
         return $this->formattedData($catalog);
     }
 
     public function formattedData(LengthAwarePaginator $catalog): LengthAwarePaginator
     {
         $data = $catalog->getCollection()->map(function ($query) {
+
+
             return [
                 'id' => $query->id,
-                'item_name' => $query->transaction->item->name,
+                'item_name' => $query->transaction?->item?->name
+                    ?? $query->initialInventoryBalance->item->name,
                 'code' => $query->code,
                 'condition' => $query->condition,
                 'created_at' => $query->created_at,
@@ -57,7 +60,7 @@ use Throwable;
     {
         DB::transaction(function () use ($request, $draftStock) {
             $draftStock->load('transaction');
-            $stock = Stock::where('transaction_id', $draftStock->transaction_id)
+            $stock = Stock::where('transaction_id', $draftStock->transaction_id)->orWhere('initial_balance_inventory_id', $draftStock->initial_balance_inventory_id)
                 ->where('condition', $request->input('condition'))
                 ->first();
 
@@ -66,15 +69,17 @@ use Throwable;
 
             if (!$stock) {
                 $newStock = Stock::create([
-                    'branch_id' => $draftStock->transaction->branch_id,
+                    'branch_id' => $draftStock->transaction?->branch_id ?? $draftStock->initialInventoryBalance->branch_id,
                     'transaction_id' => $draftStock->transaction_id,
-                    'item_id' => $draftStock->transaction->item_id,
+                    'initial_balance_inventory_id' => $draftStock->initial_balance_inventory_id,
+                    'item_id' => $draftStock->transaction->item_id ?? $draftStock->initialInventoryBalance->item_id,
                     'qty' => 1,
                     'condition' => $request->condition
                 ]);
 
                 ItemCatalog::create([
                     'transaction_id' => $draftStock->transaction_id,
+                    'initial_balance_inventory_id' => $draftStock->initial_balance_inventory_id,
                     'stock_id' => $newStock->id,
                     'code' => $request->code,
                     'condition' => $request->condition,
@@ -84,7 +89,7 @@ use Throwable;
                 $stock->increment('qty');
                 ItemCatalog::create([
                     'transaction_id' => $draftStock->transaction_id,
-                    'item_id' => $draftStock->transaction->item_id,
+                    'initial_balance_inventory_id' => $draftStock->initial_balance_inventory_id,
                     'stock_id' => $stock->id,
                     'code' => $request->code,
                     'condition' => $request->condition,

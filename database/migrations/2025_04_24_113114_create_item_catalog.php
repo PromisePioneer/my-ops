@@ -13,7 +13,13 @@ return new class extends Migration {
         Schema::create('item_catalogs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('transaction_id')
+                ->nullable()
                 ->constrained('transactions')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('initial_balance_inventory_id')
+                ->nullable()
+                ->constrained('initial_inventory_balance')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->foreignId('stock_id')

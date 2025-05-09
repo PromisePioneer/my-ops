@@ -13,8 +13,14 @@ return new class extends Migration {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('transaction_id')
+                ->nullable()
                 ->constrained('transactions')
                 ->cascadeOnDelete();
+            $table->foreignId('initial_balance_inventory_id')
+                ->nullable()
+                ->constrained('initial_inventory_balance')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->foreignId('branch_id')
                 ->constrained('branches')
                 ->cascadeOnDelete();

@@ -135,8 +135,6 @@ use Illuminate\Http\Request;
     public function filter(Request $request)
     {
         $branch = $request->input('branch_id');
-        $year = $request->input('year');
-        $month = $request->input('month');
 
         $query = $this->initialBalanceRepository->handle();
 
@@ -146,24 +144,6 @@ use Illuminate\Http\Request;
             });
         }
 
-        if ($year) {
-            $query->orWhereHas('accountTransaction', function (Builder $query) use ($year) {
-                $query->whereYear('date', $year);
-            });
-        }
-
-        if ($month) {
-            $query->orWhereHas('accountTransaction', function (Builder $query) use ($month) {
-                $query->whereMonth('date', $month);
-            });
-        }
-
-        if ($year && $month) {
-            $query->orWhereHas('accountTransaction', function (Builder $query) use ($year, $month) {
-                $query->whereYear('date', $year)
-                    ->whereMonth('date', $month);
-            });
-        }
 
         return [
             'initial_balances' => $this->formattedData($query->paginate(self::$perPage), $request),
@@ -179,19 +159,13 @@ use Illuminate\Http\Request;
             ->whereHas('account', function ($query) use ($type) {
                 $query->where('trial_balance_type', $type);
             })->where('entries_type', $type)
+            ->whereYear('date', Carbon::now()->subYear())
             ->where('transaction_type', 'SA');
 
         if ($request->branch_id) {
             $query->where('branch_id', $request->branch_id);
         }
 
-        if ($request->year) {
-            $query->whereYear('date', $request->year);
-        }
-
-        if ($request->month) {
-            $query->whereMonth('date', $request->month);
-        }
 
         return $query;
     }

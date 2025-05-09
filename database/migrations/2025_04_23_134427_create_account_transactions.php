@@ -19,6 +19,10 @@ class CreateAccountTransactions extends Migration
                 ->nullable()
                 ->constrained('transactions')
                 ->cascadeOnDelete();
+            $table->foreignId('initial_inventory_balance_id')
+                ->nullable()
+                ->constrained('initial_inventory_balance')
+                ->cascadeOnDelete();
             $table->foreignId('branch_id')->nullable()->constrained('branches');
             $table->date('date');
             $table->foreignId('account_id')->nullable()->constrained('accounts');
