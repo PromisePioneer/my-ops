@@ -43,7 +43,7 @@ use Illuminate\Http\Request;
         $employeeSchedules = $this->employeeScheduleRepository->getBasedOnPeriodsAndAbsentId($this->startDate, $this->endDate, $absentIds);
         $periods = CarbonPeriod::create($this->startDate, $this->endDate)->toArray();
 
-        return self::formattedData($weeklyLateCount, $attendanceSummary, $this->startDate, $this->endDate, $weekHolidays, $employeeSchedules, $periods);
+        return self::formattedData($weeklyLateCount, $attendanceSummary, $this->startDate, $this->endDate, $weekHolidays, $employeeSchedules, $periods, $request);
     }
 
 
@@ -72,7 +72,7 @@ use Illuminate\Http\Request;
         $periods = CarbonPeriod::create($this->startDate, $this->endDate)->toArray();
 
 
-        return self::formattedData($weeklyLateCount, $attendanceSummary, $this->startDate, $this->endDate, $weekHolidays, $employeeSchedules, $periods);
+        return self::formattedData($weeklyLateCount, $attendanceSummary, $this->startDate, $this->endDate, $weekHolidays, $employeeSchedules, $periods, $request);
     }
 
 

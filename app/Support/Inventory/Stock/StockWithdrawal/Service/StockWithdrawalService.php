@@ -11,15 +11,12 @@ use App\Models\StockWithdrawalByEmployee;
 use App\Models\StockWithdrawalItem;
 use App\Support\Inventory\Stock\StockWithdrawal\Repository\StockWithdrawalServiceRepository;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 #[AllowDynamicProperties] class StockWithdrawalService
 {
-
-
     public function __construct()
     {
         $this->stockWithdrawalServiceRepository = new StockWithdrawalServiceRepository();
@@ -27,7 +24,7 @@ use Throwable;
 
     private static int $perPage = 10;
 
-    public function data(Request $request): LengthAwarePaginator
+    public function data(): LengthAwarePaginator
     {
         $data = $this->stockWithdrawalServiceRepository->getStockWithDrawalQuery()->paginate(self::$perPage);
         return self::formattedData($data);

@@ -71,12 +71,12 @@
                             <thead>
                             <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
+                                    #
                                 </th>
                                 <th class="min-w-125px text-center">Informasi Persediaan</th>
                                 <th class="min-w-125px text-center">Akun</th>
                                 <th class="min-w-125px text-center">Detail</th>
-                                <th class="min-w-125px text-center">Bukti Transaksi</th>
-                                <th class="min-w-125px text-center">Status Konfirmasi</th>
+                                <th class="min-w-125px text-center">Dokumentasi</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class="fw-bold">
@@ -101,12 +101,15 @@
                             <template x-for="inventory in initialInventoryBalances?.data" :key="inventory.id">
                                 <tr class="text-center">
                                     <td>
+                                        <template x-if="Number(inventory.status) === 0">
+
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
                                             <input class="form-check-input" type="checkbox"
                                                    :value="inventory.id"
                                                    :id="'checkbox-' + inventory.id"/>
                                         </div>
+                                        </template>
                                     </td>
                                     <td>
                                         <div class="d-flex flex-column text-center">
@@ -120,8 +123,14 @@
                                     </td>
                                     <td x-text="inventory.stock_account"></td>
                                     <td x-text="inventory.detail"></td>
-                                    <td x-text="inventory.detail"></td>
-                                    <td x-text="inventory.detail"></td>
+                                    <td>
+                                        <a href="" class="btn btn-light-danger btn-sm">
+                                            <i class="ki-duotone ki-document fs-2">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </a>
+                                    </td>
                                     <td>
                                         <template x-if="inventory.status == 0">
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
@@ -132,6 +141,16 @@
                                                     <span class="path2"></span>
                                                 </i>
                                             </button>
+                                        </template>
+
+
+                                        <template x-if="inventory.status == 1">
+                                              <span class="badge badge-light-success">
+                                            <i class="ki-duotone ki-check-square fs-2x text-success">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </span>
                                         </template>
                                     </td>
                                 </tr>

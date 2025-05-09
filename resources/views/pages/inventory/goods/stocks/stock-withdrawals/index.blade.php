@@ -49,12 +49,7 @@
                         <table class="table table-bordered align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
                             <thead>
                             <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="w-10px pe-2">
-                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                        <input class="form-check-input" type="checkbox"
-                                               @click="toggleAllCheckBox()">
-                                    </div>
-                                </th>
+                                <th class="w-10px pe-2">#</th>
                                 <th class="min-w-125px">Cabang</th>
                                 <th class="min-w-125px">Tanggal</th>
                                 <th class="min-w-125px">Deskripsi</th>
@@ -95,6 +90,28 @@
                                     <td class="text-center" x-text="stockWithdrawal.branch_name"></td>
                                     <td class="text-center" x-text="stockWithdrawal.date"></td>
                                     <td class="text-center" x-text="stockWithdrawal.description"></td>
+                                    <td class="text-center">
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <button class="btn btn-light-info btn-sm mb-4" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-stock-withdrawal-detail"
+                                                    @click="confirmedByKCA()">
+                                                <i class="ki-duotone ki-information fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                    <span class="path3"></span>
+                                                </i>
+                                            </button>
+                                            <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-stock-withdrawal-detail"
+                                                    @click="confirmedByStocker()">
+                                                <i class="ki-duotone ki-information fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                    <span class="path3"></span>
+                                                </i>
+                                            </button>
+                                        </div>
+                                    </td>
                                     <td class="text-center">
                                         <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#modal-stock-withdrawal-detail"
@@ -216,6 +233,12 @@
                             await showAlert('error', 'Terjadi kesalahan');
                         }
                     });
+                },
+                async confirmedByKCA(id) {
+
+                },
+                async confirmedByStocker(id) {
+
                 }
             }
         }

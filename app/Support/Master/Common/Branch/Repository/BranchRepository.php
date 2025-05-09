@@ -33,7 +33,7 @@ class BranchRepository implements BranchRepositoryInterface
     }
 
 
-    public function getSubBranches(Request $request, $mainBranchId): Collection
+    public function getSubBranches(Request $request, int $mainBranchId): Collection
     {
         $search = $request->input('search');
 
@@ -50,7 +50,7 @@ class BranchRepository implements BranchRepositoryInterface
     }
 
 
-    public function getAllBranch(Request $request)
+    public function getAllBranch(Request $request): Collection
     {
         $search = $request->input('search');
         $branch = Branch::with('parent', 'children')->whereNull('parent_id');

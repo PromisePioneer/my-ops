@@ -28,6 +28,8 @@ return new class extends Migration {
                 ->constrained('users')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->string('stocker_signature')->nullable();
+            $table->string('kca_signature')->nullable();
             $table->timestamps();
         });
     }
