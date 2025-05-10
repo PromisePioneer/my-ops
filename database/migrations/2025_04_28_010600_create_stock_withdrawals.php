@@ -18,7 +18,7 @@ return new class extends Migration {
                 ->cascadeOnUpdate();
             $table->date('date');
             $table->string('description');
-            $table->foreignId('kca_id')
+            $table->foreignId('pic_id')
                 ->nullable()
                 ->constrained('users')
                 ->cascadeOnDelete()
@@ -28,8 +28,11 @@ return new class extends Migration {
                 ->constrained('users')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->string('stocker_signature')->nullable();
-            $table->string('kca_signature')->nullable();
+            $table->enum('status', ['Pending', 'Dibawa', 'Dikembalikan'])->default('Pending');
+            $table->string('stocker_signature_after_withdraw')->nullable();
+            $table->string('pic_signature_after_withdraw')->nullable();
+            $table->string('stocker_signature_after_returned')->nullable();
+            $table->string('pic_signature_after_returned')->nullable();
             $table->timestamps();
         });
     }

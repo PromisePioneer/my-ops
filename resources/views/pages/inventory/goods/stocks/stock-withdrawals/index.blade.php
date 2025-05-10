@@ -53,6 +53,8 @@
                                 <th class="min-w-125px">Cabang</th>
                                 <th class="min-w-125px">Tanggal</th>
                                 <th class="min-w-125px">Deskripsi</th>
+                                <th class="min-w-125px">PIC</th>
+                                <th class="min-w-125px">Stocker</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -77,61 +79,50 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-for="stockWithdrawal in stockWithdrawals?.data" :key="stockWithdrawal.id">
-                                <tbody class="fw-bold ">
+                            <template x-for="(stockWithdrawal, index) in stockWithdrawals?.data"
+                                      :key="stockWithdrawal.id">
+                                <tbody class="fw-bold text-center">
                                 <tr>
-                                    <td>
-                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                             @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="stockWithdrawal.id"
-                                                   :id="'checkbox-' + stockWithdrawal.id"/>
-                                        </div>
-                                    </td>
+                                    <td x-text="startIndex + index++"></td>
                                     <td class="text-center" x-text="stockWithdrawal.branch_name"></td>
                                     <td class="text-center" x-text="stockWithdrawal.date"></td>
                                     <td class="text-center" x-text="stockWithdrawal.description"></td>
+                                    <td class="text-center" x-text="stockWithdrawal.pic"></td>
+                                    <td class="text-center" x-text="stockWithdrawal.stocker"></td>
                                     <td class="text-center">
-                                        <div class="d-flex flex-column justify-content-center">
+                                        <div class="d-flex align-items-center flex-column">
                                             <button class="btn btn-light-info btn-sm mb-4" data-bs-toggle="modal"
                                                     data-bs-target="#modal-stock-withdrawal-detail"
-                                                    @click="confirmedByKCA()">
+                                                    @click="showDetail(stockWithdrawal.id)">
                                                 <i class="ki-duotone ki-information fs-2">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
                                                     <span class="path3"></span>
                                                 </i>
+                                                Informasi Pemakaian
                                             </button>
-                                            <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-stock-withdrawal-detail"
-                                                    @click="confirmedByStocker()">
-                                                <i class="ki-duotone ki-information fs-2">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                    <span class="path3"></span>
-                                                </i>
-                                            </button>
+                                            <template x-if="stockWithdrawal.status === 'Dibawa'">
+                                                <a :href="`/inventory/goods/stock-withdrawals/return/${stockWithdrawal.id}`"
+                                                   class="btn btn-light-info btn-sm mb-4">
+                                                    <i class="las la-boxes fs-2"></i>
+                                                    Pengembalian Barang
+                                                </a>
+                                            </template>
+                                            <template x-if="stockWithdrawal.status === 'Pending'">
+                                                <button class="btn btn-light-danger btn-sm"
+                                                        @click="destroy(stockWithdrawal.id)">
+                                                    <i class="ki-duotone ki-trash fs-2">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                        <span class="path3"></span>
+                                                        <span class="path4"></span>
+                                                        <span class="path5"></span>
+                                                    </i>
+                                                    Hapus
+                                                </button>
+                                            </template>
+
                                         </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-stock-withdrawal-detail"
-                                                @click="showDetail(stockWithdrawal.id)">
-                                            <i class="ki-duotone ki-information fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                                <span class="path3"></span>
-                                            </i>
-                                        </button>
-                                        <button class="btn btn-light-danger btn-sm"
-                                                @click="destroy(stockWithdrawal.id)">
-                                            <i class="ki-duotone ki-trash fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                                <span class="path3"></span>
-                                                <span class="path4"></span>
-                                                <span class="path5"></span>
-                                            </i>
-                                        </button>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -162,6 +153,7 @@
                 search: '',
                 stockWithdrawalDetail: {},
                 selectedCheckBox: [],
+                detailModal: new bootstrap.Modal(document.getElementById('modal-stock-withdrawal-detail')),
                 async init() {
                     await this.getStockWithdrawals();
                 },
@@ -169,6 +161,7 @@
                     try {
                         const resp = await axios.get('/inventory/goods/stock-withdrawals/data');
                         this.stockWithdrawals = resp.data;
+                        this.startIndex = this.stockWithdrawals.from;
                     } catch (e) {
                         console.log(e);
                     } finally {
@@ -234,12 +227,32 @@
                         }
                     });
                 },
-                async confirmedByKCA(id) {
-
+                async confirmedByPIC(id) {
+                    showConfirmModal("Anda yakin?", "Data yang diparaf tidak akan bisa diubah maupun dihapus,", "Ya, Konfirmasi!", async () => {
+                        try {
+                            await axios.post(`/inventory/goods/stock-withdrawals/confirmed-by-pic/${id}`);
+                            await showAlert('success', 'Data sukses Dikonfirmasi');
+                            this.detailModal.hide();
+                            await this.init();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
                 },
                 async confirmedByStocker(id) {
-
-                }
+                    showConfirmModal("Anda yakin?", "Data yang diparaf tidak akan bisa diubah maupun dihapus,", "Ya, Konfirmasi!", async () => {
+                        try {
+                            await axios.post(`/inventory/goods/stock-withdrawals/confirmed-by-stocker/${id}`);
+                            await showAlert('success', 'Data sukses Dikonfirmasi');
+                            this.detailModal.hide();
+                            await this.init();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
+                },
             }
         }
     </script>

@@ -4,10 +4,13 @@
     <div x-data="generateStockCode()">
         @include('pages.inventory.goods.stocks.draft-stocks.generate-code')
         <div class="card shadow-sm mb-10">
-
             <div class="card-body">
                 <div class="d-flex">
-                    <h3 class="card-title mb-10">{{ $draftStock->transaction->item->name ?? $draftStock->transaction?->item->name ?? $draftStock->initialInventoryBalance->item->name }}
+                    <h3 class="card-title mb-10">
+                        {{ $draftStock->transaction->item->name
+                        ?? $draftStock->transaction?->item->name
+                        ?? $draftStock->initialInventoryBalance->item->name
+                        }}
                         tidak ada kode</h3>
                     <div class="ms-auto">
                         <a href="{{ url('inventory/goods/draft-stocks') }}" class="btn btn-sm btn-light">

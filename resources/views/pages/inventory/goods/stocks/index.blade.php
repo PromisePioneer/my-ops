@@ -39,9 +39,9 @@
                                         class="d-flex align-items-center flex-row-fluid justify-content-between">
                                         <a :href="`/inventory/goods/draft-stocks`"
                                            class="fs-6 fw-bolder btn-link"
-                                        >Belum berkode</a>
+                                        >Harus Reorder Ulang</a>
                                         <span class="text-gray-800 fw-bold d-block fs-4"
-                                              x-text="draftStock"></span>
+                                              x-text="mustReorderStock"></span>
                                     </div>
                                 </div>
                             </div>

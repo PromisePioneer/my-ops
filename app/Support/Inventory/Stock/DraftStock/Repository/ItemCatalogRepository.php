@@ -2,13 +2,14 @@
 
 namespace App\Support\Inventory\Stock\DraftStock\Repository;
 
+use App\Models\DraftStock;
 use App\Models\ItemCatalog;
 use Illuminate\Database\Eloquent\Builder;
 
 class ItemCatalogRepository
 {
-    public function getItemCatalogByDraftStockId(): Builder
+    public function findByTransactionIdOrInitialBalanceInventoryId(DraftStock $draftStock): Builder
     {
-        return ItemCatalog::with('transaction', 'transaction.item', 'createdBy', 'initialInventoryBalance', 'initialInventoryBalance.item');
+        return ItemCatalog::with('transaction', 'transaction.item', 'createdBy', 'initialInventoryBalance', 'initialInventoryBalance.item')->where('transaction_id', $draftStock->transaction_id)->orWhere('initial_balance_inventory_id', $draftStock->initial_balance_inventory_id);
     }
 }

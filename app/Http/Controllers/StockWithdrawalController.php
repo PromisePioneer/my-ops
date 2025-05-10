@@ -29,15 +29,15 @@ use Throwable;
     }
 
 
-    public function data(Request $request): JsonResponse
+    public function data(): JsonResponse
     {
-        return response()->json($this->stockWithdrawalService->data($request));
+        return response()->json($this->stockWithdrawalService->data());
     }
 
 
     public function show(StockWithdrawal $stockWithdrawal): JsonResponse
     {
-        $stockWithdrawal->load('stockWithdrawalItem', 'stockWithdrawalByEmployee', 'stockWithdrawalItem.stock.item', 'stockWithdrawalByEmployee.user.roles');
+        $stockWithdrawal->load('stockWithdrawalItem', 'stockWithdrawalByEmployee', 'stockWithdrawalItem.stock.item', 'stockWithdrawalByEmployee.user.roles', 'pic.roles', 'stocker.roles');
 
         $stockWithdrawalItem = $stockWithdrawal->stockWithdrawalItem->map(function ($item) {
             return [
@@ -59,6 +59,7 @@ use Throwable;
 
 
         return response()->json([
+            'stock_withdrawal' => $stockWithdrawal,
             'stock_withdrawal_items' => $stockWithdrawalItem,
             'stock_withdrawal_by_employee' => $stockWithdrawalByEmployee,
         ]);
@@ -94,15 +95,12 @@ use Throwable;
     }
 
 
-    public function confirm()
-    {
-
-    }
-
-
+    /**
+     * @throws Throwable
+     */
     public function destroy(StockWithdrawal $stockWithdrawal)
     {
-        DB::transaction(function ($query) use ($stockWithdrawal) {
+        DB::transaction(function () use ($stockWithdrawal) {
 
             $data = StockWithdrawalItem::with('stock', 'stock.itemCatalog')->where('stock_withdrawal_id', $stockWithdrawal->id);
             $withdrawalItems = [];
@@ -119,7 +117,51 @@ use Throwable;
             ]);
             $stockWithdrawal->delete();
         });
+    }
 
 
+    public function confirmedByPIC(StockWithdrawal $stockWithdrawal): JsonResponse
+    {
+        $this->stockWithdrawalService->confirmedByPIC($stockWithdrawal);
+
+        return response()->json([
+            'message' => 'data berhasil dikonfirmasi'
+        ]);
+    }
+
+
+    public function confirmedByStocker(StockWithdrawal $stockWithdrawal): JsonResponse
+    {
+        $this->stockWithdrawalService->confirmedByStocker($stockWithdrawal);
+        return response()->json([
+            'message' => 'data berhasil dikonfirmasi'
+        ]);
+    }
+
+
+    public function return(StockWithdrawal $stockWithdrawal): View
+    {
+        return view('pages.inventory.goods.stocks.stock-withdrawals.returned-stock-form', compact('stockWithdrawal'));
+    }
+
+
+    public function getStockWithdrawalItems(StockWithdrawal $stockWithdrawal): JsonResponse
+    {
+        return response()->json($this->stockWithdrawalService->getStockWithdrawalItems($stockWithdrawal));
+    }
+
+    public function getStockWithdrawalItem(StockWithdrawalItem $stockWithdrawalItem): JsonResponse
+    {
+        return response()->json($stockWithdrawalItem);
+    }
+
+
+    public function returningItems(Request $request, StockWithdrawalItem $stockWithdrawalItem)
+    {
+        DB::transaction(function () use ($request, $stockWithdrawalItem) {
+            $stockWithdrawalItem->update([
+                'status' => $request->input('status'),
+            ]);
+        });
     }
 }

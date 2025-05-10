@@ -703,6 +703,12 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/edit/{stockWithdrawal}', [StockWithdrawalController::class, 'edit']);
                 Route::get('/show/{stockWithdrawal}', [StockWithdrawalController::class, 'show']);
                 Route::delete('/destroy/{stockWithdrawal}', [StockWithdrawalController::class, 'destroy']);
+                Route::post('/confirmed-by-pic/{stockWithdrawal}', [StockWithdrawalController::class, 'confirmedByPIC']);
+                Route::post('/confirmed-by-stocker/{stockWithdrawal}', [StockWithdrawalController::class, 'confirmedByStocker']);
+                Route::get('/return/{stockWithdrawal}', [StockWithdrawalController::class, 'return']);
+                Route::get('/stock-withdrawal-items/{stockWithdrawal}', [StockWithdrawalController::class, 'getStockWithdrawalItems']);
+                Route::get('/stock-withdrawal-item/{stockWithdrawalItem}', [StockWithdrawalController::class, 'getStockWithdrawalItem']);
+                Route::post('/stock-withdrawal-item/return/{stockWithdrawalItem}', [StockWithdrawalController::class, 'returningItems']);
             });
 
             Route::prefix('consumed-stocks')->group(function () {
@@ -1319,6 +1325,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/user-has-areas-data', [UserController::class, 'getUserHasArea']);
         Route::get('/suppliers-data', [SupplierController::class, 'getSuppliers']);
         Route::get('/selected-supplier/{supplier}', [SupplierController::class, 'selectedSupplier']);
+
     });
 
 

@@ -45,14 +45,15 @@
                             </div>
                         </div>
                         <div class="card card-custom mb-4">
-                            <div class="card-header">
+                            <div class="card-header p-0">
                                 <div class="card-body">
-                                    <table class="table table-bordered">
+                                    <table class="table table-bordered w-100">
                                         <thead>
                                         <tr>
                                             <th>Kode</th>
                                             <th>Barang</th>
                                             <th>Qty</th>
+                                            <th>Status</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -61,6 +62,7 @@
                                                 <td x-text="item.code ?? '-'"></td>
                                                 <td x-text="item.item_name"></td>
                                                 <td x-text="item.qty"></td>
+                                                <td x-text="stockWithdrawalDetail.stock_withdrawal.status"></td>
                                             </tr>
                                         </template>
                                         </tbody>
@@ -80,22 +82,41 @@
                                 </tr>
                                 <tr>
                                     <th style="text-align: center; padding: 8px;">
-                                        <p style="font-size: 12px; margin: 0;">
-                                            h3h3
-                                        </p>
+                                        <template
+                                            x-if="stockWithdrawalDetail.stock_withdrawal.pic_signature_after_withdraw === null">
+                                            <button class="btn btn-light-info btn-sm mb-4"
+                                                    @click="confirmedByPIC(stockWithdrawalDetail.stock_withdrawal.id)">
+                                                <i class="ki-duotone ki-questionnaire-tablet fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                                Paraf PIC
+                                            </button>
+                                        </template>
+                                        <template
+                                            x-if="stockWithdrawalDetail.stock_withdrawal.pic_signature_after_withdraw !== null">
+                                            <a href="#"
+                                               @click="openImage(stockWithdrawalDetail.stock_withdrawal.pic_signature_after_withdraw)">
+                                                <img
+                                                    :src="getImageURL(stockWithdrawalDetail.stock_withdrawal.pic_signature_after_withdraw ?? null)"
+                                                    class="img-fluid w-100px"
+                                                    alt="Image">
+                                            </a>
+                                        </template>
                                     </th>
                                     <th style="text-align: center; padding: 8px;">
                                 </tr>
                                 <tr>
                                     <th style="text-align: center; padding: 8px 8px 0 8px;">
-                                        <p style="font-size: 12px; margin: 0; text-decoration: underline">
-                                            Nama PIC
+                                        <p style="font-size: 12px; margin: 0; text-decoration: underline"
+                                           x-text="stockWithdrawalDetail.stock_withdrawal.pic.name">
                                         </p>
                                     </th>
                                 </tr>
                                 <tr style="padding: 0">
                                     <th style="text-align: center; padding: 8px;">
-                                        <p style="font-size: 12px; margin: 0;">Jabatan PIC</p>
+                                        <p style="font-size: 12px; margin: 0;"
+                                           x-text="stockWithdrawalDetail.stock_withdrawal.pic.roles[0].name"></p>
                                     </th>
                                 </tr>
                             </table>
@@ -108,22 +129,41 @@
                                 </tr>
                                 <tr>
                                     <th style="text-align: center; padding: 8px;">
-                                        <p style="font-size: 12px; margin: 0;">
-                                            h3h3
-                                        </p>
+                                        <template
+                                            x-if="stockWithdrawalDetail.stock_withdrawal.stocker_signature_after_withdraw === null">
+                                            <button class="btn btn-light-info btn-sm mb-4"
+                                                    @click="confirmedByStocker(stockWithdrawalDetail.stock_withdrawal.id)">
+                                                <i class="ki-duotone ki-questionnaire-tablet fs-2">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                                Paraf Stocker
+                                            </button>
+                                        </template>
+                                        <template
+                                            x-if="stockWithdrawalDetail.stock_withdrawal.stocker_signature_after_withdraw !== null">
+                                            <a href="#"
+                                               @click="openImage(stockWithdrawalDetail.stock_withdrawal.stocker_signature_after_withdraw)">
+                                                <img
+                                                    :src="getImageURL(stockWithdrawalDetail.stock_withdrawal.stocker_signature_after_withdraw ?? null)"
+                                                    class="img-fluid w-100px"
+                                                    alt="Image">
+                                            </a>
+                                        </template>
                                     </th>
                                     <th style="text-align: center; padding: 8px;">
                                 </tr>
                                 <tr>
                                     <th style="text-align: center; padding: 8px 8px 0 8px;">
-                                        <p style="font-size: 12px; margin: 0; text-decoration: underline">
-                                            Nama Stocker
+                                        <p style="font-size: 12px; margin: 0; text-decoration: underline"
+                                           x-text="stockWithdrawalDetail.stock_withdrawal.stocker.name">
                                         </p>
                                     </th>
                                 </tr>
                                 <tr style="padding: 0">
                                     <th style="text-align: center; padding: 8px;">
-                                        <p style="font-size: 12px; margin: 0;">Stocker</p>
+                                        <p style="font-size: 12px; margin: 0;"
+                                           x-text="stockWithdrawalDetail.stock_withdrawal.stocker.roles[0].name"></p>
                                     </th>
                                 </tr>
                             </table>

@@ -9,17 +9,26 @@ use App\Models\Stock;
 use App\Models\StockWithdrawal;
 use App\Models\StockWithdrawalByEmployee;
 use App\Models\StockWithdrawalItem;
+use App\Support\HelperService\HandleFileUploadService;
 use App\Support\Inventory\Stock\StockWithdrawal\Repository\StockWithdrawalServiceRepository;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\FileHelpers;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Storage;
 use Throwable;
 
 #[AllowDynamicProperties] class StockWithdrawalService
 {
+    use FileHelpers;
     public function __construct()
     {
         $this->stockWithdrawalServiceRepository = new StockWithdrawalServiceRepository();
+        $this->handleFileUploadService = new HandleFileUploadService();
     }
 
     private static int $perPage = 10;
@@ -39,8 +48,11 @@ use Throwable;
                 'branch_name' => $stockWithdrawal->branch->name,
                 'date' => $stockWithdrawal->date,
                 'description' => $stockWithdrawal->description,
-                'pic' => $stockWithdrawal->kca?->name ?? null,
+                'pic' => $stockWithdrawal->pic?->name ?? null,
                 'stocker' => $stockWithdrawal->stocker?->name ?? null,
+                'pic_signature_after_withdraw' => $stockWithdrawal->pic_signature_after_withdraw,
+                'stocker_signature_after_withdraw' => $stockWithdrawal->stocker_signature_after_withdraw,
+                'status' => $stockWithdrawal->status
             ];
         });
 
@@ -59,7 +71,7 @@ use Throwable;
                 'branch_id' => $request->user()->branch_id ?? 1,
                 'date' => Carbon::now()->format('Y-m-d'),
                 'description' => $request->input('description'),
-                'kca_id' => $request->user()->id,
+                'pic_id' => $request->user()->id,
             ]);
             $this->stockWithdrawalEmployeeStoreAndUpdate($stockWithdrawal, $request);
             $this->stockWithdrawalItemStoreOrUpdate($stockWithdrawal, $request);
@@ -116,23 +128,7 @@ use Throwable;
         }
     }
 
-
-    public function getUsers(StockWithdrawal $stockWithdrawal)
-    {
-        $data = StockWithdrawalByEmployee::with('user')
-            ->where('stock_withdrawal_id', $stockWithdrawal->id)
-            ->get();
-
-
-        return $data->map(function ($query) {
-            return [
-                'id' => $query->id,
-                'name' => $query->user->name
-            ];
-        });
-    }
-
-    public function getCarriedStock()
+    public function getCarriedStock(): LengthAwarePaginator
     {
         $data = StockWithdrawal::with('stockWithdrawalByEmployee', 'stockWithdrawalItem', 'stockWithdrawalItem.stock.item')->whereHas('stockWithdrawalByEmployee', function ($query) {
             $query->where('user_id', auth()->user()->id);
@@ -155,5 +151,57 @@ use Throwable;
 
         $data->setCollection($carriedStock);
         return $data;
+    }
+
+
+    public function confirmedByPIC(StockWithdrawal $stockWithdrawal): void
+    {
+        $stockWithdrawal->load('stockWithdrawalItem', 'stockWithdrawalByEmployee', 'stockWithdrawalItem.stock.item', 'stockWithdrawalByEmployee.user.roles');
+
+
+        $hash = Hash::make($stockWithdrawal->id);
+
+        $image = QrCode::format('png')->size(200)->generate($hash);
+
+        $signaturePath = 'documents/stock-withdrawal/pic-signature/' . $hash . '.png';
+        Storage::disk('public')->put($signaturePath, $image);
+
+        $stockWithdrawal->update([
+            'pic_id' => Auth::id(),
+            'pic_signature_after_withdraw' => $signaturePath,
+        ]);
+    }
+
+
+    public function confirmedByStocker(StockWithdrawal $stockWithdrawal): void
+    {
+        $stockWithdrawal->load('stockWithdrawalItem', 'stockWithdrawalByEmployee', 'stockWithdrawalItem.stock.item', 'stockWithdrawalByEmployee.user.roles');
+
+
+        $hash = Hash::make($stockWithdrawal->id);
+
+        $image = QrCode::format('png')->size(200)
+            ->generate($hash);
+
+        $signaturePath = 'documents/stock-withdrawal/stocker-signature/' . $hash . '.png';
+        Storage::disk('public')->put($signaturePath, $image);
+
+        $stockWithdrawal->update([
+            'stocker_id' => Auth::id(),
+            'stocker_signature_after_withdraw' => $signaturePath,
+            'status' => 'Dibawa'
+        ]);
+    }
+
+
+    public function getStockWithdrawalItems(StockWithdrawal $stockWithdrawal): Collection
+    {
+        return $this->stockWithdrawalServiceRepository->getStockWithdrawalItems($stockWithdrawal)->get();
+    }
+
+
+    public function getStockWithdrawalItem(StockWithdrawalItem $stockWithdrawalItem)
+    {
+        return $this->stockWithdrawalServiceRepository->getStockWithdrawalItem($stockWithdrawalItem);
     }
 }

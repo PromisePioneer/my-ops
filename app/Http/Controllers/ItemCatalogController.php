@@ -28,7 +28,7 @@ use Throwable;
 
     public function getCatalogByDraftStockId(Request $request, DraftStock $draftStock): JsonResponse
     {
-        return response()->json($this->itemCatalogService->findByDraftStockId($draftStock, $request));
+        return response()->json($this->itemCatalogService->findByTransactionIdOrInitialBalanceInventoryId($draftStock, $request));
     }
 
 

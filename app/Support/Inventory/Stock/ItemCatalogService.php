@@ -10,7 +10,6 @@ use App\Models\Stock;
 use App\Models\StockWithdrawal;
 use App\Models\StockWithdrawalItem;
 use App\Support\Inventory\Stock\DraftStock\Repository\ItemCatalogRepository;
-use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -25,9 +24,9 @@ use Throwable;
         $this->itemCatalogRepository = new ItemCatalogRepository();
     }
 
-    public function findByDraftStockId(): LengthAwarePaginator
+    public function findByTransactionIdOrInitialBalanceInventoryId(DraftStock $draftStock): LengthAwarePaginator
     {
-        $catalog = $this->itemCatalogRepository->getItemCatalogByDraftStockId()->paginate(self::$perPage);
+        $catalog = $this->itemCatalogRepository->findByTransactionIdOrInitialBalanceInventoryId($draftStock)->paginate(self::$perPage);
         return $this->formattedData($catalog);
     }
 

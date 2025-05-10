@@ -127,7 +127,9 @@ use Illuminate\View\View;
 
     public function getStockBasedOnDraftStock(DraftStock $draftStock)
     {
-        $stock = Stock::with('transaction', 'branch', 'item')
+        $stock = Stock::with('transaction', 'branch', 'item')->whereHas('item', function ($query) use ($draftStock) {
+            $query->where('name', $draftStock->transaction->item->name);
+        })
             ->where('transaction_id', $draftStock->transaction_id)->orWhere('initial_balance_inventory_id', $draftStock->initial_balance_inventory_id)->get();
         return $stock->map(function ($stock) {
             return [
@@ -155,7 +157,7 @@ use Illuminate\View\View;
             ->whereHas('item.category', function ($query) {
                 $query->where('name', '!=', 'Kategori 4');
             })
-            ->whereIn('condition', ['Baik', 'Diperbaiki'])
+            ->where('condition', 'Baik')
             ->get();
 
 

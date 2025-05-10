@@ -14,8 +14,11 @@ class StockWithdrawal extends Model
         'branch_id',
         'date',
         'description',
-        'kca_id',
+        'pic_id',
         'stocker_id',
+        'stocker_signature_after_withdraw',
+        'status',
+        'pic_signature_after_withdraw',
     ];
 
 
@@ -25,9 +28,9 @@ class StockWithdrawal extends Model
     }
 
 
-    public function kca(): BelongsTo
+    public function pic(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'kca_id');
+        return $this->belongsTo(User::class, 'pic_id');
     }
 
 

@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Models\DraftStock;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\Branch;
 use Illuminate\Http\Request;
@@ -77,6 +78,19 @@ class StockService
 
     public function getMustReorderStocks(Request $request)
     {
+        $itemDoesntHaveGoodsStock = ItemCollection::whereDoesntHave('goodsStock')->count();
+        $items = ItemCollection::all();
+
+        foreach ($items as $item) {
+            $itemHasGoodsStock = ItemCollection::whereHas('goodsStock', function ($query) use ($item) {
+                $query->where('qty', '<', $item->reorder_level);
+            })->count();
+            $draftStock = DraftStock::whereHas('transaction.item', function ($query) use ($item) {
+                $query->where('id', $item->id);
+            })->where('qty', '<', $item->reorder_level)->count();
+        }
+
+        return $itemDoesntHaveGoodsStock + $itemHasGoodsStock + $draftStock;
     }
 
 }
