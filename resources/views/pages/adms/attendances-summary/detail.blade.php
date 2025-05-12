@@ -2,7 +2,6 @@
 @section('page-title', 'Detail Riwayat Absensi'. ' [' . $user->nip . '] '. $user->name)
 @section('content')
     <div x-data="attendancesSummaryDetail()">
-        @include('pages.adms.attendances-summary.modal.correction')
         <div class="d-flex flex-column flex-xl-row">
             <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
                 <div class="card card-flush">
@@ -62,9 +61,6 @@
                                     <th class="text-center">Clock Out</th>
                                     <th class="text-center">Terlambat</th>
                                     <th class="text-center">Jam Kerja</th>
-                                    <template x-if="Number(correctionPermission) === 1">
-                                        <th class="text-center">Action</th>
-                                    </template>
                                 </tr>
                                 </thead>
                                 <template x-if="isLoading">
@@ -151,16 +147,6 @@
                                                 x-text="`${attendance.late ? attendance.late + ' Menit' : ''}`">
                                             </td>
                                             <td class="text-center" x-text="attendance.work_time"></td>
-
-                                            <template x-if="Number(correctionPermission) === 1">
-                                                <td class="text-center">
-                                                    <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                            data-bs-target="#modal-attendance-correction"
-                                                            @click="correction(attendance.date_period)">
-                                                        <i class="bi bi-pencil"></i>
-                                                    </button>
-                                                </td>
-                                            </template>
                                         </tr>
 
                                     </template>
@@ -189,7 +175,6 @@
 
         function attendancesSummaryDetail() {
             return {
-                correctionPermission: "{{ request()->user()->can('Koreksi Data Riwayat Absensi') }}",
                 buttonLoading: false,
                 isLoading: false,
                 attendancesSummaryRecords: [],
@@ -199,11 +184,8 @@
                 correctionVal: null,
                 totalLateIn1Week: 0,
                 runningCommands: [],
-                formCorrection: document.getElementById('form-attendance-correction'),
-                modalCorrection: new bootstrap.Modal(document.getElementById('modal-attendance-correction')),
                 async init() {
                     await this.getAttendanceSummaryRecords();
-                    await this.getWorkTimes();
                 },
                 async getAttendanceSummaryRecords() {
                     try {
@@ -236,11 +218,6 @@
                         this.isLoading = false;
                     }
                 },
-                async correction(datePeriod) {
-                    const resp = await axios.get(`/adms/attendances-summary/detail/correction/${datePeriod}/${this.id}`);
-                    this.correctionVal = resp.data;
-                    await this.selectedWorkTime();
-                },
                 formatDate(val) {
                     const date = new Date(val);
                     return date.toLocaleDateString("id", {
@@ -249,63 +226,6 @@
                         month: "2-digit",
                         day: "numeric",
                     });
-                },
-                async selectedWorkTime() {
-                    const selectedWorkTime = $('#selected-work-time');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-work-time/${this.correctionVal.work_time_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedWorkTime.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
-                async getWorkTimes() {
-                    $(".work-times-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Jam Kerja",
-                        ajax: {
-                            url: '/select2/work-times-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async saveCorrection(datePeriod) {
-                    this.buttonLoading = true;
-                    const startDate = document.getElementById('start_date')?.value ?? null;
-                    const endDate = document.getElementById('end_date')?.value ?? null;
-
-                    try {
-                        await axios.post(`/adms/attendances-summary/detail/correction/save/${this.id}/${datePeriod}`, new FormData(this.formCorrection)).then(async res => {
-                            await showAlert('success', 'Data berhasil disimpan');
-                            this.formCorrection.reset();
-                            this.modalCorrection.hide();
-                            if (startDate !== '' && endDate !== '') {
-                                const resp = await axios.get(`/adms/attendances-summary/detail/filter/${this.id}`,
-                                    {
-                                        params: {
-                                            start_date: startDate,
-                                            end_date: endDate,
-                                        }
-                                    });
-                                this.attendancesSummaryRecords = resp.data;
-                            } else {
-                                await this.init();
-                            }
-                        });
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]));
-                    } finally {
-                        this.buttonLoading = false;
-                    }
                 },
             };
         }

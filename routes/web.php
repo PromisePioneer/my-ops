@@ -1040,8 +1040,6 @@ Route::group(['middleware' => ['auth']], static function () {
 
         Route::prefix('/attendances-summary')->group(function () {
             Route::get('/', [AttendanceSummaryController::class, 'index']);
-            Route::get('/detail/correction/work-time/data', [AttendanceSummaryController::class, 'getWorkTime']);
-            Route::get('/detail/correction/{datePeriod}/{user}', [AttendanceSummaryController::class, 'correction']);
             Route::get('/data', [AttendanceSummaryController::class, 'data']);
             Route::get('/search', [AttendanceSummaryController::class, 'search']);
             Route::get('/detail/filter/{user}', [AttendanceSummaryController::class, 'filterByDate']);
@@ -1049,17 +1047,11 @@ Route::group(['middleware' => ['auth']], static function () {
             Route:: get('/branch/data', [AttendanceSummaryController::class, 'getBranchData']);
             Route::get('/department/data', [AttendanceSummaryController::class, 'getDepartmentData']);
             Route::get('/roles/data', [AttendanceSummaryController::class, 'getRolesData']);
-            Route::get('/detail/correction/work-time/selected/{workTime}', [AttendanceSummaryController::class, 'selectedData']);
             Route::get('/detail/running-commands/{user}', [AttendanceSummaryController::class, 'getRunningCommands']);
             Route::get('/detail/deactivate-active-commands/{user}', [AttendanceSummaryController::class, 'deactivateRunningCommand']);
             Route::get('/detail/get-fp-devices', [AttendanceSummaryController::class, 'getFPDeviceData']);
             Route::get('/detail/{user}/{startDate?}/{endDate?}', [AttendanceSummaryController::class, 'detail']);
-            Route::get('/detail/data/{user}/{startDate?}/{endDate?}', [AttendanceSummaryController::class, 'detailData']);
-
-            Route::post('detail/query-data/{user}', [AttendanceSummaryController::class, 'queryData']);
-            Route::post(
-                '/detail/correction/save/{user}/{datePeriod?}',
-                [AttendanceSummaryController::class, 'saveCorrection']);
+            Route::get('/detail/data/{user}/{startDate?}/{endDate?}', [AttendanceSummaryController::class, 'detailData']);;
             Route::get('/filter', [AttendanceSummaryController::class, 'filter']);
 
             Route::prefix('/attendance-manual-requests')->group(function () {
