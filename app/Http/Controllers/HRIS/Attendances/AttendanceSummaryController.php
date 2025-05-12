@@ -89,48 +89,9 @@ use Illuminate\View\View;
     }
 
 
-    public function correction($datePeriod, User $user): JsonResponse
-    {
-        $parseDatePeriod = Carbon::parse($datePeriod)->format('Y-m-d');
-        $attendaceVal = AttendancesSummary::whereDate('date', $parseDatePeriod)
-            ->where('employee_id', $user->absent_id)
-            ->first() ?? $parseDatePeriod;
-
-
-        return response()->json($attendaceVal);
-    }
-
     public function filter(Request $request): JsonResponse
     {
 
         return response()->json($this->attendanceSummaryService->filter($request));
-    }
-
-
-    public function saveCorrection(AttendanceCorrectionRequest $request, User $user, $datePeriod = null): JsonResponse
-    {
-        $parseDatePeriod = Carbon::parse($datePeriod)->format('Y-m-d');
-        $attendaceVal = AttendancesSummary::where('employee_id', $user->absent_id)
-            ->whereDate('date', $parseDatePeriod)->first();
-
-
-        if ($attendaceVal) {
-            $attendaceVal->update([
-                'work_time_id' => $request->input('work_time_id'),
-                'date' => $request->input('date'),
-                'clock_in' => Carbon::make($request->input('clock_in')),
-                'clock_out' => Carbon::make($request->input('clock_out')),
-            ]);
-        } else {
-            AttendancesSummary::create([
-                'work_time_id' => $request->input('work_time_id'),
-                'date' => $request->input('date'),
-                'employee_id' => $user->absent_id,
-                'clock_in' => Carbon::make($request->input('clock_in')),
-                'clock_out' => Carbon::make($request->input('clock_out')),
-            ]);
-        }
-
-        return response()->json(['message' => 'Data berhasil disimpan.']);
     }
 }
