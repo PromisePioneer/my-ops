@@ -28,6 +28,31 @@
                             </select>
                         </div>
                     </template>
+
+
+                    <template x-if="!stockWithdrawalItem.code">
+                        <div>
+                            <div class="mb-4">
+                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">
+                                    Total Barang dibawa
+                                </label>
+                                <input type="text" class="form-control form-control-solid"
+                                       name="code" id="code" :value="stockWithdrawalItem.qty"
+                                       disabled>
+                            </div>
+                            <div class="mb-4">
+                                <label
+                                    class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                    Barang yang dikembalikan
+                                </label>
+                                <input type="number" class="form-control form-control-solid mb-4"
+                                       placeholder="" :max="stockWithdrawalItem.qty" min="0"
+                                       name="qty" id="qty"
+                                       required>
+                                <span class="text-danger">Jika tidak ada barang dikembalikan maka buat 0</span>
+                            </div>
+                        </div>
+                    </template>
                 </div>
 
                 <div class="modal-footer">

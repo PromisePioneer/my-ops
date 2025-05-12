@@ -21,7 +21,8 @@
                                     <th class="min-w-125px">Kode</th>
                                     <th class="min-w-125px">Barang</th>
                                     <th class="min-w-125px">Qty</th>
-                                    <th class="min-w-125px">Status</th>
+                                    <th class="min-w-125px">Status Terkini</th>
+                                    <th class="min-w-125px">Actions</th>
                                 </tr>
                                 </thead>
                                 <template x-if="isLoading">
@@ -53,6 +54,7 @@
                                         <td x-text="stock.code ?? '-'"></td>
                                         <td x-text="stock.stock.transaction.item.name"></td>
                                         <td x-text="stock.qty"></td>
+                                        <td x-text="stock.status"></td>
                                         <td>
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modal-returning-items"
@@ -68,6 +70,9 @@
                                     </tbody>
                                 </template>
                             </table>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-primary btn-sm">Konfirmasi</button>
                         </div>
                     </div>
                 </div>

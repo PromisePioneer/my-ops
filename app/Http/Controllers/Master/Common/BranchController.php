@@ -153,4 +153,6 @@ use Illuminate\View\View;
     {
         return response()->json($this->branchService->getAllBranch($request));
     }
+
+
 }

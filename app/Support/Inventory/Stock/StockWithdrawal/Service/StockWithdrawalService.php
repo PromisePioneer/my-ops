@@ -25,6 +25,7 @@ use Throwable;
 #[AllowDynamicProperties] class StockWithdrawalService
 {
     use FileHelpers;
+
     public function __construct()
     {
         $this->stockWithdrawalServiceRepository = new StockWithdrawalServiceRepository();
@@ -89,6 +90,7 @@ use Throwable;
                     'transaction_id' => $itemCatalog->transaction_id,
                     'stock_id' => $itemCatalog->stock_id,
                     'code' => $itemCatalog->code,
+                    'draft_stock_id' => $itemCatalog->draft_stock_id,
                     'condition' => $itemCatalog->condition,
                     'created_by' => $itemCatalog->created_by,
                     'status' => 'Dibawa'
@@ -179,7 +181,6 @@ use Throwable;
 
 
         $hash = Hash::make($stockWithdrawal->id);
-
         $image = QrCode::format('png')->size(200)
             ->generate($hash);
 

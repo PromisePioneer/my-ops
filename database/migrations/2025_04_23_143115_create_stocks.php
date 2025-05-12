@@ -28,6 +28,11 @@ return new class extends Migration {
                 ->constrained('item_collections')
                 ->cascadeOnDelete()
                 ->cascadeOnDelete();
+            $table->foreignId('draft_stock_id')
+                ->nullable()
+                ->constrained('draft_stocks')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->integer('qty');
             $table->enum('condition', ['Rusak', 'Baik'])->default('Baik');
             $table->double('on_hold_qty')->default(0);

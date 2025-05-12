@@ -46,6 +46,8 @@ class DatabaseSeeder extends Seeder
             WeekHolidaySeeder::class,
             ContactSeeder::class,
             RoleHierarchySeeder::class,
+            InitialBalanceSeeder::class,
+            SupplierSeeder::class
         ]);
     }
 }

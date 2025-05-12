@@ -127,10 +127,15 @@ use Illuminate\View\View;
 
     public function getStockBasedOnDraftStock(DraftStock $draftStock)
     {
-        $stock = Stock::with('transaction', 'branch', 'item')->whereHas('item', function ($query) use ($draftStock) {
-            $query->where('name', $draftStock->transaction->item->name);
-        })
-            ->where('transaction_id', $draftStock->transaction_id)->orWhere('initial_balance_inventory_id', $draftStock->initial_balance_inventory_id)->get();
+
+        $draftStock->load('transaction.item');
+        $stock = Stock::with('transaction', 'branch', 'item')
+            ->whereHas('item', function ($query) use ($draftStock) {
+                $query->where('name', $draftStock->transaction->item->name ?? $draftStock->initialInventoryBalance->item->name);
+            })->where('draft_stock_id', $draftStock->id)
+            ->get();
+
+
         return $stock->map(function ($stock) {
             return [
                 'id' => $stock->id,
@@ -200,5 +205,11 @@ use Illuminate\View\View;
                 'text' => $item->item->name . ' Stok : ' . $item->qty . ' - ' . $item->condition,
             ];
         });
+    }
+
+
+    public function getStockBasedOnItemIdAndBranchId(Branch $branch, ItemCollection $itemCollection): JsonResponse
+    {
+        return response()->json($this->stockService->getStockBasedOnItemIdAndBranchId($branch->id, $itemCollection->id));
     }
 }
