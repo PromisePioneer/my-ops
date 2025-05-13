@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use function App\Helper\currencyFormat;
 
 class TrialBalanceService
 {
@@ -43,8 +44,8 @@ class TrialBalanceService
             return [
                 'trial_balance_type' => $account->trial_balance_type,
                 'account_name' => $account->name,
-                'debit' => $account->trial_balance_type === 'debit' ? 'Rp.' . number_format(($debit + $childDebit) - $childCredit, 2, '.', '.') : null,
-                'credit' => $account->trial_balance_type === 'credit' ? 'Rp.' . number_format($credit + $childCredit, 2, '.', '.') : null,
+                'debit' => $account->trial_balance_type === 'debit' ? currencyFormat(($debit + $childDebit) - $childCredit) : null,
+                'credit' => $account->trial_balance_type === 'credit' ? currencyFormat($credit + $childCredit) : null,
                 'balance_debit' => $account->trial_balance_type === 'debit' ? floatval(($debit + $childDebit) - ($credit + $childCredit)) : null,
                 'balance_credit' => $account->trial_balance_type === 'credit' ? floatval($credit + $childCredit) : null,
             ];
@@ -108,8 +109,8 @@ class TrialBalanceService
 
         return [
             'trial_balance' => $this->formattedData($query, $request),
-            'total_debit' => 'Rp.' . number_format($this->getTotalDebit($request)->sum('amount'), 2, '.', '.'),
-            'total_credit' => 'Rp.' . number_format($this->getTotalCredit($request)->sum('amount'), 2, '.', '.'),
+            'total_debit' => currencyFormat($this->getTotalDebit($request)->sum('amount')),
+            'total_credit' => currencyFormat($this->getTotalCredit($request)->sum('amount')),
         ];
     }
 

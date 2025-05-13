@@ -10,6 +10,7 @@ use App\Support\Master\Operational\InitialInventoryBalance\Repository\InitialInv
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use function App\Helper\currencyFormat;
 use function App\Helper\formatDate;
 
 #[AllowDynamicProperties] class InitialInventoryBalanceService
@@ -55,7 +56,7 @@ use function App\Helper\formatDate;
                 'unit_price' => $query->unit_price,
                 'unit_type' => $query->item->unitType->name,
                 'stock_account' => "{$query->stockAccount->code} {$query->stockAccount->name}",
-                'total_price' => 'Rp.' . number_format($query->total_price, 2, '.', '.'),
+                'total_price' => currencyFormat($query->total_price),
                 'detail' => $query->detail,
                 'attachment' => $query->attachment,
                 'status' => $query->status

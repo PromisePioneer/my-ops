@@ -5,6 +5,7 @@ namespace App\Support\Journal;
 use App\Models\AccountTransaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use function App\Helper\currencyFormat;
 
 class GeneralJournalService
 {
@@ -27,7 +28,7 @@ class GeneralJournalService
                 'id' => $item->id,
                 'branch_name' => $item->branch->name,
                 'date' => $item->date,
-                'amount' => 'Rp.' . number_format($item->amount, 2),
+                'amount' => currencyFormat($item->amount),
                 'type' => $item->entries_type,
                 'account' => $item->account->code . ' ' . $item->account->name,
                 'description' => $item->description,
