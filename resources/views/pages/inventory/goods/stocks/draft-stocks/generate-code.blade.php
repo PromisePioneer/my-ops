@@ -19,8 +19,8 @@
                     <div class="mb-10">
                         <label for="name" class="required form-label">Kode / SN</label>
                         <input type="text" id="code" name="code" class="form-control form-control-solid"
-                               :readonly="draftStock?.item?.must_have_code === 1 && draftStock?.item?.is_code_listed === 0"
-                               placeholder="Kode" :value="autoGenerateCode ?? editVal?.code"/>
+                               :readonly="(draftStock?.transaction?.item?.must_have_code === 1 && draftStock?.transaction?.item?.is_code_listed === 0) || (draftStock?.initial_inventory_balance?.item?.must_have_code === 1 && draftStock?.initial_inventory_balance?.item?.is_code_listed === 0)"
+                               placeholder="Kode" :value="autoGenerateCode"/>
                     </div>
                     <div class="mb-10">
                         <label for="name" class="required form-label">Kondisi</label>

@@ -81,6 +81,7 @@ use App\Http\Controllers\Master\Operational\ItemCollectionController;
 use App\Http\Controllers\Master\Operational\PSBController;
 use App\Http\Controllers\Master\Operational\SupplierController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\StockMutationController;
 use App\Http\Controllers\StockWithdrawalController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UnitTypeController;
@@ -104,6 +105,11 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+
+Route::get('/phpinfo', function () {
+    phpinfo();
+});
 
 
 Route::get('/test', function () {
@@ -692,6 +698,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/branch/data/{itemCollection}', [StockController::class, 'getMainBranchWithStock']);
                 Route::get('/stock-based-on-draft-stock/{draftStock}', [StockController::class, 'getStockBasedOnDraftStock']);
                 Route::get('/must-reorder', [StockController::class, 'getMustReorderStocks']);
+                Route::get('/{branch}/{itemCollection}', [StockController::class, 'getStockBasedOnItemIdAndBranchId']);
             });
 
 
@@ -709,6 +716,11 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/stock-withdrawal-items/{stockWithdrawal}', [StockWithdrawalController::class, 'getStockWithdrawalItems']);
                 Route::get('/stock-withdrawal-item/{stockWithdrawalItem}', [StockWithdrawalController::class, 'getStockWithdrawalItem']);
                 Route::post('/stock-withdrawal-item/return/{stockWithdrawalItem}', [StockWithdrawalController::class, 'returningItems']);
+            });
+
+
+            Route::prefix('/stock-mutation')->group(function () {
+                Route::get('/create/{itemCollection}', [StockMutationController::class, 'create']);
             });
 
             Route::prefix('consumed-stocks')->group(function () {

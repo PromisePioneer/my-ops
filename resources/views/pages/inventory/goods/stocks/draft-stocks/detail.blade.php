@@ -41,8 +41,8 @@
                     </template>
                     <tbody class="text-center">
                     <tr>
-                        <td x-text="draftStock?.transaction?.transaction_number"></td>
-                        <td x-text="draftStock?.transaction?.item?.name"></td>
+                        <td x-text="draftStock?.transaction?.transaction_number ?? 'Persediaan Awal'"></td>
+                        <td x-text="draftStock?.transaction?.item?.name ?? draftStock.initial_inventory_balance?.item?.name"></td>
                         <td x-text="draftStock.qty"></td>
                     </tr>
                     </tbody>
@@ -226,7 +226,10 @@
                 async generateCodeIfCodeNotListedOnItem() {
                     const resp = await axios.get(`/inventory/goods/draft-stocks/detail/generate-code/${this.draftStockId}`);
 
-                    if (!this.editVal && this.draftStock?.item?.must_have_code === 1 && this.draftStock?.item?.is_code_listed === 0) {
+                    if ((!this.editVal && this.draftStock?.transaction?.item?.must_have_code === 1 && this.draftStock?.transaction?.item?.is_code_listed === 0)
+                        ||
+                        (!this.editVal && this.draftStock?.initial_inventory_balance.item?.must_have_code === 1 && this.draftStock?.initial_inventory_balance.item?.is_code_listed === 0)
+                    ) {
                         this.autoGenerateCode = resp.data;
                     }
                 },
@@ -290,7 +293,7 @@
                             await showAlert('error', 'Terjadi kesalahan');
                         }
                     });
-                }
+                },
             }
         }
     </script>

@@ -10,6 +10,6 @@ class ItemCatalogRepository
 {
     public function findByTransactionIdOrInitialBalanceInventoryId(DraftStock $draftStock): Builder
     {
-        return ItemCatalog::with('transaction', 'transaction.item', 'createdBy', 'initialInventoryBalance', 'initialInventoryBalance.item')->where('transaction_id', $draftStock->transaction_id)->orWhere('initial_balance_inventory_id', $draftStock->initial_balance_inventory_id);
+        return ItemCatalog::with('transaction', 'transaction.item', 'createdBy', 'initialInventoryBalance', 'initialInventoryBalance.item')->where('draft_stock_id', $draftStock->id);
     }
 }

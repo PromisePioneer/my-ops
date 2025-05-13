@@ -59,7 +59,7 @@ use Throwable;
     {
         DB::transaction(function () use ($request, $draftStock) {
             $draftStock->load('transaction');
-            $stock = Stock::where('transaction_id', $draftStock->transaction_id)->orWhere('initial_balance_inventory_id', $draftStock->initial_balance_inventory_id)
+            $stock = Stock::where('draft_stock_id', $draftStock->id)
                 ->where('condition', $request->input('condition'))
                 ->first();
 
@@ -67,11 +67,13 @@ use Throwable;
             $draftStock->decrement('qty');
 
             if (!$stock) {
+
                 $newStock = Stock::create([
                     'branch_id' => $draftStock->transaction?->branch_id ?? $draftStock->initialInventoryBalance->branch_id,
                     'transaction_id' => $draftStock->transaction_id,
                     'initial_balance_inventory_id' => $draftStock->initial_balance_inventory_id,
                     'item_id' => $draftStock->transaction->item_id ?? $draftStock->initialInventoryBalance->item_id,
+                    'draft_stock_id' => $draftStock->id,
                     'qty' => 1,
                     'condition' => $request->condition
                 ]);
@@ -79,7 +81,9 @@ use Throwable;
                 ItemCatalog::create([
                     'transaction_id' => $draftStock->transaction_id,
                     'initial_balance_inventory_id' => $draftStock->initial_balance_inventory_id,
+                    'draft_stock_id' => $draftStock->id,
                     'stock_id' => $newStock->id,
+                    'item_id' => $draftStock->transaction->item_id ?? $draftStock->initialInventoryBalance->item_id,
                     'code' => $request->code,
                     'condition' => $request->condition,
                     'created_by' => $request->user()->id,
@@ -89,6 +93,8 @@ use Throwable;
                 ItemCatalog::create([
                     'transaction_id' => $draftStock->transaction_id,
                     'initial_balance_inventory_id' => $draftStock->initial_balance_inventory_id,
+                    'item_id' => $draftStock->transaction->item_id ?? $draftStock->initialInventoryBalance->item_id,
+                    'draft_stock_id' => $draftStock->id,
                     'stock_id' => $stock->id,
                     'code' => $request->code,
                     'condition' => $request->condition,
@@ -106,8 +112,7 @@ use Throwable;
     {
         $itemCatalog->load('transaction');
 
-        $oldStock = Stock::where('transaction_id', $itemCatalog->transaction_id)
-            ->where('branch_id', $itemCatalog->transaction->branch_id)
+        $oldStock = Stock::where('draft_stock_id', $itemCatalog->draft_stock_id)
             ->where('condition', $itemCatalog->condition)
             ->lockForUpdate()
             ->first();
@@ -115,12 +120,7 @@ use Throwable;
 
         DB::transaction(function () use ($oldStock, $itemCatalog) {
             if (!empty($oldStock)) {
-                $draftStock = DraftStock::whereHas('transaction', function ($query) use ($itemCatalog) {
-                    $query->where('id', $itemCatalog->transaction_id)
-                        ->where('branch_id', $itemCatalog->transaction->branch_id);
-                })->increment('qty');
-
-
+                DraftStock::where('id', $itemCatalog->draft_stock_id)->increment('qty');
                 $oldStock->decrement('qty');
                 $itemCatalog->delete();
             }

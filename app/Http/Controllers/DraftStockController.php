@@ -44,7 +44,7 @@ use Illuminate\View\View;
 
     public function show(DraftStock $draftStock): JsonResponse
     {
-        $draftStock->load('transaction', 'transaction.item');
+        $draftStock->load('transaction', 'transaction.item', 'initialInventoryBalance.item');
         return response()->json($draftStock);
     }
 
@@ -58,28 +58,32 @@ use Illuminate\View\View;
     public function generateCodeIfCodeNotListedOnItem(DraftStock $draftStock): string
     {
         $draftStock->load('transaction.branch.parent', 'transaction.item');
-        $latestItemCatalog = ItemCatalog::with('transaction.branch.parent', 'transaction.item', 'initialInventoryBalance.branch.parent')
-            ->where('transaction_id', $draftStock->transaction_id)
+        $latestItemCatalog = ItemCatalog::with('transaction.branch.parent', 'transaction.item', 'initialInventoryBalance.branch.parent', 'initialInventoryBalance.item')
+            ->orderBy('created_at', 'desc')
             ->latest()
             ->first();
 
+
         $month = date('m');
         $year = date('y');
+
+
+        $code = $draftStock->transaction->item->code ?? $draftStock->initialInventoryBalance->item->code;
+        $branchCode = $draftStock->transaction->branch->parent->code ?? $draftStock->initialInventoryBalance->branch->parent->code;
+
 
         if ($latestItemCatalog) {
             $convertInvNumberToArray = explode('.', $latestItemCatalog->code);
             $startingNumber = end($convertInvNumberToArray);
             $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
-            $branchCode = $latestItemCatalog->transaction->branch->parent->code ?? $latestItemCatalog->initialInventoryBalance->branch->parent->code;
-            $itemCode = $latestItemCatalog->transaction->item->code ?? $latestItemCatalog->initialInventoryBalance->item->code;
-
-            return $month . '.' . $year . '.' . $itemCode . '-' . $branchCode . '.' . $startValue;
+            return $month . '.' . $year . '.' . $code . '-' . $branchCode . '.' . $startValue;
         }
 
         $startingNumber = '000';
         $startValue = str_pad((int)$startingNumber + 1, 3, '0', STR_PAD_LEFT);
 
-        return $month . '.' . $year . '.' . $draftStock->item->code . '-' . $draftStock->branch?->parent?->code . '.' . $startValue;
+        return $month . '.' . $year . '.' . $code . '-' .
+            $branchCode . '.' . $startValue;
     }
 
 }

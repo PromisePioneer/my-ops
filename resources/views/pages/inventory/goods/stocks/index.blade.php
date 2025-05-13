@@ -138,7 +138,7 @@
                                                     </i>
                                                     Pemakaian Barang
                                                 </a>
-                                                <a href=""
+                                                <a :href="`/inventory/goods/stock-mutation/create/${stock.id}`"
                                                    class="btn btn-light-info btn-sm">
                                                     <i class="ki-duotone ki-information fs-2">
                                                         <span class="path1"></span>

@@ -22,8 +22,15 @@ return new class extends Migration {
                 ->constrained('initial_inventory_balance')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->foreignId('draft_stock_id')
+                ->constrained('draft_stocks')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
             $table->foreignId('stock_id')
                 ->constrained('stocks')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('item_id')->constrained('item_collections')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->string('code');

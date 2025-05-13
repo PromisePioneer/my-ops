@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\DraftStock;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\Branch;
+use App\Models\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -54,7 +55,6 @@ class StockService
         $data = $goodsData->getCollection()->map(function ($item) {
 
             $stock = 0;
-
             if (Auth::user()->branch_id) {
                 $stock = $item->goodsStock->where('branch_id', Auth::user()->branch_id)->sum('qty');
             } else {
@@ -91,6 +91,29 @@ class StockService
         }
 
         return $itemDoesntHaveGoodsStock + $itemHasGoodsStock + $draftStock;
+    }
+
+
+    public function getStockBasedOnItemIdAndBranchId($branchId, $itemId)
+    {
+
+        $stocks = Stock::with('branch', 'item.category', 'item.unitType', 'itemCatalog')
+            ->where('item_id', $itemId)
+            ->whereHas('branch', function ($query) use ($branchId) {
+                $query->where('parent_id', $branchId);
+            })->get();
+
+        return $stocks->flatMap(function ($stock) {
+            return $stock->itemCatalog->map(function ($itemCatalog) use ($stock) {
+                return [
+                    'id' => $itemCatalog->id,
+                    'branch_name' => $stock->branch->name,
+                    'name' => $stock->item->name,
+                    'code' => $itemCatalog->code,
+                    'condition' => $itemCatalog->condition,
+                ];
+            });
+        });
     }
 
 }
