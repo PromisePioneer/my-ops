@@ -129,7 +129,7 @@
                                             <td class="text-center" x-text="stock.category_name"></td>
                                             <td class="text-center" x-text="stock.total_stock"></td>
                                             <td>
-                                                <a :href="`inventory/goods/stock-withdrawals`"
+                                                <a :href="`/inventory/goods/stock-withdrawals`"
                                                    class="btn btn-light-info btn-sm mb-4">
                                                     <i class="ki-duotone ki-information fs-2">
                                                         <span class="path1"></span>
