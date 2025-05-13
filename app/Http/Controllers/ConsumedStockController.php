@@ -11,7 +11,7 @@ use App\Models\ItemCollection;
 use App\Models\Stock;
 use App\Models\Transaction;
 use App\Support\AccountTransactions\AccountTransactionService;
-use App\Support\Inventory\Stock\ConsumedStockService;
+use App\Support\Inventory\StockManagement\ConsumedStockService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

@@ -11,7 +11,7 @@ use App\Models\JobInformation;
 use App\Models\SP;
 use App\Models\User;
 use App\Support\HelperService\HandleFileUploadService;
-use App\Support\Inventory\Stock\StockWithdrawal\Service\StockWithdrawalService;
+use App\Support\Inventory\StockManagement\StockWithdrawal\Service\StockWithdrawalService;
 use App\Support\User\LeaveAndPermission\LeaveAndPermissionService;
 use App\Support\User\SP\SPService;
 use Illuminate\Http\JsonResponse;

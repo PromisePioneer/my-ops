@@ -40,13 +40,13 @@ class StockWithdrawal extends Model
     }
 
 
-    public function stockWithdrawalByEmployee(): HasMany
+    public function stockWithdrawalByEmployees(): HasMany
     {
         return $this->hasMany(StockWithdrawalByEmployee::class, 'stock_withdrawal_id');
     }
 
 
-    public function stockWithdrawalItem()
+    public function stockWithdrawalItems(): HasMany
     {
         return $this->hasMany(StockWithdrawalItem::class, 'stock_withdrawal_id');
     }

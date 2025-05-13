@@ -36,7 +36,7 @@ class ItemCollection extends Model
         ];
     }
 
-    public function goodsStock(): HasMany
+    public function stock(): HasMany
     {
         return $this->hasMany(Stock::class, 'item_id');
     }
