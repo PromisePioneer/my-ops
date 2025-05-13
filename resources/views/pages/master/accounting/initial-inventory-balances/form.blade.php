@@ -96,7 +96,7 @@
 
                     <div class="row mb-10">
                         <div class="col-lg-6">
-                            <label for="name" class="required form-label">Bukti Transaksi</label>
+                            <label for="name" class="required form-label">Dokumentasi</label>
                             <input type="file" class="form-control form-control-solid" @change="previewAttachmentFile()"
                                    accept="application/pdf" x-ref="attachmentFile" name="attachment" id="attachment">
                         </div>
