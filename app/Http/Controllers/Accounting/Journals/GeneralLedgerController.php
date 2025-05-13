@@ -44,7 +44,7 @@ class GeneralLedgerController extends Controller
                     'id' => $query->id,
                     'date' => Carbon::parse($query->date)->format('d/m/Y'),
                     'description' => $query->description,
-                    'type' => $query->type,
+                    'type' => $query->entries_type,
                     'amount' => number_format($query->amount, 2),
                 ];
             });
