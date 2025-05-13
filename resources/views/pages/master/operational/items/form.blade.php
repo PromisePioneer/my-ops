@@ -24,14 +24,14 @@
                                        id="mustHaveCode"
                                        name="must_have_code"/>
                                 <label class="form-check-label" for="mustHaveCode">
-                                    Barang Memiliki Kode
+                                    Kode Barang dibuat sendiri
                                 </label>
                             </div>
                             <div class="form-check form-switch form-check-custom form-check-solid">
                                 <input class="form-check-input" type="checkbox" id="isCodeListed"
                                        name="is_code_listed" :checked="editVal?.is_code_listed === 1"/>
                                 <label class="form-check-label" for="isCodeListed">
-                                    Kode tertera di barang
+                                    Kode Bawaan
                                 </label>
                             </div>
                         </div>
