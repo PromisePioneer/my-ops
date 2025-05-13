@@ -4,7 +4,7 @@
         @include('pages.inventory.goods.stocks.stock-mutation.drawer.item-catalog-details')
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
-                <a class="btn btn-info btn-sm mb-6" href="{{ url('manage-users/users/') }}">Kembali</a>
+                <a class="btn btn-info btn-sm mb-6" href="{{ url('/inventory/goods/stock') }}">Kembali</a>
             </div>
             <div class="card-body py-3">
                 <form id="form" @submit.prevent="save()">
@@ -30,54 +30,41 @@
                                id="kt_roles_view_table">
                             <thead>
                             <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="min-w-50px sorting" tabindex="0" aria-controls="kt_roles_view_table"
-                                    rowspan="1" colspan="1" aria-label="ID: activate to sort column ascending">
+                                <th class="w-10px pe-2">
+                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
+                                        <input class="form-check-input" type="checkbox"
+                                               @click="toggleAllCheckBox()">
+                                    </div>
+                                </th>
+                                <th class="min-w-125px">
                                     Cabang
                                 </th>
-                                <th class="min-w-50px sorting" tabindex="0" aria-controls="kt_roles_view_table"
-                                    rowspan="1" colspan="1" aria-label="ID: activate to sort column ascending">
+                                <th class="min-w-125px">
                                     Nama
                                 </th>
-                                <th class="min-w-150px sorting" tabindex="0" aria-controls="kt_roles_view_table"
-                                    rowspan="1" colspan="1"
-                                    aria-label="User: activate to sort column ascending">
-                                    Kondisi
+                                <th class="min-w-125px">
+                                    Kode
                                 </th>
-                                <th class="text-center sorting_disabled" rowspan="1" colspan="1"
-                                    aria-label="Actions">
-                                    Actions
+                                <th class="min-w-125px">
+                                    Kondisi
                                 </th>
                             </tr>
                             </thead>
-                            <template x-if="isLoading">
-                                <tbody class="fw-bold">
-                                <tr>
-                                    <td colspan="5">
-                                        <div style="text-align: center;">
-                                            <div class="spinner-border" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </template>
                             <template x-for="stock in currentStocks" :key="stock.id">
                                 <tbody class="fw-bold text-center">
                                 <tr>
+                                    <td>
+                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                             @click="selectCheckBox($event)">
+                                            <input class="form-check-input" type="checkbox" :value="stock.id"
+                                                   :id="'checkbox-' + stock.id"
+                                                   :checked="localStorage.getItem('selectedCheckBox').includes(stock.id)"/>
+                                        </div>
+                                    </td>
                                     <td x-text="stock.branch_name"></td>
                                     <td x-text="stock.name"></td>
                                     <td x-text="stock.code"></td>
                                     <td x-text="stock.condition"></td>
-                                    <td>
-                                        <button id="kt_drawer_example_basic_button" class="btn btn-light-info btn-sm">
-                                            <i class="ki-duotone ki-filter-square">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                            Filter
-                                        </button>
-                                    </td>
                                 </tr>
                                 </tbody>
                             </template>
@@ -110,10 +97,42 @@
         function generateStockMutation() {
             return {
                 buttonLoading: false,
-                currentStocks: null,
+                currentStocks: [],
+                selectedCheckBox: [],
+                selectAll: false,
+                singleChecked: false,
                 itemId: "{{ $itemCollection->id }}",
                 async init() {
                     await this.getBranchData();
+                },
+                toggleAllCheckBox() {
+                    this.selectAll = !this.selectAll;
+                    this.singleChecked = false;
+                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    this.selectedCheckBox = [];
+                    checkboxes.forEach((checkbox) => {
+                        checkbox.checked = this.selectAll;
+                        if (this.selectAll) {
+                            this.selectedCheckBox.push(checkbox.value);
+                        }
+                    });
+
+                    this.selectedCheckBox.shift();
+                    localStorage.setItem('selectedCheckBox', JSON.stringify(this.selectedCheckBox));
+                },
+                selectCheckBox(event) {
+                    const checkboxId = event.target.value;
+                    if (event.target.checked) {
+                        this.selectedCheckBox.push(checkboxId);
+                        console.log(checkboxId);
+                        localStorage.setItem('selectedCheckBox', JSON.stringify(this.selectedCheckBox));
+                    } else {
+                        const index = this.selectedCheckBox.indexOf(checkboxId);
+                        if (index !== -1) {
+                            this.selectedCheckBox.splice(index, 1);
+                            localStorage.setItem('selectedCheckBox', JSON.stringify(this.selectedCheckBox));
+                        }
+                    }
                 },
                 async getStock() {
 

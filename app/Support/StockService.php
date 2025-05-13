@@ -103,6 +103,7 @@ class StockService
                 $query->where('parent_id', $branchId);
             })->get();
 
+
         return $stocks->flatMap(function ($stock) {
             return $stock->itemCatalog->map(function ($itemCatalog) use ($stock) {
                 return [
