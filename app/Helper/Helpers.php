@@ -66,3 +66,9 @@ function randomDigits(): string
 
     return $result;
 }
+
+
+function currencyFormat($currency): string
+{
+    return 'Rp ' . number_format($currency, 2, ',', '.');
+}

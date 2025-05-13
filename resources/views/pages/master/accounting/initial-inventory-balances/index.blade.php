@@ -113,12 +113,13 @@
                                     </td>
                                     <td>
                                         <div class="d-flex flex-column text-center">
-                                            <span x-text="`${inventory.branch_name}`"></span>
-                                            <span x-text="`Tgl ${inventory.date}`"></span>
+                                            <span x-text="inventory.branch_name"></span>
+                                            <span x-text="inventory.date"></span>
                                             <hr>
                                             <span class="text-decoration-underline"
-                                                  x-text="`${inventory.item_name} ${inventory.qty} ${inventory.unit_type} `"></span>
-                                            <span x-text="`Total Harga : ${inventory.total_price}`"></span>
+                                                  x-text="`${inventory.qty} ${inventory.unit_type} `"></span>
+                                            <span x-text="inventory.item_name"></span>
+                                            <span x-text="inventory.total_price"></span>
                                         </div>
                                     </td>
                                     <td x-text="inventory.stock_account"></td>

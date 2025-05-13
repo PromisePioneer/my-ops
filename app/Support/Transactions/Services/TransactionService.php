@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Throwable;
+use function App\Helper\currencyFormat;
 use function App\Helper\formatDate;
 
 #[AllowDynamicProperties] class TransactionService
@@ -99,7 +100,7 @@ use function App\Helper\formatDate;
                 'credit_account_id' => $item->creditAccount->id,
                 'credit' => $item->creditAccount->code . ' ' . $item->creditAccount->name,
                 'detail' => $item->detail,
-                'total_price' => 'Rp.' . number_format($item->total_price, 2, '.', '.'),
+                'total_price' => currencyFormat($item->total_price),
                 'locked_status' => $item->locked_status,
                 'status' => $item->status,
                 'created_by' => $item->createdBy->name,
