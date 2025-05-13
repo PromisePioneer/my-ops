@@ -24,7 +24,7 @@
                                        id="mustHaveCode"
                                        name="must_have_code"/>
                                 <label class="form-check-label" for="mustHaveCode">
-                                    Kode sendiri
+                                    Wajib Memiliki Kode
                                 </label>
                             </div>
                             <div class="form-check form-switch form-check-custom form-check-solid">
