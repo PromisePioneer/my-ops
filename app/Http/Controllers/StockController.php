@@ -161,8 +161,9 @@ use Illuminate\View\View;
         $stock = Stock::with('item', 'itemCatalog')
             ->whereHas('item.category', function ($query) {
                 $query->where('name', '!=', 'Kategori 4');
-            })
-            ->where('condition', 'Baik')
+            })->when(!empty(Auth::user()->branch_id), function ($query) {
+                $query->where('branch_id', Auth::user()->branch_id);
+            })->where('condition', 'Baik')
             ->get();
 
 
