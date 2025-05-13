@@ -30,7 +30,7 @@
     </div>
     <div class="col-md-6">
         <label for="date" class="required form-label">Supplier</label>
-        <select name="supplier_id" id="supplier_id" data-dropdown-parent="#modal-transactions"
+        <select name="supplier_id" id="selected-supplier" data-dropdown-parent="#modal-transactions"
                 class="form-select form-select-solid suppliers-select2">
             <option></option>
         </select>
