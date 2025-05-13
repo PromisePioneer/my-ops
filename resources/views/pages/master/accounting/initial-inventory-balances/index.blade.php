@@ -311,7 +311,6 @@
                             await showAlert('success', 'Data sukses dikonfirmasi');
                             await this.init();
                             this.selectedCheckBox = [];
-                            this.uncheckAfterSuccessfulEvent();
                         } catch (error) {
                             await showAlert('error', 'Terjadi kesalahan');
                         }
@@ -324,7 +323,6 @@
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                             this.selectedCheckBox = [];
-                            this.uncheckAfterSuccessfulEvent();
                         } catch (error) {
                             await showAlert('error', 'Terjadi kesalahan');
                         }
