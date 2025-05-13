@@ -37,7 +37,7 @@
                                 <div class="mb-4 border border-dashed border-gray-400 p-5">
                                     <div
                                         class="d-flex align-items-center flex-row-fluid justify-content-between">
-                                        <a :href="`/inventory/goods/draft-stocks`"
+                                        <a href="#"
                                            class="fs-6 fw-bolder btn-link"
                                         >Harus Reorder Ulang</a>
                                         <span class="text-gray-800 fw-bold d-block fs-4"
