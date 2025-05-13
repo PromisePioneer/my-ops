@@ -317,10 +317,10 @@
                     });
                 },
                 async confirm() {
-                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                    showConfirmModal("Anda yakin?", "Data tidak akan bisa diubah ataupun dihapus.", "Ya, Konfirmasi!", async () => {
                         try {
                             await axios.post(`/master/accounting/initial-inventory-balances/confirm`, new FormData(this.confirmForm));
-                            await showAlert('success', 'Data sukses dihapus');
+                            await showAlert('success', 'Data sukses dikonfirmasi');
                             await this.init();
                             this.selectedCheckBox = [];
                         } catch (error) {
