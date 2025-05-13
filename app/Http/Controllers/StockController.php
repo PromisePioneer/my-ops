@@ -194,6 +194,8 @@ use Illuminate\View\View;
     {
         $stock = Stock::with('item')->whereHas('item.category', function ($query) {
             $query->where('name', 'Kategori 4');
+        })->when(!empty(Auth::user()->branch_id), function ($query) {
+            $query->where('branch_id', Auth::user()->branch_id);
         })->whereNotIn('id', $request->get('ids', []))
             ->whereIn('condition', ['Baik', 'Diperbaiki'])
             ->get();
