@@ -375,6 +375,7 @@
                         reader.readAsDataURL(file);
                     });
                 },
+
                 previewTaxInvoiceFile() {
                     let files = this.$refs.taxInvoiceFile.files;
                     if (!files.length) return;
@@ -520,6 +521,7 @@
                     await this.selectedDebitAccount();
                     await this.selectedCreditAccount();
                     await this.getAssetAccounts();
+                    await this.selectedSupplier();
                 },
                 async selectedMainBranches() {
                     if (!this.editVal?.branch_id) return;

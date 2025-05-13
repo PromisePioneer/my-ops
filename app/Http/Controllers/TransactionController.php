@@ -73,6 +73,7 @@ use Throwable;
      */
     public function edit(Transaction $transaction): JsonResponse
     {
+        $transaction->load('branch');
         $this->authorize('edit', Transaction::class);
         return response()->json($transaction);
     }
