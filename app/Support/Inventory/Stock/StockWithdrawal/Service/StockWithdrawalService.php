@@ -92,6 +92,7 @@ use Throwable;
                     'code' => $itemCatalog->code,
                     'draft_stock_id' => $itemCatalog->draft_stock_id,
                     'condition' => $itemCatalog->condition,
+                    'item_id' => $itemCatalog->item_id,
                     'created_by' => $itemCatalog->created_by,
                     'status' => 'Dibawa'
                 ]);
