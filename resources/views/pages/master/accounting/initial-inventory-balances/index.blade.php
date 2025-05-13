@@ -305,10 +305,10 @@
                     })
                 },
                 async destroy() {
-                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                    showConfirmModal("Anda yakin?", "Data akan dikunci dan tidak bisa dihapus atau di ubah.", "Ya, Hapus!", async () => {
                         try {
                             await axios.post(`/master/accounting/initial-inventory-balances/destroy`, new FormData(this.deleteForm));
-                            await showAlert('success', 'Data sukses dihapus');
+                            await showAlert('success', 'Data sukses dikonfirmasi');
                             await this.init();
                             this.selectedCheckBox = [];
                             this.uncheckAfterSuccessfulEvent();
