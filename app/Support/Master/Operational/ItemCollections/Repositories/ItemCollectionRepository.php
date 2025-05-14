@@ -25,4 +25,10 @@ class ItemCollectionRepository
             ->select('item_collections.*', 'item_collections.name as item_collection_name', 'item_categories.name', 'unit_types.name', 'accounts.name')
             ->orderBy('item_collections.name');
     }
+
+
+    public function itemCollectionStock(): EloquentBuilder
+    {
+        return ItemCollection::with('stock', 'unitType');
+    }
 }

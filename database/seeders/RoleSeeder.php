@@ -12,13 +12,17 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
+
+        //super Admin
+        Role::create(['name' => 'Super Admin']);
+
         // Managerial
         Role::create(['name' => 'Main Commissioner']);
-        $directorRole = Role::create(['name' => 'Director']);
-        $generalManagerRole = Role::create(['name' => 'General Manager']);
-        $financeManagerRole = Role::create(['name' => 'FA & Tax Manager']);
-        $operationalManagerRole = Role::create(['name' => 'Operational Manager']);
-        $branchManagerRole = Role::create(['name' => 'Branch Manager']);
+        Role::create(['name' => 'Director']);
+        Role::create(['name' => 'General Manager']);
+        Role::create(['name' => 'FA & Tax Manager']);
+        Role::create(['name' => 'Operational Manager']);
+        Role::create(['name' => 'Branch Manager']);
 
         //Finance
         Role::create(['name' => 'Tax Admin Supervisor']);
@@ -43,11 +47,13 @@ class RoleSeeder extends Seeder
         Role::create(['name' => 'Graphic Designer & Socmed Admin']);
         Role::create(['name' => 'Mechanic Senior Staff']);
         Role::create(['name' => 'Support']);
+        Role::create(['name' => 'Welding Senior Engineer']);
+        Role::create(['name' => 'Electrical Senior Engineer']);
 
 
         //Warehouse
-        Role::create(['name' => 'Welding Senior Engineer']);
-        Role::create(['name' => 'Electrical Senior Engineer']);
+        Role::create(['name' => 'Warehouse Supervisor']);
+
         Role::create(['name' => 'Warehouse Security']);
         Role::create(['name' => 'Warehouse Stocker Staff']);
 
@@ -79,23 +85,5 @@ class RoleSeeder extends Seeder
 
         //Vendor/ Freelance
         Role::create(['name' => 'Vendor']);
-
-
-//        $director = User::where('name', ['Director'])->first();
-//        $director->assignRole($directorRole);
-//
-//        $generalManager = User::where('name', ['General Manager'])->first();
-//        $generalManager->assignRole($generalManagerRole);
-//
-//        $financeManager = User::where('name', ['FA & Tax Manager'])->first();
-//        $financeManager->assignRole($financeManagerRole);
-//
-//
-//        $operationalManager = User::where('name', ['Operational Manager'])->first();
-//        $operationalManager->assignRole($operationalManagerRole);
-//
-//
-//        $branchManager = User::where('name', ['Branch Manager'])->first();
-//        $branchManager->assignRole($branchManagerRole);
     }
 }

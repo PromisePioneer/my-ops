@@ -22,7 +22,7 @@ return new class extends Migration {
                 ->cascadeOnUpdate();
             $table->string('code')->nullable();
             $table->double('qty');
-            $table->enum('status', ['Dibawa', 'Dikembalikan', 'Terpakai'])->default('Dibawa');
+            $table->enum('status', ['Dibawa', 'Dikembalikan', 'Terpakai', 'Habis'])->default('Dibawa');
             $table->timestamps();
         });
     }
