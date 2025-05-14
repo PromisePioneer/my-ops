@@ -18,11 +18,6 @@
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane fade show active" id="kt_list_widget_10_tab_1" role="tabpanel">
-                                <template x-if="!isLoading && draftStock.length === 0">
-                                    <div class="m-0 border border-dashed border-gray-400 p-5 text-center">
-                                        <span class="text-gray-800 fw-bold d-block fs-4">Data tidak ditemukan</span>
-                                    </div>
-                                </template>
                                 <div class="mb-4 border border-dashed border-gray-400 p-5">
                                     <div
                                         class="d-flex align-items-center flex-row-fluid justify-content-between">
@@ -30,7 +25,7 @@
                                            class="fs-6 fw-bolder btn-link"
                                         >Belum berkode</a>
                                         <span class="text-gray-800 fw-bold d-block fs-4"
-                                              x-text="draftStock"></span>
+                                              x-text="draftStockQty"></span>
                                     </div>
                                 </div>
 
@@ -44,24 +39,16 @@
                                               x-text="mustReorderStock"></span>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="tab-pane fade" id="kt_list_widget_10_tab_2" role="tabpanel">
-                                <template x-if="!isLoading && mustReorderStock.length === 0">
-                                    <div class="m-0 border border-dashed border-gray-400 p-5 text-center">
-                                        <span class="text-gray-800 fw-bold d-block fs-4">Data tidak ditemukan</span>
+                                <div class="mb-4 border border-dashed border-gray-400 p-5">
+                                    <div
+                                        class="d-flex align-items-center flex-row-fluid justify-content-between">
+                                        <a href="{{ url('inventory/stock-withdrawal-items/') }}"
+                                           class="fs-6 fw-bolder btn-link"
+                                        >Barang belum dikembalikan</a>
+                                        <span class="text-gray-800 fw-bold d-block fs-4"
+                                              x-text="carriedStockCount"></span>
                                     </div>
-                                </template>
-                                <template x-for="stock in mustReorderStock"
-                                          :key="stock.id">
-                                    <div class="m-0 border border-dashed border-gray-400 p-5">
-                                        <div
-                                            class="d-flex align-items-center flex-row-fluid justify-content-between">
-                                            <a href="#" class="fs-6 fw-bolder text-black" x-text="stock.name"></a>
-                                            <span class="text-gray-800 fw-bold d-block fs-4"
-                                                  x-text="stock.stock"></span>
-                                        </div>
-                                    </div>
-                                </template>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -186,6 +173,7 @@
                 incomingItemTransactionQtyInThisMonth: null,
                 draftStockQty: 0,
                 mustReorderStock: [],
+                carriedStockCount: null,
                 async init() {
                     await this.getGoodsStock();
                     await this.debitAccounts();
@@ -194,10 +182,7 @@
                     await this.getDraftStockQty();
                     await this.getMustReorderStock();
                     await this.getIncomingItemsQty();
-                    this.modal.addEventListener('hidden.bs.modal', () => {
-                        this.form.reset();
-                        this.ifMutated = null;
-                    });
+                    await this.getCarriedStockCount();
                 },
                 async getIncomingItemsQty() {
                     this.isLoading = true;
@@ -268,11 +253,20 @@
                 async getDraftStockQty() {
                     try {
                         const resp = await axios.get('/inventory/draft-stocks/get-qty');
-                        this.draftStock = resp.data
+                        this.draftStockQty = resp.data;
+
                     } catch (e) {
                         console.log(e)
                     } finally {
                         this.isLoading = false;
+                    }
+                },
+                async getCarriedStockCount() {
+                    try {
+                        const resp = await axios.get('/inventory/stock-withdrawal-items/count');
+                        this.carriedStockCount = resp.data;
+                    } catch (e) {
+                        console.log(e)
                     }
                 },
                 async getMainBranchesWithStock(id) {

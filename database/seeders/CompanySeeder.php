@@ -23,5 +23,11 @@ class CompanySeeder extends Seeder
         ]);
 
 
+        Company::create([
+            'code' => 002,
+            'name' => 'Linkkita Teknologi',
+        ]);
+
+
     }
 }

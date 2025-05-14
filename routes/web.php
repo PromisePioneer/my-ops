@@ -21,7 +21,6 @@ use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\AttendanceManualRequestController;
 use App\Http\Controllers\BAAController;
-use App\Http\Controllers\ConsumedStockController;
 use App\Http\Controllers\DraftStockController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
@@ -82,6 +81,7 @@ use App\Http\Controllers\Master\Operational\PSBController;
 use App\Http\Controllers\Master\Operational\SupplierController;
 use App\Http\Controllers\StockMutationController;
 use App\Http\Controllers\StockWithdrawalController;
+use App\Http\Controllers\StockWithdrawalItemController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UnitTypeController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
@@ -714,13 +714,17 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/stock-withdrawal-item/{stockWithdrawalItem}', [StockWithdrawalController::class, 'getStockWithdrawalItem']);
                 Route::post('/stock-withdrawal-item/return/{stockWithdrawalItem}', [StockWithdrawalController::class, 'returningItems']);
             });
+        Route::prefix('/stock-withdrawal-items')->group(function () {
+            Route::get('/', [StockWithdrawalItemController::class, 'index']);
+            Route::get('/data', [StockWithdrawalItemController::class, 'data']);
+            Route::get('/filter', [StockWithdrawalItemController::class, 'filter']);
+            Route::get('/search', [StockWithdrawalItemController::class, 'search']);
+            Route::get('/count', [StockWithdrawalItemController::class, 'getCount']);
+        });
+
+
             Route::prefix('/stock-mutation')->group(function () {
                 Route::get('/create/{itemCollection}', [StockMutationController::class, 'create']);
-            });
-            Route::prefix('consumed-stocks')->group(function () {
-                Route::get('/', [ConsumedStockController::class, 'index']);
-                Route::get('/data', [ConsumedStockController::class, 'data']);
-                Route::post('/', [ConsumedStockController::class, 'store']);
             });
             Route::prefix('draft-stocks')->group(function () {
                 Route::get('/', [DraftStockController::class, 'index']);
