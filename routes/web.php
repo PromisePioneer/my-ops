@@ -723,11 +723,11 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/stock-withdrawal-item/return/{stockWithdrawalItem}', [StockWithdrawalController::class, 'returningItems']);
         });
         Route::prefix('/stock-withdrawal-items')->group(function () {
-//            Route::get('/', [StockWithdrawalItemController::class, 'index']);
-//            Route::get('/data', [StockWithdrawalItemController::class, 'data']);
-//            Route::get('/filter', [StockWithdrawalItemController::class, 'filter']);
-//            Route::get('/search', [StockWithdrawalItemController::class, 'search']);
-//            Route::get('/count', [StockWithdrawalItemController::class, 'getCount']);
+            Route::get('/', [StockWithdrawalItemController::class, 'index']);
+            Route::get('/data', [StockWithdrawalItemController::class, 'data']);
+            Route::get('/filter', [StockWithdrawalItemController::class, 'filter']);
+            Route::get('/search', [StockWithdrawalItemController::class, 'search']);
+            Route::get('/count', [StockWithdrawalItemController::class, 'getCount']);
         });
 
 

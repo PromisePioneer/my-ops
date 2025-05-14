@@ -72,6 +72,7 @@
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Cabang</th>
+                                <th class="min-w-125px">Kode</th>
                                 <th class="min-w-125px">Kategori</th>
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Unit</th>
@@ -109,6 +110,7 @@
                                         </div>
                                     </td>
                                     <td x-text="`${asset.branch_name ?? 'Pusat'}`"></td>
+                                    <td x-text="asset.code"></td>
                                     <td x-text="asset.debit_account"></td>
                                     <td>
                                         <a :href="`${Number(viewDetailPermission) === 1 ? `/master/accounting/assets/detail/${asset.id}` : '' }`"

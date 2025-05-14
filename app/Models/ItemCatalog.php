@@ -17,7 +17,8 @@ class ItemCatalog extends Model
         'condition',
         'created_by',
         'status',
-        'initial_balance_inventory_id'
+        'initial_balance_inventory_id',
+        'asset_id',
     ];
 
     public function stock(): BelongsTo

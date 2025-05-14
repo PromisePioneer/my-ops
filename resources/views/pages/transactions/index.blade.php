@@ -99,7 +99,7 @@
                         <template x-if="isLoading">
                         <tbody class="fw-bold">
                             <tr>
-                                <td colspan="6">
+                                <td colspan="7">
                                     <div style="text-align: center;">
                                         <div class="spinner-border" role="status">
                                             <span class="visually-hidden">Loading...</span>
@@ -112,7 +112,7 @@
                         <template x-if="!isLoading && transactions.data?.length === 0">
                             <tbody class="fw-bold">
                             <tr>
-                                <td colspan="6">
+                                <td colspan="7">
                                     <center>Data Tidak Ditemukan</center>
                                 </td>
                             </tr>
