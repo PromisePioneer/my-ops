@@ -162,4 +162,12 @@ use Throwable;
     }
 
 
+    public function restore(Request $request, ItemCollection $itemCollection): void
+    {
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $itemCollection->whereIn('id', $explodeID)->restore();
+    }
+
+
 }

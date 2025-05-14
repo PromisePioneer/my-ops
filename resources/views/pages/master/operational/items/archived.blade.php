@@ -53,7 +53,7 @@
                     </div>
                     <div class="card-body py-3">
                         <div class="col-12">
-                            <form id="form-delete" @submit.prevent="destroy()">
+                            <form id="restore-form" @submit.prevent="restore()">
                                 <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
                                 <button type="submit" class="btn btn-light-primary btn-sm mt-5"
                                         x-show="selectedCheckBox.length > 0"
@@ -154,7 +154,7 @@
             </div>
         </div>
     </div>
-
+@include('components.toast')
 @endsection
 @push('script')
     <script>
@@ -166,6 +166,7 @@
                 singleChecked: false,
                 itemCollections: [],
                 search: '',
+                restoreForm: document.getElementById('restore-form'),
                 async init() {
                     await this.getArchivedItems();
                     await this.getItemCategories();
@@ -252,6 +253,19 @@
                             cache: true
                         }
                     })
+                },
+                async restore() {
+                    showConfirmModal("Anda yakin?", "", "Ya, Pulihkan Data!", async () => {
+                        try {
+                            await axios.post(`/master/operational/items/archives/restore`, new FormData(this.restoreForm));
+                            await showAlert('success', 'Data sukses dipulihkan');
+                            this.selectedCheckBox = [];
+                            await this.getArchivedItems();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
                 },
             }
         }

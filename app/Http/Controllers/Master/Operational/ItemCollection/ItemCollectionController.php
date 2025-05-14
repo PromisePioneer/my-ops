@@ -153,9 +153,10 @@ use Throwable;
     }
 
 
-    public function restore(Request $request, ItemCollection $itemCollection)
+    public function restore(Request $request, ItemCollection $itemCollection): JsonResponse
     {
-
+        $this->itemCollectionService->restore($request, $itemCollection);
+        return response()->json(['message' => 'Data berhasil di restore']);
     }
 
 

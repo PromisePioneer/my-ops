@@ -524,6 +524,7 @@ Route::group(['middleware' => ['auth']], static function () {
                     Route::get('/data', [ItemCollectionController::class, 'archivedData']);
                     Route::get('/search', [ItemCollectionController::class, 'archivedSearch']);
                     Route::get('/filter', [ItemCollectionController::class, 'archivedFilter']);
+                    Route::post('/restore', [ItemCollectionController::class, 'restore']);
                 });
 
 
