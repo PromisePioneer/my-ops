@@ -157,7 +157,7 @@ use Throwable;
     {
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
-        $itemCollection->whereIn('id', $explodeID)->delete();
+        $itemCollection->whereIn('id', array_filter($explodeID, 'is_numeric'))->delete();
     }
 
 
