@@ -76,7 +76,7 @@ use App\Http\Controllers\Master\Common\RoleController;
 use App\Http\Controllers\Master\Common\ServiceCategoryManagerController;
 use App\Http\Controllers\Master\Common\SKLController;
 use App\Http\Controllers\Master\Operational\ItemCategoryController;
-use App\Http\Controllers\Master\Operational\ItemCollectionController;
+use App\Http\Controllers\Master\Operational\ItemCollection\ItemCollectionController;
 use App\Http\Controllers\Master\Operational\PSBController;
 use App\Http\Controllers\Master\Operational\SupplierController;
 use App\Http\Controllers\StockMutationController;
@@ -299,6 +299,7 @@ Route::group(['middleware' => ['auth']], static function () {
 
 
     Route::prefix('/master')->group(function () {
+
         Route::prefix('/common')->group(function () {
             Route::prefix('area')->group(function () {
                 Route::get('/', [AreaController::class, 'index']);
@@ -425,8 +426,6 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::post('/{company}', [CompanyController::class, 'update']);
             });
         });
-
-
         Route::prefix('/accounting')->group(function () {
             Route::prefix('account-categories')->group(function () {
                 Route::get('/', [AccountCategoryController::class, 'index']);
@@ -518,15 +517,23 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::post('/destroy', [ItemCategoryController::class, 'destroy']);
                 Route::post('/{itemCategory}', [ItemCategoryController::class, 'update']);
             });
-
             Route::prefix('/items')->group(function () {
+
+                Route::prefix('archives')->group(function () {
+                    Route::get('/', [ItemCollectionController::class, 'archived']);
+                    Route::get('/data', [ItemCollectionController::class, 'archivedData']);
+                    Route::get('/search', [ItemCollectionController::class, 'archivedSearch']);
+                    Route::get('/filter', [ItemCollectionController::class, 'archivedFilter']);
+                });
+
+
                 Route::get('/', [ItemCollectionController::class, 'index']);
                 Route::get('/data', [ItemCollectionController::class, 'data']);
                 Route::get('/filter', [ItemCollectionController::class, 'filter']);
                 Route::get('/search', [ItemCollectionController::class, 'search']);
                 Route::post('/', [ItemCollectionController::class, 'store']);
-                Route::get('/{itemCollection}', [ItemCollectionController::class, 'edit']);
                 Route::post('/destroy', [ItemCollectionController::class, 'destroy']);
+                Route::get('/{itemCollection}', [ItemCollectionController::class, 'edit']);
                 Route::post('/update/{itemCollection}', [ItemCollectionController::class, 'update']);
             });
 

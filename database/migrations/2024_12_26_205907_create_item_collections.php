@@ -26,6 +26,7 @@ return new class extends Migration {
             $table->boolean('must_have_code')->default(false);
             $table->boolean('is_code_listed')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

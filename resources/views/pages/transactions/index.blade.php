@@ -112,7 +112,7 @@
                         <template x-if="!isLoading && transactions.data?.length === 0">
                             <tbody class="fw-bold">
                             <tr>
-                                <td colspan="6">
+                                <td colspan="7">
                                     <center>Data Tidak Ditemukan</center>
                                 </td>
                             </tr>
