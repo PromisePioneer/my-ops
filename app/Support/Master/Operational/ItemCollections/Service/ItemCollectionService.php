@@ -30,9 +30,23 @@ use Throwable;
     }
 
 
+    public function archivedData(): LengthAwarePaginator
+    {
+        $data = $this->itemCollectionRepository->getArchivedData()->paginate(self::$perPage);
+        return self::formattedData($data);
+    }
+
+
     public function filter(Request $request): LengthAwarePaginator
     {
         $query = $this->itemCollectionRepository->getItemCollection();
+        $filter = ItemCollectionFilter::apply($query, $request)->paginate(self::$perPage);
+        return $this->formattedData($filter);
+    }
+
+    public function archivedFilter(Request $request): LengthAwarePaginator
+    {
+        $query = $this->itemCollectionRepository->getArchivedData();
         $filter = ItemCollectionFilter::apply($query, $request)->paginate(self::$perPage);
         return $this->formattedData($filter);
     }
@@ -44,6 +58,15 @@ use Throwable;
         $itemCollections = ItemCollection::search($search)->query(function ($query) {
             $this->itemCollectionRepository->searchItemCollection($query);
         })->paginate(self::$perPage);
+        return $this->formattedData($itemCollections);
+    }
+
+    public function archivedSearch(Request $request): LengthAwarePaginator
+    {
+        $search = $request->input('search');
+        $itemCollections = ItemCollection::search($search)->query(function ($query) {
+            $this->itemCollectionRepository->searchItemCollection($query);
+        })->onlyTrashed()->paginate(self::$perPage);
 
         return $this->formattedData($itemCollections);
     }
@@ -130,8 +153,20 @@ use Throwable;
     }
 
 
-    public function destroy()
+    public function destroy(Request $request, ItemCollection $itemCollection): void
     {
-
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $itemCollection->whereIn('id', $explodeID)->delete();
     }
+
+
+    public function restore(Request $request, ItemCollection $itemCollection): void
+    {
+        $implodeID = implode(',', $request->get('id'));
+        $explodeID = explode(',', $implodeID);
+        $itemCollection->whereIn('id', array_filter($explodeID, 'is_numeric'))->restore();
+    }
+
+
 }

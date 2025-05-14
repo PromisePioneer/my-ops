@@ -6,8 +6,10 @@ use AllowDynamicProperties;
 use App\Http\Requests\ItemCatalogRequest;
 use App\Models\DraftStock;
 use App\Models\ItemCatalog;
-use App\Support\Inventory\StockManagement\ItemCatalogService;
+use App\Models\StockWithdrawal;
+use App\Support\Inventory\ItemCatalog\ItemCatalogService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Throwable;
 
 #[AllowDynamicProperties] class ItemCatalogController extends Controller
@@ -24,18 +26,18 @@ use Throwable;
     }
 
 
-    public function findByDraftStock(DraftStock $draftStock): JsonResponse
+    public function getCatalogByDraftStockId(Request $request, DraftStock $draftStock): JsonResponse
     {
-        return response()->json($this->itemCatalogService->findByDraftStock($draftStock));
+        return response()->json($this->itemCatalogService->findByTransactionIdOrInitialBalanceInventoryId($draftStock, $request));
     }
 
 
     /**
      * @throws Throwable
      */
-    public function store(ItemCatalogRequest $request, DraftStock $draftStock): JsonResponse
+    public function storeByDraftStockId(ItemCatalogRequest $request, DraftStock $draftStock): JsonResponse
     {
-        $this->itemCatalogService->store($request, $draftStock);
+        $this->itemCatalogService->storeByDraftStockId($request, $draftStock);
         return response()->json(['message' => 'data berhasil disimpan']);
     }
 
@@ -55,10 +57,9 @@ use Throwable;
     }
 
 
-    public function generateAutomaticItemCode(DraftStock $draftStock): JsonResponse
+    public function getSelectedItemCatalogByStockWithdrawalId(StockWithdrawal $stockWithdrawal): JsonResponse
     {
-        return response()->json($this->itemCatalogService->generateAutomaticItemCode($draftStock));
+        return response()->json($this->itemCatalogService->getSelectedItemCatalogByStockWithdrawalId($stockWithdrawal));
     }
-
 
 }

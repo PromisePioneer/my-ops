@@ -44,6 +44,13 @@ use Throwable;
         return response()->json($this->itemCollectionService->search($request));
     }
 
+
+    public function archivedSearch(Request $request): JsonResponse
+    {
+        return response()->json($this->itemCollectionService->archivedSearch($request));
+    }
+
+
     /**
      * @throws AuthorizationException
      */
@@ -51,6 +58,12 @@ use Throwable;
     {
         $this->authorize('view', ItemCollection::class);
         return response()->json($this->itemCollectionService->filter($request));
+    }
+
+
+    public function archivedFilter(Request $request): JsonResponse
+    {
+        return response()->json($this->itemCollectionService->archivedFilter($request));
     }
 
 
@@ -91,14 +104,13 @@ use Throwable;
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function destroy(Request $request, ItemCollection $itemCollection): JsonResponse
     {
+        $this->itemCollectionService->destroy($request, $itemCollection);
         $this->authorize('delete', $itemCollection);
-        $implodeID = implode(',', $request->get('id'));
-        $explodeID = explode(',', $implodeID);
-        $itemCollection->whereIn('id', $explodeID)->delete();
-
-
         return response()->json([
             'message' => 'data berhasil dihapus',
         ], 200);
@@ -127,6 +139,24 @@ use Throwable;
             'id' => $item->id,
             'name' => $item->name,
         ];
+    }
+
+
+    public function archived(): View
+    {
+        return view('pages.master.operational.items.archived');
+    }
+
+    public function archivedData(): JsonResponse
+    {
+        return response()->json($this->itemCollectionService->archivedData());
+    }
+
+
+    public function restore(Request $request, ItemCollection $itemCollection): JsonResponse
+    {
+        $this->itemCollectionService->restore($request, $itemCollection);
+        return response()->json(['message' => 'Data berhasil di restore']);
     }
 
 

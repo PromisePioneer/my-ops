@@ -2,6 +2,8 @@
 
 namespace App\Support\Inventory\StockManagement\StockWithdrawal\Service;
 
+namespace App\Support\Inventory\StockWithdrawal\Service;
+
 use AllowDynamicProperties;
 use App\Http\Requests\StockWithdrawalRequest;
 use App\Models\ItemCatalog;
@@ -12,6 +14,8 @@ use App\Models\StockWithdrawalItem;
 use App\Support\HelperService\HandleFileUploadService;
 use App\Support\Inventory\StockManagement\StockWithdrawal\Repository\StockWithdrawalItemRepository;
 use App\Support\Inventory\StockManagement\StockWithdrawal\Repository\StockWithdrawalRepository;
+use App\Support\Inventory\StockManagement\StockWithdrawal\Service\StockWithdrawalQueryFilter;
+use App\Support\Inventory\StockWithdrawal\Repository\StockWithdrawalServiceRepository;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\FileHelpers;

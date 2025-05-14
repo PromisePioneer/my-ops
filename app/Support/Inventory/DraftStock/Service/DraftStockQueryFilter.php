@@ -2,6 +2,8 @@
 
 namespace App\Support\Inventory\StockManagement\DraftStock\Service;
 
+namespace App\Support\Inventory\DraftStock\Service;
+
 use App\Models\Master\Common\Branch;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;
