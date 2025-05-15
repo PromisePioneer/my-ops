@@ -6,6 +6,9 @@
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             @include('pages.master.accounting.assets.form')
             @include('pages.master.accounting.assets.import')
+            @include('pages.master.operational.items.form')
+            @include('pages.master.accounting.initial-inventory-balances.form')
+            @include('pages.master.operational.supplier.form')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -72,6 +75,7 @@
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Cabang</th>
+                                <th class="min-w-125px">Kode</th>
                                 <th class="min-w-125px">Kategori</th>
                                 <th class="min-w-125px">Nama</th>
                                 <th class="min-w-125px">Unit</th>
@@ -109,6 +113,7 @@
                                         </div>
                                     </td>
                                     <td x-text="`${asset.branch_name ?? 'Pusat'}`"></td>
+                                    <td x-text="asset.code"></td>
                                     <td x-text="asset.debit_account"></td>
                                     <td>
                                         <a :href="`${Number(viewDetailPermission) === 1 ? `/master/accounting/assets/detail/${asset.id}` : '' }`"
@@ -167,12 +172,36 @@
             allowMinus: false
         }).mask("#price_per_unit");
 
+
+        Inputmask("decimal", {
+            radixPoint: ",",
+            groupSeparator: ".",
+            digits: 2,
+            autoGroup: true,
+            rightAlign: false,
+            allowMinus: false
+        }).mask("#unit_price");
+
         $('.date').flatpickr();
 
         document.addEventListener('focusin', (e) => {
             if (e.target.closest(".flatpickr-calendar") !== null) {
                 e.stopImmediatePropagation();
             }
+        });
+
+
+        const modal = new bootstrap.Modal(document.getElementById('modal-initial-inventory-balance'));
+        const supplierModal = document.getElementById('modal-supplier');
+        const itemModal = document.getElementById('modal-item');
+
+
+        itemModal.addEventListener('hidden.bs.modal', e => {
+            modal.show();
+        });
+
+        supplierModal.addEventListener('hidden.bs.modal', e => {
+            modal.show();
         });
 
         function assetsData() {
@@ -187,18 +216,33 @@
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
+                itemMustHaveCode: false,
+                isAset: false,
                 search: '',
                 editVal: '',
+                branchVal: '',
                 form: document.getElementById('asset-form'),
                 modal: new bootstrap.Modal(document.getElementById('asset-modal')),
                 formDelete: document.getElementById('form-delete'),
                 formImport: document.getElementById('form-import'),
                 modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
+                initialInventoryBalanceModal: new bootstrap.Modal(document.getElementById('modal-initial-inventory-balance')),
+                initialInventoryBalanceForm: document.getElementById('form-initial-inventory-balance'),
+                supplierModal: document.getElementById('modal-supplier'),
+                supplierForm: document.getElementById('form-supplier'),
+                itemModal: new bootstrap.Modal(document.getElementById('modal-item')),
+                itemForm: document.getElementById('form-item'),
+                itemCondition: null,
                 async init() {
-                    await this.getAssetsData();
                     await this.getMainBranches();
+                    await this.getAssetsData();
                     await this.getAssetAccounts();
+                    await this.getSuppliers();
                     await this.getKasAccount();
+                    await this.getItemCollections();
+                    await this.getStockAccounts();
+                    await this.itemCategories();
+                    await this.getUnitTypes();
                 },
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
@@ -212,6 +256,52 @@
                         }
                     });
                     this.selectedCheckBox.shift();
+                },
+                changeItemCondition() {
+                    if (this.itemCondition === 'Digudang') {
+                        this.modal.hide();
+                        this.initialInventoryBalanceModal.show();
+                    }
+                },
+                async getSuppliers() {
+                    $(".suppliers-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Supplier",
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-supplier">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
+                        ajax: {
+                            url: '/select2/suppliers-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    })
+                },
+                async getItemCollections() {
+                    $(".items-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Barang",
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-item">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
+                        ajax: {
+                            url: '/select2/goods-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
                 },
                 selectCheckBox(event) {
                     const checkboxId = event.target.value;
@@ -229,6 +319,51 @@
                         const resp = await axios.get(`${url}`);
                         this.assets = resp.data
                     }
+                },
+                async saveInitialInventoryBalance() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/master/accounting/initial-inventory-balances', new FormData(this.initialInventoryBalanceForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.initialInventoryBalanceForm.reset();
+                        await this.initialInventoryBalanceModal.hide();
+                        window.location.href = '/master/accounting/initial-inventory-balances';
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async getMainBranches() {
+                    const self = this;
+                    $(".main-branches-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Cabang",
+                        ajax: {
+                            url: '/select2/main-branches-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    }).on('select2:select', function (e) {
+                        self.branchVal = true;
+                        const selectedMainBranchId = e?.params?.data?.id ?? self.editVal.branch_id;
+                        $('.sub-branches-select2').select2({
+                            allowClear: true,
+                            placeholder: "Pilih Sub Cabang",
+                            ajax: {
+                                url: `/select2/sub-branches-data/${selectedMainBranchId}`,
+                                dataType: "json",
+                                type: "GET",
+                                data: params => ({search: params.term}),
+                                processResults: data => ({results: data}),
+                                cache: true
+                            }
+                        });
+                    });
                 },
                 async searchData() {
                     this.isLoading = true;
@@ -271,6 +406,71 @@
                     await this.selectedKasAccount();
                     await this.selectedAssetAccount();
                 },
+                async saveSupplier() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/master/operational/suppliers', new FormData(this.supplierForm))
+                            .then(async () => {
+                                await showAlert('success', 'data berhasil disimpan');
+                                await this.supplierForm.reset();
+                                this.supplierModal.hide();
+                            })
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async saveItem() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('master/operational/items', new FormData(this.goodsForm))
+                        await showAlert('success', 'Data berhasil disimpan')
+                        this.goodsForm.reset();
+                        this.itemModal.hide();
+                        this.modalForm.show();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async itemCategories() {
+                    const self = this;
+                    $(".item-category-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Kategori Barang",
+                        tags: true,
+                        ajax: {
+                            url: '/select2/item-categories-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    }).on('change', () => {
+                        const data = $(".item-category-select2 option:selected").text();
+                        self.isAset = data === 'ASET';
+                    });
+                },
+                async getUnitTypes() {
+                    $(".unit-types-select2").select2({
+                        allowClear: true,
+                        tags: true,
+                        placeholder: "Pilih Satuan",
+                        ajax: {
+                            url: '/select2/unit-types-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
                 async update(id) {
                     this.buttonLoading = true;
                     try {
@@ -294,6 +494,21 @@
                         } catch (error) {
                             console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
+                },
+                async getStockAccounts() {
+                    $(".stock-accounts-select2").select2({
+                        allowClear: true,
+                        tags: true,
+                        placeholder: "Pilih Akun Persediaan",
+                        ajax: {
+                            url: '/select2/stock-accounts-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
                         }
                     });
                 },
@@ -322,20 +537,6 @@
                     } finally {
                         this.buttonLoading = false;
                     }
-                },
-                async getMainBranches() {
-                    $(".main-branches-select2").select2({
-                        allowClear: true,
-                        placeholder: 'Pilih Cabang',
-                        ajax: {
-                            url: '/select2/main-branches-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
                 },
                 async getAssetAccounts() {
                     $(".asset-accounts-select2").select2({
@@ -393,7 +594,7 @@
                 },
 
                 async selectedAssetAccount() {
-                    const selectedAssetAccount = $('#selected-asset-account');
+                    const selectedAssetAccount = $('#selected-asset-account-type');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",

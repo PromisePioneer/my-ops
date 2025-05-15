@@ -15,7 +15,7 @@
             </div>
 
             <div class="modal-body">
-                <form id="form-initial-inventory-balance" @submit.prevent="save(editVal?.id)"
+                <form id="form-initial-inventory-balance" @submit.prevent="saveInitialInventoryBalance(editVal?.id)"
                       enctype="multipart/form-data">
                     <div class="row mb-10">
                         @if(empty(Auth::user()->branch_id))
@@ -98,9 +98,22 @@
                         <div class="col-lg-6">
                             <label for="name" class="required form-label">Dokumentasi</label>
                             <input type="file" class="form-control form-control-solid" @change="previewAttachmentFile()"
-                                   accept="application/pdf" x-ref="attachmentFile" name="attachment" id="attachment">
+                                   accept="image/*" x-ref="attachmentFile" name="attachment" id="attachment">
                         </div>
 
+                        <div class="col-lg-6">
+                            <label
+                                :class="`${attachmentImgSrc.length > 0 ? 'col-form-label required fw-bold fs-6' : 'd-none'}`">
+                                Preview
+                            </label>
+                            <div class="col-md-4">
+                                <img :src="attachmentImgSrc" class="img-fluid" @click="openAttachmentImage(attachmentImgSrc)">
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
                         <div class="col-lg-6">
                             <label for="name" class="required form-label">Akun Persediaan</label>
                             <select name="stock_account_id" id="selected-stock-account"

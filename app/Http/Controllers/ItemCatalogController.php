@@ -6,8 +6,10 @@ use AllowDynamicProperties;
 use App\Http\Requests\ItemCatalogRequest;
 use App\Models\DraftStock;
 use App\Models\ItemCatalog;
-use App\Support\Inventory\StockManagement\ItemCatalogService;
+use App\Models\StockWithdrawal;
+use App\Support\Inventory\StockManagement\ItemCatalog\ItemCatalogService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Throwable;
 
 #[AllowDynamicProperties] class ItemCatalogController extends Controller
@@ -24,9 +26,9 @@ use Throwable;
     }
 
 
-    public function findByDraftStock(DraftStock $draftStock): JsonResponse
+    public function findByDraftStock(Request $request, DraftStock $draftStock): JsonResponse
     {
-        return response()->json($this->itemCatalogService->findByDraftStock($draftStock));
+        return response()->json($this->itemCatalogService->findByDraftStock($draftStock, $request));
     }
 
 
@@ -59,6 +61,5 @@ use Throwable;
     {
         return response()->json($this->itemCatalogService->generateAutomaticItemCode($draftStock));
     }
-
 
 }

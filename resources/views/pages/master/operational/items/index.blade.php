@@ -48,7 +48,7 @@
                             @can('Tambah Data Daftar Barang')
                                 <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                                        <button type="button" class="btn btn-light-primary btn-sm" @click="add()"
+                                        <button type="button" class="btn btn-light-primary btn-sm me-3" @click="add()"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#modal-item">
                                             <i class="ki-duotone ki-message-add fs-2">
@@ -57,6 +57,11 @@
                                                 <span class="path3"></span>
                                             </i> Tambah
                                         </button>
+                                        <a href="{{ url('master/operational/items/archives') }}"
+                                           class="btn btn-light-dark btn-sm">
+                                            <x-icons.archived/>
+                                            Arsip Barang
+                                        </a>
                                     </div>
                                 </div>
                             @endcan

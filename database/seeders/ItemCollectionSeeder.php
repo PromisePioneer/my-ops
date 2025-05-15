@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Account;
 use App\Models\ItemCategory;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\UnitType;
@@ -34,6 +35,7 @@ class ItemCollectionSeeder extends Seeder
             'unit_type_id' => UnitType::where('name', 'Meter')->first()->id,
             'material' => 'Non Besi',
             'type' => 'ASET',
+            'asset_account_id' => Account::where('code', '126')->first()->id,
             'reorder_level' => 100,
             'must_have_code' => true,
         ]);
@@ -60,6 +62,7 @@ class ItemCollectionSeeder extends Seeder
             'material' => 'Non Besi',
             'type' => 'ASET',
             'reorder_level' => 100,
+            'asset_account_id' => Account::where('code', '126')->first()->id,
             'must_have_code' => true,
         ]);
 
@@ -70,8 +73,9 @@ class ItemCollectionSeeder extends Seeder
             'category_id' => ItemCategory::where('name', 'Kategori 2')->first()->id,
             'unit_type_id' => UnitType::where('name', 'PCS')->first()->id,
             'material' => 'Non besi',
-            'type' => 'JUAL',
+            'type' => 'ASET',
             'reorder_level' => 100,
+            'asset_account_id' => Account::where('code', '126')->first()->id,
             'must_have_code' => true,
             'is_code_listed' => true,
         ]);
@@ -86,6 +90,7 @@ class ItemCollectionSeeder extends Seeder
             'material' => 'Non besi',
             'type' => 'ASET',
             'reorder_level' => 100,
+            'asset_account_id' => Account::where('code', '126')->first()->id,
             'must_have_code' => true,
             'is_code_listed' => true,
         ]);

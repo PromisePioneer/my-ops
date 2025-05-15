@@ -4,6 +4,13 @@ namespace App\Support\Inventory\StockManagement\DraftStock\Service;
 
 use AllowDynamicProperties;
 use App\Support\Inventory\StockManagement\DraftStock\Repository\DraftStockRepository;
+
+namespace App\Support\Inventory\DraftStock\Service;
+
+use AllowDynamicProperties;
+use App\Models\DraftStock;
+use App\Support\Inventory\DraftStock\Repository\DraftStockServiceRepository;
+use App\Support\Inventory\StockManagement\DraftStock\Repository\DraftStockRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 

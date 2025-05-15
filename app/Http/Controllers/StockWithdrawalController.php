@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
 use App\Http\Requests\StockWithdrawalRequest;
+use App\Models\ItemCatalog;
 use App\Models\StockWithdrawal;
 use App\Models\StockWithdrawalItem;
-use App\Support\Inventory\StockManagement\StockWithdrawal\Service\StockWithdrawalService;
+use App\Support\Inventory\StockWithdrawal\Service\StockWithdrawalService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,17 +29,6 @@ use Throwable;
     }
 
 
-    public function search(Request $request): JsonResponse
-    {
-        return response()->json($this->stockWithdrawalService->search($request));
-    }
-
-    public function filter(Request $request): JsonResponse
-    {
-        return response()->json($this->stockWithdrawalService->filter($request));
-    }
-
-
     public function data(): JsonResponse
     {
         return response()->json($this->stockWithdrawalService->data());
@@ -49,15 +39,42 @@ use Throwable;
     {
         $stockWithdrawal->load('stockWithdrawalItems', 'stockWithdrawalByEmployees', 'stockWithdrawalItems.stock.item', 'stockWithdrawalByEmployees.user.roles', 'pic.roles', 'stocker.roles');
 
+        $stockWithdrawalItem = $stockWithdrawal->stockWithdrawalItems->map(function ($item) {
+            return [
+                'item_name' => $item->stock->item->name,
+                'code' => $item->code,
+                'qty' => $item->qty,
+            ];
+        });
+
+
+        $stockWithdrawalByEmployee = $stockWithdrawal->stockWithdrawalByEmployees->map(function ($item) {
+            return [
+                'name' => $item->user->name,
+                'roles' => $item->user->roles->pluck('name')->implode(', '),
+                'nik' => $item->user->nip,
+                'profile_pic' => $item->user->profile_pic,
+            ];
+        });
+
+
         return response()->json([
             'stock_withdrawal' => $stockWithdrawal,
-            'stock_withdrawal_items' => $this->stockWithdrawalService->showStockWithdrawalItems($stockWithdrawal),
-            'stock_withdrawal_by_employee' => $this->stockWithdrawalService->showStockWithdrawalByEmployees($stockWithdrawal),
+            'stock_withdrawal_items' => $stockWithdrawalItem,
+            'stock_withdrawal_by_employee' => $stockWithdrawalByEmployee,
         ]);
     }
 
 
+    public function search(Request $request)
+    {
 
+    }
+
+    public function filter()
+    {
+
+    }
 
 
     public function create(): View
@@ -72,17 +89,34 @@ use Throwable;
     public function store(StockWithdrawalRequest $request): JsonResponse
     {
         $this->stockWithdrawalService->store($request);
-        return response()->json(['message' => 'Data berhasil disimpan']);
+        return response()->json([
+            'message' => 'Data berhasil disimpan'
+        ]);
     }
 
 
     /**
      * @throws Throwable
      */
-    public function destroy(StockWithdrawal $stockWithdrawal): JsonResponse
+    public function destroy(StockWithdrawal $stockWithdrawal)
     {
-        $this->stockWithdrawalService->destroy($stockWithdrawal);
-        return response()->json(['message' => 'data berhasil disimpan']);
+        DB::transaction(function () use ($stockWithdrawal) {
+
+            $data = StockWithdrawalItem::with('stock', 'stock.itemCatalog')->where('stock_withdrawal_id', $stockWithdrawal->id);
+            $withdrawalItems = [];
+            foreach ($data->get() as $withdrawalItem) {
+                foreach ($withdrawalItem->stock->itemCatalog as $itemCatalog) {
+                    $withdrawalItems [] = $itemCatalog->where('stock_id', $withdrawalItem->stock_id)
+                        ->where('code', $withdrawalItem->code)
+                        ->where('status', 'Dibawa')
+                        ->pluck('id')->toArray();
+                }
+            }
+            ItemCatalog::whereIn('id', $withdrawalItems)->update([
+                'status' => 'Tersedia',
+            ]);
+            $stockWithdrawal->delete();
+        });
     }
 
 
@@ -122,10 +156,7 @@ use Throwable;
     }
 
 
-    /**
-     * @throws Throwable
-     */
-    public function returningItems(Request $request, StockWithdrawalItem $stockWithdrawalItem): void
+    public function returningItems(Request $request, StockWithdrawalItem $stockWithdrawalItem)
     {
         DB::transaction(function () use ($request, $stockWithdrawalItem) {
             $stockWithdrawalItem->update([

@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Support\Inventory\StockManagement;
+namespace App\Support\Inventory\StockManagement\ItemCatalog;
 
 use AllowDynamicProperties;
 use App\Http\Requests\ItemCatalogRequest;
+use App\Models\Account;
+use App\Models\Asset;
 use App\Models\DraftStock;
 use App\Models\ItemCatalog;
 use App\Models\Stock;
@@ -59,16 +61,53 @@ use Throwable;
      */
     public function store(ItemCatalogRequest $request, DraftStock $draftStock): void
     {
-        $draftStock->load('transaction');
-        DB::transaction(function () use ($request, $draftStock) {
-            $stock = $this->stockRepository->findByDraftStock($draftStock, $request);
+        $draftStock->load('transaction', 'initialInventoryBalance');
+        $assetAccount = Account::find(
+            $draftStock->transaction?->item?->asset_account_id
+            ?? $draftStock->initialInventoryBalance?->item?->asset_account_id
+        );
+
+
+        $itemObject = $draftStock->transaction?->item ?? $draftStock->initialInventoryBalance?->item;
+
+        $stock = $this->stockRepository->findByDraftStock($draftStock, $request);
+        DB::transaction(function () use ($request, $draftStock, $assetAccount, $stock, $itemObject) {
             $draftStock->decrement('qty');
             if (empty($stock)) {
                 $newStock = $this->stockStore($draftStock, $request);
-                $this->itemCatalogStore($request, $draftStock, $newStock);
+                if ($draftStock->transaction->item->type === 'ASET' || $draftStock->initialInventoryBalance->item->type === 'ASET') {
+
+                    $asset = Asset::create([
+                        'branch_id' => $draftStock->transaction->branch_id,
+                        'code' => $request->code,
+                        'debit_account_id' => $itemObject->asset_account_id,
+                        'date_received' => $draftStock->transaction?->date ?? $draftStock->initialInventoryBalance->date,
+                        'name' => $itemObject->name,
+                        'unit' => 1,
+                        'useful_life' => $this->usefulLife($assetAccount->code, $itemObject->material),
+                        'price_per_unit' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance->unit_price,
+                        'total_price' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance->unit_price,
+                    ]);
+                    $this->itemCatalogStore($request, $draftStock, $newStock, null, $asset);
+                }
+
+
             } else {
                 $stock->increment('qty');
-                $this->itemCatalogStore($request, $draftStock, null, $stock);
+                if ($draftStock->transaction->item->type === 'ASET' || $draftStock->initialInventoryBalance->item->type === 'ASET') {
+                    $asset = Asset::create([
+                        'branch_id' => $draftStock->transaction->branch_id,
+                        'code' => $request->code,
+                        'debit_account_id' => $itemObject->asset_account_id,
+                        'date_received' => $draftStock->transaction?->date ?? $draftStock->initialInventoryBalance->date,
+                        'name' => $itemObject->name,
+                        'unit' => 1,
+                        'useful_life' => $this->usefulLife($assetAccount->code, $itemObject->material),
+                        'price_per_unit' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance->unit_price,
+                        'total_price' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance->unit_price,
+                    ]);
+                    $this->itemCatalogStore($request, $draftStock, null, $stock, $asset);
+                }
             }
         });
     }
@@ -88,15 +127,16 @@ use Throwable;
     }
 
 
-    public function itemCatalogStore($request, $draftStock, $newStock = null, $stock = null): void
+    public function itemCatalogStore($request, $draftStock, $newStock = null, $stock = null, $asset = null)
     {
-        ItemCatalog::create([
+        return ItemCatalog::create([
             'transaction_id' => $draftStock->transaction_id,
             'initial_balance_inventory_id' => $draftStock->initial_balance_inventory_id,
             'draft_stock_id' => $draftStock->id,
             'stock_id' => $stock->id ?? $newStock->id,
             'item_id' => $draftStock->transaction->item_id ?? $draftStock->initialInventoryBalance->item_id,
             'code' => $request->code,
+            'asset_id' => $asset?->id,
             'condition' => $request->condition,
             'created_by' => $request->user()->id,
         ]);
@@ -116,6 +156,7 @@ use Throwable;
                 DraftStock::where('id', $itemCatalog->draft_stock_id)->increment('qty');
                 $oldStock->decrement('qty');
                 $itemCatalog->delete();
+                Asset::where('id', $itemCatalog->asset_id)->delete();
             }
         });
     }
@@ -144,5 +185,43 @@ use Throwable;
 
         return $month . '.' . $year . '.' . $code . '-' .
             $branchCode . '.' . $startValue;
+    }
+
+    public function usefulLife($code, $itemMaterial): ?int
+    {
+
+
+        if ($code === '121') {
+            return null;
+        }
+
+        if ($code === '122') {
+            return 20;
+        }
+
+        if ($code === '123' || $code === '124') {
+            return 8;
+        }
+
+        if ($code === '125' && $itemMaterial === 'Besi') {
+            return 8;
+        }
+
+
+        if ($code === '126' && $itemMaterial === 'Besi') {
+            return 8;
+        }
+
+        if ($code === '125' && $itemMaterial === 'Non besi') {
+            return 4;
+        }
+
+
+        if ($code === '126' && $itemMaterial === 'Non besi') {
+            return 4;
+        }
+
+
+        return null;
     }
 }

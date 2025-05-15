@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
 use App\Models\DraftStock;
-use App\Support\Inventory\StockManagement\DraftStock\Service\DraftStockService;
+use App\Support\Inventory\DraftStock\Service\DraftStockService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
