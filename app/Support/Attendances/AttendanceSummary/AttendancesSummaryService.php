@@ -299,8 +299,8 @@ use Illuminate\Http\Request;
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                         if (($employeeSchedule?->status !== 'L') && !$weekHoliday) {
                             $latenessInSeconds = $newExpectedCheckIn ?
-                                number_format($newExpectedCheckIn->diffInMinutes($actualCheckIn) % 60) :
-                                number_format($expectedCheckIn->diffInMinutes($actualCheckIn) % 60);
+                                number_format($newExpectedCheckIn->diffInMinutes($actualCheckIn) ) :
+                                number_format($expectedCheckIn->diffInMinutes($actualCheckIn) );
                             $weekLatenessTotal += (int)$latenessInSeconds;
                         }
                     }
