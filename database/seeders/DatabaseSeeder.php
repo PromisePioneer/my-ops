@@ -36,7 +36,6 @@ class DatabaseSeeder extends Seeder
             BroadbandPacketSeeder::class,
             SalaryCalculationMethodSeeder::class,
             TaxSettingSeeder::class,
-            JointClosureCodeSeeder::class,
             AttendancesSummarySeeder::class,
             ItemCategoriesSeeder::class,
             WarehouseSeeder::class,
