@@ -97,8 +97,6 @@ class AttendanceSummaryDetailService
 
         $weekLatenessMap = [];
         foreach ($weeklyAttendances as $weekEndDate => $weekDays) {
-
-
             $weekLatenessTotal = 0;
             $weekLatenessDetails = [];
 
@@ -120,11 +118,11 @@ class AttendanceSummaryDetailService
 
                     if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
                         $lateness = $newExpectedCheckIn ?
-                            $newExpectedCheckIn->diffInMinutes($actualCheckIn) :
-                            $expectedCheckIn->diffInMinutes($actualCheckIn);
+                            number_format($newExpectedCheckIn->diffInMinutes($actualCheckIn)) :
+                            number_format($expectedCheckIn->diffInMinutes($actualCheckIn));
                         if ($day['employeeSchedule']?->status !== 'L' || $weekHoliday->day !== Carbon::parse($day['attendancesDate'])->dayName) {
                             $weekLatenessDetails[$day['attendancesDate']] = $lateness;
-                            $weekLatenessTotal += $lateness % 60;
+                            $weekLatenessTotal += (int)$lateness;
                         }
 
                     }
@@ -419,14 +417,14 @@ class AttendanceSummaryDetailService
 
                     if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
                         $lateness = $newExpectedCheckIn ?
-                            $newExpectedCheckIn->diffInSeconds($actualCheckIn) :
-                            $expectedCheckIn->diffInSeconds($actualCheckIn);
-                        $weekLatenessTotal += $lateness;
+                            number_format($newExpectedCheckIn->diffInMinutes($actualCheckIn)) :
+                            number_format($expectedCheckIn->diffInMinutes($actualCheckIn));
+                        $weekLatenessTotal += (int)$lateness;
                     }
                 }
             }
 
-            if ($weekLatenessTotal > 900) {
+            if ($weekLatenessTotal > 15) {
                 $weekLatenessMap[$weekEndDate] = number_format($weekLatenessTotal / 60);
             }
         }
