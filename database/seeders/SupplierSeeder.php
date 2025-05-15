@@ -12,23 +12,47 @@ class SupplierSeeder extends Seeder
      */
     public function run(): void
     {
+
+        //pkp
         Supplier::create([
-            'name' => 'PT. Virtus Technology Indonesia',
-            'code' => "ASD",
-            'address' => 'Nice',
+            'name' => 'PT MORA TELEMATIKA INDONESIA TBK',
+            'code' => "MTI",
+            'address' => 'Grha 9, Jalan Penataran No. 9 Kel. Pegangsaan, Kec. MentengJakarta Pusat 10320, Indonesia',
             'city' => 'Jakarta',
-            'province' => 'Jawa',
+            'province' => 'DKI JAKARTA',
             'country' => 'Indonesia',
-            'postal_code' => '02123',
-            'fax' => '02123',
-            'email' => 'admins@asdasd.com',
-            'phone_number' => '02123',
-            'bank_account_number' => '02123',
-            'bank_account_name' => 'Javanicus',
-            'bank_name' => 'test',
-            'npwp' => '123213213',
-            'description' => 'asdasd',
+            'postal_code' => '10320',
+            'fax' => '+6221 314 2882',
+            'email' => 'info@moratelindo.co.id',
+            'phone_number' => '+6221 3199 8600',
+            'bank_account_number' => '-',
+            'bank_account_name' => '-',
+            'bank_name' => '-',
+            'npwp' => '-',
+            'description' => '-',
             'tax_type' => 'PKP',
         ]);
+
+
+        Supplier::create([
+            'name' => fake()->company(),
+            'code' => "TES",
+            'address' => fake()->address(),
+            'city' => fake()->city(),
+            'province' => fake()->city(),
+            'country' => fake()->country(),
+            'postal_code' => fake()->postcode(),
+            'fax' => fake()->postcode,
+            'email' => fake()->companyEmail(),
+            'phone_number' => fake()->phoneNumber(),
+            'bank_account_number' => fake()->randomNumber(),
+            'bank_account_name' => fake()->company(),
+            'bank_name' => '-',
+            'npwp' => '-',
+            'description' => '-',
+            'tax_type' => 'NON PKP',
+        ]);
+
+
     }
 }

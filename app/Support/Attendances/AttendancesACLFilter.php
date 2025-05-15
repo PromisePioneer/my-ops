@@ -73,6 +73,7 @@ class AttendancesACLFilter
                 $query->whereIn('name', [
                     'Customer Service Leader',
                     'Customer Service Staff',
+                    'Quality Control Staff',
                     'Head Engineer',
                     'Senior Engineer',
                     'Engineer',

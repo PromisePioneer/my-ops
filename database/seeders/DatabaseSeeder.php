@@ -47,7 +47,8 @@ class DatabaseSeeder extends Seeder
             ContactSeeder::class,
             RoleHierarchySeeder::class,
             InitialBalanceSeeder::class,
-            SupplierSeeder::class
+            SupplierSeeder::class,
+            TransactionSeeder::class
         ]);
     }
 }

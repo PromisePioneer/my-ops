@@ -103,7 +103,7 @@ class ItemCollectionSeeder extends Seeder
             'category_id' => ItemCategory::where('name', 'Kategori 4')->first()->id,
             'unit_type_id' => UnitType::where('name', 'PCS')->first()->id,
             'material' => 'Non besi',
-            'type' => 'ASET',
+            'type' => 'JUAL',
             'reorder_level' => 100,
         ]);
 

@@ -21,6 +21,10 @@ return new class extends Migration {
             $table->foreignId('unit_type_id')
                 ->constrained('unit_types')
                 ->cascadeOnDelete();
+            $table->foreignId('asset_account_id')
+                ->nullable()
+                ->constrained('accounts')
+                ->cascadeOnDelete();
             $table->enum('material', ['Besi', 'Non besi']);
             $table->double('reorder_level');
             $table->boolean('must_have_code')->default(false);

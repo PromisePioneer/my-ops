@@ -13,6 +13,7 @@ use App\Support\Attendances\WeekHoliday\Repository\WeekHolidayRepository;
 use App\Support\HelperService\FinancialClosePeriodService;
 use App\Support\User\LeaveAndPermission\Repository\LeaveAndPermissionRepository;
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
@@ -264,7 +265,7 @@ use Illuminate\Http\Request;
             $attendances = $user->attendancesSummary;
 
             $attendancesGroupedByWeek = collect($attendances)->groupBy(function ($item) {
-                $date = Carbon::parse($item['attendancesDate']);
+                $date = Carbon::parse($item->date);
                 $diffInDays = $this->startDate->diffInDays($date);
                 $groupNumber = (int)($diffInDays / 7);
                 return $this->startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
@@ -298,16 +299,16 @@ use Illuminate\Http\Request;
 
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                         if (($employeeSchedule?->status !== 'L') && !$weekHoliday) {
-                            $latenessInSeconds = $newExpectedCheckIn ?
-                                $newExpectedCheckIn->diffInSeconds($actualCheckIn) :
-                                $expectedCheckIn->diffInSeconds($actualCheckIn);
-                            $weekLatenessTotal += $latenessInSeconds;
+                            $latenessInMinutes = $newExpectedCheckIn ?
+                                $newExpectedCheckIn->diffInMinutes($actualCheckIn) :
+                                $expectedCheckIn->diffInMinutes($actualCheckIn);
+                            $weekLatenessTotal += (int)CarbonInterval::minutes($latenessInMinutes)->format('%i');
                         }
                     }
                 }
 
-                if ($weekLatenessTotal > 900) {
-                    $weeklyLatenessMap[$user->id][$weekEndDate] = $weekLatenessTotal / 60;
+                if ($weekLatenessTotal > 15) {
+                    $weeklyLatenessMap[$user->id][$weekEndDate] = $weekLatenessTotal;
                 }
             }
         }
