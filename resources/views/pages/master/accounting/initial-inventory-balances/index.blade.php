@@ -20,10 +20,10 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            @can('Tambah Data Aset')
+                            @can('Tambah Data Saldo Awal Persediaan')
                                 <button type="button" class="btn btn-light-primary btn-sm"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#modal-initial-inventory-balance">
+                                        data-bs-target="#modal-initial-inventory-balance" @click="add()">
                                     <i class="ki-duotone ki-message-add fs-2">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
@@ -103,12 +103,12 @@
                                     <td>
                                         <template x-if="Number(inventory.status) === 0">
 
-                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                             @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox"
-                                                   :value="inventory.id"
-                                                   :id="'checkbox-' + inventory.id"/>
-                                        </div>
+                                            <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                                 @click="selectCheckBox($event)">
+                                                <input class="form-check-input" type="checkbox"
+                                                       :value="inventory.id"
+                                                       :id="'checkbox-' + inventory.id"/>
+                                            </div>
                                         </template>
                                     </td>
                                     <td>
@@ -124,12 +124,14 @@
                                     </td>
                                     <td x-text="inventory.stock_account"></td>
                                     <td x-text="inventory.detail"></td>
-                                    <td>
-                                        <a href="" class="btn btn-light-danger btn-sm">
-                                            <i class="ki-duotone ki-document fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
+                                    <td class="text-center">
+                                        <a href="#">
+                                            <div class="symbol-label">
+                                                <a href="#" @click="openImageList(inventory.attachment)">
+                                                    <img :src="getImageURL(inventory.attachment ?? null)"
+                                                         alt="Image" class="w-100">
+                                                </a>
+                                            </div>
                                         </a>
                                     </td>
                                     <td>
@@ -225,6 +227,7 @@
                 itemForm: document.getElementById('form-item'),
                 deleteForm: document.getElementById('form-delete'),
                 confirmForm: document.getElementById('form-confirm'),
+                attachmentImgSrc: '',
                 async init() {
                     await this.getInitialInventoryBalances();
                     await this.getMainBranches();
@@ -243,6 +246,14 @@
                             this.selectedCheckBox.splice(index, 1);
                         }
                     }
+                },
+                add() {
+                    this.editVal = '';
+                    $('.suppliers-select2').val('', true).trigger('change');
+                    $('.sub-branches-select2').val('', true).trigger('change');
+                    $('.main-branches-select2').val('', true).trigger('change');
+                    $('.stock-accounts-select2').val('', true).trigger('change');
+                    this.branchVal = false;
                 },
                 async getInitialInventoryBalances() {
                     this.isLoading = false;
@@ -284,6 +295,27 @@
                             }
                         });
                     });
+                },
+                openImageList(imagePath) {
+                    console.log(imagePath);
+                    const lightbox = new FsLightbox();
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        const image = "{{ asset('')  }}" + placeholders;
+                        lightbox.props.sources = [image, image];
+                        lightbox.open();
+                    } else {
+                        const image = "{{  Storage::url('') }}" + imagePath;
+                        lightbox.props.sources = [image];
+                        lightbox.open();
+                    }
+                },
+                getImageURL(imagePath) {
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        return "{{ asset('') }}" + placeholders;
+                    }
+                    return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
                 },
                 async getSuppliers() {
                     $(".suppliers-select2").select2({
@@ -378,6 +410,30 @@
                         }
                     });
                 },
+                previewAttachmentFile() {
+                    let files = this.$refs.attachmentFile.files;
+                    if (!files.length) return;
+
+                    Array.from(files).forEach(file => {
+                        if (!file.type.startsWith('image/')) return;
+
+                        let reader = new FileReader();
+                        reader.onload = e => {
+                            this.attachmentImgSrc = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                },
+                openAttachmentImage() {
+                    const lightbox = new FsLightbox();
+                    const storage = "{{ Storage::url('')  }}"
+                    if (this.editVal) {
+                        lightbox.props.sources = [storage + this.attachmentImgSrc[0]];
+                    }
+                    lightbox.props.sources = [this.attachmentImgSrc];
+                    lightbox.open();
+                },
+
                 async getItemCollections() {
                     $(".items-select2").select2({
                         allowClear: true,
@@ -398,7 +454,7 @@
                         }
                     });
                 },
-                async save(id = null) {
+                async saveInitialInventoryBalance(id = null) {
                     this.buttonLoading = true;
                     try {
                         if (!id) {

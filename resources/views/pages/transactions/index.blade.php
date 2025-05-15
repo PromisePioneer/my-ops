@@ -543,7 +543,6 @@
                     });
                 },
                 async destroy() {
-                    console.log(this.selectedCheckBox);
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
                             await axios.post(`/transactions/destroy`, new FormData(this.formDelete));

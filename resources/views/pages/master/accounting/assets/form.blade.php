@@ -20,14 +20,38 @@
                         <div class="col-md-6">
                             <label for="name" class="required form-label">Cabang</label>
                             <select name="branch_id" class="form-select form-select-solid main-branches-select2"
-                                    data-dropdown-parent="#asset-modal" id="selected-branch">
+                                    data-dropdown-parent="#asset-modal" id="selected-main-asset-branch">
                                 <option></option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div x-show="branchVal" x-cloak x-transition>
+                                <label for="branch_id" class="required form-label">Sub Cabang</label>
+                                <select name="branch_id" id="selected-asset-branch"
+                                        class="form-select form-select-solid sub-branches-select2"
+                                        data-dropdown-parent="#asset-modal">
+                                    <option></option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="name" class="required form-label">Kondisi Barang</label>
+                            <select class="form-select form-select-solid" x-model="itemCondition"
+                                    @change="changeItemCondition()">
+                                <option value="Terpakai">Terpakai</option>
+                                <option value="Digudang">Digudang</option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label for="name" class="required form-label">Kategori Aset</label>
                             <select name="debit_account_id" class="form-select form-select-solid asset-accounts-select2"
-                                    data-dropdown-parent="#asset-modal" id="selected-asset-account">
+                                    data-dropdown-parent="#asset-modal" id="selected-asset-account-type">
                                 <option></option>
                             </select>
                         </div>
