@@ -30,7 +30,7 @@ class TransactionSeeder extends Seeder
             'branch_id' => Branch::where('name', 'Kantor')->where('parent_id', 1)->first()->id,
             'supplier_id' => Supplier::where('tax_type', 'PKP')->first()->id,
             'date' => Carbon::now()->format('Y-m-d'),
-            'item_id' => ItemCollection::where('name', 'Box ODC'),
+            'item_id' => ItemCollection::where('name', 'Box ODC')->first()->id,
             'qty' => $qty,
             'type' => 'Barang',
             'unit_price' => $unitPrice,
