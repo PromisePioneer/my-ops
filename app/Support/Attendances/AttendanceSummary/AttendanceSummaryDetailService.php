@@ -11,6 +11,7 @@ use App\Models\WeekHoliday;
 use App\Models\WorkTime;
 use App\Support\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 
@@ -118,11 +119,11 @@ class AttendanceSummaryDetailService
 
                     if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
                         $lateness = $newExpectedCheckIn ?
-                            number_format($newExpectedCheckIn->diffInMinutes($actualCheckIn)) :
-                            number_format($expectedCheckIn->diffInMinutes($actualCheckIn));
+                            $newExpectedCheckIn->diffInMinutes($actualCheckIn) :
+                            $expectedCheckIn->diffInMinutes($actualCheckIn);
                         if ($day['employeeSchedule']?->status !== 'L' || $weekHoliday->day !== Carbon::parse($day['attendancesDate'])->dayName) {
                             $weekLatenessDetails[$day['attendancesDate']] = $lateness;
-                            $weekLatenessTotal += (int)$lateness;
+                            $weekLatenessTotal += (int)CarbonInterval::minutes($lateness)->format('%i');
                         }
 
                     }
@@ -330,9 +331,10 @@ class AttendanceSummaryDetailService
                 $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
             }
 
+
             if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
-                $lateness = $newExpectedCheckIn ? number_format($newExpectedCheckIn->diffInMinutes($actualCheckIn)) : number_format($expectedCheckIn->diffInMinutes($actualCheckIn));
-                return $lateness;
+                $lateness = $newExpectedCheckIn ? $newExpectedCheckIn->diffInMinutes($actualCheckIn) : $expectedCheckIn->diffInMinutes($actualCheckIn);
+                return (int)CarbonInterval::minutes($lateness)->format('%i');
             }
         }
         return null;

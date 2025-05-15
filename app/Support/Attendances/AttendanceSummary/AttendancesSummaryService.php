@@ -13,6 +13,7 @@ use App\Support\Attendances\WeekHoliday\Repository\WeekHolidayRepository;
 use App\Support\HelperService\FinancialClosePeriodService;
 use App\Support\User\LeaveAndPermission\Repository\LeaveAndPermissionRepository;
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
@@ -298,10 +299,10 @@ use Illuminate\Http\Request;
 
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                         if (($employeeSchedule?->status !== 'L') && !$weekHoliday) {
-                            $latenessInSeconds = $newExpectedCheckIn ?
-                                number_format($newExpectedCheckIn->diffInMinutes($actualCheckIn) ) :
-                                number_format($expectedCheckIn->diffInMinutes($actualCheckIn) );
-                            $weekLatenessTotal += (int)$latenessInSeconds;
+                            $latenessInMinutes = $newExpectedCheckIn ?
+                                $newExpectedCheckIn->diffInMinutes($actualCheckIn) :
+                                $expectedCheckIn->diffInMinutes($actualCheckIn);
+                            $weekLatenessTotal += (int)CarbonInterval::minutes($latenessInMinutes)->format('%i');
                         }
                     }
                 }
