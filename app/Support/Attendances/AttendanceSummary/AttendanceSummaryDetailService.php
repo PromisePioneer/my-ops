@@ -31,6 +31,7 @@ class AttendanceSummaryDetailService
             ->where('employee_id', $empId)
             ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
             ->orderBy('date', 'asc')
+            ->distinct('date')
             ->get()
             ->keyBy('date');
     }
