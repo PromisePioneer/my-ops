@@ -9,6 +9,7 @@ use App\Support\Master\Accounting\InitialBalances\Repositories\InitialBalanceRep
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use function App\Helper\currencyFormat;
 
 #[AllowDynamicProperties] class InitialBalanceService
 {
@@ -89,8 +90,8 @@ use Illuminate\Http\Request;
                 'code' => $account->code,
                 'account' => $account->code . ' ' . $account->name,
                 'trial_balance_type' => $account->trial_balance_type,
-                'initial_balance_debit' => $account->trial_balance_type === 'debit' ? 'Rp.' . number_format($initialBalanceDebit, 2, '.', '.') : null,
-                'initial_balance_credit' => $account->trial_balance_type === 'credit' ? 'Rp.' . number_format($initialBalanceCredit, 2, '.', '.') : null,
+                'initial_balance_debit' => $account->trial_balance_type === 'debit' ? currencyFormat($initialBalanceDebit) : null,
+                'initial_balance_credit' => $account->trial_balance_type === 'credit' ? currencyFormat($initialBalanceCredit) : null,
                 'sub_accounts' => $account->children->map(function ($subAccount) use ($request) {
                     return [
                         'id' => $subAccount->id,
@@ -98,13 +99,11 @@ use Illuminate\Http\Request;
                         'parent_account_code' => $subAccount->parent->code,
                         'sub_account_code' => $subAccount->code,
                         'sub_account_name' => $subAccount->name,
-                        'initial_balance_debit' => $subAccount->parent->trial_balance_type === 'debit' ? 'Rp.' . number_format(
-                                $this->getFilteredTransactionSum($subAccount, 'SA', $request, 'debit'), 2, '.', '.'
-                            )
+                        'initial_balance_debit' => $subAccount->parent->trial_balance_type === 'debit'
+                            ? currencyFormat($this->getFilteredTransactionSum($subAccount, 'SA', $request, 'debit'))
                             : null,
-                        'initial_balance_credit' => $subAccount->parent->trial_balance_type === 'credit' ? 'Rp.' . number_format(
-                                $this->getFilteredTransactionSum($subAccount, 'SA', $request, 'credit'), 2, '.', '.'
-                            )
+                        'initial_balance_credit' => $subAccount->parent->trial_balance_type === 'credit'
+                            ? currencyFormat($this->getFilteredTransactionSum($subAccount, 'SA', $request, 'credit'))
                             : null,
                     ];
                 }),
@@ -147,8 +146,8 @@ use Illuminate\Http\Request;
 
         return [
             'initial_balances' => $this->formattedData($query->paginate(self::$perPage), $request),
-            'total_debit' => 'Rp.' . number_format($this->getTotalDebit($request)->sum('amount'), 2, '.', '.'),
-            'total_credit' => 'Rp.' . number_format($this->getTotalCredit($request)->sum('amount'), 2, '.', '.'),
+            'total_debit' => currencyFormat($this->getTotalDebit($request)->sum('amount')),
+            'total_credit' => currencyFormat($this->getTotalCredit($request)->sum('amount')),
         ];
     }
 

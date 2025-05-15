@@ -15,6 +15,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use function App\Helper\currencyFormat;
 
 #[AllowDynamicProperties] class InitialBalanceController extends Controller
 {
@@ -55,8 +56,8 @@ use Illuminate\Http\Request;
 
         return response()->json([
             'initial_balances' => $this->initialBalanceService->data($request),
-            'total_debit' => 'Rp.' . number_format(bcsub($totalDebit, '0', 2), 2, '.', '.'),
-            'total_credit' => 'Rp.' . number_format(bcsub($totalCredit, '0', 2), 2, '.', '.'),
+            'total_debit' => currencyFormat(bcsub($totalDebit, '0', 2)),
+            'total_credit' => currencyFormat(bcsub($totalCredit, '0', 2)),
         ]);
     }
 

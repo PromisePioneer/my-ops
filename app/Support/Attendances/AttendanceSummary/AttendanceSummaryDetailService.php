@@ -11,6 +11,7 @@ use App\Models\WeekHoliday;
 use App\Models\WorkTime;
 use App\Support\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 
@@ -30,6 +31,7 @@ class AttendanceSummaryDetailService
             ->where('employee_id', $empId)
             ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
             ->orderBy('date', 'asc')
+            ->distinct('date')
             ->get()
             ->keyBy('date');
     }
@@ -75,7 +77,7 @@ class AttendanceSummaryDetailService
             ]);
         }
 
-        $datesCollection = collect($dates)->values(); // buang key, biar indexing rapih
+        $datesCollection = collect($dates)->values();
         $weeklyAttendances = collect();
         $totalDays = $datesCollection->count();
         $chunkSize = 7;
@@ -86,7 +88,7 @@ class AttendanceSummaryDetailService
             $lastDateInChunk = Carbon::parse($chunk->last()['attendancesDate']);
 
             if ($i + $chunkSize >= $totalDays) {
-                $key = $endDate->toDateString(); // <= minggu terakhir
+                $key = $endDate->toDateString();
             } else {
                 $key = $lastDateInChunk->toDateString();
             }
@@ -97,8 +99,6 @@ class AttendanceSummaryDetailService
 
         $weekLatenessMap = [];
         foreach ($weeklyAttendances as $weekEndDate => $weekDays) {
-
-
             $weekLatenessTotal = 0;
             $weekLatenessDetails = [];
 
@@ -120,11 +120,11 @@ class AttendanceSummaryDetailService
 
                     if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
                         $lateness = $newExpectedCheckIn ?
-                            $newExpectedCheckIn->diffInSeconds($actualCheckIn) :
-                            $expectedCheckIn->diffInSeconds($actualCheckIn);
+                            $newExpectedCheckIn->diffInMinutes($actualCheckIn) :
+                            $expectedCheckIn->diffInMinutes($actualCheckIn);
                         if ($day['employeeSchedule']?->status !== 'L' || $weekHoliday->day !== Carbon::parse($day['attendancesDate'])->dayName) {
                             $weekLatenessDetails[$day['attendancesDate']] = $lateness;
-                            $weekLatenessTotal += $lateness;
+                            $weekLatenessTotal += (int)CarbonInterval::minutes($lateness)->format('%i');
                         }
 
                     }
@@ -132,8 +132,8 @@ class AttendanceSummaryDetailService
             }
 
 
-            if ($weekLatenessTotal > 900) {
-                $weekLatenessMap[$weekEndDate] = number_format($weekLatenessTotal / 60);
+            if ($weekLatenessTotal > 15) {
+                $weekLatenessMap[$weekEndDate] = $weekLatenessTotal;
             }
         }
 
@@ -157,7 +157,6 @@ class AttendanceSummaryDetailService
             $weekStart = $startDate->copy()->addDays($weekIndex * 7);
             $weekEnd = $weekStart->copy()->addDays(6);
 
-            // Jika minggu terakhir, pakai endDate sebagai key
             if ($weekEnd->greaterThan($endDate)) {
                 $weekEnd = $endDate->copy();
             }
@@ -333,9 +332,10 @@ class AttendanceSummaryDetailService
                 $newExpectedCheckIn = $expectedCheckIn->copy()->addDays();
             }
 
+
             if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
-                $lateness = $newExpectedCheckIn ? $newExpectedCheckIn->diffInSeconds($actualCheckIn) : $expectedCheckIn->diffInSeconds($actualCheckIn);
-                return number_format($lateness / 60);
+                $lateness = $newExpectedCheckIn ? $newExpectedCheckIn->diffInMinutes($actualCheckIn) : $expectedCheckIn->diffInMinutes($actualCheckIn);
+                return (int)CarbonInterval::minutes($lateness)->format('%i');
             }
         }
         return null;
@@ -390,17 +390,30 @@ class AttendanceSummaryDetailService
         }
 
 
-        $weeklyAttendances = collect($dates)->groupBy(function ($item) use ($startDate) {
-            $date = Carbon::parse($item['attendancesDate']);
-            $diffInDays = $startDate->diffInDays($date);
-            $groupNumber = floor($diffInDays / 7);
-            return $startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
-        });
+        $datesCollection = collect($dates)->values();
+        $weeklyAttendances = collect();
+        $totalDays = $datesCollection->count();
+        $chunkSize = 7;
+
+
+        for ($i = 0; $i < $totalDays; $i += $chunkSize) {
+            $chunk = $datesCollection->slice($i, $chunkSize);
+            $lastDateInChunk = Carbon::parse($chunk->last()['attendancesDate']);
+
+            if ($i + $chunkSize >= $totalDays) {
+                $key = $endDate->toDateString();
+            } else {
+                $key = $lastDateInChunk->toDateString();
+            }
+
+            $weeklyAttendances->put($key, $chunk);
+        }
 
 
         $weekLatenessMap = [];
         foreach ($weeklyAttendances as $weekEndDate => $weekDays) {
             $weekLatenessTotal = 0;
+            $weekLatenessDetails = [];
 
             foreach ($weekDays as $day) {
                 $userWorktime = null;
@@ -420,15 +433,20 @@ class AttendanceSummaryDetailService
 
                     if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
                         $lateness = $newExpectedCheckIn ?
-                            $newExpectedCheckIn->diffInSeconds($actualCheckIn) :
-                            $expectedCheckIn->diffInSeconds($actualCheckIn);
-                        $weekLatenessTotal += $lateness;
+                            $newExpectedCheckIn->diffInMinutes($actualCheckIn) :
+                            $expectedCheckIn->diffInMinutes($actualCheckIn);
+                        if ($day['employeeSchedule']?->status !== 'L' || $weekHoliday->day !== Carbon::parse($day['attendancesDate'])->dayName) {
+                            $weekLatenessDetails[$day['attendancesDate']] = $lateness;
+                            $weekLatenessTotal += (int)CarbonInterval::minutes($lateness)->format('%i');
+                        }
+
                     }
                 }
             }
 
-            if ($weekLatenessTotal > 900) {
-                $weekLatenessMap[$weekEndDate] = number_format($weekLatenessTotal / 60);
+
+            if ($weekLatenessTotal > 15) {
+                $weekLatenessMap[$weekEndDate] = $weekLatenessTotal;
             }
         }
 

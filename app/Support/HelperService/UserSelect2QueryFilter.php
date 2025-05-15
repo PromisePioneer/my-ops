@@ -38,7 +38,8 @@ class UserSelect2QueryFilter
                     'Project Controller & Vendor Supervisor',
                     'Warehouse Security',
                     'Graphic Designer & Socmed Admin',
-                    'Warehouse Supervisor'
+                    'Warehouse Supervisor',
+                    'Quality Control Staff',
                 ]);
             });
         }
@@ -61,7 +62,8 @@ class UserSelect2QueryFilter
                     'Project Controller & Vendor Supervisor',
                     'Warehouse Security',
                     'Graphic Designer & Socmed Admin',
-                    'Warehouse Supervisor'
+                    'Warehouse Supervisor',
+                    'Quality Control Staff',
                 ]);
             });
 
@@ -87,7 +89,8 @@ class UserSelect2QueryFilter
                     'Project Controller & Vendor Supervisor',
                     'Warehouse Security',
                     'Graphic Designer & Socmed Admin',
-                    'Warehouse Supervisor'
+                    'Warehouse Supervisor',
+                    'Quality Control Staff',
                 ]);
             });
         }

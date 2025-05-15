@@ -25,4 +25,17 @@ class ItemCollectionRepository
             ->select('item_collections.*', 'item_collections.name as item_collection_name', 'item_categories.name', 'unit_types.name', 'accounts.name')
             ->orderBy('item_collections.name');
     }
+
+
+    public function itemCollectionStock(): EloquentBuilder
+    {
+        return ItemCollection::with('stock', 'unitType');
+    }
+
+    public function getArchivedData()
+    {
+        return ItemCollection::onlyTrashed()->with('category', 'unitType', 'assetAccount')
+            ->select('id', 'name as item_collection_name', 'category_id', 'unit_type_id', 'asset_account_id', 'material', 'type', 'reorder_level')
+            ->orderBy('name');
+    }
 }

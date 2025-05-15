@@ -55,6 +55,7 @@ class EmployeeScheduleACLFilter
                     'KU Engineer',
                     'Quality Controller Supervisor',
                     'Backbone Team Supervisor',
+                    'Quality Control Staff',
                     'Trainer & Quality Control Staff',
                     'Stocker Supervisor',
                     'Programmer',

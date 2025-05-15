@@ -303,19 +303,19 @@
                         @endslot
                         @slot('menuItem')
                             <x-dropdown-menu-item
-                                    :active="request()->is('inventory/goods/stock')"
-                                    href="{{ url('inventory/goods/stock') }}">
+                                :active="request()->is('inventory/stocks')"
+                                href="{{ url('inventory/stocks') }}">
                                 Stok Barang
                             </x-dropdown-menu-item>
                             <x-dropdown-menu-item
-                                    :active="request()->is('inventory/goods/stock-withdrawals*')"
-                                    href="{{ url('inventory/goods/stock-withdrawals') }}">
-                                Pemakaian Barang
+                                :active="request()->is('inventory/draft-stocks*')"
+                                href="{{ url('inventory/draft-stocks') }}">
+                                Pengkodean Barang
                             </x-dropdown-menu-item>
-                            <x-dropdown-menu-item
-                                    :active="request()->is('inventory/goods/consumed-stocks*')"
-                                    href="{{ url('inventory/goods/consumed-stocks') }}">
-                                Riwayat Pemakaian Barang
+                                <x-dropdown-menu-item
+                                    :active="request()->is('inventory/stock-withdrawals*')"
+                                    href="{{ url('inventory/stock-withdrawals') }}">
+                                Pemakaian Barang
                             </x-dropdown-menu-item>
                         @endslot
                     </x-dropdown-menu>

@@ -63,4 +63,10 @@ class BranchRepository implements BranchRepositoryInterface
 
         return $branch->get();
     }
+
+
+    public function getBranchWithStock(): Builder
+    {
+        return Branch::with('stock', 'children')->whereNull('parent_id');
+    }
 }

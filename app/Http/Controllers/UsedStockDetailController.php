@@ -6,7 +6,7 @@ use AllowDynamicProperties;
 use App\App\Controllers\Controller;
 use App\Models\ItemCollection;
 use App\Models\ConsumedStock;
-use App\Support\Inventory\Stock\UsedStockRepository;
+use App\Support\Inventory\StockManagement\UsedStockRepository;
 use Illuminate\Http\JsonResponse;
 
 #[AllowDynamicProperties] class UsedStockDetailController extends Controller

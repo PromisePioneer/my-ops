@@ -7,7 +7,7 @@ use App\Http\Requests\StockWithdrawalRequest;
 use App\Models\ItemCatalog;
 use App\Models\StockWithdrawal;
 use App\Models\StockWithdrawalItem;
-use App\Support\Inventory\Stock\StockWithdrawal\Service\StockWithdrawalService;
+use App\Support\Inventory\StockWithdrawal\Service\StockWithdrawalService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +25,7 @@ use Throwable;
 
     public function index(): View
     {
-        return view('pages.inventory.goods.stocks.stock-withdrawals.index');
+        return view('pages.inventory.stock-withdrawals.index');
     }
 
 
@@ -37,9 +37,9 @@ use Throwable;
 
     public function show(StockWithdrawal $stockWithdrawal): JsonResponse
     {
-        $stockWithdrawal->load('stockWithdrawalItem', 'stockWithdrawalByEmployee', 'stockWithdrawalItem.stock.item', 'stockWithdrawalByEmployee.user.roles', 'pic.roles', 'stocker.roles');
+        $stockWithdrawal->load('stockWithdrawalItems', 'stockWithdrawalByEmployees', 'stockWithdrawalItems.stock.item', 'stockWithdrawalByEmployees.user.roles', 'pic.roles', 'stocker.roles');
 
-        $stockWithdrawalItem = $stockWithdrawal->stockWithdrawalItem->map(function ($item) {
+        $stockWithdrawalItem = $stockWithdrawal->stockWithdrawalItems->map(function ($item) {
             return [
                 'item_name' => $item->stock->item->name,
                 'code' => $item->code,
@@ -48,7 +48,7 @@ use Throwable;
         });
 
 
-        $stockWithdrawalByEmployee = $stockWithdrawal->stockWithdrawalByEmployee->map(function ($item) {
+        $stockWithdrawalByEmployee = $stockWithdrawal->stockWithdrawalByEmployees->map(function ($item) {
             return [
                 'name' => $item->user->name,
                 'roles' => $item->user->roles->pluck('name')->implode(', '),
@@ -79,7 +79,7 @@ use Throwable;
 
     public function create(): View
     {
-        return view('pages.inventory.goods.stocks.stock-withdrawals.create');
+        return view('pages.inventory.stock-withdrawals.create');
     }
 
 
@@ -141,7 +141,7 @@ use Throwable;
 
     public function return(StockWithdrawal $stockWithdrawal): View
     {
-        return view('pages.inventory.goods.stocks.stock-withdrawals.returned-stock-form', compact('stockWithdrawal'));
+        return view('pages.inventory.stock-withdrawals.returned-stock-form', compact('stockWithdrawal'));
     }
 
 

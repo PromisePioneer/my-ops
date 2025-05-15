@@ -15,6 +15,7 @@ class Asset extends Model
     protected $table = 'assets';
     protected $fillable = [
         'branch_id',
+        'code',
         'debit_account_id',
         'credit_account_id',
         'date_received',

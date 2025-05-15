@@ -7,7 +7,7 @@ use App\Models\DraftStock;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\Branch;
 use App\Models\Stock;
-use App\Support\StockService;
+use App\Support\Inventory\StockManagement\Stock\Service\StockService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,7 +25,7 @@ use Illuminate\View\View;
 
     public function index(): View
     {
-        return view('pages.inventory.goods.stocks.index');
+        return view('pages.inventory.stocks.index');
     }
 
 
@@ -35,22 +35,31 @@ use Illuminate\View\View;
     public function data(): JsonResponse
     {
         $this->authorize('view', Stock::class);
-        return response()->json($this->stockService->goodsData());
+        return response()->json($this->stockService->data());
     }
 
 
-    public function goodsSearch(Request $request): JsonResponse
+    /**
+     * @throws AuthorizationException
+     */
+    public function search(Request $request): JsonResponse
     {
         $this->authorize('view', Stock::class);
         return response()->json($this->stockService->searchGoodsData($request));
     }
 
-    public function goodsFilter(Request $request): JsonResponse
+    /**
+     * @throws AuthorizationException
+     */
+    public function filter(Request $request): JsonResponse
     {
         $this->authorize('view', Stock::class);
         return response()->json($this->stockService->filter($request));
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function detail(ItemCollection $goods): View
     {
         $this->authorize('view', Stock::class);
@@ -84,6 +93,9 @@ use Illuminate\View\View;
         ]);
     }
 
+    /**
+     * @throws AuthorizationException
+     */
     public function confirm(Stock $goodsStock, Request $request): JsonResponse
     {
         $this->authorize('view', Stock::class);
@@ -97,6 +109,9 @@ use Illuminate\View\View;
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function getMainBranchWithStock(ItemCollection $itemCollection)
     {
         $this->authorize('view', Stock::class);
@@ -125,7 +140,7 @@ use Illuminate\View\View;
     }
 
 
-    public function getStockBasedOnDraftStock(DraftStock $draftStock)
+    public function findByDraftStockAndItemName(DraftStock $draftStock)
     {
         $stock = Stock::with('transaction', 'branch', 'item')->whereHas('item', function ($query) use ($draftStock) {
             $query->where('name', $draftStock->transaction->item->name);
@@ -151,7 +166,7 @@ use Illuminate\View\View;
     }
 
 
-    public function getStockWithCode()
+    public function getStockWithCodes()
     {
         $stock = Stock::with('item', 'itemCatalog')
             ->whereHas('item.category', function ($query) {

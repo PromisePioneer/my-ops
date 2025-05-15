@@ -43,6 +43,7 @@ use function App\Helper\formatDate;
             return [
                 'id' => $item->id,
                 'branch_name' => $item->branch?->name . ' ' . $item->branch?->parent?->name ?? null,
+                'code' => $item->code,
                 'name' => $item->name,
                 'debit_account' => $item->debitAccount?->name,
                 'unit' => $item->unit,

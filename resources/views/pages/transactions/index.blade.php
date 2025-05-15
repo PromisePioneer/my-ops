@@ -96,10 +96,10 @@
                                 <th class="min-w-250px text-center">Actions</th>
                             </template>
                         </thead>
-                        <tbody class="fw-bold">
                         <template x-if="isLoading">
+                        <tbody class="fw-bold">
                             <tr>
-                                <td colspan="9">
+                                <td colspan="7">
                                     <div style="text-align: center;">
                                         <div class="spinner-border" role="status">
                                             <span class="visually-hidden">Loading...</span>
@@ -107,15 +107,19 @@
                                     </div>
                                 </td>
                             </tr>
+                        </tbody>
                         </template>
                         <template x-if="!isLoading && transactions.data?.length === 0">
+                            <tbody class="fw-bold">
                             <tr>
-                                <td colspan="9">
+                                <td colspan="7">
                                     <center>Data Tidak Ditemukan</center>
                                 </td>
                             </tr>
+                            </tbody>
                         </template>
                         <template x-for="(transaction, index) in transactions?.data" :key="transaction.id">
+                            <tbody class="fw-bold">
                             <tr>
                                 <td>
                                     <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -137,8 +141,9 @@
                                         <span x-text="`No ${transaction.transaction_number}`"></span>
                                         <hr>
                                         <span class="text-decoration-underline"
-                                              x-text="`${transaction.qty} ${transaction.unit_type} ${transaction.item_name}`"></span>
-                                        <span x-text="`Total Harga : ${transaction.total_price}`"></span>
+                                              x-text="`${transaction.qty} ${transaction.unit_type}`"></span>
+                                        <span x-text="transaction.item_name"></span>
+                                        <span x-text="transaction.total_price"></span>
                                     </div>
                                 </td>
                                 <td class="text-center">
@@ -200,8 +205,8 @@
                                         </div>
                                     </div>
                                 </td>
+                                <td>
                                 <template x-if="Number(editPermission) === 1 && transaction.locked_status === 0">
-                                    <td>
                                         <div
                                             class="d-flex flex-column align-items-center justify-content-center">
                                             <template x-if="transaction.locked_status === 0">
@@ -223,11 +228,11 @@
                                                 </button>
                                             </template>
                                         </div>
-                                    </td>
                                 </template>
+                                    </td>
                             </tr>
+                            </tbody>
                         </template>
-                        </tbody>
                     </table>
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
@@ -375,6 +380,7 @@
                         reader.readAsDataURL(file);
                     });
                 },
+
                 previewTaxInvoiceFile() {
                     let files = this.$refs.taxInvoiceFile.files;
                     if (!files.length) return;
@@ -520,6 +526,7 @@
                     await this.selectedDebitAccount();
                     await this.selectedCreditAccount();
                     await this.getAssetAccounts();
+                    await this.selectedSupplier();
                 },
                 async selectedMainBranches() {
                     if (!this.editVal?.branch_id) return;
@@ -536,7 +543,6 @@
                     });
                 },
                 async destroy() {
-                    console.log(this.selectedCheckBox);
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
                             await axios.post(`/transactions/destroy`, new FormData(this.formDelete));

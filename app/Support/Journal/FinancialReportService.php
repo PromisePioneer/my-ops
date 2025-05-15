@@ -2,12 +2,10 @@
 
 namespace App\Support\Journal;
 
-use App\Models\Account;
 use App\Models\AccountCategory;
-use App\Models\AccountTransaction;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use function App\Helper\currencyFormat;
 
 class FinancialReportService
 {
@@ -58,7 +56,7 @@ class FinancialReportService
             return [
                 'id' => $item->id,
                 'name' => $item->name,
-                'total_each_categories' => 'Rp.' . number_format($totalEachCategories, 2, '.', '.'),
+                'total_each_categories' => currencyFormat($totalEachCategories),
                 'sub_categories' => $item->children->map(function ($child) use ($request) {
                     $total = 0;
                     foreach ($child->accounts as $account) {
@@ -87,7 +85,7 @@ class FinancialReportService
                     return [
                         'id' => $child->id,
                         'name' => $child->name,
-                        'total' => 'Rp.' . number_format($total, 2, '.', '.'),
+                        'total' => currencyFormat($total),
                         'accounts' => $child->accounts->map(function ($account) use ($request, $total) {
                             $debit = 0;
                             $childDebit = 0;
@@ -112,7 +110,7 @@ class FinancialReportService
                                 'id' => $account->id,
                                 'name' => $account->name,
                                 'trial_balance_type' => $account->trial_balance_type,
-                                'balance' => 'Rp.' . number_format($balance, 2, '.', '.'),
+                                'balance' => currencyFormat($balance),
                             ];
                         })
                     ];

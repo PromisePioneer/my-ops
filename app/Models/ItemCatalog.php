@@ -11,11 +11,14 @@ class ItemCatalog extends Model
     protected $fillable = [
         'transaction_id',
         'stock_id',
+        'draft_stock_id',
+        'item_id',
         'code',
         'condition',
         'created_by',
         'status',
-        'initial_balance_inventory_id'
+        'initial_balance_inventory_id',
+        'asset_id',
     ];
 
     public function stock(): BelongsTo
@@ -37,5 +40,10 @@ class ItemCatalog extends Model
     public function initialInventoryBalance(): BelongsTo
     {
         return $this->belongsTo(InitialInventoryBalance::class, 'initial_balance_inventory_id');
+    }
+
+    public function item(): BelongsTo
+    {
+        return $this->belongsTo(ItemCollection::class, 'item_id');
     }
 }
