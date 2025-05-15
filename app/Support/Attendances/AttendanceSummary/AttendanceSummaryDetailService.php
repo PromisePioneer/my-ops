@@ -86,7 +86,7 @@ class AttendanceSummaryDetailService
             $lastDateInChunk = Carbon::parse($chunk->last()['attendancesDate']);
 
             if ($i + $chunkSize >= $totalDays) {
-                $key = $endDate->toDateString(); // <= minggu terakhir
+                $key = $endDate->toDateString();
             } else {
                 $key = $lastDateInChunk->toDateString();
             }
@@ -120,11 +120,11 @@ class AttendanceSummaryDetailService
 
                     if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
                         $lateness = $newExpectedCheckIn ?
-                            $newExpectedCheckIn->diffInSeconds($actualCheckIn) :
-                            $expectedCheckIn->diffInSeconds($actualCheckIn);
+                            $newExpectedCheckIn->diffInMinutes($actualCheckIn) :
+                            $expectedCheckIn->diffInMinutes($actualCheckIn);
                         if ($day['employeeSchedule']?->status !== 'L' || $weekHoliday->day !== Carbon::parse($day['attendancesDate'])->dayName) {
                             $weekLatenessDetails[$day['attendancesDate']] = $lateness;
-                            $weekLatenessTotal += $lateness;
+                            $weekLatenessTotal += $lateness % 60;
                         }
 
                     }
@@ -132,8 +132,8 @@ class AttendanceSummaryDetailService
             }
 
 
-            if ($weekLatenessTotal > 900) {
-                $weekLatenessMap[$weekEndDate] = number_format($weekLatenessTotal / 60);
+            if ($weekLatenessTotal > 15) {
+                $weekLatenessMap[$weekEndDate] = $weekLatenessTotal;
             }
         }
 
@@ -157,7 +157,6 @@ class AttendanceSummaryDetailService
             $weekStart = $startDate->copy()->addDays($weekIndex * 7);
             $weekEnd = $weekStart->copy()->addDays(6);
 
-            // Jika minggu terakhir, pakai endDate sebagai key
             if ($weekEnd->greaterThan($endDate)) {
                 $weekEnd = $endDate->copy();
             }
@@ -334,8 +333,8 @@ class AttendanceSummaryDetailService
             }
 
             if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
-                $lateness = $newExpectedCheckIn ? $newExpectedCheckIn->diffInSeconds($actualCheckIn) : $expectedCheckIn->diffInSeconds($actualCheckIn);
-                return number_format($lateness / 60);
+                $lateness = $newExpectedCheckIn ? $newExpectedCheckIn->diffInMinutes($actualCheckIn) : $expectedCheckIn->diffInMinutes($actualCheckIn);
+                return $lateness % 60;
             }
         }
         return null;

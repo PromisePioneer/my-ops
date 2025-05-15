@@ -264,7 +264,7 @@ use Illuminate\Http\Request;
             $attendances = $user->attendancesSummary;
 
             $attendancesGroupedByWeek = collect($attendances)->groupBy(function ($item) {
-                $date = Carbon::parse($item['attendancesDate']);
+                $date = Carbon::parse($item->date);
                 $diffInDays = $this->startDate->diffInDays($date);
                 $groupNumber = (int)($diffInDays / 7);
                 return $this->startDate->copy()->addDays($groupNumber * 7 + 6)->toDateString();
@@ -299,15 +299,15 @@ use Illuminate\Http\Request;
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
                         if (($employeeSchedule?->status !== 'L') && !$weekHoliday) {
                             $latenessInSeconds = $newExpectedCheckIn ?
-                                $newExpectedCheckIn->diffInSeconds($actualCheckIn) :
-                                $expectedCheckIn->diffInSeconds($actualCheckIn);
-                            $weekLatenessTotal += $latenessInSeconds;
+                                number_format($newExpectedCheckIn->diffInMinutes($actualCheckIn) % 60) :
+                                number_format($expectedCheckIn->diffInMinutes($actualCheckIn) % 60);
+                            $weekLatenessTotal += (int)$latenessInSeconds;
                         }
                     }
                 }
 
-                if ($weekLatenessTotal > 900) {
-                    $weeklyLatenessMap[$user->id][$weekEndDate] = $weekLatenessTotal / 60;
+                if ($weekLatenessTotal > 15) {
+                    $weeklyLatenessMap[$user->id][$weekEndDate] = $weekLatenessTotal;
                 }
             }
         }
