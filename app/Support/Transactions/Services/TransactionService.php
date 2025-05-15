@@ -209,63 +209,72 @@ use function App\Helper\formatDate;
                 'approved_by' => $request->status === 'Diterima' ?: $request->user()->id,
                 'final_notes' => $request->input('final_notes'),
             ]);
+            $ppnAccount = Account::where('code', '115-01')->first();
+            $taxSetting = TaxSetting::where('name', 'PPN')->first();
 
             if ($request->input('status') === 'Diterima') {
-                $ppnAccount = Account::where('code', '115-01')->first();
-                $taxSetting = TaxSetting::where('name', 'PPN')->first();
                 foreach ($explodeID as $transactionId) {
                     $transaction = Transaction::with('item.category', 'supplier')->where('id', $transactionId)->first();
                     $branch = Branch::with('parent')->where('id', $transaction->branch_id)->first();
-
-                    if ($transaction->item->category->name !== 'Kategori 4') {
-                        DraftStock::create([
-                            'transaction_id' => $transaction->id,
-                            'qty' => $transaction->qty
-                        ]);
-                    } else {
-                        Stock::create([
-                            'transaction_id' => $transaction->id,
-                            'branch_id' => $transaction->branch_id,
-                            'item_id' => $transaction->item_id,
-                            'qty' => $transaction->qty,
-                            'condition' => 'Baik'
-                        ]);
-                    }
-
-
-                    $ppnTotal = ($taxSetting->rate / 100) * $transaction->total_price;
-
-
-                    $this->accountTransactionService->createDebitTransaction(
-                        $branch->parent->id,
-                        $transaction->detail,
-                        $transaction->debit_account_id,
-                        $transaction->total_price,
-                        $transaction->id,
-                    );
-
-                    $this->accountTransactionService->createCreditTransaction(
-                        $branch->parent->id,
-                        $transaction->detail,
-                        $transaction->credit_account_id,
-                        $transaction->total_price,
-                        $transaction->id
-                    );
-
-
-                    //ppn
-                    if ($transaction->supplier->tax_type === 'PKP') {
-                        $this->accountTransactionService->createDebitTransaction(
-                            $branch->parent->id,
-                            $transaction->detail,
-                            $ppnAccount->id,
-                            $ppnTotal,
-                            $transaction->id,
-                        );
-                    }
+                    $this->saveToStock($transaction);
+                    $this->accountTransactionStore($taxSetting, $transaction, $branch, $ppnAccount);
                 }
             }
         });
+    }
+
+
+    public function saveToStock($transaction): void
+    {
+        if ($transaction->item->category->name !== 'Kategori 4') {
+            DraftStock::create([
+                'transaction_id' => $transaction->id,
+                'qty' => $transaction->qty
+            ]);
+        } else {
+            Stock::create([
+                'transaction_id' => $transaction->id,
+                'branch_id' => $transaction->branch_id,
+                'item_id' => $transaction->item_id,
+                'qty' => $transaction->qty,
+                'condition' => 'Baik'
+            ]);
+        }
+    }
+
+
+    public function accountTransactionStore($taxSetting, $transaction, $branch, $ppnAccount): void
+    {
+        $ppnTotal = ($taxSetting->rate / 100) * $transaction->total_price;
+
+
+        $this->accountTransactionService->createDebitTransaction(
+            $branch->parent->id,
+            $transaction->detail,
+            $transaction->debit_account_id,
+            $transaction->total_price,
+            $transaction->id,
+        );
+
+        $this->accountTransactionService->createCreditTransaction(
+            $branch->parent->id,
+            $transaction->detail,
+            $transaction->credit_account_id,
+            $transaction->total_price,
+            $transaction->id
+        );
+
+
+        //ppn
+        if ($transaction->supplier->tax_type === 'PKP') {
+            $this->accountTransactionService->createDebitTransaction(
+                $branch->parent->id,
+                $transaction->detail,
+                $ppnAccount->id,
+                $ppnTotal,
+                $transaction->id,
+            );
+        }
     }
 
 

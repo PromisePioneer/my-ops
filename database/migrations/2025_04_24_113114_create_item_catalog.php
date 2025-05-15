@@ -33,6 +33,7 @@ return new class extends Migration {
             $table->foreignId('item_id')->constrained('item_collections')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->foreignId('asset_id')->nullable()->constrained('assets')->cascadeOnDelete();
             $table->string('code');
             $table->enum('condition', ['Rusak', 'Baik', 'Diperbaiki']);
             $table->enum('status', ['Tersedia', 'Terpakai', 'Dibawa'])->default('Tersedia');
