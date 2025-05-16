@@ -22,7 +22,6 @@ use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\AttendanceManualRequestController;
 use App\Http\Controllers\BAAController;
 use App\Http\Controllers\DraftStockController;
-use App\Http\Controllers\StockController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
 use App\Http\Controllers\HRIS\Attendances\FpDevicesController;
@@ -79,6 +78,7 @@ use App\Http\Controllers\Master\Operational\ItemCategoryController;
 use App\Http\Controllers\Master\Operational\ItemCollectionController;
 use App\Http\Controllers\Master\Operational\PSBController;
 use App\Http\Controllers\Master\Operational\SupplierController;
+use App\Http\Controllers\StockController;
 use App\Http\Controllers\StockMutationController;
 use App\Http\Controllers\StockWithdrawalController;
 use App\Http\Controllers\StockWithdrawalItemController;
@@ -491,7 +491,6 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::post('/confirm/{asset}', [AssetController::class, 'confirm']);
                 Route::get('/detail/{asset}', [AssetController::class, 'detail']);
                 Route::get('/detail/data/{asset}', [AssetController::class, 'depreciationData']);
-                Route::post('/import', [AssetController::class, 'import']);
             });
 
             Route::prefix('initial-inventory-balances')->group(function () {
@@ -1304,6 +1303,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/user-has-areas-data', [UserController::class, 'getUserHasArea']);
         Route::get('/suppliers-data', [SupplierController::class, 'getSuppliers']);
         Route::get('/selected-supplier/{supplier}', [SupplierController::class, 'selectedSupplier']);
+        Route::get('/asset-items-data', [ItemCollectionController::class, 'getAssetData']);
 
     });
 

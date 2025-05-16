@@ -5,17 +5,14 @@ namespace App\Http\Controllers\Master\Accounting\Asset;
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AssetRequest;
-use App\Imports\AssetImport;
 use App\Models\Account;
 use App\Models\Asset;
 use App\Support\Master\Accounting\Assets\Service\AssetDepreciationService;
 use App\Support\Master\Accounting\Assets\Service\AssetService;
-use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
 
 #[AllowDynamicProperties] class AssetController extends Controller
@@ -92,6 +89,7 @@ use Throwable;
      */
     public function edit(Asset $asset): JsonResponse
     {
+        $asset->load('item', 'branch');
         $this->authorize('update', $asset);
 
 
@@ -148,23 +146,6 @@ use Throwable;
     {
         $this->authorize('view', Asset::class);
         return response()->json($this->assetService->data($request));
-    }
-
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function import(Request $request): JsonResponse
-    {
-        $this->authorize('import', Asset::class);
-        try {
-            ini_set('max_execution_time', 180);
-            $file = $request->file('file_import');
-            Excel::import(new AssetImport(), $file);
-        } catch (Exception $exception) {
-            return response()->json(['message' => $exception->getMessage()]);
-        }
-        return response()->json(['message' => 'Data berhasil diimport']);
     }
 
 

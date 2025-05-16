@@ -39,7 +39,7 @@
                     </div>
 
 
-                    <div class="row">
+                    <div class="row mb-7">
                         <div class="col-md-6">
                             <label for="name" class="required form-label">Kondisi Barang</label>
                             <select class="form-select form-select-solid" x-model="itemCondition"
@@ -49,34 +49,31 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label for="name" class="required form-label">Kategori Aset</label>
-                            <select name="debit_account_id" class="form-select form-select-solid asset-accounts-select2"
-                                    data-dropdown-parent="#asset-modal" id="selected-asset-account-type">
-                                <option></option>
-                            </select>
+                            <label for="name" class="required form-label">Kode Aset</label>
+                            <input type="text" class="form-control form-control-solid" name="code" id="code"
+                                   placeholder="Kode Aset" :value="editVal?.code ?? ''">
                         </div>
                     </div>
                     <div class="row mb-7">
+
+
                         <div class="col-md-6">
-                            <label for="name" class="required form-label">Nama</label>
-                            <input type="text" id="name" name="name" class="form-control form-control-solid"
-                                   placeholder="Nama Aset" :value="editVal?.name"/>
+                            <label for="name" class="required form-label">Nama Barang</label>
+                            <select name="item_id" id="selected-asset-item"
+                                    class="form-select form-select-solid asset-items-select2"
+                                    data-dropdown-parent="#asset-modal">
+                                <option></option>
+                            </select>
                         </div>
                         <div class="col-md-6">
                             <label for="name" class="required form-label">Jumlah Unit</label>
                             <input type="text" id="unit" name="unit" class="form-control form-control-solid"
-                                   placeholder="Jumlah unit" :value="editVal?.unit"/>
+                                   placeholder="Jumlah unit" :value="editVal?.unit ?? 1" readonly/>
                         </div>
                     </div>
 
 
-                    <div class="row mb-7">
-                        <div class="col-md-6">
-                            <label for="name" class="required form-label">Masa Manfaat</label>
-                            <input type="number" id="useful_life" name="useful_life"
-                                   class="form-control form-control-solid"
-                                   placeholder="Masa Manfaat" :value="editVal?.useful_life"/>
-                        </div>
+                    <div class="row">
                         <div class="col-md-6">
                             <label for="name" class="required form-label">Tanggal Perolehan</label>
                             <br>
@@ -84,10 +81,6 @@
                                    class="form-control form-control-solid date"
                                    placeholder=" Tanggal Perolehan" :value="editVal?.date_received"/>
                         </div>
-                    </div>
-
-
-                    <div class="row mb-7">
                         <div class="col-md-6">
                             <label for="name" class="required form-label">Harga / Unit</label>
                             <input type="text" id="price_per_unit" name="price_per_unit"
@@ -95,6 +88,7 @@
                                    placeholder="Harga per unit" :value="parseFloat(editVal?.price_per_unit)"/>
                         </div>
                     </div>
+
                 </div>
 
                 <div class="modal-footer">
