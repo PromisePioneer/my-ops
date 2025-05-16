@@ -298,7 +298,7 @@ use Illuminate\Http\Request;
                         ->first();
 
                     if ($actualCheckIn->greaterThan($expectedCheckIn)) {
-                        if (($employeeSchedule?->status !== 'L') && !$weekHoliday) {
+                        if (($employeeSchedule?->status !== 'L') || !$weekHoliday) {
                             $latenessInMinutes = $newExpectedCheckIn ?
                                 $newExpectedCheckIn->diffInMinutes($actualCheckIn) :
                                 $expectedCheckIn->diffInMinutes($actualCheckIn);
