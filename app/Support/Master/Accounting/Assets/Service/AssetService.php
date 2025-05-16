@@ -7,13 +7,16 @@ use App\Http\Requests\AssetRequest;
 use App\Models\Account;
 use App\Models\Asset;
 use App\Models\AssetDepreciation;
+use App\Models\ItemCollection;
 use App\Support\AccountTransactions\AccountTransactionService;
+use App\Support\HelperService\UsefulLifeService;
 use App\Support\Master\Accounting\Assets\Repositories\AssetRepository;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Throwable;
+use function App\Helper\currencyFormat;
 use function App\Helper\formatDate;
 
 #[AllowDynamicProperties] class AssetService
@@ -44,12 +47,12 @@ use function App\Helper\formatDate;
                 'id' => $item->id,
                 'branch_name' => $item->branch?->name . ' ' . $item->branch?->parent?->name ?? null,
                 'code' => $item->code,
-                'name' => $item->name,
-                'debit_account' => $item->debitAccount?->name,
+                'name' => $item->item->name,
+                'debit_account' => $item->item->assetAccount->name,
                 'unit' => $item->unit,
                 'useful_life' => $item->useful_life,
-                'price_per_unit' => 'Rp.' . number_format($item->price_per_unit, 2, '.', '.'),
-                'price_at_first_recieved' => number_format($item->price_at_first_recieved, 2, '.', '.'),
+                'price_per_unit' => currencyFormat($item->price_per_unit, 2, '.', '.'),
+                'price_at_first_recieved' => currencyFormat($item->price_at_first_recieved, 2, '.', '.'),
                 'status' => $item->status,
             ];
         });
@@ -90,10 +93,22 @@ use function App\Helper\formatDate;
         $unitPriceformattedValue = str_replace(',', '.', $unitPriceformattedValue);
         $unitPrice = (float)$unitPriceformattedValue;
 
-        $data['price_per_unit'] = $unitPrice;
-        $data['total_price'] = $unitPrice * $data['unit'];
-        $data['residu'] = $data['total_price'] / $data['useful_life'];
-        Asset::create($data);
+
+        $itemCollection = ItemCollection::find($request->item_id);
+        $assetAccount = Account::find($itemCollection->asset_account_id);
+
+
+        Asset::create([
+            'branch_id' => $request->branch_id,
+            'code' => $request->code,
+            'date_received' => $request->date_received,
+            'item_id' => $request->item_id,
+            'unit' => 1,
+            'useful_life' => UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->material),
+            'price_per_unit' => $unitPrice,
+            'total_price' => $unitPrice,
+            'residu' => $unitPrice / UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->material),
+        ]);
     }
 
     /**
@@ -156,9 +171,25 @@ use function App\Helper\formatDate;
 
     public function update(AssetRequest $request, Asset $asset): bool
     {
-        $data = $request->validated();
-        $data['price_at_first_recieved'] = $data['price_per_unit'] * $data['unit'];
-        return $asset->update($data);
+        $unitPriceformattedValue = str_replace('.', '', $request->input('price_per_unit'));
+        $unitPriceformattedValue = str_replace(',', '.', $unitPriceformattedValue);
+        $unitPrice = (float)$unitPriceformattedValue;
+
+
+        $itemCollection = ItemCollection::find($request->item_id);
+        $assetAccount = Account::find($itemCollection->asset_account_id);
+
+        return $asset->update([
+            'branch_id' => $request->branch_id,
+            'code' => $request->code,
+            'date_received' => $request->date_received,
+            'item_id' => $request->item_id,
+            'unit' => 1,
+            'useful_life' => UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->material),
+            'price_per_unit' => $unitPrice,
+            'total_price' => $unitPrice,
+            'residu' => $unitPrice / UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->material),
+        ]);
     }
 
 

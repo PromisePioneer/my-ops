@@ -38,4 +38,10 @@ class ItemCollectionRepository
             ->select('id', 'name as item_collection_name', 'category_id', 'unit_type_id', 'asset_account_id', 'material', 'type', 'reorder_level')
             ->orderBy('name');
     }
+
+
+    public function getAssetData()
+    {
+        return ItemCollection::with('category', 'unitType', 'assetAccount')->where('type', 'ASET');
+    }
 }

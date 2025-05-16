@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AssetRequest extends FormRequest
 {
@@ -20,15 +22,14 @@ class AssetRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array|string>
      */
-    public function rules(): array
+    public function rules(Request $request): array
     {
         return [
+            'code' => ['required', Rule::unique('assets', 'code')->ignore($request->route('asset'))],
+            'item_id' => ['required', 'exists:item_collections,id'],
             'branch_id' => ['nullable', 'exists:branches,id'],
-            'debit_account_id' => ['nullable', 'exists:accounts,id'],
             'date_received' => ['required', 'date'],
-            'name' => ['required'],
             'unit' => ['required', 'numeric'],
-            'useful_life' => ['required'],
             'price_per_unit' => ['required'],
         ];
     }
@@ -38,13 +39,14 @@ class AssetRequest extends FormRequest
     {
         return [
             'branch_id.exists' => 'Cabang ini tidak terdaftar',
+            'code.required' => 'Kode tidak boleh kosong',
+            'code.unique' => 'Kode sudah terdaftar',
+            'item_id.required' => 'Item tidak boleh kosong',
+            'item_id.exists' => 'Item ini tidak terdaftar',
             'credit_account_id.required' => 'Akun Kredit tidak boleh kosong',
             'credit_account_id.exists' => 'Akun Kredit ini tidak terdaftar',
-            'name.required' => 'Nama tidak boleh kosong',
             'unit.required' => 'Unit tidak boleh kosong',
             'unit.numeric' => 'Unit harus berupa angka',
-            'useful_life.required' => 'Masa manfaat tidak boleh kosong',
-            'useful_life.numeric' => 'Masa manfaat harus berupa angka',
             'price_per_unit.required' => 'Harga per unit tidak boleh kosong',
             'date_recieved.required' => 'Tanggal Perolehan tidak boleh kosong',
             'date_recieved.date' => 'Tanggal Perolehan harus berupa tanggal',

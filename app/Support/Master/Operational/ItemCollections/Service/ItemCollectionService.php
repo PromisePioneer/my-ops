@@ -72,6 +72,18 @@ use Throwable;
     }
 
 
+    public function assetData()
+    {
+        $items = $this->itemCollectionRepository->getAssetData()->get();
+        return $items->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->name
+            ];
+        });
+    }
+
+
     public function formattedData(LengthAwarePaginator $itemCollections): LengthAwarePaginator
     {
         $data = $itemCollections->getCollection()->map(function ($item) {

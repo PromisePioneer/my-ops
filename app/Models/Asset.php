@@ -16,17 +16,14 @@ class Asset extends Model
     protected $fillable = [
         'branch_id',
         'code',
-        'debit_account_id',
-        'credit_account_id',
         'date_received',
-        'name',
+        'item_id',
         'unit',
         'useful_life',
         'price_per_unit',
         'total_price',
         'residu',
         'status',
-
     ];
 
 
@@ -49,5 +46,10 @@ class Asset extends Model
     public function assetDepreciations(): HasMany
     {
         return $this->hasMany(AssetDepreciation::class, 'asset_id');
+    }
+
+    public function item(): BelongsTo
+    {
+        return $this->belongsTo(ItemCollection::class, 'item_id');
     }
 }
