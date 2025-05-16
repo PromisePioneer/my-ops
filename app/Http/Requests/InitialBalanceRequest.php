@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Account;
 use App\Models\AccountTransaction;
-use App\Models\Master\Common\Branch;
 use Carbon\Carbon;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -28,8 +28,10 @@ class InitialBalanceRequest extends FormRequest
      */
     public function rules(Request $request): array
     {
+
+        $ifHasTransaction = $this->ifHasTransaction($request);
         return [
-            'branch_id' => [Rule::requiredIf(empty($request->user()->branch_id)), 'exists:branches,id'],
+            'branch_id' => [Rule::requiredIf(empty($request->user()->branch_id)), 'exists:branches,id', $ifHasTransaction],
             'account_id' => ['required', 'exists:accounts,id', $this->uniqueYear($request)],
             'amount' => ['required'],
         ];
@@ -65,6 +67,31 @@ class InitialBalanceRequest extends FormRequest
 
             if ($isAccountTransactionExists) {
                 return $fail('Saldo awal sudah terdaftar!');
+            }
+
+            return null;
+        };
+    }
+
+
+    public function ifHasTransaction(Request $request): Closure
+    {
+        return static function ($attribute, $value, $fail) use ($request) {
+            $account = Account::where('id', $request->account_id)->first();
+            $transactions = $account->join(
+                'account_transactions',
+                'account_transactions.account_id',
+                '=',
+                'accounts.id'
+            )->where('account_transactions.branch_id', $request->user()->branch_id ?? $request->branch_id)
+                ->where('account_transactions.transaction_type', 'TR')
+                ->where('accounts.id', $account->id)
+                ->select('account_transactions.id as account_transaction_id')
+                ->first();
+
+
+            if ($transactions) {
+                return $fail('Akun ini sudah mempunyai transaksi. ');
             }
 
             return null;
