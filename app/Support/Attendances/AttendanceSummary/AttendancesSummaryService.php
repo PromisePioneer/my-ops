@@ -285,7 +285,7 @@ use Illuminate\Http\Request;
 
 
                     $newExpectedCheckIn = null;
-                    if ($workTime->name === 'malam') {
+                    if ($workTime->name === 'Malam') {
                         $newExpectedCheckIn = $expectedCheckIn->copy()->addDay();
                     }
 
