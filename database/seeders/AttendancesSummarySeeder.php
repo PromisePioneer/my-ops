@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\AttendancesSummary;
 use Carbon\Carbon;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class AttendancesSummarySeeder extends Seeder
@@ -14,12 +13,11 @@ class AttendancesSummarySeeder extends Seeder
      */
     public function run(): void
     {
-//        AttendancesSummary::create([
-//            'date' => Carbon::now()->format('Y-m-d'),
-//            'employee_id' => 999,
-//            'clock_in' => Carbon::now(),
-//            'clock_out' => Carbon::now(),
-//        ]);
+        AttendancesSummary::create([
+            'date' => Carbon::now()->format('Y-m-d'),
+            'employee_id' => 120,
+            'clock_in' => Carbon::parse('2025-05-01 08:10:00'),
+        ]);
 
     }
 }

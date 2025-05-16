@@ -2,7 +2,6 @@
 
 namespace App\Support\Attendances;
 
-use App\Models\Attendances;
 use App\Models\AttendancesSummary;
 use App\Models\DeviceLog;
 use App\Models\EmployeeSchedule;
@@ -11,7 +10,6 @@ use App\Models\FpDevice;
 use App\Models\User;
 use App\Models\WorkTime;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -239,7 +237,6 @@ class IclockService
 
         if ($user) {
             $ifBranchDuri = $user?->branch_id === 2 ? WorkTime::find(14)?->id : null;
-            // $isCleaningServicePku = $user->hasRole('Cleaning Service') ? WorkTime::find(15)?->id : null;
             $isEngineer = $user->hasAnyRole([
                 'Engineer',
                 'Senior Engineer',
