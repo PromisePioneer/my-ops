@@ -334,6 +334,13 @@
                     await this.getSuppliers();
                 },
                 add() {
+                    $('.main-branches-select2').val(null).trigger('change');
+                    $('.sub-branches-select2').val(null).trigger('change');
+                    $('.suppliers-select2').val(null).trigger('change');
+                    $('.stock-accounts-select2').val(null).trigger('change');
+                    $('.kas-and-leverage-accounts-select2').val(null).trigger('change');
+                    $('.items-select2').val(null).trigger('change');
+                    this.branchVal = null;
                     this.transactionType = null
                     this.form.reset();
                     this.editVal = null;
@@ -520,6 +527,7 @@
                     this.editVal = resp.data;
                     this.imgsrc = "{{ Storage::url('') }}" + this.editVal.attachment;
                     this.transactionType = this.editVal.type;
+                    this.PKP = this.editVal.supplier.tax_type === 'PKP';
                     await this.selectedItem();
                     await this.selectedMainBranches();
                     await this.selectedSubBranch();
@@ -527,6 +535,7 @@
                     await this.selectedCreditAccount();
                     await this.getAssetAccounts();
                     await this.selectedSupplier();
+
                 },
                 async selectedMainBranches() {
                     if (!this.editVal?.branch_id) return;
@@ -605,8 +614,10 @@
                             cache: true
                         }
                     }).on('select2:select', async function (e) {
-                        const resp = await axios.get(`/select2/selected-supplier/${e.params.data.id}`);
-                        self.PKP = resp.data.tax_type === 'PKP';
+                        if (e.params?.data?.id) {
+                            const resp = await axios.get(`/select2/selected-supplier/${e.params.data.id}`);
+                            self.PKP = resp.data.tax_type === 'PKP';
+                        }
                     });
                 },
                 async getStockAccounts() {
