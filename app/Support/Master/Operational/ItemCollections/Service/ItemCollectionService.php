@@ -148,7 +148,6 @@ use Throwable;
 
     public function update(ItemCollection $itemCollection, ItemCollectionRequest $request): void
     {
-        $category = ItemCategory::where('id', $request->category_id)->first();
 
         $itemCollection->update([
             'name' => $request->name,

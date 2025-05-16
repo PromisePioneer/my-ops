@@ -103,6 +103,7 @@ use Throwable;
                     $asset = Asset::create([
                         'branch_id' => $draftStock->transaction->branch_id,
                         'code' => $request->code,
+                        'item_id' => $draftStock->transaction->item_id ?? $draftStock->initialInventoryBalance->item_id,
                         'date_received' => $draftStock->transaction?->date ?? $draftStock->initialInventoryBalance->date,
                         'name' => $itemObject->name,
                         'unit' => 1,
