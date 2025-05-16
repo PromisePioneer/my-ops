@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\Master\Operational\Item;
 
+use App\Models\InitialInventoryBalance;
 use App\Models\ItemCategory;
 use App\Models\Master\Common\UnitType;
+use App\Models\Transaction;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -27,8 +29,7 @@ class ItemCollectionRequest extends FormRequest
      */
     public function rules(Request $request): array
     {
-
-        $category = ItemCategory::where('id', $request->category_id)->first();
+        $ifHasTransaction = $this->ifHasTransaction($request);
 
         return [
             'name' => [
@@ -37,7 +38,8 @@ class ItemCollectionRequest extends FormRequest
                 Rule::unique('item_collections', 'name')
                     ->ignore($request->route('itemCollection')),
                 $this->getRulesForCategory1($request),
-                $this->getRulesForCategory3($request)
+                $this->getRulesForCategory3($request),
+                $ifHasTransaction
             ],
             'code' => [Rule::requiredIf($request->must_have_code === 'on' && !$request->is_code_listed)],
             'unit_type_id' => ['required', 'string'],
@@ -90,6 +92,23 @@ class ItemCollectionRequest extends FormRequest
 
             if ($category->name === 'Kategori 3' && $request->type !== 'ASET') {
                 return $fail('Kategori 3 harus bertipe ASET');
+            }
+
+            return null;
+        };
+    }
+
+
+    public function ifHasTransaction(Request $request): Closure
+    {
+        return static function ($attribute, $value, $fail) use ($request) {
+            $initialInventoryBalance = InitialInventoryBalance::where('item_id', $request->route('itemCollection')->id)
+                ->first();
+            $transaction = Transaction::where('item_id', $request->route('itemCollection')->id)
+                ->first();
+
+            if ($initialInventoryBalance || $transaction) {
+                return $fail('Item ini sudah memiliki transaksi, tidak bisa di ubah!');
             }
 
             return null;
