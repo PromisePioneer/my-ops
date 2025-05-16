@@ -9,6 +9,7 @@ use App\Models\Asset;
 use App\Models\DraftStock;
 use App\Models\ItemCatalog;
 use App\Models\Stock;
+use App\Support\HelperService\UsefulLifeService;
 use App\Support\Inventory\StockManagement\DraftStock\Repository\ItemCatalogRepository;
 use App\Support\Inventory\StockManagement\Stock\Repository\StockRepository;
 use App\Support\Inventory\StockManagement\StockWithdrawal\Repository\StockWithdrawalItemRepository;
@@ -76,35 +77,39 @@ use Throwable;
             if (empty($stock)) {
                 $newStock = $this->stockStore($draftStock, $request);
                 if ($draftStock->transaction->item->type === 'ASET' || $draftStock->initialInventoryBalance->item->type === 'ASET') {
+                    $unitPrice = $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance->unit_price;
+
 
                     $asset = Asset::create([
                         'branch_id' => $draftStock->transaction->branch_id,
                         'code' => $request->code,
-                        'debit_account_id' => $itemObject->asset_account_id,
+                        'item_id' => $draftStock->transaction->item_id ?? $draftStock->initialInventoryBalance->item_id,
                         'date_received' => $draftStock->transaction?->date ?? $draftStock->initialInventoryBalance->date,
                         'name' => $itemObject->name,
                         'unit' => 1,
                         'useful_life' => $this->usefulLife($assetAccount->code, $itemObject->material),
-                        'price_per_unit' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance->unit_price,
+                        'price_per_unit' => $unitPrice,
                         'total_price' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance->unit_price,
+                        'residu' => $unitPrice / UsefulLifeService::getUsefulLife($assetAccount->code, $itemObject->material),
                     ]);
                     $this->itemCatalogStore($request, $draftStock, $newStock, null, $asset);
                 }
 
 
             } else {
+                $unitPrice = $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance->unit_price;
                 $stock->increment('qty');
                 if ($draftStock->transaction->item->type === 'ASET' || $draftStock->initialInventoryBalance->item->type === 'ASET') {
                     $asset = Asset::create([
                         'branch_id' => $draftStock->transaction->branch_id,
                         'code' => $request->code,
-                        'debit_account_id' => $itemObject->asset_account_id,
                         'date_received' => $draftStock->transaction?->date ?? $draftStock->initialInventoryBalance->date,
                         'name' => $itemObject->name,
                         'unit' => 1,
                         'useful_life' => $this->usefulLife($assetAccount->code, $itemObject->material),
-                        'price_per_unit' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance->unit_price,
+                        'price_per_unit' => $unitPrice,
                         'total_price' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance->unit_price,
+                        'residu' => $unitPrice / UsefulLifeService::getUsefulLife($assetAccount->code, $itemObject->material),
                     ]);
                     $this->itemCatalogStore($request, $draftStock, null, $stock, $asset);
                 }

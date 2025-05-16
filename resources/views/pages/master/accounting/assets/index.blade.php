@@ -22,14 +22,6 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                            @can('Import Data Aset')
-                                <button type="button" class="btn btn-light-success btn-sm me-3"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modal-import">
-                                    <i class="bi bi-file-earmark-excel"></i>
-                                    Import
-                                </button>
-                            @endcan
                             @can('Tambah Data Aset')
                                 <button type="button" class="btn btn-light-primary btn-sm"
                                         data-bs-toggle="modal"
@@ -233,6 +225,7 @@
                 itemModal: new bootstrap.Modal(document.getElementById('modal-item')),
                 itemForm: document.getElementById('form-item'),
                 itemCondition: null,
+                attachmentImgSrc: '',
                 async init() {
                     await this.getMainBranches();
                     await this.getAssetsData();
@@ -243,6 +236,7 @@
                     await this.getStockAccounts();
                     await this.itemCategories();
                     await this.getUnitTypes();
+                    await this.getAssetItemCollections();
                 },
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
@@ -303,6 +297,26 @@
                         }
                     });
                 },
+                async getAssetItemCollections() {
+                    $(".asset-items-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Barang",
+                        escapeMarkup: markup => (markup),
+                        language: {
+                            noResults: () => {
+                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-item">Tambahkan terlebih dahulu</a>`;
+                            }
+                        },
+                        ajax: {
+                            url: '/select2/asset-items-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
                 selectCheckBox(event) {
                     const checkboxId = event.target.value;
                     if (event.target.checked) {
@@ -350,6 +364,7 @@
                         }
                     }).on('select2:select', function (e) {
                         self.branchVal = true;
+                        $('.sub-branches-select2').val(null).trigger('change');
                         const selectedMainBranchId = e?.params?.data?.id ?? self.editVal.branch_id;
                         $('.sub-branches-select2').select2({
                             allowClear: true,
@@ -402,9 +417,9 @@
                 async edit(id) {
                     const resp = await axios.get(`/master/accounting/assets/${id}`);
                     this.editVal = resp.data;
+                    await this.selectedMainBranch();
                     await this.selectedBranch();
-                    await this.selectedKasAccount();
-                    await this.selectedAssetAccount();
+                    await this.selectedAssetItem();
                 },
                 async saveSupplier() {
                     this.buttonLoading = true;
@@ -566,8 +581,21 @@
                         }
                     });
                 },
+                async selectedMainBranch() {
+                    const selectedBranch = $('#selected-main-asset-branch');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/select2/selected-branch/${this.editVal.branch.parent_id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedBranch.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
+                },
                 async selectedBranch() {
-                    const selectedBranch = $('#selected-branch');
+                    const selectedBranch = $('#selected-asset-branch');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
@@ -579,33 +607,20 @@
                         params: {results: response}
                     });
                 },
-                async selectedKasAccount() {
-                    const selectedKasAccount = $('#selected-kas-account');
+                async selectedAssetItem() {
+                    const selectedItem = $('#selected-asset-item');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/select2/selected-account/${this.editVal.credit_account_id}`,
+                        url: `/select2/selected-item/${this.editVal.item_id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
-                    selectedKasAccount.append(option).trigger('change').trigger({
+                    selectedItem.append(option).trigger('change').trigger({
                         type: 'select2:select',
                         params: {results: response}
                     });
                 },
 
-                async selectedAssetAccount() {
-                    const selectedAssetAccount = $('#selected-asset-account-type');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-account/${this.editVal.debit_account_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedAssetAccount.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
                 async check(id) {
                     showConfirmModal("Anda yakin?", "Aset yang sudah di konfirmasi tidak bisa diubah ataupun dihapus.", "Ya, Konfirmasi!", async () => {
                         try {
