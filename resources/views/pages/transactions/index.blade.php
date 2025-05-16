@@ -342,6 +342,7 @@
                     $('.items-select2').val(null).trigger('change');
                     this.branchVal = null;
                     this.transactionType = null
+                    this.PKP = null;
                     this.form.reset();
                     this.editVal = null;
                     this.modalForm.show();
