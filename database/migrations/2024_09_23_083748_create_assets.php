@@ -12,12 +12,9 @@ return new class extends Migration {
     {
         Schema::create('assets', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique()->nullable();
+            $table->string('code')->unique();
             $table->foreignId('branch_id')->nullable()->constrained('branches');
-            $table->foreignId('debit_account_id')->nullable()->constrained('accounts');
-            $table->foreignId('credit_account_id')->nullable()->constrained('accounts');
             $table->date('date_received');
-            $table->string('name');
             $table->integer('unit');
             $table->integer('useful_life');
             $table->decimal('price_per_unit', 15, 4);
