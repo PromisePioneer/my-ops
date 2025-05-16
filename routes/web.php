@@ -492,7 +492,6 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::post('/confirm/{asset}', [AssetController::class, 'confirm']);
                 Route::get('/detail/{asset}', [AssetController::class, 'detail']);
                 Route::get('/detail/data/{asset}', [AssetController::class, 'depreciationData']);
-                Route::post('/import', [AssetController::class, 'import']);
             });
 
             Route::prefix('initial-inventory-balances')->group(function () {
@@ -1312,6 +1311,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/user-has-areas-data', [UserController::class, 'getUserHasArea']);
         Route::get('/suppliers-data', [SupplierController::class, 'getSuppliers']);
         Route::get('/selected-supplier/{supplier}', [SupplierController::class, 'selectedSupplier']);
+        Route::get('/asset-items-data', [ItemCollectionController::class, 'getAssetData']);
 
     });
 
