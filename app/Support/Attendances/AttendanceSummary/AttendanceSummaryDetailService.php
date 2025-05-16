@@ -118,15 +118,16 @@ class AttendanceSummaryDetailService
                         $newExpectedCheckIn = $expectedCheckIn->copy()->addDay();
                     }
 
+
                     if ($actualCheckIn->greaterThan($newExpectedCheckIn ?? $expectedCheckIn)) {
                         $lateness = $newExpectedCheckIn ?
                             $newExpectedCheckIn->diffInMinutes($actualCheckIn) :
                             $expectedCheckIn->diffInMinutes($actualCheckIn);
-                        if ($day['employeeSchedule']?->status !== 'L' || $weekHoliday->day !== Carbon::parse($day['attendancesDate'])->dayName) {
-                            $weekLatenessDetails[$day['attendancesDate']] = $lateness;
+                        $weekLatenessDetails[$day['attendancesDate']] = $lateness;
+
+                        if ($day['employeeSchedule']?->status !== 'L' && $weekHoliday->day !== Carbon::parse($day['attendancesDate'])->dayName) {
                             $weekLatenessTotal += (int)CarbonInterval::minutes($lateness)->format('%i');
                         }
-
                     }
                 }
             }
@@ -136,6 +137,7 @@ class AttendanceSummaryDetailService
                 $weekLatenessMap[$weekEndDate] = $weekLatenessTotal;
             }
         }
+
 
         $weeklyLateness = $weekLatenessMap;
         return self::formattedData(collect($dates), $weeklyLateness, $empId, $startDate, $endDate);
@@ -321,11 +323,9 @@ class AttendanceSummaryDetailService
     public function calculateLate($item, $userWorktime = null): ?string
     {
         if (!empty($userWorktime) && !empty($item['attendanceData']?->clock_in)) {
-
             $workDate = $item['attendanceData']?->date;
             $expectedCheckIn = Carbon::parse("$workDate {$userWorktime->clock_in}");
             $actualCheckIn = Carbon::parse($item['attendanceData']?->clock_in);
-
 
             $newExpectedCheckIn = null;
             if ($userWorktime->name === "Malam") {

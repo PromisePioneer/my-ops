@@ -4,6 +4,7 @@ namespace App\Support\Journal;
 
 use App\Models\Account;
 use App\Models\AccountTransaction;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class GeneralLedgerService
@@ -13,7 +14,7 @@ class GeneralLedgerService
         return Account::all();
     }
 
-    public function getDetailGeneralLedger(Account $account): \Illuminate\Database\Eloquent\Builder
+    public function getDetailGeneralLedger(Account $account): Builder
     {
         $isAccountHasParent = Account::where('parent_id', $account->id)->exists();
 
@@ -37,20 +38,12 @@ class GeneralLedgerService
 
     public function filterByPeriod(Account $account, $month, $year)
     {
-        $generalLedger = $this->getAccountTransaction($account)
+        $generalLedger = $this->getDetailGeneralLedger($account)
             ->whereMonth('date', $month)
-            ->whereYear('date', $year)->get()->groupBy('description');
-        return $this->formattedData($generalLedger);
-    }
+            ->whereYear('date', $year)
+            ->get();
 
-    public function getAccountTransaction(Account $account)
-    {
-        return AccountTransaction::with('account', 'subAccount')
-            ->whereHas('account', function ($query) use ($account) {
-                $query->where('id', $account->id);
-            })->orWhereHas('subAccount', function ($query) use ($account) {
-                $query->where('account_id', $account->id);
-            });
+        return self::formattedData($generalLedger);
     }
 
     public function formattedData($generalLedgerCollection)
@@ -61,16 +54,16 @@ class GeneralLedgerService
                 'description' => $item->first()->description,
                 'debit' => $item->where('entries_type', 'debit')->map(function ($transaction) {
                     return [
-                        'amount' => 'Rp.'.number_format($transaction->debit),
+                        'amount' => 'Rp.' . number_format($transaction->debit),
                     ];
                 })->values(),
                 'credit' => $item->where('entries_type', 'credit')->map(function ($transaction) {
                     return [
-                        'amount' => 'Rp.'.number_format($transaction->credit),
+                        'amount' => 'Rp.' . number_format($transaction->credit),
                     ];
                 })->values(),
             ];
-        })->filter()->values();
+        })->values();
     }
 
 }
