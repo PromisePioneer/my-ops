@@ -204,16 +204,16 @@ use function App\Helper\currencyFormat;
             '=',
             'accounts.id'
         )->where('account_transactions.branch_id', $branchId)
+            ->where('account_transactions.transaction_type', 'TR')
             ->whereIn('accounts.id', $explodeID)
-            ->whereYear('date', Carbon::now()->subYear())
             ->select('account_transactions.id as account_transaction_id')
             ->get();
 
 
-        if ($transactions->isEmpty()) {
+        if ($transactions->isNotEmpty()) {
             return response()->json([
-                'message' => 'No transactions found for the specified accounts',
-            ], 404);
+                'message' => 'Akun ini sudah mempunyai transaksi. ',
+            ], 422);
         }
 
         $transactionIds = $transactions->pluck('account_transaction_id')->toArray();
