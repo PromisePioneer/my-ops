@@ -74,7 +74,7 @@
                     </div>
                     <div class="card-body pt-0">
                         <div id="kt_roles_view_table_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
-                            <form id="form-delete" @submit.prevent="destroy()">
+                            <form id="form-delete" class="py-5" @submit.prevent="destroy()">
                                 <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
                                 <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                         x-show="selectedCheckBox.length > 0"
@@ -97,7 +97,7 @@
                                     </tr>
                                     </thead>
                                     <tbody class="fw-bolder">
-                                    <tr class="text-center">
+                                    <tr :class="notBalanceCondition()">
                                         <td colspan="2" x-text="initialBalances.total_debit"></td>
                                         <td colspan="2" x-text="initialBalances.total_credit"></td>
                                     </tr>
@@ -149,13 +149,12 @@
                                             <td>
                                                 <div class="form-check form-check-sm form-check-custom form-check-solid"
                                                      @click="selectCheckBox($event)">
-                                                    <template x-if="account?.sub_accounts?.length === 0">
-                                                        <template x-if="branchId !== null">
+                                                    <template
+                                                        x-if="account?.sub_accounts?.length === 0 && branchId !== null">
                                                             <input class="form-check-input" type="checkbox"
                                                                    :value="account.id"
                                                                    :id="'checkbox-' + account.id"
                                                                    :disabled="account.initial_balance === null || Number(deletePermission) !== 1"/>
-                                                        </template>
                                                     </template>
                                                 </div>
                                             </td>
@@ -281,7 +280,7 @@
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
-                branchId: "{{ request()->user()->branch_id ?? null }}",
+                branchId: "{{ request()->user()->branch_id }}",
                 search: "",
                 editVal: "",
                 accountVal: "",
@@ -293,6 +292,10 @@
                 async init() {
                     await this.getInitialBalances();
                     await this.getMainBranches();
+                    if (this.branchId === '') {
+                        this.branchId = null;
+                        console.log(this.branchId)
+                    }
                 },
                 async getInitialBalances() {
                     this.isLoading = true;
@@ -439,8 +442,8 @@
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
-                            console.error(error);
-                            await showAlert('error', 'Terjadi kesalahan');
+                            const respError = error.response.data.message;
+                            await showAlert('error', `${respError}`);
                         }
                     });
                 },
@@ -485,6 +488,15 @@
                         }
                     });
                     this.initialBalances = resp.data
+                },
+                notBalanceCondition() {
+                    if (this.initialBalances.total_debit > this.initialBalances.total_credit) {
+                        return 'text-white text-center bg-danger ';
+                    }
+
+                    if (this.initialBalances.total_debit < this.initialBalances.total_credit) {
+                        return 'text-white text-center bg-danger ';
+                    }
                 }
             }
         }
