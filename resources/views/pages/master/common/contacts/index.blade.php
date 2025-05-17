@@ -22,11 +22,8 @@
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
                                     data-bs-target="#contact-modal">
-                                <i class="ki-duotone ki-message-add fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                </i> Tambah
+                                <x-icons.add-item/>
+                                Tambah
                             </button>
                         </template>
                     </div>
@@ -39,12 +36,7 @@
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                 x-show="selectedCheckBox.length > 0"
                                 x-transition x-cloak>
-                            <i class="ki-duotone ki-trash-square fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                                <span class="path4"></span>
-                            </i>
+                            <x-icons.trash/>
                             Hapus
                         </button>
                     </form>
@@ -68,7 +60,7 @@
                                 </template>
                             </thead>
                             <template x-if="isLoading">
-                                <tbody class=" fw-bold text-center">
+                                <tbody class="fw-bold text-center">
                                 <tr>
                                     <td colspan="9">
                                         <div style="text-align: center;">
@@ -90,7 +82,7 @@
                                 </tbody>
                             </template>
                             <template x-for="(contact,index) in contacts?.data" :key="index">
-                                <tbody class="fw-bold">
+                                <tbody class="fw-bold text-center">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -107,10 +99,7 @@
                                         <td>
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#contact-modal" @click="edit(contact.id)">
-                                                <i class="ki-duotone ki-pencil fs-2">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
+                                                <x-icons.edit/>
                                             </button>
                                         </td>
                                     </template>
@@ -213,9 +202,9 @@
                     this.buttonLoading = true;
                     try {
                         if (!id) {
-                            await axios.post(`/general-master-data/contact`, new FormData(this.form))
+                            await axios.post(`/master/common/contact`, new FormData(this.form))
                         } else {
-                            await axios.post(`general-master-data/contact/update/${id}`, new FormData(this.form))
+                            await axios.post(`/master/common/contact/update/${id}`, new FormData(this.form))
                         }
                         await showAlert('success', 'Data berhasil disimpan')
                         this.form.reset();

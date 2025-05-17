@@ -2,14 +2,11 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Form Cabang</h5>
+                <h5 class="modal-title" x-text="`${editVal.parent.name} - ${editVal.name}`"></h5>
                 <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
-                        <i class="ki-duotone ki-technology-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                        </i>
+                       <x-icons.close/>
                     </span>
                 </div>
             </div>
@@ -40,13 +37,7 @@
                         <span x-text="buttonLoading ? 'Loading...' : 'Hapus'"></span>
                     </button>
                     <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
-                        <i class="ki-duotone ki-click fs-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                            <span class="path3"></span>
-                            <span class="path4"></span>
-                            <span class="path5"></span>
-                        </i>
+                        <x-icons.save/>
                         <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
                     </button>
                 </div>
