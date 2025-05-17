@@ -216,4 +216,11 @@ use Illuminate\View\View;
             ];
         });
     }
+
+
+    public function findByItemAndBranch(Branch $branch, ItemCollection $itemCollection): JsonResponse
+    {
+        $stocks = $this->stockService->findByItemAndBranch($branch, $itemCollection);
+        return response()->json($stocks);
+    }
 }
