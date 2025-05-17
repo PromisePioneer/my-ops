@@ -112,7 +112,7 @@
                 <div class="card-toolbar">
                     <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                             data-bs-target="#modal-generate-code" @click="add()">
-                        <x-icons.plus/>
+                        <x-icons.add-item/>
                         Buat Kode
                     </button>
                 </div>
