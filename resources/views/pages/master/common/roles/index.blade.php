@@ -66,13 +66,13 @@
                             <template x-if="Number(editPermission) === 1">
                                 <a :href="`/master/common/roles/edit/${role.id}`"
                                    class="btn btn-light btn-active-primary my-1 me-2">
-                                    <i class="bi bi-pencil-square fs-3"></i>
+                                    <x-icons.edit/>
                                 </a>
                             </template>
                             <template x-if="Number(deletePermission) === 1">
-                                <button type="button" class="btn btn-light btn-active-light-danger my-1"
+                                <button type="button" class="btn btn-light btn-active-danger my-1"
                                         @click="destroy(role.id)">
-                                    <i class="bi bi-trash fs-3"></i>
+                                    <x-icons.trash/>
                                 </button>
                             </template>
                         </div>
