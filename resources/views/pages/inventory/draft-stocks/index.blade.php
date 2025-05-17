@@ -85,7 +85,7 @@
                                             <td class="text-center">
                                                 <a :href="`/inventory/draft-stocks/detail/${stock.id}`"
                                                    class="btn btn-light-primary btn-sm">
-                                                    <x-icons.add-item>
+                                                    <x-icons.add-item/>
                                                     Buat Kode
                                                 </a>
                                             </td>
