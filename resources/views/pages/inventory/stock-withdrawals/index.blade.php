@@ -21,7 +21,7 @@
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                             <a href="{{ url('/inventory/stock-withdrawals/create') }}"
                                class="btn btn-light-primary btn-sm me-2">
-                                <x-icons.plus/>
+                                <x-icons.add-item/>
                                 Tambah
                             </a>
 
@@ -40,12 +40,7 @@
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                 x-show="selectedCheckBox.length > 0"
                                 x-transition x-cloak>
-                            <i class="ki-duotone ki-trash-square fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                                <span class="path4"></span>
-                            </i>
+                            <x-icons.trash/>
                             Hapus
                         </button>
                     </form>
