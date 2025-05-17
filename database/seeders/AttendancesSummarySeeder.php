@@ -13,11 +13,6 @@ class AttendancesSummarySeeder extends Seeder
      */
     public function run(): void
     {
-        AttendancesSummary::create([
-            'date' => Carbon::now()->format('Y-m-d'),
-            'employee_id' => 120,
-            'clock_in' => Carbon::parse('2025-05-01 08:10:00'),
-        ]);
 
     }
 }

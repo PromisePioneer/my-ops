@@ -161,4 +161,11 @@ use Illuminate\View\View;
         $stocks = $this->stockService->findByItemAndBranch($branch, $itemCollection);
         return response()->json($stocks);
     }
+
+
+    public function getMustReorderItem()
+    {
+        $stocks = $this->stockService->getMustReorderItem();
+        return response()->json($stocks);
+    }
 }

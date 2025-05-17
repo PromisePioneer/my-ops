@@ -25,11 +25,8 @@
                                     <button type="button" class="btn btn-light-primary btn-sm"
                                             data-bs-toggle="modal"
                                             data-bs-target="#modal-create">
-                                        <i class="ki-duotone ki-message-add fs-2">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                        </i> Tambah
+                                        <x-icons.add-item/>
+                                        Tambah
                                     </button>
                                 </template>
                             </div>
@@ -43,12 +40,7 @@
                             <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                     x-show="selectedCheckBox.length > 0"
                                     x-transition x-cloak>
-                                <i class="ki-duotone ki-trash-square fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                    <span class="path4"></span>
-                                </i>
+                                <x-icons.trash/>
                                 Hapus
                             </button>
                         </form>
@@ -57,7 +49,7 @@
                         <div class="table-responsive">
                             <table class="table align-middle table-row-dashed table-bordered fs-6 gy-5" id="kt_table_users">
                                 <thead>
-                                <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                     <template x-if="Number(deletePermission) === 1">
                                         <th class="w-10px pe-2">
                                             <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
@@ -108,18 +100,18 @@
                                                 </div>
                                             </td>
                                         </template>
-                                        <td x-text="branch.code"></td>
-                                        <td x-text="branch.name"></td>
-                                        <td x-text="`${branch.address.substring(0, 30)}...`"></td>
+                                        <td class="text-center" x-text="branch.code"></td>
+                                        <td class="text-center" x-text="branch.name"></td>
+                                        <td class="text-center" x-text="`${branch.address.substring(0, 30)}...`"></td>
                                         <td>
-                                            <ul>
+                                            <ul >
                                                 <template x-for="(children, index) in branch.children" :key="index">
                                                     <li>
                                                         <button class="btn btn-link btn-sm" data-bs-toggle="modal"
                                                                 data-bs-target="#modal-children-detail"
                                                                 @click="edit(children.id)">
                                                             <i class="bi bi-geo-alt-fill"></i>
-                                                            <span x-text="children.name"></span>
+                                                            <span class="fw-bolder" x-text="children.name"></span>
                                                         </button>
                                                     </li>
                                                 </template>
@@ -129,19 +121,13 @@
                                             <template x-if="Number(editPermission) === 1">
                                                 <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                         data-bs-target="#modal-edit" @click="edit(branch.id)">
-                                                    <i class="ki-duotone ki-pencil fs-2">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                    </i>
+                                                    <x-icons.edit/>
                                                 </button>
                                             </template>
                                             <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modal-create-children"
                                                     @click="edit(branch.id)">
-                                                <i class="ki-duotone ki-add-folder">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
+                                                <x-icons.add-folder/>
                                             </button>
                                         </td>
                                     </tr>

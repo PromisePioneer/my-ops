@@ -79,17 +79,14 @@ use Illuminate\Support\Facades\Auth;
     {
         $itemDoesntHaveGoodsStock = ItemCollection::whereDoesntHave('stock')->count();
         $items = ItemCollection::all();
-
+        $itemHasGoodsStock = null;
         foreach ($items as $item) {
             $itemHasGoodsStock = ItemCollection::whereHas('stock', function ($query) use ($item) {
                 $query->where('qty', '<', $item->reorder_level);
             })->count();
-            $draftStock = DraftStock::whereHas('transaction.item', function ($query) use ($item) {
-                $query->where('id', $item->id);
-            })->where('qty', '<', $item->reorder_level)->count();
         }
 
-        return $itemDoesntHaveGoodsStock + $itemHasGoodsStock + $draftStock;
+        return $itemDoesntHaveGoodsStock + $itemHasGoodsStock;
     }
 
 

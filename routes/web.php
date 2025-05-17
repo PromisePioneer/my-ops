@@ -78,6 +78,7 @@ use App\Http\Controllers\Master\Operational\ItemCategoryController;
 use App\Http\Controllers\Master\Operational\ItemCollectionController;
 use App\Http\Controllers\Master\Operational\PSBController;
 use App\Http\Controllers\Master\Operational\SupplierController;
+use App\Http\Controllers\MustReorderStockController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\StockMutationController;
 use App\Http\Controllers\StockWithdrawalController;
@@ -699,7 +700,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/show/{itemCollection}', [StockController::class, 'show']);
             Route::get('/detail/{stock}', [StockController::class, 'detail']);
             Route::get('/branch/data/{itemCollection}', [StockController::class, 'getMainBranchWithStock']);
-            Route::get('/branch/data/{itemCollection}', [StockController::class, 'getMainBranchWithStock']);
             Route::get('/stock-based-on-draft-stock/{draftStock}', [StockController::class, 'findByDraftStockAndItemName']);
             Route::get('/must-reorder', [StockController::class, 'getMustReorderStocks']);
             Route::get('/{branch}/{itemCollection}', [StockController::class, 'findByItemAndBranch']);
@@ -752,6 +752,12 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/generate-code/{draftStock}', [ItemCatalogController::class, 'generateAutomaticItemCode']);
             Route::get('/{itemCatalog}', [ItemCatalogController::class, 'edit']);
             Route::post('/destroy/{itemCatalog}', [ItemCatalogController::class, 'destroy']);
+        });
+
+
+        Route::prefix('/must-reorder-stocks')->group(function () {
+            Route::get('/', [MustReorderStockController::class, 'index']);
+            Route::get('/data', [MustReorderStockController::class, 'data']);
         });
     });
 

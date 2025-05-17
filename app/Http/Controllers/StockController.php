@@ -160,9 +160,9 @@ use Illuminate\View\View;
     }
 
 
-    public function getMustReorderStocks(Request $request): JsonResponse
+    public function getMustReorderStocks(): JsonResponse
     {
-        return response()->json($this->stockService->getMustReorderStocks($request));
+        return response()->json($this->stockService->getMustReorderStocks());
     }
 
 
