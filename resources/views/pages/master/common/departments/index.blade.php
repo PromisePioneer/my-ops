@@ -134,7 +134,7 @@
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
-                modalForm: new bootstrap.Modal(document.getElementById('form-department')),
+                modalForm: new bootstrap.Modal(document.getElementById('modal-department')),
                 form: document.getElementById('form-department'),
                 deleteForm: document.getElementById('form-delete'),
                 async init() {
