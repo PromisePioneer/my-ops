@@ -4,7 +4,7 @@
         @include('pages.inventory.stock-mutation.drawer.item-catalog-details')
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
-                <a class="btn btn-info btn-sm mb-6" href="{{ url('/inventory/goods/stock') }}">Kembali</a>
+                <a class="btn btn-info btn-sm mb-6" href="{{ url('/inventory/stock') }}">Kembali</a>
             </div>
             <div class="card-body py-3">
                 <form id="form" @submit.prevent="save()">
