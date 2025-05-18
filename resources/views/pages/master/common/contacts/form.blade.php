@@ -6,10 +6,7 @@
                 <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
-                        <i class="ki-duotone ki-technology-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                        </i>
+                        <x-icons.close/>
                     </span>
                 </div>
             </div>
@@ -48,7 +45,7 @@
 
                     <div class="row g-9 mb-8">
                         <div class="col-md-6 fv-row">
-                            <label class="fs-6 fw-bold mb-2">No. Telepon</label>
+                            <label class="fs-6 fw-bold mb-2 required">No. Telepon</label>
                             <input type="number" class="form-control form-control-solid" placeholder="No. Telepon"
                                    name="phone_number" :value="editVal?.phone_number ?? ''"/>
                         </div>
@@ -114,13 +111,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
-                            <i class="ki-duotone ki-click fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                                <span class="path4"></span>
-                                <span class="path5"></span>
-                            </i>
+                            <x-icons.save/>
                             <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
                         </button>
                     </div>

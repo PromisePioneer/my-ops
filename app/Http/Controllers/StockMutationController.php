@@ -16,7 +16,7 @@ class StockMutationController extends Controller
 
     public function create(ItemCollection $itemCollection): View
     {
-        return view('pages.inventory.goods.stocks.stock-mutation.form', compact('itemCollection'));
+        return view('pages.inventory.stock-mutation.form', compact('itemCollection'));
     }
 
 

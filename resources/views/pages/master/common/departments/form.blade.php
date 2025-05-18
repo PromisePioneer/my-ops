@@ -3,9 +3,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Form Departemen</h5>
-                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal"
+                <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
                      aria-label="Close">
-                    <span class="svg-icon svg-icon-2x"></span>
+                    <span class="svg-icon svg-icon-2x">
+                        <x-icons.close/>
+                    </span>
                 </div>
             </div>
 
@@ -24,10 +26,11 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-light-primary btn-sm"
-                            :disabled="buttonLoading"
-                            x-text="buttonLoading ? 'Loading...' : 'Simpan'"></button>
+                            :disabled="buttonLoading">
+                        <x-icons.save/>
+                        <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
+                    </button>
                 </div>
             </form>
         </div>

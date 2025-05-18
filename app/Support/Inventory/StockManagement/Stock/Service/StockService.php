@@ -79,34 +79,34 @@ use Illuminate\Support\Facades\Auth;
     {
         $itemDoesntHaveGoodsStock = ItemCollection::whereDoesntHave('stock')->count();
         $items = ItemCollection::all();
-
+        $itemHasGoodsStock = null;
         foreach ($items as $item) {
             $itemHasGoodsStock = ItemCollection::whereHas('stock', function ($query) use ($item) {
                 $query->where('qty', '<', $item->reorder_level);
             })->count();
-            $draftStock = DraftStock::whereHas('transaction.item', function ($query) use ($item) {
-                $query->where('id', $item->id);
-            })->where('qty', '<', $item->reorder_level)->count();
         }
 
-        return $itemDoesntHaveGoodsStock + $itemHasGoodsStock + $draftStock;
+        return $itemDoesntHaveGoodsStock + $itemHasGoodsStock;
     }
 
 
     public function findByItemAndBranch(Branch $branch, ItemCollection $itemCollection)
     {
-        $stocks = $this->stockRepository->findByItemAndBranch($branch->id, $itemCollection->id)->get();
-        return $stocks->flatMap(function ($stock) {
-            return $stock->itemCatalog->map(function ($itemCatalog) use ($stock) {
-                return [
-                    'id' => $itemCatalog->id,
-                    'branch_name' => $stock->branch->name,
-                    'name' => $stock->item->name,
-                    'code' => $itemCatalog->code,
-                    'condition' => $itemCatalog->condition,
-                ];
-            });
+        $stocks = $this->stockRepository->findByItemAndBranch($branch->id, $itemCollection->id)->paginate(self::$perPage);
+
+
+        $data = $stocks->getCollection()->map(function ($stock) {
+            return [
+                'id' => $stock->id,
+                'branch_name' => $stock->stock->branch->name,
+                'name' => $stock->stock->item->name,
+                'code' => $stock->code,
+                'condition' => $stock->condition,
+            ];
         });
+
+        $stocks->setCollection($data);
+        return $stocks;
     }
 
     public function getMainBranchWithStock(ItemCollection $itemCollection)

@@ -160,9 +160,9 @@ use Illuminate\View\View;
     }
 
 
-    public function getMustReorderStocks(Request $request): JsonResponse
+    public function getMustReorderStocks(): JsonResponse
     {
-        return response()->json($this->stockService->getMustReorderStocks($request));
+        return response()->json($this->stockService->getMustReorderStocks());
     }
 
 
@@ -215,5 +215,12 @@ use Illuminate\View\View;
                 'text' => $item->item->name . ' Stok : ' . $item->qty . ' - ' . $item->condition,
             ];
         });
+    }
+
+
+    public function findByItemAndBranch(Branch $branch, ItemCollection $itemCollection): JsonResponse
+    {
+        $stocks = $this->stockService->findByItemAndBranch($branch, $itemCollection);
+        return response()->json($stocks);
     }
 }

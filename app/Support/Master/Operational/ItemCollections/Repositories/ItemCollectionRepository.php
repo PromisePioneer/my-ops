@@ -44,4 +44,11 @@ class ItemCollectionRepository
     {
         return ItemCollection::with('category', 'unitType', 'assetAccount')->where('type', 'ASET');
     }
+
+
+    public function getMustReorderItem(): EloquentBuilder
+    {
+
+        return ItemCollection::with('stock', 'transaction.draftStock');
+    }
 }

@@ -1,10 +1,10 @@
 @extends('layouts.template')
 @section('content')
     <div x-data="generateStockMutation()">
-        @include('pages.inventory.goods.stocks.stock-mutation.drawer.item-catalog-details')
+        @include('pages.inventory.stock-mutation.drawer.item-catalog-details')
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
-                <a class="btn btn-info btn-sm mb-6" href="{{ url('/inventory/goods/stock') }}">Kembali</a>
+                <a class="btn btn-info btn-sm mb-6" href="{{ url('/inventory/stocks') }}">Kembali</a>
             </div>
             <div class="card-body py-3">
                 <form id="form" @submit.prevent="save()">
@@ -13,7 +13,13 @@
                         @if(!Auth::user()->branch_id)
                             <div class="row">
                                 <div class="col-lg-6">
-                                    <label class="col-form-label required fw-bold fs-6">Pilih Cabang</label>
+                                    <label class="col-form-label required fw-bold fs-6">Pilih Cabang Awal</label>
+                                    <select name="" id="" class="form-select form-select-solid branches-select2">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="col-form-label required fw-bold fs-6">Pilih Cabang Tujuan</label>
                                     <select name="" id="" class="form-select form-select-solid branches-select2">
                                         <option value=""></option>
                                     </select>
@@ -25,7 +31,7 @@
 
                     <div class="separator py-2"></div>
 
-                    <div class="table-responsive" x-show="currentStocks.length > 0" x-cloak x-transition>
+                    <div class="table-responsive" x-show="currentStocks.data.length > 0" x-cloak x-transition>
                         <table class="table align-middle table-bordered fs-6 gy-5 mb-0 dataTable no-footer"
                                id="kt_roles_view_table">
                             <thead>
@@ -50,14 +56,14 @@
                                 </th>
                             </tr>
                             </thead>
-                            <template x-for="stock in currentStocks" :key="stock.id">
+                            <template x-for="stock in currentStocks.data" :key="stock.id">
                                 <tbody class="fw-bold text-center">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
                                             <input class="form-check-input" type="checkbox" :value="stock.id"
-                                                   :id="'checkbox-' + stock.id"
+                                                   :id="stock.id"
                                                    :checked="localStorage.getItem('selectedCheckBox').includes(stock.id)"/>
                                         </div>
                                     </td>
@@ -69,6 +75,15 @@
                                 </tbody>
                             </template>
                         </table>
+                        <ul class="pagination float-end mb-4 mt-4">
+                            <template x-for="pagination in currentStocks.links">
+                                <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                    <button class="page-link" @click="paginationEndPoint(pagination.url)"
+                                            x-html="pagination.label">
+                                    </button>
+                                </li>
+                            </template>
+                        </ul>
                     </div>
 
 
@@ -109,22 +124,24 @@
                     this.selectAll = !this.selectAll;
                     this.singleChecked = false;
                     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                    this.selectedCheckBox = [];
                     checkboxes.forEach((checkbox) => {
                         checkbox.checked = this.selectAll;
                         if (this.selectAll) {
-                            this.selectedCheckBox.push(checkbox.value);
+                            this.selectedCheckBox.push(checkbox.id);
                         }
                     });
 
                     this.selectedCheckBox.shift();
                     localStorage.setItem('selectedCheckBox', JSON.stringify(this.selectedCheckBox));
+                    const selectedItem = JSON.parse(localStorage.getItem('selectedCheckBox'));
+                    const resp = selectedItem.filter((value, index, array) => array.indexOf(value) === index)
+                        .filter(value => !isNaN(value)).map(value => parseInt(value)).filter(value => !isNaN(value));
+                    localStorage.setItem('selectedCheckBox', JSON.stringify(resp));
                 },
                 selectCheckBox(event) {
                     const checkboxId = event.target.value;
                     if (event.target.checked) {
                         this.selectedCheckBox.push(checkboxId);
-                        console.log(checkboxId);
                         localStorage.setItem('selectedCheckBox', JSON.stringify(this.selectedCheckBox));
                     } else {
                         const index = this.selectedCheckBox.indexOf(checkboxId);
@@ -134,8 +151,23 @@
                         }
                     }
                 },
-                async getStock() {
-
+                async paginationEndPoint(url) {
+                    if (url) {
+                        this.currentStocks = [];
+                        this.isLoading = true;
+                        try {
+                            const resp = await axios.get(`${url}`, {
+                                params: {
+                                    search: this.search,
+                                }
+                            });
+                            this.currentStocks = resp.data
+                        } catch (e) {
+                            console.log(e)
+                        } finally {
+                            this.isLoading = false
+                        }
+                    }
                 },
                 async getBranchData() {
                     const self = this;
@@ -153,8 +185,7 @@
                     }).on('select2:select', async function (e) {
                         const branchId = e.params.data.id;
                         const itemId = self.itemId;
-
-                        const resp = await axios.get(`/inventory/goods/stock/${branchId}/${itemId}`);
+                        const resp = await axios.get(`/inventory/stocks/${branchId}/${itemId}`);
                         self.currentStocks = resp.data;
                     });
                 }

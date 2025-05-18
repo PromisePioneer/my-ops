@@ -16,17 +16,14 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-                    <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                    <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                             @can('Tambah Data Departemen')
                             <button type="button" class="btn btn-light-primary btn-sm"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-department">
-                                <i class="ki-duotone ki-message-add fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                </i> Tambah
+                                <x-icons.add-item/>
+                                Tambah
                             </button>
                             @endcan
                         </div>
@@ -41,12 +38,7 @@
                             <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                     x-show="selectedCheckBox.length > 0"
                                     x-transition x-cloak>
-                                <i class="ki-duotone ki-trash-square fs-2">
-                                    <span class="path1"></span>
-                                    <span class="path2"></span>
-                                    <span class="path3"></span>
-                                    <span class="path4"></span>
-                                </i>
+                                <x-icons.trash/>
                                 Hapus
                             </button>
                         </form>
@@ -104,10 +96,7 @@
                                         <template x-if="Number(editPermission) === 1">
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                     data-bs-target="#modal-department" @click="edit(department.id)">
-                                                <i class="ki-duotone ki-pencil fs-2">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
+                                                <x-icons.edit/>
                                             </button>
                                         </template>
                                     </td>
@@ -145,7 +134,7 @@
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
-                modalForm: new bootstrap.Modal(document.getElementById('form-department')),
+                modalForm: new bootstrap.Modal(document.getElementById('modal-department')),
                 form: document.getElementById('form-department'),
                 deleteForm: document.getElementById('form-delete'),
                 async init() {

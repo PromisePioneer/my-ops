@@ -251,8 +251,7 @@ class IclockService
 
         $queryDate = $this->getShiftDate($date, $attendanceData['employee_id']);
 
-        $summary = AttendancesSummary::where('employee_id', $attendanceData['employee_id'])
-            ->where('work_time_id', $shift)->whereDate('date', $queryDate->format('Y-m-d'))
+        $summary = AttendancesSummary::where('employee_id', $attendanceData['employee_id'])->whereDate('date', $queryDate->format('Y-m-d'))
             ->first();
 
 
