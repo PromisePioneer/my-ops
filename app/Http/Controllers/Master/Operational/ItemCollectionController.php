@@ -127,6 +127,8 @@ use Throwable;
         return $goods->map(function ($item) {
             return [
                 'id' => $item->id,
+                'asset_account_id' => $item->asset_account_id,
+                'must_have_code' => $item->must_have_code,
                 'text' => $item->name
             ];
         });

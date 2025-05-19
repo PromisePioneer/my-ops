@@ -196,8 +196,6 @@
                             code: e.params.data.code,
                             stock_id: e.params.data.stock_id
                         });
-
-                        console.log(self.itemWithCodeFields);
                     });
                 },
                 removeItemWithoutCode(index) {

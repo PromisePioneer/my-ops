@@ -730,7 +730,9 @@ Route::group(['middleware' => ['auth']], static function () {
         });
 
 
-        Route::prefix('/stock-mutation')->group(function () {
+        Route::prefix('/stock-mutations')->group(function () {
+            Route::get('/', [StockMutationController::class, 'index']);
+            Route::get('/data', [StockMutationController::class, 'data']);
             Route::get('/create/{itemCollection}', [StockMutationController::class, 'create']);
             Route::post('/store/{itemCollection}', [StockMutationController::class, 'store']);
         });
