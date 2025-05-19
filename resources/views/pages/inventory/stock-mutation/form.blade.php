@@ -1,4 +1,5 @@
 @extends('layouts.template')
+@section('page-title', 'Mutasi Barang' . ' - ' . $itemCollection->name)
 @section('content')
     <div x-data="generateStockMutation()">
         @include('pages.inventory.stock-mutation.drawer.item-catalog-details')
@@ -14,24 +15,27 @@
                             <div class="row">
                                 <div class="col-lg-6">
                                     <label class="col-form-label required fw-bold fs-6">Pilih Cabang Awal</label>
-                                    <select name="" id="" class="form-select form-select-solid branches-select2">
+                                    <select name="from_branch" id=""
+                                            class="form-select form-select-solid main-branches-select2">
                                         <option value=""></option>
                                     </select>
                                 </div>
+                                @endif
                                 <div class="col-lg-6">
                                     <label class="col-form-label required fw-bold fs-6">Pilih Cabang Tujuan</label>
-                                    <select name="" id="" class="form-select form-select-solid branches-select2">
+                                    <select name="to_branch" id=""
+                                            class="form-select form-select-solid branches-select2">
                                         <option value=""></option>
                                     </select>
                                 </div>
                             </div>
-                        @else
-                        @endif
+
+                            <input type="hidden" name="item_collection_id[]" :value="JSON.parse(localStorage.getItem('selectedCheckBox'))">
                     </div>
 
                     <div class="separator py-2"></div>
 
-                    <div class="table-responsive" x-show="currentStocks.data.length > 0" x-cloak x-transition>
+                    <div class="table-responsive" x-show="currentStocks.length > 0" x-cloak x-transition>
                         <table class="table align-middle table-bordered fs-6 gy-5 mb-0 dataTable no-footer"
                                id="kt_roles_view_table">
                             <thead>
@@ -56,7 +60,7 @@
                                 </th>
                             </tr>
                             </thead>
-                            <template x-for="stock in currentStocks.data" :key="stock.id">
+                            <template x-for="stock in currentStocks" :key="stock.id">
                                 <tbody class="fw-bold text-center">
                                 <tr>
                                     <td>
@@ -117,8 +121,10 @@
                 selectAll: false,
                 singleChecked: false,
                 itemId: "{{ $itemCollection->id }}",
+                form: document.getElementById('form'),
                 async init() {
-                    await this.getBranchData();
+                    await this.getAllBranches();
+                    await this.getMainBranches();
                 },
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
@@ -169,9 +175,9 @@
                         }
                     }
                 },
-                async getBranchData() {
+                async getMainBranches() {
                     const self = this;
-                    $(".branches-select2").select2({
+                    $(".main-branches-select2").select2({
                         allowClear: true,
                         placeholder: 'Pilih Cabang',
                         ajax: {
@@ -188,6 +194,35 @@
                         const resp = await axios.get(`/inventory/stocks/${branchId}/${itemId}`);
                         self.currentStocks = resp.data;
                     });
+                },
+                async getAllBranches() {
+                    const self = this;
+                    $(".branches-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Cabang',
+                        ajax: {
+                            url: '/select2/branches-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async save() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post(`/inventory/stock-mutation/store/${this.itemId}`, new FormData(this.form))
+                        this.form.reset();
+                        await showAlert('success', 'Data berhasil disimpan');
+                        window.location.href = '/inventory/stock-mutations';
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
+                    } finally {
+                        this.buttonLoading = false;
+                    }
                 }
             }
         }

@@ -32,8 +32,6 @@ class StockRepository
     {
 
         $itemCollection = ItemCollection::find($itemId);
-
-
         if ($itemCollection->must_have_code === 1 || $itemCollection->is_code_listed === 1) {
             return ItemCatalog::with('stock', 'stock.branch', 'stock.item.category', 'stock.item.unitType')
                 ->where('item_id', $itemId)->whereHas('stock.branch', function ($query) use ($branchId) {
