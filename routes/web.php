@@ -733,6 +733,7 @@ Route::group(['middleware' => ['auth']], static function () {
 
         Route::prefix('/stock-mutation')->group(function () {
             Route::get('/create/{itemCollection}', [StockMutationController::class, 'create']);
+            Route::post('/store/{itemCollection}', [StockMutationController::class, 'store']);
         });
         Route::prefix('draft-stocks')->group(function () {
             Route::get('/', [DraftStockController::class, 'index']);

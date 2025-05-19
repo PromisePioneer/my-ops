@@ -9,6 +9,7 @@ use App\Models\Master\Common\Branch;
 use App\Support\Inventory\StockManagement\Stock\Repository\StockRepository;
 use App\Support\Master\Common\Branch\Repository\BranchRepository;
 use App\Support\Master\Operational\ItemCollections\Repositories\ItemCollectionRepository;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -92,10 +93,8 @@ use Illuminate\Support\Facades\Auth;
 
     public function findByItemAndBranch(Branch $branch, ItemCollection $itemCollection)
     {
-        $stocks = $this->stockRepository->findByItemAndBranch($branch->id, $itemCollection->id)->paginate(self::$perPage);
-
-
-        $data = $stocks->getCollection()->map(function ($stock) {
+        $stocks = $this->stockRepository->findByItemAndBranch($branch->id, $itemCollection->id)->get();
+        return $stocks->map(function ($stock) {
             return [
                 'id' => $stock->id,
                 'branch_name' => $stock->stock->branch->name,
@@ -104,9 +103,6 @@ use Illuminate\Support\Facades\Auth;
                 'condition' => $stock->condition,
             ];
         });
-
-        $stocks->setCollection($data);
-        return $stocks;
     }
 
     public function getMainBranchWithStock(ItemCollection $itemCollection)
