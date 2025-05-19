@@ -317,6 +317,11 @@
                                     href="{{ url('inventory/stock-withdrawals') }}">
                                 Pemakaian Barang
                             </x-dropdown-menu-item>
+                                <x-dropdown-menu-item
+                                    :active="request()->is('inventory/stock-mutations*')"
+                                    href="{{ url('inventory/stock-mutations') }}">
+                                    Mutasi Barang
+                                </x-dropdown-menu-item>
                         @endslot
                     </x-dropdown-menu>
                 @endcanany

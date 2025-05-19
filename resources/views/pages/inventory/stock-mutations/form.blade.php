@@ -1,8 +1,8 @@
 @extends('layouts.template')
-@section('page-title', 'Mutasi Barang' . ' - ' . $itemCollection->name)
+@section('page-title', 'Mutasi Barang' . '  ' . $itemCollection->name)
 @section('content')
     <div x-data="generateStockMutation()">
-        @include('pages.inventory.stock-mutation.drawer.item-catalog-details')
+        @include('pages.inventory.stock-mutations.drawer.item-catalog-details')
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
                 <a class="btn btn-info btn-sm mb-6" href="{{ url('/inventory/stocks') }}">Kembali</a>
@@ -30,10 +30,67 @@
                                 </div>
                             </div>
 
-                            <input type="hidden" name="item_collection_id[]" :value="JSON.parse(localStorage.getItem('selectedCheckBox'))">
+                            <input type="hidden" name="item_collection_id[]"
+                                   :value="JSON.parse(localStorage.getItem('selectedCheckBox'))">
                     </div>
 
                     <div class="separator py-2"></div>
+
+                    <div x-show="itemMustHaveCode === 0" x-cloak x-transition>
+
+                        <div class="table-responsive mb-20">
+                            <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                Barang Tidak Berkode
+                            </label>
+                            <table class="table g-5 gs-0 mb-0 fw-bolder text-gray-700" data-kt-element="items">
+                                <thead>
+                                <tr class="border-bottom fs-7 fw-bolder text-gray-700 text-uppercase">
+                                    <th class="min-w-300px w-475px">Barang</th>
+                                    <th class="min-w-150px w-150px">Jumlah</th>
+                                    <th class="min-w-75px w-75px text-end">Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <template x-for="(field,index) in itemWithoutCodeFields " :key="index">
+                                    <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
+                                        <td class="pe-7" style='text-align:center; vertical-align:middle'>
+                                            <select x-model="field.stock_id"
+                                                    :name="`itemWithoutCodeFields[${index}][stock_id]`"
+                                                    :id="`stock-without-codes-select2-${index}`"
+                                                    class="form-select form-select-solid stocks-without-code-select2">
+                                                <option></option>
+                                            </select>
+                                        </td>
+                                        <td class="ps-0" style='text-align:center; vertical-align:middle'>
+                                            <input class="form-control form-control-solid" type="number" min="1"
+                                                   x-model="field.qty" :name="`itemWithoutCodeFields[${index}][qty]`"
+                                                   placeholder="1"
+                                                   value="1"/>
+                                        </td>
+                                        <td class="pt-5 text-end" style='text-align:center; vertical-align:middle'>
+                                            <button type="button" class="btn btn-sm btn-icon btn-active-color-primary"
+                                                    @click="removeItemWithoutCode(index)">
+                                                    <span class="svg-icon svg-icon-3">
+                                                        <i class="bi bi-trash"></i>
+                                                    </span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </template>
+                                </tbody>
+                                <tfoot>
+                                <tr class="border-top border-top-dashed align-top fs-6 fw-bolder text-gray-700">
+                                    <th class="text-primary">
+                                        <button type="button" class="btn btn-link py-1" @click="addItemWithoutCode()">
+                                            Tambah
+                                        </button>
+                                    </th>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
 
                     <div class="table-responsive" x-show="currentStocks.length > 0" x-cloak x-transition>
                         <table class="table align-middle table-bordered fs-6 gy-5 mb-0 dataTable no-footer"
@@ -60,6 +117,15 @@
                                 </th>
                             </tr>
                             </thead>
+                            <template x-if="!isLoading && currentStocks?.length === 0">
+                                <tbody class="fw-bold">
+                                <tr>
+                                    <td colspan="7">
+                                        <center>Data Tidak Ditemukan</center>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </template>
                             <template x-for="stock in currentStocks" :key="stock.id">
                                 <tbody class="fw-bold text-center">
                                 <tr>
@@ -118,18 +184,31 @@
                 buttonLoading: false,
                 currentStocks: [],
                 selectedCheckBox: [],
+                stockOnly: [],
+                itemWithoutCodeFields: [],
+                itemWithoutCode: false,
                 selectAll: false,
                 singleChecked: false,
                 itemId: "{{ $itemCollection->id }}",
+                itemMustHaveCode: "{{ $itemCollection->must_have_code }}",
+                branchId: "{{ Auth::user()->branch_id }}",
                 form: document.getElementById('form'),
+                isLoading: false,
                 async init() {
                     await this.getAllBranches();
                     await this.getMainBranches();
+                    await this.getItemCollections();
+
+                    for (const val of this.itemWithoutCodeFields) {
+                        const index = this.itemWithoutCodeFields.indexOf(val);
+                        await this.getStockWithoutCodesData(index);
+                    }
                 },
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
                     this.singleChecked = false;
                     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                    this.selectedCheckBox = [];
                     checkboxes.forEach((checkbox) => {
                         checkbox.checked = this.selectAll;
                         if (this.selectAll) {
@@ -149,11 +228,19 @@
                     if (event.target.checked) {
                         this.selectedCheckBox.push(checkboxId);
                         localStorage.setItem('selectedCheckBox', JSON.stringify(this.selectedCheckBox));
+                        const selectedItem = JSON.parse(localStorage.getItem('selectedCheckBox'));
+                        const resp = selectedItem.filter((value, index, array) => array.indexOf(value) === index)
+                            .filter(value => !isNaN(value)).map(value => parseInt(value)).filter(value => !isNaN(value));
+                        localStorage.setItem('selectedCheckBox', JSON.stringify(resp));
                     } else {
                         const index = this.selectedCheckBox.indexOf(checkboxId);
                         if (index !== -1) {
                             this.selectedCheckBox.splice(index, 1);
                             localStorage.setItem('selectedCheckBox', JSON.stringify(this.selectedCheckBox));
+                            const selectedItem = JSON.parse(localStorage.getItem('selectedCheckBox'));
+                            const resp = selectedItem.filter((value, index, array) => array.indexOf(value) === index)
+                                .filter(value => !isNaN(value)).map(value => parseInt(value)).filter(value => !isNaN(value));
+                            localStorage.setItem('selectedCheckBox', JSON.stringify(resp));
                         }
                     }
                 },
@@ -189,14 +276,29 @@
                             cache: true
                         }
                     }).on('select2:select', async function (e) {
-                        const branchId = e.params.data.id;
+                        self.branchId = e.params.data.id;
                         const itemId = self.itemId;
-                        const resp = await axios.get(`/inventory/stocks/${branchId}/${itemId}`);
-                        self.currentStocks = resp.data;
+                        if (self.itemMustHaveCode === 1) {
+                            const resp = await axios.get(`/inventory/stocks/${self.branchId}/${itemId}`);
+                            self.currentStocks = resp.data;
+                        } else {
+                            self.itemWithoutCode = true;
+                            $('.stocks-without-code-select2').select2({
+                                allowClear: true,
+                                placeholder: "Pilih Stock",
+                                ajax: {
+                                    url: `/select2/stock-without-codes-data/`,
+                                    dataType: "json",
+                                    type: "GET",
+                                    data: params => ({search: params.term}),
+                                    processResults: data => ({results: data}),
+                                    cache: true
+                                }
+                            });
+                        }
                     });
                 },
                 async getAllBranches() {
-                    const self = this;
                     $(".branches-select2").select2({
                         allowClear: true,
                         placeholder: 'Pilih Cabang',
@@ -213,17 +315,48 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/inventory/stock-mutation/store/${this.itemId}`, new FormData(this.form))
+                        await axios.post(`/inventory/stock-mutations/store/${this.itemId}`, new FormData(this.form))
                         this.form.reset();
                         await showAlert('success', 'Data berhasil disimpan');
                         window.location.href = '/inventory/stock-mutations';
+                        localStorage.removeItem('selectedCheckBox');
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
                     } finally {
                         this.buttonLoading = false;
                     }
-                }
+                },
+                addItemWithoutCode() {
+                    this.$nextTick(() => {
+                        $('.stocks-without-code-select2').select2({
+                            allowClear: true,
+                            placeholder: "Pilih Stock",
+                            ajax: {
+                                url: `/select2/stock-without-codes-data/`,
+                                dataType: "json",
+                                type: "GET",
+                                data: params => ({search: params.term}),
+                                processResults: data => ({results: data}),
+                                cache: true
+                            }
+                        });
+                    })
+                    this.itemWithoutCodeFields.push({
+                        stock_id: '',
+                        qty: '',
+                    });
+                },
+
+                removeItemWithoutCode(index) {
+                    if (this.itemWithoutCodeFields.length > 1) {
+                        this.itemWithoutCodeFields.splice(index, 1);
+                        $(`#stock-without-codes-select2`).val('').trigger('change')
+                        this.$nextTick(() => {
+                            this.getStockWithoutCodesData(index)
+                        })
+                    }
+                },
             }
         }
     </script>

@@ -10,36 +10,25 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('stock_mutation_histories', function (Blueprint $table) {
+        Schema::create('mutation_histories', function (Blueprint $table) {
             $table->id();
+            $table->date('date');
             $table->foreignId('old_branch_id')
                 ->constrained('branches')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();;
-            $table->foreignId('old_stock_id')
-                ->constrained('stocks')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->foreignId('new_branch_id')
                 ->constrained('branches')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignId('new_stock_id')
-                ->constrained('stocks')
-                ->cascadeOnDelete()
+            $table->foreignId('item_id')
+                ->constrained('item_collections')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+            $table->foreignId('stocker_id')
+                ->constrained('users')
+                ->cascadeOnUpdate()
                 ->cascadeOnUpdate();
-            $table->string('description', 255);
-            $table->foreignId('debit_account_id')
-                ->nullable()
-                ->constrained('accounts')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->foreignId('credit_account_id')
-                ->nullable()
-                ->constrained('accounts')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->integer('qty');
             $table->timestamps();
         });
     }
@@ -49,6 +38,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('stock_mutation_history');
+        Schema::dropIfExists('stock_mutation_histories');
     }
 };
