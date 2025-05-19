@@ -12,8 +12,6 @@ return new class extends Migration {
     {
         Schema::create('stock_mutation_histories', function (Blueprint $table) {
             $table->id();
-
-            //old
             $table->foreignId('old_branch_id')
                 ->constrained('branches')
                 ->cascadeOnDelete()
