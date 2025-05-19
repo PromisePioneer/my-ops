@@ -8,27 +8,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StockMutationHistory extends Model
 {
-    protected $table = 'stock_mutation_histories';
+    protected $table = 'mutation_histories';
     protected $fillable = [
+        'date',
         'old_branch_id',
-        'old_stock_id',
         'new_branch_id',
-        'new_stock_id',
-        'description',
-        'debit_account_id',
-        'credit_account_id',
-        'qty',
+        'item_id',
+        'stocker_id'
     ];
 
 
     public function oldBranch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'old_branch_id');
-    }
-
-    public function oldStock(): BelongsTo
-    {
-        return $this->belongsTo(Stock::class, 'old_stock_id');
     }
 
 
@@ -38,20 +30,14 @@ class StockMutationHistory extends Model
     }
 
 
-    public function newStock(): BelongsTo
+    public function item(): BelongsTo
     {
-        return $this->belongsTo(Stock::class, 'new_stock_id');
-    }
-
-    public function debitAccount(): BelongsTo
-    {
-        return $this->belongsTo(Account::class, 'debit_account_id');
-    }
-
-    public function creditAccount(): BelongsTo
-    {
-        return $this->belongsTo(Account::class, 'credit_account_id');
+        return $this->belongsTo(ItemCollection::class, 'item_id');
     }
 
 
+    public function stocker(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'stocker_id');
+    }
 }

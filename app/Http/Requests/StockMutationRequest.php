@@ -27,4 +27,13 @@ class StockMutationRequest extends FormRequest
             'to_branch' => 'required',
         ];
     }
+
+
+    public function messages(): array
+    {
+        return [
+            'from_branch.required' => 'Cabang asal tidak boleh kosong',
+            'to_branch.required' => 'Cabang tujuan tidak boleh kosong',
+        ];
+    }
 }

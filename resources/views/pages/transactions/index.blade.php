@@ -579,7 +579,6 @@
                             cache: true
                         }
                     }).on('select2:select', function (e) {
-                        $('.sub-branches-select2').val(null).trigger('change');
                         self.branchVal = true;
                         const selectedMainBranchId = e?.params?.data?.id ?? self.editVal.branch_id;
                         $('.sub-branches-select2').select2({
