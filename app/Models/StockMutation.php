@@ -11,6 +11,7 @@ class StockMutation extends Model
 {
     protected $table = 'stock_mutations';
     protected $fillable = [
+        'stock_mutation_number',
         'date',
         'old_branch_id',
         'new_branch_id',
@@ -19,6 +20,7 @@ class StockMutation extends Model
         'description',
         'sender_signature',
         'receiver_signature',
+
     ];
 
 

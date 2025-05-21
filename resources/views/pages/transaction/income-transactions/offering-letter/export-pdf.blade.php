@@ -1,4 +1,5 @@
-<!doctype html>
+@php use function App\Helper\formatDate; @endphp
+    <!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -315,7 +316,7 @@
 
                 <div class="mb-1">
                     <div class="d-flex align-items-center mb-1 fs-9">
-                        {{ \App\Helper\formatDate($offeringLetter->date) }}
+                        {{ formatDate($offeringLetter->date) }}
                     </div>
                 </div>
 

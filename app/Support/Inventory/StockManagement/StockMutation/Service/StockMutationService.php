@@ -4,10 +4,16 @@ namespace App\Support\Inventory\StockManagement\StockMutation\Service;
 
 use AllowDynamicProperties;
 use App\Http\Requests\StockMutationRequest;
+use App\Models\Account;
+use App\Models\Asset;
 use App\Models\ItemCatalog;
+use App\Models\ItemCollection;
+use App\Models\Master\Common\Branch;
 use App\Models\Stock;
 use App\Models\StockMutation;
 use App\Models\StockMutationItem;
+use App\Models\User;
+use App\Support\HelperService\UsefulLifeService;
 use App\Support\Inventory\StockManagement\StockMutation\Repository\StockMutationRepository;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -70,7 +76,11 @@ use function App\Helper\formatDate;
     public function store(StockMutationRequest $request): void
     {
         DB::transaction(function () use ($request) {
+
+            $senderBranchId = $request->user()->branch_id ?? Branch::where('name', 'Dumai')->first()->id;
+
             $stockMutation = StockMutation::create([
+                'stock_mutation_number' => GenerateStockMutationNumber::apply($senderBranchId, Carbon::now()->format('Y-m-d')),
                 'date' => Carbon::now()->format('Y-m-d'),
                 'old_branch_id' => $request->input('from_branch'),
                 'new_branch_id' => $request->input('to_branch'),
@@ -116,16 +126,80 @@ use function App\Helper\formatDate;
      */
     public function sendItem(StockMutation $stockMutation): void
     {
-        $hash = Hash::make($stockMutation->id);
-        $image = QrCode::format('png')->size(200)
-            ->generate($hash);
+        DB::transaction(function () use ($stockMutation) {
 
-        $signaturePath = 'documents/stock-mutation/sender-signature/' . $hash . '.png';
+            foreach ($stockMutation->stockMutationItems as $stock) {
+                Stock::find($stock->stock_id)->decrement('qty', $stock->qty);
+                ItemCatalog::where('code', $stock->code)->delete();
+                Asset::where('code', $stock->code)->delete();
+            }
+
+            $this->generateSenderSignature($stockMutation);
+        });
+    }
+
+
+    /**
+     * @throws Throwable
+     */
+    public function cancelDelivery(StockMutation $stockMutation): void
+    {
+        DB::transaction(function () use ($stockMutation) {
+            foreach ($stockMutation->stockMutationItems as $stock) {
+                $currentStock = Stock::with('item', 'transaction', 'initialInventoryBalance')->find($stock->stock_id);
+                $currentStock->increment('qty', $stock->qty);
+
+                if (!empty($stock->code)) {
+                    ItemCatalog::create([
+                        'transaction_id' => $currentStock->transaction_id,
+                        'stock_id' => $currentStock->id,
+                        'draft_stock_id' => $currentStock->draft_stock_id,
+                        'item_id' => $currentStock->item_id,
+                        'code' => $stock->code,
+                        'condition' => $currentStock->condition,
+                        'created_by' => Auth::id(),
+                        'initial_balance_inventory_id' => $currentStock->initial_balance_inventory_id,
+                        'asset_id' => $currentStock->asset_id,
+                    ]);
+
+                    $item = ItemCollection::find($currentStock->item_id);
+                    $account = Account::find($item->asset_account_id);
+                    Asset::create([
+                        'branch_id' => $currentStock->branch_id,
+                        'code' => $stock->code,
+                        'item_id' => $currentStock->item_id,
+                        'date_received' => $currentStock->transaction?->date ?? $currentStock->initialInventoryBalance->date,
+                        'unit' => 1,
+                        'useful_life' => UsefulLifeService::getUsefulLife($account->code, $item->category->name, $item->building_type),
+                        'price_per_unit' => $currentStock->transaction?->unit_price ?? $currentStock->initialInventoryBalance->unit_price,
+                        'total_price' => $currentStock->transaction?->unit_price ?? $currentStock->initialInventoryBalance->unit_price,
+                        'residu' => $currentStock->transaction?->unit_price ?? $currentStock->initialInventoryBalance->unit_price / UsefulLifeService::getUsefulLife($account->code, $item->category->name, $item->building_type),
+                    ]);
+                }
+            }
+
+
+            $stockMutation->update([
+                'sender_signature' => null
+            ]);
+        });
+    }
+
+
+    private function generateSenderSignature(StockMutation $stockMutation): void
+    {
+        $image = QrCode::format('png')->size(200)
+            ->generate($stockMutation->date);
+        $signaturePath = 'documents/stock-mutation/sender-signature/' . $stockMutation->date . '.png';
         Storage::disk('public')->put($signaturePath, $image);
 
         $stockMutation->update([
             'sender_id' => Auth::id(),
             'sender_signature' => $signaturePath,
         ]);
+    }
+
+    public function receiveItem(StockMutation $stockMutation)
+    {
     }
 }

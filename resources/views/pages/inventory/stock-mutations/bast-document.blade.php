@@ -148,6 +148,53 @@
         margin-bottom: 1rem !important
     }
 
+
+    .border {
+        border: 1px solid black !important;
+    }
+
+    .border-black {
+        --bs-border-opacity: 1;
+        border-color: rgba(0, 0, 0, 1) !important
+    }
+
+
+    .custom-bordered, .custom-bordered th, .custom-bordered td {
+        border: 1px solid black;
+        border-spacing: 0;
+        border-collapse: collapse;
+    }
+
+
+    .text-center {
+        text-align: center !important
+    }
+
+    .mb-2 {
+        margin-bottom: .5rem !important
+    }
+
+
+    .d-flex {
+        display: flex !important
+    }
+
+    .align-items-center {
+        align-items: center !important
+    }
+
+    .justify-content-around {
+        justify-content: space-around !important
+    }
+
+    .flex-column {
+        flex-direction: column !important
+    }
+
+    .img-fluid {
+        max-width: 100%;
+        height: auto
+    }
 </style>
 <body>
 <header>
@@ -165,7 +212,9 @@
 <div class="wrapper">
     <div style="text-align: center; margin-bottom: 30px">
         <p style="font-size: 20px; font-weight: bold"><u>BERITA ACARA SERAH TERIMA</u></p>
-        <p style="font-size: 17px; ">Nomor : </p>
+        <p style="font-size: 17px; ">
+            <b>No : {{ $stockMutation->stock_mutation_number }}</b>
+        </p>
     </div>
 
     <p class="fs-9 mb-4">
@@ -224,25 +273,78 @@
     </div>
     <p class="fs-9 mb-4">Selanjutnya disebut sebagai "<b>PIHAK KEDUA</b>".</p>
     <p class="fs-9 mb-4">Dengan ini kami menyatakan :</p>
-    <ol class="fs-9">
-        <li>
+
+    <p class="fs-9 mb-4">
+        <b>PIHAK PERTAMA</b> telah menyerahkan kepada <b>PIHAK KEDUA</b> barang inventaris berupa :
+    </p>
+    <table class="table mb-4">
+        <thead>
+        <tr class="fw-bold custom-bordered">
+            <th class="text-center py-2"><b>Nama</b></th>
+            <th class="text-center"><b>KODE / SN</b></th>
+            <th class="text-center"><b>Jumlah</b></th>
+        </tr>
+        </thead>
+        <tbody class="border-bottom border-black custom-bordered">
+        @foreach($stockMutation->stockMutationItems as $stock)
+            <tr>
+                <td class="text-center">{{ $stock->stock->item->name }}</td>
+                <td class="text-center">{{ $stock->code ?? '-' }}</td>
+                <td class="text-center">{{ $stock->qty }}</td>
+            </tr>
+        @endforeach
+        </tbody>
+    </table>
+
+    <div class="fs-9 mb-4">
+        <p class="mb-2"> Dengan Ketentuan Sebagai Berikut :</p>
+        <ol style="line-height: 1.5">
+            <li><b>PIHAK KESATU</b> wajib mengeluarkan Aset tersebut berikut nilainya dari Daftar Aktiva.</li>
+            <li>Berdasarkan poin pertama di atas maka <b>PIHAK KESATU</b> tidak bertanggung jawab dan tidak dibebankan
+                lagi dengan
+                berbagai kewajiban atas Aset yang dimaksud setelah ditanda tangani Berita Acara ini.
+            </li>
+            <li>
+                <b>PIHAK KEDUA</b> wajib mencatat Nilai Perolehan dan Nilau Penyusutan dari Aset tersebut ke dalam
+                Daftar Aktiva.
+            </li>
+            <li>
+                Berdasarkan poin ketiga di atas, maka <b>PIHAK KEDUA</b> bertanggung jawab sepenuhnya atas Aset
+                dimaksud
+                setelah di tandatangani Berita Acara ini.
+            </li>
+        </ol>
+    </div>
+
+
+    <div class="d-flex align-items-center justify-content-around">
+        <div class="d-flex flex-column text-center">
+            <p class="mb-2"><b>PIHAK PERTAMA</b></p>
+            <img
+                src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/' . $stockMutation->sender_signature))) }}"
+                alt="" class="mb-2" width="100px" height="70px">
             <p class="fs-9">
-                Pihak pertama telah menyerahkan kepada pihak kedua barang inventaris berupa :
+                <b>{{ $stockMutation->sender->name }}</b>
             </p>
-            <table>
-                <thead>
-                <tr>
-                    <th class="vertical w-100px"><b>Nama</b></th>
-                    <th class="vertical  w-10px"><b>KODE / SN</b></th>
-                    <th class="vertical  w-10px"><b>Jumlah</b></th>
-                </tr>
-                </thead>
-                <tr>
-                    <td class="vertical"><b>Jumlah</b></td>
-                    <td class="vertical"><b>:</b></td>
-            </table>
-        </li>
-    </ol>
+        </div>
+        <div class="d-flex flex-column text-center">
+            <p class="mb-2"><b>PIHAK KEDUA</b></p>
+            @if(isset($stockMutation->receiver_signature))
+                <img
+                    src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/' . $stockMutation->receiver_signature))) }}"
+                    alt="" class="mb-2" width="100px" height="70px">
+            @else
+                <img
+                    src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('assets/media/etc/dummy.png'))) }}"
+                    alt="" class="mb-2" width="100px" height="70px">
+            @endif
+            <p class="fs-9">
+                <b>{{ $stockMutation->receiver->name }}</b>
+            </p>
+        </div>
+    </div>
+
+
 </div>
 
 
