@@ -222,4 +222,28 @@ use Throwable;
             ];
         });
     }
+
+    public function getStockerByBranchId(Request $request)
+    {
+
+        if ($request->branch_id == null) {
+            return [];
+        }
+
+        $user = User::with('branch', 'roles')
+            ->where(function ($query) use ($request) {
+                $query->whereHas('roles', function ($query) {
+                    $query->where('name', 'Stocker Staff');
+                })->whereHas('branch', function ($query) use ($request) {
+                    $query->where('id', $request->branch_id);
+                });
+            })
+            ->get();
+        return $user->map(function ($query) {
+            return [
+                'id' => $query->id,
+                'text' => $query->name
+            ];
+        });
+    }
 }

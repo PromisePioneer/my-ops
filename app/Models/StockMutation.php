@@ -5,18 +5,25 @@ namespace App\Models;
 use App\Models\Master\Common\Branch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class StockMutationHistory extends Model
+class StockMutation extends Model
 {
-    protected $table = 'mutation_histories';
+    protected $table = 'stock_mutations';
     protected $fillable = [
         'date',
         'old_branch_id',
         'new_branch_id',
-        'item_id',
-        'stocker_id'
+        'sender_id',
+        'receiver_id',
+        'description'
     ];
 
+
+    public function stockMutationItems(): HasMany
+    {
+        return $this->hasMany(StockMutationItem::class, 'stock_mutation_id');
+    }
 
     public function oldBranch(): BelongsTo
     {
@@ -36,8 +43,13 @@ class StockMutationHistory extends Model
     }
 
 
-    public function stocker(): BelongsTo
+    public function sender(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'stocker_id');
+        return $this->belongsTo(User::class, 'sender_id');
+    }
+
+    public function receiver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'receiver_id');
     }
 }

@@ -9,7 +9,6 @@ use App\Models\Master\Common\Branch;
 use App\Support\Inventory\StockManagement\Stock\Repository\StockRepository;
 use App\Support\Master\Common\Branch\Repository\BranchRepository;
 use App\Support\Master\Operational\ItemCollections\Repositories\ItemCollectionRepository;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -64,7 +63,7 @@ use Illuminate\Support\Facades\Auth;
                 'id' => $item->id,
                 'type' => $item->type,
                 'total_stock' => $stock,
-                'category_name' => $item->category->name,
+                'category_name' => $item->category?->name,
                 'name' => $item->name,
                 'unit_name' => $item->unitType->name
             ];
@@ -79,10 +78,14 @@ use Illuminate\Support\Facades\Auth;
     public function getMustReorderStocks()
     {
         $itemDoesntHaveGoodsStock = ItemCollection::whereDoesntHave('stock')->count();
-        $items = ItemCollection::all();
+        $items = ItemCollection::with('category', 'stock')
+            ->whereNotNull('category_id')
+            ->get();
+
         $itemHasGoodsStock = null;
         foreach ($items as $item) {
-            $itemHasGoodsStock = ItemCollection::whereHas('stock', function ($query) use ($item) {
+            $itemHasGoodsStock = ItemCollection::where('category_id', null)
+                ->whereHas('stock', function ($query) use ($item) {
                 $query->where('qty', '<', $item->reorder_level);
             })->count();
         }
@@ -105,7 +108,7 @@ use Illuminate\Support\Facades\Auth;
         });
     }
 
-    public function getMainBranchWithStock(ItemCollection $itemCollection)
+    public function getMainBranchWithStock(Request $request, ItemCollection $itemCollection)
     {
         $branch = $this->branchRepository->getBranchWithStock()->get();
         return $branch->map(function ($item) use ($itemCollection) {
@@ -129,7 +132,7 @@ use Illuminate\Support\Facades\Auth;
     }
 
 
-    public function getStockWithCodes()
+    public function getStockWithCodes(Request $request)
     {
         $stock = $this->stockRepository->getStockWithCodes()->get();
         return $stock->map(function ($stock) {

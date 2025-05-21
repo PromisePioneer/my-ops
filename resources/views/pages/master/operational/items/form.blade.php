@@ -59,17 +59,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-10">
-                                <label for="category_id" class="required form-label">Kategori</label>
-                                <select name="category_id" id="selected-item-category"
-                                        class="form-select form-select-solid item-category-select2"
-                                        data-dropdown-parent="#modal-item">
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-10">
-                                <label for="unit_type_id" class="required form-label">Tipe</label>
+                                <label for="type" class="required form-label">Tipe</label>
                                 <select name="type"
                                         class="form-select form-select-solid" id="type" x-model="isAset">
                                     <option value="">Pilih Tipe Barang</option>
@@ -77,32 +67,18 @@
                                     <option value="ASET" :selected="isAset === 'ASET'">Aset</option>
                                 </select>
                             </div>
-
                         </div>
-                    </div>
-
-
-                    <div class="row">
-
-                        <div class="col-md-6">
-
+                        <div class="col-md-6" x-show="isAset === 'ASET'" x-transition x-cloak>
                             <div class="mb-10">
-                                <label for="unit_type_id" class="required form-label">Satuan</label>
-                                <select name="unit_type_id" id="selected-unit-type"
-                                        class="form-select form-select-solid unit-types-select2"
-                                        data-dropdown-parent="#modal-item">
-                                    <option></option>
-                                </select>
-                            </div>
-
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-10">
-                                <label for="unit_type_id" class="required form-label">Material</label>
-                                <select name="material"
-                                        class="form-select form-select-solid">
-                                    <option value="Besi" :selected="editVal?.material === 'Besi'">Besi</option>
-                                    <option value="Non Besi" :selected="editVal?.material === 'Non Besi'">Non Besi
+                                <label for="tangible_assets_type" class="required form-label">Kelompok Harta
+                                    Berwujud</label>
+                                <select name="tangible_assets_type" id="tangible_assets_type"
+                                        class="form-select form-select-solid"
+                                        data-dropdown-parent="#modal-item" x-model="tangibleAsset">
+                                    <option value="">Pilih Kelompok</option>
+                                    <option value="Bangunan" :selected="tangibleAsset === 'Bangunan'">Bangunan</option>
+                                    <option value="Bukan Bangunan" :selected="tangibleAsset === 'Bukan Bangunan'">
+                                        Bukan Bangunan
                                     </option>
                                 </select>
                             </div>
@@ -111,23 +87,57 @@
 
 
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6" x-show="tangibleAsset === 'Bangunan'" x-cloak x-transition>
                             <div class="mb-10">
-                                <label for="unit_type_id" class="required form-label">Reorder Level</label>
-                                <input type="number" class="form-control form-control-solid" name="reorder_level"
-                                       id="reorder_level" placeholder="Reorder Level" :value="editVal?.reorder_level">
+                                <label for="building_type" class="required form-label">Tipe Bangunan</label>
+                                <select name="building_type" id="building_type"
+                                        class="form-select form-select-solid"
+                                        data-dropdown-parent="#modal-item">
+                                    <option value="">Pilih Tipe Bangunan</option>
+                                    <option value="Permanen"
+                                            :selected="editVal?.building_type === 'Permanen'"
+                                    >
+                                        Permanen
+                                    </option>
+                                    <option value="Tidak Permanen"
+                                            :selected="editVal?.building_type === 'Permanen'"
+                                    >
+                                        Tidak Permanen
+                                    </option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-10" x-show="isAset === 'ASET'" x-transition x-cloak>
-                                <label for="unit_type_id" class="required form-label">Akun Aset (Jika Masuk
-                                    Aset)</label>
-                                <select name="asset_account_id" id="selected-asset-account"
-                                        class="form-select form-select-solid asset-accounts-select2"
+                            <div class="mb-10">
+                                <label for="unit_type_id" class="required form-label">Satuan</label>
+                                <select name="unit_type_id" id="selected-unit-type"
+                                        class="form-select form-select-solid unit-types-select2"
                                         data-dropdown-parent="#modal-item">
                                     <option></option>
                                 </select>
                             </div>
+                        </div>
+                        <div class="col-md-6" x-show="tangibleAsset === 'Bukan Bangunan'" x-transition x-cloak>
+                            <label for="category_id" class="required form-label">Kategori</label>
+                            <select name="category_id" id="selected-item-category"
+                                    class="form-select form-select-solid item-category-select2"
+                                    data-dropdown-parent="#modal-item">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-6" x-show="isAset === 'ASET'" x-transition x-cloak>
+                            <label for="asset_account_id" class="required form-label">
+                                Akun Aset (Jika Masuk Aset)
+                            </label>
+                            <select name="asset_account_id" id="selected-asset-account"
+                                    class="form-select form-select-solid asset-accounts-select2"
+                                    data-dropdown-parent="#modal-item">
+                                <option></option>
+                            </select>
                         </div>
                     </div>
                 </div>

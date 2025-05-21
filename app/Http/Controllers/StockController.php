@@ -166,20 +166,20 @@ use Illuminate\View\View;
     }
 
 
-    public function getStockWithCodes()
+    public function getStockWithCodes(Request $request)
     {
-        $stock = Stock::with('item', 'itemCatalog')
-            ->whereHas('item.category', function ($query) {
-                $query->where('name', '!=', 'Kategori 4');
-            })
-            ->where('condition', 'Baik')
-            ->get();
+        $stock = Stock::with('item', 'itemCatalog', 'branch')
+            ->where(function ($query) use ($request) {
+                $query->whereHas('branch', function ($query) use ($request) {
+                    $query->where('parent_id', $request->branch_id ?? $request->user()->branch_id);
+                })->whereHas('item.category', function ($query) {
+                    $query->where('name', '!=', 'Kategori 4');
+                })->where('condition', 'Baik');
+            })->get();
 
 
         return $stock->map(function ($stock) {
             $itemCatalog = [];
-
-
             foreach ($stock->itemCatalog->where('status', 'Tersedia') as $value) {
                 $itemCatalog[] = [
                     'id' => $value->id,

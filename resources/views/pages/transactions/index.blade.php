@@ -312,6 +312,8 @@
                 attachments: [],
                 isAset: null,
                 branchVal: false,
+                tangibleAsset: null,
+                buildingType: null,
                 selectedConfirmationStatus: null,
                 form: document.getElementById('form-transactions'),
                 modalForm: new bootstrap.Modal(document.getElementById('modal-transactions')),
@@ -323,17 +325,19 @@
                 supplierModal: new bootstrap.Modal(document.getElementById('modal-supplier')),
                 supplierForm: document.getElementById('form-supplier'),
                 async init() {
-                    await this.getTransactions();
-                    await this.getMainBranches();
-                    await this.getUnitTypes();
-                    await this.getKasAndLeverageAccounts();
-                    await this.getStockAccounts();
-                    await this.getItemCollections();
-                    await this.itemCategories();
-                    await this.getAssetAccounts();
-                    await this.getSuppliers();
+                    this.$nextTick(async () => {
+                        await this.getAssetAccounts();
+                        await this.getTransactions();
+                        await this.getMainBranches();
+                        await this.getUnitTypes();
+                        await this.getKasAndLeverageAccounts();
+                        await this.getStockAccounts();
+                        await this.getItemCollections();
+                        await this.itemCategories();
+                        await this.getSuppliers();
+                    });
                 },
-                add() {
+                async add() {
                     $('.main-branches-select2').val(null).trigger('change');
                     $('.sub-branches-select2').val(null).trigger('change');
                     $('.suppliers-select2').val(null).trigger('change');
@@ -373,7 +377,6 @@
                     });
                     this.selectedCheckBox.shift();
                 },
-
                 previewAttachmentFile() {
                     let files = this.$refs.attachmentFile.files;
                     if (!files.length) return;
@@ -536,7 +539,6 @@
                     await this.selectedCreditAccount();
                     await this.getAssetAccounts();
                     await this.selectedSupplier();
-
                 },
                 async selectedMainBranches() {
                     if (!this.editVal?.branch_id) return;
@@ -714,19 +716,6 @@
                         params: {results: response}
                     });
                 },
-                async selectedUnitType() {
-                    const selectedUnitType = $('#selected-unit-type');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-unit-type/${this.editVal.unit_type_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedUnitType.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
                 async getTransactions() {
                     this.isLoading = true;
                     try {
@@ -749,21 +738,21 @@
                             type: "GET",
                             data: params => ({search: params.term}),
                             processResults: data => ({results: data}),
-                            cache: true
+                            cache: false
                         }
                     });
                 },
                 async getAssetAccounts() {
                     $(".asset-accounts-select2").select2({
                         allowClear: true,
-                        placeholder: "Pilih Akun",
+                        placeholder: 'Pilih Akun Aset',
                         ajax: {
                             url: '/select2/asset-accounts-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
                             processResults: data => ({results: data}),
-                            cache: true
+                            cache: false
                         }
                     });
                 },
@@ -783,7 +772,7 @@
                             type: "GET",
                             data: params => ({search: params.term}),
                             processResults: data => ({results: data}),
-                            cache: true
+                            cache: false
                         }
                     });
                 },
@@ -817,7 +806,6 @@
                     }
                 },
                 async itemCategories() {
-                    const self = this;
                     $(".item-category-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Kategori Barang",
@@ -828,11 +816,8 @@
                             type: "GET",
                             data: params => ({search: params.term}),
                             processResults: data => ({results: data}),
-                            cache: true
+                            cache: false
                         }
-                    }).on('change', () => {
-                        const data = $(".item-category-select2 option:selected").text();
-                        self.isAset = data === 'ASET';
                     });
                 },
                 async confirm() {
