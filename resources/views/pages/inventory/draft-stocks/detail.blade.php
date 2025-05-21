@@ -312,8 +312,8 @@
                             await axios.post(`/inventory/item-catalog/destroy/${id}`);
                             await showAlert('success', 'Data sukses dihapus')
                                 .then(async () => {
-                                    await this.getItemCatalog();
-                            });
+                                    await this.init();
+                                });
                         } catch (error) {
                             console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');

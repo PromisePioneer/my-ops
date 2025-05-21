@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('stock_mutations', function (Blueprint $table) {
             $table->id();
+            $table->string('stock_mutation_number');
             $table->date('date');
             $table->foreignId('old_branch_id')
                 ->constrained('branches')

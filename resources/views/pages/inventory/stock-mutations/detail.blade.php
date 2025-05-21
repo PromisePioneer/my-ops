@@ -54,47 +54,52 @@
                                 </tr>
                             </table>
                         </div>
-                        <div class="card card-custom mb-4">
 
-                            <div class="card-body p-1">
-                                <table class="table table-bordered w-100">
-                                    <thead>
-                                    <tr>
-                                        <th>Barang</th>
-                                        <th>Kode</th>
-                                        <th>Qty</th>
-                                        <th>Status</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <template x-for="item in editVal?.stock_mutation_items">
-                                        <tr>
-                                            <td x-text="item.stock.item.name"></td>
-                                            <td x-text="item.code ?? '-'"></td>
-                                            <td x-text="item.qty"></td>
-                                            <td x-text="item.stock.condition"></td>
-                                        </tr>
-                                    </template>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        <table class="table table-bordered w-100">
+                            <thead>
+                            <tr>
+                                <th>Barang</th>
+                                <th>Kode</th>
+                                <th>Qty</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <template x-for="item in editVal?.stock_mutation_items">
+                                <tr>
+                                    <td x-text="item.stock.item.name"></td>
+                                    <td x-text="item.code ?? '-'"></td>
+                                    <td x-text="item.qty"></td>
+                                    <td x-text="item.stock.condition"></td>
+                                </tr>
+                            </template>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <template x-if="editVal.sender_signature">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <a :href="`/inventory/stock-mutations/bast-document/${editVal.id}`" class="btn btn-light-primary btn-sm">
+                <div class="d-flex align-items-center justify-content-center">
+                    <template x-if="editVal.sender_signature">
+                        <a target="_blank" :href="`/inventory/stock-mutations/bast-document/${editVal.id}`"
+                           class="btn btn-light-primary btn-sm me-2">
                             <x-icons.print/>
                             Cetak Laporan BAST
                         </a>
-                    </div>
-                </template>
-                <button class="btn btn-light-primary btn-sm" @click="sendItem(editVal.id)">
-                    <x-icons.confirm/>
-                    Kirim Barang
-                </button>
+                    </template>
+                    <template x-if="editVal.sender_signature">
+                        <button class="btn btn-light-danger btn-sm me-2" @click="cancelDelivery(editVal.id)">
+                            <x-icons.close/>
+                            Batalkan Pengiriman
+                        </button>
+                    </template>
+                    <template x-if="!editVal.sender_signature">
+                        <button class="btn btn-light-primary btn-sm" @click="sendItem(editVal.id)">
+                            <x-icons.confirm/>
+                            Kirim Barang
+                        </button>
+                    </template>
+                </div>
             </div>
         </div>
     </div>

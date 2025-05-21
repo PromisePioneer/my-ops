@@ -4,7 +4,10 @@
     <div x-data="generateStockMutation()">
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
-                <a class="btn btn-info btn-sm mb-6" href="{{ url('/inventory/stocks') }}">Kembali</a>
+                <a class="btn btn-light-danger btn-sm mb-6" href="{{ url('/inventory/stock-mutations') }}">
+                    <x-icons.back/>
+                    Kembali
+                </a>
             </div>
             <div class="card-body py-3">
                 <form id="form" @submit.prevent="save()">
@@ -75,7 +78,7 @@
                                 <select class="form-select form-select-solid stocker-by-branch-select2"
                                         name="receiver_id" id="receiver_id">
                                 </select>
-                                </div>
+                            </div>
                         </div>
                         <div class="table-responsive mb-10" x-show="itemWithCode" x-cloak x-transition>
                             <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Barang Berkode</label>
@@ -298,7 +301,7 @@
                     }).filter(val => val !== "");
                     $(`#stock-without-codes-select2-${index}`).select2({
                         allowClear: true,
-                            placeholder: "Pilih Barang",
+                        placeholder: "Pilih Barang",
                         ajax: {
                             url: '/select2/stock-without-codes-data',
                             dataType: "json",

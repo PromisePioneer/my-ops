@@ -78,10 +78,30 @@ use function App\Helper\formatDate;
     }
 
 
+    /**
+     * @throws Throwable
+     */
     public function sendItem(StockMutation $stockMutation): JsonResponse
     {
         $this->stockMutationService->sendItem($stockMutation);
         return response()->json(['message' => 'item berhasil dikirim']);
+    }
+
+
+    /**
+     * @throws Throwable
+     */
+    public function cancelDelivery(StockMutation $stockMutation): JsonResponse
+    {
+        $this->stockMutationService->cancelDelivery($stockMutation);
+        return response()->json(['message' => 'pengiriman item berhasil dibatalkan']);
+    }
+
+
+    public function receiveItem(StockMutation $stockMutation): JsonResponse
+    {
+        $this->stockMutationService->receiveItem($stockMutation);
+        return response()->json(['message' => 'item berhasil diterima']);
     }
 
 
@@ -94,7 +114,8 @@ use function App\Helper\formatDate;
 
 
         $pdf = Browsershot::html($view)
-            ->setChromePath('/usr/bin/chromium')
+            ->setChromePath('C:\Users\Javanicus\scoop\apps\chromium\current\chrome.exe')
+//            ->setChromePath('/usr/bin/chromium')
             ->noSandbox()
             ->waitUntilNetworkIdle()
             ->ignoreHttpsErrors()
