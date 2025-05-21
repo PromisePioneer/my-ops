@@ -12,7 +12,7 @@ class ItemCollectionRepository
     public function getItemCollection(): Builder
     {
         return ItemCollection::with('category', 'unitType', 'assetAccount')
-            ->select('id', 'name as item_collection_name', 'category_id', 'unit_type_id', 'asset_account_id', 'material', 'type', 'reorder_level')
+            ->select('id', 'name as item_collection_name', 'category_id', 'unit_type_id', 'asset_account_id', 'type', 'reorder_level', 'tangible_assets_type', 'building_type')
             ->orderBy('item_collection_name');
     }
 
@@ -29,13 +29,13 @@ class ItemCollectionRepository
 
     public function itemCollectionStock(): EloquentBuilder
     {
-        return ItemCollection::with('stock', 'unitType');
+        return ItemCollection::with('stock', 'unitType')->whereNotNull('category_id');
     }
 
     public function getArchivedData()
     {
         return ItemCollection::onlyTrashed()->with('category', 'unitType', 'assetAccount')
-            ->select('id', 'name as item_collection_name', 'category_id', 'unit_type_id', 'asset_account_id', 'material', 'type', 'reorder_level')
+            ->select('id', 'name as item_collection_name', 'category_id', 'unit_type_id', 'asset_account_id', 'type', 'reorder_level', 'tangible_assets_type', 'building_type')
             ->orderBy('name');
     }
 

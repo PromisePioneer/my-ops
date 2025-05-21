@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('mutation_histories', function (Blueprint $table) {
+        Schema::create('stock_mutations', function (Blueprint $table) {
             $table->id();
             $table->date('date');
             $table->foreignId('old_branch_id')
@@ -21,14 +21,16 @@ return new class extends Migration {
                 ->constrained('branches')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignId('item_id')
-                ->constrained('item_collections')
-                ->cascadeOnUpdate()
-                ->cascadeOnDelete();
-            $table->foreignId('stocker_id')
+            $table->foreignId('sender_id')
                 ->constrained('users')
                 ->cascadeOnUpdate()
                 ->cascadeOnUpdate();
+            $table->foreignId('receiver_id')
+                ->constrained('users')
+                ->cascadeOnUpdate()
+                ->cascadeOnUpdate();
+            $table->text('description');
+            $table->boolean('status')->default(false);
             $table->timestamps();
         });
     }

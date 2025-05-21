@@ -43,10 +43,17 @@ class ItemCollectionRequest extends FormRequest
             ],
             'code' => [Rule::requiredIf($request->must_have_code === 'on' && !$request->is_code_listed)],
             'unit_type_id' => ['required', 'string'],
-            'category_id' => ['required', 'string'],
-            'material' => [
-                'required',
-                Rule::in(['Besi', 'Non Besi'])
+            'tangible_assets_type' => [
+                Rule::requiredIf($request->type === 'ASET'),
+            ],
+            'category_id' => [Rule::requiredIf($request->tangible_assets_type === 'Bukan Bangunan')],
+            'building_type' => [
+                Rule::requiredIf($request->tangible_assets_type === 'Bangunan')
+            ],
+            'reorder_level' => [
+                Rule::requiredIf(
+                    $request->tangible_assets_type === 'Bukan Bangunan' || $request->type === 'JUAL'
+                )
             ],
             'asset_account_id' => [
                 Rule::requiredIf($request->type === "ASET")
@@ -65,7 +72,14 @@ class ItemCollectionRequest extends FormRequest
             'category_id.required' => 'Kategori tidak boleh kosong',
             'category_id.exists' => 'Kategori tidak ditemukan',
             'unit_type_id.exists' => 'Tipe satuan tidak ditemukan',
+            'type.required' => 'Tipe barang tidak boleh kosong',
+            'type.in' => 'Tipe barang tidak valid',
+            'reorder_level' => 'Reorder level tidak boleh kosong',
+            'building_type.required' => 'Tipe bangunan tidak boleh kosong',
             'asset_account_id.required' => 'Akun aset tidak boleh kosong jika tipe yang dipilih aset',
+            'tangible_assets_type.in' => 'Kelompok harta berwujud  tidak valid',
+            'building_type.in' => 'Tipe bangunan tidak valid',
+            ''
         ];
     }
 
@@ -76,7 +90,7 @@ class ItemCollectionRequest extends FormRequest
             $unitType = UnitType::find($request->unit_type_id);
             $category = ItemCategory::find($request->category_id);
 
-            if ($category->name === 'Kategori 1' && $unitType->name !== 'Meter') {
+            if ($category?->name === 'Kategori 1' && $unitType?->name !== 'Meter') {
                 return $fail('Tipe satuan harus Meter jika kategori yang dipilih Kategori 1');
             }
 
@@ -90,7 +104,7 @@ class ItemCollectionRequest extends FormRequest
         return static function ($attribute, $value, $fail) use ($request) {
             $category = ItemCategory::find($request->category_id);
 
-            if ($category->name === 'Kategori 3' && $request->type !== 'ASET') {
+            if ($category?->name === 'Kategori 3' && $request?->type !== 'ASET') {
                 return $fail('Kategori 3 harus bertipe ASET');
             }
 
@@ -102,9 +116,8 @@ class ItemCollectionRequest extends FormRequest
     public function ifHasTransaction(Request $request): Closure
     {
         return static function ($attribute, $value, $fail) use ($request) {
-            $initialInventoryBalance = InitialInventoryBalance::where('item_id', $request->route('itemCollection')->id)
-                ->first();
-            $transaction = Transaction::where('item_id', $request->route('itemCollection')->id)
+            $initialInventoryBalance = InitialInventoryBalance::where('item_id', $request->route('itemCollection')?->id)->first();
+            $transaction = Transaction::where('item_id', $request->route('itemCollection')?->id)
                 ->first();
 
             if ($initialInventoryBalance || $transaction) {

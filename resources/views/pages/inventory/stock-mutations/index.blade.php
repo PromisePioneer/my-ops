@@ -2,6 +2,7 @@
 @section('page-title', 'Mutasi Barang')
 @section('content')
     <div x-data="stockMutations()">
+        @include('pages.inventory.stock-mutations.detail')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -15,7 +16,7 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
-                        <a href="{{ url('/inventory/stocks') }}" type="button"
+                        <a href="{{ url('/inventory/stock-mutations/create') }}" type="button"
                            class="btn btn-light-primary btn-sm">
                             <x-icons.add-item/>
                             Tambah
@@ -52,15 +53,15 @@
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Tanggal</th>
-                                <th class="min-w-125px">Barang</th>
                                 <th class="min-w-125px">Cabang Awal</th>
                                 <th class="min-w-125px">Cabang Tujuan</th>
-                                <th class="min-w-125px">Stocker</th>
+                                <th class="min-w-125px">Pengirim</th>
+                                <th class="min-w-125px">Penerima</th>
                                 <th class="min-w-125px">Actions</th>
                             </tr>
                             </thead>
-                            <tbody class="fw-bold">
                             <template x-if="isLoading">
+                                <tbody class="fw-bold">
                                 <tr>
                                     <td colspan="9">
                                         <div style="text-align: center;">
@@ -70,38 +71,43 @@
                                         </div>
                                     </td>
                                 </tr>
+                                </tbody>
                             </template>
                             <template x-if="!isLoading && stockMutation.data?.length === 0">
+                                <tbody class="fw-bold">
                                 <tr>
                                     <td colspan="9">
                                         <center>Data Tidak Ditemukan</center>
                                     </td>
                                 </tr>
+                                </tbody>
                             </template>
                             <template x-for="(stock, index) in stockMutation?.data" :key="stock.id">
+                                <tbody class="fw-bold">
                                 <tr>
                                     <td>
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
                                             <input class="form-check-input" type="checkbox" :value="stock.id"
                                                    :id="'checkbox-' + stock.id"
-                                                   :disabled="Number(deletePermission) !== 1"/>
+                                            />
                                         </div>
                                     </td>
                                     <td x-text="stock.date"></td>
-                                    <td x-text="stock.item_name"></td>
                                     <td x-text="stock.old_branch_name"></td>
                                     <td x-text="stock.new_branch_name"></td>
-                                    <td x-text="stock.stocker_name"></td>
+                                    <td x-text="stock.sender_name"></td>
+                                    <td x-text="stock.receiver_name"></td>
                                     <td>
-                                        <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#modal-unit-type" @click="edit(unitType.id)">
-                                            <x-icons.confirm/>
+                                        <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#modal-stock-mutations-detail"
+                                                @click="showDetail(stock.id)">
+                                            <x-icons.info/>
                                         </button>
                                     </td>
                                 </tr>
+                                </tbody>
                             </template>
-                            </tbody>
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4 mt-4">
@@ -117,6 +123,7 @@
             </div>
         </div>
     </div>
+    @include('components.toast')
 @endsection
 
 @push('script')
@@ -126,10 +133,12 @@
                 isLoading: false,
                 stockMutation: [],
                 search: '',
+                editVal: {},
                 selectedCheckBox: [],
+                formDelete: document.getElementById('form-delete'),
+                detailModal: new bootstrap.Modal(document.getElementById('modal-stock-mutations-detail')),
                 async init() {
                     await this.getStockMutations();
-                    await this.getMainBranches();
                 },
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
@@ -169,6 +178,38 @@
                 async searchData() {
 
                 },
+                async showDetail(id) {
+                    try {
+                        const resp = await axios.get(`/inventory/stock-mutations/show/${id}`);
+                        this.editVal = resp.data;
+                    } catch (e) {
+                        console.log(e);
+                    }
+                },
+                async sendStock() {
+                    showConfirmModal("Anda yakin?", "Barang yang dikirim tidak akan bisa dihapus atau dikembalikan lagi.", "Ya, Kirim!", async () => {
+                        try {
+                            await axios.post(`/inventory/stock-mutations/destroy`, new FormData(this.formDelete));
+                            await showAlert('success', 'Data sukses Dikirim');
+                            await this.init();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
+                },
+                async destroy() {
+                    showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
+                        try {
+                            await axios.post(`/inventory/stock-mutations/destroy`, new FormData(this.formDelete));
+                            await showAlert('success', 'Data sukses dihapus');
+                            await this.init();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
+                }
             }
         }
     </script>

@@ -1,8 +1,7 @@
 @extends('layouts.template')
-@section('page-title', 'Mutasi Barang' . '  ' . $itemCollection->name)
+@section('page-title', 'Mutasi Barang - Tambah')
 @section('content')
     <div x-data="generateStockMutation()">
-        @include('pages.inventory.stock-mutations.drawer.item-catalog-details')
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
                 <a class="btn btn-info btn-sm mb-6" href="{{ url('/inventory/stocks') }}">Kembali</a>
@@ -10,35 +9,97 @@
             <div class="card-body py-3">
                 <form id="form" @submit.prevent="save()">
                     @csrf
-                    <div class="card-body">
-                        @if(!Auth::user()->branch_id)
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <label class="col-form-label required fw-bold fs-6">Pilih Cabang Awal</label>
-                                    <select name="from_branch" id=""
-                                            class="form-select form-select-solid main-branches-select2">
-                                        <option value=""></option>
-                                    </select>
+                    <div class="card-body p-12">
+                        <div class="row gx-10 mb-10">
+                            <div class="col-lg-6">
+                                <label
+                                    class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Pilih Opsi</label>
+                                <div class="form-check form-switch form-check-custom form-check-solid me-10 mb-4">
+                                    <input class="form-check-input" type="checkbox"
+                                           id="itemWithCodeOption"
+                                           name="item_with_code_option" x-model="itemWithCode"/>
+                                    <label class="form-check-label" for="itemWithCodeOption">
+                                        Barang memiliki kode
+                                    </label>
                                 </div>
-                                @endif
-                                <div class="col-lg-6">
-                                    <label class="col-form-label required fw-bold fs-6">Pilih Cabang Tujuan</label>
-                                    <select name="to_branch" id=""
-                                            class="form-select form-select-solid branches-select2">
-                                        <option value=""></option>
-                                    </select>
+                                <div class="form-check form-switch form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="checkbox" id="itemWithoutCodeOption"
+                                           name="item_without_code_option" x-model="itemWithoutCode"/>
+                                    <label class="form-check-label" for="itemWithoutCodeOption">
+                                        Barang tidak memiliki kode
+                                    </label>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row mb-4">
+                            @if(empty(Auth::user()->branch_id))
+                                <div class="col-lg-6">
+                                    <label
+                                        class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                        Pilih Cabang Awal
+                                    </label>
+                                    <select class="form-select form-select-solid main-branches-select2"
+                                            name="from_branch" id="from_branch">
+                                    </select>
+                                </div>
+                            @endif
+                            <div class="col-lg-6">
+                                <label
+                                    class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                    Pilih Cabang Tujuan
+                                </label>
+                                <select class="form-select form-select-solid branches-select2"
+                                        name="to_branch" id="to_branch">
+                                </select>
+                            </div>
 
-                            <input type="hidden" name="item_collection_id[]"
-                                   :value="JSON.parse(localStorage.getItem('selectedCheckBox'))">
-                    </div>
-
-                    <div class="separator py-2"></div>
-
-                    <div x-show="itemMustHaveCode === 0" x-cloak x-transition>
-
-                        <div class="table-responsive mb-20">
+                            @if(Auth::user()->branch_id)
+                                <div class="col-lg-6">
+                                    <label
+                                        class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                        Pilih Cabang
+                                    </label>
+                                    <select class="form-select form-select-solid main-branches-select2"
+                                            name="branch_id" id="branch-id">
+                                    </select>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-lg-6"></div>
+                            <div class="col-lg-6">
+                                <label
+                                    class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                    Penerima Barang
+                                </label>
+                                <select class="form-select form-select-solid stocker-by-branch-select2"
+                                        name="receiver_id" id="receiver_id">
+                                </select>
+                                </div>
+                        </div>
+                        <div class="table-responsive mb-10" x-show="itemWithCode" x-cloak x-transition>
+                            <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Barang Berkode</label>
+                            <table class="table fw-bolder text-gray-700"
+                                   data-kt-element="items">
+                                <thead>
+                                <tr class="border-bottom fs-7 fw-bolder text-gray-700 text-uppercase">
+                                    <th class="min-w-100px w-200px">Barang</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
+                                    <td class="pe-7" style='text-align:center; vertical-align:middle'>
+                                        <select name="itemWithCodeFields[]"
+                                                class="form-select form-select-solid stock-with-codes-select2"
+                                                multiple>
+                                            <option></option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-responsive mb-20" x-show="itemWithoutCode" x-cloak x-transition>
                             <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
                                 Barang Tidak Berkode
                             </label>
@@ -57,7 +118,7 @@
                                             <select x-model="field.stock_id"
                                                     :name="`itemWithoutCodeFields[${index}][stock_id]`"
                                                     :id="`stock-without-codes-select2-${index}`"
-                                                    class="form-select form-select-solid stocks-without-code-select2">
+                                                    class="form-select form-select-solid">
                                                 <option></option>
                                             </select>
                                         </td>
@@ -89,71 +150,11 @@
                                 </tfoot>
                             </table>
                         </div>
-                    </div>
-
-
-                    <div class="table-responsive" x-show="currentStocks.length > 0" x-cloak x-transition>
-                        <table class="table align-middle table-bordered fs-6 gy-5 mb-0 dataTable no-footer"
-                               id="kt_roles_view_table">
-                            <thead>
-                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                <th class="w-10px pe-2">
-                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                        <input class="form-check-input" type="checkbox"
-                                               @click="toggleAllCheckBox()">
-                                    </div>
-                                </th>
-                                <th class="min-w-125px">
-                                    Cabang
-                                </th>
-                                <th class="min-w-125px">
-                                    Nama
-                                </th>
-                                <th class="min-w-125px">
-                                    Kode
-                                </th>
-                                <th class="min-w-125px">
-                                    Kondisi
-                                </th>
-                            </tr>
-                            </thead>
-                            <template x-if="!isLoading && currentStocks?.length === 0">
-                                <tbody class="fw-bold">
-                                <tr>
-                                    <td colspan="7">
-                                        <center>Data Tidak Ditemukan</center>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </template>
-                            <template x-for="stock in currentStocks" :key="stock.id">
-                                <tbody class="fw-bold text-center">
-                                <tr>
-                                    <td>
-                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                             @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="stock.id"
-                                                   :id="stock.id"
-                                                   :checked="localStorage.getItem('selectedCheckBox').includes(stock.id)"/>
-                                        </div>
-                                    </td>
-                                    <td x-text="stock.branch_name"></td>
-                                    <td x-text="stock.name"></td>
-                                    <td x-text="stock.code"></td>
-                                    <td x-text="stock.condition"></td>
-                                </tr>
-                                </tbody>
-                            </template>
-                        </table>
-                        <ul class="pagination float-end mb-4 mt-4">
-                            <template x-for="pagination in currentStocks.links">
-                                <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                    <button class="page-link" @click="paginationEndPoint(pagination.url)"
-                                            x-html="pagination.label">
-                                    </button>
-                                </li>
-                            </template>
-                        </ul>
+                        <div class="mb-10">
+                            <label class="form-label fs-6 fw-bolder text-gray-700">Catatan</label>
+                            <textarea name="description" class="form-control form-control-solid" rows="3"
+                                      placeholder="cth : Penggunaan untuk maintenance"></textarea>
+                        </div>
                     </div>
 
 
@@ -181,145 +182,146 @@
     <script>
         function generateStockMutation() {
             return {
-                buttonLoading: false,
-                currentStocks: [],
-                selectedCheckBox: [],
-                stockOnly: [],
-                itemWithoutCodeFields: [],
+                itemWithCode: false,
                 itemWithoutCode: false,
-                selectAll: false,
-                singleChecked: false,
-                itemId: "{{ $itemCollection->id }}",
-                itemMustHaveCode: "{{ $itemCollection->must_have_code }}",
-                branchId: "{{ Auth::user()->branch_id }}",
+                editVal: '',
+                buttonLoading: false,
                 form: document.getElementById('form'),
-                isLoading: false,
+                itemWithCodes: [],
+                itemWithCodeFields: [],
+                itemWithoutCodeFields: [],
+                toBranchParentId: null,
                 async init() {
-                    await this.getAllBranches();
+                    await this.getStockWithCodesData();
                     await this.getMainBranches();
-                    await this.getItemCollections();
+                    await this.getBranches();
+                    await this.getStockerByBranch();
 
                     for (const val of this.itemWithoutCodeFields) {
                         const index = this.itemWithoutCodeFields.indexOf(val);
                         await this.getStockWithoutCodesData(index);
                     }
                 },
-                toggleAllCheckBox() {
-                    this.selectAll = !this.selectAll;
-                    this.singleChecked = false;
-                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                    this.selectedCheckBox = [];
-                    checkboxes.forEach((checkbox) => {
-                        checkbox.checked = this.selectAll;
-                        if (this.selectAll) {
-                            this.selectedCheckBox.push(checkbox.id);
-                        }
-                    });
-
-                    this.selectedCheckBox.shift();
-                    localStorage.setItem('selectedCheckBox', JSON.stringify(this.selectedCheckBox));
-                    const selectedItem = JSON.parse(localStorage.getItem('selectedCheckBox'));
-                    const resp = selectedItem.filter((value, index, array) => array.indexOf(value) === index)
-                        .filter(value => !isNaN(value)).map(value => parseInt(value)).filter(value => !isNaN(value));
-                    localStorage.setItem('selectedCheckBox', JSON.stringify(resp));
-                },
-                selectCheckBox(event) {
-                    const checkboxId = event.target.value;
-                    if (event.target.checked) {
-                        this.selectedCheckBox.push(checkboxId);
-                        localStorage.setItem('selectedCheckBox', JSON.stringify(this.selectedCheckBox));
-                        const selectedItem = JSON.parse(localStorage.getItem('selectedCheckBox'));
-                        const resp = selectedItem.filter((value, index, array) => array.indexOf(value) === index)
-                            .filter(value => !isNaN(value)).map(value => parseInt(value)).filter(value => !isNaN(value));
-                        localStorage.setItem('selectedCheckBox', JSON.stringify(resp));
-                    } else {
-                        const index = this.selectedCheckBox.indexOf(checkboxId);
-                        if (index !== -1) {
-                            this.selectedCheckBox.splice(index, 1);
-                            localStorage.setItem('selectedCheckBox', JSON.stringify(this.selectedCheckBox));
-                            const selectedItem = JSON.parse(localStorage.getItem('selectedCheckBox'));
-                            const resp = selectedItem.filter((value, index, array) => array.indexOf(value) === index)
-                                .filter(value => !isNaN(value)).map(value => parseInt(value)).filter(value => !isNaN(value));
-                            localStorage.setItem('selectedCheckBox', JSON.stringify(resp));
-                        }
-                    }
-                },
-                async paginationEndPoint(url) {
-                    if (url) {
-                        this.currentStocks = [];
-                        this.isLoading = true;
-                        try {
-                            const resp = await axios.get(`${url}`, {
-                                params: {
-                                    search: this.search,
-                                }
-                            });
-                            this.currentStocks = resp.data
-                        } catch (e) {
-                            console.log(e)
-                        } finally {
-                            this.isLoading = false
-                        }
-                    }
-                },
                 async getMainBranches() {
                     const self = this;
-                    $(".main-branches-select2").select2({
+                    $(`.main-branches-select2`).select2({
                         allowClear: true,
-                        placeholder: 'Pilih Cabang',
+                        placeholder: "Pilih Barang",
                         ajax: {
                             url: '/select2/main-branches-data',
                             dataType: "json",
                             type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
+                            data: (params) => ({
+                                search: params.term,
+                            }),
+                            processResults: (data) => ({results: data}),
                             cache: true
-                        }
-                    }).on('select2:select', async function (e) {
-                        self.branchId = e.params.data.id;
-                        const itemId = self.itemId;
-                        if (self.itemMustHaveCode === 1) {
-                            const resp = await axios.get(`/inventory/stocks/${self.branchId}/${itemId}`);
-                            self.currentStocks = resp.data;
-                        } else {
-                            self.itemWithoutCode = true;
-                            $('.stocks-without-code-select2').select2({
-                                allowClear: true,
-                                placeholder: "Pilih Stock",
-                                ajax: {
-                                    url: `/select2/stock-without-codes-data/`,
-                                    dataType: "json",
-                                    type: "GET",
-                                    data: params => ({search: params.term}),
-                                    processResults: data => ({results: data}),
-                                    cache: true
-                                }
-                            });
                         }
                     });
                 },
-                async getAllBranches() {
-                    $(".branches-select2").select2({
+                async getBranches() {
+                    const self = this;
+                    $(`.branches-select2`).select2({
                         allowClear: true,
-                        placeholder: 'Pilih Cabang',
+                        placeholder: "Pilih Barang",
                         ajax: {
                             url: '/select2/branches-data',
                             dataType: "json",
                             type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
+                            data: (params) => ({
+                                search: params.term,
+                            }),
+                            processResults: (data) => ({results: data}),
                             cache: true
                         }
+                    }).on('select2:select', function (e) {
+                        self.toBranchParentId = e.params.data.parent_id;
+                    })
+                },
+                async getStockerByBranch() {
+                    const self = this;
+                    $(`.stocker-by-branch-select2`).select2({
+                        allowClear: true,
+                        placeholder: "Pilih Stocker",
+                        ajax: {
+                            url: '/select2/stocker-by-branch-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({
+                                search: params.term,
+                                branch_id: self.toBranchParentId
+                            }),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
+                async getStockWithCodesData() {
+                    const self = this;
+                    $(`.stock-with-codes-select2`).select2({
+                        allowClear: true,
+                        placeholder: "Pilih Barang",
+                        ajax: {
+                            url: '/select2/stock-with-codes-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({
+                                search: params.term,
+                                branch_id: $('#from_branch').val()
+                            }),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
+                    }).on('select2:select', function (e) {
+                        self.itemWithCodeFields.push({
+                            code: e.params.data.code,
+                            stock_id: e.params.data.stock_id
+                        });
+                    });
+                },
+                removeItemWithoutCode(index) {
+                    if (this.itemWithoutCodeFields.length > 1) {
+                        this.itemWithoutCodeFields.splice(index, 1);
+                        $(`#stock-without-codes-select2-${index}`).val('').trigger('change')
+                        this.$nextTick(() => {
+                            this.getStockWithoutCodesData(index)
+                        })
+                    }
+                },
+                async getStockWithoutCodesData(index) {
+                    const self = this;
+                    const ids = self.itemWithoutCodeFields.map((item) => {
+                        return item.stock_id;
+                    }).filter(val => val !== "");
+                    $(`#stock-without-codes-select2-${index}`).select2({
+                        allowClear: true,
+                            placeholder: "Pilih Barang",
+                        ajax: {
+                            url: '/select2/stock-without-codes-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({
+                                search: params.term,
+                                ids: ids,
+                            }),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
+                        }
+                    ).on('change', function (e) {
+                        self.itemWithoutCodeFields[index].stock_id = $(`#stock-without-codes-select2-${index}`)?.val() ?? ""
+                        console.log(self.itemWithoutCodeFields);
                     });
                 },
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/inventory/stock-mutations/store/${this.itemId}`, new FormData(this.form))
-                        this.form.reset();
-                        await showAlert('success', 'Data berhasil disimpan');
-                        window.location.href = '/inventory/stock-mutations';
-                        localStorage.removeItem('selectedCheckBox');
+                        let formData = new FormData(this.form);
+                        formData.append('item_with_codes', JSON.stringify(this.itemWithCodeFields));
+                        await axios.post(`/inventory/stock-mutations/store`, new FormData(this.form))
+                        await showAlert('success', 'Data berhasil disimpan').then(() => {
+                            window.location.href = '/inventory/stock-mutations';
+                        })
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));
@@ -329,33 +331,31 @@
                 },
                 addItemWithoutCode() {
                     this.$nextTick(() => {
-                        $('.stocks-without-code-select2').select2({
-                            allowClear: true,
-                            placeholder: "Pilih Stock",
-                            ajax: {
-                                url: `/select2/stock-without-codes-data/`,
-                                dataType: "json",
-                                type: "GET",
-                                data: params => ({search: params.term}),
-                                processResults: data => ({results: data}),
-                                cache: true
-                            }
-                        });
+                        this.itemWithoutCodeFields.forEach(async (val, index) => {
+                            await this.getStockWithoutCodesData(index);
+                        })
                     })
+
+
                     this.itemWithoutCodeFields.push({
                         stock_id: '',
                         qty: '',
                     });
                 },
-
-                removeItemWithoutCode(index) {
-                    if (this.itemWithoutCodeFields.length > 1) {
-                        this.itemWithoutCodeFields.splice(index, 1);
-                        $(`#stock-without-codes-select2`).val('').trigger('change')
-                        this.$nextTick(() => {
-                            this.getStockWithoutCodesData(index)
-                        })
-                    }
+                calculateTotal(index) {
+                    const quantity = this.fields[index].qty;
+                    const unitPrice = this.fields[index].unit_price;
+                    this.fields[index].total_price = (quantity * unitPrice).toFixed(2);
+                },
+                calculateTotalAll() {
+                    return this.fields.reduce((total, field) => total + (field.qty * field.unit_price), 0);
+                },
+                formatNumber(curr) {
+                    let IDR = new Intl.NumberFormat('en-ID', {
+                        style: 'currency',
+                        currency: "IDR"
+                    });
+                    return IDR.format(curr);
                 },
             }
         }

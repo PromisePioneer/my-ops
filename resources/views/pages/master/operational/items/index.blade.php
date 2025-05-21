@@ -97,8 +97,7 @@
                                             </div>
                                         </th>
                                         <th class="min-w-125px">Nama</th>
-                                        <th class="min-w-125px">Kategori</th>
-                                        <th class="min-w-125px">Material</th>
+                                        <th class="min-w-125px" colspan="2">Informasi</th>
                                         <th class="min-w-125px">Satuan</th>
                                         <th class="min-w-125px">Actions</th>
                                     </thead>
@@ -140,21 +139,25 @@
                                                     :class="item.type === 'ASET' ? 'badge badge top-100 start-0 badge-warning ms-2' : 'badge badge top-100 start-0 badge-danger ms-2'"
                                                     x-text="item.type"></span>
                                             </td>
-                                            <td>
-                                                <template x-if="item.asset_account_name === null">
-                                                    <button class="btn btn-light-info btn-sm"
-                                                            id="item_category_description_drawer"
-                                                            @click="showItemCategoryDescription(item.category_id)"
-                                                            x-text="item.category_name">
-                                                    </button>
-                                                    <span x-text="item.category_name"></span>
+                                            <td colspan="2 ">
+                                                <template x-if="item.tangible_asset === 'Bangunan'">
+                                                    <p x-text="`${item.tangible_asset}"></p>
                                                 </template>
-                                                <template x-if="item.asset_account_name !== null">
-                                                    <span
-                                                        x-text="`${item.category_name} - ${item.asset_account_name}`"></span>
+
+                                                <template x-if="item.tangible_asset === 'Bukan Bangunan'">
+                                                    <div>
+                                                        <p x-text="`${item.tangible_asset}`"></p>
+                                                        <p>
+                                                            <a class="m-0" href="#"
+                                                               id="item_category_description_drawer"
+                                                               @click="showItemCategoryDescription(item.category_id)"
+                                                               data-bs-target="#modal-"
+                                                               x-text="`${item.category_name}`"></a>
+                                                        </p>
+                                                        <p x-text="`${item.asset_account_name}`"></p>
+                                                    </div>
                                                 </template>
                                             </td>
-                                            <td x-text="item.material"></td>
                                             <td x-text="item.unit_type_name"></td>
                                             <td>
                                                 <button class="btn btn-light-primary btn-sm"
@@ -206,6 +209,8 @@
                 itemMustHaveCode: false,
                 hasSNOnItem: false,
                 itemCategoryDescription: '',
+                tangibleAsset: null,
+                buildingType: null,
                 modalForm: new bootstrap.Modal(document.getElementById('modal-item')),
                 form: document.getElementById('form-item'),
                 itemCategoryModal: new bootstrap.Modal(document.getElementById('modal-item-category')),
@@ -319,7 +324,6 @@
                     }
                 },
                 async getItemCategories() {
-                    const self = this;
                     $(".item-category-select2").select2({
                         allowClear: true,
                         placeholder: 'Pilih Kategori',
@@ -337,9 +341,6 @@
                             processResults: data => ({results: data}),
                             cache: true
                         }
-                    }).on('change', (e) => {
-                        const data = $(".item-category-select2 option:selected").text();
-                        self.isAset = data === 'ASET';
                     });
                 },
                 async selectedAssetAccount() {
@@ -451,6 +452,7 @@
                     const resp = await axios.get(`/master/operational/items/${id}`);
                     this.editVal = resp.data;
                     this.itemMustHaveCode = this.editVal.must_have_code === 1;
+                    this.tangibleAsset = this.editVal.tangible_assets_type === 1 ? 'Bangunan' : 'Bukan Bangunan';
 
                     $('#selected-asset-account').val('').trigger('change');
 

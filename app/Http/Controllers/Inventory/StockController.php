@@ -121,10 +121,10 @@ use Illuminate\View\View;
     /**
      * @throws AuthorizationException
      */
-    public function getMainBranchWithStock(ItemCollection $itemCollection): JsonResponse
+    public function getMainBranchWithStock(Request $request, ItemCollection $itemCollection): JsonResponse
     {
         $this->authorize('view', Stock::class);
-        return response()->json($this->stockService->getMainBranchWithStock($itemCollection));
+        return response()->json($this->stockService->getMainBranchWithStock($request, $itemCollection));
     }
 
 
@@ -142,9 +142,9 @@ use Illuminate\View\View;
     }
 
 
-    public function getStockWithCodes(): JsonResponse
+    public function getStockWithCodes(Request $request): JsonResponse
     {
-        $stocks = $this->stockService->getStockWithCodes();
+        $stocks = $this->stockService->getStockWithCodes($request);
         return response()->json($stocks);
     }
 
