@@ -21,7 +21,8 @@ class ItemCollection extends Model
         'code',
         'category_id',
         'unit_type_id',
-        'material',
+        'tangible_assets_type',
+        'building_type',
         'asset_account_id',
         'reorder_level',
         'must_have_code',
@@ -33,7 +34,6 @@ class ItemCollection extends Model
     {
         return [
             'name' => $this->name,
-            'material' => $this->material,
         ];
     }
 

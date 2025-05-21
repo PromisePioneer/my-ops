@@ -109,26 +109,3 @@
 
 </div>
 
-
-<div class="row mb-10">
-    <div class="col-lg-6">
-        <label for="name" class="required form-label">
-            Akun Debit
-        </label>
-        <select name="debit_account_id" id="selected-debit-account"
-                class="form-select form-select-solid stock-accounts-select2"
-                data-dropdown-parent="#modal-transactions">
-            <option></option>
-        </select>
-    </div>
-    <div class="col-lg-6">
-        <label for="name" class="required form-label">
-            Akun Kredit
-        </label>
-        <select name="credit_account_id" id="selected-credit-account"
-                class="form-select-solid form-select kas-and-leverage-accounts-select2"
-                data-dropdown-parent="#modal-transactions">
-            <option></option>
-        </select>
-    </div>
-</div>

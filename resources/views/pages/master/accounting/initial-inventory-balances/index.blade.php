@@ -218,6 +218,8 @@
                 editVal: '',
                 search: '',
                 isAset: false,
+                tangibleAsset: null,
+                buildingType: null,
                 PKP: false,
                 modal: new bootstrap.Modal(document.getElementById('modal-initial-inventory-balance')),
                 form: document.getElementById('form-initial-inventory-balance'),
@@ -229,14 +231,32 @@
                 confirmForm: document.getElementById('form-confirm'),
                 attachmentImgSrc: '',
                 async init() {
-                    await this.getInitialInventoryBalances();
-                    await this.getMainBranches();
-                    await this.getSuppliers();
-                    await this.getItemCollections();
-                    await this.itemCategories();
-                    await this.getUnitTypes();
-                    await this.getStockAccounts();
-                }, selectCheckBox(event) {
+                    this.$nextTick(async () => {
+                        await this.getInitialInventoryBalances();
+                        await this.getMainBranches();
+                        await this.getSuppliers();
+                        await this.getItemCollections();
+                        await this.itemCategories();
+                        await this.getUnitTypes();
+                        await this.getStockAccounts();
+                        await this.getAssetAccounts();
+                    })
+                },
+                async getAssetAccounts() {
+                    $(".asset-accounts-select2").select2({
+                        allowClear: true,
+                        placeholder: 'Pilih Akun Aset',
+                        ajax: {
+                            url: '/select2/asset-accounts-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: false
+                        }
+                    });
+                },
+                selectCheckBox(event) {
                     const checkboxId = event.target.value;
                     if (event.target.checked) {
                         this.selectedCheckBox.push(checkboxId);
@@ -364,9 +384,9 @@
                 async saveItem() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('master/operational/items', new FormData(this.goodsForm))
+                        await axios.post('/master/operational/items', new FormData(this.itemForm))
                         await showAlert('success', 'Data berhasil disimpan')
-                        this.goodsForm.reset();
+                        this.itemForm.reset();
                         this.itemModal.hide();
                         this.modalForm.show();
                     } catch (error) {

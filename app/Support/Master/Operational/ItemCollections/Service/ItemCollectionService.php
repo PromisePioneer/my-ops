@@ -90,11 +90,11 @@ use Throwable;
             return [
                 'id' => $item->id,
                 'name' => $item->item_collection_name,
-                'unit_type_name' => $item->unitType?->name ?? $item->unit_type_name,
+                'unit_type_name' => $item->unitType?->name,
                 'category_name' => $item->category?->name,
                 'category_id' => $item->category_id,
-                'asset_account_name' => $item->assetAccount?->name ?? $item->accounts,
-                'material' => $item->material,
+                'asset_account_name' => "{$item->assetAccount?->code} {$item->assetAccount?->name}",
+                'tangible_asset' => $item->tangible_assets_type,
                 'type' => $item->type,
                 'reorder_level' => $item->reorder_level
             ];
@@ -110,15 +110,11 @@ use Throwable;
      */
     public function store(ItemCollectionRequest $request): void
     {
-
         DB::transaction(function () use ($request) {
-
-
+            $categoryId = null;
             $category = ItemCategory::find($request->category_id);
             $unitType = UnitType::find($request->unit_type_id);
-
-
-            if (empty($category)) {
+            if ($request->category_id) {
                 $categoryId = ItemCategory::create([
                     'name' => $request->category_id
                 ]);
@@ -130,17 +126,40 @@ use Throwable;
                 ]);
             }
 
+
+            $reorderLevel = null;
+            $buildingType = null;
+            $tangibleAssetsType = null;
+            if ($request->type === 'ASET') {
+                $tangibleAssetsType = $request->tangible_assets_type;
+            }
+            if ($request->tangible_assets_type === 'Bukan Bangunan' || $request->type === 'JUAL') {
+                $reorderLevel = $request->reorder_level;
+            }
+            if ($request->tangible_assets_type === 'Bangunan') {
+                $buildingType = $request->building_type;
+            }
+
+            if ($request->tangible_assets_type === 'Bukan Bangunan'
+                || $request->type === 'ASET'
+                || $request->type === 'JUAL'
+            ) {
+                $categoryId = $request->category_id;
+            }
+
             ItemCollection::create([
                 'name' => $request->name,
-                'category_id' => $categoryId->id ?? $request->category_id,
+                'category_id' => $categoryId,
                 'unit_type_id' => $unitTypeId->id ?? $request->unit_type_id,
                 'code' => $request->code,
                 'asset_account_id' => $request->type === 'ASET' ? $request->asset_account_id : null,
                 'material' => $request->material,
                 'must_have_code' => $request->must_have_code === 'on',
                 'is_code_listed' => $request->is_code_listed === 'on',
-                'reorder_level' => $request->reorder_level,
+                'tangible_assets_type' => $tangibleAssetsType,
+                'reorder_level' => $reorderLevel,
                 'type' => $request->type,
+                'building_type' => $buildingType,
             ]);
         });
     }
@@ -149,9 +168,30 @@ use Throwable;
     public function update(ItemCollection $itemCollection, ItemCollectionRequest $request): void
     {
 
+        $reorderLevel = null;
+        $buildingType = null;
+        $categoryId = null;
+        $tangibleAssetsType = null;
+        if ($request->type === 'ASET') {
+            $tangibleAssetsType = $request->tangible_assets_type;
+        }
+        if ($request->tangible_assets_type === 'Bukan Bangunan' || $request->type === 'JUAL') {
+            $reorderLevel = $request->reorder_level;
+        }
+        if ($request->tangible_assets_type === 'Bangunan') {
+            $buildingType = $request->building_type;
+        }
+
+        if ($request->tangible_assets_type === 'Bukan Bangunan'
+            || $request->type === 'ASET'
+            || $request->type === 'JUAL'
+        ) {
+            $categoryId = $request->category_id;
+        }
+
         $itemCollection->update([
             'name' => $request->name,
-            'category_id' => $request->category_id,
+            'category_id' => $categoryId,
             'unit_type_id' => $request->unit_type_id,
             'code' => $request->code,
             'type' => $request->type,
@@ -159,7 +199,9 @@ use Throwable;
             'material' => $request->material,
             'must_have_code' => $request->must_have_code === 'on',
             'is_code_listed' => $request->is_code_listed === 'on',
-            'reorder_level' => $request->reorder_level,
+            'tangible_assets_type' => $tangibleAssetsType,
+            'reorder_level' => $reorderLevel,
+            'building_type' => $buildingType,
         ]);
     }
 
