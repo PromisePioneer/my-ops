@@ -42,4 +42,10 @@ class Stock extends Model
     {
         return $this->hasMany(ItemCatalog::class, 'stock_id');
     }
+
+
+    public function initialInventoryBalance(): BelongsTo
+    {
+        return $this->belongsTo(InitialInventoryBalance::class, 'initial_balance_inventory_id');
+    }
 }
