@@ -15,7 +15,9 @@ return new class extends Migration {
             $table->string('name');
             $table->enum('type', ['ASET', 'JUAL']);
             $table->string('code')->nullable();
+            $table->enum('tangible_assets_type', ['Bangunan', 'Bukan Bangunan'])->nullable();
             $table->foreignId('category_id')
+                ->nullable()
                 ->constrained('item_categories')
                 ->cascadeOnDelete();
             $table->foreignId('unit_type_id')
@@ -25,8 +27,8 @@ return new class extends Migration {
                 ->nullable()
                 ->constrained('accounts')
                 ->cascadeOnDelete();
-            $table->enum('material', ['Besi', 'Non besi']);
-            $table->double('reorder_level');
+            $table->enum('building_type', ['Permanen', 'Tidak Permanen'])->nullable();
+            $table->double('reorder_level')->nullable();
             $table->boolean('must_have_code')->default(false);
             $table->boolean('is_code_listed')->default(false);
             $table->softDeletes();

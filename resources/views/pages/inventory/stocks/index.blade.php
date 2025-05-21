@@ -58,16 +58,40 @@
                 <div class="card card-flush">
                     <div class="card-header border-0 pt-6">
                         <div class="card-title">
-                            <h3>Stok Tersedia</h3>
-                        </div>
-                        <div class="card-toolbar">
-                            <div class="d-flex align-items-center position-relative my-1">
+                            <div class="d-flex align-items-center position-relative">
+                                <div class="d-flex align-items-center position-relative my-1">
                                 <span class="svg-icon svg-icon-1 position-absolute ms-6">
                                    <i class="bi bi-search"></i>
                                 </span>
-                                <input type="text" name="search" x-model="search" @input.debounce="searchData()"
-                                       class="form-control form-control-solid w-250px ps-14"
-                                       placeholder="Search...">
+                                    <input type="text" name="search" x-model="search" @input.debounce="searchData()"
+                                           class="form-control form-control-solid w-250px ps-14"
+                                           placeholder="Search...">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <a href="{{ url('inventory/stock-withdrawals') }}" target="_blank"
+                                   class="btn btn-light-primary btn-sm me-2">
+                                    <i class="ki-duotone ki-package fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                    </i>
+                                    Pemakaian Barang
+                                </a>
+                                <a href="{{ url('inventory/stock-mutations') }}" target="_blank"
+                                   class="btn btn-light-primary btn-sm">
+                                    <i class="ki-duotone ki-basket-ok fs-2">
+                                        <span class="path1"></span>
+                                        <span class="path2"></span>
+                                        <span class="path3"></span>
+                                        <span class="path4"></span>
+                                    </i>
+
+
+                                    Mutasi Barang
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -83,7 +107,6 @@
                                         <th class="min-w-125px text-center">Nama</th>
                                         <th class="min-w-125px text-center">Kategori</th>
                                         <th class="min-w-125px text-center">Stok</th>
-                                        <th class="min-w-125px text-center">Actions</th>
                                     </thead>
                                     <tbody class="fw-bold text-center">
                                     <template x-if="isLoading">
@@ -115,26 +138,6 @@
                                             </td>
                                             <td class="text-center" x-text="stock.category_name"></td>
                                             <td class="text-center" x-text="stock.total_stock"></td>
-                                            <td>
-                                                <a :href="`/inventory/stock-withdrawals`"
-                                                   class="btn btn-light-info btn-sm mb-4">
-                                                    <i class="ki-duotone ki-information fs-2">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                        <span class="path3"></span>
-                                                    </i>
-                                                    Pemakaian Barang
-                                                </a>
-                                                <a :href="`/inventory/stock-mutation/create/${stock.id}`"
-                                                   class="btn btn-light-info btn-sm">
-                                                    <i class="ki-duotone ki-information fs-2">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                        <span class="path3"></span>
-                                                    </i>
-                                                    Mutasi Barang
-                                                </a>
-                                            </td>
                                         </tr>
                                     </template>
                                     </tbody>

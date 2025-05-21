@@ -106,6 +106,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
                 'children' => $branch->children->map(function ($child) {
                     return [
                         'id' => $child?->id,
+                        'parent_id' => $child?->parent_id,
                         'text' => $child->parent->name . '-' . $child?->name,
                     ];
                 })

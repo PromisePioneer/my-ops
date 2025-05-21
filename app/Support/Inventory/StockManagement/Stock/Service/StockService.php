@@ -63,7 +63,7 @@ use Illuminate\Support\Facades\Auth;
                 'id' => $item->id,
                 'type' => $item->type,
                 'total_stock' => $stock,
-                'category_name' => $item->category->name,
+                'category_name' => $item->category?->name,
                 'name' => $item->name,
                 'unit_name' => $item->unitType->name
             ];
@@ -78,10 +78,14 @@ use Illuminate\Support\Facades\Auth;
     public function getMustReorderStocks()
     {
         $itemDoesntHaveGoodsStock = ItemCollection::whereDoesntHave('stock')->count();
-        $items = ItemCollection::all();
+        $items = ItemCollection::with('category', 'stock')
+            ->whereNotNull('category_id')
+            ->get();
+
         $itemHasGoodsStock = null;
         foreach ($items as $item) {
-            $itemHasGoodsStock = ItemCollection::whereHas('stock', function ($query) use ($item) {
+            $itemHasGoodsStock = ItemCollection::where('category_id', null)
+                ->whereHas('stock', function ($query) use ($item) {
                 $query->where('qty', '<', $item->reorder_level);
             })->count();
         }
@@ -92,10 +96,8 @@ use Illuminate\Support\Facades\Auth;
 
     public function findByItemAndBranch(Branch $branch, ItemCollection $itemCollection)
     {
-        $stocks = $this->stockRepository->findByItemAndBranch($branch->id, $itemCollection->id)->paginate(self::$perPage);
-
-
-        $data = $stocks->getCollection()->map(function ($stock) {
+        $stocks = $this->stockRepository->findByItemAndBranch($branch->id, $itemCollection->id)->get();
+        return $stocks->map(function ($stock) {
             return [
                 'id' => $stock->id,
                 'branch_name' => $stock->stock->branch->name,
@@ -104,12 +106,9 @@ use Illuminate\Support\Facades\Auth;
                 'condition' => $stock->condition,
             ];
         });
-
-        $stocks->setCollection($data);
-        return $stocks;
     }
 
-    public function getMainBranchWithStock(ItemCollection $itemCollection)
+    public function getMainBranchWithStock(Request $request, ItemCollection $itemCollection)
     {
         $branch = $this->branchRepository->getBranchWithStock()->get();
         return $branch->map(function ($item) use ($itemCollection) {
@@ -133,7 +132,7 @@ use Illuminate\Support\Facades\Auth;
     }
 
 
-    public function getStockWithCodes()
+    public function getStockWithCodes(Request $request)
     {
         $stock = $this->stockRepository->getStockWithCodes()->get();
         return $stock->map(function ($stock) {

@@ -234,7 +234,6 @@ use function App\Helper\formatDate;
     {
         $stockWithdrawal->load('stockWithdrawalItems', 'stockWithdrawalByEmployees', 'stockWithdrawalItems.stock.item', 'stockWithdrawalByEmployees.user.roles');
 
-
         $hash = Hash::make($stockWithdrawal->id);
         $image = QrCode::format('png')->size(200)
             ->generate($hash);

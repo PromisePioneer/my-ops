@@ -1,30 +1,16 @@
 @extends('layouts.template')
-@section('page-title', 'Form Pengambilan Barang')
+@section('page-title', 'Mutasi Barang - Tambah')
 @section('content')
-    <style>
-        .modal-open .select2-container--bootstrap5 .select2-dropdown {
-            z-index: 1020 !important;
-        }
-    </style>
-
-    <div class="d-flex flex-column flex-lg-row" x-data="generateStockWithdrawals">
-        <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
-            <div class="card p-10">
-                <form id="form" @submit.prevent="save()" enctype="multipart/form-data">
+    <div x-data="generateStockMutation()">
+        <div class="card p-10">
+            <div class="card-header border-0 pt-10">
+                <a class="btn btn-info btn-sm mb-6" href="{{ url('/inventory/stocks') }}">Kembali</a>
+            </div>
+            <div class="card-body py-3">
+                <form id="form" @submit.prevent="save()">
+                    @csrf
                     <div class="card-body p-12">
-                        <div class="row gx-10 mb-5">
-                            <div class="col-lg-6">
-                                <div class="form-group row mb-6">
-                                    <label
-                                        class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Karyawan</label>
-                                    <div class="col-lg-11 fv-row">
-                                        <select name="user_id[]" id="users"
-                                                class="form-select form-select-solid users-select2" multiple>
-                                            <option></option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="row gx-10 mb-10">
                             <div class="col-lg-6">
                                 <label
                                     class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Pilih Opsi</label>
@@ -45,6 +31,52 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row mb-4">
+                            @if(empty(Auth::user()->branch_id))
+                                <div class="col-lg-6">
+                                    <label
+                                        class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                        Pilih Cabang Awal
+                                    </label>
+                                    <select class="form-select form-select-solid main-branches-select2"
+                                            name="from_branch" id="from_branch">
+                                    </select>
+                                </div>
+                            @endif
+                            <div class="col-lg-6">
+                                <label
+                                    class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                    Pilih Cabang Tujuan
+                                </label>
+                                <select class="form-select form-select-solid branches-select2"
+                                        name="to_branch" id="to_branch">
+                                </select>
+                            </div>
+
+                            @if(Auth::user()->branch_id)
+                                <div class="col-lg-6">
+                                    <label
+                                        class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                        Pilih Cabang
+                                    </label>
+                                    <select class="form-select form-select-solid main-branches-select2"
+                                            name="branch_id" id="branch-id">
+                                    </select>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-lg-6"></div>
+                            <div class="col-lg-6">
+                                <label
+                                    class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                    Penerima Barang
+                                </label>
+                                <select class="form-select form-select-solid stocker-by-branch-select2"
+                                        name="receiver_id" id="receiver_id">
+                                </select>
+                                </div>
+                        </div>
                         <div class="table-responsive mb-10" x-show="itemWithCode" x-cloak x-transition>
                             <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Barang Berkode</label>
                             <table class="table fw-bolder text-gray-700"
@@ -57,7 +89,7 @@
                                 <tbody>
                                 <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                     <td class="pe-7" style='text-align:center; vertical-align:middle'>
-                                        <select name="itemWithCodeFields[]"
+                                        <select :name="`${itemWithCode ? 'itemWithCodeFields[]' : ''}`"
                                                 class="form-select form-select-solid stock-with-codes-select2"
                                                 multiple>
                                             <option></option>
@@ -86,7 +118,7 @@
                                             <select x-model="field.stock_id"
                                                     :name="`itemWithoutCodeFields[${index}][stock_id]`"
                                                     :id="`stock-without-codes-select2-${index}`"
-                                                    class="form-select form-select-solid">
+                                                    class="form-select form-select-solid stock-without-codes-select2">
                                                 <option></option>
                                             </select>
                                         </td>
@@ -125,11 +157,20 @@
                         </div>
                     </div>
 
-                    <div class="float-end">
-                        <a href="{{ url('/inventory/stock-withdrawals') }}"
-                           class="btn btn-sm btn-light">Cancel</a>
-                        <button type="submit" class="btn btn-sm btn-primary" :disabled="buttonLoading"
-                                x-text="buttonLoading ? 'Loading...' : 'Simpan'"></button>
+
+                    <div class="float-end d-flex py-6 px-9">
+                        <button type="reset" class="btn btn-light btn-active-light-primary me-2 btn-sm">Reset</button>
+                        <button type="submit" class="btn btn-sm btn-light-primary"
+                                :disabled="buttonLoading">
+                            <i class="ki-duotone ki-click fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                                <span class="path5"></span>
+                            </i>
+                            <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -139,10 +180,7 @@
 @endsection
 @push('script')
     <script>
-        $("#invoiceDate").flatpickr();
-        $("#dueDate").flatpickr();
-
-        function generateStockWithdrawals() {
+        function generateStockMutation() {
             return {
                 itemWithCode: false,
                 itemWithoutCode: false,
@@ -150,26 +188,72 @@
                 buttonLoading: false,
                 form: document.getElementById('form'),
                 itemWithCodes: [],
-                itemWithCodeFields: [],
                 itemWithoutCodeFields: [],
+                toBranchParentId: null,
                 async init() {
-                    await this.getUserData();
                     await this.getStockWithCodesData();
+                    await this.getMainBranches();
+                    await this.getBranches();
+                    await this.getStockerByBranch();
 
                     for (const val of this.itemWithoutCodeFields) {
                         const index = this.itemWithoutCodeFields.indexOf(val);
                         await this.getStockWithoutCodesData(index);
                     }
                 },
-                async getUserData() {
-                    $(".users-select2").select2({
-                        placeholder: "Pilih Karyawan",
+                async getMainBranches() {
+                    const self = this;
+                    $(`.main-branches-select2`).select2({
                         allowClear: true,
+                        placeholder: "Pilih Barang",
                         ajax: {
-                            url: '/select2/user-has-areas-data',
+                            url: '/select2/main-branches-data',
                             dataType: "json",
                             type: "GET",
-                            data: (params) => ({search: params.term}),
+                            data: (params) => ({
+                                search: params.term,
+                            }),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
+                    }).on('change', function (e) {
+                        self.itemWithoutCodeFields.forEach((val, index) => {
+                            $(`#stock-without-codes-select2-${index}`).val(null).trigger('change');
+                        });
+                    });
+                },
+                async getBranches() {
+                    const self = this;
+                    $(`.branches-select2`).select2({
+                        allowClear: true,
+                        placeholder: "Pilih Barang",
+                        ajax: {
+                            url: '/select2/branches-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({
+                                search: params.term,
+                            }),
+                            processResults: (data) => ({results: data}),
+                            cache: true
+                        }
+                    }).on('select2:select', function (e) {
+                        self.toBranchParentId = e.params.data.parent_id;
+                    })
+                },
+                async getStockerByBranch() {
+                    const self = this;
+                    $(`.stocker-by-branch-select2`).select2({
+                        allowClear: true,
+                        placeholder: "Pilih Stocker",
+                        ajax: {
+                            url: '/select2/stocker-by-branch-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({
+                                search: params.term,
+                                branch_id: self.toBranchParentId
+                            }),
                             processResults: (data) => ({results: data}),
                             cache: true
                         }
@@ -178,20 +262,20 @@
                 async getStockWithCodesData() {
                     const self = this;
                     $(`.stock-with-codes-select2`).select2({
-                            allowClear: true,
-                            placeholder: "Pilih Barang",
-                            ajax: {
-                                url: '/select2/stock-with-codes-data',
-                                dataType: "json",
-                                type: "GET",
-                                data: (params) => ({
-                                    search: params.term,
-                                }),
-                                processResults: (data) => ({results: data}),
-                                cache: true
-                            }
+                        allowClear: true,
+                        placeholder: "Pilih Barang",
+                        ajax: {
+                            url: '/select2/stock-with-codes-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({
+                                search: params.term,
+                                branch_id: $('#from_branch').val()
+                            }),
+                            processResults: (data) => ({results: data}),
+                            cache: true
                         }
-                    ).on('select2:select', function (e) {
+                    }).on('select2:select', function (e) {
                         self.itemWithCodeFields.push({
                             code: e.params.data.code,
                             stock_id: e.params.data.stock_id
@@ -213,23 +297,22 @@
                         return item.stock_id;
                     }).filter(val => val !== "");
                     $(`#stock-without-codes-select2-${index}`).select2({
-                            allowClear: true,
+                        allowClear: true,
                             placeholder: "Pilih Barang",
-                            ajax: {
-                                url: '/select2/stock-without-codes-data',
-                                dataType: "json",
-                                type: "GET",
-                                data: (params) => ({
-                                    search: params.term,
-                                    ids: ids,
-                                }),
-                                processResults: (data) => ({results: data}),
-                                cache: true
-                            }
+                        ajax: {
+                            url: '/select2/stock-without-codes-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({
+                                search: params.term,
+                                ids: ids,
+                                branch_id: $('#from_branch').val()
+                            }),
+                            processResults: (data) => ({results: data}),
+                            cache: true
                         }
-                    ).on('change', function (e) {
+                    }).on('change', function (e) {
                         self.itemWithoutCodeFields[index].stock_id = $(`#stock-without-codes-select2-${index}`)?.val() ?? ""
-                        console.log(self.itemWithoutCodeFields);
                     });
                 },
                 async save() {
@@ -237,9 +320,9 @@
                     try {
                         let formData = new FormData(this.form);
                         formData.append('item_with_codes', JSON.stringify(this.itemWithCodeFields));
-                        await axios.post(`/inventory/stock-withdrawals/store`, new FormData(this.form))
+                        await axios.post(`/inventory/stock-mutations/store`, new FormData(this.form))
                         await showAlert('success', 'Data berhasil disimpan').then(() => {
-                            window.location.href = '/inventory/stock-withdrawals';
+                            window.location.href = '/inventory/stock-mutations';
                         })
                     } catch (error) {
                         const respError = error.response.data.errors;
@@ -257,9 +340,9 @@
 
 
                     this.itemWithoutCodeFields.push({
-                            stock_id: '',
-                            qty: '',
-                        });
+                        stock_id: '',
+                        qty: '',
+                    });
                 },
                 calculateTotal(index) {
                     const quantity = this.fields[index].qty;
@@ -280,3 +363,4 @@
         }
     </script>
 @endpush
+

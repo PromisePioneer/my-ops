@@ -203,4 +203,10 @@ use Maatwebsite\Excel\Facades\Excel;
     {
         return response()->json($this->userService->getUserHasArea($request));
     }
+
+
+    public function getStockerByBranchId(Request $request): JsonResponse
+    {
+        return response()->json($this->userService->getStockerByBranchId($request));
+    }
 }

@@ -124,6 +124,7 @@ Route::get('/', function () {
     return redirect('home');
 });
 
+
 Auth::routes();
 
 
@@ -730,8 +731,15 @@ Route::group(['middleware' => ['auth']], static function () {
         });
 
 
-        Route::prefix('/stock-mutation')->group(function () {
-            Route::get('/create/{itemCollection}', [StockMutationController::class, 'create']);
+        Route::prefix('/stock-mutations')->group(function () {
+            Route::get('/', [StockMutationController::class, 'index']);
+            Route::get('/data', [StockMutationController::class, 'data']);
+            Route::get('/create', [StockMutationController::class, 'create']);
+            Route::post('/store', [StockMutationController::class, 'store']);
+            Route::post('/destroy', [StockMutationController::class, 'destroy']);
+            Route::get('/show/{stockMutation}', [StockMutationController::class, 'show']);
+            Route::post('/send-item/{stockMutation}', [StockMutationController::class, 'sendItem']);
+            Route::get('/bast-document/{stockMutation}', [StockMutationController::class, 'bastDocument']);
         });
         Route::prefix('draft-stocks')->group(function () {
             Route::get('/', [DraftStockController::class, 'index']);
@@ -1310,6 +1318,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/suppliers-data', [SupplierController::class, 'getSuppliers']);
         Route::get('/selected-supplier/{supplier}', [SupplierController::class, 'selectedSupplier']);
         Route::get('/asset-items-data', [ItemCollectionController::class, 'getAssetData']);
+        Route::get('/stocker-by-branch-data', [UserController::class, 'getStockerByBranchId']);
 
     });
 
