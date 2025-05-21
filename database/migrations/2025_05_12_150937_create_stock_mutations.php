@@ -29,6 +29,8 @@ return new class extends Migration {
                 ->constrained('users')
                 ->cascadeOnUpdate()
                 ->cascadeOnUpdate();
+            $table->string('sender_signature')->nullable();
+            $table->string('receiver_signature')->nullable();
             $table->text('description');
             $table->boolean('status')->default(false);
             $table->timestamps();
@@ -40,6 +42,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('stock_mutation_histories');
+        Schema::disableForeignKeyConstraints();
+        Schema::dropIfExists('stock_mutations');
     }
 };

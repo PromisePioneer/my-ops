@@ -98,7 +98,7 @@ use Throwable;
     /**
      * @throws Throwable
      */
-    public function destroy(StockWithdrawal $stockWithdrawal)
+    public function destroy(StockWithdrawal $stockWithdrawal): void
     {
         DB::transaction(function () use ($stockWithdrawal) {
 
