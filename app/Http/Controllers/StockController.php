@@ -144,8 +144,9 @@ use Illuminate\View\View;
     {
         $stock = Stock::with('transaction', 'branch', 'item')->whereHas('item', function ($query) use ($draftStock) {
             $query->where('name', $draftStock->transaction->item->name);
-        })
-            ->where('transaction_id', $draftStock->transaction_id)->orWhere('initial_balance_inventory_id', $draftStock->initial_balance_inventory_id)->get();
+        })->where('transaction_id', $draftStock->transaction_id)
+            ->orWhere('initial_balance_inventory_id', $draftStock->initial_balance_inventory_id)
+            ->get();
         return $stock->map(function ($stock) {
             return [
                 'id' => $stock->id,
@@ -201,7 +202,11 @@ use Illuminate\View\View;
 
     public function getStockWithoutCode(Request $request)
     {
-        $stock = Stock::with('item')->whereHas('item.category', function ($query) {
+        $stock = Stock::with('item', 'branch')
+            ->whereHas('branch', function ($query) use ($request) {
+                $query->where('parent_id', $request->branch_id ?? $request->user()->branch_id);
+            })
+            ->whereHas('item.category', function ($query) {
             $query->where('name', 'Kategori 4');
         })->whereNotIn('id', $request->get('ids', []))
             ->whereIn('condition', ['Baik', 'Diperbaiki'])

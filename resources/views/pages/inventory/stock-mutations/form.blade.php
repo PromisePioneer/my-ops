@@ -89,7 +89,7 @@
                                 <tbody>
                                 <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                     <td class="pe-7" style='text-align:center; vertical-align:middle'>
-                                        <select name="itemWithCodeFields[]"
+                                        <select :name="`${itemWithCode ? 'itemWithCodeFields[]' : ''}`"
                                                 class="form-select form-select-solid stock-with-codes-select2"
                                                 multiple>
                                             <option></option>
@@ -118,7 +118,7 @@
                                             <select x-model="field.stock_id"
                                                     :name="`itemWithoutCodeFields[${index}][stock_id]`"
                                                     :id="`stock-without-codes-select2-${index}`"
-                                                    class="form-select form-select-solid">
+                                                    class="form-select form-select-solid stock-without-codes-select2">
                                                 <option></option>
                                             </select>
                                         </td>
@@ -188,7 +188,6 @@
                 buttonLoading: false,
                 form: document.getElementById('form'),
                 itemWithCodes: [],
-                itemWithCodeFields: [],
                 itemWithoutCodeFields: [],
                 toBranchParentId: null,
                 async init() {
@@ -217,6 +216,10 @@
                             processResults: (data) => ({results: data}),
                             cache: true
                         }
+                    }).on('change', function (e) {
+                        self.itemWithoutCodeFields.forEach((val, index) => {
+                            $(`#stock-without-codes-select2-${index}`).val(null).trigger('change');
+                        });
                     });
                 },
                 async getBranches() {
@@ -303,14 +306,13 @@
                             data: (params) => ({
                                 search: params.term,
                                 ids: ids,
+                                branch_id: $('#from_branch').val()
                             }),
                             processResults: (data) => ({results: data}),
                             cache: true
                         }
-                        }
-                    ).on('change', function (e) {
+                    }).on('change', function (e) {
                         self.itemWithoutCodeFields[index].stock_id = $(`#stock-without-codes-select2-${index}`)?.val() ?? ""
-                        console.log(self.itemWithoutCodeFields);
                     });
                 },
                 async save() {
