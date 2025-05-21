@@ -125,6 +125,7 @@ Route::get('/', function () {
     return redirect('home');
 });
 
+
 Auth::routes();
 
 
@@ -738,6 +739,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/store', [StockMutationController::class, 'store']);
             Route::post('/destroy', [StockMutationController::class, 'destroy']);
             Route::get('/show/{stockMutation}', [StockMutationController::class, 'show']);
+            Route::post('/send-item/{stockMutation}', [StockMutationController::class, 'sendItem']);
+            Route::get('/bast-document/{stockMutation}', [StockMutationController::class, 'bastDocument']);
         });
         Route::prefix('draft-stocks')->group(function () {
             Route::get('/', [DraftStockController::class, 'index']);

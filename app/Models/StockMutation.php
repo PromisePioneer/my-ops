@@ -16,7 +16,9 @@ class StockMutation extends Model
         'new_branch_id',
         'sender_id',
         'receiver_id',
-        'description'
+        'description',
+        'sender_signature',
+        'receiver_signature',
     ];
 
 
@@ -34,12 +36,6 @@ class StockMutation extends Model
     public function newBranch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'new_branch_id');
-    }
-
-
-    public function item(): BelongsTo
-    {
-        return $this->belongsTo(ItemCollection::class, 'item_id');
     }
 
 

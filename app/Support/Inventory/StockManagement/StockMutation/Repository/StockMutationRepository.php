@@ -9,6 +9,6 @@ class StockMutationRepository
 {
     public function getData(): Builder
     {
-        return StockMutation::with('oldBranch', 'newBranch', 'item', 'sender', 'receiver');
+        return StockMutation::with('oldBranch', 'newBranch', 'sender', 'receiver');
     }
 }

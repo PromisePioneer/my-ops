@@ -86,12 +86,15 @@
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td>
+                                        <template x-if="!stock.sender_signature">
+
                                         <div class="form-check form-check-sm form-check-custom form-check-solid"
                                              @click="selectCheckBox($event)">
                                             <input class="form-check-input" type="checkbox" :value="stock.id"
                                                    :id="'checkbox-' + stock.id"
                                             />
                                         </div>
+                                        </template>
                                     </td>
                                     <td x-text="stock.date"></td>
                                     <td x-text="stock.old_branch_name"></td>
@@ -203,6 +206,18 @@
                         try {
                             await axios.post(`/inventory/stock-mutations/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
+                            await this.init();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
+                },
+                async sendItem(id) {
+                    showConfirmModal("Anda yakin?", "Kirim barang ?.", "Ya, Kirim!", async () => {
+                        try {
+                            await axios.post(`/inventory/stock-mutations/send-item/${id}`, new FormData(this.formDelete));
+                            await showAlert('success', 'Barang sukses dikirim');
                             await this.init();
                         } catch (error) {
                             console.error(error);
