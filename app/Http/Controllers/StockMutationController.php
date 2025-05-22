@@ -114,8 +114,8 @@ use function App\Helper\formatDate;
 
 
         $pdf = Browsershot::html($view)
-            ->setChromePath('C:\Users\Javanicus\scoop\apps\chromium\current\chrome.exe')
-//            ->setChromePath('/usr/bin/chromium')
+//            ->setChromePath('C:\Users\Javanicus\scoop\apps\chromium\current\chrome.exe')
+            ->setChromePath('/usr/bin/chromium')
             ->noSandbox()
             ->waitUntilNetworkIdle()
             ->ignoreHttpsErrors()
