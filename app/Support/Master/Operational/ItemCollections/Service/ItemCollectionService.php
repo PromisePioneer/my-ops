@@ -111,7 +111,6 @@ use Throwable;
     public function store(ItemCollectionRequest $request): void
     {
         DB::transaction(function () use ($request) {
-            $categoryId = null;
             $category = ItemCategory::find($request->category_id);
             $unitType = UnitType::find($request->unit_type_id);
             if ($request->category_id) {
@@ -167,6 +166,7 @@ use Throwable;
 
     public function update(ItemCollection $itemCollection, ItemCollectionRequest $request): void
     {
+
 
         $reorderLevel = null;
         $buildingType = null;

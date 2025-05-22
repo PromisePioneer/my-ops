@@ -19,8 +19,9 @@
                     <div class="d-flex justify-content-end align-items-center">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="form-check form-switch form-check-custom form-check-solid me-10"
-                                 x-model="itemMustHaveCode">
-                                <input class="form-check-input" type="checkbox" :checked="editVal?.must_have_code === 1"
+                            >
+                                <input class="form-check-input" type="checkbox" x-model="itemMustHaveCode"
+                                       :checked="editVal?.must_have_code === 1"
                                        id="mustHaveCode"
                                        name="must_have_code"/>
                                 <label class="form-check-label" for="mustHaveCode">
@@ -28,8 +29,8 @@
                                 </label>
                             </div>
                             <div class="form-check form-switch form-check-custom form-check-solid">
-                                <input class="form-check-input" type="checkbox" id="isCodeListed"
-                                       name="is_code_listed" :checked="editVal?.is_code_listed === 1"/>
+                                <input class="form-check-input" type="checkbox" id="isCodeListed" x-model="hasSNOnItem"
+                                       :name="is_code_listed" :checked="editVal?.is_code_listed === 1"/>
                                 <label class="form-check-label" for="isCodeListed">
                                     Kode Bawaan
                                 </label>
@@ -38,20 +39,21 @@
                     </div>
 
 
-                    <div class="row mt-10">
+                    <div class="row mt-10 mb-10">
                         <div class="col-md-6">
-                            <div class="mb-10">
                                 <label for="name" class="required form-label">Nama</label>
                                 <input type="text" id="name" name="name" class="form-control form-control-solid"
                                        placeholder="Nama Barang" :value="editVal?.name"/>
-                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-10">
-                                <label for="name" class="form-label">Kode (Jika Barang memiliki kode)</label>
-                                <input type="text" id="code" name="code" class="form-control form-control-solid"
+                        <div class="col-md-6"
+                             x-show="itemMustHaveCode && !hasSNOnItem" x-transition x-cloak>
+                            <label for="name" class="form-label">
+                                Kode (Jika Barang memiliki kode)
+                            </label>
+                            <input type="text" id="code"
+                                   :name="`${itemMustHaveCode && !hasSNOnItem ? 'code' : ''}`"
+                                   class="form-control form-control-solid"
                                        placeholder="Kode Barang" :value="editVal?.code"/>
-                            </div>
                         </div>
                     </div>
 
@@ -70,14 +72,19 @@
                         </div>
                         <div class="col-md-6" x-show="isAset === 'ASET'" x-transition x-cloak>
                             <div class="mb-10">
-                                <label for="tangible_assets_type" class="required form-label">Kelompok Harta
-                                    Berwujud</label>
-                                <select name="tangible_assets_type" id="tangible_assets_type"
+                                <label for="tangible_assets_type" class="required form-label">
+                                    Kelompok Harta Berwujud
+                                </label>
+                                <select :name="`${isAset ? 'tangible_assets_type' : ''}`" id="tangible_assets_type"
                                         class="form-select form-select-solid"
                                         data-dropdown-parent="#modal-item" x-model="tangibleAsset">
                                     <option value="">Pilih Kelompok</option>
-                                    <option value="Bangunan" :selected="tangibleAsset === 'Bangunan'">Bangunan</option>
-                                    <option value="Bukan Bangunan" :selected="tangibleAsset === 'Bukan Bangunan'">
+                                    <option value="Bangunan"
+                                            :selected="tangibleAsset === 'Bangunan'">
+                                        Bangunan
+                                    </option>
+                                    <option value="Bukan Bangunan"
+                                            :selected="tangibleAsset === 'Bukan Bangunan'">
                                         Bukan Bangunan
                                     </option>
                                 </select>
@@ -91,10 +98,16 @@
                         &&
                         isAset === 'ASET'" x-cloak x-transition>
                             <div class="mb-10">
-                                <label for="building_type" class="required form-label">Tipe Bangunan</label>
-                                <select name="building_type" id="building_type"
-                                        class="form-select form-select-solid"
-                                        data-dropdown-parent="#modal-item">
+                                <label for="building_type" class="required form-label">
+                                    Tipe Bangunan
+                                </label>
+                                <select
+                                    :name="`${
+                                    tangibleAsset === 'Bangunan' &&
+                                    isAset === 'ASET' ? 'building_type' : ''}`"
+                                    id="building_type"
+                                    class="form-select form-select-solid"
+                                    data-dropdown-parent="#modal-item">
                                     <option value="">Pilih Tipe Bangunan</option>
                                     <option value="Permanen"
                                             :selected="editVal?.building_type === 'Permanen'"
@@ -122,10 +135,30 @@
 
                         <div class="col-md-6" x-show="tangibleAsset === 'Bukan Bangunan'" x-transition x-cloak>
                             <label for="category_id" class="required form-label">Kategori</label>
-                            <select name="category_id" id="selected-item-category"
+                            <select
+                                :name="tangibleAsset === 'Bukan Bangunan' || isAset === 'ASET' || isAset === 'Jual'? 'category_id' : ''"
+                                id="selected-item-category"
                                     class="form-select form-select-solid item-category-select2"
                                     data-dropdown-parent="#modal-item">
                                 <option></option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="row mb-4">
+                        <div class="col-md-6" x-show="tangibleAsset === 'Bukan Bangunan'" x-transition x-cloak>
+                            <label for="category_id" class="required form-label">Kelompok</label>
+                            <select
+                                :name="tangibleAsset === 'Bukan Bangunan' && isAset === 'ASET' ? 'non_building_group' : ''"
+                                id="selected-item-category"
+                                class="form-select form-select-solid"
+                                data-dropdown-parent="#modal-item">
+                                <option value="">Pilih Kelompok</option>
+                                <option value="Kelompok I">Kelompok I</option>
+                                <option value="Kelompok II">Kelompok II</option>
+                                <option value="Kelompok III">Kelompok III</option>
+                                <option value="Kelompok IV">Kelompok IV</option>
                             </select>
                         </div>
                     </div>
