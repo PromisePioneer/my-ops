@@ -16,6 +16,9 @@ return new class extends Migration {
             $table->enum('type', ['ASET', 'JUAL']);
             $table->string('code')->nullable();
             $table->enum('tangible_assets_type', ['Bangunan', 'Bukan Bangunan'])->nullable();
+            $table->enum('non_building_group',
+                ['Kelompok I', 'Kelompok II', 'Kelompok III', 'Kelompok IV'])
+                ->nullable();
             $table->foreignId('category_id')
                 ->nullable()
                 ->constrained('item_categories')
