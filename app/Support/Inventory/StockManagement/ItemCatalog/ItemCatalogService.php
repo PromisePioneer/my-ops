@@ -76,40 +76,40 @@ use Throwable;
             $draftStock->decrement('qty');
             if (empty($stock)) {
                 $newStock = $this->stockStore($draftStock, $request);
-                if ($draftStock->transaction->item->type === 'ASET' || $draftStock->initialInventoryBalance->item->type === 'ASET') {
-                    $unitPrice = $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance->unit_price;
+                if ($draftStock->transaction?->item?->type === 'ASET' || $draftStock->initialInventoryBalance?->item?->type === 'ASET') {
+                    $unitPrice = $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance?->unit_price;
 
 
                     $asset = Asset::create([
-                        'branch_id' => $draftStock->transaction->branch_id,
+                        'branch_id' => $draftStock->transaction?->branch_id,
                         'code' => $request->code,
-                        'item_id' => $draftStock->transaction->item_id ?? $draftStock->initialInventoryBalance->item_id,
-                        'date_received' => $draftStock->transaction?->date ?? $draftStock->initialInventoryBalance->date,
+                        'item_id' => $draftStock->transaction?->item_id ?? $draftStock->initialInventoryBalance?->item_id,
+                        'date_received' => $draftStock->transaction?->date ?? $draftStock->initialInventoryBalance?->date,
                         'unit' => 1,
-                        'useful_life' => UsefulLifeService::getUsefulLife($assetAccount->code, $itemObject->category->name, $itemObject->building_type),
+                        'useful_life' => UsefulLifeService::getUsefulLife($assetAccount?->code, $itemObject->category?->name, $itemObject?->building_type),
                         'price_per_unit' => $unitPrice,
-                        'total_price' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance->unit_price,
-                        'residu' => $unitPrice / UsefulLifeService::getUsefulLife($assetAccount->code, $itemObject->category->name, $itemObject->building_type),
+                        'total_price' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance?->unit_price,
+                        'residu' => $unitPrice / UsefulLifeService::getUsefulLife($assetAccount->code, $itemObject->category?->name, $itemObject->building_type),
                     ]);
                     $this->itemCatalogStore($request, $draftStock, $newStock, null, $asset);
                 }
 
 
             } else {
-                $unitPrice = $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance->unit_price;
+                $unitPrice = $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance?->unit_price;
                 $stock->increment('qty');
-                if ($draftStock->transaction->item->type === 'ASET' || $draftStock->initialInventoryBalance->item->type === 'ASET') {
+                if ($draftStock->transaction->item?->type === 'ASET' || $draftStock->initialInventoryBalance?->item->type === 'ASET') {
                     $asset = Asset::create([
-                        'branch_id' => $draftStock->transaction->branch_id,
+                        'branch_id' => $draftStock->transaction?->branch_id,
                         'code' => $request->code,
-                        'item_id' => $draftStock->transaction->item_id ?? $draftStock->initialInventoryBalance->item_id,
-                        'date_received' => $draftStock->transaction?->date ?? $draftStock->initialInventoryBalance->date,
+                        'item_id' => $draftStock->transaction?->item_id ?? $draftStock->initialInventoryBalance?->item_id,
+                        'date_received' => $draftStock->transaction?->date ?? $draftStock->initialInventoryBalance?->date,
                         'name' => $itemObject->name,
                         'unit' => 1,
-                        'useful_life' => UsefulLifeService::getUsefulLife($assetAccount->code, $itemObject->category->name, $itemObject->building_type),
+                        'useful_life' => UsefulLifeService::getUsefulLife($assetAccount->code, $itemObject->category?->name, $itemObject?->building_type),
                         'price_per_unit' => $unitPrice,
-                        'total_price' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance->unit_price,
-                        'residu' => $unitPrice / UsefulLifeService::getUsefulLife($assetAccount->code, $itemObject->category->name, $itemObject->building_type),
+                        'total_price' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance?->unit_price,
+                        'residu' => $unitPrice / UsefulLifeService::getUsefulLife($assetAccount->code, $itemObject->category?->name, $itemObject->building_type),
                     ]);
                     $this->itemCatalogStore($request, $draftStock, null, $stock, $asset);
                 }
