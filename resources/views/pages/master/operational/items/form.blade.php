@@ -135,7 +135,7 @@
                         <div class="col-md-6" x-show="isAset === 'ASET' || isAset === 'JUAL'" x-transition x-cloak>
                             <label for="unit_type_id" class="required form-label">Reorder Level</label>
                             <input type="text" class="form-control form-control-solid" name="reorder_level"
-                                   id="reorder_level" placeholder="Reorder Level">
+                                   id="reorder_level" placeholder="Reorder Level" :value="editVal.reorder_level">
                         </div>
                         <div class="col-md-6" x-show="isAset === 'ASET'" x-transition x-cloak>
                             <label for="asset_account_id" class="required form-label">
