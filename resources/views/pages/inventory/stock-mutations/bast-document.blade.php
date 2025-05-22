@@ -38,7 +38,7 @@
         top: 0;
         left: 0;
         right: 0;
-        height: 3cm;
+        height: 3.5cm;
     }
 
     footer {
@@ -195,6 +195,10 @@
         max-width: 100%;
         height: auto
     }
+
+    .page-break {
+        break-after: page
+    }
 </style>
 <body>
 <header>
@@ -217,7 +221,7 @@
         </p>
     </div>
 
-    <p class="fs-9 mb-4">
+    <p class="fs-9 mb-4 ">
         Pada tanggal {{ formatDate($stockMutation->date) }} yang bertanda tangan di bawah ini adalah :
     </p>
 
@@ -296,7 +300,13 @@
         </tbody>
     </table>
 
-    <div class="fs-9 mb-4">
+
+    @if(count($stockMutation->stockMutationItems) > 5)
+        @pageBreak
+        <div style="margin-top: 200px"></div>
+    @endif
+
+    <div class="fs-9 mb-4 ">
         <p class="mb-2"> Dengan Ketentuan Sebagai Berikut :</p>
         <ol style="line-height: 1.5">
             <li><b>PIHAK KESATU</b> wajib mengeluarkan Aset tersebut berikut nilainya dari Daftar Aktiva.</li>
