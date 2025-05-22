@@ -142,8 +142,8 @@ use Illuminate\View\View;
 
     public function findByDraftStockAndItemName(DraftStock $draftStock)
     {
-        $stock = Stock::with('transaction', 'branch', 'item')->whereHas('item', function ($query) use ($draftStock) {
-            $query->where('name', $draftStock->transaction->item->name);
+        $stock = Stock::with('transaction', 'branch', 'item', 'initialInventoryBalance')->whereHas('item', function ($query) use ($draftStock) {
+            $query->where('name', $draftStock->transaction?->item->name ?? $draftStock->initialInventoryBalance?->item->name);
         })->where('transaction_id', $draftStock->transaction_id)
             ->orWhere('initial_balance_inventory_id', $draftStock->initial_balance_inventory_id)
             ->get();

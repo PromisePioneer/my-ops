@@ -98,7 +98,7 @@ use Throwable;
             } else {
                 $unitPrice = $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance?->unit_price;
                 $stock->increment('qty');
-                if ($draftStock->transaction->item?->type === 'ASET' || $draftStock->initialInventoryBalance?->item->type === 'ASET') {
+                if ($draftStock->transaction?->item?->type === 'ASET' || $draftStock->initialInventoryBalance?->item->type === 'ASET') {
                     $asset = Asset::create([
                         'branch_id' => $draftStock->transaction?->branch_id,
                         'code' => $request->code,
