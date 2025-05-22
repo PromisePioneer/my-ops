@@ -119,6 +119,7 @@
                                 </select>
                             </div>
                         </div>
+
                         <div class="col-md-6" x-show="tangibleAsset === 'Bukan Bangunan'" x-transition x-cloak>
                             <label for="category_id" class="required form-label">Kategori</label>
                             <select name="category_id" id="selected-item-category"
@@ -131,6 +132,11 @@
 
 
                     <div class="row">
+                        <div class="col-md-6" x-show="isAset === 'ASET' || isAset === 'JUAL'" x-transition x-cloak>
+                            <label for="unit_type_id" class="required form-label">Reorder Level</label>
+                            <input type="text" class="form-control form-control-solid" name="reorder_level"
+                                   id="reorder_level" placeholder="Reorder Level">
+                        </div>
                         <div class="col-md-6" x-show="isAset === 'ASET'" x-transition x-cloak>
                             <label for="asset_account_id" class="required form-label">
                                 Akun Aset (Jika Masuk Aset)
