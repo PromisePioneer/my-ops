@@ -87,7 +87,9 @@
 
 
                     <div class="row">
-                        <div class="col-md-6" x-show="tangibleAsset === 'Bangunan'" x-cloak x-transition>
+                        <div class="col-md-6" x-show="tangibleAsset === 'Bangunan'
+                        &&
+                        isAset === 'ASET'" x-cloak x-transition>
                             <div class="mb-10">
                                 <label for="building_type" class="required form-label">Tipe Bangunan</label>
                                 <select name="building_type" id="building_type"
