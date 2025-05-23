@@ -117,6 +117,12 @@ use Throwable;
     }
 
 
+    public function nonBuildingGroupDetails(): View
+    {
+        return view('pages.master.operational.items.non-building-group-desc');
+    }
+
+
     public function getGoods(Request $request)
     {
         $search = $request->input('search');

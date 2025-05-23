@@ -4,7 +4,7 @@ namespace App\Support\Master\Operational\ItemCollections\Service;
 
 use AllowDynamicProperties;
 use App\Http\Requests\Master\Operational\Item\ItemCollectionRequest;
-use App\Models\ItemCategory;
+use App\Models\Account;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\UnitType;
 use App\Support\Master\Operational\ItemCollections\Repositories\ItemCollectionRepository;
@@ -111,54 +111,38 @@ use Throwable;
     public function store(ItemCollectionRequest $request): void
     {
         DB::transaction(function () use ($request) {
-            $category = ItemCategory::find($request->category_id);
             $unitType = UnitType::find($request->unit_type_id);
-            if ($request->category_id) {
-                $categoryId = ItemCategory::create([
-                    'name' => $request->category_id
-                ]);
-            }
-
             if (empty($unitType)) {
                 $unitTypeId = UnitType::create([
                     'name' => $request->unit_type_id
                 ]);
             }
 
+            $assetAccount = $request->asset_account_id;
 
-            $reorderLevel = null;
-            $buildingType = null;
-            $tangibleAssetsType = null;
-            if ($request->type === 'ASET') {
-                $tangibleAssetsType = $request->tangible_assets_type;
-            }
-            if ($request->tangible_assets_type === 'Bukan Bangunan' || $request->type === 'JUAL') {
-                $reorderLevel = $request->reorder_level;
-            }
-            if ($request->tangible_assets_type === 'Bangunan') {
-                $buildingType = $request->building_type;
+            if ($request->is_vehicle === 'on') {
+                $assetAccount = Account::where('code', '123')->first()->id;
             }
 
-            if ($request->tangible_assets_type === 'Bukan Bangunan'
-                || $request->type === 'ASET'
-                || $request->type === 'JUAL'
-            ) {
-                $categoryId = $request->category_id;
+            if ($request->tangible_assets_type === 'Tanah') {
+                $assetAccount = Account::where('code', '121')->first()->id;
             }
+
 
             ItemCollection::create([
                 'name' => $request->name,
-                'category_id' => $categoryId,
+                'is_vehicle' => $request->is_vehicle === 'on',
+                'category_id' => $request->category_id,
                 'unit_type_id' => $unitTypeId->id ?? $request->unit_type_id,
                 'code' => $request->code,
-                'asset_account_id' => $request->type === 'ASET' ? $request->asset_account_id : null,
-                'material' => $request->material,
+                'asset_account_id' => $assetAccount,
                 'must_have_code' => $request->must_have_code === 'on',
                 'is_code_listed' => $request->is_code_listed === 'on',
-                'tangible_assets_type' => $tangibleAssetsType,
-                'reorder_level' => $reorderLevel,
+                'tangible_assets_type' => $request->tangible_assets_type,
+                'reorder_level' => $request->reorder_level,
                 'type' => $request->type,
-                'building_type' => $buildingType,
+                'building_type' => $request->building_type,
+                'non_building_group' => $request->non_building_group
             ]);
         });
     }
@@ -166,42 +150,38 @@ use Throwable;
 
     public function update(ItemCollection $itemCollection, ItemCollectionRequest $request): void
     {
-
-
-        $reorderLevel = null;
-        $buildingType = null;
-        $categoryId = null;
-        $tangibleAssetsType = null;
-        if ($request->type === 'ASET') {
-            $tangibleAssetsType = $request->tangible_assets_type;
-        }
-        if ($request->tangible_assets_type === 'Bukan Bangunan' || $request->type === 'JUAL') {
-            $reorderLevel = $request->reorder_level;
-        }
-        if ($request->tangible_assets_type === 'Bangunan') {
-            $buildingType = $request->building_type;
+        $unitType = UnitType::find($request->unit_type_id);
+        if (empty($unitType)) {
+            $unitTypeId = UnitType::create([
+                'name' => $request->unit_type_id
+            ]);
         }
 
-        if ($request->tangible_assets_type === 'Bukan Bangunan'
-            || $request->type === 'ASET'
-            || $request->type === 'JUAL'
-        ) {
-            $categoryId = $request->category_id;
+        $assetAccount = $request->asset_account_id;
+
+        if ($request->is_vehicle === 'on') {
+            $assetAccount = Account::where('code', '123')->first()->id;
         }
+
+        if ($request->tangible_assets_type === 'Tanah') {
+            $assetAccount = Account::where('code', '121')->first()->id;
+        }
+
 
         $itemCollection->update([
             'name' => $request->name,
-            'category_id' => $categoryId,
-            'unit_type_id' => $request->unit_type_id,
+            'is_vehicle' => $request->is_vehicle === 'on',
+            'category_id' => $request->category_id,
+            'unit_type_id' => $unitTypeId->id ?? $request->unit_type_id,
             'code' => $request->code,
-            'type' => $request->type,
-            'asset_account_id' => $request->type === 'ASET' ? $request->asset_account_id : null,
-            'material' => $request->material,
+            'asset_account_id' => $assetAccount,
             'must_have_code' => $request->must_have_code === 'on',
             'is_code_listed' => $request->is_code_listed === 'on',
-            'tangible_assets_type' => $tangibleAssetsType,
-            'reorder_level' => $reorderLevel,
-            'building_type' => $buildingType,
+            'tangible_assets_type' => $request->tangible_assets_type,
+            'reorder_level' => $request->reorder_level,
+            'type' => $request->type,
+            'building_type' => $request->building_type,
+            'non_building_group' => $request->non_building_group
         ]);
     }
 
@@ -220,6 +200,4 @@ use Throwable;
         $explodeID = explode(',', $implodeID);
         $itemCollection->whereIn('id', array_filter($explodeID, 'is_numeric'))->restore();
     }
-
-
 }

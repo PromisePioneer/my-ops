@@ -535,6 +535,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/filter', [ItemCollectionController::class, 'filter']);
                 Route::get('/search', [ItemCollectionController::class, 'search']);
                 Route::post('/', [ItemCollectionController::class, 'store']);
+                Route::get('/non-building-group-details', [ItemCollectionController::class, 'nonBuildingGroupDetails']);
                 Route::post('/destroy', [ItemCollectionController::class, 'destroy']);
                 Route::get('/{itemCollection}', [ItemCollectionController::class, 'edit']);
                 Route::post('/update/{itemCollection}', [ItemCollectionController::class, 'update']);

@@ -104,10 +104,9 @@ use function App\Helper\formatDate;
             'date_received' => $request->date_received,
             'item_id' => $request->item_id,
             'unit' => 1,
-            'useful_life' => UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->material),
+            'useful_life' => UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->non_building_group, $itemCollection->building_type),
             'price_per_unit' => $unitPrice,
             'total_price' => $unitPrice,
-            'residu' => $unitPrice / UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->material),
         ]);
     }
 
@@ -132,19 +131,20 @@ use function App\Helper\formatDate;
     }
 
 
+    /**
+     * @throws Throwable
+     */
     public function depreciation(Request $request, Asset $asset): void
     {
-        $yearsStart = Carbon::parse($request->date_received);
-        $yearsEnd = Carbon::parse($request->date_received)->addYears($asset->useful_life);
+        $yearsStart = Carbon::parse($request->date_received)->startOfMonth();
+        $yearsEnd = Carbon::parse($request->date_received)->startOfMonth()->addYears($asset->useful_life);
         $diffInMonth = $yearsStart->diffInMonths($yearsEnd);
 
-
-        $residu = $asset->total_price / $diffInMonth;
-        $depreciation = ($asset->total_price - $residu) / $diffInMonth;
+        $depreciation = ($asset->total_price) / $diffInMonth;
         $price = $asset->total_price;
 
-        for ($i = 1; $i <= $diffInMonth; $i++) {
-            $date = Carbon::parse($asset->date_received)->addMonths($i);
+        for ($i = 0; $i <= $diffInMonth; $i++) {
+            $date = Carbon::parse($asset->date_received)->startOfMonth()->addMonths($i);
             $price -= $depreciation;
 
             DB::transaction(function () use ($date, $price, $asset, $i) {
