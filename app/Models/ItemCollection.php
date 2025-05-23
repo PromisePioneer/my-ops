@@ -27,6 +27,9 @@ class ItemCollection extends Model
         'reorder_level',
         'must_have_code',
         'is_code_listed',
+        'is_land',
+        'is_vehicle',
+        'non_building_group'
     ];
 
 

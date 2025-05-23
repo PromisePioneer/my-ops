@@ -46,17 +46,17 @@ class ItemCollectionRequest extends FormRequest
             'tangible_assets_type' => [
                 Rule::requiredIf($request->type === 'ASET'),
             ],
-            'category_id' => [Rule::requiredIf($request->tangible_assets_type === 'Bukan Bangunan')],
+            'category_id' => [Rule::requiredIf($request->tangible_assets_type === 'Bukan Bangunan' && !$request->is_vehicle)],
             'building_type' => [
-                Rule::requiredIf($request->tangible_assets_type === 'Bangunan')
+                Rule::requiredIf($request->tangible_assets_type === 'Bangunan' && !$request->is_land),
             ],
             'reorder_level' => [
                 Rule::requiredIf(
-                    $request->tangible_assets_type === 'Bukan Bangunan' || $request->type === 'JUAL'
+                    $request->tangible_assets_type === 'Bukan Bangunan' && !$request->is_vehicle
                 )
             ],
             'asset_account_id' => [
-                Rule::requiredIf($request->type === "ASET")
+                Rule::requiredIf($request->type === "ASET" && $request->tangible_assets_type !== 'Tanah' && !$request->is_vehicle)
             ],
             'type' => ['required', Rule::in('ASET', 'JUAL')],
         ];

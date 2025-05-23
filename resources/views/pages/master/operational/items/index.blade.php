@@ -141,7 +141,7 @@
                                             </td>
                                             <td colspan="2 ">
                                                 <template x-if="item.tangible_asset === 'Bangunan'">
-                                                    <p x-text="`${item.tangible_asset}"></p>
+                                                    <p x-text="`${item.tangible_asset}`"></p>
                                                 </template>
 
                                                 <template x-if="item.tangible_asset === 'Bukan Bangunan'">
@@ -198,6 +198,14 @@
                 editPermission: "{{ request()->user()->can('Edit Data Daftar Barang') }}",
                 deletePermission: "{{ request()->user()->can('Hapus Data Daftar Barang') }}",
                 items: [],
+                isAset: null,
+                itemMustHaveCode: false,
+                hasSNOnItem: false,
+                isLandAsset: false,
+                nonBuildingGroup: null,
+                isVehicleAsset: false,
+                tangibleAsset: null,
+                buildingType: null,
                 isLoading: false,
                 buttonLoading: false,
                 selectedCheckBox: [],
@@ -205,12 +213,7 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                isAset: null,
-                itemMustHaveCode: false,
-                hasSNOnItem: false,
                 itemCategoryDescription: '',
-                tangibleAsset: null,
-                buildingType: null,
                 modalForm: new bootstrap.Modal(document.getElementById('modal-item')),
                 form: document.getElementById('form-item'),
                 itemCategoryModal: new bootstrap.Modal(document.getElementById('modal-item-category')),
@@ -400,6 +403,7 @@
                     }
                 },
                 async selectedItemCategory() {
+                    if (this.editVal.category_id === null) return;
                     const selectedItemCategory = $('#selected-item-category');
                     const response = await $.ajax({
                         type: 'GET',
@@ -433,11 +437,7 @@
                         allowClear: true,
                         placeholder: 'Pilih Satuan',
                         escapeMarkup: markup => (markup),
-                        language: {
-                            noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-unit-type">Tambahkan terlebih dahulu</a>`;
-                            }
-                        },
+                        tags: true,
                         ajax: {
                             url: '/select2/unit-types-data',
                             dataType: "json",
@@ -451,8 +451,13 @@
                 async edit(id) {
                     const resp = await axios.get(`/master/operational/items/${id}`);
                     this.editVal = resp.data;
+
+
                     this.itemMustHaveCode = this.editVal.must_have_code === 1;
-                    this.tangibleAsset = this.editVal.tangible_assets_type === 1 ? 'Bangunan' : 'Bukan Bangunan';
+                    this.tangibleAsset = this.editVal.tangible_assets_type;
+                    this.isLandAsset = this.editVal.is_land === 1;
+                    this.isAset = this.editVal.type;
+                    this.isVehicleAsset = this.editVal.is_vehicle === 1;
 
                     $('#selected-asset-account').val('').trigger('change');
 
@@ -460,9 +465,7 @@
                     await this.selectedItemCategory();
                     await this.selectedUnitType();
                     await this.selectedAssetAccount();
-                    this.$nextTick(() => {
-                        this.isAset = this.editVal.type;
-                    })
+
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {

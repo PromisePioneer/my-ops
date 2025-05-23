@@ -24,6 +24,7 @@ class ItemCollectionSeeder extends Seeder
             'category_id' => ItemCategory::where('name', 'Kategori 1')->first()->id,
             'asset_account_id' => Account::where('code', '126')->first()->id,
             'tangible_assets_type' => 'Bukan Bangunan',
+            'non_building_group' => 'Kelompok I',
             'reorder_level' => 100,
             'must_have_code' => true,
         ]);
@@ -37,6 +38,7 @@ class ItemCollectionSeeder extends Seeder
             'type' => 'ASET',
             'asset_account_id' => Account::where('code', '126')->first()->id,
             'tangible_assets_type' => 'Bukan Bangunan',
+            'non_building_group' => 'Kelompok I',
             'reorder_level' => 100,
             'must_have_code' => true,
         ]);
@@ -63,11 +65,12 @@ class ItemCollectionSeeder extends Seeder
             'type' => 'ASET',
             'tangible_assets_type' => 'Bukan Bangunan',
             'reorder_level' => 100,
+            'non_building_group' => 'Kelompok I',
             'asset_account_id' => Account::where('code', '126')->first()->id,
             'must_have_code' => true,
         ]);
 
-        //kategori 2 jual
+        //kategori 2 ASET
         ItemCollection::create([
             'name' => 'GPON',
             'code' => 'GPON',
@@ -75,6 +78,7 @@ class ItemCollectionSeeder extends Seeder
             'unit_type_id' => UnitType::where('name', 'PCS')->first()->id,
             'type' => 'ASET',
             'tangible_assets_type' => 'Bukan Bangunan',
+            'non_building_group' => 'Kelompok I',
             'reorder_level' => 100,
             'asset_account_id' => Account::where('code', '126')->first()->id,
             'must_have_code' => true,
@@ -90,6 +94,7 @@ class ItemCollectionSeeder extends Seeder
             'unit_type_id' => UnitType::where('name', 'PCS')->first()->id,
             'type' => 'ASET',
             'tangible_assets_type' => 'Bukan Bangunan',
+            'non_building_group' => 'Kelompok I',
             'reorder_level' => 100,
             'asset_account_id' => Account::where('code', '126')->first()->id,
             'must_have_code' => true,
