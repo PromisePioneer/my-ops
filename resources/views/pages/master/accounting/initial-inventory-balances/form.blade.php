@@ -21,33 +21,25 @@
                         @if(empty(Auth::user()->branch_id))
                             <div class="col-md-6">
                                 <label for="branch_id" class="required form-label">Cabang</label>
-                                <select class="form-select form-select-solid main-branches-select2"
+                                <select class="form-select form-select-solid branches-select2"
+                                        name="branch_id"
                                         id="selected-main-branch"
                                         data-dropdown-parent="#modal-initial-inventory-balance">
                                     <option></option>
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <div x-show="branchVal" x-cloak x-transition>
-                                    <label for="branch_id" class="required form-label">Sub Cabang</label>
-                                    <select name="branch_id" id="selected-branch"
-                                            class="form-select form-select-solid sub-branches-select2"
-                                            data-dropdown-parent="#modal-initial-inventory-balance">
-                                        <option></option>
-                                    </select>
-                                </div>
-                            </div>
                         @endif
-                    </div>
-
-
-                    <div class="row mb-10">
                         <div class="col-md-6">
                             <label for="date" class="required form-label">Tanggal Pembelian</label>
                             <input type="date" id="date" name="date" class="form-control-solid form-control date"
                                    placeholder="Tanggal Pembelian"
                                    :value="editVal?.date">
                         </div>
+                    </div>
+
+
+                    <div class="row mb-10">
+
                         <div class="col-md-6">
                             <label for="date" class="required form-label">Supplier</label>
                             <select name="supplier_id" id="selected-supplier"
@@ -98,7 +90,7 @@
                         <div class="col-lg-6">
                             <label for="name" class="required form-label">Dokumentasi</label>
                             <input type="file" class="form-control form-control-solid" @change="previewAttachmentFile()"
-                                   accept="image/*" x-ref="attachmentFile" name="attachment" id="attachment">
+                                   accept=".png, .jpg, .jpeg" x-ref="attachmentFile" name="attachment" id="attachment">
                         </div>
 
                         <div class="col-lg-6">
@@ -106,9 +98,8 @@
                                 :class="`${attachmentImgSrc.length > 0 ? 'col-form-label required fw-bold fs-6' : 'd-none'}`">
                                 Preview
                             </label>
-                            <div class="col-md-4">
-                                <img :src="attachmentImgSrc" class="img-fluid" @click="openAttachmentImage(attachmentImgSrc)">
-                            </div>
+                            <img :src="attachmentImgSrc" class="img-fluid w-100"
+                                 @click="openAttachmentImage(attachmentImgSrc)">
                         </div>
                     </div>
 

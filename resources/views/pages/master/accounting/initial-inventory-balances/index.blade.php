@@ -213,11 +213,14 @@
                 toggleAllCheckBox: false,
                 selectedCheckBox: [],
                 initialInventoryBalances: [],
-                branchVal: false,
-                itemMustHaveCode: false,
                 editVal: '',
                 search: '',
-                isAset: false,
+                isAset: null,
+                itemMustHaveCode: false,
+                hasSNOnItem: false,
+                isLandAsset: false,
+                nonBuildingGroup: null,
+                isVehicleAsset: false,
                 tangibleAsset: null,
                 buildingType: null,
                 PKP: false,
@@ -287,33 +290,17 @@
                     }
                 },
                 async getMainBranches() {
-                    const self = this;
-                    $(".main-branches-select2").select2({
+                    $(".branches-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Cabang",
                         ajax: {
-                            url: '/select2/main-branches-data',
+                            url: '/select2/branches-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
                             processResults: data => ({results: data}),
                             cache: true
                         }
-                    }).on('select2:select', function (e) {
-                        self.branchVal = true;
-                        const selectedMainBranchId = e?.params?.data?.id ?? self.editVal.branch_id;
-                        $('.sub-branches-select2').select2({
-                            allowClear: true,
-                            placeholder: "Pilih Sub Cabang",
-                            ajax: {
-                                url: `/select2/sub-branches-data/${selectedMainBranchId}`,
-                                dataType: "json",
-                                type: "GET",
-                                data: params => ({search: params.term}),
-                                processResults: data => ({results: data}),
-                                cache: true
-                            }
-                        });
                     });
                 },
                 openImageList(imagePath) {

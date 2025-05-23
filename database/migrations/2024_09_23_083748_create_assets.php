@@ -13,12 +13,14 @@ return new class extends Migration {
         Schema::create('assets', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->foreignId('branch_id')->nullable()->constrained('branches');
+            $table->foreignId('branch_id')
+                ->constrained('branches')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->date('date_received');
             $table->integer('unit');
-            $table->integer('useful_life');
+            $table->integer('useful_life')->nullable();
             $table->decimal('price_per_unit', 15, 4);
-            $table->double('residu')->nullable();
             $table->decimal('total_price', 15, 4)->nullable();
             $table->boolean('status')->default(false);
             $table->timestamps();
