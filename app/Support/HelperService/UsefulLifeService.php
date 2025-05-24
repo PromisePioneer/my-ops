@@ -6,7 +6,6 @@ class UsefulLifeService
 {
     public static function getUsefulLife($code, $nonBuildingGroup, $buildingType): ?int
     {
-
         if ($code === '121') {
             return null;
         }

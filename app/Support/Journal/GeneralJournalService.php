@@ -30,7 +30,7 @@ class GeneralJournalService
                 'date' => $item->date,
                 'amount' => currencyFormat($item->amount),
                 'type' => $item->entries_type,
-                'account' => $item->account->code . ' ' . $item->account->name,
+                'account' => $item->account?->code . ' ' . $item->account?->name,
                 'description' => $item->description,
             ];
         });
