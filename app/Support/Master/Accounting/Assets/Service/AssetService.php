@@ -115,7 +115,7 @@ use function App\Helper\formatDate;
      */
     public function confirm(Request $request, Asset $asset): void
     {
-
+        $asset->load('item');
         $description = sprintf(self::PURCHASE_ASSET_DESCRIPTION, $asset->unit, $asset->name);
         DB::transaction(function () use ($request, $description, $asset) {
             $this->depreciation($request, $asset);
@@ -124,7 +124,7 @@ use function App\Helper\formatDate;
             $this->accountTransactionService->createDebitTransaction(
                 $asset->branch_id,
                 $description,
-                $asset->debit_account_id,
+                $asset->item->asset_account_id,
                 $asset->total_price,
             );
         });
@@ -143,25 +143,29 @@ use function App\Helper\formatDate;
         $depreciation = ($asset->total_price) / $diffInMonth;
         $price = $asset->total_price;
 
-        for ($i = 0; $i <= $diffInMonth; $i++) {
+        for ($i = 0; $i < $diffInMonth; $i++) {
             $date = Carbon::parse($asset->date_received)->startOfMonth()->addMonths($i);
-            $price -= $depreciation;
+            if ($i === 0) {
+                $price;
+            } else {
+                $price -= $depreciation;
+            }
 
-            DB::transaction(function () use ($date, $price, $asset, $i) {
+            DB::transaction(function () use ($date, $price, $asset, $i, $depreciation) {
                 AssetDepreciation::create([
                     'asset_id' => $asset->id,
                     'depreciation_date' => $date,
-                    'depreciation_amount' => $price,
+                    'depreciation_amount' => $depreciation,
                 ]);
 
-                $accounts = Account::where('code', '130')->first();
+                $account = Account::where('code', '130')->first();
                 $description = sprintf(self::DEPRECIATION_ASSET_DESCRIPTION, $asset->unit, $asset->name, $i);
 
                 $this->accountTransactionService->createCreditTransaction(
                     $asset->branch_id,
                     $description,
-                    $accounts->id,
-                    $price,
+                    $account->id,
+                    $depreciation,
                     null,
                     $date
                 );
@@ -195,11 +199,11 @@ use function App\Helper\formatDate;
 
     public function depreciationData(Asset $asset)
     {
-        return AssetDepreciation::with('asset')->where('asset_id', $asset->id)->get()->map(function ($query) {
+        return AssetDepreciation::with('asset')->where('asset_id', $asset->id)->get()->map(function ($query) use ($asset) {
             return [
                 'id' => $query->id,
                 'depreciation_date' => formatDate($query->depreciation_date),
-                'depreciation_amount' => 'Rp.' . number_format($query->depreciation_amount, 2, '.', '.'),
+                'depreciation_amount' => currencyFormat($query->depreciation_amount),
             ];
         });
     }
