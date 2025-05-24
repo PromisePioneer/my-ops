@@ -2,20 +2,10 @@
     @if(empty(Auth::user()->branch_id))
         <div class="col-md-6">
             <label for="branch_id" class="required form-label">Cabang</label>
-            <select class="form-select form-select-solid main-branches-select2" id="selected-main-branch"
+            <select class="form-select form-select-solid branches-select2" name="branch_id" id="selected-branch"
                     data-dropdown-parent="#modal-transactions">
                 <option></option>
             </select>
-        </div>
-        <div class="col-md-6">
-            <div x-show="branchVal" x-cloak x-transition>
-                <label for="branch_id" class="required form-label">Sub Cabang</label>
-                <select name="branch_id" id="selected-branch"
-                        class="form-select form-select-solid sub-branches-select2"
-                        data-dropdown-parent="#modal-transactions">
-                    <option></option>
-                </select>
-            </div>
         </div>
     @endif
 </div>
@@ -74,6 +64,28 @@
 
 
 <div class="row mb-10">
+    <div class="col-md-6">
+        <label for="name" class="required form-label">Akun Debit</label>
+        <select name="debit_account_id" id="selected-debit-account"
+                class="form-select form-select-solid stock-accounts-select2"
+                data-dropdown-parent="#modal-transactions">
+            <option></option>
+        </select>
+    </div>
+
+
+    <div class="col-md-6">
+        <label for="name" class="required form-label">Akun Debit</label>
+        <select name="credit_account_id" id="selected-credit-account"
+                class="form-select form-select-solid kas-and-leverage-accounts-select2"
+                data-dropdown-parent="#modal-transactions">
+            <option></option>
+        </select>
+    </div>
+</div>
+
+
+<div class="row mb-10">
     <div class="col-lg-6">
         <label for="name" class="required form-label">Bukti Transaksi</label>
         <input type="file" class="form-control form-control-solid" @change="previewAttachmentFile()"
@@ -93,18 +105,14 @@
             :class="`${attachmentImgSrc.length > 0 ? 'col-form-label required fw-bold fs-6' : 'd-none'}`">
             Preview
         </label>
-        <div class="col-md-4">
-            <img :src="attachmentImgSrc" class="img-fluid" @click="openAttachmentImage(attachmentImgSrc)">
-        </div>
+        <img :src="attachmentImgSrc" class="w-100" @click="openAttachmentImage(attachmentImgSrc)">
     </div>
     <div class="col-lg-6">
         <label
             :class="`${taxInvoiceImgSrc.length > 0 ? 'col-form-label required fw-bold fs-6' : 'd-none'}`">
             Preview
         </label>
-        <div class="col-md-4">
-            <img :src="taxInvoiceImgSrc" class="img-fluid" @click="openTaxInvoiceImage(taxInvoiceImgSrc)">
-        </div>
+        <img :src="taxInvoiceImgSrc" class="w-100" @click="openTaxInvoiceImage(taxInvoiceImgSrc)">
     </div>
 
 </div>

@@ -236,7 +236,7 @@
                 async init() {
                     this.$nextTick(async () => {
                         await this.getInitialInventoryBalances();
-                        await this.getMainBranches();
+                        await this.getBranches();
                         await this.getSuppliers();
                         await this.getItemCollections();
                         await this.itemCategories();
@@ -273,8 +273,6 @@
                 add() {
                     this.editVal = '';
                     $('.suppliers-select2').val('', true).trigger('change');
-                    $('.sub-branches-select2').val('', true).trigger('change');
-                    $('.main-branches-select2').val('', true).trigger('change');
                     $('.stock-accounts-select2').val('', true).trigger('change');
                     this.branchVal = false;
                 },
@@ -289,7 +287,7 @@
                         this.isLoading = false;
                     }
                 },
-                async getMainBranches() {
+                async getBranches() {
                     $(".branches-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Cabang",
@@ -485,7 +483,7 @@
                         const resp = await axios.get(`/master/accounting/initial-inventory-balances/${id}`);
                         this.editVal = resp.data;
                         await this.selectedSupplier();
-                        await this.selectedMainBranches();
+                        await this.selectedBranch();
                         await this.selectedSubBranch();
                         await this.selectedItem();
                         await this.selectedAccount();
@@ -532,13 +530,13 @@
                         params: {results: response}
                     });
                 },
-                async selectedMainBranches() {
+                async selectedBranch() {
                     const self = this;
                     const selectedMainBranch = $('#selected-main-branch');
                     const response = await $.ajax({
                         type: 'GET',
                         dataType: "JSON",
-                        url: `/select2/selected-branch/${self.editVal.branch.parent_id}`,
+                        url: `/select2/selected-branch/${self.editVal.branch.id}`,
                     });
                     const option = new Option(response.name, response.id, true, true);
                     selectedMainBranch.append(option).trigger('change').trigger({
