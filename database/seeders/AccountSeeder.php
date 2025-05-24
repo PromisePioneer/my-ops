@@ -328,6 +328,12 @@ class AccountSeeder extends Seeder
             'parent_id' => 1,
         ]);
 
+        Account::create([
+            'name' => 'Peti Brankas',
+            'code' => $id1->code . '-' . '05',
+            'parent_id' => 1,
+        ]);
+
         //2
         Account::create([
             'name' => 'Persediaan Perlengkapan Jaringan',
@@ -335,9 +341,16 @@ class AccountSeeder extends Seeder
             'parent_id' => 2,
         ]);
 
+
+        Account::create([
+            'name' => 'Persediaan Aset',
+            'code' => $id2->code . '-' . '03',
+            'parent_id' => 2,
+        ]);
+
         Account::create([
             'name' => 'Persediaan Lainnya',
-            'code' => $id2->code . '-' . '02',
+            'code' => $id2->code . '-' . '03',
             'parent_id' => 2,
         ]);
 

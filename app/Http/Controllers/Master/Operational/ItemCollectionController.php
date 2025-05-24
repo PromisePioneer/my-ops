@@ -127,7 +127,7 @@ use Throwable;
     {
         $search = $request->input('search');
         $goods = ItemCollection::search($search)->query(function ($query) {
-            $query->whereNotIn('tangible_assets_type', ['Tanah'])->orderBy('name', 'asc');
+            $query->orderBy('name', 'asc');
         })->get();
 
         return $goods->map(function ($item) {

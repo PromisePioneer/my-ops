@@ -14,7 +14,6 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('asset_id')->constrained('assets')->cascadeOnDelete();
             $table->date('depreciation_date');
-            $table->decimal('total_depreciation_in_month', 15, 4);
             $table->decimal('depreciation_amount', 15, 4);
             $table->timestamps();
         });

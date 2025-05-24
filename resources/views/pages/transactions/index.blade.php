@@ -301,7 +301,6 @@
                 buttonLoading: false,
                 startIndex: null,
                 selectedCheckBox: [],
-                itemMustHaveCode: false,
                 selectAll: false,
                 singleChecked: false,
                 search: '',
@@ -311,7 +310,11 @@
                 taxInvoiceImgSrc: [],
                 attachments: [],
                 isAset: null,
-                branchVal: false,
+                itemMustHaveCode: false,
+                hasSNOnItem: false,
+                isLandAsset: false,
+                nonBuildingGroup: null,
+                isVehicleAsset: false,
                 tangibleAsset: null,
                 buildingType: null,
                 selectedConfirmationStatus: null,
@@ -328,7 +331,7 @@
                     this.$nextTick(async () => {
                         await this.getAssetAccounts();
                         await this.getTransactions();
-                        await this.getMainBranches();
+                        await this.getBranches();
                         await this.getUnitTypes();
                         await this.getKasAndLeverageAccounts();
                         await this.getStockAccounts();
@@ -567,34 +570,19 @@
                         }
                     });
                 },
-                async getMainBranches() {
+                async getBranches() {
                     const self = this;
-                    $(".main-branches-select2").select2({
+                    $(".branches-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Cabang",
                         ajax: {
-                            url: '/select2/main-branches-data',
+                            url: '/select2/branches-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
                             processResults: data => ({results: data}),
                             cache: true
                         }
-                    }).on('select2:select', function (e) {
-                        self.branchVal = true;
-                        const selectedMainBranchId = e?.params?.data?.id ?? self.editVal.branch_id;
-                        $('.sub-branches-select2').select2({
-                            allowClear: true,
-                            placeholder: "Pilih Sub Cabang",
-                            ajax: {
-                                url: `/select2/sub-branches-data/${selectedMainBranchId}`,
-                                dataType: "json",
-                                type: "GET",
-                                data: params => ({search: params.term}),
-                                processResults: data => ({results: data}),
-                                cache: true
-                            }
-                        });
                     });
                 },
                 async getSuppliers() {
