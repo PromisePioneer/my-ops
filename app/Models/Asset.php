@@ -24,6 +24,7 @@ class Asset extends Model
         'price_per_unit',
         'total_price',
         'status',
+        'depreciation',
     ];
 
 
