@@ -1,4 +1,4 @@
-@php use function App\Helper\formatDate; @endphp
+@php use function App\Helper\currencyFormat;use function App\Helper\formatDate; @endphp
 @extends('layouts.template')
 @section('page-title', 'Detail Aset')
 @section('breadcrumbs', 'Master Keuangan - Aset - Detail Aset')
@@ -6,73 +6,7 @@
     <div x-data="assetDepreciationDetail()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
-                <div class="card-title">
-                    <table>
-                        <tr>
-                            <th>Nama aset</th>
-                            <th>:</th>
-                            <th>{{ $asset->name }}</th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                        </tr>
-                        <tr>
-                            <th>Nilai residu</th>
-                            <th>:</th>
-                            <th> Rp. {{ number_format($asset->residu) }}</th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                        </tr>
-                        <tr>
-                            <th>Harga perolehan</th>
-                            <th>:</th>
-                            <th>Rp {{ number_format($asset->total_price, 2, '.', '.')  }}</th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                        </tr>
-                        <tr>
-                            <th>Tahun Perolehan</th>
-                            <th>:</th>
-                            <th>{{ formatDate($asset->date_received)  }}</th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                        </tr>
-                        <tr>
-                            <th>Masa Manfaat</th>
-                            <th>:</th>
-                            <th>{{ $asset->useful_life }} Tahun</th>
-                        </tr>
-                        <tr>
-                        </tr>
-                    </table>
-                </div>
+                <div class="card-title"></div>
                 <div class="card-toolbar">
                     <div class="d-flex" data-kt-user-table-toolbar="base">
                         <div class="d-flex" data-kt-user-table-toolbar="base">
@@ -84,6 +18,35 @@
                 </div>
             </div>
             <div class="card-body py-3">
+                <table class="table table-borderless fw-bolder">
+                    <tr>
+                        <th style="width: 170px">Nama aset</th>
+                        <th style="width: 10px">:</th>
+                        <th class="min-w-10px">{{ $asset->item->name }} ({{ $asset->code }})</th>
+                    </tr>
+                    <tr>
+                        <th>Nilai Depresiasi / Tahun</th>
+                        <th>:</th>
+                        <th>{{ currencyFormat($asset->depreciation) }}</th>
+                    </tr>
+                    <tr>
+                        <th>Harga perolehan</th>
+                        <th>:</th>
+                        <th>Rp {{ number_format($asset->total_price, 2, '.', '.')  }}</th>
+                    </tr>
+                    <tr>
+                        <th>Tahun Perolehan</th>
+                        <th>:</th>
+                        <th>{{ formatDate($asset->date_received)  }}</th>
+                    </tr>
+                    <tr>
+                        <th>Masa Manfaat</th>
+                        <th>:</th>
+                        <th>{{ $asset->useful_life }} Tahun</th>
+                    </tr>
+                    <tr>
+                    </tr>
+                </table>
                 <div class="py-5">
                     <div class="table-responsive">
                         <table class="table align-middle table-bordered fs-6 gy-5" id="kt_table_users">

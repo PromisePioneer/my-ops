@@ -127,7 +127,7 @@ use Throwable;
     {
         $search = $request->input('search');
         $goods = ItemCollection::search($search)->query(function ($query) {
-            $query->orderBy('name');
+            $query->whereNotIn('tangible_assets_type', ['Tanah'])->orderBy('name', 'asc');
         })->get();
 
         return $goods->map(function ($item) {
@@ -168,9 +168,14 @@ use Throwable;
     }
 
 
-    public function getAssetData(): JsonResponse
+    public function getDepreciationAssetOrSellable(): JsonResponse
     {
-        return response()->json($this->itemCollectionService->assetData());
+        return response()->json($this->itemCollectionService->getDepreciationAssetOrSellable());
+    }
+
+    public function getAppreciationAssetData(): JsonResponse
+    {
+        return response()->json($this->itemCollectionService->getAppreciationAssetData());
     }
 
 

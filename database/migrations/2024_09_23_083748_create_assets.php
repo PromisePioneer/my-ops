@@ -23,6 +23,7 @@ return new class extends Migration {
             $table->decimal('price_per_unit', 15, 4);
             $table->decimal('total_price', 15, 4)->nullable();
             $table->boolean('status')->default(false);
+            $table->decimal('depreciation', 15, 4)->nullable();
             $table->timestamps();
         });
     }
