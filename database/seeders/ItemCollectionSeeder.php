@@ -86,6 +86,17 @@ class ItemCollectionSeeder extends Seeder
         ]);
 
 
+        ItemCollection::create([
+            'name' => 'TANAH',
+            'code' => 'TNH',
+            'type' => 'ASET',
+            'unit_type_id' => UnitType::where('name', 'Meter')->first()->id,
+            'asset_account_id' => Account::where('code', '121')->first()->id,
+            'tangible_assets_type' => 'Tanah',
+        ]);
+
+
+
         //kategori 3 aset
         ItemCollection::create([
             'name' => 'Splicer',

@@ -142,10 +142,10 @@ use Throwable;
     /**
      * @throws AuthorizationException
      */
-    public function data(Request $request): JsonResponse
+    public function data(): JsonResponse
     {
         $this->authorize('view', Asset::class);
-        return response()->json($this->assetService->data($request));
+        return response()->json($this->assetService->data());
     }
 
 
