@@ -90,7 +90,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
         return [
             'id' => $branch?->id,
             'code' => $branch?->code,
-            'name' => $branch?->name
+            'name' => isset($branch?->parent) ? $branch->parent->name . ' - ' . $branch?->name : $branch?->name
         ];
     }
 

@@ -147,7 +147,6 @@ use function App\Helper\formatDate;
         $depreciationPerMonth = $depreciationPerYear / 12;
 
 
-        // Update nilai penyusutan tahunan
         $asset->update([
             'depreciation' => $depreciationPerYear,
         ]);
@@ -161,7 +160,6 @@ use function App\Helper\formatDate;
                     'asset_id' => $asset->id,
                     'depreciation_date' => $date,
                     'depreciation_amount' => $depreciationPerMonth,
-                    'total_depreciation_in_month' => $depreciationPerMonth * ($i + 1),
                 ]);
 
                 $account = Account::where('code', '130')->first();
@@ -196,53 +194,27 @@ use function App\Helper\formatDate;
             'date_received' => $request->date_received,
             'item_id' => $request->item_id,
             'unit' => 1,
-            'useful_life' => UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->material),
+            'useful_life' => UsefulLifeService::getUsefulLife($assetAccount?->code, $asset->item->non_building_group, $asset->item?->building_type),
             'price_per_unit' => $unitPrice,
             'total_price' => $unitPrice,
-            'residu' => $unitPrice / UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->material),
         ]);
     }
 
 
-    public function depreciationData(Asset $asset): array
+    public function depreciationData(Asset $asset)
     {
         $depreciations = AssetDepreciation::with('asset')
             ->where('asset_id', $asset->id)
             ->orderBy('depreciation_date')
             ->get();
 
-        $accumulated = $asset->total_price;
-        $result = [];
-        $initialDate = Carbon::parse($asset->date_received)->startOfDay();
-
-        // Add initial value
-        $result[] = [
-            'id' => 'initial',
-            'depreciation_date' => formatDate($initialDate),
-            'depreciation_amount' => currencyFormat($accumulated),
-        ];
-        $isFirstDepreciation = true;
-
-        foreach ($depreciations as $depreciation) {
-            $depreciationDate = Carbon::parse($depreciation->depreciation_date)->startOfDay();
-            if ($isFirstDepreciation && $depreciationDate->eq($initialDate)) {
-                $isFirstDepreciation = false;
-                continue;
-            }
-
-            $accumulated = max(0, $accumulated - $depreciation->depreciation_amount);
-            $result[] = [
+        $totalPrice = $asset->total_price;
+        return $depreciations->map(function ($depreciation) use (&$totalPrice) {
+            return [
                 'id' => $depreciation->id,
                 'depreciation_date' => formatDate($depreciation->depreciation_date),
-                'depreciation_amount' => currencyFormat($accumulated),
+                'depreciation_amount' => currencyFormat($totalPrice = $totalPrice - $depreciation->depreciation_amount),
             ];
-
-            $isFirstDepreciation = false;
-            if ($accumulated <= 0) {
-                break;
-            }
-        }
-
-        return $result;
+        });
     }
 }
