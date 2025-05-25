@@ -16,9 +16,7 @@ class StockWithdrawal extends Model
         'description',
         'pic_id',
         'stocker_id',
-        'stocker_signature_after_withdraw',
         'status',
-        'pic_signature_after_withdraw',
     ];
 
 

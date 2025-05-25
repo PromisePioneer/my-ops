@@ -36,6 +36,7 @@ return new class extends Migration {
             $table->integer('qty');
             $table->enum('condition', ['Rusak', 'Baik'])->default('Baik');
             $table->double('on_hold_qty')->default(0);
+            $table->double('on_')
             $table->timestamps();
         });
     }

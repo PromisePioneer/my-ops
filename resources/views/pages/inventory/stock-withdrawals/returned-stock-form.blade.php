@@ -119,7 +119,7 @@
                         async save(id) {
                             this.buttonLoading = true;
                             try {
-                                await axios.post(`/inventory/goods/stock-withdrawals/stock-withdrawal-item/return/${id}`, new FormData(this.returnStockForm));
+                                await axios.post(`/inventory/stock-withdrawals/stock-withdrawal-item/return/${id}`, new FormData(this.returnStockForm));
                             } catch (e) {
 
                             } finally {

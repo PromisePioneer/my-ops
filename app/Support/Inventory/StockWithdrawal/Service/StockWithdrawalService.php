@@ -126,7 +126,7 @@ use function App\Helper\formatDate;
                 'branch_id' => $request->user()->branch_id ?? 1,
                 'date' => Carbon::now()->format('Y-m-d'),
                 'description' => $request->input('description'),
-                'pic_id' => $request->user()->id,
+                'stocker_id' => $request->user()->id,
             ]);
             $this->stockWithdrawalEmployeeStoreAndUpdate($stockWithdrawal, $request);
             $this->stockWithdrawalItemStoreOrUpdate($stockWithdrawal, $request);
@@ -155,6 +155,7 @@ use function App\Helper\formatDate;
                     'stock_withdrawal_id' => $stockWithdrawal->id,
                     'stock_id' => $itemCatalog->stock_id,
                     'code' => $itemCatalog->code,
+                    'status' => 'Dibawa',
                     'qty' => 1,
                 ]);
             }
@@ -166,6 +167,7 @@ use function App\Helper\formatDate;
                 $stockWithoutCode->decrement('qty', $value['qty']);
                 $value['stock_withdrawal_id'] = $stockWithdrawal->id;
                 $value['stock_id'] = $stockWithoutCode->id;
+                $value['status'] = 'Dibawa';
                 StockWithdrawalItem::create($value);
             }
         }

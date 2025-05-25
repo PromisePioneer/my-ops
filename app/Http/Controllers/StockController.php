@@ -172,7 +172,7 @@ use Illuminate\View\View;
         $stock = Stock::with('item', 'itemCatalog', 'branch')
             ->where(function ($query) use ($request) {
                 $query->whereHas('branch', function ($query) use ($request) {
-                    $query->where('parent_id', $request->branch_id ?? $request->user()->branch_id);
+                    $query->where('id', $request->branch_id ?? $request->user()->branch_id);
                 })->whereHas('item.category', function ($query) {
                     $query->where('name', '!=', 'Kategori 4');
                 })->where('condition', 'Baik');
@@ -207,8 +207,8 @@ use Illuminate\View\View;
                 $query->where('parent_id', $request->branch_id ?? $request->user()->branch_id);
             })
             ->whereHas('item.category', function ($query) {
-            $query->where('name', 'Kategori 4');
-        })->whereNotIn('id', $request->get('ids', []))
+                $query->where('name', 'Kategori 4');
+            })->whereNotIn('id', $request->get('ids', []))
             ->whereIn('condition', ['Baik', 'Diperbaiki'])
             ->get();
 

@@ -28,11 +28,6 @@ return new class extends Migration {
                 ->constrained('users')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->enum('status', ['Pending', 'Dibawa', 'Dikembalikan'])->default('Pending');
-            $table->string('stocker_signature_after_withdraw')->nullable();
-            $table->string('pic_signature_after_withdraw')->nullable();
-            $table->string('stocker_signature_after_returned')->nullable();
-            $table->string('pic_signature_after_returned')->nullable();
             $table->timestamps();
         });
     }

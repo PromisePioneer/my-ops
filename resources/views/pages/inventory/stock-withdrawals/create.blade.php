@@ -12,19 +12,9 @@
             <div class="card p-10">
                 <form id="form" @submit.prevent="save()" enctype="multipart/form-data">
                     <div class="card-body p-12">
-                        <div class="row gx-10 mb-5">
-                            <div class="col-lg-6">
-                                <div class="form-group row mb-6">
-                                    <label
-                                        class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Karyawan</label>
-                                    <div class="col-lg-11 fv-row">
-                                        <select name="user_id[]" id="users"
-                                                class="form-select form-select-solid users-select2" multiple>
-                                            <option></option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+
+
+                        <div class="row">
                             <div class="col-lg-6">
                                 <label
                                     class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Pilih Opsi</label>
@@ -42,6 +32,35 @@
                                     <label class="form-check-label" for="itemWithoutCodeOption">
                                         Barang tidak memiliki kode
                                     </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row gx-10 mb-5">
+                            @if(empty(Auth::user()->branch_id))
+                                <div class="col-lg-6">
+                                    <div class="form-group row mb-6">
+                                        <label
+                                            class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Cabang</label>
+                                        <div class="col-lg-11 fv-row">
+                                            <select name="branch_id" id="branch_id"
+                                                    class="form-select form-select-solid branches-select2">
+                                                <option></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                            <div class="col-lg-6">
+                                <div class="form-group row mb-6">
+                                    <label
+                                        class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Karyawan</label>
+                                    <div class="col-lg-11 fv-row">
+                                        <select name="user_id[]" id="users"
+                                                class="form-select form-select-solid users-select2" multiple>
+                                            <option></option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -84,7 +103,7 @@
                                     <tr class="border-bottom border-bottom-dashed" data-kt-element="item">
                                         <td class="pe-7" style='text-align:center; vertical-align:middle'>
                                             <select x-model="field.stock_id"
-                                                    :name="`itemWithoutCodeFields[${index}][stock_id]`"
+                                                    :name="`${field.stock_id !== '' ? `itemWithoutCodeFields[${index}][stock_id]` : '' }`"
                                                     :id="`stock-without-codes-select2-${index}`"
                                                     class="form-select form-select-solid">
                                                 <option></option>
@@ -92,7 +111,7 @@
                                         </td>
                                         <td class="ps-0" style='text-align:center; vertical-align:middle'>
                                             <input class="form-control form-control-solid" type="number" min="1"
-                                                   x-model="field.qty" :name="`itemWithoutCodeFields[${index}][qty]`"
+                                                   x-model="field.qty" :name="`${field.qty !== '' ? `itemWithoutCodeFields[${index}][qty]` : '' }`"
                                                    placeholder="1"
                                                    value="1"/>
                                         </td>
@@ -151,15 +170,33 @@
                 form: document.getElementById('form'),
                 itemWithCodes: [],
                 itemWithCodeFields: [],
-                itemWithoutCodeFields: [],
+                itemWithoutCodeFields: [{
+                    stock_id: '',
+                    qty: '',
+                }],
                 async init() {
                     await this.getUserData();
                     await this.getStockWithCodesData();
+                    await this.getBranches();
 
                     for (const val of this.itemWithoutCodeFields) {
                         const index = this.itemWithoutCodeFields.indexOf(val);
                         await this.getStockWithoutCodesData(index);
                     }
+                },
+                async getBranches() {
+                    $(".branches-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Cabang",
+                        ajax: {
+                            url: '/select2/branches-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: (params) => ({search: params.term}),
+                            processResults: (data) => ({results: data}),
+                            cache: true,
+                        },
+                    });
                 },
                 async getUserData() {
                     $(".users-select2").select2({
@@ -186,6 +223,7 @@
                                 type: "GET",
                                 data: (params) => ({
                                     search: params.term,
+                                    branch_id: $('#branch_id').val()
                                 }),
                                 processResults: (data) => ({results: data}),
                                 cache: true
@@ -257,9 +295,9 @@
 
 
                     this.itemWithoutCodeFields.push({
-                            stock_id: '',
-                            qty: '',
-                        });
+                        stock_id: '',
+                        qty: '',
+                    });
                 },
                 calculateTotal(index) {
                     const quantity = this.fields[index].qty;

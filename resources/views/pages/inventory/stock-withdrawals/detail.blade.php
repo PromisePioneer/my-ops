@@ -15,11 +15,12 @@
             </div>
 
             <div class="modal-body">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
+                <div class="d-flex flex-column flex-xl-row">
+                    <div class="flex-column flex-lg-row-auto w-100 w-lg-300px">
                         <div class="card card-custom mb-4">
                             <div class="card-header">
-                                <template x-for="employee in stockWithdrawalDetail?.stock_withdrawal_by_employee">
+                                <template
+                                    x-for="employee in stockWithdrawalDetail?.stock_withdrawal_by_employee">
                                     <div class="card-title">
                                         <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
                                             <a href="#">
@@ -44,6 +45,9 @@
                                 </template>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="flex-lg-row-fluid ms-lg-10">
                         <div class="card card-custom mb-4">
                             <div class="card-header p-0">
                                 <div class="card-body">
@@ -62,7 +66,7 @@
                                                 <td x-text="item.code ?? '-'"></td>
                                                 <td x-text="item.item_name"></td>
                                                 <td x-text="item.qty"></td>
-                                                <td x-text="stockWithdrawalDetail?.stock_withdrawal?.status"></td>
+                                                <td x-text="item.status"></td>
                                             </tr>
                                         </template>
                                         </tbody>
@@ -70,108 +74,49 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-center justify-content-around mt-10">
-                            <table>
-                                <tr>
-                                    <th style="text-align: center; padding: 8px;">
-                                        <p style="font-size: 12px; margin: 0;">Penanggung Jawab:</p>
-                                    </th>
-                                    <th style="text-align: center; padding: 8px;"></th>
-                                </tr>
-                                <tr>
-                                    <th style="text-align: center; padding: 8px;">
-                                        <template
-                                            x-if="stockWithdrawalDetail?.stock_withdrawal?.pic_signature_after_withdraw === null">
-                                            <button class="btn btn-light-info btn-sm mb-4"
-                                                    @click="confirmedByPIC(stockWithdrawalDetail?.stock_withdrawal?.id)">
-                                                <i class="ki-duotone ki-questionnaire-tablet fs-2">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
-                                                Paraf PIC
-                                            </button>
-                                        </template>
-                                        <template
-                                            x-if="stockWithdrawalDetail?.stock_withdrawal?.pic_signature_after_withdraw !== null">
-                                            <a href="#"
-                                               @click="openImage(stockWithdrawalDetail?.stock_withdrawal?.pic_signature_after_withdraw)">
-                                                <img
-                                                    :src="getImageURL(stockWithdrawalDetail?.stock_withdrawal?.pic_signature_after_withdraw ?? null)"
-                                                    class="img-fluid w-100px"
-                                                    alt="Image">
-                                            </a>
-                                        </template>
-                                    </th>
-                                    <th style="text-align: center; padding: 8px;">
-                                </tr>
-                                <tr>
-                                    <th style="text-align: center; padding: 8px 8px 0 8px;">
-                                        <p style="font-size: 12px; margin: 0; text-decoration: underline"
-                                           x-text="stockWithdrawalDetail?.stock_withdrawal?.pic.name">
-                                        </p>
-                                    </th>
-                                </tr>
-                                <tr style="padding: 0">
-                                    <th style="text-align: center; padding: 8px;">
-                                        <p style="font-size: 12px; margin: 0;"
-                                           x-text="stockWithdrawalDetail?.stock_withdrawal?.pic.roles[0].name"></p>
-                                    </th>
-                                </tr>
-                            </table>
-                            <table>
-                                <tr>
-                                    <th style="text-align: center; padding: 8px;">
-                                        <p style="font-size: 12px; margin: 0;">Dikonfirmasi Oleh:</p>
-                                    </th>
-                                    <th style="text-align: center; padding: 8px;"></th>
-                                </tr>
-                                <tr>
-                                    <th style="text-align: center; padding: 8px;">
-                                        <template
-                                            x-if="stockWithdrawalDetail?.stock_withdrawal?.stocker_signature_after_withdraw === null">
-                                            <button class="btn btn-light-info btn-sm mb-4"
-                                                    @click="confirmedByStocker(stockWithdrawalDetail?.stock_withdrawal.id)">
-                                                <i class="ki-duotone ki-questionnaire-tablet fs-2">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                </i>
-                                                Paraf Stocker
-                                            </button>
-                                        </template>
-                                        <template
-                                            x-if="stockWithdrawalDetail?.stock_withdrawal?.stocker_signature_after_withdraw !== null">
-                                            <a href="#"
-                                               @click="openImage(stockWithdrawalDetail?.stock_withdrawal?.stocker_signature_after_withdraw)">
-                                                <img
-                                                    :src="getImageURL(stockWithdrawalDetail?.stock_withdrawal?.stocker_signature_after_withdraw ?? null)"
-                                                    class="img-fluid w-100px"
-                                                    alt="Image">
-                                            </a>
-                                        </template>
-                                    </th>
-                                    <th style="text-align: center; padding: 8px;">
-                                </tr>
-                                <tr>
-                                    <th style="text-align: center; padding: 8px 8px 0 8px;">
-                                        <p style="font-size: 12px; margin: 0; text-decoration: underline"
-                                           x-text="stockWithdrawalDetail?.stock_withdrawal?.stocker.name">
-                                        </p>
-                                    </th>
-                                </tr>
-                                <tr style="padding: 0">
-                                    <th style="text-align: center; padding: 8px;">
-                                        <p style="font-size: 12px; margin: 0;"
-                                           x-text="stockWithdrawalDetail?.stock_withdrawal?.stocker.roles[0].name"></p>
-                                    </th>
-                                </tr>
-                            </table>
-                        </div>
+
                     </div>
                 </div>
-
+                <div class="d-flex align-items-center justify-content-end mt-4">
+                    <table>
+                        <tr>
+                            <th style="text-align: center; padding: 8px;">
+                                <p style="font-size: 12px; margin: 0;">Penanggung jawab:</p>
+                            </th>
+                            <th style="text-align: center; padding: 8px;"></th>
+                        </tr>
+                        <tr>
+                            <th style="text-align: center; padding: 8px;">
+                                <template
+                                    x-if="stockWithdrawalDetail?.stock_withdrawal?.stocker_signature_after_withdraw !== null">
+                                    <a href="#"
+                                       @click="openImage(stockWithdrawalDetail?.stock_withdrawal?.stocker_signature_after_withdraw)">
+                                        <img
+                                            :src="getImageURL(stockWithdrawalDetail?.stock_withdrawal?.stocker_signature_after_withdraw ?? null)"
+                                            class="img-fluid w-100px"
+                                            alt="Image">
+                                    </a>
+                                </template>
+                            </th>
+                            <th style="text-align: center; padding: 8px;">
+                        </tr>
+                        <tr>
+                            <th style="text-align: center; padding: 8px 8px 0 8px;">
+                                <p style="font-size: 12px; margin: 0; text-decoration: underline"
+                                   x-text="stockWithdrawalDetail?.stock_withdrawal?.stocker.name">
+                                </p>
+                            </th>
+                        </tr>
+                        <tr style="padding: 0">
+                            <th style="text-align: center; padding: 8px;">
+                                <p style="font-size: 12px; margin: 0;"
+                                   x-text="stockWithdrawalDetail?.stock_withdrawal?.stocker.roles[0].name"></p>
+                            </th>
+                        </tr>
+                    </table>
+                </div>
             </div>
+
         </div>
     </div>
 </div>

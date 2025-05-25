@@ -95,6 +95,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
         return view('pages.manage-users.user.form', compact('randomAbsentId'));
     }
+
     /**
      * @throws AuthorizationException
      */
@@ -208,5 +209,11 @@ use Maatwebsite\Excel\Facades\Excel;
     public function getStockerByBranchId(Request $request): JsonResponse
     {
         return response()->json($this->userService->getStockerByBranchId($request));
+    }
+
+
+    public function getUserByBranch(Request $request): JsonResponse
+    {
+        return response()->json($this->userService->getUserByBranch($request));
     }
 }
