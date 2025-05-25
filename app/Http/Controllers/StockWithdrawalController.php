@@ -44,6 +44,7 @@ use Throwable;
                 'item_name' => $item->stock->item->name,
                 'code' => $item->code,
                 'qty' => $item->qty,
+                'status' => $item->status,
             ];
         });
 
@@ -156,12 +157,33 @@ use Throwable;
     }
 
 
-    public function returningItems(Request $request, StockWithdrawalItem $stockWithdrawalItem)
+    /**
+     * @throws Throwable
+     */
+    public function returningItems(Request $request, StockWithdrawalItem $stockWithdrawalItem): void
     {
+        $stockWithdrawalItem->load('stock');
         DB::transaction(function () use ($request, $stockWithdrawalItem) {
-            $stockWithdrawalItem->update([
-                'status' => $request->input('status'),
-            ]);
+            if ($stockWithdrawalItem->code) {
+                $stockWithdrawalItem->stock->decrement('on_hold_qty', $stockWithdrawalItem->qty);
+                $itemCatalog = ItemCatalog::where('code', $stockWithdrawalItem?->code)->first();
+                ItemCatalog::create([
+                    'transaction_id' => $stockWithdrawalItem->stock?->transaction_id,
+                    'stock_id' => $stockWithdrawalItem->stock?->id,
+                    'draft_stock_id' => $stockWithdrawalItem->stock?->draft_stock_id,
+                    'item_id' => $stockWithdrawalItem->stock?->item_id,
+                    'code' => $itemCatalog->code,
+                    'condition' => $itemCatalog->condition,
+                    'created_by' => $itemCatalog->created_by,
+                    'status' => $request->input('status'),
+                    'initial_balance_inventory_id' => $stockWithdrawalItem->stock?->initial_balance_inventory_id,
+                    'asset_id' => $itemCatalog->asset_id,
+                ]);
+                $itemCatalog->delete();
+                $stockWithdrawalItem->update([
+                    'status' => $request->input('status'),
+                ]);
+            }
         });
     }
 }

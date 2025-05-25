@@ -1329,6 +1329,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/selected-supplier/{supplier}', [SupplierController::class, 'selectedSupplier']);
         Route::get('/asset-items-data', [ItemCollectionController::class, 'getDepreciationAssetOrSellable']);
         Route::get('/stocker-by-branch-data', [UserController::class, 'getStockerByBranchId']);
+        Route::get('/user-by-branch-data', [UserController::class, 'getUserByBranchId']);
 
     });
 
