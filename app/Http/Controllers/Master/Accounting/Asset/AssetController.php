@@ -93,7 +93,6 @@ use Throwable;
         $this->authorize('update', $asset);
 
 
-
         return response()->json($asset);
     }
 
@@ -151,6 +150,6 @@ use Throwable;
 
     public function depreciationData(Asset $asset): JsonResponse
     {
-        return response()->json($this->assetService->depreciationData($asset));
+        return response()->json($this->assetDepreciationService->data($asset));
     }
 }

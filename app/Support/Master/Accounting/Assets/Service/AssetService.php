@@ -45,15 +45,14 @@ use function App\Helper\formatDate;
 
             return [
                 'id' => $item->id,
-                'branch_name' => "{$item->branch?->name} {$item->branch?->parent?->name}",
+                'branch_name' => $item->branch?->name . ' ' . $item->branch?->parent?->name ?? null,
                 'code' => $item->code,
                 'name' => $item->item->name,
                 'debit_account' => $item->item->assetAccount->name,
-                'debit_account_code' => $item->item->assetAccount->code,
                 'unit' => $item->unit,
                 'useful_life' => $item->useful_life,
-                'price_per_unit' => currencyFormat($item->price_per_unit),
-                'price_at_first_recieved' => currencyFormat($item->price_at_first_recieved),
+                'price_per_unit' => currencyFormat($item->price_per_unit, 2, '.', '.'),
+                'price_at_first_recieved' => currencyFormat($item->price_at_first_recieved, 2, '.', '.'),
                 'status' => $item->status,
             ];
         });
@@ -116,14 +115,14 @@ use function App\Helper\formatDate;
      */
     public function confirm(Request $request, Asset $asset): void
     {
-        $asset->load('item', 'branch');
-        $description = sprintf(self::PURCHASE_ASSET_DESCRIPTION, $asset->unit, $asset->item->name);
+        $asset->load('item');
+        $description = sprintf(self::PURCHASE_ASSET_DESCRIPTION, $asset->unit, $asset->name);
         DB::transaction(function () use ($request, $description, $asset) {
             $this->depreciation($request, $asset);
             $asset->status = 1;
             $asset->save();
             $this->accountTransactionService->createDebitTransaction(
-                $asset->branch->parent_id,
+                $asset->branch_id,
                 $description,
                 $asset->item->asset_account_id,
                 $asset->total_price,
@@ -137,46 +136,42 @@ use function App\Helper\formatDate;
      */
     public function depreciation(Request $request, Asset $asset): void
     {
-        $asset->load('branch');
-        $startDate = Carbon::parse($request->date_received)->startOfMonth();
-        $endDate = $startDate->copy()->startOfMonth()->addYears($asset->useful_life);
-        $totalMonths = (int)$startDate->diffInMonths($endDate);
+        $yearsStart = Carbon::parse($request->date_received)->startOfMonth();
+        $yearsEnd = Carbon::parse($request->date_received)->startOfMonth()->addYears($asset->useful_life);
+        $diffInMonth = $yearsStart->diffInMonths($yearsEnd);
 
-        $residu = 0;
-        $depreciationPerYear = ($asset->total_price - $residu) / $asset->useful_life;
-        $depreciationPerMonth = $depreciationPerYear / 12;
+        $depreciation = ($asset->total_price) / $diffInMonth;
+        $price = $asset->total_price;
 
+        for ($i = 0; $i < $diffInMonth; $i++) {
+            $date = Carbon::parse($asset->date_received)->startOfMonth()->addMonths($i);
+            if ($i === 0) {
+                $price;
+            } else {
+                $price -= $depreciation;
+            }
 
-        $asset->update([
-            'depreciation' => $depreciationPerYear,
-        ]);
-
-        for ($i = 0; $i < $totalMonths; $i++) {
-
-            $date = $startDate->copy()->addMonths($i);
-
-            DB::transaction(function () use ($asset, $depreciationPerMonth, $date, $i) {
+            DB::transaction(function () use ($date, $price, $asset, $i, $depreciation) {
                 AssetDepreciation::create([
                     'asset_id' => $asset->id,
                     'depreciation_date' => $date,
-                    'depreciation_amount' => $depreciationPerMonth,
+                    'depreciation_amount' => $depreciation,
                 ]);
 
                 $account = Account::where('code', '130')->first();
-                $description = sprintf(self::DEPRECIATION_ASSET_DESCRIPTION, $asset->unit, $asset->item->name, $i + 1);
+                $description = sprintf(self::DEPRECIATION_ASSET_DESCRIPTION, $asset->unit, $asset->name, $i);
 
                 $this->accountTransactionService->createCreditTransaction(
-                    $asset->branch->parent_id,
+                    $asset->branch_id,
                     $description,
                     $account->id,
-                    $depreciationPerMonth,
+                    $depreciation,
                     null,
                     $date
                 );
             });
         }
     }
-
 
     public function update(AssetRequest $request, Asset $asset): bool
     {
@@ -194,26 +189,21 @@ use function App\Helper\formatDate;
             'date_received' => $request->date_received,
             'item_id' => $request->item_id,
             'unit' => 1,
-            'useful_life' => UsefulLifeService::getUsefulLife($assetAccount?->code, $asset->item->non_building_group, $asset->item?->building_type),
+            'useful_life' => UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->material),
             'price_per_unit' => $unitPrice,
             'total_price' => $unitPrice,
+            'residu' => $unitPrice / UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->material),
         ]);
     }
 
 
     public function depreciationData(Asset $asset)
     {
-        $depreciations = AssetDepreciation::with('asset')
-            ->where('asset_id', $asset->id)
-            ->orderBy('depreciation_date')
-            ->get();
-
-        $totalPrice = $asset->total_price;
-        return $depreciations->map(function ($depreciation) use (&$totalPrice) {
+        return AssetDepreciation::with('asset')->where('asset_id', $asset->id)->get()->map(function ($query) use ($asset) {
             return [
-                'id' => $depreciation->id,
-                'depreciation_date' => formatDate($depreciation->depreciation_date),
-                'depreciation_amount' => currencyFormat($totalPrice = $totalPrice - $depreciation->depreciation_amount),
+                'id' => $query->id,
+                'depreciation_date' => formatDate($query->depreciation_date),
+                'depreciation_amount' => currencyFormat($query->depreciation_amount),
             ];
         });
     }

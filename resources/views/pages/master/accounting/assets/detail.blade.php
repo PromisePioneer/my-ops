@@ -11,6 +11,7 @@
                     <div class="d-flex" data-kt-user-table-toolbar="base">
                         <div class="d-flex" data-kt-user-table-toolbar="base">
                             <a href="{{ url('/master/accounting/assets/') }}" class="btn btn-light-danger btn-sm">
+                                <x-icons.back/>
                                 Kembali
                             </a>
                         </div>
@@ -68,25 +69,25 @@
                                 </tr>
                                 </tbody>
                             </template>
-                            <template x-if="!isLoading && assetDepreciationData?.length === 0">
+                            <template x-if="!isLoading && assetDepreciations?.length === 0">
                                 <tr class="fw-bolder">
                                     <td colspan="9">
                                         <center>Data Tidak Ditemukan</center>
                                     </td>
                                 </tr>
                             </template>
-                            <template x-for="asset in assetDepreciationData" :key="asset.id">
+                            <template x-for="asset in assetDepreciations" :key="asset.id">
                                 <tbody class="fw-bold text-center">
                                 <tr>
-                                    <td x-text="asset.depreciation_date"></td>
-                                    <td x-text="asset.depreciation_amount"></td>
+                                    <td x-text="asset.date"></td>
+                                    <td x-text="asset.amount"></td>
                                 </tr>
                                 </tbody>
                             </template>
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4">
-                        <template x-for="pagination in assetDepreciationData.links">
+                        <template x-for="pagination in assetDepreciations.links">
                             <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
                                 <button class="page-link" @click="paginationEndPoint(pagination.url)"
                                         x-html="pagination.label">
@@ -105,18 +106,26 @@
             return {
                 isLoading: false,
                 id: "{{ $asset->id }}",
-                assetDepreciationData: [],
+                assetDepreciations: [],
                 async init() {
                     await this.getDepreciationData();
                 },
                 async getDepreciationData() {
                     const resp = await axios.get(`/master/accounting/assets/detail/data/${this.id}`);
-                    this.assetDepreciationData = resp.data;
+                    this.assetDepreciations = resp.data;
                 },
                 async paginationEndPoint(url) {
-                    if (url) {
+                    try {
+                        this.assetDepreciations = [];
+                        this.isLoading = true;
                         const resp = await axios.get(`${url}`);
-                        this.assetDepreciationData = resp.data
+                        this.assetDepreciations = resp.data
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
+                    if (url) {
                     }
                 },
             }

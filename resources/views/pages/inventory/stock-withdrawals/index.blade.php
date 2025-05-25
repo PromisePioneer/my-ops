@@ -109,20 +109,16 @@
                                                     Pengembalian Barang
                                                 </a>
                                             </template>
-                                            <template x-if="stockWithdrawal.status === 'Pending'">
-                                                <button class="btn btn-light-danger btn-sm"
-                                                        @click="destroy(stockWithdrawal.id)">
-                                                    <i class="ki-duotone ki-trash fs-2">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                        <span class="path3"></span>
-                                                        <span class="path4"></span>
-                                                        <span class="path5"></span>
-                                                    </i>
-                                                    Hapus
-                                                </button>
-                                            </template>
-
+                                            <a :href="`/inventory/stock-withdrawals/return/${stockWithdrawal.id}`"
+                                               class="btn btn-light-warning btn-sm mb-4">
+                                                <x-icons.back/>
+                                                Kembalikan Barang
+                                            </a>
+                                            <button class="btn btn-light-danger btn-sm"
+                                                    @click="destroy(stockWithdrawal.id)">
+                                                <x-icons.trash/>
+                                                Hapus
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>

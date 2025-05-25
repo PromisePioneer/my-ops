@@ -4,6 +4,7 @@ namespace App\Support\User\User;
 
 use AllowDynamicProperties;
 use App\Http\Requests\User\UserRequest;
+use App\Models\Master\Common\Branch;
 use App\Models\User;
 use App\Models\WeekHoliday;
 use App\Support\HelperService\UserSelect2QueryFilter;
@@ -245,5 +246,27 @@ use Throwable;
                 'text' => $query->name
             ];
         });
+    }
+
+
+    public function getUserByBranch(Request $request)
+    {
+        $branchId = Branch::with('parent_id')->find($request->branch_id);
+        $user = User::with('branch', 'roles')
+            ->where(function ($query) use ($branchId) {
+                $query->whereHas('roles', function ($query) {
+                    $query->where('name', 'Stocker Staff');
+                })->whereHas('branch', function ($query) use ($branchId) {
+                    $query->where('id', $branchId);
+                });
+            })
+            ->get();
+        return $user->map(function ($query) {
+            return [
+                'id' => $query->id,
+                'text' => $query->name
+            ];
+        });
+
     }
 }
