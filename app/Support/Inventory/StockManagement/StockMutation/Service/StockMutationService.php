@@ -12,7 +12,6 @@ use App\Models\Master\Common\Branch;
 use App\Models\Stock;
 use App\Models\StockMutation;
 use App\Models\StockMutationItem;
-use App\Models\User;
 use App\Support\HelperService\UsefulLifeService;
 use App\Support\Inventory\StockManagement\StockMutation\Repository\StockMutationRepository;
 use Carbon\Carbon;
@@ -20,7 +19,6 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Throwable;
@@ -52,7 +50,6 @@ use function App\Helper\formatDate;
     public function formattedData(LengthAwarePaginator $stockMutations): LengthAwarePaginator
     {
         $data = $stockMutations->getCollection()->map(function ($query) {
-
             return [
                 'id' => $query->id,
                 'date' => formatDate($query->date),
