@@ -77,22 +77,12 @@ use Illuminate\Support\Facades\Auth;
     // masih salah
     public function getMustReorderStocks()
     {
-        $itemDoesntHaveGoodsStock = ItemCollection::whereDoesntHave('stock')->whereNotNull('reorder_level')->count();
-        $items = ItemCollection::with('category', 'stock')
-            ->whereNotNull('reorder_level')
-            ->whereNotNull('category_id')
-            ->get();
 
-        $itemHasGoodsStock = null;
-        foreach ($items as $item) {
-            $itemHasGoodsStock = ItemCollection::where('category_id', null)
-                ->whereNotNull('reorder_level')
-                ->whereHas('stock', function ($query) use ($item) {
-                    $query->where('qty', '<', $item->reorder_level);
-                })->count();
-        }
-
-        return $itemDoesntHaveGoodsStock + $itemHasGoodsStock;
+        $doesntHaveStock = ItemCollection::doesntHave('stock')->whereNotNull('reorder_level')->count();
+        return ItemCollection::with('stock')
+                ->whereHas('stock', function ($query) {
+                    $query->where('qty', '<', 'reorder_level');
+                })->count() + $doesntHaveStock;
     }
 
 
