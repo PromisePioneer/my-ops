@@ -115,18 +115,7 @@ use Throwable;
                 $endDate = Carbon::parse($request->start_date);
             }
 
-            if ($request->day_count > 0) {
                 $this->saveBatchSchedule($request, $selectedWorkTime);
-            } else {
-                EmployeeSchedule::updateOrCreate([
-                    'employee_id' => $request->employee_id,
-                    'start_date' => $request->start_date,
-                    'end_date' => $endDate,
-                ], [
-                    'work_time_id' => $request->work_time_id,
-                    'status' => $request->status,
-                ]);
-            }
         });
 
 
