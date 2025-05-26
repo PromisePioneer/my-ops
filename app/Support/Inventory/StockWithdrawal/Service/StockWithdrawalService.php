@@ -148,6 +148,7 @@ use function App\Helper\formatDate;
                     'condition' => $itemCatalog->condition,
                     'item_id' => $itemCatalog->item_id,
                     'created_by' => $itemCatalog->created_by,
+                    'asset_id' => $itemCatalog->asset_id,
                     'status' => 'Dibawa'
                 ]);
                 $itemCatalog->delete();
