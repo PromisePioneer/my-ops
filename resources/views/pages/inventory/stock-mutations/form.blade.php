@@ -41,7 +41,7 @@
                                         class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
                                         Pilih Cabang Awal
                                     </label>
-                                    <select class="form-select form-select-solid main-branches-select2"
+                                    <select class="form-select form-select-solid branches-select2"
                                             name="from_branch" id="from_branch">
                                     </select>
                                 </div>
@@ -195,7 +195,6 @@
                 toBranchParentId: null,
                 async init() {
                     await this.getStockWithCodesData();
-                    await this.getMainBranches();
                     await this.getBranches();
                     await this.getStockerByBranch();
 
@@ -204,32 +203,11 @@
                         await this.getStockWithoutCodesData(index);
                     }
                 },
-                async getMainBranches() {
-                    const self = this;
-                    $(`.main-branches-select2`).select2({
-                        allowClear: true,
-                        placeholder: "Pilih Barang",
-                        ajax: {
-                            url: '/select2/main-branches-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({
-                                search: params.term,
-                            }),
-                            processResults: (data) => ({results: data}),
-                            cache: true
-                        }
-                    }).on('change', function (e) {
-                        self.itemWithoutCodeFields.forEach((val, index) => {
-                            $(`#stock-without-codes-select2-${index}`).val(null).trigger('change');
-                        });
-                    });
-                },
                 async getBranches() {
                     const self = this;
                     $(`.branches-select2`).select2({
                         allowClear: true,
-                        placeholder: "Pilih Barang",
+                        placeholder: "Pilih Cabang",
                         ajax: {
                             url: '/select2/branches-data',
                             dataType: "json",
