@@ -145,7 +145,7 @@
                             <label for="" class="form-label required">Akun Aset</label>
                             <input type="text" class="form-control form-control-solid" value="Tanah" disabled>
                         </div>
-                        <div class="col-md-6" x-show="tangibleAsset === 'Bukan Bangunan'" x-transition x-cloak>
+                        <div class="col-md-6 mb-10" x-show="tangibleAsset === 'Bukan Bangunan'" x-transition x-cloak>
                             <div class="d-flex align-items-center mb-1">
                                 <label for="category_id" class="required form-label me-2 mb-0">Kelompok</label>
                                 <span class="text-danger">
@@ -178,10 +178,8 @@
                                 </option>
                             </select>
                         </div>
-                    </div>
-
-                    <div class="row mb-10">
-                        <div class="col-md-6" x-show="tangibleAsset === 'Bukan Bangunan' && !isVehicleAsset"
+                        <div class="col-md-6"
+                             x-show="(tangibleAsset === 'Bukan Bangunan' && !isVehicleAsset)  || isAset === 'JUAL'"
                              x-transition x-cloak>
                             <label for="category_id" class="required form-label">Kategori</label>
                             <select
@@ -192,6 +190,10 @@
                                 <option></option>
                             </select>
                         </div>
+                    </div>
+
+                    <div class="row mb-10">
+
                     </div>
 
 
