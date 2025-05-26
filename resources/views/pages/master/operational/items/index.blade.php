@@ -140,23 +140,12 @@
                                                     x-text="item.type"></span>
                                             </td>
                                             <td colspan="2 ">
-                                                <template x-if="item.tangible_asset === 'Bangunan'">
-                                                    <p x-text="`${item.tangible_asset}`"></p>
-                                                </template>
-
-                                                <template x-if="item.tangible_asset === 'Bukan Bangunan'">
-                                                    <div>
-                                                        <p x-text="`${item.tangible_asset}`"></p>
-                                                        <p>
-                                                            <a class="m-0" href="#"
-                                                               id="item_category_description_drawer"
-                                                               @click="showItemCategoryDescription(item.category_id)"
-                                                               data-bs-target="#modal-"
-                                                               x-text="`${item.category_name}`"></a>
-                                                        </p>
-                                                        <p x-text="`${item.asset_account_name}`"></p>
-                                                    </div>
-                                                </template>
+                                                <p class="m-0" x-text="`Kelompok Harta : ${item.tangible_asset ?? '-'}`"></p>
+                                                <a class="mb-4" href="#"
+                                                   id="item_category_description_drawer"
+                                                   @click="showItemCategoryDescription(item.category_id)"
+                                                   x-text="`Kategori : ${item.category_name ?? '-'}`"></a>
+                                                <p x-text="`${item.asset_account_name ? 'Akun Aset : ' + item.asset_account_name : '-' ?? '-'}`"></p>
                                             </td>
                                             <td x-text="item.unit_type_name"></td>
                                             <td>

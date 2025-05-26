@@ -149,7 +149,7 @@
                             <div class="d-flex align-items-center mb-1">
                                 <label for="category_id" class="required form-label me-2 mb-0">Kelompok</label>
                                 <span class="text-danger">
-                                    <a class="p-0 m-0" target="_blank"
+                                    <a class="btn btn-sm btn-link p-0 m-0" target="_blank"
                                        href="{{ url('master/operational/items/non-building-group-details') }}">Bantuan</a>
                                 </span>
                             </div>
@@ -181,7 +181,13 @@
                         <div class="col-md-6"
                              x-show="(tangibleAsset === 'Bukan Bangunan' && !isVehicleAsset)  || isAset === 'JUAL'"
                              x-transition x-cloak>
-                            <label for="category_id" class="required form-label">Kategori</label>
+                            <div class="d-flex align-items-center mb-1">
+                                <label for="category_id" class="required form-label me-2 mb-0">Kategori</label>
+                                <span class="text-danger">
+                                   <a class="btn btn-sm btn-link p-0 m-0" target="_blank"
+                                      href="{{ url('master/operational/item-categories') }}">Bantuan</a>
+                                </span>
+                            </div>
                             <select
                                 :name="`${tangibleAsset === 'Bukan Bangunan' || isAset === 'ASET' || isAset === 'JUAL' || !isLandAsset || !isVehicleAsset ? 'category_id' : ''}`"
                                 id="selected-item-category"
