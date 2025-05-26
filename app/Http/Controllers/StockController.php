@@ -144,9 +144,14 @@ use Illuminate\View\View;
     {
         $stock = Stock::with('transaction', 'branch', 'item', 'initialInventoryBalance')->whereHas('item', function ($query) use ($draftStock) {
             $query->where('name', $draftStock->transaction?->item->name ?? $draftStock->initialInventoryBalance?->item->name);
-        })->where('transaction_id', $draftStock->transaction_id)
-            ->orWhere('initial_balance_inventory_id', $draftStock->initial_balance_inventory_id)
-            ->get();
+        })->where(function ($query) use ($draftStock) {
+            if ($draftStock->transaction_id) {
+                $query->where('transaction_id', $draftStock->transaction_id);
+            } else {
+                $query->where('initial_balance_inventory_id', $draftStock->initial_balance_inventory_id);
+            }
+        })->get();
+
         return $stock->map(function ($stock) {
             return [
                 'id' => $stock->id,

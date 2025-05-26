@@ -17,7 +17,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 use function App\Helper\currencyFormat;
-use function App\Helper\formatDate;
 
 #[AllowDynamicProperties] class AssetService
 {
@@ -143,6 +142,10 @@ use function App\Helper\formatDate;
         $depreciation = ($asset->total_price) / $diffInMonth;
         $price = $asset->total_price;
 
+        $asset->update([
+            'depreciation' => ($asset->total_price) / (int)$yearsStart->diffInYears($yearsEnd),
+        ]);
+
         for ($i = 0; $i < $diffInMonth; $i++) {
             $date = Carbon::parse($asset->date_received)->startOfMonth()->addMonths($i);
             if ($i === 0) {
@@ -189,22 +192,10 @@ use function App\Helper\formatDate;
             'date_received' => $request->date_received,
             'item_id' => $request->item_id,
             'unit' => 1,
-            'useful_life' => UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->material),
+            'useful_life' => UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->non_building_group, $itemCollection->building_type),
             'price_per_unit' => $unitPrice,
             'total_price' => $unitPrice,
-            'residu' => $unitPrice / UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->material),
         ]);
     }
 
-
-    public function depreciationData(Asset $asset)
-    {
-        return AssetDepreciation::with('asset')->where('asset_id', $asset->id)->get()->map(function ($query) use ($asset) {
-            return [
-                'id' => $query->id,
-                'depreciation_date' => formatDate($query->depreciation_date),
-                'depreciation_amount' => currencyFormat($query->depreciation_amount),
-            ];
-        });
-    }
 }
