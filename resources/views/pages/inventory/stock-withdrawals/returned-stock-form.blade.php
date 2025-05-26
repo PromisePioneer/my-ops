@@ -5,11 +5,17 @@
     <div x-data="returnedItemsData()">
         @include('pages.inventory.stock-withdrawals.returned-stock-modal')
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-12 mb-4">
                 <div class="card card-flush">
                     <div class="card-header">
                         <div class="card-title">
                             <h2>Barang dibawa</h2>
+                        </div>
+                        <div class="card-toolbar">
+                            <a href="{{ url('/inventory/stock-withdrawals') }}" class="btn btn-light-danger btn-sm">
+                                <x-icons.back/>
+                                Kembali
+                            </a>
                         </div>
                     </div>
                     <div class="card-body pt-0">
@@ -41,7 +47,7 @@
                                 <template x-if="!isLoading && carriedStock?.length === 0">
                                     <tbody class="fw-bolder text-center">
                                     <tr>
-                                        <td colspan="5">
+                                        <td colspan="6">
                                             <center>Data Tidak Ditemukan</center>
                                         </td>
                                     </tr>
@@ -71,13 +77,83 @@
                                 </template>
                             </table>
                         </div>
-                        <div class="d-flex justify-content-end">
-                            <button class="btn btn-primary btn-sm">Konfirmasi</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="card card-flush">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2>Barang dikembalikan / terpakai / habis</h2>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0">
+                        <div class="table-responsive">
+                            <table class="table align-middle table-bordered fs-6 gy-5">
+                                <thead>
+                                <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                    <th class="w-10px pe-2">#</th>
+                                    <th class="min-w-125px">Kode</th>
+                                    <th class="min-w-125px">Barang</th>
+                                    <th class="min-w-125px">Jml Terpakai</th>
+                                    <th class="min-w-125px">Jml Dikembalikan</th>
+                                    <th class="min-w-125px">Status Terkini</th>
+                                </tr>
+                                </thead>
+                                <template x-if="isLoading">
+                                    <tbody>
+                                    <tr>
+                                        <td colspan="5">
+                                            <div style="text-align: center;">
+                                                <div class="spinner-border" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                                <template x-if="!isLoading && consumedOrAppliedStock.data?.length === 0">
+                                    <tbody class="fw-bolder text-center">
+                                    <tr>
+                                        <td colspan="6">
+                                            <center>Data Tidak Ditemukan</center>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                                <template x-for="(stock, index) in consumedOrAppliedStock.data" :key="index">
+                                    <tbody class="fw-bolder text-center">
+                                    <template x-if="!stock.code">
+                                        <tr>
+                                            <td x-text="startIndex + index++"></td>
+                                            <td x-text="stock.code ?? '-'"></td>
+                                            <td x-text="stock.item_name"></td>
+                                            <td x-text="stock.qty_used"></td>
+                                            <td x-text="stock.qty"></td>
+                                            <td x-text="stock.status"></td>
+                                        </tr>
+                                    </template>
+                                    <template x-if="stock.code">
+                                        <tr>
+                                            <td x-text="startIndex + index++"></td>
+                                            <td x-text="stock.code ?? '-'"></td>
+                                            <td x-text="stock.item_name"></td>
+                                            <td colspan="3"
+                                                :class="stock.status === 'Dikembalikan' ? 'bg-danger text-danger' : 'bg-success text-white text-uppercase'">
+                                                <span x-text="stock.status"></span>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                    </tbody>
+                                </template>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        @include('components.toast')
         @endsection
         @push('script')
             <script>
@@ -90,12 +166,14 @@
                         selectedCheckBox: [],
                         carriedStock: [],
                         startIndex: 1,
+                        consumedOrAppliedStock: [],
                         id: "{{ $stockWithdrawal->id }}",
                         stockWithdrawalItem: {},
                         returnStockModal: new bootstrap.Modal(document.getElementById('modal-returning-items')),
                         returnStockForm: document.getElementById('form-returning-items'),
                         async init() {
                             await this.getCarriedStock();
+                            await this.getConsumedOrAppliedStock();
                         },
                         async getCarriedStock() {
                             this.isLoading = true;
@@ -116,12 +194,24 @@
                                 console.log(e);
                             }
                         },
+                        async getConsumedOrAppliedStock() {
+                            try {
+                                const resp = await axios.get(`/inventory/stock-withdrawals/stock-withdrawal-item/consumed-or-applied-stock/${this.id}`);
+                                this.consumedOrAppliedStock = resp.data;
+                                this.startIndex = this.consumedOrAppliedStock.from
+                            } catch (e) {
+                                console.log(e);
+                            }
+                        },
                         async save(id) {
                             this.buttonLoading = true;
                             try {
                                 await axios.post(`/inventory/stock-withdrawals/stock-withdrawal-item/return/${id}`, new FormData(this.returnStockForm));
+                                await showAlert('success', 'Data berhasil disimpan');
+                                this.returnStockModal.hide();
+                                await this.init();
                             } catch (e) {
-
+                                console.log(e);
                             } finally {
                                 this.buttonLoading = false;
                             }

@@ -34,17 +34,6 @@
                 </div>
             </div>
             <div class="card-body py-3">
-                <div class="col-12 ">
-                    <form id="form-delete" @submit.prevent="destroy()">
-                        <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
-                        <button type="submit" class="btn btn-light-danger btn-sm mt-5"
-                                x-show="selectedCheckBox.length > 0"
-                                x-transition x-cloak>
-                            <x-icons.trash/>
-                            Hapus
-                        </button>
-                    </form>
-                </div>
                 <div class="py-5">
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
@@ -281,8 +270,7 @@
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
-                            console.error(error);
-                            await showAlert('error', 'Terjadi kesalahan');
+                            await showAlert('error', `${error.response.data.message}`);
                         }
                     });
                 },
@@ -294,7 +282,6 @@
                             this.detailModal.hide();
                             await this.init();
                         } catch (error) {
-                            console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');
                         }
                     });

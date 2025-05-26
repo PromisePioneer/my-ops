@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use AllowDynamicProperties;
 use App\Http\Requests\StockWithdrawalRequest;
 use App\Models\ItemCatalog;
+use App\Models\Stock;
 use App\Models\StockWithdrawal;
 use App\Models\StockWithdrawalItem;
 use App\Support\Inventory\StockWithdrawal\Service\StockWithdrawalService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -102,20 +104,15 @@ use Throwable;
     public function destroy(StockWithdrawal $stockWithdrawal): void
     {
         DB::transaction(function () use ($stockWithdrawal) {
-
-            $data = StockWithdrawalItem::with('stock', 'stock.itemCatalog')->where('stock_withdrawal_id', $stockWithdrawal->id);
-            $withdrawalItems = [];
-            foreach ($data->get() as $withdrawalItem) {
-                foreach ($withdrawalItem->stock->itemCatalog as $itemCatalog) {
-                    $withdrawalItems [] = $itemCatalog->where('stock_id', $withdrawalItem->stock_id)
-                        ->where('code', $withdrawalItem->code)
-                        ->where('status', 'Dibawa')
-                        ->pluck('id')->toArray();
+            foreach ($stockWithdrawal->stockWithdrawalItems as $item) {
+                if ($item->status === 'Dikembalikan' || $item->status === 'Terpakai') {
+                    throw new Exception('Data tidak dapat dihapus, dikarenakan barang sudah ada yg di kembalikan atau terpakai', 403);
                 }
-            }
-            ItemCatalog::whereIn('id', $withdrawalItems)->update([
-                'status' => 'Tersedia',
-            ]);
+                ItemCatalog::where('code', $item->code)->update(['status' => 'Tersedia']);
+                $stock = Stock::where('id', $item->stock_id)->first();
+                $stock->increment('qty', $item->qty);
+                $stock->decrement('on_hold_qty', $item->qty);
+                }
             $stockWithdrawal->delete();
         });
     }
@@ -175,13 +172,26 @@ use Throwable;
                     'code' => $itemCatalog->code,
                     'condition' => $itemCatalog->condition,
                     'created_by' => $itemCatalog->created_by,
-                    'status' => $request->input('status'),
+                    'status' => $request->input('status') === 'Terpakai' ? 'Terpakai' : 'Tersedia',
                     'initial_balance_inventory_id' => $stockWithdrawalItem->stock?->initial_balance_inventory_id,
                     'asset_id' => $itemCatalog->asset_id,
                 ]);
                 $itemCatalog->delete();
                 $stockWithdrawalItem->update([
-                    'status' => $request->input('status'),
+                    'status' => $request->input('status')
+                ]);
+                if ($request->input('status') === 'Dikembalikan') {
+                    $stockWithdrawalItem->stock->increment('qty');
+                }
+            } else {
+                $stockWithdrawalItem->stock->decrement('on_hold_qty', $stockWithdrawalItem->qty);
+                $stockWithdrawalItem->update([
+                    'qty_used' => $stockWithdrawalItem->qty - $request->input('qty'),
+                    'qty' => $request->input('qty'),
+                ]);
+                $stockWithdrawalItem->stock->increment('qty', $request->input('qty'));
+                $stockWithdrawalItem->update([
+                    'status' => 'Habis',
                 ]);
             }
         });

@@ -23,7 +23,6 @@
                             <select name="status" id="status" class="form-select form-select-solid"
                                     x-model="itemStatus">
                                 <option value="Terpakai">Terpakai</option>
-                                <option value="Dibawa">Dibawa</option>
                                 <option value="Dikembalikan">Dikembalikan</option>
                             </select>
                         </div>
