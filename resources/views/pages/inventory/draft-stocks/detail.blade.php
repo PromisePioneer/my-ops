@@ -13,7 +13,8 @@
                         }}
                         tidak ada kode</h3>
                     <div class="ms-auto">
-                        <a href="{{ url('inventory/draft-stocks') }}" class="btn btn-sm btn-light">
+                        <a href="{{ url('inventory/draft-stocks') }}" class="btn btn-sm btn-light-danger">
+                            <x-icons.back/>
                             Kembali
                         </a>
                     </div>
