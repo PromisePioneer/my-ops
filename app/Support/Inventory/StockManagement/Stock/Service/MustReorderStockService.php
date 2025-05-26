@@ -48,10 +48,9 @@ use Illuminate\Http\Request;
                 $stock = 0;
             } else {
                 if (!empty(Auth::user()->branch_id)) {
-                    $totalStock = $stock->where('branch_id', Auth::user()->branch_id)->sum('qty')
-                        + $stock->draftStock->where('branch_id', Auth::user()->branch_id)->sum('qty');
+                    $totalStock = $stock->where('branch_id', Auth::user()->branch_id)->sum('qty');
                 } else {
-                    $totalStock = $stock->sum('qty') + $stock->draftStock->sum('qty');
+                    $totalStock = $stock->sum('qty');
                 }
             }
 
@@ -65,7 +64,6 @@ use Illuminate\Http\Request;
                     'unit_name' => $item->unitType->name
                 ];
             }
-
 
             return null;
         })->filter(function ($item) {
