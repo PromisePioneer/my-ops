@@ -15,7 +15,6 @@ use App\Support\HelperService\HandleFileUploadService;
 use App\Support\Inventory\StockManagement\StockWithdrawal\Repository\StockWithdrawalItemRepository;
 use App\Support\Inventory\StockManagement\StockWithdrawal\Repository\StockWithdrawalRepository;
 use App\Support\Inventory\StockManagement\StockWithdrawal\Service\StockWithdrawalQueryFilter;
-use App\Support\Inventory\StockWithdrawal\Repository\StockWithdrawalServiceRepository;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\FileHelpers;
@@ -140,6 +139,7 @@ use function App\Helper\formatDate;
             foreach ($request->itemWithCodeFields as $value) {
                 $itemCatalog = ItemCatalog::find($value);
                 Stock::where('id', $itemCatalog->stock_id)->increment('on_hold_qty');
+                Stock::where('id', $itemCatalog->stock_id)->decrement('qty');
                 ItemCatalog::create([
                     'transaction_id' => $itemCatalog->transaction_id,
                     'stock_id' => $itemCatalog->stock_id,
@@ -165,6 +165,7 @@ use function App\Helper\formatDate;
             foreach ($request['itemWithoutCodeFields'] as $key => $value) {
                 $stockWithoutCode = Stock::with('item', 'itemCatalog')->where('id', $value['stock_id'])->first();
                 $stockWithoutCode->decrement('qty', $value['qty']);
+                $stockWithoutCode->increment('on_hold_qty', $value['qty']);
                 $value['stock_withdrawal_id'] = $stockWithdrawal->id;
                 $value['stock_id'] = $stockWithoutCode->id;
                 $value['status'] = 'Dibawa';

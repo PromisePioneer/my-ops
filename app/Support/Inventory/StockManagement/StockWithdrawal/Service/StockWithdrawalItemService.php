@@ -3,6 +3,7 @@
 namespace App\Support\Inventory\StockManagement\StockWithdrawal\Service;
 
 use AllowDynamicProperties;
+use App\Models\StockWithdrawal;
 use App\Support\Inventory\StockManagement\StockWithdrawal\Repository\StockWithdrawalItemRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -53,7 +54,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
         $data = $carriedStocks->getCollection()->map(function ($query) {
             return [
                 'id' => $query->id,
-                'pic' => $query->stockWithdrawal->pic->name,
+                'pic' => $query->stockWithdrawal->stocker->name,
                 'stocker' => $query->stockWithdrawal->stocker->name,
                 'branch_name' => $query->stockWithdrawal->branch->name,
                 'stock_withdrawal_id' => $query->stock_withdrawal_id,
@@ -61,11 +62,18 @@ use Illuminate\Pagination\LengthAwarePaginator;
                 'code' => $query->code,
                 'status' => $query->status,
                 'qty' => $query->qty,
+                'qty_used' => $query->qty_used
             ];
         });
 
         $carriedStocks->setCollection($data);
         return $carriedStocks;
+    }
+
+    public function getConsumedOrAppliedStock(StockWithdrawal $stockWithdrawal): LengthAwarePaginator
+    {
+        $stocks = $this->stockWithdrawalItemRepository->getConsumedOrAppliedStock($stockWithdrawal);
+        return self::formattedData($stocks->paginate(self::$perPage));
     }
 
 }

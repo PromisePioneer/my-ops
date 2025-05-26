@@ -260,6 +260,7 @@
                                 data: (params) => ({
                                     search: params.term,
                                     ids: ids,
+                                    branch_id: $('#branch_id').val()
                                 }),
                                 processResults: (data) => ({results: data}),
                                 cache: true

@@ -202,9 +202,11 @@ use Illuminate\View\View;
 
     public function getStockWithoutCode(Request $request)
     {
+
+
         $stock = Stock::with('item', 'branch')
             ->whereHas('branch', function ($query) use ($request) {
-                $query->where('parent_id', $request->branch_id ?? $request->user()->branch_id);
+                $query->where('id', $request->branch_id ?? $request->user()->branch_id);
             })
             ->whereHas('item.category', function ($query) {
                 $query->where('name', 'Kategori 4');
