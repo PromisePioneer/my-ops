@@ -81,7 +81,7 @@
                     <table>
                         <tr>
                             <th style="text-align: center; padding: 8px;">
-                                <p style="font-size: 12px; margin: 0;">Penanggung jawab:</p>
+                                <p style="font-size: 12px; margin: 0;">Stocker: </p>
                             </th>
                             <th style="text-align: center; padding: 8px;"></th>
                         </tr>
@@ -105,12 +105,6 @@
                                 <p style="font-size: 12px; margin: 0; text-decoration: underline"
                                    x-text="stockWithdrawalDetail?.stock_withdrawal?.stocker.name">
                                 </p>
-                            </th>
-                        </tr>
-                        <tr style="padding: 0">
-                            <th style="text-align: center; padding: 8px;">
-                                <p style="font-size: 12px; margin: 0;"
-                                   x-text="stockWithdrawalDetail?.stock_withdrawal?.stocker.roles[0].name"></p>
                             </th>
                         </tr>
                     </table>

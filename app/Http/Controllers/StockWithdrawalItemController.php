@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
+use App\Models\StockWithdrawal;
 use App\Support\Inventory\StockManagement\StockWithdrawal\Service\StockWithdrawalItemService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -42,6 +43,12 @@ use Illuminate\View\View;
     public function getCount(): JsonResponse
     {
         return response()->json($this->stockWithdrawalItemService->getCarriedStockCount());
+    }
+
+
+    public function getConsumedOrAppliedStock(StockWithdrawal $stockWithdrawal): JsonResponse
+    {
+        return response()->json($this->stockWithdrawalItemService->getConsumedOrAppliedStock($stockWithdrawal));
     }
 
 }
