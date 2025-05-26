@@ -75,7 +75,7 @@
                                         </tr>
                                         </tbody>
                                     </template>
-                                    <template x-if="!isLoading && mustReorderStocks.data?.length === 0">
+                                    <template x-if="!isLoading && mustReorderStocks?.length === 0">
                                         <tbody class="fw-bold">
                                         <tr>
                                             <td colspan="7">
@@ -84,7 +84,7 @@
                                         </tr>
                                         </tbody>
                                     </template>
-                                    <template x-for="(stock, index) in mustReorderStocks?.data" :key="stock.id">
+                                    <template x-for="(stock, index) in mustReorderStocks" :key="stock.id">
                                         <tbody class="fw-bold text-center">
                                         <tr>
                                             <td x-text="startIndex + index++"></td>
@@ -118,17 +118,34 @@
             return {
                 isLoading: false,
                 mustReorderStocks: [],
-                startIndex: null,
+                startIndex: 1,
                 search: '',
                 async init() {
                     await this.getMustReorderStocks();
                     await this.getMainBranches();
                 },
+                async paginationEndPoint(url) {
+                    if (url) {
+                        this.branches = [];
+                        this.isLoading = true;
+                        try {
+                            const resp = await axios.get(`${url}`, {
+                                params: {
+                                    search: this.search,
+                                }
+                            });
+                            this.mustReorderStocks = resp.data
+                        } catch (e) {
+                            console.log(e)
+                        } finally {
+                            this.isLoading = false
+                        }
+                    }
+                },
                 async getMustReorderStocks() {
                     try {
                         const resp = await axios.get('/inventory/must-reorder-stocks/data');
                         this.mustReorderStocks = resp.data;
-                        this.startIndex = resp.data.from;
                     } catch (e) {
                         console.log(e);
                     } finally {
