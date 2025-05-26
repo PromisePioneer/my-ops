@@ -90,9 +90,9 @@ class ItemCollectionRequest extends FormRequest
             $unitType = UnitType::find($request->unit_type_id);
             $category = ItemCategory::find($request->category_id);
 
-            if ($category?->name === 'Kategori 1' && $unitType?->name !== 'Meter') {
-                return $fail('Tipe satuan harus Meter jika kategori yang dipilih Kategori 1');
-            }
+//            if ($category?->name === 'Kategori 1' && $unitType?->name !== 'Meter') {
+//                return $fail('Tipe satuan harus Meter jika kategori yang dipilih Kategori 1');
+//            }
 
             return null;
         };
