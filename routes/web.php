@@ -744,6 +744,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/send-item/{stockMutation}', [StockMutationController::class, 'sendItem']);
             Route::post('/cancel-delivery/{stockMutation}', [StockMutationController::class, 'cancelDelivery']);
             Route::get('/bast-document/{stockMutation}', [StockMutationController::class, 'bastDocument']);
+            Route::post('/receive-delivery/{stockMutation}', [StockMutationController::class, 'receiveItem']);
         });
         Route::prefix('draft-stocks')->group(function () {
             Route::get('/', [DraftStockController::class, 'index']);
