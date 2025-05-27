@@ -168,15 +168,4 @@ use Throwable;
     }
 
 
-    public function getDepreciationAssetOrSellable(): JsonResponse
-    {
-        return response()->json($this->itemCollectionService->getDepreciationAssetOrSellable());
-    }
-
-    public function getAppreciationAssetData(): JsonResponse
-    {
-        return response()->json($this->itemCollectionService->getAppreciationAssetData());
-    }
-
-
 }
