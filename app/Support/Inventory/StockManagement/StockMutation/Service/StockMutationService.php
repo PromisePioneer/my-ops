@@ -142,6 +142,7 @@ use function App\Helper\formatDate;
     public function cancelDelivery(StockMutation $stockMutation): void
     {
         DB::transaction(function () use ($stockMutation) {
+
             foreach ($stockMutation->stockMutationItems as $stock) {
                 $currentStock = Stock::with('item', 'transaction', 'initialInventoryBalance')->find($stock->stock_id);
                 $currentStock->increment('qty', $stock->qty);
@@ -177,7 +178,8 @@ use function App\Helper\formatDate;
 
 
             $stockMutation->update([
-                'sender_signature' => null
+                'sender_signature' => null,
+                'status' => null,
             ]);
         });
     }
@@ -193,10 +195,27 @@ use function App\Helper\formatDate;
         $stockMutation->update([
             'sender_id' => Auth::id(),
             'sender_signature' => $signaturePath,
+            'status' => 'Dikirim'
         ]);
     }
 
-    public function receiveItem(StockMutation $stockMutation)
+    /**
+     * @throws Throwable
+     */
+    public function receiveItem(StockMutation $stockMutation): void
     {
+        DB::transaction(function () use ($stockMutation) {
+
+
+            $oldBranch = Branch::find($stockMutation->old_branch_id);
+            $newBranch = Branch::find($stockMutation->new_branch_id);
+            foreach ($stockMutation->stockMutationItems as $stock) {
+                $currentStock = Stock::with('item', 'transaction', 'initialInventoryBalance')->find($stock->stock_id);
+                $newStock = Stock::where('branch_id', $newBranch->id)->where('item_id', $currentStock->item_id)->first();
+                $currentStock->decrement('qty', $stock->qty);
+                dd($newStock);
+            }
+        });
+
     }
 }

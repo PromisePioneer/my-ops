@@ -33,7 +33,7 @@ return new class extends Migration {
             $table->string('sender_signature')->nullable();
             $table->string('receiver_signature')->nullable();
             $table->text('description');
-            $table->boolean('status')->default(false);
+            $table->enum('status', ['Dikirim', 'Diterima'])->nullable();
             $table->timestamps();
         });
     }

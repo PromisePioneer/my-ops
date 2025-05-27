@@ -98,6 +98,9 @@ use function App\Helper\formatDate;
     }
 
 
+    /**
+     * @throws Throwable
+     */
     public function receiveItem(StockMutation $stockMutation): JsonResponse
     {
         $this->stockMutationService->receiveItem($stockMutation);

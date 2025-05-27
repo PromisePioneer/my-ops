@@ -47,22 +47,15 @@
                         <div class="card-toolbar">
                             @can('Tambah Data Daftar Barang')
                                 <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                                    <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                                        <button type="button" class="btn btn-light-primary btn-sm me-3" @click="add()"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modal-item">
-                                            <i class="ki-duotone ki-message-add fs-2">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                                <span class="path3"></span>
-                                            </i> Tambah
-                                        </button>
-                                        <a href="{{ url('master/operational/items/archives') }}"
-                                           class="btn btn-light-dark btn-sm">
-                                            <x-icons.archived/>
-                                            Arsip Barang
-                                        </a>
-                                    </div>
+                                    <button id="item-drawer" class="btn btn-light-primary btn-sm" @click="add()">
+                                        <x-icons.add-item/>
+                                        Tambah
+                                    </button>
+                                    <a href="{{ url('master/operational/items/archives') }}"
+                                       class="btn btn-light-dark btn-sm">
+                                        <x-icons.archived/>
+                                        Arsip Barang
+                                    </a>
                                 </div>
                             @endcan
                         </div>
@@ -149,8 +142,7 @@
                                             </td>
                                             <td x-text="item.unit_type_name"></td>
                                             <td>
-                                                <button class="btn btn-light-primary btn-sm"
-                                                        data-bs-target="#modal-item" data-bs-toggle="modal"
+                                                <button id="item-drawer" class="btn btn-light-primary btn-sm"
                                                         @click="edit(item.id)">
                                                     <i class="ki-duotone ki-pencil fs-2">
                                                         <span class="path1"></span>
@@ -203,7 +195,6 @@
                 search: '',
                 editVal: '',
                 itemCategoryDescription: '',
-                modalForm: new bootstrap.Modal(document.getElementById('modal-item')),
                 form: document.getElementById('form-item'),
                 itemCategoryModal: new bootstrap.Modal(document.getElementById('modal-item-category')),
                 itemCategoryForm: document.getElementById('form-item-category'),
@@ -309,8 +300,10 @@
                                 })
                         }
                     } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                        const respError = error.response?.data.errors;
+                        if (respError) {
+                            Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                        }
                     } finally {
                         this.buttonLoading = false;
                     }
@@ -473,7 +466,7 @@
                 async successResponse() {
                     await showAlert('success', 'Data berhasil disimpan')
                     this.form.reset();
-                    this.modalForm.hide();
+                    KTDrawer.getInstance(document.querySelector('#item-drawer-action')).hide();
                     const resp = await axios.get(`${this.items.path}?page=${this.items.current_page}`);
                     this.items = resp.data
                 },
