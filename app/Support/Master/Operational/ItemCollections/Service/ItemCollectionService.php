@@ -111,8 +111,6 @@ use Throwable;
     public function store(ItemCollectionRequest $request): void
     {
         DB::transaction(function () use ($request) {
-
-            dd($request->all());
             $unitType = UnitType::find($request->unit_type_id);
             if (empty($unitType)) {
                 $unitTypeId = UnitType::create([
