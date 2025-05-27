@@ -17,6 +17,7 @@ return new class extends Migration {
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->foreignId('stock_id')
+                ->nullable()
                 ->after('item_id')
                 ->constrained('stocks')
                 ->cascadeOnDelete()
