@@ -430,7 +430,7 @@
                 async saveItem() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('master/operational/items', new FormData(this.goodsForm))
+                        await axios.post('/master/operational/items', new FormData(this.goodsForm))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.goodsForm.reset();
                         this.itemModal.hide();
