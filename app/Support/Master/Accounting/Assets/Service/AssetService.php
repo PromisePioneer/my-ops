@@ -86,8 +86,6 @@ use function App\Helper\currencyFormat;
      */
     public function store(AssetRequest $request): void
     {
-        $data = $request->validated();
-
         $unitPriceformattedValue = str_replace('.', '', $request->input('price_per_unit'));
         $unitPriceformattedValue = str_replace(',', '.', $unitPriceformattedValue);
         $unitPrice = (float)$unitPriceformattedValue;
