@@ -19,7 +19,7 @@
                     <div class="row mb-7">
                         <div class="col-md-6">
                             <label for="name" class="required form-label">Cabang</label>
-                            <select name="branch_id" class="form-select form-select-solid main-branches-select2"
+                            <select name="branch_id" class="form-select form-select-solid branches-select2"
                                     data-dropdown-parent="#asset-modal" id="selected-main-asset-branch">
                                 <option></option>
                             </select>
