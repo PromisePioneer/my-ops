@@ -79,7 +79,6 @@ class ItemCollectionRequest extends FormRequest
             'asset_account_id.required' => 'Akun aset tidak boleh kosong jika tipe yang dipilih aset',
             'tangible_assets_type.in' => 'Kelompok harta berwujud  tidak valid',
             'building_type.in' => 'Tipe bangunan tidak valid',
-            ''
         ];
     }
 
