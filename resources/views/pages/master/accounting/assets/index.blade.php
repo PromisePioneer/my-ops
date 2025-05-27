@@ -227,7 +227,7 @@
                 itemCondition: null,
                 attachmentImgSrc: '',
                 async init() {
-                    await this.getMainBranches();
+                    await this.getBranches();
                     await this.getAssetsData();
                     await this.getAssetAccounts();
                     await this.getSuppliers();
@@ -251,10 +251,11 @@
                     });
                     this.selectedCheckBox.shift();
                 },
-                changeItemCondition() {
+                async changeItemCondition() {
                     if (this.itemCondition === 'Digudang') {
                         this.modal.hide();
                         this.initialInventoryBalanceModal.show();
+                        await this.getBranches();
                     }
                 },
                 async getSuppliers() {
@@ -349,36 +350,19 @@
                         this.buttonLoading = false;
                     }
                 },
-                async getMainBranches() {
-                    const self = this;
-                    $(".main-branches-select2").select2({
+                async getBranches() {
+                    $(".branches-select2").select2({
                         allowClear: true,
                         placeholder: "Pilih Cabang",
                         ajax: {
-                            url: '/select2/main-branches-data',
+                            url: '/select2/branches-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
                             processResults: data => ({results: data}),
                             cache: true
                         }
-                    }).on('select2:select', function (e) {
-                        self.branchVal = true;
-                        $('.sub-branches-select2').val(null).trigger('change');
-                        const selectedMainBranchId = e?.params?.data?.id ?? self.editVal.branch_id;
-                        $('.sub-branches-select2').select2({
-                            allowClear: true,
-                            placeholder: "Pilih Sub Cabang",
-                            ajax: {
-                                url: `/select2/sub-branches-data/${selectedMainBranchId}`,
-                                dataType: "json",
-                                type: "GET",
-                                data: params => ({search: params.term}),
-                                processResults: data => ({results: data}),
-                                cache: true
-                            }
-                        });
-                    });
+                    })
                 },
                 async searchData() {
                     this.isLoading = true;
