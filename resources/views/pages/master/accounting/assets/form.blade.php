@@ -25,17 +25,6 @@
                             </select>
                         </div>
 
-                        <div class="col-md-6">
-                            <div x-show="branchVal" x-cloak x-transition>
-                                <label for="branch_id" class="required form-label">Sub Cabang</label>
-                                <select name="branch_id" id="selected-asset-branch"
-                                        class="form-select form-select-solid sub-branches-select2"
-                                        data-dropdown-parent="#asset-modal">
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
-
                     </div>
 
 
