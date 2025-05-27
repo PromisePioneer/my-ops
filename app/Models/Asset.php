@@ -18,6 +18,7 @@ class Asset extends Model
         'code',
         'date_received',
         'item_id',
+        'stock_id',
         'unit',
         'useful_life',
         'price_per_unit',
