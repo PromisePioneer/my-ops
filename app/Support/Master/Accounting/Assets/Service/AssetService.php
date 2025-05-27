@@ -5,6 +5,7 @@ namespace App\Support\Master\Accounting\Assets\Service;
 use AllowDynamicProperties;
 use App\Http\Requests\AssetRequest;
 use App\Models\Account;
+use App\Models\AccountTransaction;
 use App\Models\Asset;
 use App\Models\AssetDepreciation;
 use App\Models\ItemCollection;
@@ -23,6 +24,7 @@ use function App\Helper\currencyFormat;
 
     private const string PURCHASE_ASSET_DESCRIPTION = 'Pembelian %s unit %s';
     private const string DEPRECIATION_ASSET_DESCRIPTION = 'Penyusutan %s unit %s';
+    private const string INITIAL_BALANCE_ASSET_DESCRIPTION = 'Saldo Awal Aset %s';
 
     private static int $perPage = 10;
 
@@ -105,6 +107,13 @@ use function App\Helper\currencyFormat;
             'price_per_unit' => $unitPrice,
             'total_price' => $unitPrice,
         ]);
+
+        $this->accountTransactionService->createDebitTransaction(
+            $request->branch_id,
+            sprintf(self::INITIAL_BALANCE_ASSET_DESCRIPTION, $itemCollection->name),
+            $itemCollection->asset_account_id,
+            $unitPrice,
+        );
     }
 
     /**
@@ -112,19 +121,33 @@ use function App\Helper\currencyFormat;
      */
     public function confirm(Request $request, Asset $asset): void
     {
-        $asset->load('item');
+        $asset->load('item', 'branch');
         $description = sprintf(self::PURCHASE_ASSET_DESCRIPTION, $asset->unit, $asset->name);
         DB::transaction(function () use ($request, $description, $asset) {
             $this->depreciation($request, $asset);
             $asset->status = 1;
             $asset->save();
+        });
+
+
+        if (empty($asset->stock_id)) {
+            AccountTransaction::create([
+                'branch_id' => $asset->branch->parent_id,
+                'date' => $asset->date_received,
+                'account_id' => $asset->item->asset_account_id,
+                'description' => sprintf(self::INITIAL_BALANCE_ASSET_DESCRIPTION, $asset->item->name),
+                'transaction_type' => 'SA',
+                'entries_type' => 'Debit',
+                'amount' => $asset->total_price,
+            ]);
+        } else {
             $this->accountTransactionService->createDebitTransaction(
-                $asset->branch_id,
+                $asset->branch->parent_id,
                 $description,
                 $asset->item->asset_account_id,
                 $asset->total_price,
             );
-        });
+        }
     }
 
 
@@ -136,7 +159,6 @@ use function App\Helper\currencyFormat;
         $yearsStart = Carbon::parse($request->date_received)->startOfMonth();
         $yearsEnd = Carbon::parse($request->date_received)->startOfMonth()->addYears($asset->useful_life);
         $diffInMonth = $yearsStart->diffInMonths($yearsEnd);
-
         $depreciation = ($asset->total_price) / $diffInMonth;
         $price = $asset->total_price;
 

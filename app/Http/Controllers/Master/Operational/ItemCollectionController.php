@@ -141,6 +141,24 @@ use Throwable;
     }
 
 
+    public function getAssetItem(Request $request)
+    {
+        $search = $request->input('search');
+        $goods = ItemCollection::search($search)->query(function ($query) {
+            $query->where('type', 'ASET')->orderBy('name', 'asc');
+        })->get();
+
+        return $goods->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'asset_account_id' => $item->asset_account_id,
+                'must_have_code' => $item->must_have_code,
+                'text' => $item->name
+            ];
+        });
+    }
+
+
     public function selectedItem(ItemCollection $item): array
     {
         return [

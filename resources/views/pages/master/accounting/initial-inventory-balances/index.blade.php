@@ -193,6 +193,11 @@
         });
 
 
+        document.querySelector('.btn-close').addEventListener('click', () => {
+            modal.hide();
+        })
+
+
         Inputmask("decimal", {
             radixPoint: ",",
             groupSeparator: ".",

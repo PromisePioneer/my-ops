@@ -20,7 +20,7 @@ class StockMutation extends Model
         'description',
         'sender_signature',
         'receiver_signature',
-
+        'status',
     ];
 
 
