@@ -134,6 +134,7 @@
         function stockMutations() {
             return {
                 isLoading: false,
+                loggedUserId: "{{ Auth::id() }}",
                 stockMutation: [],
                 search: '',
                 editVal: {},
@@ -219,6 +220,7 @@
                             await axios.post(`/inventory/stock-mutations/send-item/${id}`, new FormData(this.formDelete));
                             await showAlert('success', 'Barang sukses dikirim');
                             await this.init();
+                            await this.detailModal.hide();
                         } catch (error) {
                             console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');
@@ -228,9 +230,23 @@
                 async cancelDelivery(id) {
                     showConfirmModal("Anda yakin?", "Batalkan Pengiriman?", "Ya, Kirim!", async () => {
                         try {
-                            await axios.post(`/inventory/stock-mutations/cancel-delivery/${id}`, new FormData(this.formDelete));
+                            await axios.post(`/inventory/stock-mutations/cancel-delivery/${id}`);
                             await showAlert('success', 'Pengiriman berhasil dibatalkan');
                             await this.init();
+                            await this.detailModal.hide();
+                        } catch (error) {
+                            console.error(error);
+                            await showAlert('error', 'Terjadi kesalahan');
+                        }
+                    });
+                },
+                async receiveItem(id) {
+                    showConfirmModal("Anda yakin?", "Terima Pengiriman? Mohon di pastikan barang sudah sesuai", "Ya, Terima!", async () => {
+                        try {
+                            await axios.post(`/inventory/stock-mutations/receive-delivery/${id}`);
+                            await showAlert('success', 'Pengiriman berhasil diterima');
+                            await this.init();
+                            await this.detailModal.hide();
                         } catch (error) {
                             console.error(error);
                             await showAlert('error', 'Terjadi kesalahan');

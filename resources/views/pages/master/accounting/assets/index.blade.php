@@ -2,13 +2,16 @@
 @section('page-title', 'Aset')
 @section('breadcrumbs', 'Master Keuangan - Aset')
 @section('content')
+    @push('styles')
+    @endpush
     <div x-data="assetsData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.master.accounting.assets.form')
-            @include('pages.master.accounting.assets.import')
-            @include('pages.master.operational.items.form')
-            @include('pages.master.accounting.initial-inventory-balances.form')
-            @include('pages.master.operational.supplier.form')
+            <div>
+                @include('pages.master.accounting.assets.form')
+                @include('pages.master.operational.items.form')
+                @include('pages.master.accounting.initial-inventory-balances.form')
+                @include('pages.master.operational.supplier.form')
+            </div>
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -60,11 +63,7 @@
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
-                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                        <input class="form-check-input" type="checkbox"
-                                               @click="toggleAllCheckBox()"
-                                               :disabled="Number(deletePermission) !== 1">
-                                    </div>
+                                    #
                                 </th>
                                 <th class="min-w-125px">Cabang</th>
                                 <th class="min-w-125px">Kode</th>
@@ -183,17 +182,26 @@
         });
 
 
-        const modal = new bootstrap.Modal(document.getElementById('modal-initial-inventory-balance'));
+        const initialInventoryBalanceModal = document.getElementById('modal-initial-inventory-balance');
         const supplierModal = document.getElementById('modal-supplier');
         const itemModal = document.getElementById('modal-item');
+        const assetModal = new bootstrap.Modal(document.getElementById('asset-modal'));
 
 
-        itemModal.addEventListener('hidden.bs.modal', e => {
-            modal.show();
+        //hide asset modal when initial inventory balance modal is open
+        initialInventoryBalanceModal.addEventListener('shown.bs.modal', e => {
+            assetModal.hide();
+        })
+
+        //show asset modal when initial inventory balance modal is hide
+        initialInventoryBalanceModal.addEventListener('hidden.bs.modal', e => {
+            assetModal.show();
         });
 
-        supplierModal.addEventListener('hidden.bs.modal', e => {
-            modal.show();
+
+        // close asset modal after opening multiple modal inside asset modal
+        document.querySelector('.btn-close').addEventListener('click', () => {
+            assetModal.hide();
         });
 
         function assetsData() {
@@ -222,13 +230,10 @@
                 form: document.getElementById('asset-form'),
                 modal: new bootstrap.Modal(document.getElementById('asset-modal')),
                 formDelete: document.getElementById('form-delete'),
-                formImport: document.getElementById('form-import'),
-                modalImport: new bootstrap.Modal(document.getElementById('modal-import')),
                 initialInventoryBalanceModal: new bootstrap.Modal(document.getElementById('modal-initial-inventory-balance')),
                 initialInventoryBalanceForm: document.getElementById('form-initial-inventory-balance'),
                 supplierModal: document.getElementById('modal-supplier'),
                 supplierForm: document.getElementById('form-supplier'),
-                itemModal: new bootstrap.Modal(document.getElementById('modal-item')),
                 itemForm: document.getElementById('form-item'),
                 itemCondition: null,
                 attachmentImgSrc: '',
@@ -291,7 +296,7 @@
                         escapeMarkup: markup => (markup),
                         language: {
                             noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-item">Tambahkan terlebih dahulu</a>`;
+                                return `Data Tidak Ditemukan.. <button  href=/'#' id='item-drawer'>Tambahkan terlebih dahulu</button>`;
                             }
                         },
                         ajax: {
@@ -311,11 +316,11 @@
                         escapeMarkup: markup => (markup),
                         language: {
                             noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-item">Tambahkan terlebih dahulu</a>`;
+                                return `Data Tidak Ditemukan.. <button   id='item-drawer'>Tambahkan terlebih dahulu</button>`;
                             }
                         },
                         ajax: {
-                            url: '/select2/goods-data',
+                            url: '/select2/asset-items-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
@@ -623,6 +628,9 @@
                             await showAlert('error', 'Terjadi kesalahan');
                         }
                     });
+                },
+                closeAssetModal() {
+                    this.modal.hide();
                 }
             }
         }

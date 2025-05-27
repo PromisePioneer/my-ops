@@ -1,9 +1,9 @@
-<div class="modal fade" tabindex="-1" id="asset-modal">
+<div class="modal fade" id="asset-modal">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Form Aset</h5>
-                <div class="btn btn-icon btn-sm btn-active-light-danger ms-2" data-bs-dismiss="modal"
+                <button class="btn btn-icon btn-sm btn-active-light-danger ms-2 btn-close" @click="modal.hide()"
                      aria-label="Close">
                     <span class="svg-icon svg-icon-2x">
                         <i class="ki-duotone ki-technology-2">
@@ -11,7 +11,7 @@
                             <span class="path2"></span>
                         </i>
                     </span>
-                </div>
+                </button>
             </div>
 
             <form id="asset-form" @submit.prevent="save(editVal?.id)">

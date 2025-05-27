@@ -80,23 +80,30 @@
             </div>
             <div class="modal-footer">
                 <div class="d-flex align-items-center justify-content-center">
-                    <template x-if="editVal.sender_signature">
+                    <template x-if="editVal.status === 'Dikirim'">
                         <a target="_blank" :href="`/inventory/stock-mutations/bast-document/${editVal.id}`"
                            class="btn btn-light-primary btn-sm me-2">
                             <x-icons.print/>
                             Cetak Laporan BAST
                         </a>
                     </template>
-                    <template x-if="editVal.sender_signature">
+                    <template
+                        x-if="Number(loggedUserId) === Number(editVal.sender_id) && editVal.status === 'Dikirim'">
                         <button class="btn btn-light-danger btn-sm me-2" @click="cancelDelivery(editVal.id)">
                             <x-icons.close/>
                             Batalkan Pengiriman
                         </button>
                     </template>
-                    <template x-if="!editVal.sender_signature">
+                    <template x-if="Number(loggedUserId)  === Number(editVal.sender_id) && editVal.status === null">
                         <button class="btn btn-light-primary btn-sm" @click="sendItem(editVal.id)">
                             <x-icons.confirm/>
                             Kirim Barang
+                        </button>
+                    </template>
+                    <template x-if="Number(loggedUserId)  === Number(editVal.receiver_id) && editVal.status === 'Dikirim'">
+                        <button class="btn btn-light-primary btn-sm" @click="receiveItem(editVal.id)">
+                            <x-icons.confirm/>
+                            Terima Barang
                         </button>
                     </template>
                 </div>
