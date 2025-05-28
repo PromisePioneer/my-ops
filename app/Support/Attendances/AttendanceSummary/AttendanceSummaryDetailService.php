@@ -435,7 +435,7 @@ class AttendanceSummaryDetailService
                         $lateness = $newExpectedCheckIn ?
                             $newExpectedCheckIn->diffInMinutes($actualCheckIn) :
                             $expectedCheckIn->diffInMinutes($actualCheckIn);
-                        if ($day['employeeSchedule']?->status !== 'L' || $weekHoliday->day !== Carbon::parse($day['attendancesDate'])->dayName) {
+                        if ($day['employeeSchedule']?->status !== 'L' ) {
                             $weekLatenessDetails[$day['attendancesDate']] = $lateness;
                             $weekLatenessTotal += (int)CarbonInterval::minutes($lateness)->format('%i');
                         }

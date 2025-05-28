@@ -225,7 +225,9 @@ class IclockService
             Log::warning('Data dilewati karena tidak masuk tanggal', [
                 'timestamp' => $date,
                 'employee_id' => $attendanceData,
-                'shift' => $shift
+                'shift' => $shift,
+                'checkin' => $isCheckIn,
+                'checkout' => $isCheckOut
             ]);
         }
     }
@@ -251,7 +253,7 @@ class IclockService
 
         $queryDate = $this->getShiftDate($date, $attendanceData['employee_id']);
 
-        $summary = AttendancesSummary::where('employee_id', $attendanceData['employee_id'])->whereDate('date', $queryDate->format('Y-m-d'))
+        $summary = AttendancesSummary::where('employee_id', $attendanceData['employee_id'])->where('work_time_id', $shift)->whereDate('date', $queryDate->format('Y-m-d'))
             ->first();
 
 
@@ -322,7 +324,7 @@ class IclockService
 
     public function isValidTimeToCheckIn($date, string $checkInStart, string $checkInEnd, $shiftName): bool
     {
-        if ($shiftName === 'Pagi' || $shiftName === 'Lapangan') {
+        if ($shiftName === 'Pagi' || $shiftName === 'Lapangan' || $shiftName === 'Duri') {
             $actualCheckInTime = Carbon::parse($date)->toTimeString();
             return $actualCheckInTime >= $checkInStart && $actualCheckInTime <= $checkInEnd;
         }
@@ -337,7 +339,7 @@ class IclockService
 
     public function isValidTimeCheckOut($date, string $checkOutStart, string $checkOutEnd, $shiftName, $employee_id): bool
     {
-        if ($shiftName === 'Pagi' || $shiftName === 'Lapangan') {
+        if ($shiftName === 'Pagi' || $shiftName === 'Lapangan' || $shiftName === 'Duri') {
             $actualCheckOutTime = Carbon::parse($date)->toTimeString();
 
             return $actualCheckOutTime >= $checkOutStart && $actualCheckOutTime <= $checkOutEnd;

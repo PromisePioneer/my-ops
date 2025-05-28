@@ -124,6 +124,18 @@ class AttendancesACLFilter
         }
 
 
+    if($request->user()->hasRole('Quality Controller Supervisor')){
+        $query->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', [
+                    'Quality Controller Supervisor',
+                    'Backbone Team Supervisor',
+                    'Trainer & Quality Control Staff',
+                    'Quality Control Staff'
+                ]);
+            });
+    }
+
+
         if ($request->user()->hasRole('KU Head Engineer')) {
             $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['KU Head Engineer', 'KU Engineer']);

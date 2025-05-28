@@ -67,13 +67,13 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
                             'status1' => $record['type'],
                         ];
 
-                        Log::info($data);
-
                         $shift = $this->iclockService->getShiftForUser(
                             $data['employee_id'],
                             $data['timestamp'],
                             $data['status1']
                         );
+
+                    Log::info($data);
 
                         $this->iclockService->processAttendanceRecord($data, $shift);
                     }
