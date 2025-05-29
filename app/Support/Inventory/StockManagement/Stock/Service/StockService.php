@@ -6,6 +6,7 @@ use AllowDynamicProperties;
 use App\Models\DraftStock;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\Branch;
+use App\Models\Stock;
 use App\Support\Inventory\StockManagement\Stock\Repository\StockRepository;
 use App\Support\Master\Common\Branch\Repository\BranchRepository;
 use App\Support\Master\Operational\ItemCollections\Repositories\ItemCollectionRepository;
@@ -77,12 +78,24 @@ use Illuminate\Support\Facades\Auth;
     // masih salah
     public function getMustReorderStocks()
     {
+        $branchId = Auth::user()->branch_id;
 
-        $doesntHaveStock = ItemCollection::doesntHave('stock')->whereNotNull('reorder_level')->count();
-        return ItemCollection::with('stock')
-                ->whereHas('stock', function ($query) {
-                    $query->where('qty', '<', 'reorder_level');
-                })->count() + $doesntHaveStock;
+        // Ambil semua stok per item
+        $stockData = Stock::when($branchId, function ($query) use ($branchId) {
+            $query->where('branch_id', $branchId);
+        })
+            ->selectRaw('item_id, SUM(qty) as total_qty')
+            ->groupBy('item_id')
+            ->pluck('total_qty', 'item_id'); // [item_id => total_qty]
+
+        // Ambil semua item yang memiliki reorder_level
+        $items = ItemCollection::whereNotNull('reorder_level')->get();
+
+        // Hitung item yang perlu reorder
+        return $items->filter(function ($item) use ($stockData) {
+            $totalStock = $stockData[$item->id] ?? 0;
+            return $totalStock < $item->reorder_level;
+        })->count();
     }
 
 

@@ -63,21 +63,27 @@ use function App\Helper\currencyFormat;
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $query = Asset::with('branch', 'account');
+        $query = Asset::with('branch');
 
         if (!empty($search)) {
             $query->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                    ->orWhereHas('account', function ($query) use ($search) {
-                        $query->where('name', 'like', '%' . $search . '%')
-                            ->orWhere('code', 'like', '%' . $search . '%');
-                    })->orWhere('useful_life', 'like', '%' . $search . '%');
+                $query->whereHas('item', function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                })->orWhere('useful_life', 'like', '%' . $search . '%');
             });
         }
 
 
         $data = $query->paginate(self::$perPage);
         return self::formattedData($data);
+    }
+
+
+    public function filter(Request $request): LengthAwarePaginator
+    {
+        $query = $this->assetRepository->data();
+        $filter = AssetQueryFilterService::apply($query, $request);
+        return self::formattedData($filter->paginate(self::$perPage));
     }
 
 

@@ -484,6 +484,7 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/data', [AssetController::class, 'data']);
                 Route::get('/create', [AssetController::class, 'create']);
                 Route::get('/search', [AssetController::class, 'search']);
+                Route::get('/filter', [AssetController::class, 'filter']);
                 Route::get('/edit/{asset}', [AssetController::class, 'edit']);
                 Route::get('/branch/data', [AssetController::class, 'getBranchData']);
                 Route::get('/debit-account/data', [AssetController::class, 'getDebitAccount']);

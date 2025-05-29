@@ -85,11 +85,9 @@ use Throwable;
                         'code' => $request->code,
                         'stock_id' => $newStock->id,
                         'item_id' => $draftStock->transaction?->item_id ?? $draftStock->initialInventoryBalance?->item_id,
-                        'date_received' => $draftStock->transaction?->date ?? $draftStock->initialInventoryBalance?->date,
-                        'unit' => 1,
+                        'date' => $draftStock->transaction?->date ?? $draftStock->initialInventoryBalance?->date,
                         'useful_life' => UsefulLifeService::getUsefulLife($assetAccount?->code, $itemObject->non_building_group, $itemObject?->building_type),
-                        'price_per_unit' => $unitPrice,
-                        'total_price' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance?->unit_price,
+                        'price' => $unitPrice,
                     ]);
                     $this->itemCatalogStore($request, $draftStock, $newStock, null, $asset);
                 }
@@ -104,12 +102,10 @@ use Throwable;
                         'code' => $request->code,
                         'item_id' => $draftStock->transaction?->item_id ?? $draftStock->initialInventoryBalance?->item_id,
                         'stock_id' => $stock->id,
-                        'date_received' => $draftStock->transaction?->date ?? $draftStock->initialInventoryBalance?->date,
+                        'date' => $draftStock->transaction?->date ?? $draftStock->initialInventoryBalance?->date,
                         'name' => $itemObject->name,
-                        'unit' => 1,
                         'useful_life' => UsefulLifeService::getUsefulLife($assetAccount?->code, $itemObject->non_building_group, $itemObject?->building_type),
-                        'price_per_unit' => $unitPrice,
-                        'total_price' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance?->unit_price,
+                        'price' => $unitPrice,
                     ]);
                     $this->itemCatalogStore($request, $draftStock, null, $stock, $asset);
                 }
