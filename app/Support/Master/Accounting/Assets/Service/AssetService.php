@@ -22,8 +22,8 @@ use function App\Helper\currencyFormat;
 #[AllowDynamicProperties] class AssetService
 {
 
-    private const string PURCHASE_ASSET_DESCRIPTION = 'Pembelian %s unit %s';
-    private const string DEPRECIATION_ASSET_DESCRIPTION = 'Penyusutan %s unit %s';
+    private const string PURCHASE_ASSET_DESCRIPTION = 'Pembelian  %s';
+    private const string DEPRECIATION_ASSET_DESCRIPTION = 'Penyusutan %s';
     private const string INITIAL_BALANCE_ASSET_DESCRIPTION = 'Saldo Awal Aset %s';
 
     private static int $perPage = 10;
@@ -50,10 +50,8 @@ use function App\Helper\currencyFormat;
                 'code' => $item->code,
                 'name' => $item->item->name,
                 'debit_account' => $item->item->assetAccount->name,
-                'unit' => $item->unit,
                 'useful_life' => $item->useful_life,
-                'price_per_unit' => currencyFormat($item->price_per_unit, 2, '.', '.'),
-                'price_at_first_recieved' => currencyFormat($item->price_at_first_recieved, 2, '.', '.'),
+                'price' => currencyFormat($item->price),
                 'status' => $item->status,
             ];
         });
@@ -88,7 +86,7 @@ use function App\Helper\currencyFormat;
      */
     public function store(AssetRequest $request): void
     {
-        $unitPriceformattedValue = str_replace('.', '', $request->input('price_per_unit'));
+        $unitPriceformattedValue = str_replace('.', '', $request->input('price'));
         $unitPriceformattedValue = str_replace(',', '.', $unitPriceformattedValue);
         $unitPrice = (float)$unitPriceformattedValue;
 
@@ -100,20 +98,32 @@ use function App\Helper\currencyFormat;
         Asset::create([
             'branch_id' => $request->branch_id,
             'code' => $request->code,
-            'date_received' => $request->date_received,
+            'date' => $request->date,
             'item_id' => $request->item_id,
-            'unit' => 1,
             'useful_life' => UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->non_building_group, $itemCollection->building_type),
-            'price_per_unit' => $unitPrice,
-            'total_price' => $unitPrice,
+            'price' => $unitPrice,
         ]);
+    }
 
-        $this->accountTransactionService->createDebitTransaction(
-            $request->branch_id,
-            sprintf(self::INITIAL_BALANCE_ASSET_DESCRIPTION, $itemCollection->name),
-            $itemCollection->asset_account_id,
-            $unitPrice,
-        );
+
+    public function update(AssetRequest $request, Asset $asset): void
+    {
+        $unitPriceformattedValue = str_replace('.', '', $request->input('price'));
+        $unitPriceformattedValue = str_replace(',', '.', $unitPriceformattedValue);
+        $unitPrice = (float)$unitPriceformattedValue;
+
+
+        $itemCollection = ItemCollection::find($request->item_id);
+        $assetAccount = Account::find($itemCollection->asset_account_id);
+
+        $asset->update([
+            'branch_id' => $request->branch_id,
+            'code' => $request->code,
+            'date' => $request->date,
+            'item_id' => $request->item_id,
+            'useful_life' => UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->non_building_group, $itemCollection->building_type),
+            'price' => $unitPrice,
+        ]);
     }
 
     /**
@@ -122,9 +132,9 @@ use function App\Helper\currencyFormat;
     public function confirm(Request $request, Asset $asset): void
     {
         $asset->load('item', 'branch');
-        $description = sprintf(self::PURCHASE_ASSET_DESCRIPTION, $asset->unit, $asset->name);
+        $description = sprintf(self::PURCHASE_ASSET_DESCRIPTION, $asset->name);
         DB::transaction(function () use ($request, $description, $asset) {
-            $this->depreciation($request, $asset);
+            $this->depreciation($asset);
             $asset->status = 1;
             $asset->save();
         });
@@ -133,19 +143,19 @@ use function App\Helper\currencyFormat;
         if (empty($asset->stock_id)) {
             AccountTransaction::create([
                 'branch_id' => $asset->branch->parent_id,
-                'date' => $asset->date_received,
+                'date' => $asset->date,
                 'account_id' => $asset->item->asset_account_id,
                 'description' => sprintf(self::INITIAL_BALANCE_ASSET_DESCRIPTION, $asset->item->name),
                 'transaction_type' => 'SA',
                 'entries_type' => 'Debit',
-                'amount' => $asset->total_price,
+                'amount' => $asset->price,
             ]);
         } else {
             $this->accountTransactionService->createDebitTransaction(
                 $asset->branch->parent_id,
                 $description,
                 $asset->item->asset_account_id,
-                $asset->total_price,
+                $asset->price,
             );
         }
     }
@@ -154,20 +164,20 @@ use function App\Helper\currencyFormat;
     /**
      * @throws Throwable
      */
-    public function depreciation(Request $request, Asset $asset): void
+    public function depreciation(Asset $asset): void
     {
-        $yearsStart = Carbon::parse($request->date_received)->startOfMonth();
-        $yearsEnd = Carbon::parse($request->date_received)->startOfMonth()->addYears($asset->useful_life);
+        $yearsStart = Carbon::parse($asset->date)->startOfMonth();
+        $yearsEnd = Carbon::parse($asset->date)->startOfMonth()->addYears($asset->useful_life);
         $diffInMonth = $yearsStart->diffInMonths($yearsEnd);
-        $depreciation = ($asset->total_price) / $diffInMonth;
-        $price = $asset->total_price;
+        $depreciation = ($asset->price) / $diffInMonth;
+        $price = $asset->price;
 
         $asset->update([
-            'depreciation' => ($asset->total_price) / (int)$yearsStart->diffInYears($yearsEnd),
+            'depreciation' => ($asset->price) / (int)$yearsStart->diffInYears($yearsEnd),
         ]);
 
         for ($i = 0; $i < $diffInMonth; $i++) {
-            $date = Carbon::parse($asset->date_received)->startOfMonth()->addMonths($i);
+            $date = Carbon::parse($asset->date)->startOfMonth()->addMonths($i);
             if ($i === 0) {
                 $price;
             } else {
@@ -182,7 +192,7 @@ use function App\Helper\currencyFormat;
                 ]);
 
                 $account = Account::where('code', '130')->first();
-                $description = sprintf(self::DEPRECIATION_ASSET_DESCRIPTION, $asset->unit, $asset->name, $i);
+                $description = sprintf(self::DEPRECIATION_ASSET_DESCRIPTION, $asset->name, $i);
 
                 $this->accountTransactionService->createCreditTransaction(
                     $asset->branch_id,
@@ -194,28 +204,6 @@ use function App\Helper\currencyFormat;
                 );
             });
         }
-    }
-
-    public function update(AssetRequest $request, Asset $asset): bool
-    {
-        $unitPriceformattedValue = str_replace('.', '', $request->input('price_per_unit'));
-        $unitPriceformattedValue = str_replace(',', '.', $unitPriceformattedValue);
-        $unitPrice = (float)$unitPriceformattedValue;
-
-
-        $itemCollection = ItemCollection::find($request->item_id);
-        $assetAccount = Account::find($itemCollection->asset_account_id);
-
-        return $asset->update([
-            'branch_id' => $request->branch_id,
-            'code' => $request->code,
-            'date_received' => $request->date_received,
-            'item_id' => $request->item_id,
-            'unit' => 1,
-            'useful_life' => UsefulLifeService::getUsefulLife($assetAccount->code, $itemCollection->non_building_group, $itemCollection->building_type),
-            'price_per_unit' => $unitPrice,
-            'total_price' => $unitPrice,
-        ]);
     }
 
 }

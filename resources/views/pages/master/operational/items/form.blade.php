@@ -1,26 +1,19 @@
-<div
-    id="item-drawer-action"
-    class="bg-white"
-    data-kt-drawer="true"
-    data-kt-drawer-activate="true"
-    data-kt-drawer-toggle="#item-drawer"
-    data-kt-drawer-close="#kt_drawer_example_advanced_close"
-    data-kt-drawer-name="docs"
-    data-kt-drawer-overlay="true"
-    data-kt-drawer-direction="start"
-    data-kt-drawer-width="{default:'300px', 'md': '700px'}"
->
-    <div class="card w-100">
-        <div class="card-header">
-            <h3 class="card-title">Form Barang</h3>
-            <div class="card-toolbar">
-                <button class="btn btn-light btn-sm" data-kt-drawer-dismiss="true">
-                    <x-icons.close/>
+<div class="modal fade" id="modal-item" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Form Barang</h5>
+                <button class="btn btn-icon btn-sm btn-active-light-danger ms-2 btn-close" data-bs-dismiss="modal"
+                        aria-label="Close">
+                    <span class="svg-icon svg-icon-2x">
+                        <i class="ki-duotone ki-technology-2">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                        </i>
+                    </span>
                 </button>
             </div>
-        </div>
             <form id="form-item" @submit.prevent="saveItem(editVal?.id ?? null)">
-                <div class="card-body">
                 <div class="modal-body">
                     <div class="d-flex justify-content-end align-items-center">
                         <div class="d-flex justify-content-between align-items-center">
@@ -37,7 +30,8 @@
                             </div>
                             <div class="form-check form-switch form-check-custom form-check-solid me-10"
                                  x-show="!itemMustHaveCode" x-transition x-cloak>
-                                <input class="form-check-input" type="checkbox" id="isCodeListed" x-model="hasSNOnItem"
+                                <input class="form-check-input" type="checkbox" id="isCodeListed"
+                                       x-model="hasSNOnItem"
                                        :name="`${!itemMustHaveCode ? 'is_code_listed' : ''}`"
                                        :checked="editVal?.is_code_listed === 1"/>
                                 <label class="form-check-label" for="isCodeListed">
@@ -47,7 +41,8 @@
                             <div class="form-check form-switch form-check-custom form-check-solid"
                                  x-show="tangibleAsset === 'Bukan Bangunan'"
                                  x-transition x-cloak>
-                                <input class="form-check-input" type="checkbox" id="isVehicle" x-model="isVehicleAsset"
+                                <input class="form-check-input" type="checkbox" id="isVehicle"
+                                       x-model="isVehicleAsset"
                                        name="is_vehicle"
                                        :checked="editVal?.is_vehicle === 1"/>
                                 <label class="form-check-label" for="isVehicle">
@@ -56,8 +51,6 @@
                             </div>
                         </div>
                     </div>
-
-
                     <div class="row mt-10 mb-10">
                         <div class="col-md-6">
                             <label for="name" class="required form-label">Nama</label>
@@ -75,8 +68,6 @@
                                    placeholder="Kode Barang" :value="editVal?.code"/>
                         </div>
                     </div>
-
-
                     <div class="row mb-10">
                         <div class="col-md-6">
                             <label for="type" class="required form-label">Tipe</label>
@@ -144,7 +135,7 @@
                             <label for="unit_type_id" class="required form-label">Satuan</label>
                             <select name="unit_type_id" id="selected-unit-type"
                                     class="form-select form-select-solid unit-types-select2"
-                                    data-dropdown-parent="#item-drawer-action"
+                                    data-dropdown-parent="#modal-item"
                             >
                                 <option></option>
                             </select>
@@ -153,7 +144,8 @@
                             <label for="" class="form-label required">Akun Aset</label>
                             <input type="text" class="form-control form-control-solid" value="Tanah" disabled>
                         </div>
-                        <div class="col-md-6 mb-10" x-show="tangibleAsset === 'Bukan Bangunan'" x-transition x-cloak>
+                        <div class="col-md-6 mb-10" x-show="tangibleAsset === 'Bukan Bangunan'" x-transition
+                             x-cloak>
                             <div class="d-flex align-items-center mb-1">
                                 <label for="category_id" class="required form-label me-2 mb-0">Kelompok</label>
                                 <span class="text-danger">
@@ -171,7 +163,8 @@
                                         :selected="editVal?.non_building_group === 'Kelompok I'">
                                     Kelompok I
                                 </option>
-                                <option value="Kelompok II" :selected="editVal?.non_building_group === 'Kelompok II'">
+                                <option value="Kelompok II"
+                                        :selected="editVal?.non_building_group === 'Kelompok II'">
                                     Kelompok II
                                 </option>
                                 <option value="Kelompok III"
@@ -190,27 +183,22 @@
                              x-show="(tangibleAsset === 'Bukan Bangunan' && !isVehicleAsset)  || isAset === 'JUAL'"
                              x-transition x-cloak>
                             <div class="d-flex align-items-center mb-1">
-                                <label for="category_id" class="required form-label me-2 mb-0">Kategori</label>
+                                <label for="" class="required form-label me-2 mb-0">Kategori</label>
                                 <span class="text-danger">
                                    <a class="btn btn-sm btn-link p-0 m-0" target="_blank"
                                       href="{{ url('master/operational/item-categories') }}">Bantuan</a>
                                 </span>
                             </div>
                             <select
-                                :name="`${tangibleAsset === 'Bukan Bangunan' || isAset === 'ASET' || isAset === 'JUAL' || !isLandAsset || !isVehicleAsset ? 'category_id' : ''}`"
+                                :name="`${tangibleAsset === 'Bukan Bangunan' || isAset === 'ASET' || isAset === 'JUAL' || !isVehicleAsset ? 'category_id' : ''}`"
                                 id="selected-item-category"
                                 class="form-select form-select-solid item-category-select2"
+                                data-dropdown-parent="#modal-item"
                             >
                                 <option></option>
                             </select>
                         </div>
                     </div>
-
-                    <div class="row mb-10">
-
-                    </div>
-
-
                     <div class="row">
                         <div class="col-md-6"
                              x-show="tangibleAsset === 'Bukan Bangunan' && !isVehicleAsset"
@@ -220,7 +208,8 @@
                                    :name="`${tangibleAsset === 'Bukan Bangunan' && !isVehicleAsset ? 'reorder_level' : ''}`"
                                    id="reorder_level" placeholder="Reorder Level" :value="editVal.reorder_level">
                         </div>
-                        <div class="col-md-6" x-show="isAset === 'ASET' && tangibleAsset !== 'Tanah' && !isVehicleAsset"
+                        <div class="col-md-6"
+                             x-show="isAset === 'ASET' && tangibleAsset !== 'Tanah' && !isVehicleAsset"
                              x-transition
                              x-cloak>
                             <label for="asset_account_id" class="required form-label">
@@ -230,14 +219,23 @@
                                 :name="`${isAset === 'ASET' && !isLandAsset && !isVehicleAsset ? 'asset_account_id' : '' }`"
                                 id="selected-asset-account"
                                 class="form-select form-select-solid asset-accounts-select2"
+                                data-dropdown-parent="#modal-item"
                             >
                                 <option></option>
                             </select>
                         </div>
                     </div>
                 </div>
-                </div>
-                <div class="card-footer">
+
+                <div class="modal-footer">
+                    @if(Request::path() === 'master/accounting/assets')
+                        <button class="btn btn-light-info btn-sm" type="button">
+                            Form Aset
+                        </button>
+                        <button class="btn btn-light-info btn-sm" type="button">
+                            Form Saldo Awal Persediaan
+                        </button>
+                    @endif
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
                             <i class="ki-duotone ki-click fs-2">
@@ -252,6 +250,6 @@
                     </div>
                 </div>
             </form>
+        </div>
     </div>
 </div>
-

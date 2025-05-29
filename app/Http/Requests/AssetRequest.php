@@ -28,9 +28,8 @@ class AssetRequest extends FormRequest
             'code' => ['required', Rule::unique('assets', 'code')->ignore($request->route('asset'))],
             'item_id' => ['required', 'exists:item_collections,id'],
             'branch_id' => ['nullable', 'exists:branches,id'],
-            'date_received' => ['required', 'date'],
-            'unit' => ['required', 'numeric'],
-            'price_per_unit' => ['required'],
+            'date' => ['required', 'date'],
+            'price' => ['required'],
         ];
     }
 
@@ -47,9 +46,9 @@ class AssetRequest extends FormRequest
             'credit_account_id.exists' => 'Akun Kredit ini tidak terdaftar',
             'unit.required' => 'Unit tidak boleh kosong',
             'unit.numeric' => 'Unit harus berupa angka',
-            'price_per_unit.required' => 'Harga per unit tidak boleh kosong',
-            'date_recieved.required' => 'Tanggal Perolehan tidak boleh kosong',
-            'date_recieved.date' => 'Tanggal Perolehan harus berupa tanggal',
+            'price.required' => 'Harga per unit tidak boleh kosong',
+            'date.required' => 'Tanggal Perolehan tidak boleh kosong',
+            'date.date' => 'Tanggal Perolehan harus berupa tanggal',
         ];
     }
 }

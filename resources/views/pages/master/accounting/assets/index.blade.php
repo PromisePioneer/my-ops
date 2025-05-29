@@ -2,16 +2,8 @@
 @section('page-title', 'Aset')
 @section('breadcrumbs', 'Master Keuangan - Aset')
 @section('content')
-    @push('styles')
-    @endpush
     <div x-data="assetsData()">
-        <div class="card card-xl-stretch mb-5 mb-xl-8">
-            <div>
-                @include('pages.master.accounting.assets.form')
-                @include('pages.master.operational.items.form')
-                @include('pages.master.accounting.initial-inventory-balances.form')
-                @include('pages.master.operational.supplier.form')
-            </div>
+        <div class="card card-xl-stretch mb-5 mb-xl-8 ">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -26,15 +18,14 @@
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                             @can('Tambah Data Aset')
-                                <button type="button" class="btn btn-light-primary btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#asset-modal">
+                                <a href="{{ url('/master/accounting/assets/create') }}"
+                                   class="btn btn-light-primary btn-sm">
                                     <i class="ki-duotone ki-message-add fs-2">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
                                         <span class="path3"></span>
                                     </i> Tambah
-                                </button>
+                                </a>
                             @endcan
                         </div>
                     </div>
@@ -59,9 +50,9 @@
                 </div>
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table align-middle table-row-dashed fs-6 gy-5 table-striped" id="kt_table_users">
+                        <table class="table align-middle table-bordered fs-6 gy-5 table-striped" id="kt_table_users">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
                                     #
                                 </th>
@@ -69,13 +60,12 @@
                                 <th class="min-w-125px">Kode</th>
                                 <th class="min-w-125px">Kategori</th>
                                 <th class="min-w-125px">Nama</th>
-                                <th class="min-w-125px">Unit</th>
                                 <th class="min-w-125px">Masa Manfaat</th>
                                 <th class="min-w-125px">Harga / Unit</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
-                            <tbody class="fw-bold">
                             <template x-if="isLoading">
+                                <tbody class="fw-bold">
                                 <tr>
                                     <td colspan="9">
                                         <div style="text-align: center;">
@@ -85,22 +75,32 @@
                                         </div>
                                     </td>
                                 </tr>
+                                </tbody>
                             </template>
+
                             <template x-if="!isLoading && assets.data?.length === 0">
+                                <tbody class="fw-bold">
+
                                 <tr>
                                     <td colspan="9">
                                         <center>Data Tidak Ditemukan</center>
                                     </td>
                                 </tr>
+                                </tbody>
                             </template>
                             <template x-for="asset in assets?.data" :key="asset.id">
+                                <tbody class="fw-bold text-center">
+
                                 <tr>
                                     <td>
-                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                        <div class="form-check form-check-sm form-ch
+                                        eck-custom form-check-solid"
                                              @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="asset.id"
-                                                   :id="'checkbox-' + asset.id"
-                                                   :disabled="Number(deletePermission) !== 1"/>
+                                            <template x-if="Number(asset.status) === 1">
+                                                <input class="form-check-input" type="checkbox" :value="asset.id"
+                                                       :id="'checkbox-' + asset.id"
+                                                       :disabled="Number(deletePermission) !== 1"/>
+                                            </template>
                                         </div>
                                     </td>
                                     <td x-text="`${asset.branch_name ?? 'Pusat'}`"></td>
@@ -110,16 +110,15 @@
                                         <a :href="`${Number(viewDetailPermission) === 1 ? `/master/accounting/assets/detail/${asset.id}` : '' }`"
                                            x-text="asset.name"></a>
                                     </td>
-                                    <td x-text="asset.unit"></td>
                                     <td x-text="asset.useful_life"></td>
-                                    <td x-text="asset.price_per_unit"></td>
+                                    <td x-text="asset.price"></td>
                                     <td>
                                         <template x-if="asset.status == 0">
                                             <template x-if="Number(editPermission) === 1">
-                                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                        data-bs-target="#asset-modal" @click="edit(asset.id)">
+                                                <a :href="`/master/accounting/assets/edit/${asset.id}`"
+                                                   class="btn btn-light-primary btn-sm">
                                                     <i class="bi bi-pencil"></i>
-                                                </button>
+                                                </a>
                                             </template>
                                         </template>
                                         <button
@@ -133,8 +132,8 @@
                                         </button>
                                     </td>
                                 </tr>
+                                </tbody>
                             </template>
-                            </tbody>
                         </table>
                     </div>
                     <ul class="pagination float-end mb-4">
@@ -154,56 +153,6 @@
 @endsection
 @push('script')
     <script defer>
-        Inputmask("decimal", {
-            radixPoint: ",",
-            groupSeparator: ".",
-            digits: 2,
-            autoGroup: true,
-            rightAlign: false,
-            allowMinus: false
-        }).mask("#price_per_unit");
-
-
-        Inputmask("decimal", {
-            radixPoint: ",",
-            groupSeparator: ".",
-            digits: 2,
-            autoGroup: true,
-            rightAlign: false,
-            allowMinus: false
-        }).mask("#unit_price");
-
-        $('.date').flatpickr();
-
-        document.addEventListener('focusin', (e) => {
-            if (e.target.closest(".flatpickr-calendar") !== null) {
-                e.stopImmediatePropagation();
-            }
-        });
-
-
-        const initialInventoryBalanceModal = document.getElementById('modal-initial-inventory-balance');
-        const supplierModal = document.getElementById('modal-supplier');
-        const itemModal = document.getElementById('modal-item');
-        const assetModal = new bootstrap.Modal(document.getElementById('asset-modal'));
-
-
-        //hide asset modal when initial inventory balance modal is open
-        initialInventoryBalanceModal.addEventListener('shown.bs.modal', e => {
-            assetModal.hide();
-        })
-
-        //show asset modal when initial inventory balance modal is hide
-        initialInventoryBalanceModal.addEventListener('hidden.bs.modal', e => {
-            assetModal.show();
-        });
-
-
-        // close asset modal after opening multiple modal inside asset modal
-        document.querySelector('.btn-close').addEventListener('click', () => {
-            assetModal.hide();
-        });
-
         function assetsData() {
             return {
                 deletePermission: "{{ request()->user()->can('Hapus Data Aset') }}",
@@ -217,37 +166,9 @@
                 selectAll: false,
                 singleChecked: false,
                 search: '',
-                editVal: '',
-                branchVal: '',
-                isAset: null,
-                itemMustHaveCode: false,
-                hasSNOnItem: false,
-                isLandAsset: false,
-                nonBuildingGroup: null,
-                isVehicleAsset: false,
-                tangibleAsset: null,
-                buildingType: null,
-                form: document.getElementById('asset-form'),
-                modal: new bootstrap.Modal(document.getElementById('asset-modal')),
                 formDelete: document.getElementById('form-delete'),
-                initialInventoryBalanceModal: new bootstrap.Modal(document.getElementById('modal-initial-inventory-balance')),
-                initialInventoryBalanceForm: document.getElementById('form-initial-inventory-balance'),
-                supplierModal: document.getElementById('modal-supplier'),
-                supplierForm: document.getElementById('form-supplier'),
-                itemForm: document.getElementById('form-item'),
-                itemCondition: null,
-                attachmentImgSrc: '',
                 async init() {
-                    await this.getBranches();
                     await this.getAssetsData();
-                    await this.getAssetAccounts();
-                    await this.getSuppliers();
-                    await this.getKasAccount();
-                    await this.getItemCollections();
-                    await this.getStockAccounts();
-                    await this.itemCategories();
-                    await this.getUnitTypes();
-                    await this.getAssetItemCollections();
                 },
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
@@ -264,70 +185,9 @@
                 },
                 async changeItemCondition() {
                     if (this.itemCondition === 'Digudang') {
-                        this.modal.hide();
                         this.initialInventoryBalanceModal.show();
                         await this.getBranches();
                     }
-                },
-                async getSuppliers() {
-                    $(".suppliers-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Supplier",
-                        escapeMarkup: markup => (markup),
-                        language: {
-                            noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-supplier">Tambahkan terlebih dahulu</a>`;
-                            }
-                        },
-                        ajax: {
-                            url: '/select2/suppliers-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    })
-                },
-                async getItemCollections() {
-                    $(".items-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Barang",
-                        escapeMarkup: markup => (markup),
-                        language: {
-                            noResults: () => {
-                                return `Data Tidak Ditemukan.. <button  href=/'#' id='item-drawer'>Tambahkan terlebih dahulu</button>`;
-                            }
-                        },
-                        ajax: {
-                            url: '/select2/goods-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async getAssetItemCollections() {
-                    $(".asset-items-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Barang",
-                        escapeMarkup: markup => (markup),
-                        language: {
-                            noResults: () => {
-                                return `Data Tidak Ditemukan.. <button   id='item-drawer'>Tambahkan terlebih dahulu</button>`;
-                            }
-                        },
-                        ajax: {
-                            url: '/select2/asset-items-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
                 },
                 selectCheckBox(event) {
                     const checkboxId = event.target.value;
@@ -361,19 +221,15 @@
                         this.buttonLoading = false;
                     }
                 },
-                async getBranches() {
-                    $(".branches-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Cabang",
-                        ajax: {
-                            url: '/select2/branches-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    })
+                inputMask() {
+                    Inputmask("decimal", {
+                        radixPoint: ",",
+                        groupSeparator: ".",
+                        digits: 2,
+                        autoGroup: true,
+                        rightAlign: false,
+                        allowMinus: false
+                    }).mask("#price");
                 },
                 async searchData() {
                     this.isLoading = true;
@@ -432,55 +288,6 @@
                         this.buttonLoading = false;
                     }
                 },
-                async saveItem() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post('/master/operational/items', new FormData(this.itemForm))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.itemForm.reset();
-                        this.itemModal.hide();
-                        this.modalForm.show();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
-                async itemCategories() {
-                    const self = this;
-                    $(".item-category-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Kategori Barang",
-                        tags: true,
-                        ajax: {
-                            url: '/select2/item-categories-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    }).on('change', () => {
-                        const data = $(".item-category-select2 option:selected").text();
-                        self.isAset = data === 'ASET';
-                    });
-                },
-                async getUnitTypes() {
-                    $(".unit-types-select2").select2({
-                        allowClear: true,
-                        tags: true,
-                        placeholder: "Pilih Satuan",
-                        ajax: {
-                            url: '/select2/unit-types-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
                 async update(id) {
                     this.buttonLoading = true;
                     try {
@@ -507,21 +314,7 @@
                         }
                     });
                 },
-                async getStockAccounts() {
-                    $(".stock-accounts-select2").select2({
-                        allowClear: true,
-                        tags: true,
-                        placeholder: "Pilih Akun Persediaan",
-                        ajax: {
-                            url: '/select2/stock-accounts-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
+
                 async getAssetsData() {
                     this.isLoading = true;
                     try {
@@ -547,20 +340,6 @@
                     } finally {
                         this.buttonLoading = false;
                     }
-                },
-                async getAssetAccounts() {
-                    $(".asset-accounts-select2").select2({
-                        allowClear: true,
-                        placeholder: 'Pilih Akun',
-                        ajax: {
-                            url: '/select2/asset-accounts-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
                 },
                 async getKasAccount() {
                     $(".kas-accounts-select2").select2({

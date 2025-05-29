@@ -24,7 +24,7 @@ class AssetDepreciationService
 
     public function formattedData(Collection $depreciation, Asset $asset): Collection
     {
-        $assetTotalPrice = $asset->total_price;
+        $assetTotalPrice = $asset->price;
         return $depreciation->map(function ($item) use (&$assetTotalPrice) {
             $assetTotalPrice -= $item->depreciation_amount;
             return [
