@@ -4,12 +4,16 @@ namespace App\Support\Master\Operational\InitialInventoryBalance\Service;
 
 use AllowDynamicProperties;
 use App\Http\Requests\InitialInventoryBalanceRequest;
+use App\Models\AccountTransaction;
+use App\Models\DraftStock;
 use App\Models\InitialInventoryBalance;
+use App\Models\Stock;
 use App\Support\HelperService\HandleFileUploadService;
 use App\Support\Master\Operational\InitialInventoryBalance\Repository\InitialInventoryBalanceRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 use function App\Helper\currencyFormat;
 use function App\Helper\formatDate;
 
@@ -31,11 +35,18 @@ use function App\Helper\formatDate;
     }
 
 
+    public function filter(Request $request): LengthAwarePaginator
+    {
+        $query = $this->initialInventoryBalanceRepository->data();
+        $filter = InitialInventoryBalanceQueryFilter::apply($query, $request);
+        return self::formattedData($filter->paginate(self::$perPage));
+    }
+
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
         $initialInventoryBalances = $this->initialInventoryBalanceRepository->data();
-        if ($search) {
+        if (!empty($search)) {
             $initialInventoryBalances = $this->initialInventoryBalanceRepository->search($search);
         }
 
@@ -122,11 +133,53 @@ use function App\Helper\formatDate;
     }
 
 
+    /**
+     * @throws Throwable
+     */
     public function confirm(Request $request, InitialInventoryBalance $initialInventoryBalance): void
     {
         DB::transaction(function () use ($request, $initialInventoryBalance) {
+            $implodeID = implode(',', $request->get('id'));
+            $explodeID = explode(',', $implodeID);
+
+            $query = $initialInventoryBalance->whereIn('id', $explodeID);
+            $query->update(['status' => true]);
+
+            $selectedInitialInventoryBalance = $query
+                ->with('branch', 'supplier', 'item', 'stockAccount', 'branch.parent')
+                ->get();
+            foreach ($selectedInitialInventoryBalance as $item) {
+
+                if ($item->item->category->name !== 'Kategori 4') {
+                    DraftStock::create([
+                        'initial_balance_inventory_id' => $item->id,
+                        'qty' => $item->qty
+                    ]);
+                } else {
+                    Stock::create([
+                        'initial_balance_inventory_id' => $item->id,
+                        'branch_id' => $item->branch_id,
+                        'item_id' => $item->item_id,
+                        'qty' => $item->qty,
+                        'condition' => 'Baik'
+                    ]);
+                }
+
+
+                AccountTransaction::create([
+                    'branch_id' => $item->branch->parent->id,
+                    'initial_inventory_balance_id' => $item->id,
+                    'date' => $item->date,
+                    'account_id' => $item->stock_account_id,
+                    'description' => $item->detail,
+                    'transaction_type' => 'SA',
+                    'entries_type' => 'debit',
+                    'amount' => $item->total_price,
+                ]);
+            }
 
         });
+
     }
 
 

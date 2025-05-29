@@ -481,14 +481,15 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::post('/destroy', [AssetController::class, 'destroy']);
                 Route::get('/', [AssetController::class, 'index']);
                 Route::get('/data', [AssetController::class, 'data']);
+                Route::get('/create', [AssetController::class, 'create']);
                 Route::get('/search', [AssetController::class, 'search']);
+                Route::get('/edit/{asset}', [AssetController::class, 'edit']);
                 Route::get('/branch/data', [AssetController::class, 'getBranchData']);
                 Route::get('/debit-account/data', [AssetController::class, 'getDebitAccount']);
                 Route::get('/credit-account/data', [AssetController::class, 'getCreditAccount']);
                 Route::get('/account/selected/{asset}', [AssetController::class, 'selectedAccount']);
                 Route::get('/branch/selected/{asset}', [AssetController::class, 'selectedBranch']);
                 Route::post('/', [AssetController::class, 'store']);
-                Route::get('/{asset}', [AssetController::class, 'edit']);
                 Route::post('/update/{asset}', [AssetController::class, 'update']);
                 Route::post('/confirm/{asset}', [AssetController::class, 'confirm']);
                 Route::get('/detail/{asset}', [AssetController::class, 'detail']);
@@ -499,11 +500,13 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/', [InitialInventoryBalanceController::class, 'index']);
                 Route::get('/data', [InitialInventoryBalanceController::class, 'data']);
                 Route::get('/search', [InitialInventoryBalanceController::class, 'search']);
-                Route::post('/', [InitialInventoryBalanceController::class, 'store']);
+                Route::get('/filter', [InitialInventoryBalanceController::class, 'filter']);
+                Route::get('/create', [InitialInventoryBalanceController::class, 'create']);
+                Route::post('/store', [InitialInventoryBalanceController::class, 'store']);
+                Route::get('/edit/{initialInventoryBalance}', [InitialInventoryBalanceController::class, 'edit']);
                 Route::post('/destroy', [InitialInventoryBalanceController::class, 'destroy']);
                 Route::post('/confirm', [InitialInventoryBalanceController::class, 'confirm']);
-                Route::get('/{initialInventoryBalance}', [InitialInventoryBalanceController::class, 'edit']);
-                Route::post('/{initialInventoryBalance}', [InitialInventoryBalanceController::class, 'update']);
+                Route::post('/update/{initialInventoryBalance}', [InitialInventoryBalanceController::class, 'update']);
             });
         });
 

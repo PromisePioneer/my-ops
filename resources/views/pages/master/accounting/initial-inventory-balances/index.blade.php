@@ -3,9 +3,7 @@
 @section('breadcrumbs', 'Master Keuangan - Saldo Awal Persediaan')
 @section('content')
     <div x-data="initialInventoryBalance()">
-        @include('pages.master.operational.items.form')
-        @include('pages.master.accounting.initial-inventory-balances.form')
-        @include('pages.master.operational.supplier.form')
+        @include('pages.master.accounting.initial-inventory-balances.filter')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -21,14 +19,20 @@
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                             @can('Tambah Data Saldo Awal Persediaan')
-                                <button type="button" class="btn btn-light-primary btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modal-initial-inventory-balance" @click="add()">
+                                <a href="{{ url('/master/accounting/initial-inventory-balances/create') }}"
+                                   type="button" class="btn btn-light-primary btn-sm me-2">
                                     <i class="ki-duotone ki-message-add fs-2">
                                         <span class="path1"></span>
                                         <span class="path2"></span>
                                         <span class="path3"></span>
                                     </i> Tambah
+                                </a>
+                            @endcan
+                            @can('Filter Data Saldo Awal Persediaan Berdasarkan Cabang')
+                                <button class="btn btn-light-info btn-sm"
+                                        id="initial-inventory-balances-filter">
+                                    <x-icons.filter/>
+                                    Filter
                                 </button>
                             @endcan
                         </div>
@@ -129,21 +133,20 @@
                                             <div class="symbol-label">
                                                 <a href="#" @click="openImageList(inventory.attachment)">
                                                     <img :src="getImageURL(inventory.attachment ?? null)"
-                                                         alt="Image" class="w-100">
+                                                         alt="Image" class="img-thumbnail h-50 w-50">
                                                 </a>
                                             </div>
                                         </a>
                                     </td>
                                     <td>
                                         <template x-if="inventory.status == 0">
-                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-initial-inventory-balance"
-                                                    @click="edit(inventory.id)">
+                                            <a :href="`/master/accounting/initial-inventory-balances/edit/${inventory.id}`"
+                                               class="btn btn-light-primary btn-sm">
                                                 <i class="ki-duotone ki-pencil">
                                                     <span class="path1"></span>
                                                     <span class="path2"></span>
                                                 </i>
-                                            </button>
+                                            </a>
                                         </template>
 
 
@@ -178,89 +181,67 @@
 @endsection
 @push('script')
     <script>
-
-        const modal = new bootstrap.Modal(document.getElementById('modal-initial-inventory-balance'));
-        const itemModal = document.getElementById('modal-item');
-        const supplierModal = document.getElementById('modal-supplier')
-
-
-        itemModal.addEventListener('hidden.bs.modal', e => {
-            modal.show();
-        });
-
-        supplierModal.addEventListener('hidden.bs.modal', e => {
-            modal.show();
-        });
-
-
-        document.querySelector('.btn-close').addEventListener('click', () => {
-            modal.hide();
-        })
-
-
-        Inputmask("decimal", {
-            radixPoint: ",",
-            groupSeparator: ".",
-            digits: 2,
-            autoGroup: true,
-            rightAlign: false,
-            allowMinus: false
-        }).mask("#unit_price");
-
-
-        $('.date').flatpickr();
-
-
         function initialInventoryBalance() {
             return {
-                isLoading: false,
                 buttonLoading: false,
+                isLoading: false,
                 toggleAllCheckBox: false,
                 selectedCheckBox: [],
                 initialInventoryBalances: [],
                 editVal: '',
                 search: '',
-                isAset: null,
-                itemMustHaveCode: false,
-                hasSNOnItem: false,
-                isLandAsset: false,
-                nonBuildingGroup: null,
-                isVehicleAsset: false,
-                tangibleAsset: null,
-                buildingType: null,
-                PKP: false,
-                modal: new bootstrap.Modal(document.getElementById('modal-initial-inventory-balance')),
-                form: document.getElementById('form-initial-inventory-balance'),
-                supplierModal: new bootstrap.Modal(document.getElementById('modal-supplier')),
-                supplierForm: document.getElementById('form-supplier'),
-                itemModal: new bootstrap.Modal(document.getElementById('modal-item')),
-                itemForm: document.getElementById('form-item'),
                 deleteForm: document.getElementById('form-delete'),
                 confirmForm: document.getElementById('form-confirm'),
-                attachmentImgSrc: '',
                 async init() {
-                    this.$nextTick(async () => {
-                        await this.getInitialInventoryBalances();
-                        await this.getBranches();
-                        await this.getSuppliers();
-                        await this.getItemCollections();
-                        await this.itemCategories();
-                        await this.getUnitTypes();
-                        await this.getStockAccounts();
-                        await this.getAssetAccounts();
-                    })
+                    await this.getInitialInventoryBalances();
+                    await this.getBranches();
                 },
-                async getAssetAccounts() {
-                    $(".asset-accounts-select2").select2({
+                async filter() {
+                    this.buttonLoading = true;
+                    this.isLoading = true;
+                    this.initialInventoryBalances = [];
+                    try {
+                        const resp = await axios.get('/master/accounting/initial-inventory-balances/filter', {
+                            params: {
+                                branch_id: $('#branch_id').val()
+                            }
+                        })
+                        this.initialInventoryBalances = resp.data;
+                    } catch (e) {
+                        console.log(e);
+                    } finally {
+                        this.buttonLoading = false;
+                        this.isLoading = false;
+                    }
+                },
+                async searchData() {
+                    this.isLoading = true;
+                    this.initialInventoryBalances = [];
+                    try {
+                        const resp = await axios.get('/master/accounting/initial-inventory-balances/search', {
+                            params: {
+                                search: this.search,
+                                branch_id: $('#branch_id').val()
+                            }
+                        })
+                        this.initialInventoryBalances = resp.data;
+                    } catch (e) {
+
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+                async getBranches() {
+                    $(".branches-select2").select2({
                         allowClear: true,
-                        placeholder: 'Pilih Akun Aset',
+                        placeholder: "Pilih Cabang",
                         ajax: {
-                            url: '/select2/asset-accounts-data',
+                            url: '/select2/branches-data',
                             dataType: "json",
                             type: "GET",
                             data: params => ({search: params.term}),
                             processResults: data => ({results: data}),
-                            cache: false
+                            cache: true
                         }
                     });
                 },
@@ -292,66 +273,12 @@
                         this.isLoading = false;
                     }
                 },
-                async getBranches() {
-                    $(".branches-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Cabang",
-                        ajax: {
-                            url: '/select2/branches-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                openImageList(imagePath) {
-                    console.log(imagePath);
-                    const lightbox = new FsLightbox();
-                    if (imagePath === null) {
-                        const placeholders = 'assets/media/avatars/blank.png'
-                        const image = "{{ asset('')  }}" + placeholders;
-                        lightbox.props.sources = [image, image];
-                        lightbox.open();
-                    } else {
-                        const image = "{{  Storage::url('') }}" + imagePath;
-                        lightbox.props.sources = [image];
-                        lightbox.open();
-                    }
-                },
-                getImageURL(imagePath) {
-                    if (imagePath === null) {
-                        const placeholders = 'assets/media/avatars/blank.png'
-                        return "{{ asset('') }}" + placeholders;
-                    }
-                    return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
-                },
-                async getSuppliers() {
-                    $(".suppliers-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Supplier",
-                        escapeMarkup: markup => (markup),
-                        language: {
-                            noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-supplier">Tambahkan terlebih dahulu</a>`;
-                            }
-                        },
-                        ajax: {
-                            url: '/select2/suppliers-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    })
-                },
+
                 async destroy() {
-                    showConfirmModal("Anda yakin?", "Data akan dikunci dan tidak bisa dihapus atau di ubah.", "Ya, Hapus!", async () => {
+                    showConfirmModal("Anda yakin?", "data akan dihapus dan tidak akan dapat dikembalikan.", "Ya, Hapus!", async () => {
                         try {
                             await axios.post(`/master/accounting/initial-inventory-balances/destroy`, new FormData(this.deleteForm));
-                            await showAlert('success', 'Data sukses dikonfirmasi');
+                            await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                             this.selectedCheckBox = [];
                         } catch (error) {
@@ -371,228 +298,32 @@
                         }
                     });
                 },
-                async saveItem() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post('/master/operational/items', new FormData(this.itemForm))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.itemForm.reset();
-                        this.itemModal.hide();
-                        this.modalForm.show();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
-                async itemCategories() {
-                    const self = this;
-                    $(".item-category-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Kategori Barang",
-                        tags: true,
-                        ajax: {
-                            url: '/select2/item-categories-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    }).on('change', () => {
-                        const data = $(".item-category-select2 option:selected").text();
-                        self.isAset = data === 'ASET';
-                    });
-                },
-                async getUnitTypes() {
-                    $(".unit-types-select2").select2({
-                        allowClear: true,
-                        tags: true,
-                        placeholder: "Pilih Satuan",
-                        ajax: {
-                            url: '/select2/unit-types-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                previewAttachmentFile() {
-                    let files = this.$refs.attachmentFile.files;
-                    if (!files.length) return;
 
-                    Array.from(files).forEach(file => {
-                        if (!file.type.startsWith('image/')) return;
-
-                        let reader = new FileReader();
-                        reader.onload = e => {
-                            this.attachmentImgSrc = e.target.result;
-                        };
-                        reader.readAsDataURL(file);
-                    });
-                },
-                openAttachmentImage() {
-                    const lightbox = new FsLightbox();
-                    const storage = "{{ Storage::url('')  }}"
-                    if (this.editVal) {
-                        lightbox.props.sources = [storage + this.attachmentImgSrc[0]];
-                    }
-                    lightbox.props.sources = [this.attachmentImgSrc];
-                    lightbox.open();
-                },
-
-                async getItemCollections() {
-                    $(".items-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Barang",
-                        escapeMarkup: markup => (markup),
-                        language: {
-                            noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-item">Tambahkan terlebih dahulu</a>`;
-                            }
-                        },
-                        ajax: {
-                            url: '/select2/goods-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
                 async saveInitialInventoryBalance(id = null) {
                     this.buttonLoading = true;
                     try {
                         if (!id) {
-                            await axios.post('/master/accounting/initial-inventory-balances', new FormData(this.form))
+                            await axios.post('/master/accounting/initial-inventory-balances/store', new FormData(this.form))
                         } else {
-                            await axios.post(`/master/accounting/initial-inventory-balances/${id}`, new FormData(this.form))
+                            await axios.post(`/master/accounting/initial-inventory-balances/update/${id}`, new FormData(this.form))
                         }
                         await showAlert('success', 'Data berhasil disimpan')
                         this.form.reset();
                         await this.modal.hide();
                         await this.init();
                     } catch (error) {
-                        const respError = error.response.data.errors;
+                        const respError = error?.response?.data?.errors;
                         Object.keys(respError).map(err => toastr.error(respError[err][0]))
                     } finally {
                         this.buttonLoading = false;
                     }
                 },
-                async edit(id) {
-                    try {
-                        const resp = await axios.get(`/master/accounting/initial-inventory-balances/${id}`);
-                        this.editVal = resp.data;
-                        await this.selectedSupplier();
-                        await this.selectedBranch();
-                        await this.selectedSubBranch();
-                        await this.selectedItem();
-                        await this.selectedAccount();
-                    } catch (e) {
-                        console.log(e)
+                getImageURL(imagePath) {
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        return "{{ asset('')  }}" + placeholders;
                     }
-                },
-                async selectedItem() {
-                    const selectedItem = $('#selected-item');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-item/${this.editVal.item_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedItem.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
-                async selectedAccount() {
-                    const selectedAccount = $('#selected-stock-account');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-account/${this.editVal.stock_account_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedAccount.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
-                async selectedSupplier() {
-                    const selectedSupplier = $('#selected-supplier');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-supplier/${this.editVal.supplier_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedSupplier.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
-                async selectedBranch() {
-                    const self = this;
-                    const selectedMainBranch = $('#selected-main-branch');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-branch/${self.editVal.branch.id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedMainBranch.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {data: response}
-                    });
-                },
-
-                async selectedSubBranch() {
-                    const selectedSubBranch = $('#selected-branch');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-branch/${this.editVal.branch_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedSubBranch.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {data: response}
-                    })
-                },
-                async getStockAccounts() {
-                    $(".stock-accounts-select2").select2({
-                        allowClear: true,
-                        tags: true,
-                        placeholder: "Pilih Akun Persediaan",
-                        ajax: {
-                            url: '/select2/stock-accounts-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async saveSupplier() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post('/master/operational/suppliers', new FormData(this.supplierForm))
-                            .then(async () => {
-                                await showAlert('success', 'data berhasil disimpan');
-                                await this.supplierForm.reset();
-                                this.supplierModal.hide();
-                            })
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
+                    return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
                 },
             }
         }
