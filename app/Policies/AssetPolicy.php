@@ -36,6 +36,11 @@ class AssetPolicy
         return $user->can('Konfirmasi Data Aset');
     }
 
+    public function filterByBranch(User $user): bool
+    {
+        return $user->can('Filter Data Aset Berdasarkan Cabang');
+    }
+
     public function viewDetail(User $user): bool
     {
         return $user->can('Lihat Detail Aset');

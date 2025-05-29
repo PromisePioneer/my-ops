@@ -9,6 +9,6 @@ class AssetRepository
 {
     public function data(): Builder
     {
-        return Asset::with('branch', 'debitAccount', 'creditAccount', 'branch.parent', 'item');
+        return Asset::with('branch', 'branch.parent', 'item');
     }
 }

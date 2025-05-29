@@ -191,7 +191,10 @@
                 buttonLoading: false,
                 form: document.getElementById('form'),
                 itemWithCodes: [],
-                itemWithoutCodeFields: [],
+                itemWithoutCodeFields: [{
+                    stock_id: '',
+                    qty: '',
+                }],
                 toBranchParentId: null,
                 async init() {
                     await this.getStockWithCodesData();
