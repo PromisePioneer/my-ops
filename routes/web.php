@@ -1004,11 +1004,11 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [FpDevicesController::class, 'index']);
             Route::get('/data', [FpDevicesController::class, 'data']);
             Route::get('/filter', [FpDevicesController::class, 'filter']);
+            Route::post('/destroy', [FpDevicesController::class, 'destroy']);
             Route::post('/{fpDevice}', [FpDevicesController::class, 'update']);
             Route::get('/search', [FpDevicesController::class, 'search']);
             Route::post('/', [FpDevicesController::class, 'store']);
             Route::get('/{fpDevice}', [FpDevicesController::class, 'edit']);
-            Route::post('/destroy', [FpDevicesController::class, 'destroy']);
 
             Route::post('/test-connection/{fpDevice}', [FpDevicesController::class, 'testConnection']);
             Route::post('/attendance-log/{fpDevice}', [FpDevicesController::class, 'getAttendances']);

@@ -93,6 +93,19 @@ class EmployeeScheduleACLFilter
         }
 
 
+
+    if($request->user()->hasRole('Quality Controller Supervisor')){
+        $query->whereHas('roles', function ($query) use ($request) {
+                $query->whereIn('name', [
+                    'Quality Controller Supervisor',
+                    'Backbone Team Supervisor',
+                    'Trainer & Quality Control Staff',
+                     'Quality Control Staff'
+                ]);
+            });
+    }
+
+
         if ($request->user()->hasRole('Branch Manager')) {
             $query->where('branch_id', $request->user()->branch_id)
                 ->where('active', 1);

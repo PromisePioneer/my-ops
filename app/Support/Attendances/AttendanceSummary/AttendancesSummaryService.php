@@ -69,11 +69,11 @@ use Illuminate\Http\Request;
         $userIds = $attendanceSummary->getCollection()->pluck('id');
         $absentIds = $attendanceSummary->getCollection()->pluck('absent_id');
         $weekHolidays = $this->weekHolidayRepository->getBasedOnUserId($userIds);
-        $employeeSchedules = $this->employeeScheduleRepository->getBasedOnPeriodsAndAbsentId($this->startDate, $this->endDate, $absentIds);
-        $periods = CarbonPeriod::create($this->startDate, $this->endDate)->toArray();
+        $employeeSchedules = $this->employeeScheduleRepository->getBasedOnPeriodsAndAbsentId($startDate, $endDate, $absentIds);
+        $periods = CarbonPeriod::create($startDate, $endDate)->toArray();
 
 
-        return self::formattedData($weeklyLateCount, $attendanceSummary, $this->startDate, $this->endDate, $weekHolidays, $employeeSchedules, $periods, $request);
+        return self::formattedData($weeklyLateCount, $attendanceSummary, $startDate, $endDate, $weekHolidays, $employeeSchedules, $periods, $request);
     }
 
 
@@ -91,10 +91,10 @@ use Illuminate\Http\Request;
         $userIds = $attendanceSummary->getCollection()->pluck('id');
         $absentIds = $attendanceSummary->getCollection()->pluck('absent_id');
         $weekHolidays = $this->weekHolidayRepository->getBasedOnUserId($userIds);
-        $employeeSchedules = $this->employeeScheduleRepository->getBasedOnPeriodsAndAbsentId($this->startDate, $this->endDate, $absentIds);
-        $periods = CarbonPeriod::create($this->startDate, $this->endDate)->toArray();
+        $employeeSchedules = $this->employeeScheduleRepository->getBasedOnPeriodsAndAbsentId($startDate, $endDate, $absentIds);
+        $periods = CarbonPeriod::create($startDate, $endDate)->toArray();
 
-        return self::formattedData($weeklyLateCount, $attendanceSummary, $this->startDate, $this->endDate, $weekHolidays, $employeeSchedules, $periods, $request);
+        return self::formattedData($weeklyLateCount, $attendanceSummary, $startDate, $endDate, $weekHolidays, $employeeSchedules, $periods, $request);
     }
 
 
@@ -114,10 +114,12 @@ use Illuminate\Http\Request;
 
             $weekHoliday = $weekHolidays[$user->id] ?? null;
             $employeeHolidays = $employeeSchedules[$user->absent_id] ?? collect();
+
+
             $employeeHolidayDates = $employeeHolidays->pluck('start_date')->toArray();
             $leaveDates = $this->getLeaveDates($user->leaveAndPermissions, $startDate, $endDate);
-            $notCheckIn = $user->attendancesSummary->where('clock_in', null)->pluck('date')->toArray();
-            $notCheckOut = $user->attendancesSummary->where('clock_out', null)->pluck('date')->toArray();
+            $notCheckIn = $user->attendancesSummary->where('clock_in', null)->count();
+            $notCheckOut = $user->attendancesSummary->where('clock_out', null)->count();
 
 
             return [
@@ -127,8 +129,8 @@ use Illuminate\Http\Request;
                 'profile_pic' => $user->profile_pic,
                 'role' => $user->roles[0]->name ?? '',
                 'total_minutes_late' => $this->totalLateCount($user, $weeklyLateCount),
-                'total_not_check_in' => $this->getTotalCheckInOrCheckOut($periods, $leaveDates, $employeeHolidayDates, $weekHoliday, $notCheckIn),
-                'total_not_check_out' => $this->getTotalCheckInOrCheckOut($periods, $leaveDates, $employeeHolidayDates, $weekHoliday, $notCheckOut),
+                'total_not_check_in' => $notCheckIn,
+                'total_not_check_out' => $notCheckOut,
                 'total_present' => $user->attendancesSummary->count(),
                 'work_period_count' => $this->workPeriodTotal($periods, $weekHoliday, $employeeHolidayDates, $leaveDates),
                 'total_leaves' => $this->calculateLeaveDays($user, $startDate, $endDate, 'Cuti'),
@@ -177,6 +179,10 @@ use Illuminate\Http\Request;
     public function getAbsentCount($attendanceSummary, $periods, $leaveDates, $employeeHolidayDates, $weekHoliday): int
     {
         $attendedDates = $attendanceSummary->pluck('date')->toArray();
+
+
+
+        // dd($employeeHolidayDates);
 
         return collect($periods)
             ->reject(function ($period) {
@@ -319,9 +325,7 @@ use Illuminate\Http\Request;
     public function getTotalCheckInOrCheckOut($periods, $leaveDates, $employeeHolidayDates, $weekHoliday, $type): int
     {
         return collect($periods)
-            ->reject(function ($period) {
-                return $period->greaterThanOrEqualTo(Carbon::today());
-            })->reject(function ($period) use ($leaveDates) {
+            ->reject(function ($period) use ($leaveDates) {
                 return in_array($period->format('Y-m-d'), $leaveDates);
             })->reject(function ($period) use ($employeeHolidayDates, $weekHoliday) {
                 if (in_array($period->format('Y-m-d'), $employeeHolidayDates)) {

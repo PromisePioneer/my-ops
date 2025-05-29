@@ -88,6 +88,8 @@ class LeaveAndPermissionRequest extends FormRequest
             ->whereMonth('start_date', Carbon::now()->month)
             ->get();
 
+
+
         foreach ($getLeaves as $leave) {
             $leaveStart = Carbon::parse($leave->start_date);
             $leaveEnd = Carbon::parse($leave->end_date);
@@ -120,7 +122,7 @@ class LeaveAndPermissionRequest extends FormRequest
             $totalLeavesInThisMonthAndTotalLeavesPeriod = $leavesPeriod + $totalLeavesInThisMonth;
 
 
-            if ($totalLeavesInThisMonthAndTotalLeavesPeriod > $leaveIn1MonthQuota) {
+            if ($totalLeavesInThisMonthAndTotalLeavesPeriod > $leaveIn1MonthQuota && $request->leaves_status === 'Cuti') {
                 return $fail(
                     'Jumlah cuti dalam satu bulan tidak boleh lebih dari 6 hari,
                      jumlah cuti tersisa untuk bulan ini :

@@ -178,6 +178,7 @@ class IclockService
 
         if ($user) {
             $ifBranchDuri = $user?->branch_id === 2 ? WorkTime::find(14) : null;
+            $ifBranchBengkalis = $user?->branch_id === 15 ? WorkTime::find(11) : null;
             // $isCleaningServicePku = $user->hasRole('Cleaning Service') ? WorkTime::find(15)?->id : null;
             $isEngineer = $user->hasAnyRole([
                 'Engineer',
@@ -188,7 +189,7 @@ class IclockService
             ]) ? WorkTime::find(12) : null;
         }
 
-        return $userShift ?? $ifBranchDuri ?? $isEngineer ?? WorkTime::find(11);
+        return $userShift ?? $ifBranchDuri ?? $ifBranchBengkalis ?? $isEngineer ?? WorkTime::find(11);
     }
 
 
@@ -225,7 +226,9 @@ class IclockService
             Log::warning('Data dilewati karena tidak masuk tanggal', [
                 'timestamp' => $date,
                 'employee_id' => $attendanceData,
-                'shift' => $shift
+                'shift' => $shift,
+                'checkin' => $isCheckIn,
+                'checkout' => $isCheckOut
             ]);
         }
     }
@@ -237,6 +240,7 @@ class IclockService
 
         if ($user) {
             $ifBranchDuri = $user?->branch_id === 2 ? WorkTime::find(14)?->id : null;
+            $ifBranchBengkalis = $user?->branch_id === 15 ? WorkTime::find(11)?->id : null;
             $isEngineer = $user->hasAnyRole([
                 'Engineer',
                 'Senior Engineer',
@@ -245,13 +249,13 @@ class IclockService
                 'Warehouse Security'
             ]) ? WorkTime::find(12)?->id : null;
         }
-        $shift = $shift->workTime?->id ?? $ifBranchDuri ?? $isEngineer ?? WorkTime::find(11)->id;
+        $shift = $shift->workTime?->id ?? $ifBranchDuri ?? $ifBranchBengkalis ?? $isEngineer ?? WorkTime::find(11)->id;
 
         $date = Carbon::parse($date);
 
         $queryDate = $this->getShiftDate($date, $attendanceData['employee_id']);
 
-        $summary = AttendancesSummary::where('employee_id', $attendanceData['employee_id'])->whereDate('date', $queryDate->format('Y-m-d'))
+        $summary = AttendancesSummary::where('employee_id', $attendanceData['employee_id'])->where('work_time_id', $shift)->whereDate('date', $queryDate->format('Y-m-d'))
             ->first();
 
 
@@ -322,7 +326,7 @@ class IclockService
 
     public function isValidTimeToCheckIn($date, string $checkInStart, string $checkInEnd, $shiftName): bool
     {
-        if ($shiftName === 'Pagi' || $shiftName === 'Lapangan') {
+        if ($shiftName === 'Pagi' || $shiftName === 'Lapangan' || $shiftName === 'Duri') {
             $actualCheckInTime = Carbon::parse($date)->toTimeString();
             return $actualCheckInTime >= $checkInStart && $actualCheckInTime <= $checkInEnd;
         }
@@ -337,7 +341,7 @@ class IclockService
 
     public function isValidTimeCheckOut($date, string $checkOutStart, string $checkOutEnd, $shiftName, $employee_id): bool
     {
-        if ($shiftName === 'Pagi' || $shiftName === 'Lapangan') {
+        if ($shiftName === 'Pagi' || $shiftName === 'Lapangan' || $shiftName === 'Duri') {
             $actualCheckOutTime = Carbon::parse($date)->toTimeString();
 
             return $actualCheckOutTime >= $checkOutStart && $actualCheckOutTime <= $checkOutEnd;
