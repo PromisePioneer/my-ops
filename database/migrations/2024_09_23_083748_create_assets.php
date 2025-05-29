@@ -17,11 +17,9 @@ return new class extends Migration {
                 ->constrained('branches')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->date('date_received');
-            $table->integer('unit');
+            $table->date('date');
             $table->integer('useful_life')->nullable();
-            $table->decimal('price_per_unit', 15, 4);
-            $table->decimal('total_price', 15, 4)->nullable();
+            $table->decimal('price', 15, 4);
             $table->boolean('status')->default(false);
             $table->decimal('depreciation', 15, 4)->nullable();
             $table->timestamps();

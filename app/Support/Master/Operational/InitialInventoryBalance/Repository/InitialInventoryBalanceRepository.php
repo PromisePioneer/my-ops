@@ -19,7 +19,7 @@ class InitialInventoryBalanceRepository
             $query->where('name', 'like', '%' . $search . '%');
         })->orWhereHas('supplier', function ($query) use ($search) {
             $query->where('name', 'like', '%' . $search . '%');
-        })->orWhereHas('itemCollection', function ($query) use ($search) {
+        })->orWhereHas('item', function ($query) use ($search) {
             $query->where('name', 'like', '%' . $search . '%');
         });
     }

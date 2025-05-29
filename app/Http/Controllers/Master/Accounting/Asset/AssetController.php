@@ -44,6 +44,11 @@ use Throwable;
         return response()->json($this->assetService->search($request));
     }
 
+    public function create(): View
+    {
+        return view('pages.master.accounting.assets.form');
+    }
+
     /**
      * @throws AuthorizationException
      */
@@ -87,13 +92,10 @@ use Throwable;
     /**
      * @throws AuthorizationException
      */
-    public function edit(Asset $asset): JsonResponse
+    public function edit(Asset $asset): View
     {
         $asset->load('item', 'branch');
-        $this->authorize('update', $asset);
-
-
-        return response()->json($asset);
+        return view('pages.master.accounting.assets.form', compact('asset'));
     }
 
     /**

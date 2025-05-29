@@ -33,6 +33,7 @@ class PermissionSeeder extends Seeder
         $this->initialBalance();
         $this->taxSetting();
         $this->assetData();
+        $this->initialInventoryBalance();
 
 
         //operational master data
@@ -1016,6 +1017,23 @@ class PermissionSeeder extends Seeder
             'Tambah Data Daftar Barang',
             'Edit Data Daftar Barang',
             'Hapus Data Daftar Barang',
+        ];
+
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+    }
+
+    private function initialInventoryBalance(): void
+    {
+        $permissions = [
+            'Lihat Menu Saldo Awal Persediaan',
+            'Tambah Data Saldo Awal Persediaan',
+            'Edit Data Saldo Awal Persediaan',
+            'Hapus Data Saldo Awal Persediaan',
+            'Filter Saldo Awal Persediaan Berdasarkan Cabang',
+            'Konfirmasi Data Saldo Awal Persediaan',
         ];
 
 

@@ -9,10 +9,12 @@ use App\Models\DraftStock;
 use App\Models\InitialInventoryBalance;
 use App\Models\Stock;
 use App\Support\Master\Operational\InitialInventoryBalance\Service\InitialInventoryBalanceService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Throwable;
 
 #[AllowDynamicProperties] class InitialInventoryBalanceController extends Controller
 {
@@ -21,82 +23,98 @@ use Illuminate\View\View;
         $this->initialInventoryBalanceService = new InitialInventoryBalanceService();
     }
 
+
+    /**
+     * @throws AuthorizationException
+     */
     public function index(): View
     {
+        $this->authorize('view', InitialInventoryBalance::class);
         return view('pages.master.accounting.initial-inventory-balances.index');
     }
 
+
+    /**
+     * @throws AuthorizationException
+     */
     public function data(): JsonResponse
     {
+        $this->authorize('view', InitialInventoryBalance::class);
         return response()->json($this->initialInventoryBalanceService->data());
     }
 
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function search(Request $request): JsonResponse
+    {
+        $this->authorize('view', InitialInventoryBalance::class);
+        return response()->json($this->initialInventoryBalanceService->search($request));
+    }
+
+
+    /**
+     * @throws AuthorizationException
+     */
+
+    public function filter(Request $request): JsonResponse
+    {
+        $this->authorize('view', InitialInventoryBalance::class);
+        $this->authorize('filterByBranch', InitialInventoryBalance::class);
+        return response()->json($this->initialInventoryBalanceService->filter($request));
+    }
+
+
+    /**
+     * @throws AuthorizationException
+     */
+
+    public function create(): View
+    {
+        $this->authorize('create', InitialInventoryBalance::class);
+        return view('pages.master.accounting.initial-inventory-balances.form');
+    }
+
+    /**
+     * @throws AuthorizationException
+     */
     public function store(InitialInventoryBalanceRequest $request): JsonResponse
     {
+        $this->authorize('create', InitialInventoryBalance::class);
         $this->initialInventoryBalanceService->store($request);
         return response()->json(['message' => 'Data berhasil disimpan']);
     }
 
 
-    public function edit(InitialInventoryBalance $initialInventoryBalance): JsonResponse
+    /**
+     * @throws AuthorizationException
+     */
+    public function edit(InitialInventoryBalance $initialInventoryBalance): View
     {
+        $this->authorize('update', $initialInventoryBalance);
         $initialInventoryBalance->load('branch', 'supplier', 'item', 'stockAccount', 'branch.parent');
-        return response()->json($initialInventoryBalance);
+        return view('pages.master.accounting.initial-inventory-balances.form', compact('initialInventoryBalance'));
     }
 
-    public function update(InitialInventoryBalanceRequest $request, InitialInventoryBalance $initialInventoryBalance)
+    /**
+     * @throws AuthorizationException
+     */
+    public function update(InitialInventoryBalanceRequest $request, InitialInventoryBalance $initialInventoryBalance): JsonResponse
     {
+        $this->authorize('update', $initialInventoryBalance);
         $this->initialInventoryBalanceService->update($request, $initialInventoryBalance);
         return response()->json(['message' => 'Data berhasil disimpan']);
     }
 
-
-    public function confirm(Request $request, InitialInventoryBalance $initialInventoryBalance)
+    /**
+     * @throws Throwable
+     * @throws AuthorizationException
+     */
+    public function confirm(Request $request, InitialInventoryBalance $initialInventoryBalance): JsonResponse
     {
-
-        DB::transaction(function () use ($request, $initialInventoryBalance) {
-            $implodeID = implode(',', $request->get('id'));
-            $explodeID = explode(',', $implodeID);
-
-            $query = $initialInventoryBalance->whereIn('id', $explodeID);
-            $query->update(['status' => true]);
-
-            $selectedInitialInventoryBalance = $query
-                ->with('branch', 'supplier', 'item', 'stockAccount', 'branch.parent')
-                ->get();
-            foreach ($selectedInitialInventoryBalance as $item) {
-
-                if ($item->item->category->name !== 'Kategori 4') {
-                    DraftStock::create([
-                        'initial_balance_inventory_id' => $item->id,
-                        'qty' => $item->qty
-                    ]);
-                } else {
-                    Stock::create([
-                        'initial_balance_inventory_id' => $item->id,
-                        'branch_id' => $item->branch_id,
-                        'item_id' => $item->item_id,
-                        'qty' => $item->qty,
-                        'condition' => 'Baik'
-                    ]);
-                }
-
-
-                AccountTransaction::create([
-                    'branch_id' => $item->branch->parent->id,
-                    'initial_inventory_balance_id' => $item->id,
-                    'date' => $item->date,
-                    'account_id' => $item->stock_account_id,
-                    'description' => $item->detail,
-                    'transaction_type' => 'SA',
-                    'entries_type' => 'debit',
-                    'amount' => $item->total_price,
-                ]);
-            }
-
-        });
-
-
+        $this->authorize('confirm', $initialInventoryBalance);
+        $this->initialInventoryBalanceService->confirm($request, $initialInventoryBalance);
         return response()->json([
             'message' => 'data berhasil dihapus'
         ]);
@@ -104,19 +122,19 @@ use Illuminate\View\View;
 
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
+     * @throws AuthorizationException
      */
     public function destroy(Request $request, InitialInventoryBalance $initialInventoryBalance): JsonResponse
     {
 
+        $this->authorize('delete', $initialInventoryBalance);
         DB::transaction(function () use ($request, $initialInventoryBalance) {
             $implodeID = implode(',', $request->get('id'));
             $explodeID = explode(',', $implodeID);
 
             $initialInventoryBalance->whereIn('id', $explodeID)->delete();
         });
-
-
         return response()->json([
             'message' => 'data berhasil dihapus'
         ]);

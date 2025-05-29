@@ -16,13 +16,11 @@ class Asset extends Model
     protected $fillable = [
         'branch_id',
         'code',
-        'date_received',
+        'date',
         'item_id',
         'stock_id',
-        'unit',
         'useful_life',
-        'price_per_unit',
-        'total_price',
+        'price',
         'status',
         'depreciation',
     ];
