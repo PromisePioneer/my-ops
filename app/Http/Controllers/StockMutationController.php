@@ -34,7 +34,7 @@ use function App\Helper\formatDate;
     }
 
 
-    public function search(Request $request)
+    public function search(Request $request): JsonResponse
     {
         return response()->json($this->stockMutationService->search($request));
     }

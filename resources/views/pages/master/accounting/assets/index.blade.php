@@ -3,6 +3,7 @@
 @section('breadcrumbs', 'Master Keuangan - Aset')
 @section('content')
     <div x-data="assetsData()">
+        @include('pages.master.accounting.assets.filter')
         <div class="card card-xl-stretch mb-5 mb-xl-8 ">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -17,15 +18,21 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+
                             @can('Tambah Data Aset')
                                 <a href="{{ url('/master/accounting/assets/create') }}"
-                                   class="btn btn-light-primary btn-sm">
-                                    <i class="ki-duotone ki-message-add fs-2">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                        <span class="path3"></span>
-                                    </i> Tambah
+                                   class="btn btn-light-primary btn-sm me-2">
+                                    <x-icons.add-item/>
+                                    Tambah
                                 </a>
+                            @endcan
+                            @can('Filter Data Aset Berdasarkan Cabang')
+                                <button
+                                    class="btn btn-light-info btn-sm"
+                                    id="assets-filter">
+                                    <x-icons.filter/>
+                                    Filter
+                                </button>
                             @endcan
                         </div>
                     </div>
@@ -93,15 +100,15 @@
 
                                 <tr>
                                     <td>
-                                        <div class="form-check form-check-sm form-ch
+                                        <template x-if="asset.status !== 1">
+                                            <div class="form-check form-check-sm form-ch
                                         eck-custom form-check-solid"
-                                             @click="selectCheckBox($event)">
-                                            <template x-if="Number(asset.status) === 1">
+                                                 @click="selectCheckBox($event)">
                                                 <input class="form-check-input" type="checkbox" :value="asset.id"
                                                        :id="'checkbox-' + asset.id"
                                                        :disabled="Number(deletePermission) !== 1"/>
-                                            </template>
-                                        </div>
+                                            </div>
+                                        </template>
                                     </td>
                                     <td x-text="`${asset.branch_name ?? 'Pusat'}`"></td>
                                     <td x-text="asset.code"></td>
@@ -169,6 +176,7 @@
                 formDelete: document.getElementById('form-delete'),
                 async init() {
                     await this.getAssetsData();
+                    await this.getBranches();
                 },
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
@@ -182,12 +190,6 @@
                         }
                     });
                     this.selectedCheckBox.shift();
-                },
-                async changeItemCondition() {
-                    if (this.itemCondition === 'Digudang') {
-                        this.initialInventoryBalanceModal.show();
-                        await this.getBranches();
-                    }
                 },
                 selectCheckBox(event) {
                     const checkboxId = event.target.value;
@@ -206,21 +208,6 @@
                         this.assets = resp.data
                     }
                 },
-                async saveInitialInventoryBalance() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post('/master/accounting/initial-inventory-balances', new FormData(this.initialInventoryBalanceForm))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.initialInventoryBalanceForm.reset();
-                        await this.initialInventoryBalanceModal.hide();
-                        window.location.href = '/master/accounting/initial-inventory-balances';
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
                 inputMask() {
                     Inputmask("decimal", {
                         radixPoint: ",",
@@ -231,11 +218,28 @@
                         allowMinus: false
                     }).mask("#price");
                 },
+                async getBranches() {
+                    $(".branches-select2").select2({
+                        allowClear: true,
+                        placeholder: "Pilih Cabang",
+                        ajax: {
+                            url: '/select2/branches-data',
+                            dataType: "json",
+                            type: "GET",
+                            data: params => ({search: params.term}),
+                            processResults: data => ({results: data}),
+                            cache: true
+                        }
+                    });
+                },
                 async searchData() {
                     this.isLoading = true;
                     try {
                         const response = await axios.get('/master/accounting/assets/search', {
-                            params: {search: this.search},
+                            params: {
+                                search: this.search,
+                                branch_id: $('branch_id').val(),
+                            },
                             headers: {'Content-Type': 'application/json'}
                         });
                         this.assets = response.data;
@@ -243,6 +247,26 @@
                         console.error('Error fetching data:', error);
                     } finally {
                         this.isLoading = false;
+                    }
+                },
+                async filter() {
+                    this.isLoading = true;
+                    this.buttonLoading = true;
+                    this.assets = [];
+                    try {
+                        const response = await axios.get('/master/accounting/assets/filter', {
+                            params: {
+                                search: this.search,
+                                branch_id: $('#branch_id').val(),
+                            },
+                            headers: {'Content-Type': 'application/json'}
+                        });
+                        this.assets = response.data;
+                    } catch (error) {
+                        console.error('Error fetching data:', error);
+                    } finally {
+                        this.isLoading = false;
+                        this.buttonLoading = false;
                     }
                 },
                 async save(id = null) {
@@ -272,36 +296,6 @@
                     await this.selectedBranch();
                     await this.selectedAssetItem();
                 },
-                async saveSupplier() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post('/master/operational/suppliers', new FormData(this.supplierForm))
-                            .then(async () => {
-                                await showAlert('success', 'data berhasil disimpan');
-                                await this.supplierForm.reset();
-                                this.supplierModal.hide();
-                            })
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
-                async update(id) {
-                    this.buttonLoading = true;
-                    try {
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.modalEdit.hide();
-                        this.formEdit.reset();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]));
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
@@ -324,21 +318,6 @@
                         console.log(e)
                     } finally {
                         this.isLoading = false;
-                    }
-                },
-                async importData() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post('/master/accounting/assets/import', new FormData(this.formImport))
-                        await showAlert('success', 'Data berhasil diimport')
-                        this.formImport.reset();
-                        this.modalImport.hide();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
                     }
                 },
                 async getKasAccount() {

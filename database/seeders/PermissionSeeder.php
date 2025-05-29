@@ -657,6 +657,7 @@ class PermissionSeeder extends Seeder
             'Tambah Data Aset',
             'Lihat Detail Data Aset',
             'Hapus Data Aset',
+            'Filter Data Aset',
             'Konfirmasi Data Aset',
         ];
 

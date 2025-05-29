@@ -44,6 +44,17 @@ use Throwable;
         return response()->json($this->assetService->search($request));
     }
 
+
+    /**
+     * @throws AuthorizationException
+     */
+    public function filter(Request $request): JsonResponse
+    {
+        $this->authorize('filterByBranch', Asset::class);
+        $this->authorize('view', Asset::class);
+        return response()->json($this->assetService->filter($request));
+    }
+
     public function create(): View
     {
         return view('pages.master.accounting.assets.form');

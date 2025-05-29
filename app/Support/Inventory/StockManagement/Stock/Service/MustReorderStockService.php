@@ -41,24 +41,25 @@ use Illuminate\Http\Request;
 
     public function formattedData($stocks)
     {
-        return $stocks->map(function ($item) {
-            $totalStock = 0;
-            $stock = Stock::find($item->id);
-            if (empty($stock)) {
-                $stock = 0;
-            } else {
-                if (!empty(Auth::user()->branch_id)) {
-                    $totalStock = $stock->where('branch_id', Auth::user()->branch_id)->sum('qty');
-                } else {
-                    $totalStock = $stock->sum('qty');
-                }
-            }
+        $branchId = Auth::user()->branch_id;
+
+        // Ambil semua stok yang terkait dengan item dalam $stocks
+        $stockData = Stock::whereIn('item_id', $stocks->pluck('id'))
+            ->when($branchId, function ($query) use ($branchId) {
+                $query->where('branch_id', $branchId);
+            })
+            ->selectRaw('item_id, SUM(qty) as total_qty')
+            ->groupBy('item_id')
+            ->pluck('total_qty', 'item_id');
+
+        return $stocks->map(function ($item) use ($stockData) {
+            $totalStock = $stockData[$item->id] ?? 0;
 
             if ($totalStock < $item->reorder_level) {
                 return [
                     'id' => $item->id,
                     'type' => $item->type,
-                    'total_stock' => $stock,
+                    'total_stock' => $totalStock,
                     'category_name' => $item->category->name,
                     'name' => $item->name,
                     'unit_name' => $item->unitType->name
@@ -66,8 +67,7 @@ use Illuminate\Http\Request;
             }
 
             return null;
-        })->filter(function ($item) {
-            return $item !== null;
-        })->values();
+        })->filter()->values();
     }
+
 }

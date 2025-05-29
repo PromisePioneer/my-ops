@@ -31,17 +31,6 @@ class Asset extends Model
         return $this->belongsTo(Branch::class, 'branch_id');
     }
 
-    public function debitAccount(): BelongsTo
-    {
-        return $this->belongsTo(Account::class, 'debit_account_id');
-    }
-
-    public function creditAccount(): BelongsTo
-    {
-        return $this->belongsTo(Account::class, 'credit_account_id');
-    }
-
-
     public function assetDepreciations(): HasMany
     {
         return $this->hasMany(AssetDepreciation::class, 'asset_id');
