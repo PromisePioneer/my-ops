@@ -74,7 +74,7 @@ use function App\Helper\formatDate;
 
     public function filter(Request $request): LengthAwarePaginator
     {
-        $query = Transaction::with('branch', 'branch.parent', 'unitType', 'debitAccount', 'creditAccount', 'confirmedBy', 'approvedBy', 'createdBy');
+        $query = Transaction::with('branch', 'branch.parent', 'item', 'item.unitType', 'debitAccount', 'creditAccount', 'confirmedBy', 'approvedBy', 'createdBy');
         $filter = TransactionQueryFilter::apply($query, $request)
             ->paginate(self::$perPage);
 
@@ -94,7 +94,7 @@ use function App\Helper\formatDate;
                 'transaction_number' => $item->transaction_number,
                 'item_name' => $item->item?->name,
                 'qty' => $item->qty,
-                'unit_type' => $item->item->unitType->name,
+                'unit_type' => $item->item?->unitType->name,
                 'debit_account_id' => $item->debitAccount->id,
                 'debit' => $item->debitAccount->code . ' ' . $item->debitAccount->name,
                 'credit_account_id' => $item->creditAccount->id,
@@ -157,13 +157,12 @@ use function App\Helper\formatDate;
         $unitPrice = (float)$formattedValue;
 
         $transaction->update([
-            'type' => $request->input('type'),
             'transaction_number' => $this->generateTransactionNumber($request),
             'branch_id' => $request->user()->branch_id ?? $request->input('branch_id'),
             'date' => $request->input('date'),
             'detail' => $request->input('detail'),
             'qty' => $request->input('qty'),
-            'item_id' => $request->input('type') === 'Barang' ? $request->input('item_id') : null,
+            'item_id' => $transaction->type === 'Barang' ? $request->input('item_id') : null,
             'unit_price' => $unitPrice,
             'total_price' => $unitPrice * $request->input('qty'),
             'debit_account_id' => $request->input('debit_account_id'),

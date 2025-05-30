@@ -2,8 +2,7 @@
     @if(empty(Auth::user()->branch_id))
         <div class="col-md-6">
             <label for="branch_id" class="required form-label">Cabang</label>
-            <select class="form-select form-select-solid branches-select2" name="branch_id" id="selected-branch"
-                    data-dropdown-parent="#modal-transactions">
+            <select class="form-select form-select-solid branches-select2" name="branch_id" id="selected-branch">
                 <option></option>
             </select>
         </div>
@@ -15,12 +14,11 @@
     <div class="col-md-6">
         <label for="date" class="required form-label">Tanggal</label>
         <input type="date" id="date" name="date" class="form-control-solid form-control date"
-               placeholder="Tanggal Transaksi"
-               :value="editVal?.date">
+               placeholder="Tanggal Transaksi" value="{{ $transaction->date ?? '' }}">
     </div>
     <div class="col-md-6">
         <label for="date" class="required form-label">Supplier</label>
-        <select name="supplier_id" id="selected-supplier" data-dropdown-parent="#modal-transactions"
+        <select name="supplier_id" id="selected-supplier"
                 class="form-select form-select-solid suppliers-select2">
             <option></option>
         </select>
@@ -32,8 +30,8 @@
         Detail Transaksi
     </label>
     <textarea class="form-control form-control-solid" name="detail" id="detail"
-              placeholder="Detail Transaksi" :value="editVal?.detail"
-              data-kt-autosize="true"></textarea>
+              placeholder="Detail Transaksi"
+              data-kt-autosize="true">{{ $transaction->detail ?? null }}</textarea>
 </div>
 
 <div class="row mb-10">
@@ -41,8 +39,7 @@
         <label for="name" class="required form-label">
             Nama Barang
         </label>
-        <select name="item_id" id="selected-item" class="form-select form-select-solid items-select2"
-                data-dropdown-parent="#modal-transactions">
+        <select name="item_id" id="selected-item" class="form-select form-select-solid items-select2">
             <option></option>
         </select>
     </div>
@@ -52,12 +49,12 @@
             Harga Satuan
         </label>
         <input type="text" class="form-control form-control-solid" name="unit_price"
-               id="unit_price" :value="parseFloat(editVal?.unit_price)" placeholder="Harga Satuan"/>
+               id="unit_price" :value="parseFloat(unitPrice)" placeholder="Harga Satuan"/>
     </div>
     <div class="col-lg-4">
         <label for="name" class="required form-label">Qty</label>
         <input type="number" class="form-control form-control-solid" name="qty" id="qty"
-               placeholder="Kuantitas" :value="editVal?.qty">
+               placeholder="Kuantitas" value="{{ $transaction->qty ?? ''}}">
     </div>
 
 </div>
@@ -65,20 +62,18 @@
 
 <div class="row mb-10">
     <div class="col-md-6">
-        <label for="name" class="required form-label">Akun Debit</label>
+        <label for="name" class="required form-label">Akun Persediaan</label>
         <select name="debit_account_id" id="selected-debit-account"
-                class="form-select form-select-solid stock-accounts-select2"
-                data-dropdown-parent="#modal-transactions">
+                class="form-select form-select-solid stock-accounts-select2">
             <option></option>
         </select>
     </div>
 
 
     <div class="col-md-6">
-        <label for="name" class="required form-label">Akun Debit</label>
+        <label for="name" class="required form-label">Akun Kas Dan Utang</label>
         <select name="credit_account_id" id="selected-credit-account"
-                class="form-select form-select-solid kas-and-leverage-accounts-select2"
-                data-dropdown-parent="#modal-transactions">
+                class="form-select form-select-solid kas-and-leverage-accounts-select2">
             <option></option>
         </select>
     </div>

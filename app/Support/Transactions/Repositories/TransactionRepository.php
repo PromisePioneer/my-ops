@@ -9,6 +9,6 @@ class TransactionRepository
 {
     public function getTransactions(): Builder
     {
-        return Transaction::with('branch', 'unitType', 'debitAccount', 'creditAccount', 'item');
+        return Transaction::with('branch', 'item.unitType', 'debitAccount', 'creditAccount');
     }
 }
