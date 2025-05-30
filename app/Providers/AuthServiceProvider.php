@@ -9,7 +9,7 @@ use App\Models\AccountTransaction;
 use App\Models\Area;
 use App\Models\Asset;
 use App\Models\AttendanceManualRequest;
-use App\Models\AttendancesSummary;
+use App\Models\AttendanceSummary;
 use App\Models\Boq;
 use App\Models\BroadbandPacket;
 use App\Models\Company;
@@ -94,7 +94,7 @@ class AuthServiceProvider extends ServiceProvider
         User::class => UserPolicy::class,
         Permission::class => PermissionPolicy::class,
         LeaveAndPermission::class => LeaveAndPermissionPolicy::class,
-        AttendancesSummary::class => AttendanceSummaryPolicy::class,
+        AttendanceSummary::class => AttendanceSummaryPolicy::class,
         Boq::class => BoqPolicy::class,
         AccountTransaction::class => InitialBalancePolicy::class,
         Company::class => CompanyPolicy::class,

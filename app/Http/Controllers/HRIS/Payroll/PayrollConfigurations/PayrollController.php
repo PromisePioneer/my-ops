@@ -5,7 +5,7 @@ namespace App\Http\Controllers\HRIS\Payroll\PayrollConfigurations;
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Models\Role;
-use App\Support\Attendances\AttendanceSummary\AttendancesSummaryService;
+use App\Support\Attendances\AttendanceSummary\AttendanceSummaryService;
 use App\Support\HelperService\FinancialClosePeriodService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,7 +19,7 @@ use Illuminate\View\View;
     {
         $this->role = new Role();
         $this->financialClosePeriodService = new FinancialClosePeriodService();
-        $this->attendanceSummaryService = new AttendancesSummaryService();
+        $this->attendanceSummaryService = new AttendanceSummaryService();
     }
 
     public function index(): View

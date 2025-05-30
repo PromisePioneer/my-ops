@@ -3,7 +3,7 @@
 namespace App\Support\Attendances\AttendanceSummary;
 
 use App\Http\Requests\AttendancesSummaryFilterByDateRequest;
-use App\Models\AttendancesSummary;
+use App\Models\AttendanceSummary;
 use App\Models\EmployeeSchedule;
 use App\Models\LeaveAndPermission;
 use App\Models\User;
@@ -27,7 +27,7 @@ class AttendanceSummaryDetailService
 
     public function getAttendancesSummaryDetail($empId, $startDate, $endDate)
     {
-        return AttendancesSummary::with('user')
+        return AttendanceSummary::with('user')
             ->where('employee_id', $empId)
             ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
             ->orderBy('date', 'asc')
@@ -348,7 +348,7 @@ class AttendanceSummaryDetailService
         $endDate = Carbon::parse($request->end_date);
 
 
-        $attendancesData = AttendancesSummary::with('user')
+        $attendancesData = AttendanceSummary::with('user')
             ->where('employee_id', $user->absent_id)
             ->whereBetween('date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
             ->orderBy('date', 'asc')

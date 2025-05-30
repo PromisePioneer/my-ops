@@ -18,7 +18,7 @@ use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 
-#[AllowDynamicProperties] class AttendancesSummaryService
+#[AllowDynamicProperties] class AttendanceSummaryService
 {
     private static int $perPage = 10;
 
@@ -269,7 +269,6 @@ use Illuminate\Http\Request;
         $weeklyLatenessMap = [];
         foreach ($users as $user) {
             $attendances = $user->attendancesSummary;
-
             $attendancesGroupedByWeek = collect($attendances)->groupBy(function ($item) {
                 $date = Carbon::parse($item->date);
                 $diffInDays = $this->startDate->diffInDays($date);
@@ -319,21 +318,5 @@ use Illuminate\Http\Request;
             }
         }
         return $weeklyLatenessMap;
-    }
-
-
-    public function getTotalCheckInOrCheckOut($periods, $leaveDates, $employeeHolidayDates, $weekHoliday, $type): int
-    {
-        return collect($periods)
-            ->reject(function ($period) use ($leaveDates) {
-                return in_array($period->format('Y-m-d'), $leaveDates);
-            })->reject(function ($period) use ($employeeHolidayDates, $weekHoliday) {
-                if (in_array($period->format('Y-m-d'), $employeeHolidayDates)) {
-                    return true;
-                }
-                return $period?->dayName === $weekHoliday?->day;
-            })->filter(function ($period) use ($type) {
-                return in_array($period->format('Y-m-d'), $type);
-            })->count();
     }
 }

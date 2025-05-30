@@ -29,7 +29,6 @@ use Maatwebsite\Excel\Facades\Excel;
         $this->user = new User();
         $this->branch = new Branch();
         $this->department = new Department();
-        $this->attendances = new Attendances();
         $this->userService = new UserService();
         $this->company = new Company();
     }

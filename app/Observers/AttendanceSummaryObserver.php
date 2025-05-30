@@ -3,7 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Attendances;
-use App\Models\AttendancesSummary;
+use App\Models\AttendanceSummary;
 use App\Models\EmployeeSchedule;
 use App\Models\User;
 use App\Models\WorkTime;
@@ -77,16 +77,16 @@ class AttendanceSummaryObserver
         return $userShift ?? $ifBranchDuri ?? $isEngineer ?? WorkTime::find(11);
     }
 
-    private function findOrCreateSummary(Attendances $attendances, WorkTime $workTime, Carbon $timestamp): AttendancesSummary
+    private function findOrCreateSummary(Attendances $attendances, WorkTime $workTime, Carbon $timestamp): AttendanceSummary
     {
         $queryDate = $this->getShiftDate($timestamp, $workTime, $attendances);
 
-        $summary = AttendancesSummary::where('employee_id', $attendances->employee_id)
+        $summary = AttendanceSummary::where('employee_id', $attendances->employee_id)
             ->where('work_time_id', $workTime->id)->whereDate('date', $queryDate->format('Y-m-d'))
             ->first();
 
         if (!$summary) {
-            $summary = new AttendancesSummary([
+            $summary = new AttendanceSummary([
                 'date' => $queryDate->format('Y-m-d'),
                 'employee_id' => $attendances->employee_id,
                 'work_time_id' => $workTime->id,

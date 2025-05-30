@@ -6,14 +6,14 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AttendanceCorrectionRequest;
 use App\Http\Requests\AttendancesSummaryFilterByDateRequest;
-use App\Models\AttendancesSummary;
+use App\Models\AttendanceSummary;
 use App\Models\Department;
 use App\Models\FpDevice;
 use App\Models\Master\Common\Branch;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\WorkTime;
-use App\Support\Attendances\AttendanceSummary\AttendancesSummaryService;
+use App\Support\Attendances\AttendanceSummary\AttendanceSummaryService;
 use App\Support\Attendances\AttendanceSummary\AttendanceSummaryDetailService;
 use App\Support\HelperService\FinancialClosePeriodService;
 use Carbon\Carbon;
@@ -26,7 +26,7 @@ use Illuminate\View\View;
 {
     public function __construct()
     {
-        $this->attendanceSummaryService = new AttendancesSummaryService();
+        $this->attendanceSummaryService = new AttendanceSummaryService();
         $this->attendanceSummaryDetailService = new AttendanceSummaryDetailService();
         $this->workTime = new WorkTime();
         $this->department = new Department();
@@ -44,7 +44,7 @@ use Illuminate\View\View;
      */
     public function index(): View
     {
-        $this->authorize('view', AttendancesSummary::class);
+        $this->authorize('view', AttendanceSummary::class);
         $startDate = Carbon::parse($this->startDate)->format('d/m/Y');
         $endDate = Carbon::parse($this->endDate)->format('d/m/Y');
         return view('pages.adms.attendances-summary.index', compact('startDate', 'endDate'));
