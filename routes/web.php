@@ -149,9 +149,10 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/data', [TransactionController::class, 'data']);
         Route::get('/filter', [TransactionController::class, 'filter']);
         Route::get('/search', [TransactionController::class, 'search']);
+        Route::get('/create', [TransactionController::class, 'create']);
         Route::post('/', [TransactionController::class, 'store']);
         Route::get('/item-transaction-qty-in-this-month', [TransactionController::class, 'getItemTransactionQtyInThisMonth']);
-        Route::get('/{transaction}', [TransactionController::class, 'edit']);
+        Route::get('edit/{transaction}', [TransactionController::class, 'edit']);
         Route::post('/{transaction}', [TransactionController::class, 'update']);
         Route::post('/lock-transaction/{transaction}', [TransactionController::class, 'lockTransaction']);
         Route::post('/confirm/{transaction}', [TransactionController::class, 'confirm']);
