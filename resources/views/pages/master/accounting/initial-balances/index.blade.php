@@ -88,8 +88,8 @@
                                     Hapus
                                 </button>
                             </form>
-                            <div class="table-responsive">
-                                <table class="table align-middle fs-6 gy-5 table-bordered">
+                            <div class="table-responsive mb-4">
+                                <table class="table align-middle fs-6 gy-5 table-bordered mb-0">
                                     <thead>
                                     <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                         <td colspan="2" class="min-w-125px">Total Saldo Debit</td>
@@ -97,12 +97,20 @@
                                     </tr>
                                     </thead>
                                     <tbody class="fw-bolder">
-                                    <tr :class="notBalanceCondition()">
-                                        <td colspan="2" x-text="initialBalances.total_debit"></td>
-                                        <td colspan="2" x-text="initialBalances.total_credit"></td>
+                                    <tr>
+                                        <td colspan="2"
+                                            :class="initialBalances.total_debit > initialBalances.total_credit || initialBalances.total_debit < initialBalances.total_credit ? 'text-center text-danger' : 'text-success'"
+                                            x-text="initialBalances.total_debit"></td>
+                                        <td colspan="2"
+                                            :class="initialBalances.total_debit > initialBalances.total_credit || initialBalances.total_debit < initialBalances.total_credit ? 'text-center text-danger' : 'text-success'"
+                                            x-text="initialBalances.total_credit"></td>
                                     </tr>
                                     </tbody>
                                 </table>
+                                <div class="d-flex justify-content-start">
+                                    <span class="text-danger">Note :</span>
+                                    <span class="text-danger"><em>Jika berwarna merah maka total debit dan kredit tidak seimbang</em></span>
+                                </div>
                             </div>
                             <div class="table-responsive">
                                 <table class="table align-middle fs-6 gy-5 table-bordered">
@@ -224,8 +232,6 @@
                                                             <span x-text="subAccount.initial_balance_credit"></span>
                                                         </button>
                                                     </template>
-                                                </td>
-                                                <td>
                                                 </td>
                                             </tr>
                                         </template>
@@ -448,14 +454,15 @@
                     });
                 },
                 disabledAccountButton(branchId, account) {
+                    if (this.branchId !== '') {
+                        return false;
+                    }
                     if (this.branchId === '') {
-                        return true;
-                    } else if (account?.sub_accounts?.length > 0) {
                         return true;
                     }
 
-                    if (this.branchId !== '') {
-                        return false;
+                    if (account?.sub_accounts?.length > 0) {
+                        return true;
                     }
 
 
@@ -491,11 +498,11 @@
                 },
                 notBalanceCondition() {
                     if (this.initialBalances.total_debit > this.initialBalances.total_credit) {
-                        return 'text-white text-center bg-danger ';
+                        return 'text-danger text-center bg-danger';
                     }
 
                     if (this.initialBalances.total_debit < this.initialBalances.total_credit) {
-                        return 'text-white text-center bg-danger ';
+                        return 'text-danger text-center bg-danger ';
                     }
                 }
             }
