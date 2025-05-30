@@ -9,7 +9,7 @@ use App\Models\Attendances;
 use App\Models\GeneratePayroll;
 use App\Models\PayrollSchedule;
 use App\Models\User;
-use App\Support\Attendances\AttendanceSummary\AttendancesSummaryService;
+use App\Support\Attendances\AttendanceSummary\AttendanceSummaryService;
 use App\Support\GeneratePayrollService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -22,7 +22,7 @@ use Illuminate\View\View;
     public function __construct()
     {
         $this->attendance = new Attendances();
-        $this->attendanceSummaryService = new AttendancesSummaryService();
+        $this->attendanceSummaryService = new AttendanceSummaryService();
         $this->generatePayrollService = new GeneratePayrollService();
     }
 

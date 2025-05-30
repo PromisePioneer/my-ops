@@ -105,7 +105,7 @@ class User extends Authenticatable
 
     public function attendancesSummary(): HasMany
     {
-        return $this->hasMany(AttendancesSummary::class, 'employee_id', 'absent_id');
+        return $this->hasMany(AttendanceSummary::class, 'employee_id', 'absent_id');
     }
 
 

@@ -2,7 +2,7 @@
 
 namespace App\Support\Attendances;
 
-use App\Models\AttendancesSummary;
+use App\Models\AttendanceSummary;
 use App\Models\DeviceLog;
 use App\Models\EmployeeSchedule;
 use App\Models\FingerLog;
@@ -255,12 +255,12 @@ class IclockService
 
         $queryDate = $this->getShiftDate($date, $attendanceData['employee_id']);
 
-        $summary = AttendancesSummary::where('employee_id', $attendanceData['employee_id'])->where('work_time_id', $shift)->whereDate('date', $queryDate->format('Y-m-d'))
+        $summary = AttendanceSummary::where('employee_id', $attendanceData['employee_id'])->where('work_time_id', $shift)->whereDate('date', $queryDate->format('Y-m-d'))
             ->first();
 
 
         if (!$summary) {
-            $summary = new AttendancesSummary([
+            $summary = new AttendanceSummary([
                 'date' => $queryDate->format('Y-m-d'),
                 'employee_id' => $attendanceData['employee_id'],
                 'work_time_id' => $shift,
