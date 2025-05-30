@@ -57,6 +57,12 @@ use Throwable;
         return response()->json($this->transactionService->search($request));
     }
 
+
+    public function create(): View
+    {
+        return view('pages.transactions.form');
+    }
+
     /**
      * @throws Throwable
      */
@@ -71,11 +77,11 @@ use Throwable;
     /**
      * @throws AuthorizationException
      */
-    public function edit(Transaction $transaction): JsonResponse
+    public function edit(Transaction $transaction): View
     {
         $transaction->load('branch', 'supplier');
         $this->authorize('edit', Transaction::class);
-        return response()->json($transaction);
+        return view('pages.transactions.form', compact('transaction'));
     }
 
     /**

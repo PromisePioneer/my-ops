@@ -43,10 +43,6 @@ class Transaction extends Model
     }
 
 
-    public function unitType(): BelongsTo
-    {
-        return $this->belongsTo(UnitType::class, 'unit_type_id');
-    }
 
     public function debitAccount(): BelongsTo
     {

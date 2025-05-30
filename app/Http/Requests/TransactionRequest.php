@@ -46,7 +46,7 @@ class TransactionRequest extends FormRequest
                 Rule::requiredIf($this->route('transaction') === null),
                 'mimes:jpg,jpeg,png', 'max:2048'],
             'tax_invoice' => [
-                Rule::requiredIf($supplier->tax_type === 'PKP'),
+                Rule::requiredIf($supplier?->tax_type === 'PKP' && $this->route('transaction') === null),
                 'mimes:jpg,jpeg,png', 'max:2048'],
         ];
     }

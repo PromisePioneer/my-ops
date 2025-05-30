@@ -12,10 +12,7 @@
 
 
     <div x-data="transactionData()">
-        @include('pages.master.operational.items.form')
-        @include('pages.transactions.form')
         @include('pages.transactions.confirm-modal')
-        @include('pages.master.operational.supplier.form')
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             <div class="card-header border-0 ">
                 <div class="card-title">
@@ -31,16 +28,13 @@
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
                         @can('Tambah Data Transaksi')
-                            <button type="button" class="btn btn-light-primary btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-transactions"
-                                    @click="add()">
+                            <a href="{{ url('/transactions/create') }}" class="btn btn-light-primary btn-sm">
                                 <i class="ki-duotone ki-message-add fs-2">
                                     <span class="path1"></span>
                                     <span class="path2"></span>
                                     <span class="path3"></span>
                                 </i> Tambah
-                            </button>
+                            </a>
                         @endcan
                     </div>
                 </div>
@@ -210,12 +204,10 @@
                                         <div
                                             class="d-flex flex-column align-items-center justify-content-center">
                                             <template x-if="transaction.locked_status === 0">
-                                                <button class="btn btn-light-primary btn-sm mb-4"
-                                                        @click="edit(transaction.id)"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#modal-transactions">
+                                                <a :href="`/transactions/edit/${transaction.id}`"
+                                                   class="btn btn-light-primary btn-sm mb-4">
                                                     <i class="bi bi-pencil"></i> Ubah Data
-                                                </button>
+                                                </a>
                                             </template>
                                             <template x-if="transaction.locked_status === 0">
                                                 <button class="btn btn-light-info btn-sm mb-4"
@@ -258,36 +250,6 @@
     <script defer>
 
 
-        Inputmask("decimal", {
-            radixPoint: ",",
-            groupSeparator: ".",
-            digits: 2,
-            autoGroup: true,
-            rightAlign: false,
-            allowMinus: false
-        }).mask("#unit_price");
-
-        $('.date').flatpickr();
-
-        document.addEventListener('focusin', (e) => {
-            if (e.target.closest(".flatpickr-calendar") !== null) {
-                e.stopImmediatePropagation();
-            }
-        });
-
-        const transactionModal = new bootstrap.Modal(document.getElementById('modal-transactions'));
-        const itemModal = document.getElementById('modal-item');
-        const supplierModal = document.getElementById('modal-supplier')
-
-
-        itemModal.addEventListener('hidden.bs.modal', e => {
-            transactionModal.show();
-        });
-
-        supplierModal.addEventListener('hidden.bs.modal', e => {
-            transactionModal.show();
-        });
-
         function transactionData() {
             return {
                 editPermission: "{{ request()->user()->can('Ubah Data Transaksi') }}",
@@ -296,7 +258,6 @@
                 finalApprovePermission: "{{ request()->user()->can('Final Approve Data Transaksi') }}",
                 transactions: [],
                 isLoading: true,
-                PKP: false,
                 transactionType: null,
                 buttonLoading: false,
                 startIndex: null,
@@ -305,54 +266,12 @@
                 singleChecked: false,
                 search: '',
                 editVal: '',
-                userList: [],
-                attachmentImgSrc: [],
-                taxInvoiceImgSrc: [],
-                attachments: [],
-                isAset: null,
-                itemMustHaveCode: false,
-                hasSNOnItem: false,
-                isLandAsset: false,
-                nonBuildingGroup: null,
-                isVehicleAsset: false,
-                tangibleAsset: null,
-                buildingType: null,
                 selectedConfirmationStatus: null,
-                form: document.getElementById('form-transactions'),
-                modalForm: new bootstrap.Modal(document.getElementById('modal-transactions')),
-                goodsForm: document.getElementById('form-item'),
-                itemModal: new bootstrap.Modal(document.getElementById('modal-item')),
                 formDelete: document.getElementById('form-delete'),
                 formConfirm: document.getElementById('form-confirm'),
                 modalConfirm: new bootstrap.Modal(document.getElementById('modal-confirm')),
-                supplierModal: new bootstrap.Modal(document.getElementById('modal-supplier')),
-                supplierForm: document.getElementById('form-supplier'),
                 async init() {
-                    this.$nextTick(async () => {
-                        await this.getAssetAccounts();
                         await this.getTransactions();
-                        await this.getBranches();
-                        await this.getUnitTypes();
-                        await this.getKasAndLeverageAccounts();
-                        await this.getStockAccounts();
-                        await this.getItemCollections();
-                        await this.itemCategories();
-                        await this.getSuppliers();
-                    });
-                },
-                async add() {
-                    $('.main-branches-select2').val(null).trigger('change');
-                    $('.sub-branches-select2').val(null).trigger('change');
-                    $('.suppliers-select2').val(null).trigger('change');
-                    $('.stock-accounts-select2').val(null).trigger('change');
-                    $('.kas-and-leverage-accounts-select2').val(null).trigger('change');
-                    $('.items-select2').val(null).trigger('change');
-                    this.branchVal = null;
-                    this.transactionType = null
-                    this.PKP = null;
-                    this.form.reset();
-                    this.editVal = null;
-                    this.modalForm.show();
                 },
                 async paginationEndPoint(url) {
                     if (url) {
@@ -380,50 +299,7 @@
                     });
                     this.selectedCheckBox.shift();
                 },
-                previewAttachmentFile() {
-                    let files = this.$refs.attachmentFile.files;
-                    if (!files.length) return;
 
-                    Array.from(files).forEach(file => {
-                        if (!file.type.startsWith('image/')) return;
-
-                        let reader = new FileReader();
-                        reader.onload = e => {
-                            this.attachmentImgSrc = e.target.result;
-                        };
-                        reader.readAsDataURL(file);
-                    });
-                },
-
-                previewTaxInvoiceFile() {
-                    let files = this.$refs.taxInvoiceFile.files;
-                    if (!files.length) return;
-
-                    Array.from(files).forEach(file => {
-                        if (!file.type.startsWith('image/')) return;
-
-                        let reader = new FileReader();
-                        reader.onload = e => {
-                            this.taxInvoiceImgSrc = e.target.result;
-                        };
-                        reader.readAsDataURL(file);
-                    });
-                },
-                async saveSupplier() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post('/master/operational/suppliers', new FormData(this.supplierForm))
-                            .then(async () => {
-                                await showAlert('success', 'data berhasil disimpan');
-                                await this.supplierForm.reset();
-                            })
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
 
                 selectCheckBox(event) {
                     const checkboxId = event.target.value;
@@ -435,6 +311,27 @@
                             this.selectedCheckBox.splice(index, 1);
                         }
                     }
+                },
+                openImageList(imagePath) {
+                    console.log(imagePath);
+                    const lightbox = new FsLightbox();
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        const image = "{{ asset('')  }}" + placeholders;
+                        lightbox.props.sources = [image, image];
+                        lightbox.open();
+                    } else {
+                        const image = "{{  Storage::url('') }}" + imagePath;
+                        lightbox.props.sources = [image];
+                        lightbox.open();
+                    }
+                },
+                getImageURL(imagePath) {
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        return "{{ asset('') }}" + placeholders;
+                    }
+                    return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
                 },
                 async filter() {
                     this.isLoading = true;
@@ -470,93 +367,7 @@
                         console.log(error);
                     }
                 },
-                async save(id = null) {
-                    this.buttonLoading = true;
-                    try {
-                        if (!id) {
-                            await axios.post('/transactions', new FormData(this.form))
-                        } else {
-                            await axios.post(`/transactions/${id}`, new FormData(this.form))
-                        }
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.form.reset();
-                        this.modalForm.hide();
-                        await this.init();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
-                openAttachmentImage() {
-                    const lightbox = new FsLightbox();
-                    const storage = "{{ Storage::url('')  }}"
-                    if (this.editVal) {
-                        lightbox.props.sources = [storage + this.attachmentImgSrc[0]];
-                    }
-                    lightbox.props.sources = [this.attachmentImgSrc];
-                    lightbox.open();
-                },
-                openTaxInvoiceImage() {
-                    const lightbox = new FsLightbox();
-                    const storage = "{{ Storage::url('')  }}"
-                    if (this.editVal) {
-                        lightbox.props.sources = [storage + this.taxInvoiceImgSrc[0]];
-                    }
-                    lightbox.props.sources = [this.taxInvoiceImgSrc];
-                    lightbox.open();
-                },
-                openImageList(imagePath) {
-                    console.log(imagePath);
-                    const lightbox = new FsLightbox();
-                    if (imagePath === null) {
-                        const placeholders = 'assets/media/avatars/blank.png'
-                        const image = "{{ asset('')  }}" + placeholders;
-                        lightbox.props.sources = [image, image];
-                        lightbox.open();
-                    } else {
-                        const image = "{{  Storage::url('') }}" + imagePath;
-                        lightbox.props.sources = [image];
-                        lightbox.open();
-                    }
-                },
-                getImageURL(imagePath) {
-                    if (imagePath === null) {
-                        const placeholders = 'assets/media/avatars/blank.png'
-                        return "{{ asset('') }}" + placeholders;
-                    }
-                    return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
-                },
-                async edit(id) {
-                    this.branchVal = true;
-                    const resp = await axios.get(`/transactions/${id}`);
-                    this.editVal = resp.data;
-                    this.imgsrc = "{{ Storage::url('') }}" + this.editVal.attachment;
-                    this.transactionType = this.editVal.type;
-                    this.PKP = this.editVal.supplier.tax_type === 'PKP';
-                    await this.selectedItem();
-                    await this.selectedMainBranches();
-                    await this.selectedSubBranch();
-                    await this.selectedDebitAccount();
-                    await this.selectedCreditAccount();
-                    await this.getAssetAccounts();
-                    await this.selectedSupplier();
-                },
-                async selectedMainBranches() {
-                    if (!this.editVal?.branch_id) return;
-                    const selectedMainBranch = $('#selected-main-branch');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-branch/${this.editVal.branch.parent_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedMainBranch.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
+
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
@@ -570,75 +381,7 @@
                         }
                     });
                 },
-                async getBranches() {
-                    const self = this;
-                    $(".branches-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Cabang",
-                        ajax: {
-                            url: '/select2/branches-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async getSuppliers() {
-                    const self = this;
-                    $(".suppliers-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Supplier",
-                        escapeMarkup: markup => (markup),
-                        language: {
-                            noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-supplier">Tambahkan terlebih dahulu</a>`;
-                            }
-                        },
-                        ajax: {
-                            url: '/select2/suppliers-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    }).on('select2:select', async function (e) {
-                        if (e.params?.data?.id) {
-                            const resp = await axios.get(`/select2/selected-supplier/${e.params.data.id}`);
-                            self.PKP = resp.data.tax_type === 'PKP';
-                        }
-                    });
-                },
-                async getStockAccounts() {
-                    $(".stock-accounts-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Akun",
-                        ajax: {
-                            url: '/select2/stock-accounts-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async getKasAndLeverageAccounts() {
-                    $(".kas-and-leverage-accounts-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Akun",
-                        ajax: {
-                            url: '/select2/kas-and-leverages-accounts-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
+
                 async lockTransaction(id) {
                     showConfirmModal("Anda yakin?", "Data yang dikunci tidak akan bisa diubah maupun dihapus, jika ingin menghapus atau mengubah silahkan hubungi stakeholder terkait.", "Ya, Konfirmasi!", async () => {
                         try {
@@ -651,59 +394,7 @@
                         }
                     });
                 },
-                async selectedSubBranch() {
-                    if (!this.editVal?.branch_id) return;
-                    const selectedSubBranch = $('#selected-branch');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-branch/${this.editVal.branch_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedSubBranch.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
-                async selectedDebitAccount() {
-                    const selectedDebitAccount = $('#selected-debit-account');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-account/${this.editVal.debit_account_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedDebitAccount.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
-                async selectedSupplier() {
-                    const selectedSupplier = $('#selected-supplier');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-supplier/${this.editVal.supplier_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedSupplier.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
-                async selectedCreditAccount() {
-                    const selectedCreditAccount = $('#selected-credit-account');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-account/${this.editVal.credit_account_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedCreditAccount.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
+
                 async getTransactions() {
                     this.isLoading = true;
                     try {
@@ -714,99 +405,6 @@
                     } finally {
                         this.isLoading = false;
                     }
-                },
-                async getUnitTypes() {
-                    $(".unit-types-select2").select2({
-                        allowClear: true,
-                        tags: true,
-                        placeholder: "Pilih Satuan",
-                        ajax: {
-                            url: '/select2/unit-types-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: false
-                        }
-                    });
-                },
-                async getAssetAccounts() {
-                    $(".asset-accounts-select2").select2({
-                        allowClear: true,
-                        placeholder: 'Pilih Akun Aset',
-                        ajax: {
-                            url: '/select2/asset-accounts-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: false
-                        }
-                    });
-                },
-                async getItemCollections() {
-                    $(".items-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Barang",
-                        escapeMarkup: markup => (markup),
-                        language: {
-                            noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-item">Tambahkan terlebih dahulu</a>`;
-                            }
-                        },
-                        ajax: {
-                            url: '/select2/goods-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: false
-                        }
-                    });
-                },
-                async selectedItem() {
-                    if (this.editVal.type !== 'Barang') return;
-                    const selectedItem = $('#selected-item');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-item/${this.editVal.item_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedItem.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
-                async saveItem() {
-                    this.buttonLoading = true;
-                    try {
-                        await axios.post('master/operational/items', new FormData(this.goodsForm))
-                        await showAlert('success', 'Data berhasil disimpan')
-                        this.goodsForm.reset();
-                        this.itemModal.hide();
-                        this.modalForm.show();
-                    } catch (error) {
-                        const respError = error.response.data.errors;
-                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
-                    } finally {
-                        this.buttonLoading = false;
-                    }
-                },
-                async itemCategories() {
-                    $(".item-category-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Kategori Barang",
-                        tags: true,
-                        ajax: {
-                            url: '/select2/item-categories-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: false
-                        }
-                    });
                 },
                 async confirm() {
                     this.buttonLoading = true;
