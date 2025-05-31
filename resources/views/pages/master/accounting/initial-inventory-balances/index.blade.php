@@ -177,6 +177,7 @@
             </div>
         </div>
         @include('components.toast')
+        @include('components.select2.script')
     </div>
 @endsection
 @push('script')
@@ -194,7 +195,8 @@
                 confirmForm: document.getElementById('form-confirm'),
                 async init() {
                     await this.getInitialInventoryBalances();
-                    await this.getBranches();
+                    await select2('.branches-select2', 'Pilih Cabang', '/select2/branches-data');
+
                 },
                 async filter() {
                     this.buttonLoading = true;
@@ -230,20 +232,6 @@
                     } finally {
                         this.isLoading = false;
                     }
-                },
-                async getBranches() {
-                    $(".branches-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Cabang",
-                        ajax: {
-                            url: '/select2/branches-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
                 },
                 selectCheckBox(event) {
                     const checkboxId = event.target.value;
