@@ -2,9 +2,8 @@
     @if(empty(Auth::user()->branch_id))
         <div class="col-md-6">
             <label for="branch_id" class="required form-label">Cabang</label>
-            <select class="form-select form-select-solid branches-select2" name="branch_id" id="selected-branch">
-                <option></option>
-            </select>
+            <x-select2.index name="branch_id" id="selected-branch" class="form-select form-select-solid"
+                             elementSelector="branches-select2"/>
         </div>
     @endif
 </div>
@@ -18,10 +17,9 @@
     </div>
     <div class="col-md-6">
         <label for="date" class="required form-label">Supplier</label>
-        <select name="supplier_id" id="selected-supplier"
-                class="form-select form-select-solid suppliers-select2">
-            <option></option>
-        </select>
+        <x-select2.index name="supplier_id" id="selected-supplier" class="form-select form-select-solid"
+                         elementSelector="suppliers-select2"
+        />
     </div>
 </div>
 
