@@ -49,10 +49,9 @@
                                 </div>
                                 <div class="form-check mb-4 border-top">
                                     <label
-                                            class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 pt-4">
+                                        class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20 pt-4">
                                         <input class="form-check-input" type="checkbox" @click="toggleAllCheckBox()">
-                                        <span
-                                                class="form-check-label text-capitalize fw-bold">
+                                        <span class="form-check-label  fw-bold text-uppercase">
                                             Pilih Semua
                                         </span>
                                     </label>
@@ -71,15 +70,18 @@
                                     </template>
                                     <template x-for="permission in permissions" :key="permission.id">
                                         <div class="col-md-6">
+                                            <div class="separator mb-2"></div>
                                             <div class="form-check mb-4">
                                                 <label
-                                                        class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                                    class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
                                                     <input class="form-check-input" type="checkbox"
+                                                           @click="selectCheckBox($event)"
                                                            :value="permission.name"
                                                            name="permission[]"
                                                            multiple
+                                                           :checked="selectedCheckBox.includes(permission.name)"
                                                     >
-                                                    <span class="form-check-label text-capitalize  fw-bold"
+                                                    <span class="form-check-label btn-link text-uppercase fw-bold"
                                                           x-text="permission.name">
                                                     </span>
                                                 </label>
@@ -141,7 +143,6 @@
                             search: this.search
                         }
                     });
-
                     this.permissions = resp.data
                 },
                 async save() {
@@ -193,7 +194,6 @@
                         }
                     }
                 },
-
             }
         }
     </script>

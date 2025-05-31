@@ -2,7 +2,7 @@
 @section('page-title', 'Pengaturan Shift')
 @section('content')
 
-    <div x-data="manageShiftData ()">
+    <div x-data="manageShiftData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             @include('pages.adms.work-time.form')
             <div class="card-header border-0 pt-6">
@@ -89,7 +89,7 @@
                                                    :id="'checkbox-' + shift.id"/>
                                         </div>
                                     </td>
-                                    <td x-text="shift.branch_name ?? 'Pusat'"></td>
+                                    <td x-text="shift.branch_name"></td>
                                     <td>
                                         <a href="#" x-text="shift.name"></a>
                                     </td>
@@ -130,6 +130,7 @@
     <script>
         function manageShiftData() {
             return {
+                placement: null,
                 buttonLoading: false,
                 isLoading: false,
                 startIndex: null,
@@ -145,9 +146,23 @@
                 formDelete: document.getElementById('form-delete'),
                 async init() {
                     await this.getShiftsData();
+                    await this.getMainBranches();
                 },
                 add() {
                     this.editVal = '';
+                },
+                async selectedMainBranches() {
+                    const selectedMainBranch = $('#selected-main-branch');
+                    const response = await $.ajax({
+                        type: 'GET',
+                        dataType: "JSON",
+                        url: `/select2/selected-branch/${this.editVal.branch_id}`,
+                    });
+                    const option = new Option(response.name, response.id, true, true);
+                    selectedMainBranch.append(option).trigger('change').trigger({
+                        type: 'select2:select',
+                        params: {results: response}
+                    });
                 },
                 async searchData() {
                     this.isLoading = true;
@@ -162,7 +177,8 @@
                     } finally {
                         this.isLoading = false;
                     }
-                },
+                }
+                ,
                 async getShiftsData() {
                     this.isLoading = true
                     try {
@@ -174,7 +190,8 @@
                     } finally {
                         this.isLoading = false;
                     }
-                },
+                }
+                ,
                 async setGlobalDefaultWorkTime(id) {
                     this.isLoading = true;
                     try {
@@ -186,13 +203,15 @@
                     } finally {
                         this.isLoading = false;
                     }
-                },
+                }
+                ,
                 async paginationEndPoint(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
                         this.shifts = resp.data
                     }
-                },
+                }
+                ,
                 toggleAllCheckBox() {
                     this.selectAll = !this.selectAll;
                     this.singleChecked = false;
@@ -205,7 +224,8 @@
                         }
                     });
                     this.selectedCheckBox.shift();
-                },
+                }
+                ,
                 selectCheckBox(event) {
                     const checkboxId = event.target.value;
                     if (event.target.checked) {
@@ -216,21 +236,24 @@
                             this.selectedCheckBox.splice(index, 1);
                         }
                     }
-                },
+                }
+                ,
                 async nextPage() {
                     if (this.shifts.next_page_url) {
                         const resp = await axios.get(`${this.shifts.next_page_url}`);
                         this.startIndex = this.shifts.from
                         this.shifts = resp.data
                     }
-                },
+                }
+                ,
                 async previousPage() {
                     if (this.shifts.prev_page_url) {
                         const resp = await axios.get(`${this.shifts.prev_page_url}`);
                         this.startIndex = this.shifts.from
                         this.shifts = resp.data
                     }
-                },
+                }
+                ,
                 async save(id) {
                     this.buttonLoading = true;
                     try {
@@ -249,11 +272,13 @@
                     } finally {
                         this.buttonLoading = false;
                     }
-                },
+                }
+                ,
                 async edit(id) {
                     const resp = await axios.get(`/adms/work-time/${id}`);
                     this.editVal = resp.data;
-                },
+                }
+                ,
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
@@ -265,7 +290,8 @@
                             await showAlert('error', 'Terjadi kesalahan');
                         }
                     });
-                },
+                }
+                ,
                 async getMainBranches() {
                     $(".main-branches-select2").select2({
                         allowClear: true,
@@ -279,7 +305,8 @@
                             cache: true
                         }
                     });
-                },
+                }
+                ,
             }
         }
     </script>

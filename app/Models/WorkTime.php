@@ -16,6 +16,7 @@ class WorkTime extends Model
     protected $table = 'work_time';
 
     protected $fillable = [
+        'branch_id',
         'name',
         'clock_in',
         'clock_out',
@@ -38,10 +39,5 @@ class WorkTime extends Model
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
-    }
-
-    public function employeeSchedules(): HasOne
-    {
-        return $this->hasOne(EmployeeSchedule::class, 'work_time_id');
     }
 }
