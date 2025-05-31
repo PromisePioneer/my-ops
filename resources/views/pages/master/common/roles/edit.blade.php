@@ -7,8 +7,8 @@
             <div class="card-header border-0 pt-10">
                 <a class="btn btn-light-info btn-sm mb-6" href="{{ url('master/common/roles/') }}">Kembali</a>
             </div>
+            <form id="form" @submit.prevent="save()">
             <div class="card-body py-3">
-                <form id="form" @submit.prevent="save()">
                     @csrf
                     <div class="card-body">
                         <div class="d-flex flex-column scroll-y me-n7 pe-7"
@@ -35,8 +35,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="fv-row">
-                                <div class="d-flex align-items-center justify-content-between mb-10">
+                            <div class="d-flex align-items-center justify-content-between">
                                     <label class="fs-5 fw-bolder form-label">Hak Akses Menu</label>
                                     <input type="text" name="search" x-model="search"
                                            @input.debounce="searchPermissionData()"
@@ -54,7 +53,7 @@
                                         <span class="form-check-label text-capitalize fw-bold">Pilih Semua</span>
                                     </label>
                                 </div>
-                                <div class="row justify-content-center align-items-center">
+                                <div class="row justify-content-between align-items-center">
                                     <template x-if="permissions.length === 0">
                                         <div class="col-md-12">
                                             <div class="fv-row">
@@ -67,21 +66,29 @@
                                         </div>
                                     </template>
                                     <template x-for="(permission, index) in permissions" :key="index">
-                                        <div class="col-md-6">
-                                            <div class="form-check mb-4">
-                                                <label
-                                                    class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
-                                                    <input class="form-check-input" type="checkbox"
-                                                           :value="permission.name"
-                                                           :checked="selectedCheckBox.includes(permission.name)"
-                                                           name="permission[]"
-                                                           multiple
-                                                    >
-                                                    <span class="form-check-label text-capitalize fw-bold"
-                                                          x-text="permission.name">
+                                        <div class="col-md-4"
+                                             x-show="permission.name.toLowerCase().includes(search.toLowerCase())">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <div class="form-check mb-4">
+                                                            <label
+                                                                class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                       @click="selectCheckBox($event)"
+                                                                       :value="permission.name"
+                                                                       :checked="selectedCheckBox.includes(permission.name)"
+                                                                       name="permission[]"
+                                                                       multiple
+                                                                >
+                                                                <span class="form-check-label text-capitalize fw-bold"
+                                                                      x-text="permission.name">
                                                     </span>
-                                                </label>
-                                            </div>
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
                                         </div>
                                     </template>
                                 </div>
@@ -108,7 +115,6 @@
                 </form>
             </div>
         </div>
-    </div>
     @include('components.toast')
 @endsection
 @push('script')
@@ -130,13 +136,8 @@
                     await this.selectedDepartment();
                     await this.getPermissionsData();
                 },
-                async searchPermissionData() {
-                    const resp = await axios.get('/master/common/roles/permissions/search', {
-                        params: {
-                            search: this.search
-                        }
-                    });
-                    this.permissions = resp.data;
+                showItem(el) {
+                    return this.search === '' || el.textContent.includes(this.search)
                 },
                 async getPermissionsData() {
                     try {
