@@ -37,9 +37,12 @@
         <label for="name" class="required form-label">
             Nama Barang
         </label>
-        <select name="item_id" id="selected-item" class="form-select form-select-solid items-select2">
-            <option></option>
-        </select>
+        <x-select2.index
+            name="item_id"
+            id="selected-item"
+            class="form-select form-select-solid"
+            elementSelector="items-select2"
+        />
     </div>
 
     <div class="col-md-4">
@@ -61,19 +64,23 @@
 <div class="row mb-10">
     <div class="col-md-6">
         <label for="name" class="required form-label">Akun Persediaan</label>
-        <select name="debit_account_id" id="selected-debit-account"
-                class="form-select form-select-solid stock-accounts-select2">
-            <option></option>
-        </select>
+        <x-select2.index
+            name="debit_account_id"
+            id="selected-debit-account"
+            class="form-select form-select-solid"
+            elementSelector="stock-accounts-select2"
+        />
     </div>
 
 
     <div class="col-md-6">
         <label for="name" class="required form-label">Akun Kas Dan Utang</label>
-        <select name="credit_account_id" id="selected-credit-account"
-                class="form-select form-select-solid kas-and-leverage-accounts-select2">
-            <option></option>
-        </select>
+        <x-select2.index
+            name="credit_account_id"
+            id="selected-credit-account"
+            class="form-select form-select-solid"
+            elementSelector="kas-and-leverage-accounts-select2"
+        />
     </div>
 </div>
 

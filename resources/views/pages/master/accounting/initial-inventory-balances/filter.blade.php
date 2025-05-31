@@ -20,13 +20,13 @@
         <div class="card-body">
             <div class="row">
                 <div class="mb-4">
-                    <select class="form-select form-select-solid form-select-sm branches-select2"
-                            name="branch_id"
-                            id="branch_id"
-                            data-dropdown-parent="#initial-inventory-balances-filter"
-                    >
-                        <option></option>
-                    </select>
+                    <x-select2.index
+                        name="branch_id"
+                        id="branch_id"
+                        class="form-select form-select-solid"
+                        elementSelector="branches-select2"
+                        data-dropdown-parent="#initial-inventory-balances-filter"
+                    />
                 </div>
                 <button type="button" class="btn btn-light-primary btn-sm" @click="filter()" :disabled="buttonLoading">
                     <span x-text="`${buttonLoading ? 'Loading...' : 'Filter'}`"></span>

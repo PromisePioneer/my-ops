@@ -1,8 +1,8 @@
 <div></div>
 
 <script>
-    function decimalInputMask(idElement) {
-        Inputmask("decimal", {
+    function inputMask(idElement, maskType) {
+        Inputmask(`${maskType}`, {
             radixPoint: ",",
             groupSeparator: ".",
             digits: 2,

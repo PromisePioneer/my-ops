@@ -69,7 +69,7 @@
     </div>
     @include('components.toast')
     @include('components.select2.script')
-    @include('components.input-mask.decimal')
+    @include('components.input-mask')
     @include('components.image.handle-image')
 @endsection
 @push('script')
@@ -108,7 +108,7 @@
                 supplierModal: new bootstrap.Modal(document.getElementById('modal-supplier')),
                 supplierForm: document.getElementById('form-supplier'),
                 async init() {
-                    decimalInputMask('unit_price');
+                    inputMask('unit_price');
                     await select2('.branches-select2', 'Pilih Cabang', '/select2/branches-data');
                     await select2('.suppliers-select2', 'Pilih Supplier', '/select2/suppliers-data', true, false, 'modal-supplier');
                     await select2('.items-select2', 'Pilih Barang', '/select2/goods-data', true, false, 'modal-item');
