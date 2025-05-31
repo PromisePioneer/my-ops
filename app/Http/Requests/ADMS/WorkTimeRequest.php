@@ -4,6 +4,8 @@ namespace App\Http\Requests\ADMS;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class WorkTimeRequest extends FormRequest
 {
@@ -20,9 +22,13 @@ class WorkTimeRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array|string>
      */
-    public function rules(): array
+    public function rules(Request $request): array
     {
         return [
+            'branch_id' => [
+                Rule::requiredIf($request->placement === 'Cabang' || !empty($request->user()->branch_id)),
+                'exists:branches,id'
+            ],
             'name' => ['required', 'string'],
             'clock_in' => ['required'],
             'clock_out' => ['required'],
@@ -36,6 +42,8 @@ class WorkTimeRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'branch_id.required' => 'Cabang tidak boleh kosong',
+            'branch_id.exists' => 'Cabang tidak valid!',
             'name.required' => 'Nama tidak boleh kosong',
             'clock_in.required' => 'Jam masuk tidak boleh kosong',
             'clock_in.date_format' => 'Jam masuk tidak valid',

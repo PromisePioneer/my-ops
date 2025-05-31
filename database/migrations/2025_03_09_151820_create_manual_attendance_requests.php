@@ -10,13 +10,18 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('att_manual_request', function (Blueprint $table) {
+        Schema::create('attendance_corrections', function (Blueprint $table) {
             $table->id();
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->enum('status', ['Awaiting Approval', 'Approved', 'Rejected'])->default('Awaiting Approval');
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->date('date');
             $table->text('reason');
             $table->text('confirmation_reason')->nullable();
+            $table->enum('attended_type', ['Checkin', 'Checkout']);
+            $table->string('attachment');
+            $table->enum('status', ['Awaiting Approval', 'Approved', 'Rejected'])->default('Awaiting Approval');
             $table->foreignId('approved_by')
                 ->nullable()
                 ->constrained('users');

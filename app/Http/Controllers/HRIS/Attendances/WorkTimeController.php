@@ -69,7 +69,7 @@ use Illuminate\View\View;
     {
         $this->authorize('create', WorkTime::class);
         $data = $request->validated();
-        $data['branch_id'] = $request->user()->branch_id ?? null;
+        $data['branch_id'] = $request->branch_id ?? $request->user()->branch_id ?? null;
         WorkTime::create($request->validated());
 
         return response()->json([
@@ -93,21 +93,6 @@ use Illuminate\View\View;
     {
         $this->authorize('update', $workTime);
         $workTime->update($request->validated());
-
-        return response()->json([
-            'message' => 'Data berhasil disimpan',
-        ]);
-    }
-
-    public function assignWorkTime(UserWorkTimeRequest $request, WorkTime $workTime): JsonResponse
-    {
-        foreach ($request['user_id'] as $userId) {
-            UserWorkTime::updateOrCreate([
-                'user_id' => $userId,
-            ], [
-                'work_time_id' => $workTime->id,
-            ]);
-        }
 
         return response()->json([
             'message' => 'Data berhasil disimpan',

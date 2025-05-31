@@ -32,7 +32,7 @@ class WorkTimeService
         $data = $workTime->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
-                'branch_name' => $item->branch,
+                'branch_name' => $item->branch?->name,
                 'name' => $item->name,
                 'clock_in' => $item->clock_in,
                 'clock_out' => $item->clock_out,
