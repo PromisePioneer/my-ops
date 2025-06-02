@@ -68,7 +68,8 @@ class SupplierController extends Controller
         return $supplier->map(function ($query) {
             return [
                 'id' => $query->id,
-                'text' => $query->name
+                'text' => $query->name,
+                'tax_type' => $query->tax_type
             ];
         });
     }

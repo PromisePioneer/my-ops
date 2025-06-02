@@ -68,6 +68,9 @@
         </div>
     </div>
     @include('components.toast')
+    @include('components.select2.script')
+    @include('components.input-mask')
+    @include('components.image.handle-image')
 @endsection
 @push('script')
     <script>
@@ -105,64 +108,32 @@
                 supplierModal: new bootstrap.Modal(document.getElementById('modal-supplier')),
                 supplierForm: document.getElementById('form-supplier'),
                 async init() {
-                    this.inputMask('unit_price');
-                    await this.getBranches();
-                    await this.getSuppliers();
-                    await this.getItemCollections();
-                    await this.getStockAccounts();
-                    await this.getCashAndLeverageAccounts();
-                    await this.getItemCategories();
-                    await this.getUnitTypes();
-                    await this.getAssetAccounts();
-                    await this.selectedSupplier();
-                    await this.selectedBranch();
-                    await this.selectedDebitAccount();
-                    await this.selectedCreditAccount();
-                    await this.selectedItemCollection();
+                    inputMask('unit_price');
+                    await select2('.branches-select2', 'Pilih Cabang', '/select2/branches-data');
+                    await select2('.suppliers-select2', 'Pilih Supplier', '/select2/suppliers-data', true, false, 'modal-supplier');
+                    await select2('.items-select2', 'Pilih Barang', '/select2/goods-data', true, false, 'modal-item');
+                    await select2('.stock-accounts-select2', 'Pilih Akun Persediaan', '/select2/stock-accounts-data');
+                    await select2('.kas-and-leverage-accounts-select2', 'Pilih Akun Kas / Utang', '/select2/kas-and-leverages-accounts-data');
+                    await select2('.item-category-select2', 'Pilih Kategori', '/select2/item-categories-data');
+                    await select2('.unit-types-select2', 'Pilih Satuan', '/select2/unit-types-data', true, true);
+                    await select2('.asset-accounts-select2', 'Pilih Akun Aset', '/select2/asset-accounts-data');
+                    await this.selectedSelect2Value();
+                    this.supplierOnSelect();
                 },
-                async getBranches() {
-                    $(".branches-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Cabang",
-                        ajax: {
-                            url: '/select2/branches-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
+                supplierOnSelect() {
+                    $('.suppliers-select2').on('select2:select', (e) => {
+                        this.PKP = e?.params?.data?.tax_type === 'PKP';
                     });
                 },
-                async selectedBranch() {
-                    if (!this.branchId) return;
-                    const selectedBranch = $('#selected-branch');
-                    const response = await axios.get(`/select2/selected-branch/${this.branchId}`);
-                    const option = new Option(response.data.name, response.data.id, true, true);
-                    selectedBranch.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response.data}
-                    });
-                },
-                async getItemCollections() {
-                    $(".items-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Barang",
-                        escapeMarkup: markup => (markup),
-                        language: {
-                            noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-item">Tambahkan terlebih dahulu</a>`;
-                            }
-                        },
-                        ajax: {
-                            url: '/select2/goods-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: false
-                        }
-                    });
+                async selectedSelect2Value() {
+                    if (this.transactionId === '') return;
+                    await selectedValue('selected-branch', `/select2/selected-branch/${this.branchId}`);
+                    await selectedValue('selected-item', `/select2/selected-item/${this.itemId}`);
+                    await selectedValue('selected-debit-account', `/select2/selected-account/${this.debitAccountId}`);
+                    await selectedValue('selected-credit-account', `/select2/selected-account/${this.creditAccountId}`);
+                    await selectedValue('selected-supplier', `/select2/selected-supplier/${this.supplierId}`);
+                    const resp = await axios.get(`/select2/selected-supplier/${this.supplierId}`);
+                    this.PKP = resp.data.tax_type === 'PKP';
                 },
                 previewAttachmentFile() {
                     let files = this.$refs.attachmentFile.files;
@@ -190,20 +161,6 @@
                             this.taxInvoiceImgSrc = e.target.result;
                         };
                         reader.readAsDataURL(file);
-                    });
-                },
-                async selectedDebitAccount() {
-                    if (!this.debitAccountId) return;
-                    const selectedDebitAccount = $('#selected-debit-account');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-account/${this.debitAccountId}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedDebitAccount.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
                     });
                 },
                 async saveSupplier() {
@@ -239,20 +196,6 @@
                         this.buttonLoading = false;
                     }
                 },
-                async selectedCreditAccount() {
-                    if (this.creditAccountId === '') return;
-                    const selectedCreditAccount = $('#selected-credit-account');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-account/${this.creditAccountId}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedCreditAccount.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
                 openAttachmentImage() {
                     const lightbox = new FsLightbox();
                     const storage = "{{ Storage::url('')  }}"
@@ -272,7 +215,6 @@
                     lightbox.open();
                 },
                 openImageList(imagePath) {
-                    console.log(imagePath);
                     const lightbox = new FsLightbox();
                     if (imagePath === null) {
                         const placeholders = 'assets/media/avatars/blank.png'
@@ -284,42 +226,6 @@
                         lightbox.props.sources = [image];
                         lightbox.open();
                     }
-                },
-                getImageURL(imagePath) {
-                    if (imagePath === null) {
-                        const placeholders = 'assets/media/avatars/blank.png'
-                        return "{{ asset('') }}" + placeholders;
-                    }
-                    return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
-                },
-                async selectedMainBranches() {
-                    if (!this.editVal?.branch_id) return;
-                    const selectedMainBranch = $('#selected-main-branch');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-branch/${this.editVal.branch.parent_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedMainBranch.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
-                async selectedItemCollection() {
-
-                    if (this.itemId === '') return;
-                    const selectedItem = $('#selected-item');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-item/${this.itemId}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedItem.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
                 },
                 async saveItem() {
                     this.buttonLoading = true;
@@ -336,131 +242,6 @@
                         this.buttonLoading = false;
                     }
                 },
-                async getItemCategories() {
-                    $(".item-category-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Kategori Barang",
-                        tags: true,
-                        ajax: {
-                            url: '/select2/item-categories-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: false
-                        }
-                    });
-                },
-                async getUnitTypes() {
-                    $(".unit-types-select2").select2({
-                        allowClear: true,
-                        tags: true,
-                        placeholder: "Pilih Satuan",
-                        ajax: {
-                            url: '/select2/unit-types-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: false
-                        }
-                    });
-                },
-                async selectedSupplier() {
-                    if (this.transactionId === '') return;
-                    const selectedSupplier = $('#selected-supplier');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-supplier/${this.supplierId}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedSupplier.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-
-                    const resp = await axios.get(`/select2/selected-supplier/${this.supplierId}`);
-                    this.PKP = resp.data.tax_type === 'PKP';
-                },
-                async getStockAccounts() {
-                    $(".stock-accounts-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Akun",
-                        ajax: {
-                            url: '/select2/stock-accounts-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async getCashAndLeverageAccounts() {
-                    $(".kas-and-leverage-accounts-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Akun",
-                        ajax: {
-                            url: '/select2/kas-and-leverages-accounts-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async getAssetAccounts() {
-                    $(".asset-accounts-select2").select2({
-                        allowClear: true,
-                        placeholder: 'Pilih Akun Aset',
-                        ajax: {
-                            url: '/select2/asset-accounts-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async getSuppliers() {
-                    const self = this;
-                    $(".suppliers-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Supplier",
-                        escapeMarkup: markup => (markup),
-                        language: {
-                            noResults: () => {
-                                return `Data Tidak Ditemukan.. <a href=/'#' data-bs-toggle="modal" data-bs-target="#modal-supplier">Tambahkan terlebih dahulu</a>`;
-                            }
-                        },
-                        ajax: {
-                            url: '/select2/suppliers-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    }).on('select2:select', async function (e) {
-                        if (e.params?.data?.id) {
-                            const resp = await axios.get(`/select2/selected-supplier/${e.params.data.id}`);
-                            self.PKP = resp.data.tax_type === 'PKP';
-                        }
-                    });
-                },
-                inputMask(id) {
-                    Inputmask("decimal", {
-                        radixPoint: ",",
-                        groupSeparator: ".",
-                        digits: 2,
-                        autoGroup: true,
-                        rightAlign: false,
-                        allowMinus: false
-                    }).mask(`#${id}`);
-                }
             }
         }
     </script>

@@ -31,11 +31,12 @@
                         <form id="form-filter" @submit.prevent="filter()">
                             <div class="card-body pt-0">
                                 <div class="d-flex flex-column text-gray-600">
-                                    <div class="d-flex align-items-center py-2">
-                                        <select class="form-select form-select-solid main-branches-select2"
-                                                name="branch_id" id="branch-id-filter">
-                                        </select>
-                                    </div>
+                                    <x-select2.index
+                                        name="branch_id"
+                                        id="branch-id-filter"
+                                        class="form-select form-select-solid"
+                                        elementSelector="main-branches-select2"
+                                    />
                                 </div>
                             </div>
                             <div class="card-footer pt-4 text-end">
@@ -96,7 +97,7 @@
                                         <td colspan="2" class="min-w-125px">Total Saldo Kredit</td>
                                     </tr>
                                     </thead>
-                                    <tbody class="fw-bolder">
+                                    <tbody class="fw-bolder text-center">
                                     <tr>
                                         <td colspan="2"
                                             :class="initialBalances.total_debit > initialBalances.total_credit || initialBalances.total_debit < initialBalances.total_credit ? 'text-center text-danger' : 'text-success'"
@@ -159,10 +160,10 @@
                                                      @click="selectCheckBox($event)">
                                                     <template
                                                         x-if="account?.sub_accounts?.length === 0 && branchId !== null">
-                                                            <input class="form-check-input" type="checkbox"
-                                                                   :value="account.id"
-                                                                   :id="'checkbox-' + account.id"
-                                                                   :disabled="account.initial_balance === null || Number(deletePermission) !== 1"/>
+                                                        <input class="form-check-input" type="checkbox"
+                                                               :value="account.id"
+                                                               :id="'checkbox-' + account.id"
+                                                               :disabled="account.initial_balance === null || Number(deletePermission) !== 1"/>
                                                     </template>
                                                 </div>
                                             </td>
@@ -254,6 +255,8 @@
         </div>
     </div>
     @include('components.toast')
+    @include('components.input-mask')
+    @include('components.select2.script')
 @endsection
 @push('script')
     <script defer>
@@ -266,15 +269,6 @@
                 }
             ]
         });
-
-        Inputmask("numeric", {
-            radixPoint: ",",
-            groupSeparator: ".",
-            digits: 2,
-            autoGroup: true,
-            rightAlign: false,
-            allowMinus: false
-        }).mask("#amount");
 
         function InitialBalancesData() {
             return {
@@ -297,10 +291,10 @@
                 formDelete: document.getElementById('form-delete'),
                 async init() {
                     await this.getInitialBalances();
-                    await this.getMainBranches();
+                    await inputMask('amount', 'numeric');
+                    await select2('.main-branches-select2', 'Pilih Cabang', '/select2/main-branches-data');
                     if (this.branchId === '') {
                         this.branchId = null;
-                        console.log(this.branchId)
                     }
                 },
                 async getInitialBalances() {
@@ -360,21 +354,6 @@
                             this.selectedCheckBox.splice(index, 1);
                         }
                     }
-                },
-                async getMainBranches() {
-                    if (this.branchId === null) return;
-                    $(".main-branches-select2").select2({
-                        allowClear: true,
-                        placeholder: 'Pilih Cabang',
-                        ajax: {
-                            url: '/select2/main-branches-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
                 },
                 async selectedBranch(id) {
                     try {
