@@ -109,7 +109,7 @@ use Throwable;
 
             $selectedWorkTime = WorkTime::find($request->work_time_id);
 
-            if ($selectedWorkTime->name === 'Malam' || $selectedWorkTime->name === 'Sore' || $selectedWorkTime->name === 'KU Malam') {
+            if ($selectedWorkTime->name === 'Malam' || $selectedWorkTime->name === 'Sore' || $selectedWorkTime->name === 'KU Malam' || $selectedWorkTime->name === 'CS Sore') {
                 $endDate = Carbon::parse($request->start_date)->addDays();
             } else {
                 $endDate = Carbon::parse($request->start_date);
@@ -135,7 +135,7 @@ use Throwable;
         $periods = CarbonPeriod::create($date, $dayCount);
 
         foreach ($periods as $period) {
-            if ($selectedWorkTime->name === 'Malam' || $selectedWorkTime->name === 'Sore' || $selectedWorkTime->name === 'KU Malam') {
+            if ($selectedWorkTime->name === 'Malam' || $selectedWorkTime->name === 'Sore' || $selectedWorkTime->name === 'KU Malam' || $selectedWorkTime->name === 'CS Sore') {
                 $endDate = Carbon::parse($period->format('Y-m-d'))->addDays();
             } else {
                 $endDate = Carbon::parse($period->format('Y-m-d'));

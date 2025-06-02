@@ -462,6 +462,13 @@
                     }
 
 
+                    if (dates.schedules_date?.status === 'H' && dates.schedules_date.work_time.name === 'CS Sore') {
+
+                        return 'text-center border border-black shift-s p-0';
+                    }
+
+
+
                     if (dates.schedules_date?.status === 'H' && dates.schedules_date.work_time.name === 'Malam') {
                         return 'text-center border border-black shift-m p-0';
                     }
@@ -482,7 +489,7 @@
                         return 'P';
                     }
 
-                    if (dates.schedules_date.work_time.name === 'Sore') {
+                    if (dates.schedules_date.work_time.name === 'Sore' || dates.schedules_date.work_time.name === 'CS Sore') {
 
                         return 'S';
                     }
