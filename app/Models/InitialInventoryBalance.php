@@ -21,7 +21,8 @@ class InitialInventoryBalance extends Model
         'total_price',
         'detail',
         'attachment',
-        'status'
+        'status',
+        'qty_in_meter'
     ];
 
 

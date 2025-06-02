@@ -80,9 +80,8 @@
                         <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                             <th class="w-10px pe-2">
                             </th>
-                            <th class="min-w-125px text-center">Informasi Transaksi</th>
+                            <th class="min-w-200px text-center">Informasi Transaksi</th>
                             <th class="min-w-125px text-center">Akun</th>
-                            <th class="min-w-125px text-center">Detail</th>
                             <th class="min-w-125px text-center">Bukti Transaksi</th>
                             <th class="min-w-125px text-center">Status Konfirmasi</th>
                             <template
@@ -134,8 +133,20 @@
                                         <span x-text="`Tgl ${transaction.date}`"></span>
                                         <span x-text="`No ${transaction.transaction_number}`"></span>
                                         <hr>
-                                        <span class="text-decoration-underline"
-                                              x-text="`${transaction.qty} ${transaction.unit_type}`"></span>
+                                        <div>
+                                            <template x-if="transaction.unit_type === 'Meter'">
+                                                <div>
+                                                    <p class="text-decoration-underline m-0"
+                                                          x-text="`${transaction.qty} Haspel`"></p>
+                                                    <p class="text-decoration-underline m-0"
+                                                          x-text="`${transaction.qty_in_meter} Meter per Haspel`"></p>
+                                                </div>
+                                            </template>
+                                        </div>
+                                        <template x-if="transaction.unit_type !== 'Meter'">
+                                             <span class="text-decoration-underline"
+                                                   x-text="`${transaction.qty} ${transaction.unit_type}`"></span>
+                                        </template>
                                         <span x-text="transaction.item_name"></span>
                                         <span x-text="transaction.total_price"></span>
                                     </div>
@@ -150,7 +161,6 @@
                                            x-text="`${transaction.credit}`"></a>
                                     </div>
                                 </td>
-                                <td class="text-center" x-text="transaction.detail"></td>
                                 <td class="text-center">
                                     <a href="#">
                                         <div class="symbol-label">

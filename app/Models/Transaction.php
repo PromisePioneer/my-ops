@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Master\Common\Branch;
-use App\Models\Master\Common\UnitType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -33,7 +32,8 @@ class Transaction extends Model
         'final_notes',
         'approved_by',
         'attachment',
-        'tax_invoice'
+        'tax_invoice',
+        'qty_in_meter',
     ];
 
 

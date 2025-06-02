@@ -152,14 +152,25 @@ use Illuminate\View\View;
             }
         })->get();
 
+
         return $stock->map(function ($stock) {
+            $stockQty = $stock->qty . ' ' . $stock->item->unitType->name;
+            if ($stock->item->unitType->name == 'Meter') {
+                $stockQty = "{$stock->qty} Haspel / Unit";
+            }
+
+            $onHoldQty = $stock->on_hold_qty . ' ' . $stock->item->unitType->name;
+            if ($stock->item->unitType->name == 'Meter') {
+                $onHoldQty = "{$stock->on_hold_qty} Haspel / Unit";
+            }
+
             return [
                 'id' => $stock->id,
                 'transaction_number' => $stock->transaction?->transaction_number ?? 'Persediaan Awal',
                 'name' => $stock->item->name,
-                'qty' => $stock->qty . ' ' . $stock->item->unitType->name,
+                'qty' => $stockQty,
                 'condition' => $stock->condition,
-                'on_hold_qty' => $stock->on_hold_qty . ' ' . $stock->item->unitType->name,
+                'on_hold_qty' => $onHoldQty,
                 'available_qty' => $stock->qty - $stock->on_hold_qty . ' ' . $stock->item->unitType->name,
             ];
         });

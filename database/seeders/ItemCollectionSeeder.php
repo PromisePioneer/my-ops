@@ -49,7 +49,7 @@ class ItemCollectionSeeder extends Seeder
             'name' => 'DW',
             'code' => 'DW',
             'category_id' => ItemCategory::where('name', 'Kategori 1')->first()->id,
-            'unit_type_id' => UnitType::where('name', 'Meter')->first()->id,
+            'unit_type_id' => UnitType::where('name', 'Haspel')->first()->id,
             'type' => 'JUAL',
             'tangible_assets_type' => null,
             'reorder_level' => 100,

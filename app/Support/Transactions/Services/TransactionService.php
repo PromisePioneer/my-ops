@@ -107,6 +107,7 @@ use function App\Helper\formatDate;
                 'approved_by' => $item->approvedBy?->name,
                 'attachment' => $item->attachment,
                 'final_notes' => $item->final_notes,
+                'qty_in_meter' => $item->qty_in_meter
             ];
         });
 
@@ -135,6 +136,7 @@ use function App\Helper\formatDate;
             'debit_account_id' => $request->input('debit_account_id'),
             'credit_account_id' => $request->input('credit_account_id'),
             'created_by' => $request->user()->id,
+            'qty_in_meter' => $request->qty_in_meter,
             'attachment' => $this->handleUploadService->upload(
                 $request,
                 'documents/transaction/item-transactions/',
@@ -168,6 +170,7 @@ use function App\Helper\formatDate;
             'debit_account_id' => $request->input('debit_account_id'),
             'credit_account_id' => $request->input('credit_account_id'),
             'created_by' => $request->user()->id,
+            'qty_in_meter' => $request->qty_in_meter,
             'attachment' => $this->handleUploadService->upload(
                 $request,
                 'documents/transaction/item-transactions/',

@@ -126,6 +126,9 @@
                         <tr>
                             <th class="w-10px pe-2">No</th>
                             <th class="min-w-125px text-center">Kode</th>
+                            @if($draftStock->transaction?->item->unitType->name == 'Meter')
+                                <th class="min-w-125px text-center">Qty (Meter) Per Haspel / Unit</th>
+                            @endif
                             <th class="min-w-125px text-center">Kondisi</th>
                             <th class="min-w-125px text-center">Status</th>
                             <th class="min-w-125px text-center">Diinput Oleh</th>
@@ -159,6 +162,9 @@
                             <tr>
                                 <td x-text="startIndex + index++"></td>
                                 <td x-text="item.code"></td>
+                                <template x-if="item.qty_in_meter">
+                                    <td x-text="`${item.qty_in_meter} Meter`"></td>
+                                </template>
                                 <td class="text-uppercase">
                                     <template x-if="item.condition === 'Rusak'">
                                         <span class="badge bg-light-danger text-danger">Rusak</span>

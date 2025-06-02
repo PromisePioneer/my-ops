@@ -45,6 +45,7 @@ return new class extends Migration {
                 ->default('Diproses');
             $table->string('final_notes')->nullable();
             $table->foreignId('approved_by')->nullable()->constrained('users');
+            $table->double('qty_in_meter')->nullable();
             $table->timestamps();
         });
     }

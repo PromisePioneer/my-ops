@@ -107,8 +107,9 @@
                 formConfirm: document.getElementById('form-confirm'),
                 supplierModal: new bootstrap.Modal(document.getElementById('modal-supplier')),
                 supplierForm: document.getElementById('form-supplier'),
+                qtyInMeter: false,
                 async init() {
-                    inputMask('unit_price');
+                    inputMask('unit_price', 'decimal');
                     await select2('.branches-select2', 'Pilih Cabang', '/select2/branches-data');
                     await select2('.suppliers-select2', 'Pilih Supplier', '/select2/suppliers-data', true, false, 'modal-supplier');
                     await select2('.items-select2', 'Pilih Barang', '/select2/goods-data', true, false, 'modal-item');
@@ -119,6 +120,12 @@
                     await select2('.asset-accounts-select2', 'Pilih Akun Aset', '/select2/asset-accounts-data');
                     await this.selectedSelect2Value();
                     this.supplierOnSelect();
+                    this.itemOnSelect();
+                },
+                itemOnSelect() {
+                    $('.items-select2').on('select2:select', (e) => {
+                        this.qtyInMeter = e?.params?.data?.unit_type_name === 'Meter';
+                    });
                 },
                 supplierOnSelect() {
                     $('.suppliers-select2').on('select2:select', (e) => {
@@ -132,8 +139,12 @@
                     await selectedValue('selected-debit-account', `/select2/selected-account/${this.debitAccountId}`);
                     await selectedValue('selected-credit-account', `/select2/selected-account/${this.creditAccountId}`);
                     await selectedValue('selected-supplier', `/select2/selected-supplier/${this.supplierId}`);
-                    const resp = await axios.get(`/select2/selected-supplier/${this.supplierId}`);
-                    this.PKP = resp.data.tax_type === 'PKP';
+                    const getSuppliers = await axios.get(`/select2/selected-supplier/${this.supplierId}`);
+                    this.PKP = getSuppliers.data.tax_type === 'PKP';
+
+                    const getItem = await axios.get(`/select2/selected-item/${this.itemId}`);
+
+                    this.qtyInMeter = getItem.data.unit_type_name === 'Meter';
                 },
                 previewAttachmentFile() {
                     let files = this.$refs.attachmentFile.files;
