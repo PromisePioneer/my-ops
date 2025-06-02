@@ -8,7 +8,7 @@ use App\Http\Requests\ADMS\UserWorkTimeRequest;
 use App\Http\Requests\ADMS\WorkTimeRequest;
 use App\Models\User;
 use App\Models\WorkTime;
-use App\Support\Attendances\WorkTimeService;
+use App\Support\Attendances\WorkTime\WorkTimeService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
