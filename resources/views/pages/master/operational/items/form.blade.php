@@ -133,12 +133,13 @@
                         </div>
                         <div class="col-md-6">
                             <label for="unit_type_id" class="required form-label">Satuan</label>
-                            <select name="unit_type_id" id="selected-unit-type"
-                                    class="form-select form-select-solid unit-types-select2"
-                                    data-dropdown-parent="#modal-item"
-                            >
-                                <option></option>
-                            </select>
+                            <x-select2.index
+                                x-bind:name="unit_type_id"
+                                id="unit_type_id"
+                                class="form-select form-select-solid"
+                                elementSelector="unit-types-select2"
+                                parentElementIfExist="#modal-item"
+                            />
                         </div>
                         <div class="col-md-6" x-show="tangibleAsset === 'Tanah'">
                             <label for="" class="form-label required">Akun Aset</label>
@@ -189,14 +190,14 @@
                                       href="{{ url('master/operational/item-categories') }}">Bantuan</a>
                                 </span>
                             </div>
-                            <select
-                                :name="`${tangibleAsset === 'Bukan Bangunan' || isAset === 'ASET' || isAset === 'JUAL' || !isVehicleAsset ? 'category_id' : ''}`"
+
+                            <x-select2.index
+                                x-bind:name="`${tangibleAsset === 'Bukan Bangunan' || isAset === 'ASET' || isAset === 'JUAL' || !isVehicleAsset ? 'category_id' : ''}`"
                                 id="selected-item-category"
-                                class="form-select form-select-solid item-category-select2"
-                                data-dropdown-parent="#modal-item"
-                            >
-                                <option></option>
-                            </select>
+                                class="form-select form-select-solid"
+                                elementSelector="item-category-select2"
+                                parentElementIfExist="#modal-item"
+                            />
                         </div>
                     </div>
                     <div class="row">
@@ -215,14 +216,13 @@
                             <label for="asset_account_id" class="required form-label">
                                 Akun Aset (Jika Masuk Aset)
                             </label>
-                            <select
-                                :name="`${isAset === 'ASET' && !isLandAsset && !isVehicleAsset ? 'asset_account_id' : '' }`"
+                            <x-select2.index
+                                x-bind:name="`${isAset === 'ASET' && !isLandAsset && !isVehicleAsset ? 'asset_account_id' : '' }`"
                                 id="selected-asset-account"
-                                class="form-select form-select-solid asset-accounts-select2"
-                                data-dropdown-parent="#modal-item"
-                            >
-                                <option></option>
-                            </select>
+                                class="form-select form-select-solid"
+                                elementSelector="asset-accounts-select2"
+                                parentElementIfExist="#modal-item"
+                            />
                         </div>
                     </div>
                 </div>
@@ -238,13 +238,7 @@
                     @endif
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
-                            <i class="ki-duotone ki-click fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                                <span class="path4"></span>
-                                <span class="path5"></span>
-                            </i>
+                            <x-icons.save/>
                             <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
                         </button>
                     </div>

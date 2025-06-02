@@ -196,7 +196,6 @@
                 async init() {
                     await this.getInitialInventoryBalances();
                     await select2('.branches-select2', 'Pilih Cabang', '/select2/branches-data');
-
                 },
                 async filter() {
                     this.buttonLoading = true;
@@ -261,7 +260,6 @@
                         this.isLoading = false;
                     }
                 },
-
                 async destroy() {
                     showConfirmModal("Anda yakin?", "data akan dihapus dan tidak akan dapat dikembalikan.", "Ya, Hapus!", async () => {
                         try {

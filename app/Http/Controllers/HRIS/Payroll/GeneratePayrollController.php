@@ -5,7 +5,6 @@ namespace App\Http\Controllers\HRIS\Payroll;
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Payroll\GeneratePayrollRequest;
-use App\Models\Attendances;
 use App\Models\GeneratePayroll;
 use App\Models\PayrollSchedule;
 use App\Models\User;
@@ -21,7 +20,6 @@ use Illuminate\View\View;
 
     public function __construct()
     {
-        $this->attendance = new Attendances();
         $this->attendanceSummaryService = new AttendanceSummaryService();
         $this->generatePayrollService = new GeneratePayrollService();
     }

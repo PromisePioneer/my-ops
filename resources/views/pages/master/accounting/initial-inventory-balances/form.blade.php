@@ -39,9 +39,7 @@
                                     name="branch_id"
                                     id="selected-branch"
                                     elementSelector="branches-select2"
-                                >
-                                    <option></option>
-                                </x-select2.index>
+                                />
                             </div>
                         @endif
                         <div class="col-md-4">
@@ -52,10 +50,12 @@
                         </div>
                         <div class="col-md-4">
                             <label for="date" class="required form-label">Supplier</label>
-                            <select name="supplier_id" id="selected-supplier"
-                                    class="form-select form-select-solid suppliers-select2">
-                                <option></option>
-                            </select>
+                            <x-select2.index
+                                class="form-select form-select-solid"
+                                name="supplier_id"
+                                id="selected-supplier"
+                                elementSelector="suppliers-select2"
+                            />
                         </div>
                     </div>
 
@@ -136,13 +136,7 @@
                 <div class="d-flex align-items-center justify-content-end p-4">
                     <button type="submit" class="btn btn-sm btn-light-primary"
                             :disabled="buttonLoading">
-                        <i class="ki-duotone ki-click fs-2">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                            <span class="path3"></span>
-                            <span class="path4"></span>
-                            <span class="path5"></span>
-                        </i>
+                        <x-icons.save/>
                         <span x-text="buttonLoading ? 'Loading...' : 'Simpan'"></span>
                     </button>
                 </div>
@@ -190,10 +184,14 @@
                     await select2('.items-select2', 'Pilih Barang', '/select2/goods-data', true, false, 'modal-item');
                     await select2('.unit-types-select2', 'Pilih Satuan', '/select2/unit-types-data', true, true);
                     await select2('.item-category-select2', 'Pilih Kategori Barang', '/select2/item-categories-data');
-                    await selectedValue('selected-branch', `/select2/selected-branch/${this.branchId}`);
-                    await selectedValue('selected-supplier', `/select2/selected-supplier/${this.supplierId}`);
-                    await selectedValue('selected-item', `/select2/selected-item/${this.itemId}`);
-                    await selectedValue('selected-stock-account', `/select2/selected-account/${this.stockAccountId}`);
+                },
+                async selectedSelect2Value() {
+                    if (this.initialInventoryBalanceId) {
+                        await selectedValue('selected-branch', `/select2/selected-branch/${this.branchId}`);
+                        await selectedValue('selected-supplier', `/select2/selected-supplier/${this.supplierId}`);
+                        await selectedValue('selected-item', `/select2/selected-item/${this.itemId}`);
+                        await selectedValue('selected-stock-account', `/select2/selected-account/${this.stockAccountId}`);
+                    }
                 },
                 async saveSupplier() {
                     this.buttonLoading = true;
