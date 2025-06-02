@@ -179,6 +179,7 @@ class IclockService
         if ($user) {
             $ifBranchDuri = $user?->branch_id === 2 ? WorkTime::find(14) : null;
             $ifBranchBengkalis = $user?->branch_id === 15 ? WorkTime::find(11) : null;
+            $ifBranchKualaTungkal = $user?->branch_id === 16 ? WorkTime::find(11) : null;
             // $isCleaningServicePku = $user->hasRole('Cleaning Service') ? WorkTime::find(15)?->id : null;
             $isEngineer = $user->hasAnyRole([
                 'Engineer',
@@ -189,7 +190,7 @@ class IclockService
             ]) ? WorkTime::find(12) : null;
         }
 
-        return $userShift ?? $ifBranchDuri ?? $ifBranchBengkalis ?? $isEngineer ?? WorkTime::find(11);
+        return $userShift ?? $ifBranchDuri ?? $ifBranchBengkalis ?? $ifBranchKualaTungkal ?? $isEngineer ?? WorkTime::find(11);
     }
 
 
@@ -241,6 +242,7 @@ class IclockService
         if ($user) {
             $ifBranchDuri = $user?->branch_id === 2 ? WorkTime::find(14)?->id : null;
             $ifBranchBengkalis = $user?->branch_id === 15 ? WorkTime::find(11)?->id : null;
+            $ifBranchKualaTungkal = $user?->branch_id === 16 ? WorkTime::find(11) : null;
             $isEngineer = $user->hasAnyRole([
                 'Engineer',
                 'Senior Engineer',
@@ -249,7 +251,7 @@ class IclockService
                 'Warehouse Security'
             ]) ? WorkTime::find(12)?->id : null;
         }
-        $shift = $shift->workTime?->id ?? $ifBranchDuri ?? $ifBranchBengkalis ?? $isEngineer ?? WorkTime::find(11)->id;
+        $shift = $shift->workTime?->id ?? $ifBranchDuri ?? $ifBranchBengkalis ?? $ifBranchKualaTungkal ?? $isEngineer ?? WorkTime::find(11)->id;
 
         $date = Carbon::parse($date);
 
