@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\Attendances;
+namespace App\Support\Attendances\WorkTime;
 
 use App\Models\WorkTime;
 use Illuminate\Http\Request;
