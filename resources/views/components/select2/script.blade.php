@@ -10,7 +10,7 @@
             tags: tags,
             language: {
                 noResults: () => {
-                    return `Data Tidak Ditemukan..
+                    return `Data Tidak Ditemukan.
                     ${modalId ?
                         `<a href=/'#' data-bs-toggle="modal" data-bs-target="#${modalId}">
                             Tambahkan terlebih dahulu

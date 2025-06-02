@@ -86,6 +86,7 @@ use Throwable;
      */
     public function edit(ItemCollection $itemCollection): JsonResponse
     {
+        $itemCollection->load('unitType');
         $this->authorize('update', $itemCollection);
         return response()->json($itemCollection);
     }
@@ -126,15 +127,17 @@ use Throwable;
     public function getGoods(Request $request)
     {
         $search = $request->input('search');
-        $goods = ItemCollection::search($search)->query(function ($query) {
-            $query->orderBy('name', 'asc');
-        })->get();
+        $goods = ItemCollection::with('unitType')
+            ->when(!empty($search), function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            });
 
-        return $goods->map(function ($item) {
+        return $goods->get()->map(function ($item) {
             return [
                 'id' => $item->id,
                 'asset_account_id' => $item->asset_account_id,
                 'must_have_code' => $item->must_have_code,
+                'unit_type_name' => $item->unitType->name,
                 'text' => $item->name
             ];
         });
@@ -144,16 +147,19 @@ use Throwable;
     public function getAssetItem(Request $request)
     {
         $search = $request->input('search');
-        $goods = ItemCollection::search($search)->query(function ($query) {
-            $query->where('type', 'ASET')->orderBy('name', 'asc');
-        })->get();
+        $goods = ItemCollection::with('unitType')
+            ->where('type', 'ASET')
+            ->when(!empty($search), function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            });
 
-        return $goods->map(function ($item) {
+        return $goods->get()->map(function ($item) {
             return [
                 'id' => $item->id,
                 'asset_account_id' => $item->asset_account_id,
                 'must_have_code' => $item->must_have_code,
-                'text' => $item->name
+                'unit_type_name' => $item->unitType->name,
+                'text' => $item->name,
             ];
         });
     }
@@ -161,9 +167,11 @@ use Throwable;
 
     public function selectedItem(ItemCollection $item): array
     {
+        $item->load('unitType');
         return [
             'id' => $item->id,
             'name' => $item->name,
+            'unit_type_name' => $item->unitType->name
         ];
     }
 

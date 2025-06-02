@@ -33,6 +33,7 @@ return new class extends Migration {
             $table->decimal('unit_price', 15, 4);
             $table->decimal('total_price', 15, 4);
             $table->text('detail');
+            $table->double('qty_in_meter')->nullable();
             $table->string('attachment');
             $table->boolean('status')->default(0);
             $table->timestamps();

@@ -49,6 +49,7 @@ use Throwable;
                 'created_at' => $query->created_at,
                 'created_by' => $query->createdBy->name,
                 'status' => $query->status,
+                'qty_in_meter' => $query->qty_in_meter,
             ];
         });
 
@@ -78,8 +79,6 @@ use Throwable;
                 $newStock = $this->stockStore($draftStock, $request);
                 if ($draftStock->transaction?->item?->type === 'ASET' || $draftStock->initialInventoryBalance?->item?->type === 'ASET') {
                     $unitPrice = $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance?->unit_price;
-
-
                     $asset = Asset::create([
                         'branch_id' => $draftStock->transaction?->branch_id ?? $draftStock->initialInventoryBalance?->branch_id,
                         'code' => $request->code,
@@ -90,9 +89,9 @@ use Throwable;
                         'price' => $unitPrice,
                     ]);
                     $this->itemCatalogStore($request, $draftStock, $newStock, null, $asset);
+                } else {
+                    $this->itemCatalogStore($request, $draftStock, $newStock);
                 }
-
-
             } else {
                 $unitPrice = $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance?->unit_price;
                 $stock->increment('qty');
@@ -108,6 +107,8 @@ use Throwable;
                         'price' => $unitPrice,
                     ]);
                     $this->itemCatalogStore($request, $draftStock, null, $stock, $asset);
+                } else {
+                    $this->itemCatalogStore($request, $draftStock, null, $stock);
                 }
             }
         });
@@ -130,6 +131,7 @@ use Throwable;
 
     public function itemCatalogStore($request, $draftStock, $newStock = null, $stock = null, $asset = null)
     {
+
         return ItemCatalog::create([
             'transaction_id' => $draftStock->transaction_id,
             'initial_balance_inventory_id' => $draftStock->initial_balance_inventory_id,
@@ -140,6 +142,7 @@ use Throwable;
             'asset_id' => $asset?->id,
             'condition' => $request->condition,
             'created_by' => $request->user()->id,
+            'qty_in_meter' => $draftStock->transaction?->qty_in_meter ?? $draftStock->initialInventoryBalance?->qty_in_meter
         ]);
     }
 

@@ -30,5 +30,26 @@ class UnitTypesSeeder extends Seeder
         DB::table('unit_types')->insert([
             'name' => 'ROLL',
         ]);
+
+
+        DB::table('unit_types')->insert([
+            'name' => 'Haspel',
+        ]);
+
+        DB::table('unit_types')->insert([
+            'name' => 'Gulung',
+        ]);
+
+        DB::table('unit_types')->insert([
+            'name' => 'Kotak',
+        ]);
+
+        DB::table('unit_types')->insert([
+            'name' => 'Unit',
+        ]);
+
+        DB::table('unit_types')->insert([
+            'name' => 'ROLL',
+        ]);
     }
 }

@@ -19,6 +19,7 @@ class ItemCatalog extends Model
         'status',
         'initial_balance_inventory_id',
         'asset_id',
+        'qty_in_meter'
     ];
 
     public function stock(): BelongsTo

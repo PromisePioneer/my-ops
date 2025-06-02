@@ -34,6 +34,7 @@ return new class extends Migration {
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->foreignId('asset_id')->nullable()->constrained('assets')->cascadeOnDelete();
+            $table->double('qty_in_meter')->nullable();
             $table->string('code');
             $table->enum('condition', ['Rusak', 'Baik', 'Diperbaiki']);
             $table->enum('status', ['Tersedia', 'Terpakai', 'Dibawa'])->default('Tersedia');

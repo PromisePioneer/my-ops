@@ -2,6 +2,7 @@
 @section('page-title', 'Master Operasional - Barang')
 @section('content')
     <div x-data="itemData()">
+        @include('pages.master.operational.items.form')
         @include('pages.master.operational.item-categories.description-drawer')
         <div class="d-flex flex-column flex-xl-row">
             <div class="flex-column flex-lg-row-auto w-100 w-lg-250px mb-10">
@@ -31,9 +32,6 @@
             </div>
             <div class="flex-lg-row-fluid ms-lg-10">
                 <div class="card card-xl-stretch mb-5 mb-xl-8">
-                    @include('pages.master.operational.items.form')
-                    @include('pages.master.operational.item-categories.form')
-                    @include('pages.master.common.unit-types.form')
                     <div class="card-header border-0 pt-6">
                         <div class="card-title">
                             <div class="d-flex align-items-center position-relative my-1">
@@ -47,7 +45,8 @@
                         <div class="card-toolbar">
                             @can('Tambah Data Daftar Barang')
                                 <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                                    <button id="item-drawer" class="btn btn-light-primary btn-sm" @click="add()">
+                                    <button data-bs-target="#modal-item" data-bs-toggle="modal"
+                                            class="btn btn-light-primary btn-sm" @click="add()">
                                         <x-icons.add-item/>
                                         Tambah
                                     </button>
@@ -133,7 +132,8 @@
                                                     x-text="item.type"></span>
                                             </td>
                                             <td colspan="2 ">
-                                                <p class="m-0" x-text="`Kelompok Harta : ${item.tangible_asset ?? '-'}`"></p>
+                                                <p class="m-0"
+                                                   x-text="`Kelompok Harta : ${item.tangible_asset ?? '-'}`"></p>
                                                 <a class="mb-4" href="#"
                                                    id="item_category_description_drawer"
                                                    @click="showItemCategoryDescription(item.category_id)"
@@ -142,7 +142,8 @@
                                             </td>
                                             <td x-text="item.unit_type_name"></td>
                                             <td>
-                                                <button id="item-drawer" class="btn btn-light-primary btn-sm"
+                                                <button data-bs-target="#modal-item" data-bs-toggle="modal"
+                                                        class="btn btn-light-primary btn-sm"
                                                         @click="edit(item.id)">
                                                     <i class="ki-duotone ki-pencil fs-2">
                                                         <span class="path1"></span>
@@ -170,10 +171,11 @@
             </div>
         </div>
     </div>
+    @include('components.select2.script')
     @include('components.toast')
 @endsection
 @push('script')
-    <script defer>
+    <script type="text/javascript">
         function itemData() {
             return {
                 editPermission: "{{ request()->user()->can('Edit Data Daftar Barang') }}",
@@ -195,17 +197,16 @@
                 search: '',
                 editVal: '',
                 itemCategoryDescription: '',
+                modal: new bootstrap.Modal(document.getElementById('modal-item')),
                 form: document.getElementById('form-item'),
-                itemCategoryModal: new bootstrap.Modal(document.getElementById('modal-item-category')),
-                itemCategoryForm: document.getElementById('form-item-category'),
-                unitTypeModal: new bootstrap.Modal(document.getElementById('modal-unit-type')),
-                unitTypeForm: document.getElementById('form-unit-type'),
                 formDelete: document.getElementById('form-delete'),
                 async init() {
-                    await this.getGoods();
                     await this.getItemCategories();
-                    await this.getUnitTypes();
-                    await this.getAssetAccounts();
+                    await this.getItems();
+                    await select2('.unit-types-select2', 'Pilih Satuan', '/select2/unit-types-data', true, true);
+                    await select2('#item-category-id-filter', 'Pilih Kategori', '/select2/item-categories-data', true, false);
+                    await select2('.item-category-select2', 'Pilih Kategori', '/select2/item-categories-data', true, false);
+                    await select2('.asset-accounts-select2', 'Pilih Akun Aset', '/select2/asset-accounts-data', true, false);
                 },
                 add() {
                     this.editVal = '';
@@ -214,7 +215,7 @@
                     $('#selected-category').val('').trigger('change');
                     $('#selected-unit-type').val('').trigger('change');
                 },
-                async getGoods() {
+                async getItems() {
                     this.isLoading = true;
                     try {
                         const resp = await axios.get('/master/operational/items/data');
