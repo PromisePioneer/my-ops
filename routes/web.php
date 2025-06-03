@@ -500,6 +500,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::prefix('initial-inventory-balances')->group(function () {
                 Route::get('/', [InitialInventoryBalanceController::class, 'index']);
                 Route::get('/data', [InitialInventoryBalanceController::class, 'data']);
+                Route::get('/create', [InitialInventoryBalanceController::class, 'create']);
+                Route::get('/edit/{initialInventoryBalance}', [InitialInventoryBalanceController::class, 'edit']);
                 Route::get('/search', [InitialInventoryBalanceController::class, 'search']);
                 Route::post('/', [InitialInventoryBalanceController::class, 'store']);
                 Route::post('/destroy', [InitialInventoryBalanceController::class, 'destroy']);
