@@ -171,6 +171,7 @@ use function App\Helper\formatDate;
             'credit_account_id' => $request->input('credit_account_id'),
             'created_by' => $request->user()->id,
             'qty_in_meter' => $request->qty_in_meter,
+            'supplier_id' => $request->input('supplier_id'),
             'attachment' => $this->handleUploadService->upload(
                 $request,
                 'documents/transaction/item-transactions/',
