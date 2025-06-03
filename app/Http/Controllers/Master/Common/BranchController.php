@@ -67,6 +67,7 @@ use Illuminate\View\View;
      */
     public function show(Branch $branch): JsonResponse
     {
+        $branch->load('parent');
         $this->authorize('update', $branch);
 
         return response()->json($branch);

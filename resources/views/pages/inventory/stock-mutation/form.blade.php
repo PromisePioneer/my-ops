@@ -1,7 +1,7 @@
 @extends('layouts.template')
 @section('content')
     <div x-data="generateStockMutation()">
-        @include('pages.inventory.goods.stocks.stock-mutation.drawer.item-catalog-details')
+        @include('pages.inventory.stock-mutation.drawer.item-catalog-details')
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
                 <a class="btn btn-info btn-sm mb-6" href="{{ url('/inventory/goods/stock') }}">Kembali</a>
