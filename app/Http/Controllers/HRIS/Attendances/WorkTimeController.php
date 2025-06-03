@@ -4,7 +4,6 @@ namespace App\Http\Controllers\HRIS\Attendances;
 
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ADMS\UserWorkTimeRequest;
 use App\Http\Requests\ADMS\WorkTimeRequest;
 use App\Models\User;
 use App\Models\WorkTime;

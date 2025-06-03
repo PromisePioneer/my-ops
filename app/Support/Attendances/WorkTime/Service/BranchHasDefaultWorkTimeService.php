@@ -3,6 +3,8 @@
 namespace App\Support\Attendances\WorkTime\Service;
 
 use AllowDynamicProperties;
+use App\Http\Requests\BranchHasDefaultWorkTimeRequest;
+use App\Models\BranchHasDefaultWorkTime;
 use App\Support\Attendances\WorkTime\DTO\BranchHasDefaultWorkTimeDTO;
 use App\Support\Attendances\WorkTime\Repositories\BranchHasDefaultWorkTimeRepository;
 use Illuminate\Http\Request;
@@ -43,7 +45,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
         $data = $workTime->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
-                'branch_name' => $item->branch,
+                'branch_name' => $item->branch->name,
                 'name' => $item->workTime->name,
             ];
         });
@@ -54,7 +56,21 @@ use Illuminate\Pagination\LengthAwarePaginator;
     }
 
 
-    public function store(Request $request): bool
+    public function store(BranchHasDefaultWorkTimeRequest $request): void
     {
+        BranchHasDefaultWorkTime::updateOrCreate([
+            'branch_id' => $request->branch_id,
+        ], [
+            'work_time_id' => $request->work_time_id
+        ]);
+    }
+
+
+    public function update(BranchHasDefaultWorkTime $branchHasDefaultWorkTime, BranchHasDefaultWorkTimeRequest $request): void
+    {
+        $branchHasDefaultWorkTime->update([
+            'work_time_id' => $request->work_time_id,
+            'branch_id' => $request->branch_id
+        ]);
     }
 }

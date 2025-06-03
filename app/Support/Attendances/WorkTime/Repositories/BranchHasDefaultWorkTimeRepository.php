@@ -15,4 +15,12 @@ class BranchHasDefaultWorkTimeRepository
                 $query->where('branch_id', $request->user()->branch_id);
             });
     }
+
+
+    public function getByUserBranchId(Request $request)
+    {
+        return BranchHasDefaultWorkTime::with('branch', 'workTime')
+            ->where('branch_id', $request->user()->branch_id)
+            ->get();
+    }
 }
