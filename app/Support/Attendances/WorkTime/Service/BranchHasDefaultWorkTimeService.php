@@ -5,7 +5,6 @@ namespace App\Support\Attendances\WorkTime\Service;
 use AllowDynamicProperties;
 use App\Http\Requests\BranchHasDefaultWorkTimeRequest;
 use App\Models\BranchHasDefaultWorkTime;
-use App\Support\Attendances\WorkTime\DTO\BranchHasDefaultWorkTimeDTO;
 use App\Support\Attendances\WorkTime\Repositories\BranchHasDefaultWorkTimeRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -31,6 +30,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
     public function search(Request $request)
     {
 
+        return response()->json();
     }
 
 
