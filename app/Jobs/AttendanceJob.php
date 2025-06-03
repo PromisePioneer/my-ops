@@ -6,7 +6,7 @@ use AllowDynamicProperties;
 use App\Models\AttendanceJobProgress;
 use App\Models\Attendances;
 use App\Models\FpDevice;
-use App\Support\Attendances\IclockService;
+use App\Support\Attendances\AttendanceSummary\IclockService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;

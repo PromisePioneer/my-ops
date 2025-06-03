@@ -5,7 +5,7 @@ namespace App\Http\Controllers\HRIS\Attendances;
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Models\FingerLog;
-use App\Support\Attendances\IclockService;
+use App\Support\Attendances\AttendanceSummary\IclockService;
 use Illuminate\Http\Request;
 use Throwable;
 

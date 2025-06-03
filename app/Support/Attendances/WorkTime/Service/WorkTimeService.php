@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\Attendances\WorkTime;
+namespace App\Support\Attendances\WorkTime\Service;
 
 use App\Models\WorkTime;
 use Illuminate\Http\Request;
@@ -32,7 +32,6 @@ class WorkTimeService
         $data = $workTime->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
-                'branch_name' => $item->branch,
                 'name' => $item->name,
                 'clock_in' => $item->clock_in,
                 'clock_out' => $item->clock_out,
@@ -73,6 +72,9 @@ class WorkTimeService
         ];
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function setGlobalDefaultWorkTime(WorkTime $workTime): void
     {
         DB::transaction(function () use ($workTime) {

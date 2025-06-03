@@ -21,8 +21,8 @@ use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\AttendanceManualRequestController;
 use App\Http\Controllers\BAAController;
+use App\Http\Controllers\BranchHasDefaultWorkTimeController;
 use App\Http\Controllers\DraftStockController;
-use App\Http\Controllers\StockController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
 use App\Http\Controllers\HRIS\Attendances\FpDevicesController;
@@ -79,6 +79,7 @@ use App\Http\Controllers\Master\Operational\ItemCategoryController;
 use App\Http\Controllers\Master\Operational\ItemCollectionController;
 use App\Http\Controllers\Master\Operational\PSBController;
 use App\Http\Controllers\Master\Operational\SupplierController;
+use App\Http\Controllers\StockController;
 use App\Http\Controllers\StockMutationController;
 use App\Http\Controllers\StockWithdrawalController;
 use App\Http\Controllers\StockWithdrawalItemController;
@@ -1011,6 +1012,13 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/detail/data/destroy', [WorkTimeController::class, 'destroyDetailWorktimeUser']);
             Route::get('/user/selected/{workTime}', [WorkTimeController::class, 'getSelectedUserWorkTime']);
             Route::post('/set-global-default-work-time/{workTime}', [WorkTimeController::class, 'setGlobalDefaultWorkTime']);
+
+
+            Route::prefix('/branch/detail')->group(function () {
+                Route::get('/', [BranchHasDefaultWorkTimeController::class, 'index']);
+                Route::get('/data', [BranchHasDefaultWorkTimeController::class, 'data']);
+                Route::get('/search', [BranchHasDefaultWorkTimeController::class, 'search']);
+            });
         });
 
         Route::prefix('/attendances-summary')->group(function () {
