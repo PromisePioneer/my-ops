@@ -12,7 +12,6 @@ return new class () extends Migration {
     {
         Schema::create('work_time', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('branch_id')->nullable()->constrained('branches');
             $table->string('name');
             $table->time('clock_in');
             $table->time('clock_out');

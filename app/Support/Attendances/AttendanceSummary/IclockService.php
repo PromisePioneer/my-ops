@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\Attendances;
+namespace App\Support\Attendances\AttendanceSummary;
 
 use App\Models\AttendanceSummary;
 use App\Models\DeviceLog;

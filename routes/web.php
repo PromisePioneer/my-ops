@@ -21,6 +21,7 @@ use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\AttendanceManualRequestController;
 use App\Http\Controllers\BAAController;
+use App\Http\Controllers\BranchHasDefaultWorkTimeController;
 use App\Http\Controllers\DraftStockController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
@@ -78,7 +79,6 @@ use App\Http\Controllers\Master\Operational\ItemCategoryController;
 use App\Http\Controllers\Master\Operational\ItemCollectionController;
 use App\Http\Controllers\Master\Operational\PSBController;
 use App\Http\Controllers\Master\Operational\SupplierController;
-use App\Http\Controllers\MustReorderStockController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\StockMutationController;
 use App\Http\Controllers\StockWithdrawalController;
@@ -124,7 +124,6 @@ Route::get('/', function () {
     return redirect('home');
 });
 
-
 Auth::routes();
 
 
@@ -148,10 +147,9 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/data', [TransactionController::class, 'data']);
         Route::get('/filter', [TransactionController::class, 'filter']);
         Route::get('/search', [TransactionController::class, 'search']);
-        Route::get('/create', [TransactionController::class, 'create']);
         Route::post('/', [TransactionController::class, 'store']);
         Route::get('/item-transaction-qty-in-this-month', [TransactionController::class, 'getItemTransactionQtyInThisMonth']);
-        Route::get('edit/{transaction}', [TransactionController::class, 'edit']);
+        Route::get('/{transaction}', [TransactionController::class, 'edit']);
         Route::post('/{transaction}', [TransactionController::class, 'update']);
         Route::post('/lock-transaction/{transaction}', [TransactionController::class, 'lockTransaction']);
         Route::post('/confirm/{transaction}', [TransactionController::class, 'confirm']);
@@ -482,33 +480,30 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::post('/destroy', [AssetController::class, 'destroy']);
                 Route::get('/', [AssetController::class, 'index']);
                 Route::get('/data', [AssetController::class, 'data']);
-                Route::get('/create', [AssetController::class, 'create']);
                 Route::get('/search', [AssetController::class, 'search']);
-                Route::get('/filter', [AssetController::class, 'filter']);
-                Route::get('/edit/{asset}', [AssetController::class, 'edit']);
                 Route::get('/branch/data', [AssetController::class, 'getBranchData']);
                 Route::get('/debit-account/data', [AssetController::class, 'getDebitAccount']);
                 Route::get('/credit-account/data', [AssetController::class, 'getCreditAccount']);
                 Route::get('/account/selected/{asset}', [AssetController::class, 'selectedAccount']);
                 Route::get('/branch/selected/{asset}', [AssetController::class, 'selectedBranch']);
                 Route::post('/', [AssetController::class, 'store']);
+                Route::get('/{asset}', [AssetController::class, 'edit']);
                 Route::post('/update/{asset}', [AssetController::class, 'update']);
                 Route::post('/confirm/{asset}', [AssetController::class, 'confirm']);
                 Route::get('/detail/{asset}', [AssetController::class, 'detail']);
                 Route::get('/detail/data/{asset}', [AssetController::class, 'depreciationData']);
+                Route::post('/import', [AssetController::class, 'import']);
             });
 
             Route::prefix('initial-inventory-balances')->group(function () {
                 Route::get('/', [InitialInventoryBalanceController::class, 'index']);
                 Route::get('/data', [InitialInventoryBalanceController::class, 'data']);
                 Route::get('/search', [InitialInventoryBalanceController::class, 'search']);
-                Route::get('/filter', [InitialInventoryBalanceController::class, 'filter']);
-                Route::get('/create', [InitialInventoryBalanceController::class, 'create']);
-                Route::post('/store', [InitialInventoryBalanceController::class, 'store']);
-                Route::get('/edit/{initialInventoryBalance}', [InitialInventoryBalanceController::class, 'edit']);
+                Route::post('/', [InitialInventoryBalanceController::class, 'store']);
                 Route::post('/destroy', [InitialInventoryBalanceController::class, 'destroy']);
                 Route::post('/confirm', [InitialInventoryBalanceController::class, 'confirm']);
-                Route::post('/update/{initialInventoryBalance}', [InitialInventoryBalanceController::class, 'update']);
+                Route::get('/{initialInventoryBalance}', [InitialInventoryBalanceController::class, 'edit']);
+                Route::post('/{initialInventoryBalance}', [InitialInventoryBalanceController::class, 'update']);
             });
         });
 
@@ -539,7 +534,6 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/filter', [ItemCollectionController::class, 'filter']);
                 Route::get('/search', [ItemCollectionController::class, 'search']);
                 Route::post('/', [ItemCollectionController::class, 'store']);
-                Route::get('/non-building-group-details', [ItemCollectionController::class, 'nonBuildingGroupDetails']);
                 Route::post('/destroy', [ItemCollectionController::class, 'destroy']);
                 Route::get('/{itemCollection}', [ItemCollectionController::class, 'edit']);
                 Route::post('/update/{itemCollection}', [ItemCollectionController::class, 'update']);
@@ -707,6 +701,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/show/{itemCollection}', [StockController::class, 'show']);
             Route::get('/detail/{stock}', [StockController::class, 'detail']);
             Route::get('/branch/data/{itemCollection}', [StockController::class, 'getMainBranchWithStock']);
+            Route::get('/branch/data/{itemCollection}', [StockController::class, 'getMainBranchWithStock']);
             Route::get('/stock-based-on-draft-stock/{draftStock}', [StockController::class, 'findByDraftStockAndItemName']);
             Route::get('/must-reorder', [StockController::class, 'getMustReorderStocks']);
             Route::get('/{branch}/{itemCollection}', [StockController::class, 'findByItemAndBranch']);
@@ -727,7 +722,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/stock-withdrawal-items/{stockWithdrawal}', [StockWithdrawalController::class, 'getStockWithdrawalItems']);
             Route::get('/stock-withdrawal-item/{stockWithdrawalItem}', [StockWithdrawalController::class, 'getStockWithdrawalItem']);
             Route::post('/stock-withdrawal-item/return/{stockWithdrawalItem}', [StockWithdrawalController::class, 'returningItems']);
-            Route::get('/stock-withdrawal-item/consumed-or-applied-stock/{stockWithdrawal}', [StockWithdrawalItemController::class, 'getConsumedOrAppliedStock']);
         });
         Route::prefix('/stock-withdrawal-items')->group(function () {
             Route::get('/', [StockWithdrawalItemController::class, 'index']);
@@ -738,17 +732,8 @@ Route::group(['middleware' => ['auth']], static function () {
         });
 
 
-        Route::prefix('/stock-mutations')->group(function () {
-            Route::get('/', [StockMutationController::class, 'index']);
-            Route::get('/data', [StockMutationController::class, 'data']);
-            Route::get('/create', [StockMutationController::class, 'create']);
-            Route::post('/store', [StockMutationController::class, 'store']);
-            Route::post('/destroy', [StockMutationController::class, 'destroy']);
-            Route::get('/show/{stockMutation}', [StockMutationController::class, 'show']);
-            Route::post('/send-item/{stockMutation}', [StockMutationController::class, 'sendItem']);
-            Route::post('/cancel-delivery/{stockMutation}', [StockMutationController::class, 'cancelDelivery']);
-            Route::get('/bast-document/{stockMutation}', [StockMutationController::class, 'bastDocument']);
-            Route::post('/receive-delivery/{stockMutation}', [StockMutationController::class, 'receiveItem']);
+        Route::prefix('/stock-mutation')->group(function () {
+            Route::get('/create/{itemCollection}', [StockMutationController::class, 'create']);
         });
         Route::prefix('draft-stocks')->group(function () {
             Route::get('/', [DraftStockController::class, 'index']);
@@ -769,12 +754,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/generate-code/{draftStock}', [ItemCatalogController::class, 'generateAutomaticItemCode']);
             Route::get('/{itemCatalog}', [ItemCatalogController::class, 'edit']);
             Route::post('/destroy/{itemCatalog}', [ItemCatalogController::class, 'destroy']);
-        });
-
-
-        Route::prefix('/must-reorder-stocks')->group(function () {
-            Route::get('/', [MustReorderStockController::class, 'index']);
-            Route::get('/data', [MustReorderStockController::class, 'data']);
         });
     });
 
@@ -1033,6 +1012,13 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/detail/data/destroy', [WorkTimeController::class, 'destroyDetailWorktimeUser']);
             Route::get('/user/selected/{workTime}', [WorkTimeController::class, 'getSelectedUserWorkTime']);
             Route::post('/set-global-default-work-time/{workTime}', [WorkTimeController::class, 'setGlobalDefaultWorkTime']);
+
+
+            Route::prefix('/branch/detail')->group(function () {
+                Route::get('/', [BranchHasDefaultWorkTimeController::class, 'index']);
+                Route::get('/data', [BranchHasDefaultWorkTimeController::class, 'data']);
+                Route::get('/search', [BranchHasDefaultWorkTimeController::class, 'search']);
+            });
         });
 
         Route::prefix('/attendances-summary')->group(function () {
@@ -1326,10 +1312,6 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/user-has-areas-data', [UserController::class, 'getUserHasArea']);
         Route::get('/suppliers-data', [SupplierController::class, 'getSuppliers']);
         Route::get('/selected-supplier/{supplier}', [SupplierController::class, 'selectedSupplier']);
-        Route::get('/asset-items-data', [ItemCollectionController::class, 'getDepreciationAssetOrSellable']);
-        Route::get('/stocker-by-branch-data', [UserController::class, 'getStockerByBranchId']);
-        Route::get('/user-by-branch-data', [UserController::class, 'getUserByBranchId']);
-        Route::get('/asset-items-data', [ItemCollectionController::class, 'getAssetItem']);
 
     });
 
