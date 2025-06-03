@@ -73,7 +73,7 @@
                                                     class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
                                                     <input class="form-check-input" type="checkbox"
                                                            :value="permission.name"
-                                                           :checked="selectedPermissions.includes(permission.name)"
+                                                           :checked="selectedCheckBox.includes(permission.name)"
                                                            name="permission[]"
                                                            multiple
                                                     >
@@ -150,6 +150,7 @@
                     try {
                         const resp = await axios.get(`/master/common/roles/permissions/data/selected/${this.id}`);
                         this.selectedPermissions = resp.data;
+                        this.selectedCheckBox = [...this.selectedPermissions];
                     } catch (e) {
                         console.log(e);
                     }

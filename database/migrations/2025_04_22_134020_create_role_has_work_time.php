@@ -10,10 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('role_has_work_time', function (Blueprint $table) {
+        Schema::create('role_has_work_times', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('work_time_id')->constrained('work_time')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('role_id')->constrained('roles')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('work_time_id')
+                ->constrained('work_time')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->timestamps();
         });
     }
