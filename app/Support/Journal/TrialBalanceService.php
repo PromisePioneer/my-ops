@@ -20,7 +20,7 @@ class TrialBalanceService
 
     public function query(): Builder
     {
-        return Account::with('children', 'accountTransaction')->whereNull('parent_id');
+        return Account::with('children')->whereNull('parent_id');
     }
 
     public function formattedData(Builder $accounts, ?Request $request = null): Collection
@@ -54,7 +54,9 @@ class TrialBalanceService
 
     public function getFilteredTransactionSum($account, $type, ?Request $request): float
     {
-        $transactions = $account->accountTransaction()->where('entries_type', $type);
+        $transactions = $account->accountTransaction()->where('entries_type', $type)->whereHas('account', function ($query) use ($type) {
+            $query->where('trial_balance_type', $type);
+        })->whereBetween('date', [Carbon::now()->subYear()->endOfYear()->firstOfMonth()->format('Y-m-d'), Carbon::now()->endOfYear()->lastOfMonth()->format('Y-m-d')]);
 
         if ($request?->branch_id) {
             $transactions->where('branch_id', $request->branch_id);
@@ -63,12 +65,13 @@ class TrialBalanceService
         if ($request?->year) {
             $transactions->whereBetween('date', [
                 Carbon::parse($request->year)->subYear()->endOfYear()->firstOfMonth()->format('Y-m-d'),
-                $request->year
+                Carbon::parse($request->year)->endOfYear()->lastOfMonth()->format('Y-m-d'),
             ]);
+
         }
 
         if ($request?->month) {
-            $transactions->whereMonth('date', $request->month);
+            $transactions->whereMonth('date', $request->month)->whereYear('date', $request->year);
         }
 
         return $transactions->sum('amount');
@@ -76,36 +79,9 @@ class TrialBalanceService
 
     public function filter(Request $request): array
     {
-        $branch = $request->input('branch_id');
-        $year = $request->input('year');
-        $month = $request->input('month');
 
         $query = $this->query();
 
-        if ($branch) {
-            $query->orWhereHas('accountTransaction', function (Builder $query) use ($branch) {
-                $query->where('branch_id', $branch ?? null);
-            });
-        }
-
-        if ($year) {
-            $query->orWhereHas('accountTransaction', function (Builder $query) use ($year) {
-                $query->whereYear('date', $year);
-            });
-        }
-
-        if ($month) {
-            $query->orWhereHas('accountTransaction', function (Builder $query) use ($month) {
-                $query->whereMonth('date', $month);
-            });
-        }
-
-        if ($year && $month) {
-            $query->orWhereHas('accountTransaction', function (Builder $query) use ($year, $month) {
-                $query->whereYear('date', $year)
-                    ->whereMonth('date', $month);
-            });
-        }
 
         return [
             'trial_balance' => $this->formattedData($query, $request),
