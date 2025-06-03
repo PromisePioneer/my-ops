@@ -262,7 +262,7 @@ use function App\Helper\formatDate;
             $branch->parent->id,
             $transaction->detail,
             $transaction->credit_account_id,
-            $transaction->total_price,
+            $transaction->supplier->tax_type === 'PKP' ? $transaction->total_price + $ppnTotal : $transaction->total_price,
             $transaction->id
         );
 
