@@ -5,8 +5,6 @@ namespace App\Support\Attendances\AttendanceSummary;
 use AllowDynamicProperties;
 use App\Models\EmployeeSchedule;
 use App\Models\WeekHoliday;
-use App\Support\Attendances\AttendanceQueryFilter;
-use App\Support\Attendances\AttendancesACLFilter;
 use App\Support\Attendances\EmployeeSchedule\Repository\EmployeeScheduleRepository;
 use App\Support\Attendances\Repository\AttendancesSummaryRepository;
 use App\Support\Attendances\WeekHoliday\Repository\WeekHolidayRepository;

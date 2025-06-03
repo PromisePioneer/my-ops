@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\Attendances;
+namespace App\Support\Attendances\AttendanceSummary;
 
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;
