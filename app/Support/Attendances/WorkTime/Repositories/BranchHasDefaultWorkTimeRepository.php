@@ -23,4 +23,10 @@ class BranchHasDefaultWorkTimeRepository
             ->where('branch_id', $request->user()->branch_id)
             ->get();
     }
+
+    public function searchQuery(Request $request)
+    {
+        return BranchHasDefaultWorkTime::join('branches', 'branches.id', '=', 'branch_has_default_work_times.branch_id')
+            ->join('work_time', 'work_time.id', '=', 'branch_has_default_work_time.work_time_id');
+    }
 }

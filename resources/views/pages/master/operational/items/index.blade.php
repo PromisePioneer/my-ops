@@ -172,7 +172,6 @@
         </div>
     </div>
     @include('components.select2.script')
-    @include('components.select2.index')
     @include('components.toast')
 @endsection
 @push('script')
