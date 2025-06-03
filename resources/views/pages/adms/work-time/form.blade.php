@@ -19,32 +19,7 @@
                                        placeholder="Nama" :value="editVal.name"/>
                             </div>
                         </div>
-                        <div class="col-md-6" x-show="placement === null || placement === 'Pusat'" x-transition x-cloak>
-                            <div class="mb-10">
-                                <label for="name" class="required form-label">Penempatan Jam Kerja</label>
-                                <select name="placement" id="" x-model="placement"
-                                        class="form-select form-select-solid">
-                                    <option value="Pusat">Pusat</option>
-                                    <option value="Cabang">Cabang</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6" x-show="placement === 'Cabang'" x-transition x-cloak>
-                            <div class="mb-10">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <label for="name" class="required form-label me-2">Cabang</label>
-                                    <label type="button" class="btn btn-link btn-sm p-0" @click="placement = 'Pusat'">
-                                        <i>Ganti ke pusat ?</i>
-                                    </label>
-                                </div>
-                                <select :name="`${placement === 'Cabang' ? 'branch_id' : ''}`" id="branch_id"
-                                        class="form-select form-select-solid main-branches-select2">
-                                    <option></option>
-                                </select>
-                            </div>
-                        </div>
                     </div>
-
 
                     <div class="row">
                         <div class="col-lg-6">

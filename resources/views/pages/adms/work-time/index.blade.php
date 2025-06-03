@@ -3,7 +3,7 @@
 @section('breadcrumbs', 'Data Absensi - Pengaturan Jam Kerja')
 @section('content')
 
-    <div x-data="manageShiftData ()">
+    <div x-data="manageShiftData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             @include('pages.adms.work-time.form')
             <div class="card-header border-0 pt-6">
@@ -18,13 +18,13 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                        <a href="{{ url('adms/work-time/branch') }}" class="btn btn-light-info btn-sm me-2">
+                        <a href="{{ url('adms/work-time/branch/detail') }}" class="btn btn-light-info btn-sm me-2">
                             <x-icons.electronic-clock/>
                             Jam Kerja Cabang
                         </a>
                         <button type="button" class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                 data-bs-target="#modal-work-time">
-                            <x-icons.plus/>
+                            <x-icons.add-item/>
                             Tambah
                         </button>
                     </div>

@@ -32,6 +32,7 @@ class WorkTimeService
         $data = $workTime->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
+                'branch_name' => $item->branch,
                 'name' => $item->name,
                 'clock_in' => $item->clock_in,
                 'clock_out' => $item->clock_out,
@@ -58,7 +59,7 @@ class WorkTimeService
         return $workTimes->map(function ($item) {
             return [
                 'id' => $item->id,
-                'text' => $item->name,
+                'text' => "{$item->name} ({$item->clock_in} - {$item->clock_out})",
             ];
         })->toArray();
     }
@@ -72,9 +73,6 @@ class WorkTimeService
         ];
     }
 
-    /**
-     * @throws \Throwable
-     */
     public function setGlobalDefaultWorkTime(WorkTime $workTime): void
     {
         DB::transaction(function () use ($workTime) {

@@ -3,6 +3,36 @@
 @section('breadcrumbs', 'Data Absensi - Pengaturan Jam Kerja - Kantor Cabang')
 @section('content')
     <div x-data="branchDefaultWorkTimeData()">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3 class="card-title">Informasi</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 fs-5">
+                        <ol>
+                            <li class="text-danger">
+                                <i>
+                                    Jika pengaturan jam kerja kantor cabang tidak diatur, maka akan menggunakan
+                                    pengaturan jam kerja default yaitu pagi (08:00 - 17:00)
+                                </i>
+                            </li>
+                            <li class="text-danger">
+                                <i>
+                                    Jam kerja kantor cabang akan berlaku untuk semua karyawan yang ada di cabang,
+                                    jadi jika
+                                    ingin mengatur jam
+                                    kerja untuk karyawan tertentu, maka harus diatur di menu pengaturan jadwal
+                                    libur,
+                                </i>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div class="card card-xl-stretch mb-5 mb-xl-8">
             @include('pages.adms.work-time.branch.form')
             <div class="card-header border-0 pt-6">
@@ -16,17 +46,11 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
-                    <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                        <button type="button" class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#modal-work-time">
-                            <i class="ki-duotone ki-message-add fs-2">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                            </i>
-                            Tambah
-                        </button>
-                    </div>
+                    <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#modal-branch-work-time">
+                        <x-icons.add-item/>
+                        Tambah
+                    </button>
                 </div>
             </div>
             <div class="card-body py-3">
@@ -56,11 +80,12 @@
                                 </th>
                                 <th class="min-w-125px">Cabang</th>
                                 <th class="min-w-125px">Jam Kerja Default</th>
+                                <th class="min-w-125px">Actions</th>
                             </thead>
                             <tbody class=" fw-bold text-center">
                             <template x-if="isLoading">
                                 <tr>
-                                    <td colspan="9">
+                                    <td colspan="4">
                                         <div style="text-align: center;">
                                             <div class="spinner-border" role="status">
                                                 <span class="visually-hidden">Loading...</span>
@@ -71,7 +96,7 @@
                             </template>
                             <template x-if="!isLoading && shifts.data?.length === 0">
                                 <tr>
-                                    <td colspan="9">
+                                    <td colspan="4">
                                         <center>Data Tidak Ditemukan</center>
                                     </td>
                                 </tr>
@@ -85,23 +110,24 @@
                                                    :id="'checkbox-' + shift.id"/>
                                         </div>
                                     </td>
+                                    <td x-text="shift.branch_name"></td>
+                                    <td x-text="shift.name"></td>
                                     <td>
-                                        <a href="#" x-text="shift.name"></a>
-                                    </td>
-                                    <td x-text="`${shift.clock_in} - ${shift.clock_out}`"></td>
-                                    <td x-text="`${shift.time_to_checkin} - ${shift.end_time_to_checkin}`"></td>
-                                    <td x-text="`${shift.time_to_checkout} - ${shift.end_time_to_checkout}`"></td>
-                                    <td>
-                                        <input type="checkbox" class="form-check-input"
-                                               :checked="shift.is_default === 1"
-                                               @click="setGlobalDefaultWorkTime(shift.id)">
+                                        <button class="btn btn-light-primary btn-sm" @click="edit(shift.id)"
+                                                data-bs-target="#modal-branch-work-time" data-bs-toggle="modal">
+                                            <x-icons.edit/>
+                                        </button>
                                     </td>
                                 </tr>
                             </template>
                             </tbody>
                         </table>
                     </div>
-                    <div class="d-flex justify-content-end align-items-center mt-4">
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a href="{{ url('adms/work-time/') }}" class="btn btn-light-danger btn-sm">
+                            <x-icons.back/>
+                            Kembali
+                        </a>
                         <ul class="pagination">
                             <template x-for="pagination in shifts?.links">
                                 <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
@@ -116,7 +142,8 @@
             </div>
         </div>
     </div>
-    @include('components.select2')
+    @include('components.select2.script')
+    @include('components.toast')
 @endsection
 @push('script')
     <script>
@@ -125,10 +152,17 @@
                 isLoading: true,
                 shifts: [],
                 selectedCheckBox: [],
+                editVal: '',
+                buttonLoading: false,
                 selectAll: false,
                 singleChecked: false,
                 search: '',
+                formDelete: document.getElementById('form-delete'),
+                form: document.getElementById('form-branch-work-time'),
+                modalForm: new bootstrap.Modal(document.getElementById('modal-branch-work-time')),
                 async init() {
+                    await select2('.main-branches-select2', 'Pilih Cabang', '/select2/main-branches-data');
+                    await select2('.work-times-select2', 'Pilih Jam Kerja', '/select2/work-times-data');
                     await this.getShiftsData();
                 },
                 async getShiftsData() {
@@ -141,6 +175,27 @@
                     } finally {
                         this.isLoading = false;
                     }
+                },
+                async save() {
+                    this.buttonLoading = true;
+                    try {
+                        await axios.post('/adms/work-time/branch/detail/store', new FormData(this.form));
+                        await showAlert('success', 'Data berhasil disimpan');
+                        this.form.reset();
+                        this.modalForm.hide();
+                        await this.init();
+                    } catch (error) {
+                        const respError = error.response.data.errors;
+                        Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                    } finally {
+                        this.buttonLoading = false;
+                    }
+                },
+                async edit(id) {
+                    const resp = await axios.get(`/adms/work-time/branch/detail/edit/${id}`);
+                    this.editVal = resp.data;
+                    await selectedValue('selected-main-branch', `/select2/selected-branch/${this.editVal.branch_id}`);
+                    await selectedValue('selected-work-time', `/select2/selected-work-time/${this.editVal.work_time_id}`);
                 }
             }
         }
