@@ -738,8 +738,15 @@ Route::group(['middleware' => ['auth']], static function () {
         });
 
 
-        Route::prefix('/stock-mutation')->group(function () {
-            Route::get('/create/{itemCollection}', [StockMutationController::class, 'create']);
+        Route::prefix('/stock-mutations')->group(function () {
+            Route::get('/', [StockMutationController::class, 'index']);
+            Route::get('/data', [StockMutationController::class, 'data']);
+            Route::get('/search', [StockMutationController::class, 'search']);
+            Route::get('/filter', [StockMutationController::class, 'filter']);
+            Route::get('/create', [StockMutationController::class, 'create']);
+            Route::post('/', [StockMutationController::class, 'store']);
+            Route::get('/show/{stockMutation}', [StockMutationController::class, 'show']);
+            Route::post('/destroy', [StockMutationController::class, 'destroy']);
         });
         Route::prefix('draft-stocks')->group(function () {
             Route::get('/', [DraftStockController::class, 'index']);
