@@ -3,7 +3,7 @@
 namespace App\Support\Attendances\AttendanceSummary;
 
 use App\Models\AttendanceSummary;
-use App\Models\BranchHasDefaultWorkTime;
+use App\Models\BranchDefaultWorkTime;
 use App\Models\DeviceLog;
 use App\Models\EmployeeSchedule;
 use App\Models\FingerLog;
@@ -176,7 +176,7 @@ class IclockService
 
         if ($user) {
 
-            $ifBranchHasUniversalWorkTime = BranchHasDefaultWorkTime::where('branch_id', $user->branch_id)->first()?->work_time_id;
+            $ifBranchHasUniversalWorkTime = BranchDefaultWorkTime::where('branch_id', $user->branch_id)->first()?->work_time_id;
             $ifHasBranchWorkTime = !empty($ifBranchHasUniversalWorkTime) ? WorkTime::find($ifBranchHasUniversalWorkTime) : null;
             $isEngineer = $user->hasAnyRole([
                 'Engineer',
@@ -184,10 +184,10 @@ class IclockService
                 'KU Engineer',
                 'Quality Control Staff',
                 'Warehouse Security'
-            ]) ? WorkTime::find(12) : null;
+            ]) ? WorkTime::find('name', 'Lapangan') : null;
         }
 
-        return $userShift ?? $ifHasBranchWorkTime ?? $isEngineer ?? WorkTime::find(11);
+        return $userShift ?? $ifHasBranchWorkTime ?? $isEngineer ?? WorkTime::where('name', 'Pagi')->first();
     }
 
 
@@ -237,18 +237,17 @@ class IclockService
         $user = User::with('branch')->where('absent_id', $attendanceData['employee_id'])->first();
 
         if ($user) {
-            $ifBranchDuri = $user?->branch_id === 2 ? WorkTime::find(14)?->id : null;
-            $ifBranchBengkalis = $user?->branch_id === 15 ? WorkTime::find(11)?->id : null;
-            $ifBranchKualaTungkal = $user?->branch_id === 16 ? WorkTime::find(11) : null;
+            $ifBranchHasUniversalWorkTime = BranchDefaultWorkTime::where('branch_id', $user->branch_id)->first()?->work_time_id;
+            $ifHasBranchWorkTime = !empty($ifBranchHasUniversalWorkTime) ? WorkTime::find($ifBranchHasUniversalWorkTime)->id : null;
             $isEngineer = $user->hasAnyRole([
                 'Engineer',
                 'Senior Engineer',
                 'KU Engineer',
                 'Quality Control Staff',
                 'Warehouse Security'
-            ]) ? WorkTime::find(12)?->id : null;
+            ]) ? WorkTime::where('name', 'Lapangan')->first()?->id : null;
         }
-        $shift = $shift->workTime?->id ?? $ifBranchDuri ?? $ifBranchBengkalis ?? $ifBranchKualaTungkal ?? $isEngineer ?? WorkTime::find(11)->id;
+        $shift = $shift->workTime?->id ?? $ifHasBranchWorkTime ?? $isEngineer ?? WorkTime::where('name', 'Pagi')->first()?->id;
 
         $date = Carbon::parse($date);
 

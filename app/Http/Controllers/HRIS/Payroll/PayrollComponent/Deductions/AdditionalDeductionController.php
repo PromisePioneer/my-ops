@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AdditionalDeductionRequest;
 use App\Models\AdditionalDeduction;
 use App\Models\User;
-use App\Support\AdditionalDeductionService;
+use App\Support\UserDeduction\AdditionalDeductionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

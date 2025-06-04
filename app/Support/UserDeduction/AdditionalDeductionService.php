@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support;
+namespace App\Support\UserDeduction;
 
 use App\Models\AdditionalDeduction;
 use Illuminate\Http\Request;

@@ -21,7 +21,7 @@ use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\AttendanceManualRequestController;
 use App\Http\Controllers\BAAController;
-use App\Http\Controllers\BranchHasDefaultWorkTimeController;
+use App\Http\Controllers\BranchDefaultWorkTimeController;
 use App\Http\Controllers\DraftStockController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
@@ -1017,11 +1017,11 @@ Route::group(['middleware' => ['auth']], static function () {
         });
 
         Route::prefix('/work-time-settings')->group(function () {
-            Route::get('/', [BranchHasDefaultWorkTimeController::class, 'index']);
-            Route::get('/data', [BranchHasDefaultWorkTimeController::class, 'data']);
-            Route::get('/search', [BranchHasDefaultWorkTimeController::class, 'search']);
-            Route::get('/edit/{branch?}/{workTime?}', [BranchHasDefaultWorkTimeController::class, 'edit']);
-            Route::post('/store', [BranchHasDefaultWorkTimeController::class, 'store']);
+            Route::get('/', [BranchDefaultWorkTimeController::class, 'index']);
+            Route::get('/data', [BranchDefaultWorkTimeController::class, 'data']);
+            Route::get('/search', [BranchDefaultWorkTimeController::class, 'search']);
+            Route::get('/edit/{branch?}/{workTime?}', [BranchDefaultWorkTimeController::class, 'edit']);
+            Route::post('/store', [BranchDefaultWorkTimeController::class, 'store']);
         });
 
 

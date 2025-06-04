@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
-use App\Models\BranchHasDefaultWorkTime;
+use App\Models\BranchDefaultWorkTime;
 use App\Models\Master\Common\Branch;
 use App\Models\Role;
 use App\Models\WorkTime;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class BranchHasDefaultWorkTimeSeeder extends Seeder
+class BranchDefaultWorkTimeSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -28,7 +28,7 @@ class BranchHasDefaultWorkTimeSeeder extends Seeder
 
         foreach ($branches as $branch) {
             foreach ($role as $roleName) {
-                BranchHasDefaultWorkTime::create([
+                BranchDefaultWorkTime::create([
                     'branch_id' => $branch->id,
                     'role_id' => Role::where('name', $roleName)->first()->id,
                     'work_time_id' => WorkTime::where('name', 'Pagi')->first()->id,

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support;
+namespace App\Support\IncomeTransaction;
 
 use App\Http\Requests\BaaRequest;
 use App\Models\BAA;

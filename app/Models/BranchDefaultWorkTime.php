@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class BranchHasDefaultWorkTime extends Model
+class BranchDefaultWorkTime extends Model
 {
-    protected $table = 'branch_has_default_work_time';
+    protected $table = 'branch_default_work_time';
     protected $fillable = [
         'branch_id',
         'work_time_id',
@@ -35,6 +35,6 @@ class BranchHasDefaultWorkTime extends Model
 
     public function branchHasDefaultWorkTime(): HasMany
     {
-        return $this->hasMany(BranchHasDefaultWorkTime::class, 'branch_id');
+        return $this->hasMany(BranchDefaultWorkTime::class, 'branch_id');
     }
 }

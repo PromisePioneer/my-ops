@@ -3,7 +3,7 @@
 namespace App\Models\Master\Common;
 
 use App\Models\AccountTransaction;
-use App\Models\BranchHasDefaultWorkTime;
+use App\Models\BranchDefaultWorkTime;
 use App\Models\Stock;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -61,7 +61,7 @@ class Branch extends Model
 
     public function branchHasDefaultWorkTime(): HasMany
     {
-        return $this->hasMany(BranchHasDefaultWorkTime::class, 'branch_id');
+        return $this->hasMany(BranchDefaultWorkTime::class, 'branch_id');
     }
 
 }
