@@ -1015,6 +1015,16 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/', [NationalHolidayController::class, 'generateHoliday']);
             Route::get('/search', [NationalHolidayController::class, 'search']);
         });
+
+        Route::prefix('/work-time-settings')->group(function () {
+            Route::get('/', [BranchHasDefaultWorkTimeController::class, 'index']);
+            Route::get('/data', [BranchHasDefaultWorkTimeController::class, 'data']);
+            Route::get('/search', [BranchHasDefaultWorkTimeController::class, 'search']);
+            Route::get('/edit/{branch?}/{workTime?}', [BranchHasDefaultWorkTimeController::class, 'edit']);
+            Route::post('/store', [BranchHasDefaultWorkTimeController::class, 'store']);
+        });
+
+
         Route::prefix('/fp-devices')->group(function () {
             Route::get('/', [FpDevicesController::class, 'index']);
             Route::get('/data', [FpDevicesController::class, 'data']);
