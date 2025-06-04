@@ -12,7 +12,14 @@ return new class extends Migration {
     {
         Schema::create('branch_has_default_work_time', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('branch_id')->constrained('branches')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('branch_id')
+                ->constrained('branches')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('role_id')
+                ->constrained('roles')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->foreignId('work_time_id')
                 ->constrained('work_time')
                 ->cascadeOnDelete()

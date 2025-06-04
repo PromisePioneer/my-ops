@@ -104,7 +104,7 @@
                 @canany(['Lihat Menu Cabang', 'Lihat Menu Kontak', 'Lihat Menu SKL',
                   'Lihat Menu Kategori Layanan', 'Lihat Menu Departemen',
                  'Lihat Menu Jabatan', 'Lihat Menu Paket Broadband', 'Lihat Menu Data Perusahaan',
-                  'Lihat Menu Area', 'Lihat Menu Satuan'])
+                  'Lihat Menu Area', 'Lihat Menu Satuan', 'Lihat Menu Jam Kerja'])
                     <x-dropdown-menu :active="request()->segment(2) === 'common'">
                         @slot('parentIcon')
                             <i class="ki-duotone ki-element-7 fs-2">
@@ -285,6 +285,13 @@
                                 href="{{ url('master/operational/psb') }}">
                                 Data Penarikan
                             </x-dropdown-menu-item>
+                            @can('Lihat Menu Pengaturan Jam Kerja')
+                                <x-dropdown-menu-item
+                                    :active="request()->segment(2) === 'work-time'"
+                                    href="{{ url('master/operational/work-time') }}">
+                                    Jam Kerja
+                                </x-dropdown-menu-item>
+                            @endcan
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
@@ -609,7 +616,7 @@
                         @endslot
                     </x-dropdown-menu>
                 @endcanany
-                @canany(['Lihat Menu Pengaturan Jadwal Libur','Lihat Menu Hari Libur Nasional', 'Lihat Menu Mesin Absen', 'Lihat Menu Pengaturan Jam Kerja', 'Lihat Menu Riwayat Absensi'])
+                @canany(['Lihat Menu Pengaturan Jadwal Libur','Lihat Menu Hari Libur Nasional', 'Lihat Menu Mesin Absen', 'Lihat Menu Riwayat Absensi'])
                     <x-dropdown-menu :active="request()->segment(1) === 'adms'">
                         @slot('parentIcon')
                             <i class="bi bi-app-indicator"></i>
@@ -630,13 +637,6 @@
                                     :active="request()->segment(2) === 'fp-devices'"
                                     href="{{ url('adms/fp-devices') }}">
                                     Mesin Absen
-                                </x-dropdown-menu-item>
-                            @endcan
-                            @can('Lhat iMenu Pengaturan Jam Kerja')
-                                <x-dropdown-menu-item
-                                    :active="request()->segment(2) === 'work-time'"
-                                    href="{{ url('adms/work-time') }}">
-                                    Pengaturan Jam Kerja
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Pengaturan Jadwal Libur')

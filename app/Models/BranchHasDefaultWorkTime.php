@@ -11,6 +11,7 @@ class BranchHasDefaultWorkTime extends Model
     protected $table = 'branch_has_default_work_time';
     protected $fillable = [
         'branch_id',
+        'role_id',
         'work_time_id',
     ];
 
@@ -23,5 +24,11 @@ class BranchHasDefaultWorkTime extends Model
     public function workTime(): BelongsTo
     {
         return $this->belongsTo(WorkTime::class, 'work_time_id');
+    }
+
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'role_id');
     }
 }

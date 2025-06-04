@@ -6,13 +6,12 @@ use AllowDynamicProperties;
 use App\Http\Requests\BranchHasDefaultWorkTimeRequest;
 use App\Models\BranchHasDefaultWorkTime;
 use App\Support\Attendances\WorkTime\Repositories\BranchHasDefaultWorkTimeRepository;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 #[AllowDynamicProperties] class BranchHasDefaultWorkTimeService
 {
-
-
     private static int $perPage = 10;
 
     public function __construct()
@@ -27,7 +26,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
         return self::formattedData($workTimes);
     }
 
-    public function search(Request $request)
+    public function search(Request $request): JsonResponse
     {
 
         return response()->json();
@@ -45,6 +44,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
         $data = $workTime->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
+                'role_name' => $item->role->name,
                 'branch_name' => $item->branch->name,
                 'name' => $item->workTime->name,
             ];

@@ -111,6 +111,7 @@
                                         </div>
                                     </td>
                                     <td x-text="shift.branch_name"></td>
+                                    <td x-text="shift.role_name"></td>
                                     <td x-text="shift.name"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" @click="edit(shift.id)"
@@ -196,6 +197,9 @@
                     this.editVal = resp.data;
                     await selectedValue('selected-main-branch', `/select2/selected-branch/${this.editVal.branch_id}`);
                     await selectedValue('selected-work-time', `/select2/selected-work-time/${this.editVal.work_time_id}`);
+                },
+                async paginatedData(){
+
                 }
             }
         }
