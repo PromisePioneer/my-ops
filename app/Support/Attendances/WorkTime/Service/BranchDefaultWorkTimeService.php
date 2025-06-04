@@ -3,22 +3,22 @@
 namespace App\Support\Attendances\WorkTime\Service;
 
 use AllowDynamicProperties;
-use App\Http\Requests\BranchHasDefaultWorkTimeRequest;
-use App\Models\BranchHasDefaultWorkTime;
+use App\Http\Requests\BranchDefaultWorkTimeRequest;
+use App\Models\BranchDefaultWorkTime;
 use App\Models\WorkTime;
-use App\Support\Attendances\WorkTime\Repositories\BranchHasDefaultWorkTimeRepository;
+use App\Support\Attendances\WorkTime\Repositories\BranchDefaultWorkTimeRepository;
 use App\Support\Master\Common\Branch\Repository\BranchRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-#[AllowDynamicProperties] class BranchHasDefaultWorkTimeService
+#[AllowDynamicProperties] class BranchDefaultWorkTimeService
 {
     private static int $perPage = 10;
 
     public function __construct()
     {
-        $this->branchHasDefaultWorkTimeRepository = new BranchHasDefaultWorkTimeRepository();
+        $this->branchDefaultWorkTimeRepository = new BranchDefaultWorkTimeRepository();
         $this->branchRepository = new BranchRepository();
     }
 
@@ -78,9 +78,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
     }
 
 
-    public function store(BranchHasDefaultWorkTimeRequest $request): void
+    public function store(BranchDefaultWorkTimeRequest $request): void
     {
-        BranchHasDefaultWorkTime::updateOrCreate([
+        BranchDefaultWorkTime::updateOrCreate([
             'branch_id' => $request->branch_id,
         ], [
             'work_time_id' => $request->work_time_id
@@ -88,7 +88,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
     }
 
 
-    public function update(BranchHasDefaultWorkTime $branchHasDefaultWorkTime, BranchHasDefaultWorkTimeRequest $request): void
+    public function update(BranchDefaultWorkTime $branchHasDefaultWorkTime, BranchDefaultWorkTimeRequest $request): void
     {
         $branchHasDefaultWorkTime->update([
             'work_time_id' => $request->work_time_id,

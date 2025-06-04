@@ -10,7 +10,7 @@ use App\Models\Fab;
 use App\Models\FabServiceCategory;
 use App\Models\SPK;
 use App\Models\User;
-use App\Support\BAAService;
+use App\Support\IncomeTransaction\BAAService;
 use App\Support\SPKService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
