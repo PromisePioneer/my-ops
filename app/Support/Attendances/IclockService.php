@@ -242,7 +242,7 @@ class IclockService
         if ($user) {
             $ifBranchDuri = $user?->branch_id === 2 ? WorkTime::find(14)?->id : null;
             $ifBranchBengkalis = $user?->branch_id === 15 ? WorkTime::find(11)?->id : null;
-            $ifBranchKualaTungkal = $user?->branch_id === 16 ? WorkTime::find(11) : null;
+            $ifBranchKualaTungkal = $user?->branch_id === 16 ? WorkTime::find(11)->id : null;
             $isEngineer = $user->hasAnyRole([
                 'Engineer',
                 'Senior Engineer',
