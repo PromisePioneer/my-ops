@@ -3,11 +3,11 @@
 namespace App\Models\Master\Common;
 
 use App\Models\AccountTransaction;
+use App\Models\BranchHasDefaultWorkTime;
 use App\Models\Stock;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Scout\Searchable;
 
@@ -56,6 +56,12 @@ class Branch extends Model
     public function stock(): HasMany
     {
         return $this->hasMany(Stock::class, 'branch_id');
+    }
+
+
+    public function branchHasDefaultWorkTime(): HasMany
+    {
+        return $this->hasMany(BranchHasDefaultWorkTime::class, 'branch_id');
     }
 
 }

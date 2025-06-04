@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use AllowDynamicProperties;
 use App\Http\Requests\BranchHasDefaultWorkTimeRequest;
 use App\Models\BranchHasDefaultWorkTime;
+use App\Models\Master\Common\Branch;
 use App\Support\Attendances\WorkTime\Service\BranchHasDefaultWorkTimeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ use Illuminate\View\View;
 
     public function index(): View
     {
-        return view('pages.adms.work-time.branch.index');
+        return view('pages.adms.work-time-settings.index');
     }
 
     public function data(Request $request): JsonResponse
@@ -41,8 +42,9 @@ use Illuminate\View\View;
     }
 
 
-    public function edit(BranchHasDefaultWorkTime $branchHasDefaultWorkTime): JsonResponse
+    public function edit(?Branch $branch): JsonResponse
     {
+        $branchHasDefaultWorkTime = BranchHasDefaultWorkTime::where('branch_id', $branch->id)->first();
         return response()->json($branchHasDefaultWorkTime);
     }
 
@@ -51,14 +53,5 @@ use Illuminate\View\View;
     {
         $this->branchHasDefaultWorkTimeService->update($branchHasDefaultWorkTime, $request);
         return response()->json(['message' => 'Data berhasil disimpan']);
-    }
-
-    public function destroy(BranchHasDefaultWorkTime $branchHasDefaultWorkTime, Request $request): JsonResponse
-    {
-        $implodeID = implode(',', $request->get('id'));
-        $explodeID = explode(',', $implodeID);
-        $branchHasDefaultWorkTime->whereIn('id', $explodeID)->delete();
-
-        return response()->json(['message' => 'data berhasil dihapus']);
     }
 }

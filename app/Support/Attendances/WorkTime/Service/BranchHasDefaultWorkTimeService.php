@@ -5,7 +5,9 @@ namespace App\Support\Attendances\WorkTime\Service;
 use AllowDynamicProperties;
 use App\Http\Requests\BranchHasDefaultWorkTimeRequest;
 use App\Models\BranchHasDefaultWorkTime;
+use App\Models\WorkTime;
 use App\Support\Attendances\WorkTime\Repositories\BranchHasDefaultWorkTimeRepository;
+use App\Support\Master\Common\Branch\Repository\BranchRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -17,12 +19,13 @@ use Illuminate\Pagination\LengthAwarePaginator;
     public function __construct()
     {
         $this->branchHasDefaultWorkTimeRepository = new BranchHasDefaultWorkTimeRepository();
+        $this->branchRepository = new BranchRepository();
     }
 
 
     public function data(Request $request): LengthAwarePaginator
     {
-        $workTimes = $this->branchHasDefaultWorkTimeRepository->getData($request)->paginate(self::$perPage);
+        $workTimes = $this->branchRepository->getBranchAndDefaultWorkTime()->paginate(self::$perPage);
         return self::formattedData($workTimes);
     }
 
@@ -36,17 +39,36 @@ use Illuminate\Pagination\LengthAwarePaginator;
     public function filter(Request $request)
     {
 
+        return response()->json();
     }
 
 
     public function formattedData(LengthAwarePaginator $workTime): LengthAwarePaginator
     {
         $data = $workTime->getCollection()->map(function ($item) {
+
+            $workTime = $item->branchHasDefaultWorkTime;
+
+            if (count($workTime) > 0) {
+                $branchHasDefaultWorkTime = $workTime->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'name' => "{$item->workTime->name} ({$item->workTime->clock_in} - {$item->workTime->clock_out})",
+                    ];
+                });
+            } else {
+                $branchHasDefaultWorkTime = WorkTime::where('name', 'Pagi')->get()->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'name' => "{$item->name} ({$item->clock_in} - {$item->clock_out})",
+                    ];
+                });
+            }
+
             return [
                 'id' => $item->id,
-                'role_name' => $item->role->name,
-                'branch_name' => $item->branch->name,
-                'name' => $item->workTime->name,
+                'name' => $item->name,
+                'work_time' => $branchHasDefaultWorkTime,
             ];
         });
 

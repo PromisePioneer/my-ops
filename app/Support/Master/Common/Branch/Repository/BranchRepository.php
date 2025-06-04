@@ -69,4 +69,10 @@ class BranchRepository implements BranchRepositoryInterface
     {
         return Branch::with('stock', 'children')->whereNull('parent_id');
     }
+
+
+    public function getBranchAndDefaultWorkTime(): Builder
+    {
+        return Branch::with('branchHasDefaultWorkTime')->whereNull('parent_id');
+    }
 }

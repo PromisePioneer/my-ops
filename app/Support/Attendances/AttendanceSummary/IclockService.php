@@ -3,6 +3,7 @@
 namespace App\Support\Attendances\AttendanceSummary;
 
 use App\Models\AttendanceSummary;
+use App\Models\BranchHasDefaultWorkTime;
 use App\Models\DeviceLog;
 use App\Models\EmployeeSchedule;
 use App\Models\FingerLog;
@@ -114,9 +115,6 @@ class IclockService
     {
         $dateTime = Carbon::parse($date);
 
-        $startOfTime = $dateTime->copy()->startOfDay();
-
-
         $userShift = null;
 
 
@@ -177,10 +175,9 @@ class IclockService
         $user = User::with('branch')->where('absent_id', $employeeId)->first();
 
         if ($user) {
-            $ifBranchDuri = $user?->branch_id === 2 ? WorkTime::find(14) : null;
-            $ifBranchBengkalis = $user?->branch_id === 15 ? WorkTime::find(11) : null;
-            $ifBranchKualaTungkal = $user?->branch_id === 16 ? WorkTime::find(11) : null;
-            // $isCleaningServicePku = $user->hasRole('Cleaning Service') ? WorkTime::find(15)?->id : null;
+
+            $ifBranchHasUniversalWorkTime = BranchHasDefaultWorkTime::where('branch_id', $user->branch_id)->first()?->work_time_id;
+            $ifHasBranchWorkTime = !empty($ifBranchHasUniversalWorkTime) ? WorkTime::find($ifBranchHasUniversalWorkTime) : null;
             $isEngineer = $user->hasAnyRole([
                 'Engineer',
                 'Senior Engineer',
@@ -190,7 +187,7 @@ class IclockService
             ]) ? WorkTime::find(12) : null;
         }
 
-        return $userShift ?? $ifBranchDuri ?? $ifBranchBengkalis ?? $ifBranchKualaTungkal ?? $isEngineer ?? WorkTime::find(11);
+        return $userShift ?? $ifHasBranchWorkTime ?? $isEngineer ?? WorkTime::find(11);
     }
 
 
