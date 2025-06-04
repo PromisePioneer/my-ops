@@ -27,7 +27,6 @@ use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
 use App\Http\Controllers\HRIS\Attendances\FpDevicesController;
 use App\Http\Controllers\HRIS\Attendances\IclockController;
-use App\Http\Controllers\HRIS\Attendances\WorkTimeController;
 use App\Http\Controllers\HRIS\Correspondence\ContractManagementController;
 use App\Http\Controllers\HRIS\Correspondence\LeaveAndPermissionController;
 use App\Http\Controllers\HRIS\Correspondence\SKController;
@@ -75,6 +74,7 @@ use App\Http\Controllers\Master\Common\NationalHolidayController;
 use App\Http\Controllers\Master\Common\RoleController;
 use App\Http\Controllers\Master\Common\ServiceCategoryManagerController;
 use App\Http\Controllers\Master\Common\SKLController;
+use App\Http\Controllers\Master\Common\WorkTimeController;
 use App\Http\Controllers\Master\Operational\ItemCategoryController;
 use App\Http\Controllers\Master\Operational\ItemCollectionController;
 use App\Http\Controllers\Master\Operational\PSBController;
@@ -568,6 +568,21 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::post('/destroy', [PSBController::class, 'destroy']);
             });
 
+
+            Route::prefix('/work-time')->group(function () {
+                Route::get('/', [WorkTimeController::class, 'index']);
+                Route::get('/data', [WorkTimeController::class, 'data']);
+                Route::get('/user/data', [WorkTimeController::class, 'getUserData']);
+                Route::get('/search', [WorkTimeController::class, 'search']);
+                Route::post('/', [WorkTimeController::class, 'store']);
+                Route::post('/destroy', [WorkTimeController::class, 'destroy']);
+                Route::get('/{workTime}', [WorkTimeController::class, 'edit']);
+                Route::post('/{workTime}', [WorkTimeController::class, 'update']);
+                Route::post('/detail/data/destroy', [WorkTimeController::class, 'destroyDetailWorktimeUser']);
+                Route::get('/user/selected/{workTime}', [WorkTimeController::class, 'getSelectedUserWorkTime']);
+                Route::post('/set-global-default-work-time/{workTime}', [WorkTimeController::class, 'setGlobalDefaultWorkTime']);
+            });
+
         });
     });
 
@@ -1019,30 +1034,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/job-status/{fpDevice}', [FpDevicesController::class, 'getJobStatus']);
         });
 
-        Route::prefix('/work-time')->group(function () {
-            Route::get('/', [WorkTimeController::class, 'index']);
-            Route::get('/data', [WorkTimeController::class, 'data']);
-            Route::get('/user/data', [WorkTimeController::class, 'getUserData']);
-            Route::get('/search', [WorkTimeController::class, 'search']);
-            Route::post('/', [WorkTimeController::class, 'store']);
-            Route::post('/destroy', [WorkTimeController::class, 'destroy']);
-            Route::get('/{workTime}', [WorkTimeController::class, 'edit']);
-            Route::post('/{workTime}', [WorkTimeController::class, 'update']);
-            Route::post('/detail/data/destroy', [WorkTimeController::class, 'destroyDetailWorktimeUser']);
-            Route::get('/user/selected/{workTime}', [WorkTimeController::class, 'getSelectedUserWorkTime']);
-            Route::post('/set-global-default-work-time/{workTime}', [WorkTimeController::class, 'setGlobalDefaultWorkTime']);
-
-
-            Route::prefix('/branch/detail')->group(function () {
-                Route::get('/', [BranchHasDefaultWorkTimeController::class, 'index']);
-                Route::get('/data', [BranchHasDefaultWorkTimeController::class, 'data']);
-                Route::get('/search', [BranchHasDefaultWorkTimeController::class, 'search']);
-                Route::post('/store', [BranchHasDefaultWorkTimeController::class, 'store']);
-                Route::get('/edit/{branchHasDefaultWorkTime}', [BranchHasDefaultWorkTimeController::class, 'edit']);
-                Route::post('/update/{branchHasDefaultWorkTime}', [BranchHasDefaultWorkTimeController::class, 'update']);
-            });
-        });
-
         Route::prefix('/attendances-summary')->group(function () {
             Route::get('/', [AttendanceSummaryController::class, 'index']);
             Route::get('/data', [AttendanceSummaryController::class, 'data']);
@@ -1059,22 +1050,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/detail/data/{user}/{startDate?}/{endDate?}', [AttendanceSummaryController::class, 'detailData']);;
             Route::get('/filter', [AttendanceSummaryController::class, 'filter']);
 
-            Route::prefix('/attendance-manual-requests')->group(function () {
-                Route::get('/', [AttendanceManualRequestController::class, 'index']);
-                Route::post('/destroy', [AttendanceManualRequestController::class, 'destroy']);
-                Route::get('/data', [AttendanceManualRequestController::class, 'data']);
-                Route::get('/create', [AttendanceManualRequestController::class, 'create']);
-                Route::post('/', [AttendanceManualRequestController::class, 'store']);
-                Route::get('/search', [AttendanceManualRequestController::class, 'search']);
-                Route::get('/attachments/{attendanceManualRequest}', [AttendanceManualRequestController::class, 'getAttachments']);
-                Route::get('/{attendanceManualRequest}', [AttendanceManualRequestController::class, 'edit']);
-                Route::get('/selected-users/{attendanceManualRequest}', [AttendanceManualRequestController::class, 'selectedUsers']);
-                Route::get('/selected-attachments/{attendanceManualRequest}', [AttendanceManualRequestController::class, 'selectedAttachments']);
-                Route::post('/remove-attachment/{attendanceManualAttachment}', [AttendanceManualRequestController::class, 'removeAttachment']);
-                Route::post('/update/{attendanceManualRequest}', [AttendanceManualRequestController::class, 'update']);
-                Route::get('/show/{attendanceManualRequest}', [AttendanceManualRequestController::class, 'show']);
-                Route::post('/confirm/{attendanceManualRequest}', [AttendanceManualRequestController::class, 'confirm']);
-            });
 
         });
 

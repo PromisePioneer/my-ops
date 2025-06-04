@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\HRIS\Attendances;
+namespace App\Http\Controllers\Master\Common;
 
 use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
@@ -31,7 +31,7 @@ use Illuminate\View\View;
     public function index(): View
     {
         $this->authorize('view', WorkTime::class);
-        return view('pages.adms.work-time.index');
+        return view('pages.master.operational.work-time.index');
     }
 
     /**

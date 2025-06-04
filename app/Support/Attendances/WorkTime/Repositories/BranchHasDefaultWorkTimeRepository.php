@@ -10,7 +10,7 @@ class BranchHasDefaultWorkTimeRepository
 {
     public function getData(Request $request): Builder
     {
-        return BranchHasDefaultWorkTime::with('branch', 'workTime')
+        return BranchHasDefaultWorkTime::with('branch', 'workTime', 'role')
             ->when(!empty($request->user()->branch_id), function ($query) use ($request) {
                 $query->where('branch_id', $request->user()->branch_id);
             });

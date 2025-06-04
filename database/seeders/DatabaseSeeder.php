@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             UnitTypesSeeder::class,
             PositionSeeder::class,
             WorkTimeSeeder::class,
+//            BranchHasDefaultWorkTimeSeeder::class,
             FpDeviceSeeder::class,
             RoleHasDepartmentSeeder::class,
             PayrollScheduleSeeder::class,

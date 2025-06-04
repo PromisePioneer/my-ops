@@ -5,7 +5,7 @@
 
     <div x-data="manageShiftData()">
         <div class="card card-xl-stretch mb-5 mb-xl-8">
-            @include('pages.adms.work-time.form')
+            @include('pages.master.operational.work-time.form')
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -18,7 +18,8 @@
                 </div>
                 <div class="card-toolbar">
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                        <a href="{{ url('adms/work-time/branch/detail') }}" class="btn btn-light-info btn-sm me-2">
+                        <a href="{{ url('/master/operational/work-time/branch/detail') }}"
+                           class="btn btn-light-info btn-sm me-2">
                             <x-icons.electronic-clock/>
                             Jam Kerja Cabang
                         </a>
@@ -151,7 +152,7 @@
                 async searchData() {
                     this.isLoading = true;
                     try {
-                        const response = await axios.get('/adms/work-time/search', {
+                        const response = await axios.get('/master/operational/work-time/search', {
                             params: {search: this.search},
                             headers: {'Content-Type': 'application/json'}
                         });
@@ -165,7 +166,7 @@
                 async getShiftsData() {
                     this.isLoading = true
                     try {
-                        const resp = await axios.get('/adms/work-time/data');
+                        const resp = await axios.get('/master/operational/work-time/data');
                         this.shifts = resp.data;
                         this.startIndex = this.shifts.from;
                     } catch (error) {
@@ -177,7 +178,7 @@
                 async setGlobalDefaultWorkTime(id) {
                     this.isLoading = true;
                     try {
-                        await axios.post(`/adms/work-time/set-global-default-work-time/${id}`);
+                        await axios.post(`/master/operational/set-global-default-work-time/${id}`);
                         await showAlert('success', 'Data berhasil disimpan');
                         await this.init();
                     } catch (e) {
@@ -234,7 +235,7 @@
                     this.buttonLoading = true;
                     try {
                         if (!id) {
-                            await axios.post('/adms/work-time/', new FormData(this.form))
+                            await axios.post('/master/operational/work-time/', new FormData(this.form))
                         } else {
                             await axios.post(`/adms/work-time/${id}`, new FormData(this.form))
                         }
@@ -250,13 +251,13 @@
                     }
                 },
                 async edit(id) {
-                    const resp = await axios.get(`/adms/work-time/${id}`);
+                    const resp = await axios.get(`/master/operational/work-time/${id}`);
                     this.editVal = resp.data;
                 },
                 async destroy() {
                     showConfirmModal("Anda yakin?", "Data akan hilang.", "Ya, Hapus!", async () => {
                         try {
-                            await axios.post(`/adms/work-time/destroy`, new FormData(this.formDelete));
+                            await axios.post(`/master/operational/work-time/destroy`, new FormData(this.formDelete));
                             await showAlert('success', 'Data sukses dihapus');
                             await this.init();
                         } catch (error) {
