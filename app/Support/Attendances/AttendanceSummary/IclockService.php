@@ -176,14 +176,13 @@ class IclockService
         $user = User::with('branch')->where('absent_id', $employeeId)->first();
 
         if ($user) {
-
-            $ifBranchHasUniversalWorkTime = BranchDefaultWorkTime::where('branch_id', $user->branch_id)->first()?->work_time_id;
-            $ifHasBranchWorkTime = !empty($ifBranchHasUniversalWorkTime) ? WorkTime::find($ifBranchHasUniversalWorkTime) : null;
-            $roleDefaultWorkTime = RoleDefaultWorkTime::where('role_id', $user->roles()->first()->id)->first()->work_time_id;
+            $branchDefaultWorkTime = BranchDefaultWorkTime::where('branch_id', $user->branch_id)->first()?->work_time_id;
+            $ifHasBranchWorkTime = !empty($ifBranchHasUniversalWorkTime) ? WorkTime::find($branchDefaultWorkTime) : null;
+            $roleDefaultWorkTime = RoleDefaultWorkTime::where('role_id', $user->roles()->first()->id)->first()?->work_time_id;
             $ifHasRoleWorkTime = WorkTime::find($roleDefaultWorkTime);
         }
 
-        return $userShift ?? $ifHasBranchWorkTime ?? $ifHasRoleWorkTime ?? WorkTime::where('name', 'Pagi')->first();
+        return $userShift ?? $ifHasBranchWorkTime ?? $ifHasRoleWorkTime ?? WorkTime::where('is_default', true)->first();
     }
 
 
@@ -238,7 +237,7 @@ class IclockService
             $ifRoleHasWorkTime = RoleDefaultWorkTime::where('role_id', $user->roles()->first()->id)->first();
             $ifHasRoleWorkTime = !empty($ifRoleHasWorkTime) ? WorkTime::find($ifRoleHasWorkTime->work_time_id)->id : null;
         }
-        $shift = $shift->workTime?->id ?? $ifHasBranchWorkTime ?? $ifHasRoleWorkTime ?? WorkTime::where('name', 'Pagi')->first()?->id;
+        $shift = $shift->workTime?->id ?? $ifHasBranchWorkTime ?? $ifHasRoleWorkTime ?? WorkTime::where('is_default', true)->first()?->id;
 
         $date = Carbon::parse($date);
 

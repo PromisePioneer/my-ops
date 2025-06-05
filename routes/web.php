@@ -21,7 +21,7 @@ use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\AttendanceManualRequestController;
 use App\Http\Controllers\BAAController;
-use App\Http\Controllers\BranchAndRoleDefaultWorkTimeController;
+use App\Http\Controllers\BranchRoleDefaultWorkTimeController;
 use App\Http\Controllers\BranchDefaultWorkTimeController;
 use App\Http\Controllers\DraftStockController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
@@ -582,8 +582,8 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/{workTime}', [WorkTimeController::class, 'edit']);
                 Route::post('/{workTime}', [WorkTimeController::class, 'update']);
                 Route::post('/detail/data/destroy', [WorkTimeController::class, 'destroyDetailWorktimeUser']);
-                Route::get('/user/selected/{workTime}', [WorkTimeController::class, 'getSelectedUserWorkTime']);
                 Route::post('/set-global-default-work-time/{workTime}', [WorkTimeController::class, 'setGlobalDefaultWorkTime']);
+                Route::get('/user/selected/{workTime}', [WorkTimeController::class, 'getSelectedUserWorkTime']);
             });
 
         });
@@ -1037,9 +1037,9 @@ Route::group(['middleware' => ['auth']], static function () {
             });
 
 
-            Route::prefix('branch-and-role')->group(function () {
-                Route::get('/{branch}', [BranchAndRoleDefaultWorkTimeController::class, 'index']);
-                Route::get('/data/{branch}', [BranchAndRoleDefaultWorkTimeController::class, 'data']);
+            Route::prefix('branch-role')->group(function () {
+                Route::get('/{branch}', [BranchRoleDefaultWorkTimeController::class, 'index']);
+                Route::get('/data/{branch}', [BranchRoleDefaultWorkTimeController::class, 'data']);
             });
         });
 

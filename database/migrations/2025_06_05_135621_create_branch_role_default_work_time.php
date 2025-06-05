@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('branch_and_role_default_work_time', function (Blueprint $table) {
+        Schema::create('branch_role_default_work_time', function (Blueprint $table) {
             $table->id();
             $table->foreignId('branch_id')
                 ->constrained('branches')
@@ -33,6 +33,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('branch_and_role_default_work_time');
+        Schema::dropIfExists('branch_role_default_work_time');
     }
 };
