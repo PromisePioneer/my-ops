@@ -8,7 +8,6 @@ use App\Models\BranchDefaultWorkTime;
 use App\Models\WorkTime;
 use App\Support\Attendances\WorkTime\Repositories\BranchDefaultWorkTimeRepository;
 use App\Support\Master\Common\Branch\Repository\BranchRepository;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -23,16 +22,20 @@ use Illuminate\Pagination\LengthAwarePaginator;
     }
 
 
-    public function data(Request $request): LengthAwarePaginator
+    public function data(): LengthAwarePaginator
     {
         $workTimes = $this->branchRepository->getBranchAndDefaultWorkTime()->paginate(self::$perPage);
         return self::formattedData($workTimes);
     }
 
-    public function search(Request $request): JsonResponse
+    public function search(Request $request): LengthAwarePaginator
     {
-
-        return response()->json();
+        $search = $request->input('search');
+        $data = $this->branchRepository->getBranchAndDefaultWorkTime();
+        if (!empty($search)) {
+            $data = $this->branchDefaultWorkTimeRepository->searchQuery($data, $search);
+        }
+        return self::formattedData($data->paginate(self::$perPage));
     }
 
 
@@ -46,29 +49,18 @@ use Illuminate\Pagination\LengthAwarePaginator;
     public function formattedData(LengthAwarePaginator $workTime): LengthAwarePaginator
     {
         $data = $workTime->getCollection()->map(function ($item) {
-
-            $workTime = $item->branchHasDefaultWorkTime;
-
-            if (count($workTime) > 0) {
-                $branchHasDefaultWorkTime = $workTime->map(function ($item) {
-                    return [
-                        'id' => $item->id,
-                        'name' => "{$item->workTime->name} ({$item->workTime->clock_in} - {$item->workTime->clock_out})",
-                    ];
-                });
+            $defaultWorkTime = WorkTime::where('name', 'Pagi')->first();
+            if (!empty($role->defaultWorkTime)) {
+                $workTime = "{$role->defaultWorkTime->workTime->name} ({$role->defaultWorkTime->workTime->clock_in} - {$role->defaultWorkTime->workTime->clock_out})";
             } else {
-                $branchHasDefaultWorkTime = WorkTime::where('name', 'Pagi')->get()->map(function ($item) {
-                    return [
-                        'id' => $item->id,
-                        'name' => "{$item->name} ({$item->clock_in} - {$item->clock_out})",
-                    ];
-                });
+                $workTime = "{$defaultWorkTime->name} ({$defaultWorkTime->clock_in} - {$defaultWorkTime->clock_out})";
             }
 
             return [
                 'id' => $item->id,
                 'name' => $item->name,
-                'work_time' => $branchHasDefaultWorkTime,
+                'work_time' => $workTime,
+                'work_time_id' => $role->defaultWorkTime->workTime?->id ?? $defaultWorkTime->id,
             ];
         });
 

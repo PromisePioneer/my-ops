@@ -8,7 +8,7 @@ use App\Http\Requests\Master\Common\Role\RoleRequest;
 use App\Models\Department;
 use App\Models\Role;
 use App\Models\RoleHasDepartment;
-use App\Support\User\Role\RoleService;
+use App\Support\User\Role\Service\RoleService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

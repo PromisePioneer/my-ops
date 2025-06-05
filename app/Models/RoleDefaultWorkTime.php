@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class RoleDefaultWorkTime extends Model
 {
-    protected $table = 'role_default_work_time';
+    protected $table = 'role_default_work_times';
     protected $fillable = [
         'role_id',
         'work_time_id'
@@ -22,6 +22,6 @@ class RoleDefaultWorkTime extends Model
 
     public function workTime(): BelongsTo
     {
-        return $this->belongsTo(Role::class, 'work_time_id');
+        return $this->belongsTo(WorkTime::class, 'work_time_id');
     }
 }

@@ -8,6 +8,7 @@ use App\Models\DeviceLog;
 use App\Models\EmployeeSchedule;
 use App\Models\FingerLog;
 use App\Models\FpDevice;
+use App\Models\RoleDefaultWorkTime;
 use App\Models\User;
 use App\Models\WorkTime;
 use Carbon\Carbon;
@@ -178,16 +179,11 @@ class IclockService
 
             $ifBranchHasUniversalWorkTime = BranchDefaultWorkTime::where('branch_id', $user->branch_id)->first()?->work_time_id;
             $ifHasBranchWorkTime = !empty($ifBranchHasUniversalWorkTime) ? WorkTime::find($ifBranchHasUniversalWorkTime) : null;
-            $isEngineer = $user->hasAnyRole([
-                'Engineer',
-                'Senior Engineer',
-                'KU Engineer',
-                'Quality Control Staff',
-                'Warehouse Security'
-            ]) ? WorkTime::find('name', 'Lapangan') : null;
+            $roleDefaultWorkTime = RoleDefaultWorkTime::where('role_id', $user->roles()->first()->id)->first()->work_time_id;
+            $ifHasRoleWorkTime = WorkTime::find($roleDefaultWorkTime);
         }
 
-        return $userShift ?? $ifHasBranchWorkTime ?? $isEngineer ?? WorkTime::where('name', 'Pagi')->first();
+        return $userShift ?? $ifHasBranchWorkTime ?? $ifHasRoleWorkTime ?? WorkTime::where('name', 'Pagi')->first();
     }
 
 
@@ -239,15 +235,10 @@ class IclockService
         if ($user) {
             $ifBranchHasUniversalWorkTime = BranchDefaultWorkTime::where('branch_id', $user->branch_id)->first()?->work_time_id;
             $ifHasBranchWorkTime = !empty($ifBranchHasUniversalWorkTime) ? WorkTime::find($ifBranchHasUniversalWorkTime)->id : null;
-            $isEngineer = $user->hasAnyRole([
-                'Engineer',
-                'Senior Engineer',
-                'KU Engineer',
-                'Quality Control Staff',
-                'Warehouse Security'
-            ]) ? WorkTime::where('name', 'Lapangan')->first()?->id : null;
+            $ifRoleHasWorkTime = RoleDefaultWorkTime::where('role_id', $user->roles()->first()->id)->first();
+            $ifHasRoleWorkTime = !empty($ifRoleHasWorkTime) ? WorkTime::find($ifRoleHasWorkTime->work_time_id)->id : null;
         }
-        $shift = $shift->workTime?->id ?? $ifHasBranchWorkTime ?? $isEngineer ?? WorkTime::where('name', 'Pagi')->first()?->id;
+        $shift = $shift->workTime?->id ?? $ifHasBranchWorkTime ?? $ifHasRoleWorkTime ?? WorkTime::where('name', 'Pagi')->first()?->id;
 
         $date = Carbon::parse($date);
 

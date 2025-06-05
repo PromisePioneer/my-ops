@@ -10,14 +10,19 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('role_default_work_times', function (Blueprint $table) {
+        Schema::create('branch_and_role_default_work_time', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('role_id')->constrained('roles')
-                ->cascadeOnDelete()
+            $table->foreignId('branch_id')
+                ->constrained('branches')
+                ->cascadeOnUpdate()
+                ->cascadeOnUpdate();
+            $table->foreignId('role_id')
+                ->constrained('roles')
+                ->cascadeOnUpdate()
                 ->cascadeOnUpdate();
             $table->foreignId('work_time_id')
                 ->constrained('work_time')
-                ->cascadeOnDelete()
+                ->cascadeOnUpdate()
                 ->cascadeOnUpdate();
             $table->timestamps();
         });
@@ -28,6 +33,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('role_has_work_time');
+        Schema::dropIfExists('branch_and_role_default_work_time');
     }
 };

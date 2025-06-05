@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Scout\Searchable;
 use Spatie\Permission\Models\Role as SpatieRole;
 
@@ -39,5 +40,11 @@ class Role extends SpatieRole
     public function roleHierarchy(): HasMany
     {
         return $this->hasMany(RoleHierarchy::class, 'role_id');
+    }
+
+
+    public function defaultWorkTime(): HasOne
+    {
+        return $this->hasOne(RoleDefaultWorkTime::class, 'role_id');
     }
 }
