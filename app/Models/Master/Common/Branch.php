@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Scout\Searchable;
 
 class Branch extends Model
@@ -59,9 +60,9 @@ class Branch extends Model
     }
 
 
-    public function branchHasDefaultWorkTime(): HasMany
+    public function defaultWorkTime(): HasOne
     {
-        return $this->hasMany(BranchDefaultWorkTime::class, 'branch_id');
+        return $this->hasOne(BranchDefaultWorkTime::class, 'branch_id');
     }
 
 }

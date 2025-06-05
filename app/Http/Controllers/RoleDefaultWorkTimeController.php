@@ -2,23 +2,31 @@
 
 namespace App\Http\Controllers;
 
-class RoleDefaultWorkTimeController extends Controller
+use AllowDynamicProperties;
+use App\Models\Role;
+use App\Models\RoleDefaultWorkTime;
+use App\Models\WorkTime;
+use App\Support\Attendances\WorkTime\Service\RoleDefaultWorkTimeService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+#[AllowDynamicProperties] class RoleDefaultWorkTimeController extends Controller
 {
     public function __construct()
     {
-
+        $this->roleDefaultWorkTimeService = new RoleDefaultWorkTimeService();
     }
 
 
     public function index()
     {
-
+        return view('role-default-work-time.index');
     }
 
 
-    public function data()
+    public function data(): JsonResponse
     {
-
+        return response()->json($this->roleDefaultWorkTimeService->data());
     }
 
 
@@ -32,14 +40,18 @@ class RoleDefaultWorkTimeController extends Controller
 
     }
 
-    public function store()
+    public function store(Request $request): JsonResponse
     {
-
+        $this->roleDefaultWorkTimeService->store($request);
+        return response()->json([
+            'message' => 'data berhasil disimpan'
+        ]);
     }
 
-    public function show()
+    public function show(?Role $role, ?WorkTime $workTime): JsonResponse
     {
-
+        $roleDefaultWorkTime = RoleDefaultWorkTime::where('role_id', $role->id)->first();
+        return response()->json($roleDefaultWorkTime);
     }
 
 

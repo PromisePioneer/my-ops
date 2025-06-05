@@ -24,9 +24,8 @@ class BranchDefaultWorkTimeRepository
             ->get();
     }
 
-    public function searchQuery(Request $request)
+    public function searchQuery(Builder $query, string $search): Builder
     {
-        return BranchDefaultWorkTime::join('branches', 'branches.id', '=', 'branch_has_default_work_times.branch_id')
-            ->join('work_time', 'work_time.id', '=', 'branch_has_default_work_time.work_time_id');
+        return $query->where('name', 'like', '%' . $search . '%');
     }
 }

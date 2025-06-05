@@ -14,16 +14,6 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-10">
-                                <label for="name" class="required form-label">Cabang</label>
-                                <x-select2.index name="branch_id"
-                                                 id="selected-branch"
-                                                 class="form-select form-select-solid"
-                                                 parentElement="#modal-work-time"
-                                />
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-10">
                                 <label for="name" class="required form-label">Nama</label>
                                 <input type="text" id="name" name="name" class="form-control form-control-solid"
                                        placeholder="Nama" :value="editVal.name"/>

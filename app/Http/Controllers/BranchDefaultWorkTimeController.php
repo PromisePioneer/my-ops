@@ -9,7 +9,6 @@ use App\Models\Master\Common\Branch;
 use App\Support\Attendances\WorkTime\Service\BranchDefaultWorkTimeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 
 #[AllowDynamicProperties] class BranchDefaultWorkTimeController extends Controller
 {
@@ -18,21 +17,15 @@ use Illuminate\View\View;
         $this->branchDefaultWorkTimeService = new BranchDefaultWorkTimeService();
     }
 
-
-    public function index(): View
+    public function data(): JsonResponse
     {
-        return view('pages.adms.work-time-settings.index');
-    }
-
-    public function data(Request $request): JsonResponse
-    {
-        return response()->json($this->branchDefaultWorkTimeService->data($request));
+        return response()->json($this->branchDefaultWorkTimeService->data());
     }
 
 
     public function search(Request $request): JsonResponse
     {
-
+        return response()->json($this->branchDefaultWorkTimeService->search($request));
     }
 
     public function store(BranchDefaultWorkTimeRequest $request): JsonResponse

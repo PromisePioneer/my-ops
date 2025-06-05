@@ -21,6 +21,7 @@ use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
 use App\Http\Controllers\AttendanceManualRequestController;
 use App\Http\Controllers\BAAController;
+use App\Http\Controllers\BranchAndRoleDefaultWorkTimeController;
 use App\Http\Controllers\BranchDefaultWorkTimeController;
 use App\Http\Controllers\DraftStockController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
@@ -80,6 +81,7 @@ use App\Http\Controllers\Master\Operational\ItemCollectionController;
 use App\Http\Controllers\Master\Operational\PSBController;
 use App\Http\Controllers\Master\Operational\SupplierController;
 use App\Http\Controllers\MustReorderStockController;
+use App\Http\Controllers\RoleDefaultWorkTimeController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\StockMutationController;
 use App\Http\Controllers\StockWithdrawalController;
@@ -92,6 +94,7 @@ use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
 use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
 use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\WorkTimeSettingController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Jmrashed\Zkteco\Lib\ZKTeco;
@@ -1017,11 +1020,27 @@ Route::group(['middleware' => ['auth']], static function () {
         });
 
         Route::prefix('/work-time-settings')->group(function () {
-            Route::get('/', [BranchDefaultWorkTimeController::class, 'index']);
-            Route::get('/data', [BranchDefaultWorkTimeController::class, 'data']);
-            Route::get('/search', [BranchDefaultWorkTimeController::class, 'search']);
-            Route::get('/edit/{branch?}/{workTime?}', [BranchDefaultWorkTimeController::class, 'edit']);
-            Route::post('/store', [BranchDefaultWorkTimeController::class, 'store']);
+            Route::get('/', [WorkTimeSettingController::class, 'index']);
+            Route::prefix('branch')->group(function () {
+                Route::get('/data', [BranchDefaultWorkTimeController::class, 'data']);
+                Route::get('/search', [BranchDefaultWorkTimeController::class, 'search']);
+                Route::get('/edit/{branch?}/{workTime?}', [BranchDefaultWorkTimeController::class, 'edit']);
+                Route::post('/store', [BranchDefaultWorkTimeController::class, 'store']);
+
+            });
+
+            Route::prefix('role')->group(function () {
+                Route::get('/data', [RoleDefaultWorkTimeController::class, 'data']);
+                Route::get('/search', [RoleDefaultWorkTimeController::class, 'search']);
+                Route::get('/show/{role?}/{workTime?}', [RoleDefaultWorkTimeController::class, 'show']);
+                Route::post('/store', [RoleDefaultWorkTimeController::class, 'store']);
+            });
+
+
+            Route::prefix('branch-and-role')->group(function () {
+                Route::get('/{branch}', [BranchAndRoleDefaultWorkTimeController::class, 'index']);
+                Route::get('/data/{branch}', [BranchAndRoleDefaultWorkTimeController::class, 'data']);
+            });
         });
 
 
