@@ -64,10 +64,11 @@
                                 <td>
                                     <a href="#" x-text="shift.work_time" @click="edit(shift.id, shift.work_time_id)"
                                        data-bs-toggle="modal"
-                                       data-bs-target="#modal-role-work-time"></a>
+                                       data-bs-target="#modal-branch-work-time"></a>
                                 </td>
                                 <td>
-                                    <a :href="`/adms/work-time-settings/branch-and-role/${shift.id}`" class="btn btn-sm btn-light-info" target="_blank">Jam Kerja Jabatan</a>
+                                    <a :href="`/adms/work-time-settings/branch-role/${shift.id}`"
+                                       class="btn btn-sm btn-light-info" target="_blank">Jam Kerja Jabatan</a>
                                 </td>
                             </tr>
                         </template>
@@ -108,7 +109,7 @@
                 form: document.getElementById('form-branch-work-time'),
                 modalForm: new bootstrap.Modal(document.getElementById('modal-branch-work-time')),
                 async init() {
-                    await select2('.main-branches-select2', 'Pilih Cabang', '/select2/main-branches-data');
+                    await select2('.branches-select2', 'Pilih Cabang', '/select2/main-branches-data');
                     await select2('.work-times-select2', 'Pilih Jam Kerja', '/select2/work-times-data');
                     await this.getShiftsData();
                 },
@@ -154,13 +155,12 @@
                         this.buttonLoading = false;
                     }
                 },
-                async edit(workTimeId, branchId) {
+                async edit(branchId, workTimeId) {
                     try {
+                        await selectedValue('selected-branch', `/select2/selected-branch/${branchId}`);
+                        await selectedValue('selected-work-time', `/select2/selected-work-time/${workTimeId}`);
                         const resp = await axios.get(`/adms/branch/work-time-settings/branch/edit/${branchId}/${workTimeId}`);
                         this.editVal = resp.data;
-                        await selectedValue('selected-main-branch', `/select2/selected-branch/${this.editVal?.branch_id ?? branchId}`);
-                        await selectedValue('selected-work-time', `/select2/selected-work-time/${this.editVal?.work_time_id ?? workTimeId}`);
-
                     } catch (error) {
                         console.log(error)
                     }

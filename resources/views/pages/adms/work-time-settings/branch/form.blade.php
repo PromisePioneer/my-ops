@@ -13,17 +13,17 @@
                 <div class="modal-body">
                     <div class="row">
                         @if(empty(Auth::user()->branch_id))
-                        <div class="col-md-6">
-                            <div class="mb-10">
-                                <label for="name" class="required form-label">Cabang</label>
-                                <x-select2.index name="branch_id"
-                                                 id="selected-main-branch"
-                                                 class="form-select form-select-solid"
-                                                 elementSelector="main-branches-select2"
-                                                 parentElementIfExist="#modal-branch-work-time"
-                                />
+                            <div class="col-md-6">
+                                <div class="mb-10">
+                                    <label for="name" class="required form-label">Cabang</label>
+                                    <x-select2.index name="branch_id"
+                                                     id="selected-branch"
+                                                     class="form-select form-select-solid"
+                                                     elementSelector="branches-select2"
+                                                     parentElementIfExist="#modal-branch-work-time"
+                                    />
+                                </div>
                             </div>
-                        </div>
                         @endif
                         <div class="col-md-6">
                             <div class="mb-10">

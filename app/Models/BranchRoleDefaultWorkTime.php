@@ -6,7 +6,7 @@ use App\Models\Master\Common\Branch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class BranchAndRoleDefaultWorkTime extends Model
+class BranchRoleDefaultWorkTime extends Model
 {
     protected $table = 'branch_and_role_default_work_time';
     protected $fillable = [

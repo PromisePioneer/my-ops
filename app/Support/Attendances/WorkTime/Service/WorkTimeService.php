@@ -80,4 +80,10 @@ class WorkTimeService
             $workTime->update(['is_default' => true]);
         });
     }
+
+
+    public static function getWorkTime(object $defaultWorkTime): string
+    {
+        return "{$defaultWorkTime->name} ({$defaultWorkTime->clock_in} - {$defaultWorkTime->clock_out})";
+    }
 }

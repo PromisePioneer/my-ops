@@ -7,7 +7,7 @@ use App\Models\Master\Common\Branch;
 use App\Support\User\Role\Repository\RoleRepository;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-#[AllowDynamicProperties] class BranchAndRoleDefaultWorkTimeService
+#[AllowDynamicProperties] class BranchRoleDefaultWorkTimeService
 {
 
     private static int $perPage = 10;
@@ -17,21 +17,23 @@ use Illuminate\Pagination\LengthAwarePaginator;
         $this->roleRepository = new RoleRepository();
     }
 
-    public function data(Branch $branch)
+    public function data(Branch $branch): LengthAwarePaginator
     {
         $roles = $this->roleRepository->getBranchRoles($branch)->paginate(self::$perPage);
+        return self::formattedData($roles);
     }
 
 
-    public function formattedData(LengthAwarePaginator $branchRoles)
+    public function formattedData(LengthAwarePaginator $branchRoles): LengthAwarePaginator
     {
         $data = $branchRoles->getCollection()->map(function ($branchRole) {
             return [
                 'id' => $branchRole->id,
                 'name' => $branchRole->name,
-                'start_time' => $branchRole->defaultWorkTime->start_time,
-                'end_time' => $branchRole->defaultWorkTime->end_time,
             ];
         });
+
+        $branchRoles->setCollection($data);
+        return $branchRoles;
     }
 }

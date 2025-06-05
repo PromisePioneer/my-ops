@@ -6,6 +6,7 @@ use AllowDynamicProperties;
 use App\Models\RoleDefaultWorkTime;
 use App\Models\WorkTime;
 use App\Support\Attendances\WorkTime\Repositories\RoleDefaultWorkTimeRepository;
+use App\Support\Attendances\WorkTime\Repositories\WorkTimeRepository;
 use App\Support\User\Role\Repository\RoleRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -14,6 +15,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 {
 
     private static int $perPage = 10;
+
     public function __construct()
     {
         $this->roleDefaultWorkTimeRepository = new RoleDefaultWorkTimeRepository();
@@ -40,26 +42,15 @@ use Illuminate\Pagination\LengthAwarePaginator;
         return self::formattedData($roles);
     }
 
-    public function filter(Request $request)
-    {
-    }
-
 
     private static function formattedData(LengthAwarePaginator $roles): LengthAwarePaginator
     {
-
         $data = $roles->map(function ($role) {
-            $defaultWorkTime = WorkTime::where('name', 'Pagi')->first();
-            if (!empty($role->defaultWorkTime)) {
-                $workTime = "{$role->defaultWorkTime->workTime->name} ({$role->defaultWorkTime->workTime->clock_in} - {$role->defaultWorkTime->workTime->clock_out})";
-            } else {
-                $workTime = "{$defaultWorkTime->name} ({$defaultWorkTime->clock_in} - {$defaultWorkTime->clock_out})";
-            }
-
+            $defaultWorkTime = WorkTimeRepository::getDefaultWorkTime();
             return [
                 'id' => $role->id,
                 'name' => $role->name,
-                'work_time' => $workTime,
+                'work_time' => WorkTimeService::getWorkTime($role->defaultWorkTime?->workTime ?? $defaultWorkTime),
                 'work_time_id' => $role->defaultWorkTime->workTime?->id ?? $defaultWorkTime->id,
             ];
         });

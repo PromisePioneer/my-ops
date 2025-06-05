@@ -7,6 +7,7 @@ use App\Http\Requests\BranchDefaultWorkTimeRequest;
 use App\Models\BranchDefaultWorkTime;
 use App\Models\WorkTime;
 use App\Support\Attendances\WorkTime\Repositories\BranchDefaultWorkTimeRepository;
+use App\Support\Attendances\WorkTime\Repositories\WorkTimeRepository;
 use App\Support\Master\Common\Branch\Repository\BranchRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -39,28 +40,15 @@ use Illuminate\Pagination\LengthAwarePaginator;
     }
 
 
-    public function filter(Request $request)
-    {
-
-        return response()->json();
-    }
-
-
     public function formattedData(LengthAwarePaginator $workTime): LengthAwarePaginator
     {
         $data = $workTime->getCollection()->map(function ($item) {
-            $defaultWorkTime = WorkTime::where('name', 'Pagi')->first();
-            if (!empty($role->defaultWorkTime)) {
-                $workTime = "{$role->defaultWorkTime->workTime->name} ({$role->defaultWorkTime->workTime->clock_in} - {$role->defaultWorkTime->workTime->clock_out})";
-            } else {
-                $workTime = "{$defaultWorkTime->name} ({$defaultWorkTime->clock_in} - {$defaultWorkTime->clock_out})";
-            }
-
+            $defaultWorkTime = WorkTimeRepository::getDefaultWorkTime();
             return [
                 'id' => $item->id,
                 'name' => $item->name,
-                'work_time' => $workTime,
-                'work_time_id' => $role->defaultWorkTime->workTime?->id ?? $defaultWorkTime->id,
+                'work_time' => WorkTimeService::getWorkTime($item->defaultWorkTime?->workTime ?? $defaultWorkTime),
+                'work_time_id' => $item->defaultWorkTime?->workTime?->id ?? $defaultWorkTime->id,
             ];
         });
 

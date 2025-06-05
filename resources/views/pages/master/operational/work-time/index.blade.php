@@ -172,8 +172,9 @@
                 },
                 async setGlobalDefaultWorkTime(id) {
                     this.isLoading = true;
+                    this.shifts = [];
                     try {
-                        await axios.post(`/master/operational/set-global-default-work-time/${id}`);
+                        await axios.post(`/master/operational/work-time/set-global-default-work-time/${id}`);
                         await showAlert('success', 'Data berhasil disimpan');
                         await this.init();
                     } catch (e) {

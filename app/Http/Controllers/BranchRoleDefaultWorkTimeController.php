@@ -4,21 +4,22 @@ namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
 use App\Models\Master\Common\Branch;
-use App\Support\Attendances\WorkTime\Service\BranchAndRoleDefaultWorkTimeService;
+use App\Support\Attendances\WorkTime\Service\BranchRoleDefaultWorkTimeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
-#[AllowDynamicProperties] class BranchAndRoleDefaultWorkTimeController extends Controller
+#[AllowDynamicProperties] class BranchRoleDefaultWorkTimeController extends Controller
 {
     public function __construct()
     {
-        $this->branchAndRoleDefaultWorkTimeService = new BranchAndRoleDefaultWorkTimeService();
+        $this->branchAndRoleDefaultWorkTimeService = new BranchRoleDefaultWorkTimeService();
     }
 
 
-    public function index(Branch $branch)
+    public function index(Branch $branch): View
     {
-        return view('pages.adms.work-time-settings.branch-and-role.index', compact('branch'));
+        return view('pages.adms.work-time-settings.branch-role.index', compact('branch'));
     }
 
 
