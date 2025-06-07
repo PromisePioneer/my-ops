@@ -9,6 +9,7 @@ use App\Models\Master\Common\Branch;
 use App\Models\Role;
 use App\Models\WorkTime;
 use App\Support\Attendances\WorkTime\Service\BranchRoleDefaultWorkTimeService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -21,39 +22,53 @@ use Illuminate\View\View;
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function index(Branch $branch): View
     {
+        $this->authorize('view', BranchRoleDefaultWorkTime::class);
         return view('pages.adms.work-time-settings.branch-role.index', compact('branch'));
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function data(Branch $branch): JsonResponse
     {
+        $this->authorize('view', BranchRoleDefaultWorkTime::class);
         return response()->json($this->branchAndRoleDefaultWorkTimeService->data($branch));
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function search(Request $request, Branch $branch): JsonResponse
     {
+        $this->authorize('view', BranchRoleDefaultWorkTime::class);
         return response()->json($this->branchAndRoleDefaultWorkTimeService->search($request, $branch));
     }
 
 
-    public function filter(Request $request)
-    {
-
-    }
-
-
+    /**
+     * @throws AuthorizationException
+     */
     public function store(Branch $branch, BranchRoleDefaultWorkTimeRequest $request): JsonResponse
     {
+        $this->authorize('create', BranchRoleDefaultWorkTime::class);
         $this->branchAndRoleDefaultWorkTimeService->store($branch, $request);
         return response()->json(['message' => 'data berhasil disimpan']);
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function edit(Branch $branch, Role $role, WorkTime $workTime): JsonResponse
     {
+        $this->authorize('create', BranchRoleDefaultWorkTime::class);
         $roleDefaultWorkTime = BranchRoleDefaultWorkTime::where('role_id', $role->id)
             ->where('branch_id', $branch->id)
             ->where('work_time_id', $workTime->id)
@@ -63,8 +78,12 @@ use Illuminate\View\View;
     }
 
 
-    public function destroy(Branch $branch, Role $role, WorkTime $workTime)
+    /**
+     * @throws AuthorizationException
+     */
+    public function destroy(Branch $branch, Role $role, WorkTime $workTime): JsonResponse
     {
+        $this->authorize('reset', BranchRoleDefaultWorkTime::class);
         BranchRoleDefaultWorkTime::where('role_id', $role->id)->where('branch_id', $branch->id)->where('work_time_id', $workTime->id)->delete();
         return response()->json(['message' => 'data berhasil dihapus']);
     }
