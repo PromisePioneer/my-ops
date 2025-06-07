@@ -11,5 +11,4 @@ class WorkTimeRepository
     {
         return WorkTime::where('is_default', true)->first();
     }
-
 }

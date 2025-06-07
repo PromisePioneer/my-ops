@@ -17,6 +17,7 @@
                     </div>
                 </div>
                 <div class="card-toolbar">
+                    @can('Tambah Data Jam Kerja')
                     <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
                         <button type="button" class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                 data-bs-target="#modal-work-time">
@@ -24,6 +25,7 @@
                             Tambah
                         </button>
                     </div>
+                    @endcan
                 </div>
             </div>
             <div class="card-body py-3">
@@ -78,24 +80,28 @@
                             </template>
                             <template x-for="(shift, index) in shifts?.data" :key="shift.id">
                                 <tr>
-                                    <td>
-                                        <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                             @click="selectCheckBox($event)">
-                                            <input class="form-check-input" type="checkbox" :value="shift.id"
-                                                   :id="'checkbox-' + shift.id"/>
-                                        </div>
-                                    </td>
+                                    <template x-if="Number(deletePermission) === 1">
+                                        <td>
+                                            <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                                 @click="selectCheckBox($event)">
+                                                <input class="form-check-input" type="checkbox" :value="shift.id"
+                                                       :id="'checkbox-' + shift.id"/>
+                                            </div>
+                                        </td>
+                                    </template>
                                     <td>
                                         <a href="#" x-text="shift.name"></a>
                                     </td>
                                     <td x-text="`${shift.clock_in} - ${shift.clock_out}`"></td>
                                     <td x-text="`${shift.time_to_checkin} - ${shift.end_time_to_checkin}`"></td>
                                     <td x-text="`${shift.time_to_checkout} - ${shift.end_time_to_checkout}`"></td>
-                                    <td>
-                                        <input type="checkbox" class="form-check-input"
-                                               :checked="shift.is_default === 1"
-                                               @click="setGlobalDefaultWorkTime(shift.id)">
-                                    </td>
+                                    <template x-if="Number(setGlobalWorkTimePermission) === 1">
+                                        <td>
+                                            <input type="checkbox" class="form-check-input"
+                                                   :checked="shift.is_default === 1"
+                                                   @click="setGlobalDefaultWorkTime(shift.id)">
+                                        </td>
+                                    </template>
                                 </tr>
                             </template>
                             </tbody>
@@ -132,12 +138,15 @@
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
+                defaultWorkTime: null,
                 search: '',
                 editVal: '',
                 shiftId: '',
                 modalForm: new bootstrap.Modal(document.getElementById('modal-work-time')),
                 form: document.getElementById('form-work-time'),
                 formDelete: document.getElementById('form-delete'),
+                deletePermission: "{{ request()->user()->can('Hapus Data Jam Kerja') }}",
+                setGlobalWorkTimePermission: "{{ request()->user()->can('Set Jam Kerja Bawaan') }}",
                 async init() {
                     await this.getShiftsData();
                 },

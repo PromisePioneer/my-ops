@@ -47,4 +47,9 @@ class Role extends SpatieRole
     {
         return $this->hasOne(RoleDefaultWorkTime::class, 'role_id');
     }
+
+    public function branchRoleDefaultWorkTime(): HasOne
+    {
+        return $this->hasOne(BranchRoleDefaultWorkTime::class, 'role_id');
+    }
 }

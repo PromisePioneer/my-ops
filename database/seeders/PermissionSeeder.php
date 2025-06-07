@@ -110,11 +110,12 @@ class PermissionSeeder extends Seeder
         $this->workTime();
         $this->employeeSchedule();
         $this->attendancesSummary();
-
-        $this->attendanceManualRequests();
+        $this->roleDefaultWorkTime();
+        $this->branchDefaultWorkTime();
+        $this->branchRoleDefaultWorkTime();
     }
 
-    public function attendanceManualRequests()
+    public function attendanceManualRequests(): void
     {
         $permissions = [
             'Lihat Menu Permintaan Absensi Manual',
@@ -179,10 +180,10 @@ class PermissionSeeder extends Seeder
     public function workTime(): void
     {
         $permissions = [
-            'Lihat Menu Pengaturan Jam Kerja',
-            'Tambah Data Pengaturan Jam Kerja',
-            'Edit Data Pengaturan Jam Kerja',
-            'Hapus Data Pengaturan Jam Kerja',
+            'Lihat Menu Jam Kerja',
+            'Tambah Data Jam Kerja',
+            'Hapus Data Jam Kerja',
+            'Set Jam Kerja Bawaan',
         ];
 
         foreach ($permissions as $permission) {
@@ -1035,6 +1036,49 @@ class PermissionSeeder extends Seeder
             'Hapus Data Saldo Awal Persediaan',
             'Filter Saldo Awal Persediaan Berdasarkan Cabang',
             'Konfirmasi Data Saldo Awal Persediaan',
+        ];
+
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+    }
+
+    private function roleDefaultWorkTime(): void
+    {
+        $permissions = [
+            'Lihat Menu Jam Kerja Berdasarkan Jabatan',
+            'Tambah Data Jam Kerja Berdasarkan Jabatan',
+            'Reset Data Jam Kerja Berdasarkan Jabatan',
+        ];
+
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+    }
+
+    private function branchDefaultWorkTime(): void
+    {
+        $permissions = [
+            'Lihat Menu Jam Kerja Berdasarkan Cabang',
+            'Tambah Data Jam Kerja Berdasarkan Cabang',
+            'Reset Data Jam Kerja Berdasarkan Cabang'
+        ];
+
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+    }
+
+
+    private function branchRoleDefaultWorkTime(): void
+    {
+        $permissions = [
+            'Lihat Menu Jam Kerja Jabatan Di Cabang',
+            'Tambah Data Jam Kerja Jabatan Di Cabang',
+            'Reset Data Jam Kerja Jabatan Di Cabang'
         ];
 
 

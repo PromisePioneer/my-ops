@@ -4,6 +4,7 @@ namespace App\Support\Attendances\AttendanceSummary;
 
 use App\Models\AttendanceSummary;
 use App\Models\BranchDefaultWorkTime;
+use App\Models\BranchRoleDefaultWorkTime;
 use App\Models\DeviceLog;
 use App\Models\EmployeeSchedule;
 use App\Models\FingerLog;
@@ -176,13 +177,17 @@ class IclockService
         $user = User::with('branch')->where('absent_id', $employeeId)->first();
 
         if ($user) {
+            $branchRoleDefaultWorkTime = BranchRoleDefaultWorkTime::where('branch_id', $user->branch_id)
+                ->where('role_id', $user->roles()->first()->id)
+                ->first();
+            $ifBranchRoleHasWorkTime = !empty($branchRoleDefaultWorkTime) ? WorkTime::find($branchRoleDefaultWorkTime->work_time_id) : null;
             $branchDefaultWorkTime = BranchDefaultWorkTime::where('branch_id', $user->branch_id)->first()?->work_time_id;
             $ifHasBranchWorkTime = !empty($ifBranchHasUniversalWorkTime) ? WorkTime::find($branchDefaultWorkTime) : null;
             $roleDefaultWorkTime = RoleDefaultWorkTime::where('role_id', $user->roles()->first()->id)->first()?->work_time_id;
             $ifHasRoleWorkTime = WorkTime::find($roleDefaultWorkTime);
         }
 
-        return $userShift ?? $ifHasBranchWorkTime ?? $ifHasRoleWorkTime ?? WorkTime::where('is_default', true)->first();
+        return $userShift ?? $ifBranchRoleHasWorkTime ?? $ifHasBranchWorkTime ?? $ifHasRoleWorkTime ?? WorkTime::where('is_default', true)->first();
     }
 
 
@@ -232,12 +237,16 @@ class IclockService
         $user = User::with('branch')->where('absent_id', $attendanceData['employee_id'])->first();
 
         if ($user) {
+            $branchRoleDefaultWorkTime = BranchRoleDefaultWorkTime::where('branch_id', $user->branch_id)
+                ->where('role_id', $user->roles()->first()->id)
+                ->first();
+            $ifBranchRoleHasWorkTime = !empty($branchRoleDefaultWorkTime) ? WorkTime::find($branchRoleDefaultWorkTime->work_time_id)->id : null;
             $ifBranchHasUniversalWorkTime = BranchDefaultWorkTime::where('branch_id', $user->branch_id)->first()?->work_time_id;
             $ifHasBranchWorkTime = !empty($ifBranchHasUniversalWorkTime) ? WorkTime::find($ifBranchHasUniversalWorkTime)->id : null;
             $ifRoleHasWorkTime = RoleDefaultWorkTime::where('role_id', $user->roles()->first()->id)->first();
             $ifHasRoleWorkTime = !empty($ifRoleHasWorkTime) ? WorkTime::find($ifRoleHasWorkTime->work_time_id)->id : null;
         }
-        $shift = $shift->workTime?->id ?? $ifHasBranchWorkTime ?? $ifHasRoleWorkTime ?? WorkTime::where('is_default', true)->first()?->id;
+        $shift = $shift->workTime?->id ?? $ifBranchRoleHasWorkTime ?? $ifHasBranchWorkTime ?? $ifHasRoleWorkTime ?? WorkTime::where('is_default', true)->first()?->id;
 
         $date = Carbon::parse($date);
 

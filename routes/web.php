@@ -19,10 +19,9 @@ use App\Http\Controllers\Accounting\VendorPayrollController;
 use App\Http\Controllers\AccountTransactionController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
-use App\Http\Controllers\AttendanceManualRequestController;
 use App\Http\Controllers\BAAController;
-use App\Http\Controllers\BranchRoleDefaultWorkTimeController;
 use App\Http\Controllers\BranchDefaultWorkTimeController;
+use App\Http\Controllers\BranchRoleDefaultWorkTimeController;
 use App\Http\Controllers\DraftStockController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
@@ -575,15 +574,14 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::prefix('/work-time')->group(function () {
                 Route::get('/', [WorkTimeController::class, 'index']);
                 Route::get('/data', [WorkTimeController::class, 'data']);
-                Route::get('/user/data', [WorkTimeController::class, 'getUserData']);
                 Route::get('/search', [WorkTimeController::class, 'search']);
                 Route::post('/', [WorkTimeController::class, 'store']);
                 Route::post('/destroy', [WorkTimeController::class, 'destroy']);
-                Route::get('/{workTime}', [WorkTimeController::class, 'edit']);
                 Route::post('/{workTime}', [WorkTimeController::class, 'update']);
                 Route::post('/detail/data/destroy', [WorkTimeController::class, 'destroyDetailWorktimeUser']);
                 Route::post('/set-global-default-work-time/{workTime}', [WorkTimeController::class, 'setGlobalDefaultWorkTime']);
                 Route::get('/user/selected/{workTime}', [WorkTimeController::class, 'getSelectedUserWorkTime']);
+                Route::get('/show-default-work-time', [WorkTimeController::class, 'showDefaultWorkTime']);
             });
 
         });
@@ -1026,7 +1024,8 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/search', [BranchDefaultWorkTimeController::class, 'search']);
                 Route::get('/edit/{branch?}/{workTime?}', [BranchDefaultWorkTimeController::class, 'edit']);
                 Route::post('/store', [BranchDefaultWorkTimeController::class, 'store']);
-
+                Route::get('/show-default-work-time/{branch}', [BranchDefaultWorkTimeController::class, 'showDefaultWorkTime']);
+                Route::delete('/reset/{branch}/{workTime}', [BranchDefaultWorkTimeController::class, 'destroy']);
             });
 
             Route::prefix('role')->group(function () {
@@ -1034,12 +1033,17 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/search', [RoleDefaultWorkTimeController::class, 'search']);
                 Route::get('/show/{role?}/{workTime?}', [RoleDefaultWorkTimeController::class, 'show']);
                 Route::post('/store', [RoleDefaultWorkTimeController::class, 'store']);
+                Route::delete('/reset/{role}/{workTime}', [RoleDefaultWorkTimeController::class, 'destroy']);
             });
 
 
             Route::prefix('branch-role')->group(function () {
                 Route::get('/{branch}', [BranchRoleDefaultWorkTimeController::class, 'index']);
                 Route::get('/data/{branch}', [BranchRoleDefaultWorkTimeController::class, 'data']);
+                Route::get('/search/{branch}', [BranchRoleDefaultWorkTimeController::class, 'search']);
+                Route::get('/show/{branch}/{role?}/{workTime?}', [BranchRoleDefaultWorkTimeController::class, 'edit']);
+                Route::post('/store/{branch}', [BranchRoleDefaultWorkTimeController::class, 'store']);
+                Route::delete('/reset/{branch}/{role}/{workTime}', [BranchRoleDefaultWorkTimeController::class, 'destroy']);
             });
         });
 

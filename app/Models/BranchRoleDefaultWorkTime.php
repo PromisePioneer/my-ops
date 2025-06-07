@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BranchRoleDefaultWorkTime extends Model
 {
-    protected $table = 'branch_and_role_default_work_time';
+    protected $table = 'branch_role_default_work_time';
     protected $fillable = [
         'branch_id',
         'work_time_id',

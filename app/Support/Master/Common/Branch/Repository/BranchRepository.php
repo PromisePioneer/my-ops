@@ -71,8 +71,14 @@ class BranchRepository implements BranchRepositoryInterface
     }
 
 
-    public function getBranchAndDefaultWorkTime(): Builder
+    public function getBranchDefaultWorkTime(): Builder
     {
-        return Branch::with('defaultWorkTime')->whereNull('parent_id');
+        return Branch::with('defaultWorkTime')->whereNull('parent_id')->orderBy('name');
+    }
+
+
+    public function getWorkTimeByBranchId(Branch $branch): Branch
+    {
+        return Branch::with('defaultWorkTime')->where('id', $branch->id)->first();
     }
 }

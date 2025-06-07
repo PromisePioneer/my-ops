@@ -11,6 +11,8 @@ use App\Models\Asset;
 use App\Models\AttendanceManualRequest;
 use App\Models\AttendanceSummary;
 use App\Models\Boq;
+use App\Models\BranchDefaultWorkTime;
+use App\Models\BranchRoleDefaultWorkTime;
 use App\Models\BroadbandPacket;
 use App\Models\Company;
 use App\Models\Department;
@@ -29,6 +31,7 @@ use App\Models\OfferingLetter;
 use App\Models\Product;
 use App\Models\PSB;
 use App\Models\PurchaseOrder;
+use App\Models\RoleDefaultWorkTime;
 use App\Models\SP;
 use App\Models\TaxSetting;
 use App\Models\Transaction;
@@ -38,10 +41,11 @@ use App\Policies\AccountCategoryPolicy;
 use App\Policies\AccountPolicy;
 use App\Policies\AreaPolicy;
 use App\Policies\AssetPolicy;
-use App\Policies\AttendanceManualRequestPolicy;
 use App\Policies\AttendanceSummaryPolicy;
 use App\Policies\BoqPolicy;
+use App\Policies\BranchDefaultWorkTimePolicy;
 use App\Policies\BranchPolicy;
+use App\Policies\BranchRoleDefaultWorkTimePolicy;
 use App\Policies\BroadbandPacketPolicy;
 use App\Policies\CompanyPolicy;
 use App\Policies\ContactPolicy;
@@ -58,6 +62,7 @@ use App\Policies\PermissionPolicy;
 use App\Policies\ProductPolicy;
 use App\Policies\PSBPolicy;
 use App\Policies\PurchaseOrderPolicy;
+use App\Policies\RoleDefaultWorkTimePolicy;
 use App\Policies\RolePolicy;
 use App\Policies\ServiceCategoriesPolicy;
 use App\Policies\SKLPolicy;
@@ -110,9 +115,11 @@ class AuthServiceProvider extends ServiceProvider
         PSB::class => PSBPolicy::class,
         EmployeeSchedule::class => EmployeeSchedulePolicy::class,
         Transaction::class => TransactionPolicy::class,
-        AttendanceManualRequest::class => AttendanceManualRequestPolicy::class,
         ItemCollection::class => ItemCollectionPolicy::class,
         InitialInventoryBalance::class => InitialInventoryBalancePolicy::class,
+        RoleDefaultWorkTime::class => RoleDefaultWorkTimePolicy::class,
+        BranchDefaultWorkTime::class => BranchDefaultWorkTimePolicy::class,
+        BranchRoleDefaultWorkTime::class => BranchRoleDefaultWorkTimePolicy::class,
     ];
 
     /**
