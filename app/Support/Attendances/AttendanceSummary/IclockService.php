@@ -4,7 +4,6 @@ namespace App\Support\Attendances\AttendanceSummary;
 
 use App\Models\AttendanceSummary;
 use App\Models\BranchDefaultWorkTime;
-use App\Models\BranchHasDefaultWorkTime;
 use App\Models\BranchRoleDefaultWorkTime;
 use App\Models\DeviceLog;
 use App\Models\EmployeeSchedule;
