@@ -29,12 +29,10 @@ class TrialBalanceService
             $debit = 0;
             $childDebit = 0;
 
-            if ($account->trial_balance_type === 'debit') {
                 $debit = $this->getFilteredTransactionSum($account, 'debit', $request);
                 $childDebit = $account->children->sum(function ($child) use ($request, $account) {
                     return $this->getFilteredTransactionSum($child, 'debit', $request);
                 });
-            }
 
             $credit = $this->getFilteredTransactionSum($account, 'credit', $request);
             $childCredit = $account->children->sum(function ($child) use ($request) {
@@ -44,8 +42,8 @@ class TrialBalanceService
             return [
                 'trial_balance_type' => $account->trial_balance_type,
                 'account_name' => $account->name,
-                'debit' => $account->trial_balance_type === 'debit' ? currencyFormat(($debit + $childDebit) - $childCredit) : null,
-                'credit' => $account->trial_balance_type === 'credit' ? currencyFormat($credit + $childCredit) : null,
+                'debit' => currencyFormat(($debit + $childDebit) - $childCredit) ?? null,
+                'credit' => currencyFormat($credit + $childCredit) ?? null,
                 'balance_debit' => $account->trial_balance_type === 'debit' ? floatval(($debit + $childDebit) - ($credit + $childCredit)) : null,
                 'balance_credit' => $account->trial_balance_type === 'credit' ? floatval($credit + $childCredit) : null,
             ];
@@ -54,9 +52,8 @@ class TrialBalanceService
 
     public function getFilteredTransactionSum($account, $type, ?Request $request): float
     {
-        $transactions = $account->accountTransaction()->where('entries_type', $type)->whereHas('account', function ($query) use ($type) {
-            $query->where('trial_balance_type', $type);
-        })->whereBetween('date', [Carbon::now()->subYear()->endOfYear()->firstOfMonth()->format('Y-m-d'), Carbon::now()->endOfYear()->lastOfMonth()->format('Y-m-d')]);
+        $transactions = $account->accountTransaction()->where('entries_type', $type)
+            ->whereBetween('date', [Carbon::now()->subYear()->endOfYear()->firstOfMonth()->format('Y-m-d'), Carbon::now()->endOfYear()->lastOfMonth()->format('Y-m-d')]);
 
         if ($request?->branch_id) {
             $transactions->where('branch_id', $request->branch_id);

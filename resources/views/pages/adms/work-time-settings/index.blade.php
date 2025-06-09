@@ -8,16 +8,20 @@
                 <h3 class="card-title">Pengaturan Jam Kerja</h3>
                 <div class="card-toolbar">
                     <ul class="nav nav-tabs nav-line-tabs nav-stretch fs-6 border-0">
+                        @can('Lihat Menu Jam Kerja Berdasarkan Jabatan')
                         <li class="nav-item">
                             <a class="nav-link active" data-bs-toggle="tab" href="#kt_tab_pane_1">
                                 Jam Kerja Berdasarkan Jabatan
                             </a>
                         </li>
+                        @endcan
+                        @can('Lihat Menu Jam Kerja Berdasarkan Cabang')
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab" href="#kt_tab_pane_2">
                                 Jam Kerja Berdasarkan Kantor Cabang
                             </a>
                         </li>
+                        @endcan
                     </ul>
                 </div>
             </div>
