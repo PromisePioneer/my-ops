@@ -41,12 +41,13 @@ class TrialBalanceService
                 return $this->getFilteredTransactionSum($child, 'credit', $request);
             });
 
+
             return [
                 'trial_balance_type' => $account->trial_balance_type,
                 'account_name' => $account->name,
                 'debit' => $account->trial_balance_type === 'debit' ? currencyFormat(($debit + $childDebit) - $childCredit) : null,
                 'credit' => $account->trial_balance_type === 'credit' ? currencyFormat($credit + $childCredit) : null,
-                'balance_debit' => $account->trial_balance_type === 'debit' ? floatval(($debit + $childDebit) - ($credit + $childCredit)) : null,
+                'balance_debit' => $account->trial_balance_type === 'debit' ? floatval(($debit + $childDebit) - $childCredit) : null,
                 'balance_credit' => $account->trial_balance_type === 'credit' ? floatval($credit + $childCredit) : null,
             ];
         });
