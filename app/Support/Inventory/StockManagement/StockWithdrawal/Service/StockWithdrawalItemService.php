@@ -3,6 +3,7 @@
 namespace App\Support\Inventory\StockManagement\StockWithdrawal\Service;
 
 use AllowDynamicProperties;
+use App\Models\ItemCatalog;
 use App\Models\StockWithdrawal;
 use App\Support\Inventory\StockManagement\StockWithdrawal\Repository\StockWithdrawalItemRepository;
 use Illuminate\Http\Request;
@@ -52,6 +53,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
     public function formattedData(LengthAwarePaginator $carriedStocks): LengthAwarePaginator
     {
         $data = $carriedStocks->getCollection()->map(function ($query) {
+
+            $itemCatalog = ItemCatalog::where('code', $query->code)->first();
             return [
                 'id' => $query->id,
                 'pic' => $query->stockWithdrawal->stocker->name,
@@ -59,7 +62,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
                 'branch_name' => $query->stockWithdrawal->branch->name,
                 'stock_withdrawal_id' => $query->stock_withdrawal_id,
                 'item_name' => $query->stock->item->name,
-                'code' => $query->code,
+                'code' => $itemCatalog->code ?? $query->code,
                 'status' => $query->status,
                 'qty' => $query->qty,
                 'qty_used' => $query->qty_used

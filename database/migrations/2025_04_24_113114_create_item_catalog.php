@@ -35,8 +35,9 @@ return new class extends Migration {
                 ->cascadeOnUpdate();
             $table->foreignId('asset_id')->nullable()->constrained('assets')->cascadeOnDelete();
             $table->double('qty_in_meter')->nullable();
+            $table->double('broken_qty')->nullable();
             $table->string('code');
-            $table->enum('condition', ['Rusak', 'Baik', 'Diperbaiki']);
+            $table->enum('condition', ['Rusak', 'Baik'])->default('Baik');
             $table->enum('status', ['Tersedia', 'Terpakai', 'Dibawa'])->default('Tersedia');
             $table->foreignId('created_by')->constrained('users');
             $table->timestamps();

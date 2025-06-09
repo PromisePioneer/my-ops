@@ -58,8 +58,16 @@
                                     <tr>
                                         <td x-text="startIndex + index++"></td>
                                         <td x-text="stock.code ?? '-'"></td>
-                                        <td x-text="stock.stock.transaction.item.name"></td>
-                                        <td x-text="stock.qty"></td>
+                                        <td x-text="stock.item_name"></td>
+                                        <td>
+                                            <template x-if="stock.qty_in_meter">
+                                                <span x-text="`${stock.qty_in_meter} Meter`"></span>
+                                            </template>
+
+                                            <template x-if="!stock.qty_in_meter">
+                                                <span x-text="stock.qty"></span>
+                                            </template>
+                                        </td>
                                         <td x-text="stock.status"></td>
                                         <td>
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
@@ -152,8 +160,8 @@
                     </div>
                 </div>
             </div>
+            @include('components.toast')
         </div>
-        @include('components.toast')
         @endsection
         @push('script')
             <script>
@@ -169,6 +177,8 @@
                         consumedOrAppliedStock: [],
                         id: "{{ $stockWithdrawal->id }}",
                         stockWithdrawalItem: {},
+                        itemStatus: 'Sisa',
+                        itemCondition: null,
                         returnStockModal: new bootstrap.Modal(document.getElementById('modal-returning-items')),
                         returnStockForm: document.getElementById('form-returning-items'),
                         async init() {
@@ -196,22 +206,23 @@
                         },
                         async getConsumedOrAppliedStock() {
                             try {
-                                const resp = await axios.get(`/inventory/stock-withdrawals/stock-withdrawal-item/consumed-or-applied-stock/${this.id}`);
+                                const resp = await axios.get(`/inventory/returned-items/${this.id}`);
                                 this.consumedOrAppliedStock = resp.data;
                                 this.startIndex = this.consumedOrAppliedStock.from
                             } catch (e) {
                                 console.log(e);
                             }
                         },
-                        async save(id) {
+                        async save() {
                             this.buttonLoading = true;
                             try {
-                                await axios.post(`/inventory/stock-withdrawals/stock-withdrawal-item/return/${id}`, new FormData(this.returnStockForm));
+                                await axios.post(`/inventory/stock-withdrawals/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.returnStockForm));
                                 await showAlert('success', 'Data berhasil disimpan');
                                 this.returnStockModal.hide();
                                 await this.init();
-                            } catch (e) {
-                                console.log(e);
+                            } catch (error) {
+                                const respError = error.response.data.errors;
+                                Object.keys(respError).map(err => toastr.error(respError[err][0]))
                             } finally {
                                 this.buttonLoading = false;
                             }

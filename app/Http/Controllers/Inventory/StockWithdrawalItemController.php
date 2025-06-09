@@ -35,7 +35,7 @@ use Illuminate\View\View;
         return response()->json($this->stockWithdrawalItemService->search($request));
     }
 
-    public function filter(Request $request)
+    public function filter(Request $request): JsonResponse
     {
         return response()->json($this->stockWithdrawalItemService->filter($request));
     }

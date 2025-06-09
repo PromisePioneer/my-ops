@@ -160,7 +160,7 @@
                             <tr>
                                 <td x-text="startIndex + index++"></td>
                                 <td x-text="item.code"></td>
-                                <template x-if="item.qty_in_meter">
+                                <template x-if="item.qty_in_meter !== null">
                                     <td x-text="`${item.qty_in_meter} Meter`"></td>
                                 </template>
                                 <td class="text-uppercase">

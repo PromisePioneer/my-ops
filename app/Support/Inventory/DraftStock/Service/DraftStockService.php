@@ -2,14 +2,9 @@
 
 namespace App\Support\Inventory\StockManagement\DraftStock\Service;
 
-use AllowDynamicProperties;
-use App\Support\Inventory\StockManagement\DraftStock\Repository\DraftStockRepository;
-
 namespace App\Support\Inventory\DraftStock\Service;
 
 use AllowDynamicProperties;
-use App\Models\DraftStock;
-use App\Support\Inventory\DraftStock\Repository\DraftStockServiceRepository;
 use App\Support\Inventory\StockManagement\DraftStock\Repository\DraftStockRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -70,7 +65,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
                 'id' => $query->id,
                 'transaction_number' => $query->transaction?->transaction_number ?? '-',
                 'name' => $query->transaction?->item?->name ?? $query->initialInventoryBalance->item->name,
-                'qty' => $query->qty . ' ' . $unitType,
+                'qty' => $query->qty,
+                'unit_type' => $unitType,
+                'qty_in_meter' => $query->qty_in_meter,
             ];
         });
 
