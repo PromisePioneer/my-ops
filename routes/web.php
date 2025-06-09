@@ -80,6 +80,7 @@ use App\Http\Controllers\Master\Operational\ItemCollectionController;
 use App\Http\Controllers\Master\Operational\PSBController;
 use App\Http\Controllers\Master\Operational\SupplierController;
 use App\Http\Controllers\MustReorderStockController;
+use App\Http\Controllers\ReturnedItemController;
 use App\Http\Controllers\RoleDefaultWorkTimeController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\StockMutationController;
@@ -744,6 +745,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/stock-withdrawal-items/{stockWithdrawal}', [StockWithdrawalController::class, 'getStockWithdrawalItems']);
             Route::get('/stock-withdrawal-item/{stockWithdrawalItem}', [StockWithdrawalController::class, 'getStockWithdrawalItem']);
             Route::post('/stock-withdrawal-item/return/{stockWithdrawalItem}', [StockWithdrawalController::class, 'returningItems']);
+
         });
         Route::prefix('/stock-withdrawal-items')->group(function () {
             Route::get('/', [StockWithdrawalItemController::class, 'index']);
@@ -751,6 +753,12 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/filter', [StockWithdrawalItemController::class, 'filter']);
             Route::get('/search', [StockWithdrawalItemController::class, 'search']);
             Route::get('/count', [StockWithdrawalItemController::class, 'getCount']);
+            Route::get('/consumed-or-applied-stock/{stockWithdrawalItem}', [StockWithdrawalItemController::class, 'getConsumedOrAppliedStock']);
+        });
+
+
+        Route::prefix('/returned-items')->group(function () {
+            Route::get('/{stockWithdrawal}', [ReturnedItemController::class, 'getReturnedItemByStockWithdrawalId']);
         });
 
 

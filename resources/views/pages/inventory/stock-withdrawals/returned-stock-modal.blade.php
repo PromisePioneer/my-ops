@@ -16,7 +16,51 @@
 
             <form id="form-returning-items" @submit.prevent="save(stockWithdrawalItem.id)">
                 <div class="modal-body">
-                    <template x-if="stockWithdrawalItem.code">
+                    <template x-if="stockWithdrawalItem.withdrawal_item.code">
+
+                        <template x-if="stockWithdrawalItem.item_catalog.qty_in_meter">
+                            <div class="row">
+                                <div class="mb-4">
+                                    <label
+                                        class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Status</label>
+                                    <select class="form-select form-select-solid" name="status" id="status"
+                                            x-model="itemStatus">
+                                        <option value="Sisa">Sisa</option>
+                                        <option value="Habis">Habis</option>
+                                    </select>
+                                </div>
+
+
+                                <div class="mb-4" x-show="itemStatus === 'Sisa'" x-transition x-cloak>
+                                    <label
+                                        class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Jumlah</label>
+                                    <input type="number" class="form-control form-control-solid"
+                                           placeholder="Jumlah Sisa" name="remaining_qty" id="remaining_qty" value="0">
+                                </div>
+
+                                <div class="mb-4" x-show="itemStatus === 'Sisa'" x-transition x-cloak>
+                                    <label
+                                        class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Kondisi</label>
+                                    <select class="form-select form-select-solid" x-model="itemCondition"
+                                            name="item_condition" id="item_condition"
+                                    >
+                                        <option value="Bagus Semua">Bagus Semua</option>
+                                        <option value="Ada Rusak">Ada Rusak</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-4" x-show="itemCondition === 'Ada Rusak'" x-transition x-cloak>
+                                    <label
+                                        class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
+                                        Jumlah Rusak</label>
+                                    <input type="number" class="form-control form-control-solid" name="broken_qty"
+                                           id="broken_qty"
+                                           placeholder="Jumlah Rusak" value="0">
+                                </div>
+                            </div>
+                        </template>
+
+
                         <div class="row">
                             <label
                                 class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Status</label>
@@ -29,7 +73,7 @@
                     </template>
 
 
-                    <template x-if="!stockWithdrawalItem.code">
+                    <template x-if="!stockWithdrawalItem.withdrawal_item.code">
                         <div>
                             <div class="mb-4">
                                 <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">

@@ -13,6 +13,7 @@ class DraftStock extends Model
         'transaction_id',
         'initial_balance_inventory_id',
         'qty',
+        'qty_in_meter',
     ];
 
 

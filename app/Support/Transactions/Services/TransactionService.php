@@ -232,7 +232,8 @@ use function App\Helper\formatDate;
         if ($transaction->item->category->name !== 'Kategori 4') {
             DraftStock::create([
                 'transaction_id' => $transaction->id,
-                'qty' => $transaction->qty
+                'qty' => $transaction->qty,
+                'qty_in_meter' => $transaction->qty_in_meter
             ]);
         } else {
             Stock::create([

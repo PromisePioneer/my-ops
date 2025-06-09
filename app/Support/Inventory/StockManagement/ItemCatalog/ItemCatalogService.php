@@ -143,7 +143,11 @@ use Throwable;
             'condition' => $request->condition,
             'created_by' => $request->user()->id,
             'qty_in_meter' => $draftStock->transaction?->qty_in_meter ?? $draftStock->initialInventoryBalance?->qty_in_meter
+
+
         ]);
+
+
     }
 
 

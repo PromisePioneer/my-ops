@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
+use App\Http\Requests\ReturnedItemRequest;
 use App\Http\Requests\StockWithdrawalRequest;
 use App\Models\ItemCatalog;
+use App\Models\ReturnedItem;
 use App\Models\Stock;
 use App\Models\StockWithdrawal;
 use App\Models\StockWithdrawalItem;
@@ -150,49 +152,46 @@ use Throwable;
 
     public function getStockWithdrawalItem(StockWithdrawalItem $stockWithdrawalItem): JsonResponse
     {
-        return response()->json($stockWithdrawalItem);
+        $itemCatalog = ItemCatalog::where('code', $stockWithdrawalItem->code)->first();
+        return response()->json([
+            'withdrawal_item' => $stockWithdrawalItem,
+            'item_catalog' => $itemCatalog
+        ]);
     }
 
 
     /**
      * @throws Throwable
      */
-    public function returningItems(Request $request, StockWithdrawalItem $stockWithdrawalItem): void
+    public function returningItems(ReturnedItemRequest $request, StockWithdrawalItem $stockWithdrawalItem): void
     {
         $stockWithdrawalItem->load('stock');
         DB::transaction(function () use ($request, $stockWithdrawalItem) {
-            if ($stockWithdrawalItem->code) {
-                $stockWithdrawalItem->stock->decrement('on_hold_qty', $stockWithdrawalItem->qty);
-                $itemCatalog = ItemCatalog::where('code', $stockWithdrawalItem?->code)->first();
-                ItemCatalog::create([
-                    'transaction_id' => $stockWithdrawalItem->stock?->transaction_id,
-                    'stock_id' => $stockWithdrawalItem->stock?->id,
-                    'draft_stock_id' => $stockWithdrawalItem->stock?->draft_stock_id,
-                    'item_id' => $stockWithdrawalItem->stock?->item_id,
-                    'code' => $itemCatalog->code,
-                    'condition' => $itemCatalog->condition,
-                    'created_by' => $itemCatalog->created_by,
-                    'status' => $request->input('status') === 'Terpakai' ? 'Terpakai' : 'Tersedia',
-                    'initial_balance_inventory_id' => $stockWithdrawalItem->stock?->initial_balance_inventory_id,
-                    'asset_id' => $itemCatalog->asset_id,
+            $itemCatalog = ItemCatalog::with('stock.item')->where('code', $stockWithdrawalItem->code)->first();
+
+            if ($itemCatalog->stock->item->must_have_code === 1) {
+                ReturnedItem::create([
+                    'stock_withdrawal_item_id' => $stockWithdrawalItem->id,
+                    'status' => $request->status,
+                    'remaining_qty' => $request->status === 'Habis' ? 0 : $request->remaining_qty,
+                    'item_condition' => $request->status === 'Habis' ? 'Habis' : $request->item_condition,
+                    'broken_qty' => $request->status === 'Habis' ? 0 : $request->broken_qty,
                 ]);
-                $itemCatalog->delete();
+
                 $stockWithdrawalItem->update([
-                    'status' => $request->input('status')
+                    'status' => 'Habis'
                 ]);
-                if ($request->input('status') === 'Dikembalikan') {
-                    $stockWithdrawalItem->stock->increment('qty');
+
+                $itemCatalog->update([
+                    'status' => 'Tersedia',
+                    'qty_in_meter' => $request->remaining_qty - $request->broken_qty,
+                ]);
+
+                if ($request->status !== 'Habis') {
+                    $itemCatalog->increment('broken_qty', $request->broken_qty);
                 }
-            } else {
-                $stockWithdrawalItem->stock->decrement('on_hold_qty', $stockWithdrawalItem->qty);
-                $stockWithdrawalItem->update([
-                    'qty_used' => $stockWithdrawalItem->qty - $request->input('qty'),
-                    'qty' => $request->input('qty'),
-                ]);
-                $stockWithdrawalItem->stock->increment('qty', $request->input('qty'));
-                $stockWithdrawalItem->update([
-                    'status' => 'Habis',
-                ]);
+                $itemCatalog->stock->increment('qty');
+                $itemCatalog->stock->decrement('on_hold_qty');
             }
         });
     }

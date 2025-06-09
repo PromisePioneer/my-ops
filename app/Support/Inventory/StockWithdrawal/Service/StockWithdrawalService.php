@@ -16,7 +16,6 @@ use App\Support\Inventory\StockManagement\StockWithdrawal\Repository\StockWithdr
 use App\Support\Inventory\StockManagement\StockWithdrawal\Repository\StockWithdrawalRepository;
 use App\Support\Inventory\StockManagement\StockWithdrawal\Service\StockWithdrawalQueryFilter;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\FileHelpers;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -149,6 +148,7 @@ use function App\Helper\formatDate;
                     'item_id' => $itemCatalog->item_id,
                     'created_by' => $itemCatalog->created_by,
                     'asset_id' => $itemCatalog->asset_id,
+                    'qty_in_meter' => $itemCatalog->qty_in_meter,
                     'status' => 'Dibawa'
                 ]);
                 $itemCatalog->delete();
@@ -253,9 +253,20 @@ use function App\Helper\formatDate;
     }
 
 
-    public function getStockWithdrawalItems(StockWithdrawal $stockWithdrawal): Collection
+    public function getStockWithdrawalItems(StockWithdrawal $stockWithdrawal)
     {
-        return $this->stockWithdrawalRepository->getStockWithdrawalItems($stockWithdrawal)->get();
+        $data = $this->stockWithdrawalRepository->getStockWithdrawalItems($stockWithdrawal)->get();
+
+        return $data->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'item_name' => $item->stock->item->name,
+                'code' => $item->code,
+                'qty_in_meter' => ItemCatalog::where('code', $item->code)->first()->qty_in_meter,
+                'qty' => $item->qty,
+                'status' => $item->status,
+            ];
+        });
     }
 
 

@@ -2,7 +2,6 @@
 @section('page-title', 'Barang Masuk yang Belum Diproses')
 @section('content')
     <div x-data="draftStockData()">
-        @include('pages.inventory.draft-stocks.generate-code')
         <div class="d-flex flex-column flex-xl-row">
             <div class="flex-column flex-lg-row-auto w-100 w-lg-250px mb-10">
                 <div class="card card-flush">
@@ -81,7 +80,11 @@
                                             <td x-text="startIndex + index++"></td>
                                             <td class="text-center" x-text="stock.transaction_number"></td>
                                             <td class="text-center" x-text="stock.name"></td>
-                                            <td class="text-center" x-text="stock.qty"></td>
+                                            <td>
+                                                <template x-if="stock.qty_in_meter">
+                                                    <span x-text="`${stock.qty} (${stock.qty_in_meter} ${stock.unit_type} per haspel)`"></span>
+                                                </template>
+                                            </td>
                                             <td class="text-center">
                                                 <a :href="`/inventory/draft-stocks/detail/${stock.id}`"
                                                    class="btn btn-light-primary btn-sm">
