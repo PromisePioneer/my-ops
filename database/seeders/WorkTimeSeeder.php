@@ -21,6 +21,7 @@ class WorkTimeSeeder extends Seeder
             'end_time_to_checkin' => '10:00',
             'time_to_checkout' => '17:00',
             'end_time_to_checkout' => '23:59',
+            'is_default' => true
         ]);
 
         WorkTime::create([

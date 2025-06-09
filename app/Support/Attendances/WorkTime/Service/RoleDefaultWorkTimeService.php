@@ -4,7 +4,6 @@ namespace App\Support\Attendances\WorkTime\Service;
 
 use AllowDynamicProperties;
 use App\Models\RoleDefaultWorkTime;
-use App\Models\WorkTime;
 use App\Support\Attendances\WorkTime\Repositories\RoleDefaultWorkTimeRepository;
 use App\Support\Attendances\WorkTime\Repositories\WorkTimeRepository;
 use App\Support\User\Role\Repository\RoleRepository;
@@ -38,20 +37,21 @@ use Illuminate\Pagination\LengthAwarePaginator;
             $roles = $this->roleDefaultWorkTimeRepository->searchQuery($roles, $search);
         }
 
-        $roles->paginate(self::$perPage);
-        return self::formattedData($roles);
+
+        return self::formattedData($roles->paginate(self::$perPage));
     }
 
 
     private static function formattedData(LengthAwarePaginator $roles): LengthAwarePaginator
     {
-        $data = $roles->map(function ($role) {
-            $defaultWorkTime = WorkTimeRepository::getDefaultWorkTime();
+        $data = $roles->getCollection()->map(function ($role) {
+            $defaultWorkTime = RoleDefaultWorkTimeRepository::getDefaultWorkTime($role->id) ?? WorkTimeRepository::getDefaultWorkTime();
             return [
                 'id' => $role->id,
                 'name' => $role->name,
-                'work_time' => WorkTimeService::getWorkTime($role->defaultWorkTime?->workTime ?? $defaultWorkTime),
-                'work_time_id' => $role->defaultWorkTime->workTime?->id ?? $defaultWorkTime->id,
+                'work_time' => WorkTimeService::getWorkTime($role->defaultWorkTime?->workTime),
+                'default_work_time' => WorkTimeService::getWorkTime($defaultWorkTime),
+                'work_time_id' => $role->defaultWorkTime?->workTime?->id,
             ];
         });
 

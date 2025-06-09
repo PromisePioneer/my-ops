@@ -6,30 +6,22 @@ use App\Models\User;
 
 class WorkTimePolicy
 {
-
     public function view(User $user): bool
     {
-        return $user->can('Lihat Jam Kerja');
+        return $user->can('Lihat Menu Jam Kerja');
     }
 
     public function create(User $user): bool
     {
-        return $user->can('Tambah Jam Kerja');
+        return $user->can('Tambah Data Jam Kerja');
     }
-
-    public function edit(User $user): bool
-    {
-        return $user->can('Update Jam Kerja');
-    }
-
     public function destroy(User $user): bool
     {
-        return $user->can('Hapus Jam Kerja');
+        return $user->can('Hapus Data Jam Kerja');
     }
 
-
-    public function viewDetail(User $user): bool
+    public function setGlobalDefaultWorkTime(User $user): bool
     {
-        return $user->can('Lihat Jam Kerja Karyawan');
+        return $user->can('Set Jam Kerja Bawaan');
     }
 }

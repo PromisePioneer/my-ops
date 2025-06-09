@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Support\Attendances\WorkTime\Service;
+namespace App\Support\Attendances\WorkTime\Service\BranchDefaultWorkTime;
 
 use AllowDynamicProperties;
 use App\Http\Requests\BranchDefaultWorkTimeRequest;
 use App\Models\BranchDefaultWorkTime;
-use App\Models\WorkTime;
+use App\Models\Master\Common\Branch;
 use App\Support\Attendances\WorkTime\Repositories\BranchDefaultWorkTimeRepository;
 use App\Support\Attendances\WorkTime\Repositories\WorkTimeRepository;
+use App\Support\Attendances\WorkTime\Service\WorkTimeService;
 use App\Support\Master\Common\Branch\Repository\BranchRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -23,20 +24,20 @@ use Illuminate\Pagination\LengthAwarePaginator;
     }
 
 
-    public function data(): LengthAwarePaginator
+    public function data(Request $request): LengthAwarePaginator
     {
-        $workTimes = $this->branchRepository->getBranchAndDefaultWorkTime()->paginate(self::$perPage);
-        return self::formattedData($workTimes);
+        $workTimes = $this->branchRepository->getBranchDefaultWorkTime();
+        return self::formattedData(BranchDefaultWorkTimeACLFilter::apply($workTimes, $request)->paginate(self::$perPage));
     }
 
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $data = $this->branchRepository->getBranchAndDefaultWorkTime();
+        $data = $this->branchRepository->getBranchDefaultWorkTime();
         if (!empty($search)) {
             $data = $this->branchDefaultWorkTimeRepository->searchQuery($data, $search);
         }
-        return self::formattedData($data->paginate(self::$perPage));
+        return self::formattedData(BranchDefaultWorkTimeACLFilter::apply($data, $request)->paginate(self::$perPage));
     }
 
 
@@ -47,8 +48,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
             return [
                 'id' => $item->id,
                 'name' => $item->name,
-                'work_time' => WorkTimeService::getWorkTime($item->defaultWorkTime?->workTime ?? $defaultWorkTime),
-                'work_time_id' => $item->defaultWorkTime?->workTime?->id ?? $defaultWorkTime->id,
+                'work_time' => WorkTimeService::getWorkTime($item->defaultWorkTime?->workTime),
+                'work_time_id' => $item->defaultWorkTime?->workTime?->id,
             ];
         });
 
@@ -74,5 +75,12 @@ use Illuminate\Pagination\LengthAwarePaginator;
             'work_time_id' => $request->work_time_id,
             'branch_id' => $request->branch_id
         ]);
+    }
+
+
+    public function getBranchDefaultWorkTime(Branch $branch): string
+    {
+        $branchDefaultWorkTime = BranchDefaultWorkTimeRepository::getDefaultWorkTime($branch);
+        return WorkTimeService::getWorkTime($branchDefaultWorkTime);
     }
 }

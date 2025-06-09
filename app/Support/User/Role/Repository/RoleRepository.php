@@ -10,13 +10,15 @@ class RoleRepository
 {
     public function getRoleWithWorkTime(): Builder
     {
-        return Role::with('defaultWorkTime');
+        return Role::with('defaultWorkTime')->orderBy('name');
     }
 
 
-    public function getBranchRoles(Branch $branch)
+    public function getBranchRoles(Branch $branch): Builder
     {
-        return Role::whereNotIn('name', [
+        return Role::with(['branchRoleDefaultWorkTime' => function ($query) use ($branch) {
+            $query->where('branch_id', $branch->id);
+        }])->whereNotIn('name', [
             'Main Commissioner',
             'General Manager',
             'Inventory Controller Supervisor',
@@ -47,6 +49,9 @@ class RoleRepository
             'NOC Supervisor',
             'NOC Staff',
             'Programmer',
-        ]);
+            'Super Admin',
+            'Director',
+            'Vendor'
+        ])->orderBy('name');
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ADMS\WorkTimeRequest;
 use App\Models\User;
 use App\Models\WorkTime;
+use App\Support\Attendances\WorkTime\Repositories\WorkTimeRepository;
 use App\Support\Attendances\WorkTime\Service\WorkTimeService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -55,15 +56,6 @@ use Illuminate\View\View;
     /**
      * @throws AuthorizationException
      */
-    public function getUserData(Request $request): JsonResponse
-    {
-        $this->authorize('view', User::class);
-        return response()->json($this->user->getUserBasedOnBranch($request));
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
     public function store(WorkTimeRequest $request): JsonResponse
     {
         $this->authorize('create', WorkTime::class);
@@ -76,31 +68,6 @@ use Illuminate\View\View;
         ]);
     }
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function edit(WorkTime $workTime): JsonResponse
-    {
-        $this->authorize('update', $workTime);
-        return response()->json($workTime);
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
-    public function update(WorkTimeRequest $request, WorkTime $workTime): JsonResponse
-    {
-        $this->authorize('update', $workTime);
-        $workTime->update($request->validated());
-
-        return response()->json([
-            'message' => 'Data berhasil disimpan',
-        ]);
-    }
-
-    /**
-     * @throws AuthorizationException
-     */
 
     /**
      * @throws AuthorizationException
@@ -116,8 +83,12 @@ use Illuminate\View\View;
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function setGlobalDefaultWorkTime(WorkTime $workTime): JsonResponse
     {
+        $this->authorize('setGlobalDefaultWorkTime', $workTime);
         $this->workTimeService->setGlobalDefaultWorkTime($workTime);
         return response()->json(['message' => 'Data berhasil disimpan']);
     }
@@ -129,8 +100,16 @@ use Illuminate\View\View;
     }
 
 
-    public function selectedWorkTime(WorkTime $workTime): JsonResponse
+    public function selectedWorkTime(WorkTime $workTime): array
     {
-        return response()->json($this->workTimeService->selectedWorkTime($workTime));
+        return [
+            'id' => $workTime->id,
+            'name' => "{$workTime->name} ({$workTime->clock_in} - {$workTime->clock_out})",
+        ];
+    }
+
+    public function showDefaultWorkTime(): string
+    {
+        return WorkTimeService::getWorkTime(WorkTimeRepository::getDefaultWorkTime());
     }
 }

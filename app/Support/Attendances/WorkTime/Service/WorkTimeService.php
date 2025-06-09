@@ -64,15 +64,6 @@ class WorkTimeService
         })->toArray();
     }
 
-
-    public function selectedWorkTime(WorkTime $workTime): array
-    {
-        return [
-            'id' => $workTime->id,
-            'name' => $workTime->name
-        ];
-    }
-
     public function setGlobalDefaultWorkTime(WorkTime $workTime): void
     {
         DB::transaction(function () use ($workTime) {
@@ -82,8 +73,11 @@ class WorkTimeService
     }
 
 
-    public static function getWorkTime(object $defaultWorkTime): string
+    public static function getWorkTime(?WorkTime $defaultWorkTime): ?string
     {
+        if (empty($defaultWorkTime)) {
+            return null;
+        }
         return "{$defaultWorkTime->name} ({$defaultWorkTime->clock_in} - {$defaultWorkTime->clock_out})";
     }
 }
