@@ -349,6 +349,8 @@ class IclockService
         $checkOutEnd = Carbon::parse($checkOutEnd);
 
 
+
+
         return $date->greaterThanOrEqualTo($checkOutStart) && $date->lessThanOrEqualTo($checkOutEnd);
     }
 }
