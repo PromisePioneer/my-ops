@@ -54,9 +54,7 @@ class TrialBalanceService
 
     public function getFilteredTransactionSum($account, $type, ?Request $request): float
     {
-        $transactions = $account->accountTransaction()->where('entries_type', $type)->whereHas('account', function ($query) use ($type) {
-            $query->where('trial_balance_type', $type);
-        })->whereBetween('date', [Carbon::now()->subYear()->endOfYear()->firstOfMonth()->format('Y-m-d'), Carbon::now()->endOfYear()->lastOfMonth()->format('Y-m-d')]);
+        $transactions = $account->accountTransaction()->where('entries_type', $type)->whereBetween('date', [Carbon::now()->subYear()->endOfYear()->firstOfMonth()->format('Y-m-d'), Carbon::now()->endOfYear()->lastOfMonth()->format('Y-m-d')]);
 
         if ($request?->branch_id) {
             $transactions->where('branch_id', $request->branch_id);
