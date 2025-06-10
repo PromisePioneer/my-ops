@@ -197,7 +197,7 @@ use Illuminate\View\View;
 
         return $stock->map(function ($stock) {
             $itemCatalog = [];
-            foreach ($stock->itemCatalog->where('status', 'Tersedia') as $value) {
+            foreach ($stock->itemCatalog as $value) {
                 $itemCatalog[] = [
                     'id' => $value->id,
                     'stock_id' => $stock->id,

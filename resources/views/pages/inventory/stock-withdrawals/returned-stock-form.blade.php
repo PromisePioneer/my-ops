@@ -139,10 +139,6 @@
                                         <td x-text="stock.consumed_qty"></td>
                                         <td x-text="stock.returned_qty"></td>
                                         <td x-text="stock.broken_qty"></td>
-                                        {{--                                            <td colspan="3"--}}
-                                        {{--                                                :class="stock.status === 'Dikembalikan' ? 'bg-danger text-danger' : 'bg-success text-white text-uppercase'">--}}
-                                        {{--                                                <span x-text="stock.status"></span>--}}
-                                        {{--                                            </td>--}}
                                     </tr>
                                     </tbody>
                                 </template>

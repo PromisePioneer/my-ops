@@ -16,9 +16,9 @@ return new class extends Migration {
                 ->constrained('stock_withdrawal_items')
                 ->cascadeOnDelete();
             $table->enum('status', ['Sisa', 'Dikembalikan', 'Habis']);
-            $table->double('remaining_qty');
-            $table->enum('item_condition', ['Ada Rusak', 'Bagus Semua', 'Habis']);
-            $table->double('broken_qty');
+            $table->double('remaining_qty')->nullable()->default(0);
+            $table->enum('item_condition', ['Ada Rusak', 'Bagus Semua', 'Habis', 'Baik', 'Rusak']);
+            $table->double('broken_qty')->nullable()->default(0);
             $table->timestamps();
         });
     }
