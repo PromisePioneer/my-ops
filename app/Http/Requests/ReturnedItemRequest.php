@@ -36,9 +36,9 @@ class ReturnedItemRequest extends FormRequest
                 $maxRemainingQty
 
             ],
-            'broken_qty' => [
-                Rule::requiredIf($request->item_condition == 'Rusak')
-            ],
+//            'broken_qty' => [
+//                Rule::requiredIf($request->item_condition === 'Rusak' && ItemCatalog::where('code', $request->route('stockWithdrawalItem')->code)->first()->qty_in_meter !== null)
+//            ],
         ];
     }
 

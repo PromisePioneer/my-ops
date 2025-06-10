@@ -38,7 +38,7 @@ class StockWithdrawalItemRepository
 
     public function getConsumedOrAppliedStock(StockWithdrawal $stockWithdrawal): EloquentBuilder
     {
-        return StockWithdrawalItem::with('stock', 'stock.transaction.item')
+        return StockWithdrawalItem::with('stock', 'stock.transaction.item.category')
             ->where('stock_withdrawal_id', $stockWithdrawal->id)
             ->whereIn('status', ['Habis', 'Terpakai', 'Dikembalikan']);
     }

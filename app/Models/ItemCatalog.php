@@ -22,6 +22,12 @@ class ItemCatalog extends Model
         'qty_in_meter'
     ];
 
+
+    public function draftStock(): BelongsTo
+    {
+        return $this->belongsTo(DraftStock::class, 'draft_stock_id');
+    }
+
     public function stock(): BelongsTo
     {
         return $this->belongsTo(Stock::class, 'stock_id');

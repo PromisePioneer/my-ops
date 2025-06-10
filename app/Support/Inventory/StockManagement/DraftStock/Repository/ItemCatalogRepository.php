@@ -15,11 +15,9 @@ class ItemCatalogRepository
     }
 
 
-    public function getLatestItem()
+    public function getLatestItem(): Builder
     {
-        return ItemCatalog::with('transaction.branch.parent', 'transaction.item', 'initialInventoryBalance.branch.parent', 'initialInventoryBalance.item')
-            ->orderBy('created_at', 'desc')
-            ->latest()
-            ->first();
+        return ItemCatalog::with('transaction.branch.parent', 'transaction.item', 'initialInventoryBalance.branch.parent', 'initialInventoryBalance.item', 'draftStock')
+            ->orderBy('created_at', 'desc');
     }
 }
