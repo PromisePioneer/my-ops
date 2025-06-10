@@ -50,6 +50,7 @@ class LeaveAndPermissionRequest extends FormRequest
             ],
             'end_date' => [
                 Rule::requiredIf($request->leaves_status === 'Izin' || $request->leaves_status === 'Sakit' || $request->leaves_status === 'Cuti'),
+                'after_or_equal:start_date'
             ],
             'reason' => [Rule::requiredIf($request->leaves_status === 'Izin' || $request->leaves_status === 'Sakit')],
             'leaves_status' => ['required'],
@@ -163,7 +164,8 @@ class LeaveAndPermissionRequest extends FormRequest
             'start_date.date' => 'Tanggal awal harus berupa tanggal',
             'end_date.required' => 'Tanggal akhir tidak boleh kosong',
             'leaves_status.required' => 'Status Cuti tidak boleh kosong',
-            'sick_letter.required' => 'Surat Sakit tidak boleh kosong.'
+            'sick_letter.required' => 'Surat Sakit tidak boleh kosong.',
+            'end_date.after_or_equal' => 'Tanggal akhir harus setelah tanggal awal'
         ];
     }
 }
