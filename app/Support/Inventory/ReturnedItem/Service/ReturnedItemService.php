@@ -3,6 +3,7 @@
 namespace App\Support\Inventory\ReturnedItem\Service;
 
 use AllowDynamicProperties;
+use App\Models\ItemCatalog;
 use App\Models\StockWithdrawal;
 use App\Support\Inventory\ReturnedItem\Repository\ReturnedItemRepository;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -20,7 +21,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
     public function getReturnedItemByStockWithdrawalId(StockWithdrawal $stockWithdrawal): LengthAwarePaginator
     {
         $returnedItems = $this->returnedItemRepository->getReturnedItemByStockWithdrawalId($stockWithdrawal)->paginate(self::$perPage);
-        dd($returnedItems);
         return self::formattedData($returnedItems);
     }
 
@@ -28,9 +28,17 @@ use Illuminate\Pagination\LengthAwarePaginator;
     private static function formattedData(LengthAwarePaginator $returnedItems): LengthAwarePaginator
     {
         $data = $returnedItems->getCollection()->map(function ($returnedItem) {
+            $itemCatalog = ItemCatalog::where('code', $returnedItem->stockWithdrawalItem->code)->first();
+
             return [
                 'id' => $returnedItem->id,
-                'item_name' => $returnedItem->stockWithdrawalItem->stockWithdrawal->stock->item?->name,
+                'code' => $returnedItem->stockWithdrawalItem->code,
+                'item_name' => $returnedItem->stockWithdrawalItem->stock->item?->name,
+                'qty' => $returnedItem->stockWithdrawalItem->qty . $returnedItem->stockWithdrawalItem->stock->item->unitType->name,
+                'consumed_qty' => $returnedItem->stockWithdrawalItem->qty_in_meter - $returnedItem->remaining_qty - $returnedItem->broken_qty,
+                'returned_qty' => $returnedItem->remaining_qty,
+                'broken_qty' => $returnedItem->broken_qty,
+                'status' => $returnedItem->status,
             ];
         });
 

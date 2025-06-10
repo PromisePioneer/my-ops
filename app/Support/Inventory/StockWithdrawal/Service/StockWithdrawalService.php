@@ -157,6 +157,7 @@ use function App\Helper\formatDate;
                     'stock_id' => $itemCatalog->stock_id,
                     'code' => $itemCatalog->code,
                     'status' => 'Dibawa',
+                    'qty_in_meter' => $itemCatalog->qty_in_meter,
                     'qty' => 1,
                 ]);
             }

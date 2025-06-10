@@ -10,7 +10,7 @@ class ReturnedItemRepository
 {
     public function getReturnedItemByStockWithdrawalId(StockWithdrawal $stockWithdrawal): Builder
     {
-        return ReturnedItem::with('stockWithdrawalItem.stockWithdrawal.stock.item')
+        return ReturnedItem::with('stockWithdrawalItem.stock.item.unitType')
             ->whereHas('stockWithdrawalItem', function ($query) use ($stockWithdrawal) {
                 $query->where('stock_withdrawal_id', $stockWithdrawal->id);
             });
