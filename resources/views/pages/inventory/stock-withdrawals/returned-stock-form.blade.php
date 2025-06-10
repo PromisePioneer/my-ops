@@ -103,9 +103,9 @@
                                     <th class="w-10px pe-2">#</th>
                                     <th class="min-w-125px">Kode</th>
                                     <th class="min-w-125px">Barang</th>
-                                    <th class="min-w-125px">Jml Terpakai</th>
-                                    <th class="min-w-125px">Jml Dikembalikan</th>
-                                    <th class="min-w-125px">Status Terkini</th>
+                                    <th class="min-w-125px">Terpakai</th>
+                                    <th class="min-w-125px">Dikembalikan</th>
+                                    <th class="min-w-125px">Rusak</th>
                                 </tr>
                                 </thead>
                                 <template x-if="isLoading">
@@ -132,27 +132,18 @@
                                 </template>
                                 <template x-for="(stock, index) in consumedOrAppliedStock.data" :key="index">
                                     <tbody class="fw-bolder text-center">
-                                    <template x-if="!stock.code">
-                                        <tr>
-                                            <td x-text="startIndex + index++"></td>
-                                            <td x-text="stock.code ?? '-'"></td>
-                                            <td x-text="stock.item_name"></td>
-                                            <td x-text="stock.qty_used"></td>
-                                            <td x-text="stock.qty"></td>
-                                            <td x-text="stock.status"></td>
-                                        </tr>
-                                    </template>
-                                    <template x-if="stock.code">
-                                        <tr>
-                                            <td x-text="startIndex + index++"></td>
-                                            <td x-text="stock.code ?? '-'"></td>
-                                            <td x-text="stock.item_name"></td>
-                                            <td colspan="3"
-                                                :class="stock.status === 'Dikembalikan' ? 'bg-danger text-danger' : 'bg-success text-white text-uppercase'">
-                                                <span x-text="stock.status"></span>
-                                            </td>
-                                        </tr>
-                                    </template>
+                                    <tr>
+                                        <td x-text="startIndex + index++"></td>
+                                        <td x-text="stock.code ?? '-'"></td>
+                                        <td x-text="stock.item_name"></td>
+                                        <td x-text="stock.consumed_qty"></td>
+                                        <td x-text="stock.returned_qty"></td>
+                                        <td x-text="stock.broken_qty"></td>
+                                        {{--                                            <td colspan="3"--}}
+                                        {{--                                                :class="stock.status === 'Dikembalikan' ? 'bg-danger text-danger' : 'bg-success text-white text-uppercase'">--}}
+                                        {{--                                                <span x-text="stock.status"></span>--}}
+                                        {{--                                            </td>--}}
+                                    </tr>
                                     </tbody>
                                 </template>
                             </table>
