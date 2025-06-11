@@ -13,7 +13,8 @@ class ReturnedItem extends Model
         'status',
         'remaining_qty',
         'item_condition',
-        'broken_qty'
+        'broken_qty',
+        'attachment'
     ];
 
 

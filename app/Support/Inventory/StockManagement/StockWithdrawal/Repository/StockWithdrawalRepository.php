@@ -17,8 +17,7 @@ class StockWithdrawalRepository
 
     public function getStockWithdrawalItems(StockWithdrawal $stockWithdrawal)
     {
-        return StockWithdrawalItem::with('stock', 'stock.transaction.item', 'returnedItem')
-            ->where('status', 'Dibawa')
+        return StockWithdrawalItem::with('stock', 'stock.transaction.item.unitType', 'returnedItem')
             ->where('stock_withdrawal_id', $stockWithdrawal->id);
     }
 

@@ -39,6 +39,20 @@ class ReturnedItemRequest extends FormRequest
 //            'broken_qty' => [
 //                Rule::requiredIf($request->item_condition === 'Rusak' && ItemCatalog::where('code', $request->route('stockWithdrawalItem')->code)->first()->qty_in_meter !== null)
 //            ],
+            'attachment' => ['required', 'image', 'max:2048'],
+        ];
+    }
+
+
+    public function messages(): array
+    {
+        return [
+            'remaining_qty.required' => 'Jumlah sisa tidak boleh kosong',
+            'remaining_qty.numeric' => 'Jumlah sisa harus berupa angka',
+            'remaining_qty.min' => 'Jumlah sisa harus lebih dari 0',
+            'attachment.required' => 'File tidak boleh kosong',
+            'attachment.image' => 'File harus berupa gambar',
+            'attachment.max' => 'File tidak boleh lebih dari 2MB',
         ];
     }
 

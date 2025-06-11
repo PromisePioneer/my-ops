@@ -14,7 +14,6 @@ class StockWithdrawalItem extends Model
         'stock_id',
         'code',
         'qty',
-        'status',
         'qty_in_meter',
     ];
 

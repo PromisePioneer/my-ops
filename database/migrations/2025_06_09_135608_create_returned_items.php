@@ -15,10 +15,11 @@ return new class extends Migration {
             $table->foreignId('stock_withdrawal_item_id')
                 ->constrained('stock_withdrawal_items')
                 ->cascadeOnDelete();
-            $table->enum('status', ['Sisa', 'Dikembalikan', 'Habis']);
+            $table->enum('status', ['Sisa', 'Dikembalikan', 'Habis', 'Terpakai']);
             $table->double('remaining_qty')->nullable()->default(0);
             $table->enum('item_condition', ['Ada Rusak', 'Bagus Semua', 'Habis', 'Baik', 'Rusak']);
             $table->double('broken_qty')->nullable()->default(0);
+            $table->string('attachment');
             $table->timestamps();
         });
     }
