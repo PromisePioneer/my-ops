@@ -7,16 +7,12 @@ use App\Http\Requests\ItemCatalogRequest;
 use App\Models\Asset;
 use App\Models\DraftStock;
 use App\Models\ItemCatalog;
-use App\Models\ItemCollection;
 use App\Models\Stock;
-use App\Models\StockMutationItem;
-use App\Models\StockWithdrawalItem;
 use App\Support\HelperService\UsefulLifeService;
 use App\Support\Inventory\StockManagement\DraftStock\Repository\ItemCatalogRepository;
 use App\Support\Inventory\StockManagement\Stock\Repository\StockRepository;
 use App\Support\Inventory\StockManagement\StockWithdrawal\Repository\StockWithdrawalItemRepository;
 use App\Support\Master\Accounting\Accounts\Repositories\AccountRepository;
-use App\Support\Master\Accounting\Assets\Service\AssetService;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -32,12 +28,18 @@ use Throwable;
         $this->itemCatalogRepository = new ItemCatalogRepository();
         $this->stockWithdrawalItemRepository = new StockWithdrawalItemRepository();
         $this->stockRepository = new StockRepository();
-        $this->assetService = new AssetService();
+    }
+
+    public function findByDraftStock(DraftStock $draftStock): LengthAwarePaginator
+    {
+        $catalog = $this->itemCatalogRepository->findByDraftStock($draftStock)->paginate(self::$perPage);
+        return $this->formattedData($catalog);
     }
 
     public function formattedData(LengthAwarePaginator $catalog): LengthAwarePaginator
     {
         $data = $catalog->getCollection()->map(function ($query) {
+
             return [
                 'id' => $query->id,
                 'item_name' => $query->transaction?->item?->name
@@ -47,7 +49,7 @@ use Throwable;
                 'created_at' => $query->created_at,
                 'created_by' => $query->createdBy->name,
                 'status' => $query->status,
-                'qty' => $query->qty,
+                'qty_in_meter' => $query->qty_in_meter,
             ];
         });
 
@@ -67,7 +69,7 @@ use Throwable;
             $stock = $this->findOrCreateStock($draftStock, $request);
             $draftStock->decrement('qty');
             if ($draftStock->transaction?->item?->type === 'ASET' || $draftStock->initialInventoryBalance?->item?->type === 'ASET') {
-                $asset = $this->insertAsset($request, $draftStock, $stock);
+                $asset = self::insertAsset($request, $draftStock, $stock);
                 self::insertItemCatalog($request, $draftStock, $stock, $asset);
             } else {
                 self::insertItemCatalog($request, $draftStock, $stock);
@@ -78,54 +80,45 @@ use Throwable;
 
     public function findOrCreateStock(DraftStock $draftStock, Request $request): Stock
     {
-        $stock = $this->stockRepository->findByDraftStock($draftStock);
+        $stock = $this->stockRepository->findByDraftStock($draftStock, $request->condition);
+
         if (empty($stock)) {
-            return self::insertStock($draftStock);
+            return self::insertStock($draftStock, $request);
         }
-
-        if ($request->condition === 'Rusak') {
-            $stock->increment('broken_qty', $draftStock->transaction?->qty_in_meter ?? 1);
-        } else {
-            $stock->increment('available_qty', $draftStock->transaction?->qty_in_meter ?? 1);
-        }
-
+        $stock->increment('qty');
         return $stock;
     }
 
 
-    /**
-     * @throws Throwable
-     */
-    private function insertAsset(Request $request, DraftStock $draftStock, Stock $stock)
+    private static function insertAsset(Request $request, DraftStock $draftStock, Stock $stock): Asset
     {
         $itemObject = $draftStock->transaction?->item ?? $draftStock->initialInventoryBalance?->item;
-        $asset = Asset::create([
+        return Asset::create([
             'branch_id' => $draftStock->transaction?->branch_id ?? $draftStock->initialInventoryBalance?->branch_id,
             'code' => $request->code,
             'stock_id' => $stock->id,
             'item_id' => $draftStock->transaction?->item_id ?? $draftStock->initialInventoryBalance?->item_id,
             'date' => $draftStock->transaction?->date ?? $draftStock->initialInventoryBalance?->date,
             'useful_life' => UsefulLifeService::getUsefulLife(
-                AccountRepository::findByTransactionOrInitialInventoryBalanceId($draftStock)->code,
+                AccountRepository::findByTransactionOrInitialInventoryBalanceId($draftStock),
                 $itemObject->non_building_group,
                 $itemObject?->building_type
             ),
             'price' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance?->unit_price,
         ]);
-
-        return $asset;
     }
 
 
-    private static function insertStock(DraftStock $draftStock): Stock
+    private static function insertStock(DraftStock $draftStock, Request $request): Stock
     {
         return Stock::create([
             'branch_id' => $draftStock->transaction?->branch_id ?? $draftStock->initialInventoryBalance->branch_id,
             'transaction_id' => $draftStock->transaction_id,
             'initial_balance_inventory_id' => $draftStock->initial_balance_inventory_id,
-            'on_hold_qty' => 0,
-            'available_qty' => $draftStock->transaction?->qty_in_meter ?? 1,
-            'broken_qty' => 0,
+            'item_id' => $draftStock->transaction->item_id ?? $draftStock->initialInventoryBalance->item_id,
+            'draft_stock_id' => $draftStock->id,
+            'qty' => 1,
+            'condition' => $request->condition
         ]);
     }
 
@@ -133,14 +126,16 @@ use Throwable;
     private static function insertItemCatalog(Request $request, DraftStock $draftStock, ?Stock $stock, ?Asset $asset = null): ItemCatalog
     {
         return ItemCatalog::create([
+            'transaction_id' => $draftStock->transaction_id,
+            'initial_balance_inventory_id' => $draftStock->initial_balance_inventory_id,
+            'draft_stock_id' => $draftStock->id,
             'stock_id' => $stock->id,
             'item_id' => $draftStock->transaction->item_id ?? $draftStock->initialInventoryBalance->item_id,
             'code' => $request->code,
-            'asset_id' => $asset->id ?? null,
+            'asset_id' => $asset->id,
             'condition' => $request->condition,
             'created_by' => $request->user()->id,
-            'available_qty' => $draftStock->transaction->qty_in_meter ?? 1,
-            'broken_qty' => 0,
+            'qty_in_meter' => $draftStock->transaction?->qty_in_meter ?? $draftStock->initialInventoryBalance?->qty_in_meter
         ]);
     }
 
@@ -150,22 +145,13 @@ use Throwable;
      */
     public function destroy(ItemCatalog $itemCatalog): void
     {
-        $itemCatalog->load('stock.transaction', 'stock.initialInventoryBalance');
+
+        $itemCatalog->load('transaction');
         $oldStock = $this->stockRepository->findByItemCatalog($itemCatalog);
         DB::transaction(function () use ($oldStock, $itemCatalog) {
-            $stockMutationItem = StockMutationItem::where('code', $itemCatalog->code)->first();
-            $stockWithdrawalItem = StockWithdrawalItem::where('code', $itemCatalog->code)->first();
-
-
-            if ($stockWithdrawalItem || $stockMutationItem) {
-                throw new \Exception('Tidak bisa dihapus, karena barang sudah di mutasi / di pakai');
-            }
-
             if (!empty($oldStock) && $itemCatalog->status === 'Tersedia') {
-                DraftStock::where(
-                    'id', $itemCatalog->stock?->transaction_id ?? $itemCatalog->stock?->initial_inventory_balance_id
-                )->increment('qty');
-                $oldStock->decrement('available_qty', $itemCatalog->available_qty + $itemCatalog->broken_qty);
+                DraftStock::where('id', $itemCatalog->draft_stock_id)->increment('qty');
+                $oldStock->decrement('qty');
                 $itemCatalog->delete();
                 Asset::where('id', $itemCatalog->asset_id)->delete();
             }
@@ -174,16 +160,11 @@ use Throwable;
 
     public function generateAutomaticItemCode(DraftStock $draftStock): string
     {
-        $draftStock->load('transaction.branch.parent', 'transaction.item', 'initialInventoryBalance.item');
-
-        if ($draftStock->transaction?->item?->is_code_listed === 1 || $draftStock->initialInventoryBalance?->item?->is_code_listed === 1) {
-            return '';
-        }
-
+        $draftStock->load('transaction.branch.parent', 'transaction.item');
         $latestItemCatalog = $this->itemCatalogRepository
             ->getLatestItem(
                 $draftStock->transaction?->item_id
-                ?? $draftStock->initialInventoryBalance?->item_id
+                ?? $draftStock->initialInventoryBalance->item_id
             )->latest()
             ->first();
         $month = date('m');
@@ -206,28 +187,5 @@ use Throwable;
 
         return $month . '.' . $year . '.' . $code . '-' .
             $branchCode . '.' . $startValue;
-    }
-
-
-    public function findByItemId(ItemCollection $itemCollection): LengthAwarePaginator
-    {
-        $query = $this->itemCatalogRepository->findByItemId($itemCollection)->paginate(self::$perPage);
-        $data = $query->getCollection()->map(function ($itemCatalog) {
-            $unitType = $itemCatalog->transaction?->item?->unitType?->name ?? $itemCatalog->initialInventoryBalance?->item?->unitType?->name;
-            return [
-                'id' => $itemCatalog->id,
-                'branch_name' => "{$itemCatalog->stock->branch->parent->name} - {$itemCatalog->stock->branch->name}",
-                'code' => $itemCatalog->code,
-                'condition' => $itemCatalog->condition,
-                'status' => $itemCatalog->status,
-                'available_qty' => "$itemCatalog->available_qty $unitType",
-                'broken_qty' => "$itemCatalog->broken_qty $unitType",
-                'created_by' => $itemCatalog->createdBy->name,
-            ];
-        });
-
-
-        $query->setCollection($data);
-        return $query;
     }
 }

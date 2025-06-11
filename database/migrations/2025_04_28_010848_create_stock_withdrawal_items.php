@@ -22,7 +22,8 @@ return new class extends Migration {
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->string('code')->nullable();
-            $table->integer('qty');
+            $table->double('qty');
+            $table->double('qty_in_meter')->nullable();
             $table->timestamps();
         });
     }
