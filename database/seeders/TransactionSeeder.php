@@ -82,5 +82,27 @@ class TransactionSeeder extends Seeder
             'created_by' => User::where('name', 'Super Admin')->first()->id,
             'attachment' => 'test.jpg',
         ]);
+
+
+        //transaksi aset Non PKP (ASET)
+        $qty4 = 20;
+        $unitPrice3 = 5000000;
+        Transaction::create([
+            'transaction_number' => '12345435',
+            'branch_id' => Branch::where('name', 'Kantor')->where('parent_id', 1)->first()->id,
+            'supplier_id' => Supplier::where('tax_type', 'NON PKP')->first()->id,
+            'date' => Carbon::now()->format('Y-m-d'),
+            'item_id' => ItemCollection::where('name', 'KU 96 Core')->first()->id,
+            'qty' => $qty4,
+            'type' => 'Barang',
+            'qty_in_meter' => 2000,
+            'unit_price' => $unitPrice3,
+            'total_price' => $qty4 * $unitPrice3,
+            'detail' => 'Pembelian KU 96 Core (NON PKP)',
+            'debit_account_id' => Account::where('code', '112-01')->first()->id,
+            'credit_account_id' => Account::where('code', '111-01')->first()->id,
+            'created_by' => User::where('name', 'Super Admin')->first()->id,
+            'attachment' => 'test.jpg',
+        ]);
     }
 }

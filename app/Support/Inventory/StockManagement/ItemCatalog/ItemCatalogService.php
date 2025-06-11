@@ -161,7 +161,12 @@ use Throwable;
     public function generateAutomaticItemCode(DraftStock $draftStock): string
     {
         $draftStock->load('transaction.branch.parent', 'transaction.item');
-        $latestItemCatalog = $this->itemCatalogRepository->getLatestItem()->latest()->first();
+        $latestItemCatalog = $this->itemCatalogRepository
+            ->getLatestItem(
+                $draftStock->transaction?->item_id
+                ?? $draftStock->initialInventoryBalance->item_id
+            )->latest()
+            ->first();
         $month = date('m');
         $year = date('y');
 

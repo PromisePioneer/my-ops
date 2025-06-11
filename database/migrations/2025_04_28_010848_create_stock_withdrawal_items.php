@@ -24,7 +24,6 @@ return new class extends Migration {
             $table->string('code')->nullable();
             $table->double('qty');
             $table->double('qty_in_meter')->nullable();
-            $table->enum('status', ['Dibawa', 'Dikembalikan', 'Terpakai', 'Habis'])->default('Dibawa');
             $table->timestamps();
         });
     }
