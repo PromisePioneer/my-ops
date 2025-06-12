@@ -11,13 +11,21 @@ class Stock extends Model
 {
     protected $table = 'stocks';
     protected $fillable = [
-        'branch_id',
         'transaction_id',
-        'initial_balance_inventory_id',
+        'branch_id',
+        'item_id',
+        'qty',
+        'draft_stock_id',
+        'condition',
         'on_hold_qty',
-        'available_qty',
-        'broken_qty',
+        'initial_balance_inventory_id',
     ];
+
+
+    public function item(): BelongsTo
+    {
+        return $this->belongsTo(ItemCollection::class, 'item_id');
+    }
 
     public function transaction(): BelongsTo
     {
