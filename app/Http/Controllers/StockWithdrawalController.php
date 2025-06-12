@@ -117,7 +117,7 @@ use Throwable;
                 $stock = Stock::where('id', $item->stock_id)->first();
                 $stock->increment('qty', $item->qty);
                 $stock->decrement('on_hold_qty', $item->qty);
-                }
+            }
             $stockWithdrawal->delete();
         });
     }
@@ -197,95 +197,72 @@ use Throwable;
                 ReturnedItem::create([
                     'stock_withdrawal_item_id' => $stockWithdrawalItem->id,
                     'status' => $request->status,
-                    'remaining_qty' => null,
+                    'remaining_qty' => 1,
                     'item_condition' => $request->item_condition,
-                    'broken_qty' => $request->broken_qty,
+                    'broken_qty' => $request->item_condition === 'Rusak' ? 1 : 0,
                     'attachment' => $this->handleUploadService->upload(
                         $request,
                         'documents/returned-items/attachment/',
                         'attachment',
                     ),
                 ]);
+                if ($request->item_condition === 'Rusak') {
+                    $stock = Stock::where('condition', $request->item_condition)
+                        ->where(function ($query) use ($itemCatalog) {
+                            $query->where('transaction_id', $itemCatalog->transaction_id)
+                                ->orWhere('initial_balance_inventory_id', $itemCatalog->initial_balance_inventory_id);
+                        })->first();
+
+                    if (empty($stock)) {
+                        $stock = Stock::create([
+                            'transaction_id' => $itemCatalog->stock->transaction_id,
+                            'branch_id' => $itemCatalog->stock->branch_id,
+                            'item_id' => $itemCatalog->item_id,
+                            'qty' => 1,
+                            'draft_stock_id' => $itemCatalog->stock->draft_stock_id,
+                            'condition' => $request->item_condition,
+                            'on_hold_qty' => 0,
+                            'initial_balance_inventory_id' => $itemCatalog->initial_balance_inventory_id,
+                        ]);
+
+                        ItemCatalog::create([
+                            'transaction_id' => $itemCatalog->transaction_id,
+                            'stock_id' => $stock->id,
+                            'draft_stock_id' => $itemCatalog->stock->draft_stock_id,
+                            'item_id' => $itemCatalog->item_id,
+                            'code' => $itemCatalog->code,
+                            'condition' => $request->item_condition,
+                            'created_by' => $itemCatalog->created_by,
+                            'status' => 'Tersedia',
+                            'initial_balance_inventory_id' => $itemCatalog->initial_balance_inventory_id,
+                            'asset_id' => $itemCatalog->asset_id,
+                        ]);
+                        $itemCatalog->delete();
+
+                    } else {
+                        $stock->increment('qty');
+                        $itemCatalog->stock->increment('qty');
+                        ItemCatalog::create([
+                            'transaction_id' => $itemCatalog->transaction_id,
+                            'stock_id' => $stock->id,
+                            'draft_stock_id' => $itemCatalog->stock->draft_stock_id,
+                            'item_id' => $itemCatalog->item_id,
+                            'code' => $itemCatalog->code,
+                            'condition' => $request->item_condition,
+                            'created_by' => $itemCatalog->created_by,
+                            'status' => 'Tersedia',
+                            'initial_balance_inventory_id' => $itemCatalog->initial_balance_inventory_id,
+                            'asset_id' => $itemCatalog->asset_id,
+                        ]);
+                        $itemCatalog->delete();
+                    }
+                } else {
+                    $itemCatalog->stock->increment('qty');
+                    $itemCatalog->update([
+                        'status' => 'Tersedia',
+                    ]);
+                }
             }
-
-//            if ($itemCatalog->stock->item->must_have_code === 1) {
-//                if ($request->status === 'Habis') {
-//                    ReturnedItem::create([
-//                        'stock_withdrawal_item_id' => $stockWithdrawalItem->id,
-//                        'status' => $request->status,
-//                        'remaining_qty' => 0,
-//                        'item_condition' => 'Habis',
-//                        'broken_qty' => 0,
-//                        'attachment' => $this->handleUploadService->upload(
-//                            $request,
-//                            'documents/returned-items/attachment/',
-//                            'attachment',
-//                        ),
-//                    ]);
-//
-//                    $stockWithdrawalItem->update([
-//                        'status' => 'Habis'
-//                    ]);
-//                } else {
-//                    ReturnedItem::create([
-//                        'stock_withdrawal_item_id' => $stockWithdrawalItem->id,
-//                        'status' => $request->status,
-//                        'remaining_qty' => $request->status === 'Dikembalikan' ? 1 : $request->remaining_qty ?? 0,
-//                        'item_condition' => $request->item_condition,
-//                        'broken_qty' => $request->item_condition === 'Rusak' ? 1 : $request->broken_qty ?? 0,
-//                        'attachment' => $this->handleUploadService->upload(
-//                            $request,
-//                            'documents/returned-items/attachment/',
-//                            'attachment',
-//                        ),
-//                    ]);
-//
-//                    if ($request->broken_qty || $request->item_condition === 'Rusak') {
-//                        $itemCatalog->increment('broken_qty', $request->broken_qty ?? 1);
-//                    }
-//                }
-//
-//                $stockWithdrawalItem->update([
-//                    'status' => $request->status
-//                ]);
-
-
-//                $itemCatalog->stock->decrement('on_hold_qty');
-//                if ($request->item_condition === 'Rusak') {
-//                    $stock = Stock::where('id', $itemCatalog->transaction_id)->where('condition', 'Rusak')->first();
-//                    if ($stock) {
-//                        $itemCatalog->stock->decrement('qty');
-//                        $stock->increment('qty');
-//                    } else {
-//                        $stock = Stock::create([
-//                            'transaction_id' => $itemCatalog->stock->transaction_id,
-//                            'branch_id' => $itemCatalog->stock->branch_id,
-//                            'item_id' => $itemCatalog->item_id,
-//                            'qty' => 1,
-//                            'draft_stock_id' => $itemCatalog->draft_stock_id,
-//                            'condition' => 'Rusak',
-//                            'on_hold_qty' => 0,
-//                            'initial_balance_inventory_id' => $itemCatalog->stock->initial_balance_inventory_id,
-//                        ]);
-//
-//                        ItemCatalog::create([
-//                            'transaction_id' => $itemCatalog->transaction_id,
-//                            'stock_id' => $stock->id,
-//                            'draft_stock_id' => $itemCatalog->draft_stock_id,
-//                            'item_id' => $itemCatalog->item_id,
-//                            'code' => $itemCatalog->code,
-//                            'condition' => 'Rusak',
-//                            'created_by' => $itemCatalog->created_by,
-//                            'status' => $itemCatalog->status,
-//                            'initial_balance_inventory_id' => $itemCatalog->initial_balance_inventory_id,
-//                            'asset_id' => $itemCatalog->asset_id,
-//                            'qty_in_meter' => $itemCatalog->qty_in_meter,
-//                        ]);
-//                        $itemCatalog->delete();
-//                    }
-//                } else {
-//                    $itemCatalog->stock->increment('qty');
-//                }
         });
     }
 }
