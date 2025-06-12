@@ -265,6 +265,7 @@ use function App\Helper\formatDate;
                 'qty_in_meter' => ItemCatalog::where('code', $item->code)->first()->qty_in_meter,
                 'qty' => $item->qty,
                 'status' => $item->status,
+                'returned_item' => $item->returnedItem
             ];
         });
     }

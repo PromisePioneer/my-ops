@@ -68,17 +68,34 @@
                                                 <span x-text="stock.qty"></span>
                                             </template>
                                         </td>
-                                        <td x-text="stock.status"></td>
                                         <td>
-                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modal-returning-items"
-                                                    @click="getStockWithdrawalItem(stock.id)">
-                                                <i class="ki-duotone ki-tablet-up fs-2">
-                                                    <span class="path1"></span>
-                                                    <span class="path2"></span>
-                                                    <span class="path3"></span>
-                                                </i>
-                                            </button>
+                                            <template x-if="!stock.returned_item">
+                                                <span
+                                                    class="!stock_returned_item">Belum Dikembalikan / Terpakai / Habis</span>
+                                            </template>
+                                            <template x-if="stock.returned_item">
+                                                <span
+                                                    class="!stock_returned_item">Sudah Dikembalikan / Terpakai / Habis</span>
+                                            </template>
+
+                                        </td>
+                                        <td>
+                                            <template x-if="!stock.returned_item">
+                                                <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                        data-bs-target="#modal-returning-items"
+                                                        @click="getStockWithdrawalItem(stock.id)">
+                                                    <i class="ki-duotone ki-tablet-up fs-2">
+                                                        <span class="path1"></span>
+                                                        <span class="path2"></span>
+                                                        <span class="path3"></span>
+                                                    </i>
+                                                </button>
+                                            </template>
+                                            <template x-if="stock.returned_item">
+                                                <button class="btn btn-light-success" disabled>
+                                                    <x-icons.confirm/>
+                                                </button>
+                                            </template>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -160,6 +177,7 @@
                         search: '',
                         selectedCheckBox: [],
                         carriedStock: [],
+                        itemStatusForItemExceptUnitTypeValue: null,
                         startIndex: 1,
                         consumedOrAppliedStock: [],
                         id: "{{ $stockWithdrawal->id }}",

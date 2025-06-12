@@ -15,9 +15,9 @@
             </div>
 
             <form id="form-returning-items" @submit.prevent="save(stockWithdrawalItem.id)">
-                <div class="modal-body">
-                    <template
-                        x-if="stockWithdrawalItem.item_catalog?.item.type === 'ASET' && stockWithdrawalItem.item_catalog?.item.category.name === 'Kategori 1' && stockWithdrawalItem.item_catalog.item.unit_type.name === 'Meter'">
+                <template
+                    x-if="stockWithdrawalItem.item_catalog?.item.type === 'ASET' && stockWithdrawalItem.item_catalog?.item.category.name === 'Kategori 1' && stockWithdrawalItem.item_catalog.item.unit_type.name === 'Meter'">
+                    <div class="modal-body">
                         <div class="row">
                             <div class="mb-4">
                                 <label
@@ -59,64 +59,47 @@
                                        id="broken_qty"
                                        placeholder="Jumlah Rusak" value="0">
                             </div>
+                            <div>
+                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Bukti</label>
+                                <input type="file" class="form-control form-control-solid" name="attachment"
+                                       id="attachment">
+                            </div>
                         </div>
-                    </template>
-                    <div>
-                        <template
-                            x-if="stockWithdrawalItem.withdrawal_item?.code && stockWithdrawalItem.item_catalog.item.category.name !== 'Kategori 3'">
-                            <div class="mb-4">
-                                <div>
-                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">Status</label>
-                                    <select name="status" id="status" x-model="itemStatus"
-                                            class="form-select form-select-solid">
-                                        <option value="Terpakai">Terpakai</option>
-                                        <option value="Dikembalikan">Dikembalikan</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div x-show="itemStatus === 'Dikembalikan'">
-                                <div class="mb-4">
-                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">Kondisi</label>
-                                    <select name="item_condition" id="item_condition"
-                                            class="form-select form-select-solid">
-                                        <option value="Rusak">Rusak</option>
-                                        <option value="Baik">Baik</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </template>
                     </div>
 
-                    <div>
-                        <template x-if="!stockWithdrawalItem.withdrawal_item?.code">
-                            <div>
-                                <div class="mb-4">
-                                    <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">
-                                        Total Barang dibawa
-                                    </label>
-                                    <input type="text" class="form-control form-control-solid"
-                                           name="code" id="code" :value="stockWithdrawalItem.qty"
-                                           disabled>
-                                </div>
-                                <div class="mb-4">
-                                    <label
-                                        class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">
-                                        Barang yang dikembalikan
-                                    </label>
-                                    <input type="number" class="form-control form-control-solid mb-4"
-                                           placeholder="" :max="stockWithdrawalItem.qty" min="0"
-                                           name="qty" id="qty"
-                                           required>
-                                    <span class="text-danger">Jika tidak ada barang dikembalikan maka buat 0</span>
-                                </div>
+                </template>
+
+
+                <template
+                    x-if="stockWithdrawalItem.withdrawal_item?.code && stockWithdrawalItem.item_catalog.item.category.name !== 'Kategori 3'  && stockWithdrawalItem.item_catalog.item.unit_type.name !== 'Meter'">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="mb-4">
+                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Status</label>
+                                <select name="status" id="status" x-model="itemStatusForItemExceptUnitTypeValue"
+                                        class="form-select form-select-solid">
+                                    <option value="Terpakai">Terpakai</option>
+                                    <option value="Dikembalikan">Dikembalikan</option>
+                                </select>
                             </div>
-                        </template>
-                        <div>
-                            <input type="file" class="form-control form-control-solid" name="attachment"
-                                   id="attachment">
+                            <div class="mb-4" x-show="itemStatusForItemExceptUnitTypeValue === 'Dikembalikan'"
+                                 x-transition x-cloak>
+                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Kondisi</label>
+                                <select name="item_condition" id="item_condition"
+                                        class="form-select form-select-solid">
+                                    <option value="Rusak">Rusak</option>
+                                    <option value="Baik">Baik</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label fs-6 fw-bolder text-gray-700 mb-3">Bukti</label>
+                                <input type="file" class="form-control form-control-solid" name="attachment"
+                                       id="attachment">
+                            </div>
                         </div>
+
                     </div>
-                </div>
+                </template>
 
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">
