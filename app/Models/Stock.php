@@ -12,13 +12,12 @@ class Stock extends Model
     protected $table = 'stocks';
     protected $fillable = [
         'transaction_id',
-        'branch_id',
-        'item_id',
+        'initial_balance_inventory_id',
         'qty',
-        'draft_stock_id',
         'condition',
         'on_hold_qty',
-        'initial_balance_inventory_id',
+        'available_qty',
+        'broken_qty',
     ];
 
 

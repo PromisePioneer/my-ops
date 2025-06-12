@@ -183,6 +183,7 @@
                         id: "{{ $stockWithdrawal->id }}",
                         stockWithdrawalItem: {},
                         itemStatus: 'Sisa',
+                        itemStatusWithoutCategory3AndUnitTypeMeter: null,
                         itemCondition: null,
                         returnStockModal: new bootstrap.Modal(document.getElementById('modal-returning-items')),
                         returnStockForm: document.getElementById('form-returning-items'),
