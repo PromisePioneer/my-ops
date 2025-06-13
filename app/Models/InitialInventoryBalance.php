@@ -6,6 +6,7 @@ use App\Models\Master\Common\Branch;
 use App\Models\Master\Common\Contact;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class InitialInventoryBalance extends Model
 {
@@ -47,5 +48,10 @@ class InitialInventoryBalance extends Model
     public function stockAccount(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'stock_account_id');
+    }
+
+    public function draftStock(): HasMany
+    {
+        return $this->hasMany(DraftStock::class, 'initial_balance_inventory_id');
     }
 }

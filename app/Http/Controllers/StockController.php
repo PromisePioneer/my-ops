@@ -185,59 +185,13 @@ use Illuminate\View\View;
 
     public function getStockWithCodes(Request $request)
     {
-        $stock = Stock::with('item', 'itemCatalog', 'branch')
-            ->where(function ($query) use ($request) {
-                $query->whereHas('branch', function ($query) use ($request) {
-                    $query->where('id', $request->branch_id ?? $request->user()->branch_id);
-                })->whereHas('item.category', function ($query) {
-                    $query->where('name', '!=', 'Kategori 4');
-                })->where('condition', 'Baik');
-            })->get();
-
-
-        return $stock->map(function ($stock) {
-            $itemCatalog = [];
-            foreach ($stock->itemCatalog->where('status', 'Tersedia') as $value) {
-                $itemCatalog[] = [
-                    'id' => $value->id,
-                    'stock_id' => $stock->id,
-                    'code' => $value->code,
-                    'text' => 'SN: ' . $value->code,
-                ];
-            }
-
-
-            return [
-                'id' => $stock->id,
-                'text' => $stock->item->name,
-                'children' => $itemCatalog
-            ];
-        });
+     return response()->json($this->stockService->getStockWithCode($request));
     }
 
 
-    public function getStockWithoutCode(Request $request)
+    public function getStockWithoutCode(Request $request): JsonResponse
     {
-
-
-        $stock = Stock::with('item', 'branch')
-            ->whereHas('branch', function ($query) use ($request) {
-                $query->where('id', $request->branch_id ?? $request->user()->branch_id);
-            })
-            ->whereHas('item.category', function ($query) {
-                $query->where('name', 'Kategori 4');
-            })->whereNotIn('id', $request->get('ids', []))
-            ->whereIn('condition', ['Baik', 'Diperbaiki'])
-            ->get();
-
-
-        return $stock->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'name' => $item->item->name,
-                'text' => $item->item->name . ' Stok : ' . $item->qty . ' - ' . $item->condition,
-            ];
-        });
+        return response()->json($this->stockService->getStockWithoutCode($request));
     }
 
 
@@ -245,5 +199,11 @@ use Illuminate\View\View;
     {
         $stocks = $this->stockService->findByItemAndBranch($branch, $itemCollection);
         return response()->json($stocks);
+    }
+
+
+    public function findByItemId(ItemCollection $itemCollection): JsonResponse
+    {
+        return response()->json($this->stockService->findByItemId($itemCollection));
     }
 }

@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Inventory;
+namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
-use App\Http\Controllers\Controller;
 use App\Models\DraftStock;
 use App\Models\ItemCollection;
 use App\Support\Inventory\DraftStock\Service\DraftStockService;
@@ -51,6 +50,12 @@ use Illuminate\View\View;
 
     public function detail(ItemCollection $itemCollection): View
     {
+        $itemCollection->load('transaction', 'initialInventoryBalance');
+        $ifTransactionExists = $itemCollection->transaction->where('status', 'Diterima')->first();
+        if (!$ifTransactionExists) {
+            return view('errors.404');
+        }
+
         return view('pages.inventory.draft-stocks.detail', compact('itemCollection'));
     }
 

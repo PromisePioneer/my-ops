@@ -55,6 +55,7 @@ use Illuminate\Validation\Rule;
             'tax_invoice' => [
                 Rule::requiredIf($supplier?->tax_type === TaxType::PKP->value && $this->route('transaction') === null),
                 'mimes:jpg,jpeg,png', 'max:2048'],
+            'qty_in_meter' => ['numeric'],
         ];
     }
 

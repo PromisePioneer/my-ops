@@ -144,7 +144,7 @@ use Throwable;
 
     public function return(StockWithdrawal $stockWithdrawal): View
     {
-        return view('pages.inventory.stock-withdrawals.returned-stock-form', compact('stockWithdrawal'));
+        return view('pages.inventory.stock-withdrawals.returned-item.index', compact('stockWithdrawal'));
     }
 
 
@@ -155,7 +155,7 @@ use Throwable;
 
     public function getStockWithdrawalItem(StockWithdrawalItem $stockWithdrawalItem): JsonResponse
     {
-        $itemCatalog = ItemCatalog::with('item.category', 'item.unitType')
+        $itemCatalog = ItemCatalog::with('stock.transaction.item', 'stock.initialInventoryBalance.item')
             ->where('code', $stockWithdrawalItem->code)
             ->first();
         return response()->json([
@@ -172,8 +172,8 @@ use Throwable;
     {
         $stockWithdrawalItem->load('stock');
         DB::transaction(function () use ($request, $stockWithdrawalItem) {
-            $itemCatalog = ItemCatalog::with('stock.item')->where('code', $stockWithdrawalItem->code)->first();
-            if ($itemCatalog->stock->item->type === 'ASET' && $itemCatalog->stock->item->category->name === 'Kategori 1') {
+            $itemCatalog = ItemCatalog::with('stock.transaction.item')->where('code', $stockWithdrawalItem->code)->first();
+            if ($itemCatalog->stock->transaction->item->type === 'ASET' && $itemCatalog->stock->transaction->item->category->name === 'Kategori 1') {
                 ReturnedItem::create([
                     'stock_withdrawal_item_id' => $stockWithdrawalItem->id,
                     'status' => $request->status,
@@ -186,14 +186,13 @@ use Throwable;
                         'attachment',
                     ),
                 ]);
-                $itemCatalog->decrement('qty_in_meter', $itemCatalog->qty_in_meter - $request->remaining_qty);
+                $itemCatalog->decrement('qty', $itemCatalog->qty - $request->remaining_qty);
                 if ($request->item_condition === 'Rusak') {
                     $itemCatalog->increment('broken_qty', $request->broken_qty ?? 1);
                 }
             }
-
-
-            if (!empty($stockWithdrawalItem->code) && $itemCatalog->stock->item->category->name !== 'Kategori 3') {
+            
+            if (!empty($stockWithdrawalItem->code) && $itemCatalog->stock->transaction->item->category->name !== 'Kategori 3') {
                 ReturnedItem::create([
                     'stock_withdrawal_item_id' => $stockWithdrawalItem->id,
                     'status' => $request->status,
@@ -206,63 +205,18 @@ use Throwable;
                         'attachment',
                     ),
                 ]);
+
                 if ($request->item_condition === 'Rusak') {
-                    $stock = Stock::where('condition', $request->item_condition)
-                        ->where(function ($query) use ($itemCatalog) {
-                            $query->where('transaction_id', $itemCatalog->transaction_id)
-                                ->orWhere('initial_balance_inventory_id', $itemCatalog->initial_balance_inventory_id);
-                        })->first();
+                    $itemCatalog->stock->increment('broken_qty', $request->broken_qty ?? 1);
+                    $itemCatalog->update(['condition' => 'Rusak']);
+                }
 
-                    if (empty($stock)) {
-                        $stock = Stock::create([
-                            'transaction_id' => $itemCatalog->stock->transaction_id,
-                            'branch_id' => $itemCatalog->stock->branch_id,
-                            'item_id' => $itemCatalog->item_id,
-                            'qty' => 1,
-                            'draft_stock_id' => $itemCatalog->stock->draft_stock_id,
-                            'condition' => $request->item_condition,
-                            'on_hold_qty' => 0,
-                            'initial_balance_inventory_id' => $itemCatalog->initial_balance_inventory_id,
-                        ]);
-
-                        ItemCatalog::create([
-                            'transaction_id' => $itemCatalog->transaction_id,
-                            'stock_id' => $stock->id,
-                            'draft_stock_id' => $itemCatalog->stock->draft_stock_id,
-                            'item_id' => $itemCatalog->item_id,
-                            'code' => $itemCatalog->code,
-                            'condition' => $request->item_condition,
-                            'created_by' => $itemCatalog->created_by,
-                            'status' => 'Tersedia',
-                            'initial_balance_inventory_id' => $itemCatalog->initial_balance_inventory_id,
-                            'asset_id' => $itemCatalog->asset_id,
-                        ]);
-                        $itemCatalog->delete();
-
-                    } else {
-                        $stock->increment('qty');
-                        $itemCatalog->stock->increment('qty');
-                        ItemCatalog::create([
-                            'transaction_id' => $itemCatalog->transaction_id,
-                            'stock_id' => $stock->id,
-                            'draft_stock_id' => $itemCatalog->stock->draft_stock_id,
-                            'item_id' => $itemCatalog->item_id,
-                            'code' => $itemCatalog->code,
-                            'condition' => $request->item_condition,
-                            'created_by' => $itemCatalog->created_by,
-                            'status' => 'Tersedia',
-                            'initial_balance_inventory_id' => $itemCatalog->initial_balance_inventory_id,
-                            'asset_id' => $itemCatalog->asset_id,
-                        ]);
-                        $itemCatalog->delete();
-                    }
                 } else {
-                    $itemCatalog->stock->increment('qty');
+                $itemCatalog->stock->increment('available_qty');
                     $itemCatalog->update([
                         'status' => 'Tersedia',
                     ]);
                 }
-            }
         });
     }
 }

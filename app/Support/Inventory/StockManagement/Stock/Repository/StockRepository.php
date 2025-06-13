@@ -9,11 +9,9 @@ use App\Models\Stock;
 
 class StockRepository
 {
-    public function findByDraftStock(DraftStock $draftStock, string $condition)
+    public function findByDraftStock(DraftStock $draftStock)
     {
-        return Stock::where('draft_stock_id', $draftStock->id)
-            ->where('condition', $condition)
-            ->first();
+        return Stock::where('transaction_id', $draftStock->transaction_id)->first();
     }
 
 
@@ -42,6 +40,19 @@ class StockRepository
             ->where('item_id', $itemId)
             ->whereHas('branch', function ($query) use ($branchId) {
                 $query->where('parent_id', $branchId);
+            });
+    }
+
+
+    public function findByItemId(ItemCollection $itemCollection)
+    {
+        return Stock::with('transaction', 'initialInventoryBalance')
+            ->where(function ($query) use ($itemCollection) {
+                $query->whereHas('transaction', function ($query) use ($itemCollection) {
+                    $query->where('item_id', $itemCollection->id);
+                })->orWhereHas('initialInventoryBalance', function ($query) use ($itemCollection) {
+                    $query->where('item_id', $itemCollection->id);
+                });
             });
     }
 }

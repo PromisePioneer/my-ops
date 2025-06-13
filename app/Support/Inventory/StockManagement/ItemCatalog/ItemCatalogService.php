@@ -7,7 +7,9 @@ use App\Http\Requests\ItemCatalogRequest;
 use App\Models\Asset;
 use App\Models\DraftStock;
 use App\Models\ItemCatalog;
+use App\Models\ItemCollection;
 use App\Models\Stock;
+use App\Models\Transaction;
 use App\Support\HelperService\UsefulLifeService;
 use App\Support\Inventory\StockManagement\DraftStock\Repository\ItemCatalogRepository;
 use App\Support\Inventory\StockManagement\Stock\Repository\StockRepository;
@@ -49,7 +51,7 @@ use Throwable;
                 'created_at' => $query->created_at,
                 'created_by' => $query->createdBy->name,
                 'status' => $query->status,
-                'qty_in_meter' => $query->qty_in_meter,
+                'qty' => $query->qty,
             ];
         });
 
@@ -80,12 +82,18 @@ use Throwable;
 
     public function findOrCreateStock(DraftStock $draftStock, Request $request): Stock
     {
-        $stock = $this->stockRepository->findByDraftStock($draftStock, $request->condition);
+        $stock = $this->stockRepository->findByDraftStock($draftStock);
 
         if (empty($stock)) {
-            return self::insertStock($draftStock, $request);
+            return self::insertStock($draftStock);
         }
-        $stock->increment('qty');
+
+        if ($request->condition === 'Rusak') {
+            $stock->increment('broken_qty', $draftStock->transaction?->qty_in_meter ?? 1);
+        } else {
+            $stock->increment('available_qty', $draftStock->transaction?->qty_in_meter ?? 1);
+        }
+
         return $stock;
     }
 
@@ -109,16 +117,15 @@ use Throwable;
     }
 
 
-    private static function insertStock(DraftStock $draftStock, Request $request): Stock
+    private static function insertStock(DraftStock $draftStock): Stock
     {
         return Stock::create([
             'branch_id' => $draftStock->transaction?->branch_id ?? $draftStock->initialInventoryBalance->branch_id,
             'transaction_id' => $draftStock->transaction_id,
             'initial_balance_inventory_id' => $draftStock->initial_balance_inventory_id,
-            'item_id' => $draftStock->transaction->item_id ?? $draftStock->initialInventoryBalance->item_id,
-            'draft_stock_id' => $draftStock->id,
-            'qty' => 1,
-            'condition' => $request->condition
+            'on_hold_qty' => 0,
+            'available_qty' => $draftStock->transaction?->qty_in_meter ?? 1,
+            'broken_qty' => 0,
         ]);
     }
 
@@ -126,16 +133,13 @@ use Throwable;
     private static function insertItemCatalog(Request $request, DraftStock $draftStock, ?Stock $stock, ?Asset $asset = null): ItemCatalog
     {
         return ItemCatalog::create([
-            'transaction_id' => $draftStock->transaction_id,
-            'initial_balance_inventory_id' => $draftStock->initial_balance_inventory_id,
-            'draft_stock_id' => $draftStock->id,
             'stock_id' => $stock->id,
             'item_id' => $draftStock->transaction->item_id ?? $draftStock->initialInventoryBalance->item_id,
             'code' => $request->code,
             'asset_id' => $asset->id,
             'condition' => $request->condition,
             'created_by' => $request->user()->id,
-            'qty_in_meter' => $draftStock->transaction?->qty_in_meter ?? $draftStock->initialInventoryBalance?->qty_in_meter
+            'qty' => $draftStock->transaction->qty_in_meter ?? 1
         ]);
     }
 
@@ -187,5 +191,47 @@ use Throwable;
 
         return $month . '.' . $year . '.' . $code . '-' .
             $branchCode . '.' . $startValue;
+    }
+
+
+    public function findByItemId(ItemCollection $itemCollection): LengthAwarePaginator
+    {
+        $query = $this->itemCatalogRepository->findByItemId($itemCollection)->paginate(self::$perPage);
+        $data = $query->getCollection()->map(function ($itemCatalog) {
+            $unitType = $itemCatalog->transaction?->item?->unitType?->name ?? $itemCatalog->initialInventoryBalance?->item?->unitType?->name;
+            return [
+                'id' => $itemCatalog->id,
+                'code' => $itemCatalog->code,
+                'condition' => $itemCatalog->condition,
+                'status' => $itemCatalog->status,
+                'qty' => "$itemCatalog->qty $unitType",
+                'created_by' => $itemCatalog->createdBy->name,
+            ];
+        });
+
+
+        $query->setCollection($data);
+        return $query;
+    }
+
+    public function getItemCatalogByBranch(Request $request)
+    {
+        $itemCatalog = Transaction::with('transaction.item.category', 'initialInventoryBalance.item.category')
+            ->where(function ($query) use ($request) {
+                $query->whereHas('transaction.item.category', function ($query) use ($request) {
+                    $query->where('branch_id', $request->branch_id ?? $request->user()->branch_id);
+                });
+            })->get();
+
+        return $itemCatalog->map(function ($itemCatalog) {
+            return [
+                'id' => $itemCatalog->id,
+                'text' => $itemCatalog->transaction->item->name,
+                'children' => [
+                    'condition' => $itemCatalog->condition,
+                    'status' => $itemCatalog->status,
+                ]
+            ];
+        });
     }
 }

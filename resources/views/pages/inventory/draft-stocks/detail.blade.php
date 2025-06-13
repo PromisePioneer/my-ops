@@ -1,120 +1,119 @@
 @extends('layouts.template')
-@section('page-title', 'Pengkodean ' . $itemCollection->name )
+@section('page-title', 'Pengkodean ' . $itemCollection->name)
 @section('content')
-
     <div x-data="generateStockCode()">
         @include('pages.inventory.draft-stocks.generate-code')
-        <div class="card shadow-sm mb-10">
-            <div class="card-body">
-                <div class="d-flex">
-                    <h3 class="card-title mb-10">
-                        {{ $itemCollection->name}}
-                        tidak ada kode</h3>
-                    <div class="ms-auto">
-                        <a href="{{ url('inventory/draft-stocks') }}" class="btn btn-sm btn-light-danger">
-                            <x-icons.back/>
-                            Kembali
-                        </a>
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="card shadow-sm mb-10">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <h3 class="card-title mb-10">
+                                {{ $itemCollection->name }}
+                                tidak ada kode</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered mb-10">
+                                <thead>
+                                <tr>
+                                    <th class="min-w-125px text-center">No. Transaksi</th>
+                                    <th class="min-w-125px text-center">Qty</th>
+                                    <th class="min-w-125px text-center">Action</th>
+                                </tr>
+                                </thead>
+                                <template x-if="isLoading">
+                                    <tbody class="fw-bolder">
+                                    <tr>
+                                        <td colspan="9">
+                                            <div style="text-align: center;">
+                                                <div class="spinner-border" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                                <template x-for="(draftStock, index) in draftStocks.data">
+                                    <tbody class="text-center">
+                                    <tr>
+                                        <td x-text="draftStock.transaction_number"></td>
+                                        <td x-text="draftStock.qty"></td>
+                                        <td>
+                                            <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#modal-generate-code"
+                                                    @click="add(draftStock.id)">
+                                                <x-icons.add-item/>
+                                                Buat Kode
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                            </table>
+                        </div>
                     </div>
                 </div>
-                <table class="table table-bordered mb-10">
-                    <thead>
-                    <tr>
-                        <th class="min-w-125px text-center">No. Transaksi</th>
-                        <th class="min-w-125px text-center">Nama</th>
-                        <th class="min-w-125px text-center">Qty</th>
-                    </tr>
-                    </thead>
-                    <template x-if="isLoading">
-                        <tbody class="fw-bolder">
-                        <tr>
-                            <td colspan="9">
-                                <div style="text-align: center;">
-                                    <div class="spinner-border" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </template>
-                    <tbody class="text-center">
-                    <tr>
-                        <td x-text="draftStock?.transaction?.transaction_number ?? 'Persediaan Awal'"></td>
-                        <td x-text="draftStock?.transaction?.item?.name ?? draftStock.initial_inventory_balance?.item?.name"></td>
-                        <td x-text="draftStock.qty"></td>
-                    </tr>
-                    </tbody>
-                </table>
-                <h3 class="card-title mb-10">Informasi stok saat ini</h3>
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th class="min-w-125px text-center">No. Transaksi</th>
-                            <th class="min-w-125px text-center">Nama</th>
-                            <th class="min-w-125px text-center">Total Stok</th>
-                            <th class="min-w-125px text-center">Stok Dibawa</th>
-                            <th class="min-w-125px text-center">Stock Gudang</th>
-                            <th class="min-w-125px text-center">Kondisi</th>
-                        </tr>
-                        </thead>
-                        <template x-if="isLoading">
-                            <tbody class="fw-bolder">
-                            <tr>
-                                <td colspan="7">
-                                    <div style="text-align: center;">
-                                        <div class="spinner-border" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </template>
-                        <template x-if="!isLoading && stocks.length === 0">
-                            <tr>
-                                <td colspan="6">
-                                    <center>Data Tidak Ditemukan</center>
-                                </td>
-                            </tr>
-                        </template>
-                        <template x-for="(stock, index) in stocks" :key="stock.id">
-                            <tbody class="text-center">
-                            <tr>
-                                <td x-text="stock.transaction_number"></td>
-                                <td x-text="stock.name"></td>
-                                <td x-text="stock.qty"></td>
-                                <td x-text="stock.on_hold_qty"></td>
-                                <td x-text="stock.qty"></td>
-                                <td>
-                                    <template x-if="stock.condition === 'Rusak'">
-                                        <span class="badge bg-light-danger text-danger">Rusak</span>
-                                    </template>
-                                    <template x-if="stock.condition === 'Baik'">
-                                        <span class="badge bg-light-success text-success">Baik</span>
-                                    </template>
-                                    <template x-if="stock.condition === 'Diperbaiki'">
-                                        <span class="badge bg-light-warning text-warning">Sdg Diperbaiki</span>
-                                    </template>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </template>
-                    </table>
+            </div>
+            <div class="col-lg-7">
+                <div class="card shadow-sm mb-10">
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <h3 class="card-title mb-10">
+                                Stok
+                            </h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered mb-10">
+                                <thead>
+                                <tr>
+                                    <th class="min-w-125px text-center">No. Transaksi</th>
+                                    <th class="min-w-125px text-center">Tersedia</th>
+                                    <th class="min-w-125px text-center">Dibawa</th>
+                                    <th class="min-w-125px text-center">Rusak</th>
+                                </tr>
+                                </thead>
+                                <template x-if="isLoading">
+                                    <tbody class="fw-bolder">
+                                    <tr>
+                                        <td colspan="9">
+                                            <div style="text-align: center;">
+                                                <div class="spinner-border" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                                <template x-if="!isLoading && stocks.data?.length === 0">
+                                    <tbody>
+                                    <tr>
+                                        <td colspan="6">
+                                            <center>Data Tidak Ditemukan</center>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                                <template x-for="(stock, index) in stocks.data">
+                                    <tbody class="text-center">
+                                    <tr>
+                                        <td x-text="stock.transaction_number"></td>
+                                        <td x-text="stock.available_qty"></td>
+                                        <td x-text="stock.broken_qty"></td>
+                                        <td x-text="stock.on_hold_qty"></td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="card shadow-sm">
             <div class="card-header">
                 <h3 class="card-title">Katalog Barang</h3>
-                <div class="card-toolbar">
-                    <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#modal-generate-code" @click="add()">
-                        <x-icons.add-item/>
-                        Buat Kode
-                    </button>
-                </div>
             </div>
 
             <div class="card-body">
@@ -124,9 +123,7 @@
                         <tr>
                             <th class="w-10px pe-2">No</th>
                             <th class="min-w-125px text-center">Kode</th>
-                            @if($itemCollection->unitType->name == 'Meter')
-                                <th class="min-w-125px text-center">Qty (Meter) Per Haspel / Unit</th>
-                            @endif
+                            <th class="min-w-125px text-center">Qty</th>
                             <th class="min-w-125px text-center">Kondisi</th>
                             <th class="min-w-125px text-center">Status</th>
                             <th class="min-w-125px text-center">Diinput Oleh</th>
@@ -160,9 +157,7 @@
                             <tr>
                                 <td x-text="startIndex + index++"></td>
                                 <td x-text="item.code"></td>
-                                <template x-if="item.qty_in_meter !== null">
-                                    <td x-text="`${item.qty_in_meter} Meter`"></td>
-                                </template>
+                                <td x-text="item.qty"></td>
                                 <td class="text-uppercase">
                                     <template x-if="item.condition === 'Rusak'">
                                         <span class="badge bg-light-danger text-danger">Rusak</span>
@@ -194,15 +189,21 @@
                         </template>
                     </table>
                 </div>
-                <ul class="pagination float-end mb-4 mt-4">
-                    <template x-for="pagination in itemCatalog.links">
-                        <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                            <button class="page-link" @click="paginateItemCatalog(pagination.url)"
-                                    x-html="pagination.label">
-                            </button>
-                        </li>
-                    </template>
-                </ul>
+                <div class="d-flex align-items-center justify-content-between">
+                    <a class="btn btn-light-danger btn-sm" href="{{ url('/inventory/draft-stocks') }}">
+                        <x-icons.back/>
+                        Kembali
+                    </a>
+                    <ul class="pagination float-end mb-4 mt-4">
+                        <template x-for="pagination in itemCatalog.links">
+                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                <button class="page-link" @click="paginateItemCatalog(pagination.url)"
+                                        x-html="pagination.label">
+                                </button>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
             </div>
         </div>
         @include('components.toast')
@@ -213,12 +214,13 @@
         function generateStockCode() {
             return {
                 buttonLoading: false,
-                draftStock: {},
+                draftStocks: [],
                 isLoading: false,
-                itemId: "{{ $itemCollection->id ?? $itemCollection->initialInventoryBalance?->item->name }}",
+                itemId: "{{ $itemCollection->id }}",
                 itemCatalog: [],
                 startIndex: null,
                 stocks: [],
+                editVal: '',
                 autoGenerateCode: null,
                 generateCodeModal: new bootstrap.Modal(document.getElementById('modal-generate-code')),
                 generateCodeForm: document.getElementById('form-generate-code'),
@@ -227,14 +229,20 @@
                     await this.getItemCatalog();
                     await this.getStock();
                 },
-                async add() {
-                    this.editVal = '';
-                    await this.generateAutomaticCode();
+                async getStock() {
+                    const resp = await axios.get(`/inventory/stocks/data/${this.itemId}`)
+                    this.stocks = resp.data;
+                },
+                async add(id) {
+                    const draftStockId = id;
+                    await this.generateAutomaticCode(draftStockId);
+                    const resp = await axios.get(`/inventory/draft-stocks/show/${draftStockId}`);
+                    this.editVal = resp.data;
                 },
                 async getItemCatalog() {
                     this.isLoading = true;
                     try {
-                        const resp = await axios.get(`/inventory/draft-stocks/detail/item-catalog/data/${this.draftStockId}`);
+                        const resp = await axios.get(`/inventory/item-catalog/data/${this.itemId}`);
                         this.itemCatalog = resp.data
                         this.startIndex = this.itemCatalog.from;
                     } catch (e) {
@@ -261,21 +269,16 @@
                         }
                     }
                 },
-                async generateAutomaticCode() {
-                    const resp = await axios.get(`/inventory/item-catalog/generate-code/${this.draftStockId}`);
-
-                    if ((!this.editVal && this.draftStock?.transaction?.item?.must_have_code === 1 && this.draftStock?.transaction?.item?.is_code_listed === 0)
-                        ||
-                        (!this.editVal && this.draftStock?.initial_inventory_balance.item?.must_have_code === 1 && this.draftStock?.initial_inventory_balance.item?.is_code_listed === 0)
-                    ) {
-                        this.autoGenerateCode = resp.data;
-                    }
+                async generateAutomaticCode(id) {
+                    const resp = await axios.get(`/inventory/item-catalog/generate-code/${id}`);
+                    this.autoGenerateCode = resp.data;
                 },
-                async generateItemCatalogCode() {
+                async generateItemCatalogCode(id) {
                     this.buttonLoading = true;
                     try {
-                        await axios.post(`/inventory/draft-stocks/detail/item-catalog/save/${this.draftStockId}`, new FormData(this.generateCodeForm)).then(async () => {
-                            await this.successResponseAfterSubmit();
+                        await axios.post(`/inventory/item-catalog/${id}`, new FormData(this.generateCodeForm))
+                            .then(async () => {
+                                await this.successResponseAfterSubmit(id);
                         });
                     } catch (error) {
                         const respError = error.response.data.errors;
@@ -292,19 +295,11 @@
                         console.log(e);
                     }
                 },
-                async getStock() {
-                    try {
-                        const resp = await axios.get(`/inventory/stocks/stock-based-on-draft-stock/${this.draftStockId}`);
-                        this.stocks = resp.data
-                    } catch (e) {
-                        console.log(e);
-                    }
-                },
                 async getDraftStock() {
                     this.isLoading = true;
                     try {
-                        const resp = await axios.get(`/inventory/draft-stocks/show/${this.draftStockId}`);
-                        this.draftStock = resp.data
+                        const resp = await axios.get(`/inventory/draft-stocks/detail/data/${this.itemId}`);
+                        this.draftStocks = resp.data
                     } catch (e) {
                         console.log(e)
                     } finally {
@@ -325,10 +320,10 @@
                         }
                     });
                 },
-                async successResponseAfterSubmit() {
+                async successResponseAfterSubmit(id) {
                     await this.init();
                     this.generateCodeForm.reset();
-                    await this.generateAutomaticCode();
+                    await this.generateAutomaticCode(id);
                     await showAlert('success', 'Data berhasil disimpan');
                     await this.getItemCatalog();
                 }

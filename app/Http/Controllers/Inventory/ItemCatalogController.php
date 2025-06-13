@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ItemCatalogRequest;
 use App\Models\DraftStock;
 use App\Models\ItemCatalog;
-use App\Models\StockWithdrawal;
+use App\Models\ItemCollection;
 use App\Support\Inventory\StockManagement\ItemCatalog\ItemCatalogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -61,6 +61,18 @@ use Throwable;
     public function generateAutomaticItemCode(DraftStock $draftStock): JsonResponse
     {
         return response()->json($this->itemCatalogService->generateAutomaticItemCode($draftStock));
+    }
+
+
+    public function findByItemName(ItemCollection $itemCollection): JsonResponse
+    {
+        return response()->json($this->itemCatalogService->findByItemId($itemCollection));
+    }
+
+
+    public function getItemCatalogByBranch(Request $request): JsonResponse
+    {
+        return response()->json($this->itemCatalogService->getItemCatalogByBranch($request));
     }
 
 }
