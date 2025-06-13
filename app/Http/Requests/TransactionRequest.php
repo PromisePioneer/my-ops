@@ -48,6 +48,7 @@ class TransactionRequest extends FormRequest
             'tax_invoice' => [
                 Rule::requiredIf($supplier?->tax_type === 'PKP' && $this->route('transaction') === null),
                 'mimes:jpg,jpeg,png', 'max:2048'],
+            'qty_in_meter' => ['numeric'],
         ];
     }
 

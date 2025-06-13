@@ -138,26 +138,13 @@ use function App\Helper\formatDate;
             foreach ($request->itemWithCodeFields as $value) {
                 $itemCatalog = ItemCatalog::find($value);
                 Stock::where('id', $itemCatalog->stock_id)->increment('on_hold_qty');
-                Stock::where('id', $itemCatalog->stock_id)->decrement('qty');
-                ItemCatalog::create([
-                    'transaction_id' => $itemCatalog->transaction_id,
-                    'stock_id' => $itemCatalog->stock_id,
-                    'code' => $itemCatalog->code,
-                    'draft_stock_id' => $itemCatalog->draft_stock_id,
-                    'condition' => $itemCatalog->condition,
-                    'item_id' => $itemCatalog->item_id,
-                    'created_by' => $itemCatalog->created_by,
-                    'asset_id' => $itemCatalog->asset_id,
-                    'qty_in_meter' => $itemCatalog->qty_in_meter,
-                    'status' => 'Dibawa'
-                ]);
-                $itemCatalog->delete();
+                Stock::where('id', $itemCatalog->stock_id)->decrement('available_qty');
+                $itemCatalog->update(['status' => 'Dibawa']);
                 StockWithdrawalItem::create([
                     'stock_withdrawal_id' => $stockWithdrawal->id,
                     'stock_id' => $itemCatalog->stock_id,
                     'code' => $itemCatalog->code,
-                    'qty_in_meter' => $itemCatalog->qty_in_meter,
-                    'qty' => 1,
+                    'qty' => $itemCatalog->qty,
                 ]);
             }
         }
@@ -260,12 +247,13 @@ use function App\Helper\formatDate;
         return $data->map(function ($item) {
             return [
                 'id' => $item->id,
-                'item_name' => $item->stock->item->name,
+                'item_name' => $item->stock->transaction->item->name,
                 'code' => $item->code,
-                'qty_in_meter' => ItemCatalog::where('code', $item->code)->first()->qty_in_meter,
                 'qty' => $item->qty,
                 'status' => $item->status,
-                'returned_item' => $item->returnedItem
+                'unit_type' => $item->stock->transaction->item->unitType->name,
+                'returned_item' => $item->returnedItem,
+                'category' => $item->stock->transaction->item->category->name,
             ];
         });
     }

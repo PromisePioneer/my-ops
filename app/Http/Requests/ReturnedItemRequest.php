@@ -25,8 +25,6 @@ class ReturnedItemRequest extends FormRequest
      */
     public function rules(Request $request): array
     {
-
-
         $maxRemainingQty = static::maxRemainingQty($request);
         return [
             'remaining_qty' => [
@@ -34,11 +32,7 @@ class ReturnedItemRequest extends FormRequest
                 'numeric',
                 'min:0',
                 $maxRemainingQty
-
             ],
-//            'broken_qty' => [
-//                Rule::requiredIf($request->item_condition === 'Rusak' && ItemCatalog::where('code', $request->route('stockWithdrawalItem')->code)->first()->qty_in_meter !== null)
-//            ],
             'attachment' => ['required', 'image', 'max:2048'],
         ];
     }
@@ -60,7 +54,7 @@ class ReturnedItemRequest extends FormRequest
     public static function maxRemainingQty(Request $request): \Closure
     {
         return static function ($attribute, $value, $fail) use ($request) {
-            ItemCatalog::where('code', $request->route('stockWithdrawalItem')->code)->first()->qty_in_meter < $value
+            ItemCatalog::where('code', $request->route('stockWithdrawalItem')->code)->first()->qty < $value
                 ? $fail('Jumlah sisa tidak boleh lebih besar dari jumlah barang')
                 : null;
         };

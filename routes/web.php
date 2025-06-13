@@ -23,6 +23,7 @@ use App\Http\Controllers\BAAController;
 use App\Http\Controllers\BranchDefaultWorkTimeController;
 use App\Http\Controllers\BranchRoleDefaultWorkTimeController;
 use App\Http\Controllers\DraftStockController;
+use App\Http\Controllers\DraftStockDetailController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
 use App\Http\Controllers\HRIS\Attendances\FpDevicesController;
@@ -720,6 +721,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('stocks')->group(function () {
             Route::get('/', [StockController::class, 'index']);
             Route::get('/data', [StockController::class, 'data']);
+            Route::get('/data/{itemCollection}', [StockController::class, 'findByItemId']);
             Route::get('/search', [StockController::class, 'goodsSearch']);
             Route::get('/filter', [StockController::class, 'goodsFilter']);
             Route::get('/show/{itemCollection}', [StockController::class, 'show']);
@@ -782,14 +784,15 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/show/{draftStock}', [DraftStockController::class, 'show']);
 
             Route::prefix('detail')->group(function () {
-                Route::get('/{draftStock}', [DraftStockController::class, 'detail']);
-                Route::get('/item-catalog/data/{draftStock}', [ItemCatalogController::class, 'findByDraftStock']);
-                Route::post('/item-catalog/save/{draftStock}', [ItemCatalogController::class, 'store']);
+                Route::get('/data/{itemCollection}', [DraftStockDetailController::class, 'draftStockByItemId']);
+                Route::get('/{itemCollection}', [DraftStockController::class, 'detail']);
             });
         });
         Route::prefix('item-catalog')->group(function () {
+            Route::get('/data/{itemCollection}', [ItemCatalogController::class, 'findByItemName']);
             Route::get('/generate-code/{draftStock}', [ItemCatalogController::class, 'generateAutomaticItemCode']);
             Route::get('/{itemCatalog}', [ItemCatalogController::class, 'edit']);
+            Route::post('/{draftStock}', [ItemCatalogController::class, 'store']);
             Route::post('/destroy/{itemCatalog}', [ItemCatalogController::class, 'destroy']);
         });
 

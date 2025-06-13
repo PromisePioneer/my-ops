@@ -51,7 +51,6 @@
                                         <th class="w-10px pe-2">
                                             #
                                         </th>
-                                        <th class="min-w-125px text-center">No.Transaksi</th>
                                         <th class="min-w-125px text-center">Nama Barang</th>
                                         <th class="min-w-125px text-center">Belum Terdata</th>
                                         <th class="min-w-125px text-center">Actions</th>
@@ -75,18 +74,13 @@
                                             </td>
                                         </tr>
                                     </template>
-                                    <template x-for="(stock, index) in draftStocks?.data" :key="stock.id">
+                                    <template x-for="(item, index) in draftStocks?.data" :key="item.id">
                                         <tr>
                                             <td x-text="startIndex + index++"></td>
-                                            <td class="text-center" x-text="stock.transaction_number"></td>
-                                            <td class="text-center" x-text="stock.name"></td>
-                                            <td>
-                                                <template x-if="stock.qty_in_meter">
-                                                    <span x-text="`${stock.qty} (${stock.qty_in_meter} ${stock.unit_type} per haspel)`"></span>
-                                                </template>
-                                            </td>
+                                            <td class="text-center" x-text="item.name"></td>
+                                            <td class="text-center" x-text="item.qty"></td>
                                             <td class="text-center">
-                                                <a :href="`/inventory/draft-stocks/detail/${stock.id}`"
+                                                <a :href="`/inventory/draft-stocks/detail/${item.id}`"
                                                    class="btn btn-light-primary btn-sm">
                                                     <x-icons.add-item/>
                                                     Buat Kode

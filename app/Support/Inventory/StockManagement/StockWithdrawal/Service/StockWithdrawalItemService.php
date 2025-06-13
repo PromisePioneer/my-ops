@@ -65,7 +65,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
                 'code' => $itemCatalog->code ?? $query->code,
                 'status' => $query->status,
                 'qty' => $query->qty,
-                'qty_used' => $query->qty_used
             ];
         });
 

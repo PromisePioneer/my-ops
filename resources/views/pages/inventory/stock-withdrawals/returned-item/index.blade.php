@@ -3,7 +3,8 @@
 @section('breadcrumbs', 'Inventory Controller - Pemakaian Barang - Pengembalian Barang')
 @section('content')
     <div x-data="returnedItemsData()">
-        @include('pages.inventory.stock-withdrawals.returned-stock-modal')
+        @include('pages.inventory.stock-withdrawals.returned-item.modal.if-meter')
+        @include('pages.inventory.stock-withdrawals.returned-item.modal.single-and-without-category-3')
         <div class="row">
             <div class="col-lg-12 mb-4">
                 <div class="card card-flush">
@@ -60,13 +61,7 @@
                                         <td x-text="stock.code ?? '-'"></td>
                                         <td x-text="stock.item_name"></td>
                                         <td>
-                                            <template x-if="stock.qty_in_meter">
-                                                <span x-text="`${stock.qty_in_meter} Meter`"></span>
-                                            </template>
-
-                                            <template x-if="!stock.qty_in_meter">
-                                                <span x-text="stock.qty"></span>
-                                            </template>
+                                            <span x-text="stock.qty"></span>
                                         </td>
                                         <td>
                                             <template x-if="!stock.returned_item">
@@ -77,24 +72,38 @@
                                                 <span
                                                     class="!stock_returned_item">Sudah Dikembalikan / Terpakai / Habis</span>
                                             </template>
-
                                         </td>
                                         <td>
                                             <template x-if="!stock.returned_item">
-                                                <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
-                                                        data-bs-target="#modal-returning-items"
-                                                        @click="getStockWithdrawalItem(stock.id)">
-                                                    <i class="ki-duotone ki-tablet-up fs-2">
-                                                        <span class="path1"></span>
-                                                        <span class="path2"></span>
-                                                        <span class="path3"></span>
-                                                    </i>
-                                                </button>
-                                            </template>
-                                            <template x-if="stock.returned_item">
-                                                <button class="btn btn-light-success" disabled>
-                                                    <x-icons.confirm/>
-                                                </button>
+                                                <div>
+                                                    <template
+                                                        x-if="stock.unit_type !== 'Meter' && stock.category != 'Kategori 3'">
+                                                        <button class="btn btn-light-primary btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modal-single-and-without-category-3"
+                                                                @click="getStockWithdrawalItem(stock.id)">
+                                                            <i class="ki-duotone ki-tablet-up fs-2">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                                <span class="path3"></span>
+                                                            </i>
+                                                        </button>
+                                                    </template>
+                                                    <template
+                                                        x-if="stock.unit_type == 'Meter' && stock.category === 'Kategori 1'">
+                                                        <button class="btn btn-light-primary btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modal-if-unit-type-meter"
+                                                                @click="getStockWithdrawalItem(stock.id)">
+                                                            <i class="ki-duotone ki-tablet-up fs-2">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                                <span class="path3"></span>
+                                                            </i>
+                                                        </button>
+                                                    </template>
+
+                                                </div>
                                             </template>
                                         </td>
                                     </tr>
@@ -185,8 +194,10 @@
                         itemStatus: 'Sisa',
                         itemStatusWithoutCategory3AndUnitTypeMeter: null,
                         itemCondition: null,
-                        returnStockModal: new bootstrap.Modal(document.getElementById('modal-returning-items')),
-                        returnStockForm: document.getElementById('form-returning-items'),
+                        modalIfUnitTypeMeter: document.getElementById('modal-if-unit-type-meter'),
+                        modalSingleAndWithoutCategory3: document.getElementById('modal-single-and-without-category-3'),
+                        formSingleAndWithoutCategory3: document.getElementById('form-single-and-without-category-3'),
+                        returnStockForm: document.querySelector('.form-returning-items'),
                         async init() {
                             await this.getCarriedStock();
                             await this.getConsumedOrAppliedStock();
@@ -224,7 +235,18 @@
                             try {
                                 await axios.post(`/inventory/stock-withdrawals/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.returnStockForm));
                                 await showAlert('success', 'Data berhasil disimpan');
-                                this.returnStockModal.hide();
+                                await this.init();
+                            } catch (error) {
+                                const respError = error.response.data.errors;
+                                Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                            } finally {
+                                this.buttonLoading = false;
+                            }
+                        },
+                        async itemStatusWithoutCategory3AndUnitTypeMeterStore() {
+                            try {
+                                await axios.post(`/inventory/stock-withdrawals/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.formSingleAndWithoutCategory3));
+                                await showAlert('success', 'Data berhasil disimpan');
                                 await this.init();
                             } catch (error) {
                                 const respError = error.response.data.errors;

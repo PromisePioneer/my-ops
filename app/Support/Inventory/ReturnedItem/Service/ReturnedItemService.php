@@ -29,15 +29,15 @@ use Illuminate\Pagination\LengthAwarePaginator;
         $data = $returnedItems->getCollection()->map(function ($returnedItem) {
             $consumedQty = 0;
 
-            if ($returnedItem->stockWithdrawalItem->qty_in_meter) {
-                $consumedQty += $returnedItem->stockWithdrawalItem->qty_in_meter - $returnedItem->remaining_qty - $returnedItem->broken_qty;
+            if ($returnedItem->stockWithdrawalItem->qty) {
+                $consumedQty +=  $returnedItem->remaining_qty - $returnedItem->broken_qty;
             }
 
             return [
                 'id' => $returnedItem->id,
                 'code' => $returnedItem->stockWithdrawalItem->code,
-                'item_name' => $returnedItem->stockWithdrawalItem->stock->item?->name,
-                'qty' => $returnedItem->stockWithdrawalItem->qty . $returnedItem->stockWithdrawalItem->stock->item->unitType->name,
+                'item_name' => $returnedItem->stockWithdrawalItem->stock->transaction->item?->name,
+                'qty' => $returnedItem->stockWithdrawalItem->qty . $returnedItem->stockWithdrawalItem->stock->transaction->item->unitType->name,
                 'consumed_qty' => $consumedQty,
                 'returned_qty' => $returnedItem->remaining_qty,
                 'broken_qty' => $returnedItem->broken_qty,

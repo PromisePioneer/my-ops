@@ -81,7 +81,7 @@ class Transaction extends Model
 
     public function draftStock(): HasMany
     {
-        return $this->hasMany(Transaction::class, 'item_id');
+        return $this->hasMany(DraftStock::class);
     }
 
 

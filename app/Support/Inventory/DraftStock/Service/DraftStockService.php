@@ -34,7 +34,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
     }
 
 
-    public function search(Request $request)
+    public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
         $query = $this->draftStockRepostitory->getDraftStockQuery();
@@ -58,22 +58,16 @@ use Illuminate\Pagination\LengthAwarePaginator;
     private static function formattedData(Request $request, LengthAwarePaginator $itemData): LengthAwarePaginator
     {
         $data = $itemData->getCollection()->map(function ($query) use ($request) {
-            $unitType = $query->transaction->item->unitType->name ?? $query->initialInventoryBalance->item->unitType->name;
-
-
             return [
                 'id' => $query->id,
-                'transaction_number' => $query->transaction?->transaction_number ?? '-',
-                'name' => $query->transaction?->item?->name ?? $query->initialInventoryBalance->item->name,
-                'qty' => $query->qty,
-                'unit_type' => $unitType,
-                'qty_in_meter' => $query->qty_in_meter,
+                'name' => $query->name,
+                'qty' => $query->transaction->reduce(function ($carry, $item) {
+                    return $carry + $item->qty;
+                }),
             ];
         });
 
         $itemData->setCollection($data);
         return $itemData;
     }
-
-
 }

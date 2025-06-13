@@ -9,17 +9,13 @@ class ItemCatalog extends Model
 {
     protected $table = 'item_catalogs';
     protected $fillable = [
-        'transaction_id',
         'stock_id',
-        'draft_stock_id',
-        'item_id',
+        'asset_id',
         'code',
         'condition',
-        'created_by',
         'status',
-        'initial_balance_inventory_id',
-        'asset_id',
-        'qty_in_meter'
+        'created_by',
+        'qty'
     ];
 
 
@@ -36,21 +32,5 @@ class ItemCatalog extends Model
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
-    }
-
-    public function transaction(): BelongsTo
-    {
-        return $this->belongsTo(Transaction::class, 'transaction_id');
-    }
-
-
-    public function initialInventoryBalance(): BelongsTo
-    {
-        return $this->belongsTo(InitialInventoryBalance::class, 'initial_balance_inventory_id');
-    }
-
-    public function item(): BelongsTo
-    {
-        return $this->belongsTo(ItemCollection::class, 'item_id');
     }
 }

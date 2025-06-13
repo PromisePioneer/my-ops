@@ -65,4 +65,10 @@ class ItemCollection extends Model
     {
         return $this->hasMany(Transaction::class, 'item_id');
     }
+
+
+    public function initialInventoryBalance(): HasMany
+    {
+        return $this->hasMany(InitialInventoryBalance::class, 'item_id');
+    }
 }

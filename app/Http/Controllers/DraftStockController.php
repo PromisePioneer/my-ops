@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
 use App\Models\DraftStock;
+use App\Models\ItemCollection;
 use App\Support\Inventory\DraftStock\Service\DraftStockService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -47,10 +48,15 @@ use Illuminate\View\View;
         return response()->json($draftStock);
     }
 
-    public function detail(DraftStock $draftStock): View
+    public function detail(ItemCollection $itemCollection): View
     {
-        $draftStock->load('transaction', 'initialInventoryBalance');
-        return view('pages.inventory.draft-stocks.detail', compact('draftStock'));
+        $itemCollection->load('transaction', 'initialInventoryBalance');
+        $ifTransactionExists = $itemCollection->transaction->where('status', 'Diterima')->first();
+        if (!$ifTransactionExists) {
+            return view('errors.404');
+        }
+
+        return view('pages.inventory.draft-stocks.detail', compact('itemCollection'));
     }
 
 }
