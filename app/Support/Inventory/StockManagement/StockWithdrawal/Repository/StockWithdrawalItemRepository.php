@@ -11,7 +11,7 @@ class StockWithdrawalItemRepository
 {
     public function carriedStockCount()
     {
-        return StockWithdrawalItem::where('status', 'Dibawa')->sum('qty');
+        return StockWithdrawalItem::doesntHave('returnedItem')->sum('qty');
     }
     public function findByStockWithdrawal(StockWithdrawal $stockWithdrawal)
     {

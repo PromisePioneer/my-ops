@@ -106,7 +106,9 @@
                                         </th>
                                         <th class="min-w-125px text-center">Nama</th>
                                         <th class="min-w-125px text-center">Kategori</th>
-                                        <th class="min-w-125px text-center">Stok</th>
+                                        <th class="min-w-125px text-center">Stok Ready</th>
+                                        <th class="min-w-125px text-center">Dibawa</th>
+                                        <th class="min-w-125px text-center">Rusak</th>
                                     </thead>
                                     <tbody class="fw-bold text-center">
                                     <template x-if="isLoading">
@@ -138,6 +140,8 @@
                                             </td>
                                             <td class="text-center" x-text="stock.category_name"></td>
                                             <td class="text-center" x-text="stock.total_stock"></td>
+                                            <td class="text-center" x-text="stock.total_on_hold_qty"></td>
+                                            <td class="text-center" x-text="stock.total_broken_qty"></td>
                                         </tr>
                                     </template>
                                     </tbody>

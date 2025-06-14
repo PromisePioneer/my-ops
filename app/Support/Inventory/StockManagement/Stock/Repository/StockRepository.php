@@ -65,4 +65,24 @@ class StockRepository
             ->orWhere('transactions.item_id', $itemId)
             ->sum('stocks.available_qty');
     }
+
+
+    public static function getSumBrokenQty($itemId)
+    {
+        return Stock::leftJoin('transactions', 'transactions.id', 'stocks.transaction_id')
+            ->leftJoin('initial_inventory_balance', 'initial_inventory_balance.id', 'stocks.initial_balance_inventory_id')
+            ->where('transactions.item_id', $itemId)
+            ->orWhere('transactions.item_id', $itemId)
+            ->sum('stocks.broken_qty');
+    }
+
+
+    public static function getSumOnHoldQty($itemId)
+    {
+        return Stock::leftJoin('transactions', 'transactions.id', 'stocks.transaction_id')
+            ->leftJoin('initial_inventory_balance', 'initial_inventory_balance.id', 'stocks.initial_balance_inventory_id')
+            ->where('transactions.item_id', $itemId)
+            ->orWhere('transactions.item_id', $itemId)
+            ->sum('stocks.on_hold_qty');
+    }
 }

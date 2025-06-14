@@ -29,7 +29,7 @@ class ItemCollectionRepository
 
     public function itemCollectionStock(): EloquentBuilder
     {
-        return ItemCollection::with('unitType')->whereNotNull('category_id');
+        return ItemCollection::with('unitType', 'category')->whereNotNull('category_id');
     }
 
     public function getArchivedData()
