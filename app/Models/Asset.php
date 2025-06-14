@@ -22,6 +22,7 @@ class Asset extends Model
         'useful_life',
         'price',
         'status',
+        'qty',
         'depreciation',
     ];
 

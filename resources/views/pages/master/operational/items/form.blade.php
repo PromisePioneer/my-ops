@@ -134,8 +134,8 @@
                         <div class="col-md-6">
                             <label for="unit_type_id" class="required form-label">Satuan</label>
                             <x-select2.index
-                                x-bind:name="unit_type_id"
-                                id="unit_type_id"
+                                name="unit_type_id"
+                                id="selected-unit-type"
                                 class="form-select form-select-solid"
                                 elementSelector="unit-types-select2"
                                 parentElementIfExist="#modal-item"
@@ -192,7 +192,7 @@
                             </div>
 
                             <x-select2.index
-                                x-bind:name="`${tangibleAsset === 'Bukan Bangunan' || isAset === 'ASET' || isAset === 'JUAL' || !isVehicleAsset ? 'category_id' : ''}`"
+                                name="category_id"
                                 id="selected-item-category"
                                 class="form-select form-select-solid"
                                 elementSelector="item-category-select2"
@@ -217,7 +217,7 @@
                                 Akun Aset (Jika Masuk Aset)
                             </label>
                             <x-select2.index
-                                x-bind:name="`${isAset === 'ASET' && !isLandAsset && !isVehicleAsset ? 'asset_account_id' : '' }`"
+                                name="asset_account_id"
                                 id="selected-asset-account"
                                 class="form-select form-select-solid"
                                 elementSelector="asset-accounts-select2"

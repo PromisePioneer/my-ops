@@ -89,9 +89,6 @@ class ItemCollectionRequest extends FormRequest
             $unitType = UnitType::find($request->unit_type_id);
             $category = ItemCategory::find($request->category_id);
 
-//            if ($category?->name === 'Kategori 1' && $unitType?->name !== 'Meter') {
-//                return $fail('Tipe satuan harus Meter jika kategori yang dipilih Kategori 1');
-//            }
 
             return null;
         };
@@ -117,6 +114,7 @@ class ItemCollectionRequest extends FormRequest
         return static function ($attribute, $value, $fail) use ($request) {
             $initialInventoryBalance = InitialInventoryBalance::where('item_id', $request->route('itemCollection')?->id)->first();
             $transaction = Transaction::where('item_id', $request->route('itemCollection')?->id)
+                ->where('status', 'Diterima')
                 ->first();
 
             if ($initialInventoryBalance || $transaction) {

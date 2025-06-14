@@ -135,11 +135,11 @@ use function App\Helper\currencyFormat;
     /**
      * @throws Throwable
      */
-    public function confirm(Request $request, Asset $asset): void
+    public function confirm(Asset $asset): void
     {
         $asset->load('item', 'branch');
         $description = sprintf(self::PURCHASE_ASSET_DESCRIPTION, $asset->name);
-        DB::transaction(function () use ($request, $description, $asset) {
+        DB::transaction(function () use ($description, $asset) {
             $this->depreciation($asset);
             $asset->status = 1;
             $asset->save();

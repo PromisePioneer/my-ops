@@ -125,10 +125,10 @@ use Throwable;
     /**
      * @throws Throwable
      */
-    public function confirm(Request $request, Asset $asset): JsonResponse
+    public function confirm(Asset $asset): JsonResponse
     {
         $this->authorize('confirm', $asset);
-        $this->assetService->confirm($request, $asset);
+        $this->assetService->confirm($asset);
         return response()->json(['message' => 'Data berhasil dikonfirmasi.']);
     }
 

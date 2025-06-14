@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('assets', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique();
+            $table->string('code');
             $table->foreignId('branch_id')
                 ->constrained('branches')
                 ->cascadeOnDelete()

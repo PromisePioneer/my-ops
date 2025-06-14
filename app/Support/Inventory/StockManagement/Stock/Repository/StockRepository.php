@@ -6,6 +6,7 @@ use App\Models\DraftStock;
 use App\Models\ItemCatalog;
 use App\Models\ItemCollection;
 use App\Models\Stock;
+use Illuminate\Support\Facades\Auth;
 
 class StockRepository
 {
@@ -61,6 +62,9 @@ class StockRepository
     {
         return Stock::leftJoin('transactions', 'transactions.id', 'stocks.transaction_id')
             ->leftJoin('initial_inventory_balance', 'initial_inventory_balance.id', 'stocks.initial_balance_inventory_id')
+            ->when(!empty(Auth::user()->branch_id), function ($query) {
+                $query->where('stocks.branch_id', Auth::user()->branch_id);
+            })
             ->where('transactions.item_id', $itemId)
             ->orWhere('transactions.item_id', $itemId)
             ->sum('stocks.available_qty');
@@ -71,6 +75,9 @@ class StockRepository
     {
         return Stock::leftJoin('transactions', 'transactions.id', 'stocks.transaction_id')
             ->leftJoin('initial_inventory_balance', 'initial_inventory_balance.id', 'stocks.initial_balance_inventory_id')
+            ->when(!empty(Auth::user()->branch_id), function ($query) {
+                $query->where('stocks.branch_id', Auth::user()->branch_id);
+            })
             ->where('transactions.item_id', $itemId)
             ->orWhere('transactions.item_id', $itemId)
             ->sum('stocks.broken_qty');
