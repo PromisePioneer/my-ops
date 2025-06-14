@@ -1,4 +1,5 @@
 @extends('layouts.template')
+@section('page-title', 'Barang Dibawa')
 @section('content')
     <div x-data="stockWithdrawalItemsData()">
         <div class="d-flex flex-column flex-xl-row">
@@ -59,11 +60,10 @@
                                             #
                                         </th>
                                         <th class="min-w-125px text-center">Cabang</th>
-                                        <th class="min-w-125px text-center">Nama Barang</th>
-                                        <th class="min-w-125px text-center">Code</th>
+                                        <th class="min-w-125px text-center">Nama</th>
+                                        <th class="min-w-125px text-center">Kode</th>
                                         <th class="min-w-125px text-center">PIC</th>
                                         <th class="min-w-125px text-center">Stocker</th>
-                                        <th class="min-w-125px text-center">Status</th>
                                     </thead>
 
                                     <template x-if="isLoading">

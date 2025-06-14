@@ -129,7 +129,6 @@ use Throwable;
                 $assetAccount = Account::where('code', '121')->first()->id;
             }
 
-
             ItemCollection::create([
                 'name' => $request->name,
                 'is_vehicle' => $request->is_vehicle === 'on',

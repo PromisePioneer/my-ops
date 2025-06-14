@@ -9,12 +9,12 @@ use App\Models\DraftStock;
 use App\Models\ItemCatalog;
 use App\Models\ItemCollection;
 use App\Models\Stock;
-use App\Models\Transaction;
 use App\Support\HelperService\UsefulLifeService;
 use App\Support\Inventory\StockManagement\DraftStock\Repository\ItemCatalogRepository;
 use App\Support\Inventory\StockManagement\Stock\Repository\StockRepository;
 use App\Support\Inventory\StockManagement\StockWithdrawal\Repository\StockWithdrawalItemRepository;
 use App\Support\Master\Accounting\Accounts\Repositories\AccountRepository;
+use App\Support\Master\Accounting\Assets\Service\AssetService;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -30,12 +30,7 @@ use Throwable;
         $this->itemCatalogRepository = new ItemCatalogRepository();
         $this->stockWithdrawalItemRepository = new StockWithdrawalItemRepository();
         $this->stockRepository = new StockRepository();
-    }
-
-    public function findByDraftStock(DraftStock $draftStock): LengthAwarePaginator
-    {
-        $catalog = $this->itemCatalogRepository->findByDraftStock($draftStock)->paginate(self::$perPage);
-        return $this->formattedData($catalog);
+        $this->assetService = new AssetService();
     }
 
     public function formattedData(LengthAwarePaginator $catalog): LengthAwarePaginator
@@ -97,10 +92,13 @@ use Throwable;
     }
 
 
-    private static function insertAsset(Request $request, DraftStock $draftStock, Stock $stock): Asset
+    /**
+     * @throws Throwable
+     */
+    private function insertAsset(Request $request, DraftStock $draftStock, Stock $stock): void
     {
         $itemObject = $draftStock->transaction?->item ?? $draftStock->initialInventoryBalance?->item;
-        return Asset::create([
+        $asset = Asset::create([
             'branch_id' => $draftStock->transaction?->branch_id ?? $draftStock->initialInventoryBalance?->branch_id,
             'code' => $request->code,
             'stock_id' => $stock->id,
@@ -113,6 +111,7 @@ use Throwable;
             ),
             'price' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance?->unit_price,
         ]);
+        $this->assetService->confirm($asset);
     }
 
 
@@ -135,7 +134,7 @@ use Throwable;
             'stock_id' => $stock->id,
             'item_id' => $draftStock->transaction->item_id ?? $draftStock->initialInventoryBalance->item_id,
             'code' => $request->code,
-            'asset_id' => $asset->id,
+            'asset_id' => $asset->id ?? null,
             'condition' => $request->condition,
             'created_by' => $request->user()->id,
             'available_qty' => $draftStock->transaction->qty_in_meter ?? 1,
@@ -213,26 +212,5 @@ use Throwable;
 
         $query->setCollection($data);
         return $query;
-    }
-
-    public function getItemCatalogByBranch(Request $request)
-    {
-        $itemCatalog = Transaction::with('transaction.item.category', 'initialInventoryBalance.item.category')
-            ->where(function ($query) use ($request) {
-                $query->whereHas('transaction.item.category', function ($query) use ($request) {
-                    $query->where('branch_id', $request->branch_id ?? $request->user()->branch_id);
-                });
-            })->get();
-
-        return $itemCatalog->map(function ($itemCatalog) {
-            return [
-                'id' => $itemCatalog->id,
-                'text' => $itemCatalog->transaction->item->name,
-                'children' => [
-                    'condition' => $itemCatalog->condition,
-                    'status' => $itemCatalog->status,
-                ]
-            ];
-        });
     }
 }

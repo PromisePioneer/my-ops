@@ -22,8 +22,7 @@ class StockWithdrawalItemRepository
 
     public function getCarriedStock(): EloquentBuilder
     {
-        return StockWithdrawalItem::with('stockWithdrawal', 'stockWithdrawal.branch', 'stock', 'stock.item')
-            ->orderByRaw("FIELD(status , 'Dibawa', 'Dikembalikan', 'Terpakai', 'Habis') ASC");
+        return StockWithdrawalItem::with('stockWithdrawal', 'stockWithdrawal.branch', 'stock.transaction.item', 'stock.initialInventoryBalance.item')->doesntHave('returnedItem');
     }
 
 

@@ -12,7 +12,6 @@ use App\Support\Master\Common\Branch\Repository\BranchRepository;
 use App\Support\Master\Operational\ItemCollections\Repositories\ItemCollectionRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
 
 #[AllowDynamicProperties] class StockService
 {
@@ -54,13 +53,9 @@ use Illuminate\Support\Facades\Auth;
     private static function formattedGoodsData(LengthAwarePaginator $goodsData): LengthAwarePaginator
     {
         $data = $goodsData->getCollection()->map(function ($item) {
-            if (Auth::user()->branch_id) {
-                $totalReadyStock = $item->transaction?->stock->where('branch_id', Auth::user()->branch_id)->sum('qty') ?? $item->initialInventoryBalance?->stock->where('branch_id', Auth::user()->branch_id)->sum('qty');
-            } else {
-                $totalReadyStock = StockRepository::getSumStockQtyByItemId($item->id);
-                $totalOnHoldQty = StockRepository::getSumOnHoldQty($item->id);
-                $totalBrokenQty = StockRepository::getSumBrokenQty($item->id);
-            }
+            $totalReadyStock = StockRepository::getSumStockQtyByItemId($item->id);
+            $totalOnHoldQty = StockRepository::getSumOnHoldQty($item->id);
+            $totalBrokenQty = StockRepository::getSumBrokenQty($item->id);
 
             return [
                 'id' => $item->id,
@@ -161,7 +156,6 @@ use Illuminate\Support\Facades\Auth;
         return $stock->map(function ($item) {
             return [
                 'id' => $item->id,
-                'name' => $item->transaction->item->name ?? $item->initialInventoryBalance->item->name ?? '',
                 'text' => $item->transaction->item->name . ' Stok : ' . $item->available_qty,
             ];
         });

@@ -61,9 +61,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
                 'stocker' => $query->stockWithdrawal->stocker->name,
                 'branch_name' => $query->stockWithdrawal->branch->name,
                 'stock_withdrawal_id' => $query->stock_withdrawal_id,
-                'item_name' => $query->stock->item->name,
+                'item_name' => $query->stock->transaction->item->name ?? $query->stock->initialInventoryBalance->item->name ,
                 'code' => $itemCatalog->code ?? $query->code,
-                'status' => $query->status,
                 'qty' => $query->qty,
             ];
         });
