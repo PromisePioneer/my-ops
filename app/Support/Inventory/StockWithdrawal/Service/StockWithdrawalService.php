@@ -151,12 +151,19 @@ use function App\Helper\formatDate;
 
         if ($request['itemWithoutCodeFields']) {
             foreach ($request['itemWithoutCodeFields'] as $key => $value) {
-                $stockWithoutCode = Stock::with('item', 'itemCatalog')->where('id', $value['stock_id'])->first();
-                $stockWithoutCode->decrement('qty', $value['qty']);
+                $stockWithoutCode = Stock::where('id', $value['stock_id'])
+                    ->where(function ($query) {
+                        $query->whereHas('transaction.item.category', function ($query) {
+                            $query->where('name', 'Kategori 4');
+                        })->orWhereHas('initialInventoryBalance.item.category', function ($query) {
+                            $query->where('name', 'Kategori 4');
+                        });
+                    })
+                    ->first();
+                $stockWithoutCode->decrement('available_qty', $value['qty']);
                 $stockWithoutCode->increment('on_hold_qty', $value['qty']);
                 $value['stock_withdrawal_id'] = $stockWithdrawal->id;
                 $value['stock_id'] = $stockWithoutCode->id;
-                $value['status'] = 'Dibawa';
                 StockWithdrawalItem::create($value);
             }
         }

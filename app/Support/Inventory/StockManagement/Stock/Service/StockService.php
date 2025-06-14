@@ -55,17 +55,20 @@ use Illuminate\Support\Facades\Auth;
     {
         $data = $goodsData->getCollection()->map(function ($item) {
             if (Auth::user()->branch_id) {
-                $stock = $item->transaction?->stock->where('branch_id', Auth::user()->branch_id)->sum('qty') ?? $item->initialInventoryBalance?->stock->where('branch_id', Auth::user()->branch_id)->sum('qty');
+                $totalReadyStock = $item->transaction?->stock->where('branch_id', Auth::user()->branch_id)->sum('qty') ?? $item->initialInventoryBalance?->stock->where('branch_id', Auth::user()->branch_id)->sum('qty');
             } else {
-                $stock = DraftStockRepository::draftStockQtySumByItemId($item->id)
-                    + StockRepository::getSumStockQtyByItemId($item->id);
+                $totalReadyStock = StockRepository::getSumStockQtyByItemId($item->id);
+                $totalOnHoldQty = StockRepository::getSumOnHoldQty($item->id);
+                $totalBrokenQty = StockRepository::getSumBrokenQty($item->id);
             }
 
             return [
                 'id' => $item->id,
                 'type' => $item->type,
-                'total_stock' => $stock,
+                'total_stock' => $totalReadyStock,
                 'category_name' => $item->category?->name,
+                'total_on_hold_qty' => "$totalOnHoldQty {$item->unitType->name}",
+                'total_broken_qty' => "$totalBrokenQty {$item->unitType->name}",
                 'name' => $item->name,
                 'unit_name' => $item->unitType->name
             ];
@@ -141,22 +144,25 @@ use Illuminate\Support\Facades\Auth;
     public function getStockWithoutCode(Request $request)
     {
 
-        $stock = Stock::with('item', 'branch')
+        $stock = Stock::with('transaction', 'branch', 'initialInventoryBalance')
             ->whereHas('branch', function ($query) use ($request) {
                 $query->where('id', $request->branch_id ?? $request->user()->branch_id);
-            })
-            ->whereHas('item.category', function ($query) {
-                $query->where('name', 'Kategori 4');
             })->whereNotIn('id', $request->get('ids', []))
-            ->whereIn('condition', ['Baik', 'Diperbaiki'])
+            ->where(function ($query) use ($request) {
+                $query->whereHas('transaction.item.category', function ($query) use ($request) {
+                    $query->where('name', 'Kategori 4');
+                })->orWhereHas('initialInventoryBalance.item.category', function ($query) use ($request) {
+                    $query->where('name', 'Kategori 4');
+                });
+            })
             ->get();
 
 
         return $stock->map(function ($item) {
             return [
                 'id' => $item->id,
-                'name' => $item->item->name,
-                'text' => $item->item->name . ' Stok : ' . $item->qty . ' - ' . $item->condition,
+                'name' => $item->transaction->item->name ?? $item->initialInventoryBalance->item->name ?? '',
+                'text' => $item->transaction->item->name . ' Stok : ' . $item->available_qty,
             ];
         });
 
