@@ -15,7 +15,8 @@ class ItemCatalog extends Model
         'condition',
         'status',
         'created_by',
-        'qty'
+        'available_qty',
+        'broken_qty'
     ];
 
 

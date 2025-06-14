@@ -54,7 +54,7 @@ class ReturnedItemRequest extends FormRequest
     public static function maxRemainingQty(Request $request): \Closure
     {
         return static function ($attribute, $value, $fail) use ($request) {
-            ItemCatalog::where('code', $request->route('stockWithdrawalItem')->code)->first()->qty < $value
+            ItemCatalog::where('code', $request->route('stockWithdrawalItem')->code)->first()->available_qty < $value
                 ? $fail('Jumlah sisa tidak boleh lebih besar dari jumlah barang')
                 : null;
         };

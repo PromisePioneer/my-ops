@@ -83,7 +83,6 @@ use Throwable;
     public function findOrCreateStock(DraftStock $draftStock, Request $request): Stock
     {
         $stock = $this->stockRepository->findByDraftStock($draftStock);
-
         if (empty($stock)) {
             return self::insertStock($draftStock);
         }
@@ -139,7 +138,8 @@ use Throwable;
             'asset_id' => $asset->id,
             'condition' => $request->condition,
             'created_by' => $request->user()->id,
-            'qty' => $draftStock->transaction->qty_in_meter ?? 1
+            'available_qty' => $draftStock->transaction->qty_in_meter ?? 1,
+            'broken_qty' => 0,
         ]);
     }
 
@@ -204,7 +204,8 @@ use Throwable;
                 'code' => $itemCatalog->code,
                 'condition' => $itemCatalog->condition,
                 'status' => $itemCatalog->status,
-                'qty' => "$itemCatalog->qty $unitType",
+                'available_qty' => "$itemCatalog->available_qty $unitType",
+                'broken_qty' => "$itemCatalog->broken_qty $unitType",
                 'created_by' => $itemCatalog->createdBy->name,
             ];
         });

@@ -123,7 +123,8 @@
                         <tr>
                             <th class="w-10px pe-2">No</th>
                             <th class="min-w-125px text-center">Kode</th>
-                            <th class="min-w-125px text-center">Qty</th>
+                            <th class="min-w-125px text-center"> Tersedia</th>
+                            <th class="min-w-125px text-center"> Rusak</th>
                             <th class="min-w-125px text-center">Kondisi</th>
                             <th class="min-w-125px text-center">Status</th>
                             <th class="min-w-125px text-center">Diinput Oleh</th>
@@ -157,7 +158,8 @@
                             <tr>
                                 <td x-text="startIndex + index++"></td>
                                 <td x-text="item.code"></td>
-                                <td x-text="item.qty"></td>
+                                <td x-text="item.available_qty"></td>
+                                <td x-text="item.broken_qty"></td>
                                 <td class="text-uppercase">
                                     <template x-if="item.condition === 'Rusak'">
                                         <span class="badge bg-light-danger text-danger">Rusak</span>

@@ -14,7 +14,7 @@
                 </div>
             </div>
 
-            <form id="form-returning-items" @submit.prevent="save(stockWithdrawalItem.id)">
+            <form id="form-if-unit-type-meter" @submit.prevent="ifUnitTypeMeterStore(stockWithdrawalItem.id)">
                 <div class="modal-body">
                     <div class="row">
                         <div class="mb-4">

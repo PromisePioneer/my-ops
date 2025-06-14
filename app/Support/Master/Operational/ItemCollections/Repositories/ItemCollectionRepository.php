@@ -29,7 +29,7 @@ class ItemCollectionRepository
 
     public function itemCollectionStock(): EloquentBuilder
     {
-        return ItemCollection::with('stock', 'unitType')->whereNotNull('category_id');
+        return ItemCollection::with('unitType')->whereNotNull('category_id');
     }
 
     public function getArchivedData()
@@ -49,6 +49,6 @@ class ItemCollectionRepository
     public function getMustReorderItem(): EloquentBuilder
     {
 
-        return ItemCollection::with('stock', 'transaction.draftStock');
+        return ItemCollection::query();
     }
 }

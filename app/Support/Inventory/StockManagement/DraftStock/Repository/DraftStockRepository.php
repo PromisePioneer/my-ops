@@ -51,4 +51,14 @@ class DraftStockRepository
 
         return $query;
     }
+
+
+    public static function draftStockQtySumByItemId($itemId)
+    {
+        return DraftStock::leftJoin('transactions', 'transactions.id', 'draft_stocks.transaction_id')
+            ->leftJoin('initial_inventory_balance', 'initial_inventory_balance.id', 'draft_stocks.initial_balance_inventory_id')
+            ->where('initial_inventory_balance.item_id', $itemId)
+            ->orWhere('transactions.item_id', $itemId)
+            ->sum('draft_stocks.qty');
+    }
 }

@@ -10,7 +10,6 @@ use App\Models\ItemCatalog;
 use App\Models\ItemCollection;
 use App\Support\Inventory\StockManagement\ItemCatalog\ItemCatalogService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Throwable;
 
 #[AllowDynamicProperties] class ItemCatalogController extends Controller
@@ -19,17 +18,6 @@ use Throwable;
     public function __construct()
     {
         $this->itemCatalogService = new ItemCatalogService();
-    }
-
-    public function index()
-    {
-
-    }
-
-
-    public function findByDraftStock(Request $request, DraftStock $draftStock): JsonResponse
-    {
-        return response()->json($this->itemCatalogService->findByDraftStock($draftStock, $request));
     }
 
 
@@ -64,15 +52,10 @@ use Throwable;
     }
 
 
-    public function findByItemName(ItemCollection $itemCollection): JsonResponse
+    public function findByItemId(ItemCollection $itemCollection): JsonResponse
     {
         return response()->json($this->itemCatalogService->findByItemId($itemCollection));
     }
 
-
-    public function getItemCatalogByBranch(Request $request): JsonResponse
-    {
-        return response()->json($this->itemCatalogService->getItemCatalogByBranch($request));
-    }
 
 }

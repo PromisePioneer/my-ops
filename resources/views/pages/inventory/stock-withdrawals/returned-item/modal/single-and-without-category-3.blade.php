@@ -14,7 +14,8 @@
                 </div>
             </div>
 
-            <form class="form-single-and-without-category-3" @submit.prevent="itemStatusWithoutCategory3AndUnitTypeMeterStore(stockWithdrawalItem.id)">
+            <form id="form-single-and-without-category-3"
+                  @submit.prevent="itemStatusWithoutCategory3AndUnitTypeMeterStore(stockWithdrawalItem.id)">
                 <div class="modal-body">
                     <div class="row">
                         <div class="mb-4">
@@ -28,7 +29,7 @@
                         <div class="mb-4" x-show="itemStatus === 'Dikembalikan'"
                              x-transition x-cloak>
                             <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Kondisi</label>
-                            <select name="item_condition" id="item_condition"
+                            <select :name="`${itemStatus === 'Dikembalikan' ? 'item_condition' : ''}`"
                                     class="form-select form-select-solid">
                                 <option value="Rusak">Rusak</option>
                                 <option value="Baik">Baik</option>

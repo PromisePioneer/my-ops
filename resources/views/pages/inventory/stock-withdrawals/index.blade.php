@@ -101,7 +101,7 @@
                                             <a :href="`/inventory/stock-withdrawals/return/${stockWithdrawal.id}`"
                                                class="btn btn-light-warning btn-sm mb-4">
                                                 <x-icons.back/>
-                                                Kembalikan Barang
+                                                Barang Kembali
                                             </a>
                                             <button class="btn btn-light-danger btn-sm"
                                                     @click="destroy(stockWithdrawal.id)">

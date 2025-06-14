@@ -789,7 +789,7 @@ Route::group(['middleware' => ['auth']], static function () {
             });
         });
         Route::prefix('item-catalog')->group(function () {
-            Route::get('/data/{itemCollection}', [ItemCatalogController::class, 'findByItemName']);
+            Route::get('/data/{itemCollection}', [ItemCatalogController::class, 'findByItemId']);
             Route::get('/generate-code/{draftStock}', [ItemCatalogController::class, 'generateAutomaticItemCode']);
             Route::get('/{itemCatalog}', [ItemCatalogController::class, 'edit']);
             Route::post('/{draftStock}', [ItemCatalogController::class, 'store']);
