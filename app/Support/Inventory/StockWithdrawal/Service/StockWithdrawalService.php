@@ -144,7 +144,7 @@ use function App\Helper\formatDate;
                     'stock_withdrawal_id' => $stockWithdrawal->id,
                     'stock_id' => $itemCatalog->stock_id,
                     'code' => $itemCatalog->code,
-                    'qty' => $itemCatalog->qty,
+                    'qty' => $itemCatalog->available_qty,
                 ]);
             }
         }

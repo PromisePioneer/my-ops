@@ -86,7 +86,7 @@ class TransactionSeeder extends Seeder
 
         //transaksi aset Non PKP (ASET)
         $qty4 = 20;
-        $unitPrice3 = 5000000;
+        $unitPrice4 = 5000000;
         Transaction::create([
             'transaction_number' => '12345435',
             'branch_id' => Branch::where('name', 'Kantor')->where('parent_id', 1)->first()->id,
@@ -96,13 +96,34 @@ class TransactionSeeder extends Seeder
             'qty' => $qty4,
             'type' => 'Barang',
             'qty_in_meter' => 2000,
-            'unit_price' => $unitPrice3,
-            'total_price' => $qty4 * $unitPrice3,
+            'unit_price' => $unitPrice4,
+            'total_price' => $qty4 * $unitPrice4,
             'detail' => 'Pembelian KU 96 Core (NON PKP)',
             'debit_account_id' => Account::where('code', '112-01')->first()->id,
             'credit_account_id' => Account::where('code', '111-01')->first()->id,
             'created_by' => User::where('name', 'Super Admin')->first()->id,
             'attachment' => 'test.jpg',
         ]);
+
+
+        $qty5 = 10;
+        $unitPrice5 = 20000000;
+        Transaction::create([
+            'transaction_number' => '12345435',
+            'branch_id' => Branch::where('name', 'Kantor')->where('parent_id', 1)->first()->id,
+            'supplier_id' => Supplier::where('tax_type', 'NON PKP')->first()->id,
+            'date' => Carbon::now()->format('Y-m-d'),
+            'item_id' => ItemCollection::where('name', 'Splicer')->first()->id,
+            'qty' => $qty3,
+            'type' => 'Barang',
+            'unit_price' => $unitPrice5,
+            'total_price' => $qty5 * $unitPrice5,
+            'detail' => 'Pembelian GPON (NON PKP)',
+            'debit_account_id' => Account::where('code', '112-01')->first()->id,
+            'credit_account_id' => Account::where('code', '111-01')->first()->id,
+            'created_by' => User::where('name', 'Super Admin')->first()->id,
+            'attachment' => 'test.jpg',
+        ]);
+
     }
 }

@@ -15,7 +15,8 @@ return new class extends Migration {
             $table->foreignId('asset_id')->nullable()->constrained('assets')->cascadeOnDelete();
             $table->foreignId('stock_id')->constrained('stocks')->cascadeOnDelete();
             $table->string('code');
-            $table->string('qty');
+            $table->double('available_qty');
+            $table->double('broken_qty');
             $table->enum('condition', ['Rusak', 'Baik'])->default('Baik');
             $table->enum('status', ['Tersedia', 'Terpakai', 'Dibawa'])->default('Tersedia');
             $table->foreignId('created_by')->constrained('users');

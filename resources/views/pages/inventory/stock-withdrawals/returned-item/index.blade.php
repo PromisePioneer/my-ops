@@ -5,6 +5,7 @@
     <div x-data="returnedItemsData()">
         @include('pages.inventory.stock-withdrawals.returned-item.modal.if-meter')
         @include('pages.inventory.stock-withdrawals.returned-item.modal.single-and-without-category-3')
+        @include('pages.inventory.stock-withdrawals.returned-item.modal.category3')
         <div class="row">
             <div class="col-lg-12 mb-4">
                 <div class="card card-flush">
@@ -81,6 +82,19 @@
                                                         <button class="btn btn-light-primary btn-sm"
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#modal-single-and-without-category-3"
+                                                                @click="getStockWithdrawalItem(stock.id)">
+                                                            <i class="ki-duotone ki-tablet-up fs-2">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                                <span class="path3"></span>
+                                                            </i>
+                                                        </button>
+                                                    </template>
+                                                    <template
+                                                        x-if="stock.unit_type !== 'Meter' && stock.category === 'Kategori 3'">
+                                                        <button class="btn btn-light-primary btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modal-category-3"
                                                                 @click="getStockWithdrawalItem(stock.id)">
                                                             <i class="ki-duotone ki-tablet-up fs-2">
                                                                 <span class="path1"></span>
@@ -194,10 +208,12 @@
                         itemStatus: 'Sisa',
                         itemStatusWithoutCategory3AndUnitTypeMeter: null,
                         itemCondition: null,
-                        modalIfUnitTypeMeter: document.getElementById('modal-if-unit-type-meter'),
-                        modalSingleAndWithoutCategory3: document.getElementById('modal-single-and-without-category-3'),
+                        modalIfUnitTypeMeter: new bootstrap.Modal(document.getElementById('modal-if-unit-type-meter')),
+                        formIfUnitTypeMeter: document.getElementById('form-if-unit-type-meter'),
+                        modalSingleAndWithoutCategory3: new bootstrap.Modal(document.getElementById('modal-single-and-without-category-3')),
                         formSingleAndWithoutCategory3: document.getElementById('form-single-and-without-category-3'),
-                        returnStockForm: document.querySelector('.form-returning-items'),
+                        modalCategory3: new bootstrap.Modal(document.getElementById('modal-category-3')),
+                        formCategory3: document.getElementById('form-category-3'),
                         async init() {
                             await this.getCarriedStock();
                             await this.getConsumedOrAppliedStock();
@@ -230,10 +246,10 @@
                                 console.log(e);
                             }
                         },
-                        async save() {
+                        async ifUnitTypeMeterStore() {
                             this.buttonLoading = true;
                             try {
-                                await axios.post(`/inventory/stock-withdrawals/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.returnStockForm));
+                                await axios.post(`/inventory/stock-withdrawals/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.formIfUnitTypeMeter));
                                 await showAlert('success', 'Data berhasil disimpan');
                                 await this.init();
                             } catch (error) {
@@ -244,10 +260,26 @@
                             }
                         },
                         async itemStatusWithoutCategory3AndUnitTypeMeterStore() {
+                            this.buttonLoading = true;
                             try {
                                 await axios.post(`/inventory/stock-withdrawals/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.formSingleAndWithoutCategory3));
                                 await showAlert('success', 'Data berhasil disimpan');
                                 await this.init();
+                                await this.modalSingleAndWithoutCategory3.hide();
+                            } catch (error) {
+                                const respError = error.response.data.errors;
+                                Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                            } finally {
+                                this.buttonLoading = false;
+                            }
+                        },
+                        async itemCategory3Store() {
+                            this.buttonLoading = true;
+                            try {
+                                await axios.post(`/inventory/stock-withdrawals/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.formCategory3));
+                                await showAlert('success', 'Data berhasil disimpan');
+                                await this.init();
+                                await this.modalCategory3.hide();
                             } catch (error) {
                                 const respError = error.response.data.errors;
                                 Object.keys(respError).map(err => toastr.error(respError[err][0]))

@@ -39,12 +39,6 @@ class ItemCollection extends Model
             'name' => $this->name,
         ];
     }
-
-    public function stock(): HasMany
-    {
-        return $this->hasMany(Stock::class, 'item_id');
-    }
-
     public function unitType(): BelongsTo
     {
         return $this->belongsTo(UnitType::class, 'unit_type_id');

@@ -6,6 +6,7 @@ use AllowDynamicProperties;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\Branch;
 use App\Models\Stock;
+use App\Support\Inventory\StockManagement\DraftStock\Repository\DraftStockRepository;
 use App\Support\Inventory\StockManagement\Stock\Repository\StockRepository;
 use App\Support\Master\Common\Branch\Repository\BranchRepository;
 use App\Support\Master\Operational\ItemCollections\Repositories\ItemCollectionRepository;
@@ -54,9 +55,10 @@ use Illuminate\Support\Facades\Auth;
     {
         $data = $goodsData->getCollection()->map(function ($item) {
             if (Auth::user()->branch_id) {
-                $stock = $item->stock->where('branch_id', Auth::user()->branch_id)->sum('qty');
+                $stock = $item->transaction?->stock->where('branch_id', Auth::user()->branch_id)->sum('qty') ?? $item->initialInventoryBalance?->stock->where('branch_id', Auth::user()->branch_id)->sum('qty');
             } else {
-                $stock = $item->stock->sum('qty');
+                $stock = DraftStockRepository::draftStockQtySumByItemId($item->id)
+                    + StockRepository::getSumStockQtyByItemId($item->id);
             }
 
             return [
@@ -77,24 +79,27 @@ use Illuminate\Support\Facades\Auth;
     // masih salah
     public function getMustReorderStocks()
     {
-        $branchId = Auth::user()->branch_id;
+        return $this->calculateDraftStockAndStock();
+    }
 
-        // Ambil semua stok per item
-        $stockData = Stock::when($branchId, function ($query) use ($branchId) {
-            $query->where('branch_id', $branchId);
-        })
-            ->selectRaw('item_id, SUM(qty) as total_qty')
-            ->groupBy('item_id')
-            ->pluck('total_qty', 'item_id'); // [item_id => total_qty]
 
-        // Ambil semua item yang memiliki reorder_level
-        $items = ItemCollection::whereNotNull('reorder_level')->get();
+    public function calculateDraftStockAndStock(): ?int
+    {
+        $itemCollections = ItemCollection::query()->get();
+        $totalItemMustReorder = 0;
 
-        // Hitung item yang perlu reorder
-        return $items->filter(function ($item) use ($stockData) {
-            $totalStock = $stockData[$item->id] ?? 0;
-            return $totalStock < $item->reorder_level;
-        })->count();
+
+        foreach ($itemCollections as $itemCollection) {
+            $totalStock = DraftStockRepository::draftStockQtySumByItemId($itemCollection->id)
+                + StockRepository::getSumStockQtyByItemId($itemCollection->id);
+
+
+            if ($totalStock < $itemCollection->reorder_level) {
+                $totalItemMustReorder++;
+            }
+        }
+
+        return $totalItemMustReorder;
     }
 
 

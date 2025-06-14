@@ -55,4 +55,14 @@ class StockRepository
                 });
             });
     }
+
+
+    public static function getSumStockQtyByItemId($itemId)
+    {
+        return Stock::leftJoin('transactions', 'transactions.id', 'stocks.transaction_id')
+            ->leftJoin('initial_inventory_balance', 'initial_inventory_balance.id', 'stocks.initial_balance_inventory_id')
+            ->where('transactions.item_id', $itemId)
+            ->orWhere('transactions.item_id', $itemId)
+            ->sum('stocks.available_qty');
+    }
 }
