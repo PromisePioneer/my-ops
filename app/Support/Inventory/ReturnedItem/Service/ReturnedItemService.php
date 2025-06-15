@@ -30,7 +30,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
             $consumedQty = 0;
 
             if ($returnedItem->stockWithdrawalItem->qty) {
-                $consumedQty +=  $returnedItem->remaining_qty - $returnedItem->broken_qty;
+                $consumedQty += $returnedItem->stockWithdrawalItem->qty - $returnedItem->remaining_qty - $returnedItem->broken_qty;
             }
 
             return [

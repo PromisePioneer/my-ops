@@ -6,6 +6,7 @@
         @include('pages.inventory.stock-withdrawals.returned-item.modal.if-meter')
         @include('pages.inventory.stock-withdrawals.returned-item.modal.single-and-without-category-3')
         @include('pages.inventory.stock-withdrawals.returned-item.modal.category3')
+        @include('pages.inventory.stock-withdrawals.returned-item.modal.category4')
         <div class="row">
             <div class="col-lg-12 mb-4">
                 <div class="card card-flush">
@@ -78,7 +79,7 @@
                                             <template x-if="!stock.returned_item">
                                                 <div>
                                                     <template
-                                                        x-if="stock.unit_type !== 'Meter' && stock.category != 'Kategori 3'">
+                                                        x-if="stock.unit_type !== 'Meter' && stock.category !== 'Kategori 3'  && stock.code">
                                                         <button class="btn btn-light-primary btn-sm"
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#modal-single-and-without-category-3"
@@ -104,7 +105,7 @@
                                                         </button>
                                                     </template>
                                                     <template
-                                                        x-if="stock.unit_type == 'Meter' && stock.category === 'Kategori 1'">
+                                                        x-if="stock.unit_type === 'Meter' && stock.category === 'Kategori 1'">
                                                         <button class="btn btn-light-primary btn-sm"
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#modal-if-unit-type-meter"
@@ -116,10 +117,22 @@
                                                             </i>
                                                         </button>
                                                     </template>
-
+                                                    <template x-if="stock.category === 'Kategori 4' && !stock.code">
+                                                        <button class="btn btn-light-primary btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modal-category-4"
+                                                                @click="getStockWithdrawalItem(stock.id)">
+                                                            <i class="ki-duotone ki-tablet-up fs-2">
+                                                                <span class="path1"></span>
+                                                                <span class="path2"></span>
+                                                                <span class="path3"></span>
+                                                            </i>
+                                                        </button>
+                                                    </template>
                                                 </div>
                                             </template>
                                         </td>
+
                                     </tr>
                                     </tbody>
                                 </template>
@@ -214,6 +227,8 @@
                         formSingleAndWithoutCategory3: document.getElementById('form-single-and-without-category-3'),
                         modalCategory3: new bootstrap.Modal(document.getElementById('modal-category-3')),
                         formCategory3: document.getElementById('form-category-3'),
+                        modalCategory4: new bootstrap.Modal(document.getElementById('modal-category-4')),
+                        formCategory4: document.getElementById('form-category-4'),
                         async init() {
                             await this.getCarriedStock();
                             await this.getConsumedOrAppliedStock();
@@ -280,6 +295,20 @@
                                 await showAlert('success', 'Data berhasil disimpan');
                                 await this.init();
                                 await this.modalCategory3.hide();
+                            } catch (error) {
+                                const respError = error.response.data.errors;
+                                Object.keys(respError).map(err => toastr.error(respError[err][0]))
+                            } finally {
+                                this.buttonLoading = false;
+                            }
+                        },
+                        async itemCategory4Store() {
+                            this.buttonLoading = true;
+                            try {
+                                await axios.post(`/inventory/stock-withdrawals/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.formCategory4));
+                                await showAlert('success', 'Data berhasil disimpan');
+                                await this.init();
+                                await this.modalCategory4.hide();
                             } catch (error) {
                                 const respError = error.response.data.errors;
                                 Object.keys(respError).map(err => toastr.error(respError[err][0]))

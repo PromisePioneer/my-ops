@@ -14,7 +14,7 @@
                 </div>
             </div>
 
-            <form id="form-category-4" @submit.prevent="category4Store(stockWithdrawalItem.id)">
+            <form id="form-category-4" @submit.prevent="itemCategory4Store(stockWithdrawalItem.id)">
                 <div class="modal-body">
                     <div class="row">
                         <div class="mb-4">

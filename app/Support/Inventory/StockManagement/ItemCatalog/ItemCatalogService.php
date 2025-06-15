@@ -105,7 +105,7 @@ use Throwable;
             'item_id' => $draftStock->transaction?->item_id ?? $draftStock->initialInventoryBalance?->item_id,
             'date' => $draftStock->transaction?->date ?? $draftStock->initialInventoryBalance?->date,
             'useful_life' => UsefulLifeService::getUsefulLife(
-                AccountRepository::findByTransactionOrInitialInventoryBalanceId($draftStock),
+                AccountRepository::findByTransactionOrInitialInventoryBalanceId($draftStock)->code,
                 $itemObject->non_building_group,
                 $itemObject?->building_type
             ),

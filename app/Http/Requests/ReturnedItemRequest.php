@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\ItemCatalog;
+use App\Models\Stock;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
@@ -54,9 +55,15 @@ class ReturnedItemRequest extends FormRequest
     public static function maxRemainingQty(Request $request): \Closure
     {
         return static function ($attribute, $value, $fail) use ($request) {
-            ItemCatalog::where('code', $request->route('stockWithdrawalItem')->code)->first()->available_qty < $value
-                ? $fail('Jumlah sisa tidak boleh lebih besar dari jumlah barang')
-                : null;
+
+            $qty = ItemCatalog::where('code', $request->route('stockWithdrawalItem')->code)->first()?->available_qty
+                ?? $request->route('stockWithdrawalItem')?->qty
+                ?? 0;
+
+
+            (int)$qty >= (int)$value
+                ? null
+                : $fail('Jumlah sisa tidak boleh lebih besar dari jumlah barang');
         };
     }
 }
