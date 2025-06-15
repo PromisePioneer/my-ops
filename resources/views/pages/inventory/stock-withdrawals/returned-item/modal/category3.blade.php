@@ -17,6 +17,7 @@
             <form id="form-category-3"
                   @submit.prevent="itemCategory3Store(stockWithdrawalItem.id)">
                 <div class="modal-body">
+                    h3h3
                     <div class="row">
                         <div class="mb-4">
                             <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Status</label>

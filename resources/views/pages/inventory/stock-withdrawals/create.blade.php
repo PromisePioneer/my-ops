@@ -111,7 +111,8 @@
                                         </td>
                                         <td class="ps-0" style='text-align:center; vertical-align:middle'>
                                             <input class="form-control form-control-solid" type="number" min="1"
-                                                   x-model="field.qty" :name="`${field.qty !== '' ? `itemWithoutCodeFields[${index}][qty]` : '' }`"
+                                                   x-model="field.qty"
+                                                   :name="`${field.qty !== '' ? `itemWithoutCodeFields[${index}][qty]` : '' }`"
                                                    placeholder="1"
                                                    value="1"/>
                                         </td>
@@ -266,16 +267,21 @@
                                 cache: true
                             }
                         }
-                    ).on('change', function (e) {
-                        self.itemWithoutCodeFields[index].stock_id = $(`#stock-without-codes-select2-${index}`)?.val() ?? ""
-                        console.log(self.itemWithoutCodeFields);
+                    ).on('select2:select', function (e) {
+                        self.itemWithoutCodeFields[index].stock_id = e.params.data.id
                     });
                 },
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        let formData = new FormData(this.form);
-                        formData.append('item_with_codes', JSON.stringify(this.itemWithCodeFields));
+                        const ids = this.itemWithoutCodeFields.map(i => i.stock_id);
+                        const hasDuplicates = ids.some((id, idx) => ids.indexOf(id) !== idx);
+
+                        if (hasDuplicates) {
+                            toastr.error('Barang tidak boleh duplikat dalam entri.');
+                            this.buttonLoading = false;
+                            return;
+                        }
                         await axios.post(`/inventory/stock-withdrawals/store`, new FormData(this.form))
                         await showAlert('success', 'Data berhasil disimpan').then(() => {
                             window.location.href = '/inventory/stock-withdrawals';
@@ -288,16 +294,22 @@
                     }
                 },
                 addItemWithoutCode() {
-                    this.$nextTick(() => {
-                        this.itemWithoutCodeFields.forEach(async (val, index) => {
-                            await this.getStockWithoutCodesData(index);
-                        })
-                    })
+                    const selectedIds = this.itemWithoutCodeFields.map(item => item.stock_id).filter(Boolean);
 
+                    const hasEmpty = this.itemWithoutCodeFields.some(item => !item.stock_id);
+                    if (hasEmpty) {
+                        toastr.warning("Isi terlebih dahulu barang yang sudah ditambahkan sebelum menambah yang baru.");
+                        return;
+                    }
 
                     this.itemWithoutCodeFields.push({
                         stock_id: '',
                         qty: '',
+                    });
+
+                    this.$nextTick(() => {
+                        const lastIndex = this.itemWithoutCodeFields.length - 1;
+                        this.getStockWithoutCodesData(lastIndex);
                     });
                 },
                 calculateTotal(index) {

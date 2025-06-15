@@ -175,6 +175,7 @@ use function App\Helper\currencyFormat;
         $yearsStart = Carbon::parse($asset->date)->startOfMonth();
         $yearsEnd = Carbon::parse($asset->date)->startOfMonth()->addYears($asset->useful_life);
         $diffInMonth = $yearsStart->diffInMonths($yearsEnd);
+
         $depreciation = ($asset->price) / $diffInMonth;
         $price = $asset->price;
 
