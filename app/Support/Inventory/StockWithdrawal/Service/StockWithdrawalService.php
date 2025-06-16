@@ -137,8 +137,8 @@ use function App\Helper\formatDate;
         if ($request->has('itemWithCodeFields')) {
             foreach ($request->itemWithCodeFields as $value) {
                 $itemCatalog = ItemCatalog::find($value);
-                Stock::where('id', $itemCatalog->stock_id)->increment('on_hold_qty');
-                Stock::where('id', $itemCatalog->stock_id)->decrement('available_qty');
+                Stock::where('id', $itemCatalog->stock_id)->increment('on_hold_qty', $itemCatalog->available_qty);
+                Stock::where('id', $itemCatalog->stock_id)->decrement('available_qty', $itemCatalog->available_qty);
                 $itemCatalog->update(['status' => 'Dibawa']);
                 StockWithdrawalItem::create([
                     'stock_withdrawal_id' => $stockWithdrawal->id,
