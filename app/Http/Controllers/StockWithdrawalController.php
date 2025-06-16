@@ -16,6 +16,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 use Throwable;
 
@@ -89,6 +90,20 @@ use Throwable;
     {
         return view('pages.inventory.stock-withdrawals.create');
     }
+
+
+    public function sessionStore(Request $request): void
+    {
+        $stockWithdrawal = [
+            'code' => $request->get('code'),
+            'qty' => $request->get('qty'),
+            'stock_id' => $request->get('stock_id'),
+            'item_id' => $request->get('item_id'),
+            'item_name' => $request->get('item_name'),
+        ];
+        session()->push('stock_withdrawal_item', $stockWithdrawal);
+    }
+
 
 
     /**
@@ -290,6 +305,26 @@ use Throwable;
                 $stock->increment('available_qty', $request->remaining_qty);
             }
         }
-
     }
+
+
+    public function getSessions(): JsonResponse
+    {
+        $stock = session()->get('stock_withdrawal_item') ?? [];
+        return response()->json($stock);
+    }
+
+
+    public function flushSessions(): void
+    {
+        session()->forget('stock_withdrawal_item');
+    }
+
+
+    public function deleteSessions(Request $request): void
+    {
+        Session::forget("stock_withdrawal_item.$request->index");
+    }
+
+
 }

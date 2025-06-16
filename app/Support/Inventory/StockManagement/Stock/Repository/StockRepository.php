@@ -4,6 +4,7 @@ namespace App\Support\Inventory\StockManagement\Stock\Repository;
 
 use App\Models\DraftStock;
 use App\Models\ItemCatalog;
+use App\Models\ItemCategory;
 use App\Models\ItemCollection;
 use App\Models\Stock;
 use Illuminate\Support\Facades\Auth;
@@ -91,5 +92,33 @@ class StockRepository
             ->where('transactions.item_id', $itemId)
             ->orWhere('transactions.item_id', $itemId)
             ->sum('stocks.on_hold_qty');
+    }
+
+    public function getStockByCategoryAndBranch(int|string $branchId, int|string $categoryId)
+    {
+        $itemCategory = ItemCategory::find($categoryId);
+        if ($itemCategory->name !== 'Kategori 4') {
+
+            return Stock::with('transaction.item', 'initialInventoryBalance.item', 'itemCatalog')
+                ->where('branch_id', $branchId)
+                ->where(function ($query) use ($categoryId) {
+                    $query->whereHas('transaction.item.category', function ($query) use ($categoryId) {
+                        $query->where('id', $categoryId);
+                    })->orWhereHas('initialInventoryBalance.item.category', function ($query) use ($categoryId) {
+                        $query->where('id', $categoryId);
+                    });
+                });
+        }
+
+        return Stock::with('transaction.item', 'initialInventoryBalance.item', 'itemCatalog')
+            ->where('available_qty', '>', 0)
+            ->where('branch_id', $branchId)
+            ->where(function ($query) use ($categoryId) {
+                $query->whereHas('transaction.item.category', function ($query) use ($categoryId) {
+                    $query->where('id', $categoryId);
+                })->orWhereHas('initialInventoryBalance.item.category', function ($query) use ($categoryId) {
+                    $query->where('id', $categoryId);
+                });
+            });
     }
 }

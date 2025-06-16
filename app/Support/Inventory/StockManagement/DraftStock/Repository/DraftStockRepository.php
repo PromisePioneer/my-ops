@@ -18,10 +18,10 @@ class DraftStockRepository
 
     public function getDraftStockQuery(): EloquentBuilder|Builder
     {
-        return ItemCollection::with('transaction.draftStock', 'initialInventoryBalance.draftStock')
-            ->where('must_have_code', true)
-            ->whereHas('transaction.draftStock')
-            ->orWhereHas('initialInventoryBalance.draftStock');
+        return ItemCollection::where(function ($query) {
+            $query->whereHas('transaction')
+                ->orWhereHas('initialInventoryBalance');
+        })->where('is_code_listed', true)->orWhere('must_have_code', true);
     }
 
 

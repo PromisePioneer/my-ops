@@ -5,7 +5,6 @@ namespace App\Support\Inventory\StockManagement\Stock\Service;
 use AllowDynamicProperties;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\Branch;
-use App\Models\Stock;
 use App\Support\Inventory\StockManagement\DraftStock\Repository\DraftStockRepository;
 use App\Support\Inventory\StockManagement\Stock\Repository\StockRepository;
 use App\Support\Master\Common\Branch\Repository\BranchRepository;
@@ -136,63 +135,63 @@ use Illuminate\Pagination\LengthAwarePaginator;
         return $query;
     }
 
-    public function getStockWithoutCode(Request $request)
+
+    public function getStockByCategoryAndBranch(string|int $branchId, string|int $categoryId)
     {
+        $query = $this->stockRepository->getStockByCategoryAndBranch($branchId, $categoryId)->get();
 
-        $stock = Stock::with('transaction', 'branch', 'initialInventoryBalance')
-            ->whereHas('branch', function ($query) use ($request) {
-                $query->where('id', $request->branch_id ?? $request->user()->branch_id);
-            })->whereNotIn('id', $request->get('ids', []))
-            ->where(function ($query) use ($request) {
-                $query->whereHas('transaction.item.category', function ($query) use ($request) {
-                    $query->where('name', 'Kategori 4');
-                })->orWhereHas('initialInventoryBalance.item.category', function ($query) use ($request) {
-                    $query->where('name', 'Kategori 4');
-                });
-            })
-            ->get();
+        $stocks = [];
 
+        $query->map(function ($stock) use (&$stocks) {
+            $item = $stock->transaction?->item ?? $stock->initialInventoryBalance?->item;
+            $itemCategoryName = $stock->transaction?->item?->category?->name ?? $stock->initialInventoryBalance?->item?->category?->name;
+            if ($itemCategoryName !== 'Kategori 4') {
+                $code = [];
 
-        return $stock->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'text' => $item->transaction->item->name . ' Stok : ' . $item->available_qty,
-            ];
-        });
-
-    }
-
-    public function getStockWithCode(Request $request)
-    {
-        $stock = Stock::with('transaction.item.category', 'initialInventoryBalance.item.category')
-            ->where('branch_id', $request->branch_id ?? $request->user()->branch_id)
-            ->where(function ($query) use ($request) {
-                $query->whereHas('transaction.item.category', function ($query) {
-                    $query->where('name', '!=', 'Kategori 4');
-                })->orWhereHas('initialInventoryBalance.item.category', function ($query) {
-                    $query->where('name', '!=', 'Kategori 4');
-                });
-            })->get();
+                if (session()->has('stock_withdrawal_item')) {
+                    foreach (session()->get('stock_withdrawal_item') as $withDrawalItem) {
+                        $code [] = $withDrawalItem['code'];
+                    }
+                }
 
 
-        return $stock->map(function ($stock) {
-            $itemCatalog = [];
-            foreach ($stock->itemCatalog->where('status', 'Tersedia') as $value) {
-                $itemCatalog[] = [
-                    'id' => $value->id,
-                    'stock_id' => $stock->id,
-                    'code' => $value->code,
-                    'text' => 'SN: ' . $value->code,
+                $stocks = $stock->where('stock_id')->itemCatalog->whereNotIn('code', $code)
+                    ->map(function ($itemCatalog) use ($stock, $item) {
+
+                        return [
+                            'id' => $itemCatalog->id,
+                            'code' => $itemCatalog->code,
+                            'name' => $item->name,
+                            'item_id' => $item->id,
+                            'qty' => $itemCatalog->available_qty,
+                            'stock_id' => $stock->id,
+                            'category_name' => $stock->transaction?->item?->category?->name ?? $stock->initialInventoryBalance?->item?->category?->name,
+                        ];
+                    });
+            } else {
+
+                $qty = 0;
+                if (session()->has('stock_withdrawal_item')) {
+                    $stockWithdrawalItems = session()->get('stock_withdrawal_item');
+                    foreach ($stockWithdrawalItems as $stockWithdrawalItem) {
+                        if ($stock->id === (int)$stockWithdrawalItem['stock_id']) {
+                            $qty += $stockWithdrawalItem['qty'];
+                        }
+                    }
+                }
+
+                $stockActualQty = $stock->available_qty - $qty;
+                $stocks [] = [
+                    'id' => $stock->id,
+                    'name' => $item->name,
+                    'qty' => $stockActualQty,
+                    'category_name' => $stock->transaction?->item?->category?->name ?? $stock->initialInventoryBalance?->item?->category?->name,
                 ];
             }
 
-
-            return [
-                'id' => $stock->id,
-                'text' => $stock->transaction?->item?->name ?? $stock->initialInventoryBalance?->item?->name,
-                'children' => $itemCatalog
-            ];
         });
+        return $stocks;
     }
+
 
 }

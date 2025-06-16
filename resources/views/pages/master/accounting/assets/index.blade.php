@@ -128,15 +128,17 @@
                                                 </a>
                                             </template>
                                         </template>
-                                        <button
+                                        <template x-if="!asset.stock_id">
+                                            <button
                                                 :class="`${asset.status  === 1  ? 'btn btn-success btn-sm' : 'btn btn-danger btn-sm'}`"
                                                 @click="asset.status === 0 ? check(asset.id) : ''"
                                                 :disabled="asset.status === 1">
-                                            <i class="ki-duotone ki-check-square">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                            </i>
-                                        </button>
+                                                <i class="ki-duotone ki-check-square">
+                                                    <span class="path1"></span>
+                                                    <span class="path2"></span>
+                                                </i>
+                                            </button>
+                                        </template>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -374,7 +376,6 @@
                         params: {results: response}
                     });
                 },
-
                 async check(id) {
                     showConfirmModal("Anda yakin?", "Aset yang sudah di konfirmasi tidak bisa diubah ataupun dihapus.", "Ya, Konfirmasi!", async () => {
                         try {

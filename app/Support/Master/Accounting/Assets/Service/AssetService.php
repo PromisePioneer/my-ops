@@ -53,6 +53,7 @@ use function App\Helper\currencyFormat;
                 'useful_life' => $item->useful_life,
                 'price' => currencyFormat($item->price),
                 'status' => $item->status,
+                'stock_id' => $item->stock_id,
             ];
         });
 
