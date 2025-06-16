@@ -183,18 +183,6 @@ use Illuminate\View\View;
     }
 
 
-    public function getStockWithCodes(Request $request)
-    {
-     return response()->json($this->stockService->getStockWithCode($request));
-    }
-
-
-    public function getStockWithoutCode(Request $request): JsonResponse
-    {
-        return response()->json($this->stockService->getStockWithoutCode($request));
-    }
-
-
     public function findByItemAndBranch(Branch $branch, ItemCollection $itemCollection): JsonResponse
     {
         $stocks = $this->stockService->findByItemAndBranch($branch, $itemCollection);
@@ -205,5 +193,19 @@ use Illuminate\View\View;
     public function findByItemId(ItemCollection $itemCollection): JsonResponse
     {
         return response()->json($this->stockService->findByItemId($itemCollection));
+    }
+
+
+    public function getStockByCategoryAndBranch(Request $request): JsonResponse
+    {
+        $branch = $request->input('branch_id');
+        $category = $request->input('category_id');
+        return response()->json($this->stockService->getStockByCategoryAndBranch($branch, $category));
+    }
+
+    public function showStock(Stock $stock): JsonResponse
+    {
+        $stock->load('transaction.item', 'initialInventoryBalance.item');
+        return response()->json($stock);
     }
 }

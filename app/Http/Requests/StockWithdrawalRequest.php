@@ -29,6 +29,7 @@ class StockWithdrawalRequest extends FormRequest
             'user_id' => ['required', $this->ifNotSelectAnyItemOption($request)],
             'itemWithCodeFields' => [Rule::requiredIf($request->has('item_with_code_option')), 'array'],
             'description' => ['required', 'string'],
+//            'itemWithoutCodeFields' => ['required'],
         ];
     }
 

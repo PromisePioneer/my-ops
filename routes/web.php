@@ -719,6 +719,7 @@ Route::group(['middleware' => ['auth']], static function () {
 
     Route::prefix('inventory')->group(function () {
         Route::prefix('stocks')->group(function () {
+            Route::get('/get-stock-detail/{stock}', [StockController::class, 'showStock']);
             Route::get('/', [StockController::class, 'index']);
             Route::get('/data', [StockController::class, 'data']);
             Route::get('/data/{itemCollection}', [StockController::class, 'findByItemId']);
@@ -730,6 +731,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/stock-based-on-draft-stock/{draftStock}', [StockController::class, 'findByDraftStockAndItemName']);
             Route::get('/must-reorder', [StockController::class, 'getMustReorderStocks']);
             Route::get('/{branch}/{itemCollection}', [StockController::class, 'findByItemAndBranch']);
+            Route::get('/data/branch/category', [StockController::class, 'getStockByCategoryAndBranch']);
         });
         Route::prefix('/stock-withdrawals')->group(function () {
             Route::get('/', [StockWithdrawalController::class, 'index']);
@@ -738,6 +740,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/filter', [StockWithdrawalController::class, 'filter']);
             Route::get('/create', [StockWithdrawalController::class, 'create']);
             Route::post('/store', [StockWithdrawalController::class, 'store']);
+            Route::get('/session-store', [StockWithdrawalController::class, 'sessionStore']);
+            Route::get('/get-sessions', [StockWithdrawalController::class, 'getSessions']);
+            Route::get('/flush-sessions', [StockWithdrawalController::class, 'flushSessions']);
+            Route::get('/delete-sessions', [StockWithdrawalController::class, 'deleteSessions']);
             Route::get('/edit/{stockWithdrawal}', [StockWithdrawalController::class, 'edit']);
             Route::get('/show/{stockWithdrawal}', [StockWithdrawalController::class, 'show']);
             Route::delete('/destroy/{stockWithdrawal}', [StockWithdrawalController::class, 'destroy']);
@@ -1348,8 +1354,6 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/kas-accounts-data', [AccountController::class, 'kasAccounts']);
         Route::get('/stock-accounts-data', [AccountController::class, 'stockAccounts']);
         Route::get('/branches-data', [BranchController::class, 'getAllBranch']);
-        Route::get('/stock-with-codes-data', [StockController::class, 'getStockWithCodes']);
-        Route::get('/stock-without-codes-data', [StockController::class, 'getStockWithoutCode']);
         Route::get('/user-has-areas-data', [UserController::class, 'getUserHasArea']);
         Route::get('/suppliers-data', [SupplierController::class, 'getSuppliers']);
         Route::get('/selected-supplier/{supplier}', [SupplierController::class, 'selectedSupplier']);

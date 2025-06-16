@@ -18,7 +18,7 @@
                 <div class="modal-body">
                     <div class="mb-10">
                         <label for="name" class="required form-label">Kode / SN</label>
-                        <input type="text" id="code" name="code" class="form-control form-control-solid"
+                        <input type="text" id="code" name="code" :readonly="autoGenerateCode !== ''" class="form-control form-control-solid"
                                placeholder="Kode" :value="autoGenerateCode"/>
                     </div>
                     <div class="mb-10">
