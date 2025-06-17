@@ -24,9 +24,9 @@ return new class extends Migration {
             $table->foreignId('branch_id')
                 ->constrained('branches')
                 ->cascadeOnDelete();
-            $table->double('on_hold_qty')->default(0);
-            $table->double('available_qty')->default(0);
-            $table->double('broken_qty')->default(0);
+            $table->integer('on_hold_qty')->default(0);
+            $table->integer('available_qty')->default(0);
+            $table->integer('broken_qty')->default(0);
             $table->timestamps();
         });
     }

@@ -336,18 +336,10 @@
                 async save() {
                     this.buttonLoading = true;
                     try {
-                        const ids = this.itemWithoutCodeFields.map(i => i.stock_id);
-                        const hasDuplicates = ids.some((id, idx) => ids.indexOf(id) !== idx);
-
-                        if (hasDuplicates) {
-                            toastr.error('Barang tidak boleh duplikat dalam entri.');
-                            this.buttonLoading = false;
-                            return;
-                        }
                         await axios.post(`/inventory/stock-withdrawals/store`, new FormData(this.form))
                         await showAlert('success', 'Data berhasil disimpan').then(() => {
                             window.location.href = '/inventory/stock-withdrawals';
-                        })
+                        });
                     } catch (error) {
                         const respError = error.response.data.errors;
                         Object.keys(respError).map(err => toastr.error(`${respError[err][0]}`));

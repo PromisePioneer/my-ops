@@ -155,7 +155,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
                 }
 
 
-                $stocks = $stock->where('stock_id')->itemCatalog->whereNotIn('code', $code)
+                $stocks = $stock->itemCatalog->where('status', 'Tersedia')->whereNotIn('code', $code)
                     ->map(function ($itemCatalog) use ($stock, $item) {
 
                         return [

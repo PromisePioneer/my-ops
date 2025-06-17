@@ -98,7 +98,6 @@ class StockRepository
     {
         $itemCategory = ItemCategory::find($categoryId);
         if ($itemCategory->name !== 'Kategori 4') {
-
             return Stock::with('transaction.item', 'initialInventoryBalance.item', 'itemCatalog')
                 ->where('branch_id', $branchId)
                 ->where(function ($query) use ($categoryId) {

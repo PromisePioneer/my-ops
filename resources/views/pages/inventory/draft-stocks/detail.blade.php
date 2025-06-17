@@ -100,8 +100,8 @@
                                     <tr>
                                         <td x-text="stock.transaction_number"></td>
                                         <td x-text="stock.available_qty"></td>
-                                        <td x-text="stock.broken_qty"></td>
                                         <td x-text="stock.on_hold_qty"></td>
+                                        <td x-text="stock.broken_qty"></td>
                                     </tr>
                                     </tbody>
                                 </template>

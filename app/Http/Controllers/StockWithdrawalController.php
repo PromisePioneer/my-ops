@@ -196,28 +196,9 @@ use Throwable;
             if (!empty($stockWithdrawalItem->code)) {
                 $this->category1Store($itemCatalog, $stockWithdrawalItem, $request);
                 $this->ifCategory3Store($itemCatalog, $stockWithdrawalItem, $request);
+                $this->ifNotMeterAndNotCategory3Store($itemCatalog, $stockWithdrawalItem, $request);
 
-                if ($itemCatalog->stock->transaction->item->unitType->name !== 'Meter'
-                    && $itemCatalog->stock->transaction->item->category->name !== 'Kategori 3') {
-                    ReturnedItem::create([
-                        'stock_withdrawal_item_id' => $stockWithdrawalItem->id,
-                        'status' => $request->status,
-                        'remaining_qty' => 1,
-                        'item_condition' => $request->item_condition ?? 'Baik',
-                        'broken_qty' => $request->item_condition === 'Rusak' ? 1 : 0,
-                        'attachment' => $this->handleUploadService->upload(
-                            $request,
-                            'documents/returned-items/attachment/',
-                            'attachment',
-                        ),
-                    ]);
 
-                    if ($request->item_condition === 'Rusak') {
-                        $itemCatalog->stock->increment('broken_qty', $request->broken_qty ?? 1);
-                        $itemCatalog->update(['condition' => 'Rusak']);
-                    }
-                }
-                $itemCatalog->stock->increment('available_qty');
                 $itemCatalog->update(['status' => $request->status === 'Terpakai' ? 'Terpakai' : 'Tersedia']);
             }
         });
@@ -240,13 +221,21 @@ use Throwable;
                     'attachment',
                 ),
             ]);
-
-            if ($request->item_condition === 'Rusak') {
-                $itemCatalog->increment('available_qty', $request->remaining_qty);
-                $itemCatalog->increment('broken_qty', $request->broken_qty);
-            } else {
-                $itemCatalog->decrement('available_qty', $request->remaining_qty);
+            if ($request->status === 'Habis') {
+                $itemCatalog->stock->decrement('on_hold_qty', $stockWithdrawalItem->qty);
             }
+
+
+            if ($request->status === 'Sisa') {
+                $itemCatalog->stock->decrement('on_hold_qty', $stockWithdrawalItem->qty);
+                $itemCatalog->increment('available_qty', $request->remaining_qty - $request->broken_qty);
+                $itemCatalog->stock->increment('available_qty', $request->remaining_qty - $request->broken_qty);
+                if ($request->item_condition === 'Rusak') {
+                    $itemCatalog->stock->increment('broken_qty', $request->broken_qty);
+                }
+            }
+
+
             $itemCatalog->update(['status' => 'Tersedia']);
         }
     }
@@ -272,6 +261,8 @@ use Throwable;
                 ),
             ]);
 
+            $itemCatalog->increment('available_qty');
+            $itemCatalog->stock->decrement('on_hold_qty');
             $itemCatalog->stock->increment('available_qty');
             $itemCatalog->update(['status' => 'Tersedia']);
 
@@ -296,13 +287,18 @@ use Throwable;
                 ),
             ]);
 
-            if ($request->item_condition === 'Rusak') {
-                $stock->update(['on_hold_qty' => 0]);
+
+            if ($request->status === 'Habis') {
+                $stock->decrement('on_hold_qty', $stockWithdrawalItem->qty);
+            }
+
+            if ($request->status === 'Sisa') {
+                $stock->decrement('on_hold_qty', $stockWithdrawalItem->qty);
                 $stock->increment('available_qty', $request->remaining_qty - $request->broken_qty);
-                $stock->increment('broken_qty', $request->broken_qty);
-            } else {
-                $stock->update(['on_hold_qty' => 0]);
-                $stock->increment('available_qty', $request->remaining_qty);
+
+                if ($request->item_condition === 'Rusak') {
+                    $stock->increment('broken_qty', $request->broken_qty);
+                }
             }
         }
     }
@@ -324,6 +320,49 @@ use Throwable;
     public function deleteSessions(Request $request): void
     {
         Session::forget("stock_withdrawal_item.$request->index");
+    }
+
+    private function ifNotMeterAndNotCategory3Store(?ItemCatalog $itemCatalog, StockWithdrawalItem $stockWithdrawalItem, ReturnedItemRequest $request): void
+    {
+        if ($itemCatalog->stock->transaction->item->unitType->name !== 'Meter'
+            && $itemCatalog->stock->transaction->item->category->name !== 'Kategori 3') {
+            ReturnedItem::create([
+                'stock_withdrawal_item_id' => $stockWithdrawalItem->id,
+                'status' => $request->status,
+                'remaining_qty' => 1,
+                'item_condition' => $request->item_condition ?? 'Baik',
+                'broken_qty' => $request->item_condition === 'Rusak' ? 1 : 0,
+                'attachment' => $this->handleUploadService->upload(
+                    $request,
+                    'documents/returned-items/attachment/',
+                    'attachment',
+                ),
+            ]);
+
+            if ($request->status === 'Terpakai') {
+                $itemCatalog->stock->decrement('on_hold_qty');
+                $itemCatalog->update(['status' => 'Terpakai']);
+            }
+
+
+            if ($request->status === 'Dikembalikan' && $request->item_condition === 'Baik') {
+                $itemCatalog->stock->increment('available_qty');
+                $itemCatalog->stock->decrement('on_hold_qty');
+                $itemCatalog->increment('available_qty');
+                $itemCatalog->update(['status' => 'Tersedia']);
+            }
+
+
+            if ($request->status === 'Dikembalikan' && $request->item_condition === 'Rusak') {
+                $itemCatalog->stock->decrement('on_hold_qty');
+                $itemCatalog->increment('broken_qty');
+                $itemCatalog->stock->increment('broken_qty');
+                $itemCatalog->update([
+                    'status' => 'Tersedia',
+                    'condition' => 'Rusak',
+                ]);
+            }
+        }
     }
 
 

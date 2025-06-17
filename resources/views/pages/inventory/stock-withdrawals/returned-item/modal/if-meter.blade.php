@@ -32,8 +32,8 @@
                             <label
                                 class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Jumlah</label>
                             <input type="number" class="form-control form-control-solid"
-                                   placeholder="Jumlah Sisa" name="remaining_qty" id="remaining_qty"
-                                   value="0">
+                                   placeholder="Jumlah Sisa" :name="`${itemStatus === 'Sisa' ? 'remaining_qty' : ''}`"
+                                   id="remaining_qty">
                         </div>
 
                         <div class="mb-4" x-show="itemStatus === 'Sisa'" x-transition x-cloak>
