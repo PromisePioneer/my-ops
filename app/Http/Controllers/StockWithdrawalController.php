@@ -105,7 +105,6 @@ use Throwable;
     }
 
 
-
     /**
      * @throws Throwable
      */
@@ -209,8 +208,9 @@ use Throwable;
 
     public function category1Store(ItemCatalog $itemCatalog, StockWithdrawalItem $stockWithdrawalItem, ReturnedItemRequest $request): void
     {
-        if ($itemCatalog->stock->transaction->item->unitType->name === 'Meter'
-            && $itemCatalog->stock->transaction->item->category->name === 'Kategori 1') {
+
+        $item = $itemCatalog->stock->transaction?->item ?? $itemCatalog->stock->initialInventoryBalance->item;
+        if ($item->unitType->name === 'Meter' && $item->category->name === 'Kategori 1') {
             ReturnedItem::create([
                 'stock_withdrawal_item_id' => $stockWithdrawalItem->id,
                 'status' => $request->status,
@@ -248,8 +248,8 @@ use Throwable;
         ReturnedItemRequest $request
     ): void
     {
-        if ($itemCatalog->stock->transaction->item->unitType->name !== 'Meter'
-            && $itemCatalog->stock->transaction->item->category->name === 'Kategori 3') {
+        $item = $itemCatalog->stock->transaction?->item ?? $itemCatalog->stock->initialInventoryBalance->item;
+        if ($item->unitType->name !== 'Meter' && $item->category->name === 'Kategori 3') {
             ReturnedItem::create([
                 'stock_withdrawal_item_id' => $stockWithdrawalItem->id,
                 'status' => $request->status,
@@ -326,8 +326,8 @@ use Throwable;
 
     private function ifNotMeterAndNotCategory3Store(?ItemCatalog $itemCatalog, StockWithdrawalItem $stockWithdrawalItem, ReturnedItemRequest $request): void
     {
-        if ($itemCatalog->stock->transaction->item->unitType->name !== 'Meter'
-            && $itemCatalog->stock->transaction->item->category->name !== 'Kategori 3') {
+        $item = $itemCatalog->stock->transaction?->item ?? $itemCatalog->stock->initialInventoryBalance->item;
+        if ($item->unitType->name !== 'Meter' && $item->category->name !== 'Kategori 3') {
             ReturnedItem::create([
                 'stock_withdrawal_item_id' => $stockWithdrawalItem->id,
                 'status' => $request->status,

@@ -153,7 +153,8 @@ use function App\Helper\formatDate;
                 if ($item->item->category->name !== 'Kategori 4') {
                     DraftStock::create([
                         'initial_balance_inventory_id' => $item->id,
-                        'qty' => $item->qty
+                        'qty' => $item->qty,
+                        'qty_in_meter' => $item->qty_in_meter
                     ]);
                 } else {
                     Stock::create([

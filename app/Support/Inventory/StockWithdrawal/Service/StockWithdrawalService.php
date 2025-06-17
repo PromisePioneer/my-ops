@@ -247,13 +247,13 @@ use function App\Helper\formatDate;
         return $data->map(function ($item) {
             return [
                 'id' => $item->id,
-                'item_name' => $item->stock->transaction->item->name,
+                'item_name' => $item->stock->transaction?->item?->name ?? $item->stock->initialInventoryBalance->item->name,
                 'code' => $item->code,
                 'qty' => $item->qty,
                 'status' => $item->status,
-                'unit_type' => $item->stock->transaction->item->unitType->name,
+                'unit_type' => $item->stock->transaction->item->unitType->name ?? $item->stock->initialInventoryBalance->item->unitType->name,
                 'returned_item' => $item->returnedItem,
-                'category' => $item->stock->transaction->item->category->name,
+                'category' => $item->stock->transaction?->item?->category?->name ?? $item->stock->initialInventoryBalance->item->category->name,
             ];
         });
     }
