@@ -15,6 +15,7 @@ use App\Support\HelperService\HandleFileUploadService;
 use App\Support\Inventory\StockManagement\StockWithdrawal\Repository\StockWithdrawalItemRepository;
 use App\Support\Inventory\StockManagement\StockWithdrawal\Repository\StockWithdrawalRepository;
 use App\Support\Inventory\StockManagement\StockWithdrawal\Service\StockWithdrawalQueryFilter;
+use App\Support\Master\Accounting\Assets\Service\AssetService;
 use Carbon\Carbon;
 use Illuminate\Http\FileHelpers;
 use Illuminate\Http\Request;
@@ -36,6 +37,7 @@ use function App\Helper\formatDate;
         $this->stockWithdrawalRepository = new StockWithdrawalRepository();
         $this->handleFileUploadService = new HandleFileUploadService();
         $this->stockWithdrawalItemRepository = new StockWithdrawalItemRepository();
+        $this->assetService = new AssetService();
     }
 
     private static int $perPage = 10;
@@ -89,31 +91,6 @@ use function App\Helper\formatDate;
     }
 
 
-    public function showStockWithdrawalItems(StockWithdrawal $stockWithdrawal)
-    {
-        return $stockWithdrawal->stockWithdrawalItems->map(function ($item) {
-            return [
-                'item_name' => $item->stock->item->name,
-                'code' => $item->code,
-                'qty' => $item->qty,
-            ];
-        });
-    }
-
-
-    public function showStockWithdrawalByEmployees(StockWithdrawal $stockWithdrawal)
-    {
-        return $stockWithdrawal->stockWithdrawalByEmployees->map(function ($item) {
-            return [
-                'name' => $item->user->name,
-                'roles' => $item->user->roles->pluck('name')->implode(', '),
-                'nik' => $item->user->nip,
-                'profile_pic' => $item->user->profile_pic,
-            ];
-        });
-    }
-
-
     /**
      * @throws Throwable
      */
@@ -137,9 +114,13 @@ use function App\Helper\formatDate;
         if (session()->has('stock_withdrawal_item')) {
             foreach (session('stock_withdrawal_item') as $item) {
                 if (!empty($item['code'])) {
-                    $itemCatalog = ItemCatalog::where('code', $item['code'])->first();
-                    $stock = Stock::where('id', $item['stock_id'])->first();
+                    $itemCatalog = ItemCatalog::with('asset')->where('code', $item['code'])->first();
 
+                    if (!empty($itemCatalog->asset_id)) {
+                        $this->assetService->depreciation($itemCatalog->asset);
+                    }
+
+                    $stock = Stock::where('id', $item['stock_id'])->first();
                     $itemCatalog->decrement('available_qty', $item['qty']);
                     $itemCatalog->update(['status' => 'Dibawa']);
                     $stock->decrement('available_qty', $item['qty']);
