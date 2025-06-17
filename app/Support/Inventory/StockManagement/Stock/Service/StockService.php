@@ -194,53 +194,64 @@ use Illuminate\Pagination\LengthAwarePaginator;
         return $stocks;
     }
 
-    public function searchByCategoryAndBranch(?string $search, int $branchId, int $categoryId)
+    public function searchByCategoryAndBranch(?string $search, int $branchId, int $categoryId): array
     {
         $category = ItemCategory::find($categoryId);
         $query = $this->stockRepository->getStockByCategoryAndBranch($branchId, $categoryId);
-        if (!empty($search)) {
-            if ($category->name === 'Kategori 4')
-                $query->whereHas('transaction.item', function ($query) use ($search) {
 
-                });
+        $code = [];
+        if (session()->has('stock_withdrawal_item')) {
+            foreach (session()->get('stock_withdrawal_item') as $withDrawalItem) {
+                $code[] = $withDrawalItem['code'];
+            }
+        }
+
+        // Filter search untuk semua kategori
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('transaction.item', function ($subQ) use ($search) {
+                    $subQ->where('name', 'like', "%{$search}%");
+                })
+                    ->orWhereHas('itemCatalog', function ($subQ) use ($search) {
+                        $subQ->where('code', 'like', "%{$search}%");
+                    });
+            });
         }
 
         $data = $query->get();
-
-
         $stocks = [];
 
-        $data->map(function ($stock) use (&$stocks) {
+        foreach ($data as $stock) {
             $item = $stock->transaction?->item ?? $stock->initialInventoryBalance?->item;
-            $itemCategoryName = $stock->transaction?->item?->category?->name ?? $stock->initialInventoryBalance?->item?->category?->name;
-            if ($itemCategoryName !== 'Kategori 4') {
-                $code = [];
+            $itemCategoryName = $item?->category?->name;
 
-                if (session()->has('stock_withdrawal_item')) {
-                    foreach (session()->get('stock_withdrawal_item') as $withDrawalItem) {
-                        $code [] = $withDrawalItem['code'];
-                    }
+            if ($itemCategoryName !== 'Kategori 4') {
+                $filteredCatalogs = $stock->itemCatalog
+                    ->where('status', 'Tersedia')
+                    ->whereNotIn('code', $code);
+
+                // Jika pencarian ada, filter juga berdasarkan code
+                if (!empty($search)) {
+                    $filteredCatalogs = $filteredCatalogs->filter(function ($catalog) use ($search) {
+                        return stripos($catalog->code, $search) !== false;
+                    });
                 }
 
-
-                $stocks = $stock->itemCatalog->where('status', 'Tersedia')->whereNotIn('code', $code)
-                    ->map(function ($itemCatalog) use ($stock, $item) {
-
-                        return [
-                            'id' => $itemCatalog->id,
-                            'code' => $itemCatalog->code,
-                            'name' => $item->name,
-                            'item_id' => $item->id,
-                            'qty' => $itemCatalog->available_qty,
-                            'stock_id' => $stock->id,
-                            'category_name' => $stock->transaction?->item?->category?->name ?? $stock->initialInventoryBalance?->item?->category?->name,
-                        ];
-                    });
+                foreach ($filteredCatalogs as $itemCatalog) {
+                    $stocks[] = [
+                        'id' => $itemCatalog->id,
+                        'code' => $itemCatalog->code,
+                        'name' => $item->name,
+                        'item_id' => $item->id,
+                        'qty' => $itemCatalog->available_qty,
+                        'stock_id' => $stock->id,
+                        'category_name' => $itemCategoryName,
+                    ];
+                }
             } else {
                 $qty = 0;
                 if (session()->has('stock_withdrawal_item')) {
-                    $stockWithdrawalItems = session()->get('stock_withdrawal_item');
-                    foreach ($stockWithdrawalItems as $stockWithdrawalItem) {
+                    foreach (session()->get('stock_withdrawal_item') as $stockWithdrawalItem) {
                         if ($stock->id === (int)$stockWithdrawalItem['stock_id']) {
                             $qty += $stockWithdrawalItem['qty'];
                         }
@@ -248,18 +259,20 @@ use Illuminate\Pagination\LengthAwarePaginator;
                 }
 
                 $stockActualQty = $stock->available_qty - $qty;
-                $stocks [] = [
-                    'id' => $stock->id,
-                    'name' => $item->name,
-                    'qty' => $stockActualQty,
-                    'category_name' => $stock->transaction?->item?->category?->name ?? $stock->initialInventoryBalance?->item?->category?->name,
-                ];
-            }
 
-        });
+                // Kalau pencarian ada, pastikan cocok dengan nama item
+                if (empty($search) || stripos($item->name, $search) !== false) {
+                    $stocks[] = [
+                        'id' => $stock->id,
+                        'name' => $item->name,
+                        'qty' => $stockActualQty,
+                        'category_name' => $itemCategoryName,
+                    ];
+                }
+            }
+        }
 
         return $stocks;
     }
-
 
 }
