@@ -7,6 +7,7 @@ namespace App\Support\Inventory\StockWithdrawal\Service;
 use AllowDynamicProperties;
 use App\Http\Requests\StockWithdrawalRequest;
 use App\Models\ItemCatalog;
+use App\Models\Master\Common\Branch;
 use App\Models\Stock;
 use App\Models\StockWithdrawal;
 use App\Models\StockWithdrawalByEmployee;
@@ -42,9 +43,12 @@ use function App\Helper\formatDate;
 
     private static int $perPage = 10;
 
-    public function data(): LengthAwarePaginator
+    public function data(Request $request): LengthAwarePaginator
     {
-        $data = $this->stockWithdrawalRepository->getStockWithdrawalQuery()->paginate(self::$perPage);
+        $data = StockWithdrawalQueryFilter::apply(
+            $this->stockWithdrawalRepository->getStockWithdrawalQuery()
+            , $request
+        )->paginate(self::$perPage);
         return self::formattedData($data);
     }
 
@@ -78,7 +82,14 @@ use function App\Helper\formatDate;
                 'branch_name' => $stockWithdrawal->branch->name,
                 'date' => formatDate($stockWithdrawal->date),
                 'description' => $stockWithdrawal->description,
-                'pic' => $stockWithdrawal->pic?->name ?? null,
+                'pic' => $stockWithdrawal->stockWithdrawalByEmployees->map(function ($stockWithdrawalByEmployee) {
+                    return [
+                        'id' => $stockWithdrawalByEmployee->id,
+                        'user_id' => $stockWithdrawalByEmployee->user_id,
+                        'name' => $stockWithdrawalByEmployee->user->name,
+                    ];
+
+                }),
                 'stocker' => $stockWithdrawal->stocker?->name ?? null,
                 'pic_signature_after_withdraw' => $stockWithdrawal->pic_signature_after_withdraw,
                 'stocker_signature_after_withdraw' => $stockWithdrawal->stocker_signature_after_withdraw,
@@ -98,7 +109,8 @@ use function App\Helper\formatDate;
     {
         DB::transaction(function () use ($request) {
             $stockWithdrawal = StockWithdrawal::create([
-                'branch_id' => $request->user()->branch_id ?? 1,
+                'branch_id' => Branch::where('id', $request->branch_id ?? $request->user()->branch_id)
+                    ->first()?->parent_id,
                 'date' => Carbon::now()->format('Y-m-d'),
                 'description' => $request->input('description'),
                 'stocker_id' => $request->user()->id,

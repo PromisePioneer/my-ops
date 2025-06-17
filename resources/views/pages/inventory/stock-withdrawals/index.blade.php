@@ -71,13 +71,21 @@
                             </template>
                             <template x-for="(stockWithdrawal, index) in stockWithdrawals?.data"
                                       :key="stockWithdrawal.id">
-                                <tbody class="fw-bold text-center">
+                                <tbody class="fw-bold">
                                 <tr>
                                     <td x-text="startIndex + index++"></td>
                                     <td class="text-center" x-text="stockWithdrawal.branch_name"></td>
                                     <td class="text-center" x-text="stockWithdrawal.date"></td>
                                     <td class="text-center" x-text="stockWithdrawal.description"></td>
-                                    <td class="text-center" x-text="stockWithdrawal.pic"></td>
+                                    <td>
+                                        <div class="row align-items-center">
+                                            <ul class="ms-3">
+                                                <template x-for="user in stockWithdrawal.pic" :key="user.id">
+                                                    <li x-text="user.name"></li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                    </td>
                                     <td class="text-center" x-text="stockWithdrawal.stocker"></td>
                                     <td class="text-center">
                                         <div class="d-flex align-items-center flex-column">

@@ -48,7 +48,7 @@
                                         Kategori Barang
                                     </label>
                                     <div class="col-lg-11 fv-row">
-                                        <select
+                                        <select name="category_id"
                                             class="form-select form-select-solid item-categories-select2">
                                             <option></option>
                                         </select>
@@ -60,6 +60,15 @@
                         <div x-show="branchId && itemCategoryId" x-transition x-cloak>
                             <div class="row justify-content-between align-items-center">
                                 <div :class="`${category4 && stockDetail ? 'col-lg-5' : 'col-lg-6'}`">
+                                    <div class="d-flex align-items-center position-relative my-1">
+                                        <span class="svg-icon svg-icon-1 position-absolute ms-6">
+                                           <i class="bi bi-search"></i>
+                                        </span>
+                                        <input type="text" name="search" x-model="search"
+                                               @input.debounce="searchItemByCategoryAndBranch()"
+                                               class="form-control form-control-solid w-250px ps-14"
+                                               placeholder="Search...">
+                                    </div>
                                     <div class="table-responsive">
                                         <table class="table align-middle table-row-dashed fs-6 gy-5 table-bordered">
                                             <thead>
@@ -235,11 +244,15 @@
                 form: document.getElementById('form'),
                 stockDetail: null,
                 stockQty: 0,
+                search: '',
                 async init() {
                     await this.getBranches();
                     await this.getItemCategories();
                     await select2('.users-select2', 'Pilih Karyawan', '/select2/users-data');
                     await this.getSessions();
+                },
+                async searchItemByCategory() {
+
                 },
                 async getSessions() {
                     this.stockWithdrawalItemSessionsLoading = true;
@@ -367,6 +380,22 @@
                     this.stockQty = resp.data.available_qty
                     await this.getSessions();
                     await this.getStockList();
+                },
+                async searchItemByCategoryAndBranch() {
+                    try {
+                        const resp = await axios.get('/inventory/stocks/search/category/branch', {
+                            params: {
+                                search: this.search ?? "",
+                                branch_id: this.branchId,
+                                category_id: this.itemCategoryId
+                            }
+                        });
+                        this.stockList = resp.data;
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
                 }
             }
         }
