@@ -208,4 +208,12 @@ use Illuminate\View\View;
         $stock->load('transaction.item', 'initialInventoryBalance.item');
         return response()->json($stock);
     }
+
+    public function searchByCategoryAndBranch(Request $request): JsonResponse
+    {
+        $search = $request->get('search');
+        $branch = $request->get('branch_id');
+        $category = $request->get('category_id');
+        return response()->json($this->stockService->searchByCategoryAndBranch($search, $branch, $category));
+    }
 }

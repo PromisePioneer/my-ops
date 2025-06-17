@@ -732,6 +732,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/must-reorder', [StockController::class, 'getMustReorderStocks']);
             Route::get('/{branch}/{itemCollection}', [StockController::class, 'findByItemAndBranch']);
             Route::get('/data/branch/category', [StockController::class, 'getStockByCategoryAndBranch']);
+            Route::get('/search/category/branch', [StockController::class, 'searchByCategoryAndBranch']);
         });
         Route::prefix('/stock-withdrawals')->group(function () {
             Route::get('/', [StockWithdrawalController::class, 'index']);

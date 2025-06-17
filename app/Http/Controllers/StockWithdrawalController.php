@@ -37,9 +37,9 @@ use Throwable;
     }
 
 
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
-        return response()->json($this->stockWithdrawalService->data());
+        return response()->json($this->stockWithdrawalService->data($request));
     }
 
 
@@ -128,9 +128,11 @@ use Throwable;
                 if ($item->status === 'Dikembalikan' || $item->status === 'Terpakai') {
                     throw new Exception('Data tidak dapat dihapus, dikarenakan barang sudah ada yg di kembalikan atau terpakai', 403);
                 }
-                ItemCatalog::where('code', $item->code)->update(['status' => 'Tersedia']);
+                $itemCatalog = ItemCatalog::where('code', $item->code)->first();
+                $itemCatalog->update(['status' => 'Tersedia']);
+                $itemCatalog->increment('available_qty', $item->qty);
                 $stock = Stock::where('id', $item->stock_id)->first();
-                $stock->increment('qty', $item->qty);
+                $stock->increment('available_qty', $item->qty);
                 $stock->decrement('on_hold_qty', $item->qty);
             }
             $stockWithdrawal->delete();

@@ -44,7 +44,7 @@ class PermissionSeeder extends Seeder
         // Inventory Controller
         $this->BoQ();
         $this->stock();
-        $this->consumedStock();
+        $this->stockWithdrawal();
 
         // journal
         $this->generalJournal();
@@ -1001,17 +1001,6 @@ class PermissionSeeder extends Seeder
         $branchManager = Role::where('name', 'Branch Manager')->first();
     }
 
-    public function consumedStock(): void
-    {
-        $permissions = [
-            'Input Pemakaian Stok Barang',
-        ];
-
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
-        }
-    }
-
     public function itemCollections(): void
     {
         $permissions = [
@@ -1081,6 +1070,19 @@ class PermissionSeeder extends Seeder
             'Reset Data Jam Kerja Jabatan Di Cabang'
         ];
 
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+    }
+
+    private function stockWithdrawal(): void
+    {
+        $permissions = [
+            'Lihat Menu Pemakaian Barang',
+            'Tambah Data Pemakaian Barang',
+            'Hapus Data Pemakaian Barang',
+        ];
 
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);
