@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\ItemCatalog;
-use App\Models\Stock;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
@@ -56,12 +54,8 @@ class ReturnedItemRequest extends FormRequest
     {
         return static function ($attribute, $value, $fail) use ($request) {
 
-            $qty = ItemCatalog::where('code', $request->route('stockWithdrawalItem')->code)->first()?->available_qty
-                ?? $request->route('stockWithdrawalItem')?->qty
-                ?? 0;
 
-
-            (int)$qty >= (int)$value
+            (int)$request->route('stockWithdrawalItem')->qty >= (int)$value
                 ? null
                 : $fail('Jumlah sisa tidak boleh lebih besar dari jumlah barang');
         };

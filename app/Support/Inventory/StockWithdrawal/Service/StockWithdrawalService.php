@@ -127,46 +127,46 @@ use function App\Helper\formatDate;
                 'stocker_id' => $request->user()->id,
             ]);
             $this->stockWithdrawalEmployeeStoreAndUpdate($stockWithdrawal, $request);
-            $this->stockWithdrawalItemStoreOrUpdate($stockWithdrawal, $request);
+            $this->stockWithdrawalItemStoreOrUpdate($stockWithdrawal);
         });
     }
 
 
-    public function stockWithdrawalItemStoreOrUpdate($stockWithdrawal, $request): void
+    public function stockWithdrawalItemStoreOrUpdate($stockWithdrawal): void
     {
-        if ($request->has('itemWithCodeFields')) {
-            foreach ($request->itemWithCodeFields as $value) {
-                $itemCatalog = ItemCatalog::find($value);
-                Stock::where('id', $itemCatalog->stock_id)->increment('on_hold_qty', $itemCatalog->available_qty);
-                Stock::where('id', $itemCatalog->stock_id)->decrement('available_qty', $itemCatalog->available_qty);
-                $itemCatalog->update(['status' => 'Dibawa']);
-                StockWithdrawalItem::create([
-                    'stock_withdrawal_id' => $stockWithdrawal->id,
-                    'stock_id' => $itemCatalog->stock_id,
-                    'code' => $itemCatalog->code,
-                    'qty' => $itemCatalog->available_qty,
-                ]);
-            }
-        }
+        if (session()->has('stock_withdrawal_item')) {
+            foreach (session('stock_withdrawal_item') as $item) {
+                if (!empty($item['code'])) {
+                    $itemCatalog = ItemCatalog::where('code', $item['code'])->first();
+                    $stock = Stock::where('id', $item['stock_id'])->first();
 
-        if ($request['itemWithoutCodeFields']) {
-            foreach ($request['itemWithoutCodeFields'] as $key => $value) {
-                $stockWithoutCode = Stock::where('id', $value['stock_id'])
-                    ->where(function ($query) {
-                        $query->whereHas('transaction.item.category', function ($query) {
-                            $query->where('name', 'Kategori 4');
-                        })->orWhereHas('initialInventoryBalance.item.category', function ($query) {
-                            $query->where('name', 'Kategori 4');
-                        });
-                    })
-                    ->first();
-                $stockWithoutCode->decrement('available_qty', $value['qty']);
-                $stockWithoutCode->increment('on_hold_qty', $value['qty']);
-                $value['stock_withdrawal_id'] = $stockWithdrawal->id;
-                $value['stock_id'] = $stockWithoutCode->id;
-                StockWithdrawalItem::create($value);
+                    $itemCatalog->decrement('available_qty', $item['qty']);
+                    $itemCatalog->update(['status' => 'Dibawa']);
+                    $stock->decrement('available_qty', $item['qty']);
+                    $stock->increment('on_hold_qty', $item['qty']);
+
+                    StockWithdrawalItem::create([
+                        'stock_withdrawal_id' => $stockWithdrawal->id,
+                        'stock_id' => $item['stock_id'],
+                        'code' => $item['code'],
+                        'qty' => $item['qty'],
+                    ]);
+                }
+
+                if (empty($item['code'])) {
+                    $stock = Stock::where('id', $item['stock_id'])->first();
+                    $stock->decrement('available_qty', $item['qty']);
+                    $stock->increment('on_hold_qty', $item['qty']);
+
+                    StockWithdrawalItem::create([
+                        'stock_withdrawal_id' => $stockWithdrawal->id,
+                        'stock_id' => $item['stock_id'],
+                        'qty' => $item['qty'],
+                    ]);
+                }
             }
         }
+        session()->forget('stock_withdrawal_item');
     }
 
 

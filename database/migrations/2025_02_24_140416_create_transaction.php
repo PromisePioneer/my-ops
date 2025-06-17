@@ -23,7 +23,7 @@ return new class extends Migration {
                 ->nullable()
                 ->constrained('item_collections')
                 ->cascadeOnDelete();
-            $table->double('qty')->nullable();
+            $table->integer('qty')->nullable();
             $table->enum('type', ['Default', 'Barang', 'Beban', 'Utang', 'Piutang']);
             $table->decimal('unit_price', 15, 4);
             $table->decimal('total_price', 15, 4);
@@ -45,7 +45,7 @@ return new class extends Migration {
                 ->default('Diproses');
             $table->string('final_notes')->nullable();
             $table->foreignId('approved_by')->nullable()->constrained('users');
-            $table->double('qty_in_meter')->nullable();
+            $table->integer('qty_in_meter')->nullable();
             $table->timestamps();
         });
     }
