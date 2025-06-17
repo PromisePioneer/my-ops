@@ -38,13 +38,16 @@ use Illuminate\Pagination\LengthAwarePaginator;
                 $consumedQty = 0;
             }
 
+
+            $item = $returnedItem->stockWithdrawalItem->stock->transaction?->item ?? $returnedItem->stockWithdrawalItem->stock->initialInventoryBalance->item;
+
             return [
                 'id' => $returnedItem->id,
                 'code' => $returnedItem->stockWithdrawalItem->code,
-                'item_name' => $returnedItem->stockWithdrawalItem->stock->transaction->item?->name,
-                'qty' => $returnedItem->stockWithdrawalItem->qty . $returnedItem->stockWithdrawalItem->stock->transaction->item->unitType->name,
+                'item_name' => $item->name,
+                'qty' => $returnedItem->stockWithdrawalItem->qty . $item->unitType->name,
                 'consumed_qty' => $consumedQty,
-                'returned_qty' => $returnedItem->remaining_qty,
+                'returned_qty' => $returnedItem->remaining_qty ?? 0,
                 'broken_qty' => $returnedItem->broken_qty,
                 'status' => $returnedItem->status,
             ];

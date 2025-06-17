@@ -9,9 +9,9 @@
 
     <div class="d-flex flex-column flex-lg-row" x-data="generateStockWithdrawals">
         <div class="flex-lg-row-fluid mb-10 mb-lg-0 me-lg-7 me-xl-10">
-            <div class="card p-10">
+            <div class="card p-2">
                 <form id="form" @submit.prevent="save()" enctype="multipart/form-data">
-                    <div class="card-body p-12">
+                    <div class="card-body p-5">
                         <div class="row gx-10 mb-5">
                             @if(empty(Auth::user()->branch_id))
                                 <div class="col-lg-6">
@@ -49,7 +49,7 @@
                                     </label>
                                     <div class="col-lg-11 fv-row">
                                         <select name="category_id"
-                                            class="form-select form-select-solid item-categories-select2">
+                                                class="form-select form-select-solid item-categories-select2">
                                             <option></option>
                                         </select>
                                     </div>
@@ -58,17 +58,17 @@
                         </div>
 
                         <div x-show="branchId && itemCategoryId" x-transition x-cloak>
-                            <div class="row justify-content-between align-items-center">
-                                <div :class="`${category4 && stockDetail ? 'col-lg-5' : 'col-lg-6'}`">
-                                    <div class="d-flex align-items-center position-relative my-1">
+                            <div class="row justify-content-between align-items-start">
+                                <div class="d-flex align-items-center position-relative my-1 mb-4">
                                         <span class="svg-icon svg-icon-1 position-absolute ms-6">
                                            <i class="bi bi-search"></i>
                                         </span>
-                                        <input type="text" name="search" x-model="search"
-                                               @input.debounce="searchItemByCategoryAndBranch()"
-                                               class="form-control form-control-solid w-250px ps-14"
-                                               placeholder="Search...">
-                                    </div>
+                                    <input type="text" name="search" x-model="search"
+                                           @input.debounce="searchItemByCategoryAndBranch()"
+                                           class="form-control form-control-solid w-250px ps-14"
+                                           placeholder="Search...">
+                                </div>
+                                <div :class="`${category4 && stockDetail ? 'col-lg-5' : 'col-lg-6'}`">
                                     <div class="table-responsive">
                                         <table class="table align-middle table-row-dashed fs-6 gy-5 table-bordered">
                                             <thead>
@@ -92,7 +92,7 @@
                                                 </tr>
                                                 </tbody>
                                             </template>
-                                            <template x-if="!isLoading && stockList.length === 0">
+                                            <template x-if="!isLoading && stockList.data.length === 0">
                                                 <tbody class="fw-bold text-center">
                                                 <tr>
                                                     <td colspan="4">
@@ -101,7 +101,7 @@
                                                 </tr>
                                                 </tbody>
                                             </template>
-                                            <template x-for="(stock, index) in stockList" :key="index">
+                                            <template x-for="(stock, index) in stockList.data" :key="index">
                                                 <tbody class="text-center">
                                                 <tr>
                                                     <td x-text="stock.name"></td>
@@ -126,9 +126,19 @@
                                                 </tbody>
                                             </template>
                                         </table>
+                                        <ul class="pagination float-end mb-4 mt-4">
+                                            <template x-for="pagination in stockList.links">
+                                                <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                                    <button type="button" class="page-link btn-sm"
+                                                            @click="paginationEndPoint(pagination.url)"
+                                                            x-html="pagination.label">
+                                                    </button>
+                                                </li>
+                                            </template>
+                                        </ul>
                                     </div>
                                 </div>
-                                <div :class="`${category4 && stockDetail ? 'col-lg-2' : ''}`"
+                                <div :class="`${category4 && stockDetail ? 'col-lg-2' : 'd-none'}`"
                                      x-show="category4 && stockDetail">
                                     <div class="d-flex flex-column">
                                         <input type="text" class="form-control form-control-solid mb-4"
@@ -196,10 +206,13 @@
                                 </div>
                             </div>
                             <div class="justify-content-end">
-                                <button type="button" @click="flushSession()" class="btn btn-light-danger btn-sm mb-4">
-                                    <x-icons.trash/>
-                                    Reset
-                                </button>
+                                <template x-if="stockWithdrawalItemSessions.length > 0">
+                                    <button type="button" @click="flushSession()"
+                                            class="btn btn-light-danger btn-sm mb-4">
+                                        <x-icons.trash/>
+                                        Reset
+                                    </button>
+                                </template>
                             </div>
                         </div>
 
@@ -263,6 +276,24 @@
                         console.log(e)
                     } finally {
                         this.stockWithdrawalItemSessionsLoading = false;
+                    }
+                },
+                async paginationEndPoint(url) {
+                    if (url) {
+                        this.stockList = [];
+                        this.isLoading = true;
+                        try {
+                            const resp = await axios.get(`${url}`, {
+                                params: {
+                                    search: this.search,
+                                }
+                            });
+                            this.stockList = resp.data
+                        } catch (e) {
+                            console.log(e)
+                        } finally {
+                            this.isLoading = false
+                        }
                     }
                 },
                 async selectCheckBox(id, code = null, qty, stockId, itemName) {
