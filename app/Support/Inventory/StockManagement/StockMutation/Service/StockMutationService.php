@@ -4,11 +4,13 @@ namespace App\Support\Inventory\StockManagement\StockMutation\Service;
 
 use AllowDynamicProperties;
 use App\Http\Requests\StockMutationRequest;
+use App\Models\AssetDepreciation;
 use App\Models\ItemCatalog;
 use App\Models\Master\Common\Branch;
 use App\Models\Stock;
 use App\Models\StockMutation;
 use App\Models\StockMutationItem;
+use App\Support\AccountTransactions\AccountTransactionService;
 use App\Support\Inventory\StockManagement\StockMutation\Repository\StockMutationRepository;
 use App\Support\Master\Accounting\Assets\Service\AssetService;
 use Carbon\Carbon;
@@ -26,6 +28,7 @@ use function App\Helper\formatDate;
     {
         $this->stockMutationRepository = new StockMutationRepository();
         $this->assetService = new  AssetService();
+        $this->accountTransactionService = new  AccountTransactionService();
     }
 
     public function data(): LengthAwarePaginator
@@ -90,16 +93,30 @@ use function App\Helper\formatDate;
     public function stockMutationItemStore(StockMutationRequest $request, StockMutation $stockMutation): void
     {
         if (session()->has('stock_mutation_items')) {
+            $totalDepreciation = 0;
+            $itemName = null;
+            $itemCatalog = null;
             foreach (session('stock_mutation_items') as $item) {
                 if (!empty($item['code'])) {
                     $itemCatalog = ItemCatalog::with('asset', 'stock')
                         ->where('code', $item['code'])
                         ->first();
 
+
                     if (!empty($itemCatalog->asset_id)) {
                         $itemCatalog->asset->update([
                             'branch_id' => $request->to_branch
                         ]);
+
+
+                        $itemName = $itemCatalog->stock->transaction?->item?->name ?? $itemCatalog->stock->initialInventoryBalance->item->name;
+                        $totalDepreciation = AssetDepreciation::where('asset_id', $itemCatalog->asset_id)
+                            ->whereBetween('depreciation_date', [
+                                Carbon::parse($itemCatalog->asset->date)->format('Y-m-d'),
+                                Carbon::now()->format('Y-m-d')
+                            ])
+                            ->sum('depreciation_amount');
+
                     }
 
                     $oldStock = Stock::where('id', $item['stock_id'])
@@ -140,7 +157,6 @@ use function App\Helper\formatDate;
                 }
 
                 if (empty($item['code'])) {
-
                     $oldStock = Stock::where('id', $item['stock_id'])
                         ->where('branch_id', $request->from_branch)
                         ->first();
@@ -170,25 +186,25 @@ use function App\Helper\formatDate;
                     ]);
                 }
             }
+
+            $fromBranch = Branch::find($request->from_branch)->parent_id;
+            $toBranch = Branch::find($request->to_branch)->parent_id;
+            // debit old branch
+            $this->accountTransactionService->createDebitTransaction(
+                Branch::find($request->from_branch)->parent_id,
+                "MUTASI {$itemName} DARI {$fromBranch} KE {$toBranch}",
+                $itemCatalog->stock->transaction->credit_account_id,
+                $itemCatalog->stock->transaction->unit_price,
+            );
+            $this->accountTransactionService->createDebitTransaction(
+                Branch::find($request->from_branch)->parent_id,
+                "Akumulasi Penyusutan Aset {$itemName}",
+                $itemCatalog->stock->transaction->credit_account_id,
+                $totalDepreciation,
+            );
+
         }
         session()->forget('stock_mutation_items');
     }
 
-    /**
-     * @throws Throwable
-     */
-    public function receiveItem(StockMutation $stockMutation): void
-    {
-        DB::transaction(function () use ($stockMutation) {
-            $oldBranch = Branch::find($stockMutation->old_branch_id);
-            $newBranch = Branch::find($stockMutation->new_branch_id);
-            foreach ($stockMutation->stockMutationItems as $stock) {
-                $currentStock = Stock::with('item', 'transaction', 'initialInventoryBalance')->find($stock->stock_id);
-                $newStock = Stock::where('branch_id', $newBranch->id)->where('item_id', $currentStock->item_id)->first();
-                $currentStock->decrement('qty', $stock->qty);
-                dd($newStock);
-            }
-        });
-
-    }
 }
