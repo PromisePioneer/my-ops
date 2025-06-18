@@ -210,18 +210,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
             }
         }
 
-        if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->whereHas('transaction.item', function ($subQ) use ($search) {
-                    $subQ->where('name', 'like', "%" . $search . "%");
-                })->orWhereHas('initialInventoryBalance.item', function ($subQ) use ($search) {
-                    $subQ->where('name', 'like', "%" . $search . "%");
-                })->orWhereHas('itemCatalog', function ($subQ) use ($search) {
-                    $subQ->where('code', 'like', " % " . $search . " % ");
-                });
-            });
-        }
-
         $data = $query->paginate(self::$perPage);
 
         $transformed = $data->getCollection()->flatMap(function ($stock) use ($code, $search) {
