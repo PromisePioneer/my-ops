@@ -159,12 +159,13 @@
                                     <th class="min-w-125px">Terpakai</th>
                                     <th class="min-w-125px">Dikembalikan</th>
                                     <th class="min-w-125px">Rusak</th>
+                                    <th class="min-w-125px">Bukti</th>
                                 </tr>
                                 </thead>
                                 <template x-if="isLoading">
                                     <tbody>
                                     <tr>
-                                        <td colspan="5">
+                                        <td colspan="7">
                                             <div style="text-align: center;">
                                                 <div class="spinner-border" role="status">
                                                     <span class="visually-hidden">Loading...</span>
@@ -177,7 +178,7 @@
                                 <template x-if="!isLoading && consumedOrAppliedStock.data?.length === 0">
                                     <tbody class="fw-bolder text-center">
                                     <tr>
-                                        <td colspan="6">
+                                        <td colspan="7">
                                             <center>Data Tidak Ditemukan</center>
                                         </td>
                                     </tr>
@@ -192,6 +193,16 @@
                                         <td x-text="stock.consumed_qty"></td>
                                         <td x-text="stock.returned_qty"></td>
                                         <td x-text="stock.broken_qty"></td>
+                                        <td>
+                                            <a href="#">
+                                                <div class="symbol-label">
+                                                    <a href="#" @click="openImageList(stock.attachment)">
+                                                        <img :src="getImageURL(stock.attachment ?? null)"
+                                                             alt="Image" class="w-100 h-200px">
+                                                    </a>
+                                                </div>
+                                            </a>
+                                        </td>
                                     </tr>
                                     </tbody>
                                 </template>
@@ -315,7 +326,27 @@
                             } finally {
                                 this.buttonLoading = false;
                             }
-                        }
+                        },
+                        openImageList(imagePath) {
+                            const lightbox = new FsLightbox();
+                            if (imagePath === null) {
+                                const placeholders = 'assets/media/avatars/blank.png'
+                                const image = "{{ asset('')  }}" + placeholders;
+                                lightbox.props.sources = [image, image];
+                                lightbox.open();
+                            } else {
+                                const image = "{{  Storage::url('') }}" + imagePath;
+                                lightbox.props.sources = [image];
+                                lightbox.open();
+                            }
+                        },
+                        getImageURL(imagePath) {
+                            if (imagePath === null) {
+                                const placeholders = 'assets/media/avatars/blank.png'
+                                return "{{ asset('') }}" + placeholders;
+                            }
+                            return imagePath ? "{{ Storage::url('') }}" + imagePath : '';
+                        },
                     }
                 }
             </script>

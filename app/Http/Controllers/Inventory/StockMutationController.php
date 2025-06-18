@@ -11,6 +11,7 @@ use App\Support\Inventory\StockManagement\StockMutation\Service\StockMutationSer
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 use Spatie\Browsershot\Browsershot;
 use Throwable;
@@ -64,7 +65,13 @@ use function App\Helper\formatDate;
 
     public function show(StockMutation $stockMutation): JsonResponse
     {
-        $stockMutation->load('stockMutationItems', 'stockMutationItems.stock.item', 'sender', 'receiver');
+        $stockMutation->load(
+            'stockMutationItems',
+            'stockMutationItems.stock.transaction.item',
+            'stockMutationItems.stock.initialInventoryBalance.item',
+            'sender',
+            'receiver'
+        );
         $stockMutation->date = formatDate($stockMutation->date);
         return response()->json($stockMutation);
     }
@@ -135,5 +142,37 @@ use function App\Helper\formatDate;
         ]);
     }
 
+
+    public function getSessions(): JsonResponse
+    {
+        $stock = session()->get('stock_mutation_items') ?? [];
+        return response()->json($stock);
+    }
+
+
+    public function sessionStore(Request $request): void
+    {
+        $stockMutationItem = [
+            'code' => $request->get('code'),
+            'qty' => $request->get('qty'),
+            'stock_id' => $request->get('stock_id'),
+            'item_id' => $request->get('item_id'),
+            'item_name' => $request->get('item_name'),
+        ];
+        session()->push('stock_mutation_items', $stockMutationItem);
+    }
+
+
+    public function flushSessions(): void
+    {
+        session()->forget('stock_mutation_items');
+    }
+
+
+    public function deleteSessions(Request $request): void
+    {
+        Session::forget("stock_mutation_items.$request->index");
+
+    }
 
 }

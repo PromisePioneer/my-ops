@@ -22,4 +22,10 @@ class UserRepository
         return User::orderBy('absent_id')->pluck('absent_id')->toArray();
     }
 
+
+    public function getUserByBranchId(int $branchId)
+    {
+        return User::where('branch_id', $branchId);
+    }
+
 }

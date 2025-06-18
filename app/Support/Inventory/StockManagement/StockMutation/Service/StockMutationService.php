@@ -4,23 +4,17 @@ namespace App\Support\Inventory\StockManagement\StockMutation\Service;
 
 use AllowDynamicProperties;
 use App\Http\Requests\StockMutationRequest;
-use App\Models\Account;
-use App\Models\Asset;
 use App\Models\ItemCatalog;
-use App\Models\ItemCollection;
 use App\Models\Master\Common\Branch;
 use App\Models\Stock;
 use App\Models\StockMutation;
 use App\Models\StockMutationItem;
-use App\Support\HelperService\UsefulLifeService;
 use App\Support\Inventory\StockManagement\StockMutation\Repository\StockMutationRepository;
+use App\Support\Master\Accounting\Assets\Service\AssetService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Throwable;
 use function App\Helper\formatDate;
 
@@ -31,6 +25,7 @@ use function App\Helper\formatDate;
     public function __construct()
     {
         $this->stockMutationRepository = new StockMutationRepository();
+        $this->assetService = new  AssetService();
     }
 
     public function data(): LengthAwarePaginator
@@ -94,109 +89,89 @@ use function App\Helper\formatDate;
 
     public function stockMutationItemStore(StockMutationRequest $request, StockMutation $stockMutation): void
     {
-        if ($request->has('itemWithCodeFields')) {
-            foreach ($request->itemWithCodeFields as $value) {
-                $itemCatalog = ItemCatalog::find($value);
-                StockMutationItem::create([
-                    'stock_mutation_id' => $stockMutation->id,
-                    'stock_id' => $itemCatalog->stock_id,
-                    'code' => $itemCatalog->code,
-                    'qty' => 1,
-                ]);
-            }
-        }
+        if (session()->has('stock_mutation_items')) {
+            foreach (session('stock_mutation_items') as $item) {
+                if (!empty($item['code'])) {
+                    $itemCatalog = ItemCatalog::with('asset', 'stock')
+                        ->where('code', $item['code'])
+                        ->first();
 
-        if ($request['itemWithoutCodeFields']) {
-            foreach ($request['itemWithoutCodeFields'] as $key => $value) {
-                $stockWithoutCode = Stock::with('item', 'itemCatalog')
-                    ->where('id', $value['stock_id'])
-                    ->first();
-                $value['stock_mutation_id'] = $stockMutation->id;
-                $value['stock_id'] = $stockWithoutCode->id;
-                StockMutationItem::create($value);
-            }
-        }
-    }
+                    if (!empty($itemCatalog->asset_id)) {
+                        $itemCatalog->asset->update([
+                            'branch_id' => $request->to_branch
+                        ]);
+                    }
 
-    /**
-     * @throws Throwable
-     */
-    public function sendItem(StockMutation $stockMutation): void
-    {
-        DB::transaction(function () use ($stockMutation) {
+                    $oldStock = Stock::where('id', $item['stock_id'])
+                        ->where('branch_id', $request->from_branch)
+                        ->first();
+                    $newStock = Stock::where('id', $item['stock_id'])
+                        ->where('branch_id', $request->to_branch)
+                        ->first();
 
-            foreach ($stockMutation->stockMutationItems as $stock) {
-                Stock::find($stock->stock_id)->decrement('qty', $stock->qty);
-                ItemCatalog::where('code', $stock->code)->delete();
-                Asset::where('code', $stock->code)->delete();
-            }
+                    if ($newStock) {
+                        $oldStock->decrement('available_qty', $item['qty']);
+                        $newStock->increment('available_qty', $item['qty']);
+                        $itemCatalog->update([
+                            'stock_id' => $newStock->id,
+                        ]);
+                    } else {
+                        $stock = Stock::create([
+                            'branch_id' => $request->to_branch,
+                            'transaction_id' => $oldStock->transaction_id,
+                            'initial_balance_inventory_id' => $oldStock->initial_balance_inventory_id,
+                            'on_hold_qty' => 0,
+                            'available_qty' => $item['qty'],
+                            'broken_qty' => 0,
+                        ]);
+                        $oldStock->decrement('available_qty', $item['qty']);
+                        $itemCatalog->update([
+                            'stock_id' => $stock->id,
+                        ]);
+                    }
 
-            $this->generateSenderSignature($stockMutation);
-        });
-    }
 
-
-    /**
-     * @throws Throwable
-     */
-    public function cancelDelivery(StockMutation $stockMutation): void
-    {
-        DB::transaction(function () use ($stockMutation) {
-
-            foreach ($stockMutation->stockMutationItems as $stock) {
-                $currentStock = Stock::with('item', 'transaction', 'initialInventoryBalance')->find($stock->stock_id);
-                $currentStock->increment('qty', $stock->qty);
-
-                if (!empty($stock->code)) {
-                    ItemCatalog::create([
-                        'transaction_id' => $currentStock->transaction_id,
-                        'stock_id' => $currentStock->id,
-                        'draft_stock_id' => $currentStock->draft_stock_id,
-                        'item_id' => $currentStock->item_id,
-                        'code' => $stock->code,
-                        'condition' => $currentStock->condition,
-                        'created_by' => Auth::id(),
-                        'initial_balance_inventory_id' => $currentStock->initial_balance_inventory_id,
-                        'asset_id' => $currentStock->asset_id,
+                    StockMutationItem::create([
+                        'stock_mutation_id' => $stockMutation->id,
+                        'stock_id' => $item['stock_id'],
+                        'code' => $item['code'],
+                        'qty' => $item['qty'],
                     ]);
+                }
 
-                    $item = ItemCollection::find($currentStock->item_id);
-                    $account = Account::find($item->asset_account_id);
-                    Asset::create([
-                        'branch_id' => $currentStock->branch_id,
-                        'code' => $stock->code,
-                        'item_id' => $currentStock->item_id,
-                        'date_received' => $currentStock->transaction?->date ?? $currentStock->initialInventoryBalance->date,
-                        'unit' => 1,
-                        'useful_life' => UsefulLifeService::getUsefulLife($account->code, $item->category->name, $item->building_type),
-                        'price_per_unit' => $currentStock->transaction?->unit_price ?? $currentStock->initialInventoryBalance->unit_price,
-                        'total_price' => $currentStock->transaction?->unit_price ?? $currentStock->initialInventoryBalance->unit_price,
-                        'residu' => $currentStock->transaction?->unit_price ?? $currentStock->initialInventoryBalance->unit_price / UsefulLifeService::getUsefulLife($account->code, $item->category->name, $item->building_type),
+                if (empty($item['code'])) {
+
+                    $oldStock = Stock::where('id', $item['stock_id'])
+                        ->where('branch_id', $request->from_branch)
+                        ->first();
+                    $newStock = Stock::where('id', $item['stock_id'])
+                        ->where('branch_id', $request->to_branch)
+                        ->first();
+
+
+                    if ($newStock) {
+                        $newStock->increment('available_qty', $item['qty']);
+                    } else {
+                        Stock::create([
+                            'branch_id' => $request->to_branch,
+                            'transaction_id' => $oldStock->transaction_id,
+                            'initial_balance_inventory_id' => $oldStock->initial_balance_inventory_id,
+                            'on_hold_qty' => 0,
+                            'available_qty' => $item['qty'],
+                            'broken_qty' => 0,
+                        ]);
+                    }
+
+                    StockMutationItem::create([
+                        'stock_mutation_id' => $stockMutation->id,
+                        'stock_id' => $item['stock_id'],
+                        'code' => $item['code'],
+                        'qty' => $item['qty'],
                     ]);
                 }
             }
-
-
-            $stockMutation->update([
-                'sender_signature' => null,
-                'status' => null,
-            ]);
-        });
-    }
-
-
-    private function generateSenderSignature(StockMutation $stockMutation): void
-    {
-        $image = QrCode::format('png')->size(200)
-            ->generate($stockMutation->date);
-        $signaturePath = 'documents/stock-mutation/sender-signature/' . $stockMutation->date . '.png';
-        Storage::disk('public')->put($signaturePath, $image);
-
-        $stockMutation->update([
-            'sender_id' => Auth::id(),
-            'sender_signature' => $signaturePath,
-            'status' => 'Dikirim'
-        ]);
+        }
+        session()->forget('stock_mutation_items');
     }
 
     /**
@@ -205,8 +180,6 @@ use function App\Helper\formatDate;
     public function receiveItem(StockMutation $stockMutation): void
     {
         DB::transaction(function () use ($stockMutation) {
-
-
             $oldBranch = Branch::find($stockMutation->old_branch_id);
             $newBranch = Branch::find($stockMutation->new_branch_id);
             foreach ($stockMutation->stockMutationItems as $stock) {

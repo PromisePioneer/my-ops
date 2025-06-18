@@ -23,12 +23,13 @@ class StockMutationRequest extends FormRequest
      *
      * @return array<string, ValidationRule|array|string>
      */
-    public function rules(Request $request): array
+    public function rules(): array
     {
         return [
-            'from_branch' => ['required', $this->ifNotSelectAnyItemOption($request)],
-            'itemWithCodeFields' => [Rule::requiredIf($request->has('item_with_code_option')), 'array'],
-            'to_branch' => ['required'],
+            'from_branch' => ['required', Rule::exists('branches', 'id')],
+            'to_branch' => ['required', Rule::exists('branches', 'id')],
+            'description' => ['required'],
+            'receiver_id' => ['required', Rule::exists('users', 'id')],
         ];
     }
 
@@ -39,21 +40,5 @@ class StockMutationRequest extends FormRequest
             'from_branch.required' => 'Cabang asal tidak boleh kosong',
             'to_branch.required' => 'Cabang tujuan tidak boleh kosong',
         ];
-    }
-
-
-    public function ifNotSelectAnyItemOption(Request $request): Closure
-    {
-        $itemWithCodeOption = $request->has('item_with_code_option');
-        $itemWithoutCodeOption = $request->has('item_without_code_option');
-
-
-        return static function ($attribute, $value, $fail) use ($itemWithCodeOption, $itemWithoutCodeOption) {
-            if (!$itemWithCodeOption && !$itemWithoutCodeOption) {
-                return $fail('Pilih salah satu opsi barang');
-            }
-
-            return null;
-        };
     }
 }

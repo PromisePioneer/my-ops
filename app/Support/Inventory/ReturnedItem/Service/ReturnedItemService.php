@@ -50,6 +50,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
                 'returned_qty' => $returnedItem->remaining_qty ?? 0,
                 'broken_qty' => $returnedItem->broken_qty,
                 'status' => $returnedItem->status,
+                'attachment' => $returnedItem->attachment,
             ];
         });
 

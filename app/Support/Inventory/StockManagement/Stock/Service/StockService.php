@@ -3,7 +3,6 @@
 namespace App\Support\Inventory\StockManagement\Stock\Service;
 
 use AllowDynamicProperties;
-use App\Models\ItemCategory;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\Branch;
 use App\Support\Inventory\StockManagement\DraftStock\Repository\DraftStockRepository;
@@ -150,6 +149,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
             if ($itemCategoryName !== 'Kategori 4') {
                 $code = [];
+                $code2 = [];
 
                 if (session()->has('stock_withdrawal_item')) {
                     foreach (session()->get('stock_withdrawal_item') as $withDrawalItem) {
@@ -157,9 +157,15 @@ use Illuminate\Pagination\LengthAwarePaginator;
                     }
                 }
 
+                if (session()->has('stock_mutation_items')) {
+                    foreach (session()->get('stock_mutation_items') as $mutationItem) {
+                        $code2[] = $mutationItem['code'];
+                    }
+                }
+
                 $filteredCatalogs = $stock->itemCatalog
                     ->where('status', 'Tersedia')
-                    ->whereNotIn('code', $code);
+                    ->whereNotIn('code', $code)->whereNotIn('code', $code2);
 
                 foreach ($filteredCatalogs as $itemCatalog) {
                     $result[] = [
@@ -178,6 +184,15 @@ use Illuminate\Pagination\LengthAwarePaginator;
                     foreach (session()->get('stock_withdrawal_item') as $stockWithdrawalItem) {
                         if ($stock->id === (int)$stockWithdrawalItem['stock_id']) {
                             $qty += $stockWithdrawalItem['qty'];
+                        }
+                    }
+                }
+
+
+                if (session()->has('stock_mutation_items')) {
+                    foreach (session()->get('stock_mutation_items') as $stockMutationItem) {
+                        if ($stock->id === (int)$stockMutationItem['stock_id']) {
+                            $qty += $stockMutationItem['qty'];
                         }
                     }
                 }
@@ -204,15 +219,24 @@ use Illuminate\Pagination\LengthAwarePaginator;
         $query = $this->stockRepository->getStockByCategoryAndBranch($branchId, $categoryId);
 
         $code = [];
+        $code2 = [];
         if (session()->has('stock_withdrawal_item')) {
             foreach (session()->get('stock_withdrawal_item') as $withDrawalItem) {
                 $code[] = $withDrawalItem['code'];
             }
         }
 
+
+        if (session()->has('stock_mutation_items')) {
+            foreach (session()->get('stock_mutation_items') as $itemMutation) {
+                $code2[] = $itemMutation['code'];
+            }
+        }
+
+
         $data = $query->paginate(self::$perPage);
 
-        $transformed = $data->getCollection()->flatMap(function ($stock) use ($code, $search) {
+        $transformed = $data->getCollection()->flatMap(function ($stock) use ($code, $code2, $search) {
             $item = $stock->transaction?->item ?? $stock->initialInventoryBalance?->item;
             $itemCategoryName = $item?->category?->name;
             $result = [];
@@ -220,7 +244,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
             if ($itemCategoryName !== 'Kategori 4') {
                 $filteredCatalogs = $stock->itemCatalog
                     ->where('status', 'Tersedia')
-                    ->whereNotIn('code', $code);
+                    ->whereNotIn('code', $code)->whereNotIn('code', $code2);
 
                 if (!empty($search)) {
                     $filteredCatalogs = $filteredCatalogs->filter(function ($catalog) use ($search) {
