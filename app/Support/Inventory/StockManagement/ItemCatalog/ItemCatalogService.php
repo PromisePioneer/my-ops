@@ -66,7 +66,7 @@ use Throwable;
             $stock = $this->findOrCreateStock($draftStock, $request);
             $draftStock->decrement('qty');
             if ($draftStock->transaction?->item?->type === 'ASET' || $draftStock->initialInventoryBalance?->item?->type === 'ASET') {
-                $asset = self::insertAsset($request, $draftStock, $stock);
+                $asset = $this->insertAsset($request, $draftStock, $stock);
                 self::insertItemCatalog($request, $draftStock, $stock, $asset);
             } else {
                 self::insertItemCatalog($request, $draftStock, $stock);
@@ -95,7 +95,7 @@ use Throwable;
     /**
      * @throws Throwable
      */
-    private function insertAsset(Request $request, DraftStock $draftStock, Stock $stock): void
+    private function insertAsset(Request $request, DraftStock $draftStock, Stock $stock)
     {
         $itemObject = $draftStock->transaction?->item ?? $draftStock->initialInventoryBalance?->item;
         $asset = Asset::create([
@@ -112,6 +112,8 @@ use Throwable;
             'price' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance?->unit_price,
         ]);
         $this->assetService->confirm($asset);
+
+        return $asset;
     }
 
 
