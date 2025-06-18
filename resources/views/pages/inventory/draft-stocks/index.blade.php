@@ -135,6 +135,24 @@
                         }
                     });
                 },
+                async paginationEndPoint(url) {
+                    if (url) {
+                        this.draftStocks = [];
+                        this.isLoading = true;
+                        try {
+                            const resp = await axios.get(`${url}`, {
+                                params: {
+                                    search: this.search,
+                                }
+                            });
+                            this.draftStocks = resp.data
+                        } catch (e) {
+                            console.log(e)
+                        } finally {
+                            this.isLoading = false
+                        }
+                    }
+                },
                 async searchData() {
                     this.draftStocks = [];
                     this.isLoading = true;
