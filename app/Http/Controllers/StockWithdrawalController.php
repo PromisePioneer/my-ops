@@ -124,12 +124,14 @@ use Throwable;
     {
         DB::transaction(function () use ($stockWithdrawal) {
             foreach ($stockWithdrawal->stockWithdrawalItems as $item) {
-                if ($item->status === 'Dikembalikan' || $item->status === 'Terpakai') {
+                if ($item->returnedItem) {
                     throw new Exception('Data tidak dapat dihapus, dikarenakan barang sudah ada yg di kembalikan atau terpakai', 403);
                 }
                 $itemCatalog = ItemCatalog::where('code', $item->code)->first();
-                $itemCatalog->update(['status' => 'Tersedia']);
-                $itemCatalog->increment('available_qty', $item->qty);
+                if ($itemCatalog) {
+                    $itemCatalog->update(['status' => 'Tersedia']);
+                    $itemCatalog->increment('available_qty', $item->qty);
+                }
                 $stock = Stock::where('id', $item->stock_id)->first();
                 $stock->increment('available_qty', $item->qty);
                 $stock->decrement('on_hold_qty', $item->qty);
