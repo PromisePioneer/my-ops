@@ -19,8 +19,7 @@ class StockRepository
 
     public function findByItemCatalog(ItemCatalog $itemCatalog)
     {
-        return Stock::where('draft_stock_id', $itemCatalog->draft_stock_id)
-            ->where('condition', $itemCatalog->condition)
+        return Stock::where('id', $itemCatalog->stock?->id)
             ->lockForUpdate()
             ->first();
     }

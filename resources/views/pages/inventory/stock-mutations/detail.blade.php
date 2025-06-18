@@ -61,16 +61,14 @@
                                 <th>Barang</th>
                                 <th>Kode</th>
                                 <th>Qty</th>
-                                <th>Status</th>
                             </tr>
                             </thead>
                             <tbody>
                             <template x-for="item in editVal?.stock_mutation_items">
                                 <tr>
-                                    <td x-text="item.stock.item.name"></td>
+                                    <td x-text="item.stock?.transaction?.item?.name ?? item.stock.initialInventoryBalance.stock.item.name"></td>
                                     <td x-text="item.code ?? '-'"></td>
                                     <td x-text="item.qty"></td>
-                                    <td x-text="item.stock.condition"></td>
                                 </tr>
                             </template>
                             </tbody>

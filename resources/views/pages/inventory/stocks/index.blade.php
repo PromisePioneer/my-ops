@@ -110,8 +110,8 @@
                                         <th class="min-w-125px text-center">Dibawa</th>
                                         <th class="min-w-125px text-center">Rusak</th>
                                     </thead>
-                                    <tbody class="fw-bold text-center">
                                     <template x-if="isLoading">
+                                        <tbody class="fw-bold text-center">
                                         <tr>
                                             <td colspan="9">
                                                 <div style="text-align: center;">
@@ -121,21 +121,27 @@
                                                 </div>
                                             </td>
                                         </tr>
+                                        </tbody>
                                     </template>
                                     <template x-if="!isLoading && goodsStock?.data?.length === 0">
+                                        <tbody class="fw-bold text-center">
                                         <tr>
                                             <td colspan="9">
                                                 <center>Data Tidak Ditemukan</center>
                                             </td>
                                         </tr>
+                                        </tbody>
                                     </template>
                                     <template x-for="(stock, index) in goodsStock?.data" :key="stock.id">
+                                        <tbody class="fw-bold text-center">
                                         <tr>
                                             <td x-text="startIndex + index++"></td>
                                             <td class="text-center">
                                                 <span x-text="stock.name"></span>
                                                 <span
-                                                        :class="stock.type === 'ASET' ? 'badge badge top-100 start-0 badge-warning ms-2' : 'badge badge top-100 start-0 badge-danger ms-2'"
+                                                    :class="stock.type === 'ASET'
+                                                         ? 'badge badge top-100 start-0 badge-warning ms-2'
+                                                         : 'badge badge top-100 start-0 badge-danger ms-2'"
                                                         x-text="stock.type"></span>
                                             </td>
                                             <td class="text-center" x-text="stock.category_name"></td>
@@ -143,8 +149,8 @@
                                             <td class="text-center" x-text="stock.total_on_hold_qty"></td>
                                             <td class="text-center" x-text="stock.total_broken_qty"></td>
                                         </tr>
+                                        </tbody>
                                     </template>
-                                    </tbody>
                                 </table>
                             </div>
                             <ul class="pagination float-end mb-4 mt-4">

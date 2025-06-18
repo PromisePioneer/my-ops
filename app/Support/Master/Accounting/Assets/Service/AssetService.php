@@ -9,6 +9,7 @@ use App\Models\AccountTransaction;
 use App\Models\Asset;
 use App\Models\AssetDepreciation;
 use App\Models\ItemCollection;
+use App\Models\Master\Common\Branch;
 use App\Support\AccountTransactions\AccountTransactionService;
 use App\Support\HelperService\UsefulLifeService;
 use App\Support\Master\Accounting\Assets\Repositories\AssetRepository;
@@ -23,7 +24,7 @@ use function App\Helper\currencyFormat;
 {
 
     private const string PURCHASE_ASSET_DESCRIPTION = 'Pembelian  %s';
-    private const string DEPRECIATION_ASSET_DESCRIPTION = 'Penyusutan %s';
+    private const string DEPRECIATION_ASSET_DESCRIPTION = 'Penyusutan %s ';
     private const string INITIAL_BALANCE_ASSET_DESCRIPTION = 'Saldo Awal Aset %s';
 
     private static int $perPage = 10;
@@ -203,7 +204,7 @@ use function App\Helper\currencyFormat;
                 $description = sprintf(self::DEPRECIATION_ASSET_DESCRIPTION, $asset->name, $i);
 
                 $this->accountTransactionService->createCreditTransaction(
-                    $asset->branch_id,
+                    Branch::find($asset->branch_id)->parent_id,
                     $description,
                     $account->id,
                     $depreciation,

@@ -780,6 +780,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/', [StockMutationController::class, 'store']);
             Route::get('/show/{stockMutation}', [StockMutationController::class, 'show']);
             Route::post('/destroy', [StockMutationController::class, 'destroy']);
+            Route::get('/session-store', [StockMutationController::class, 'sessionStore']);
+            Route::get('/get-sessions', [StockMutationController::class, 'getSessions']);
+            Route::get('/flush-sessions', [StockMutationController::class, 'flushSessions']);
+            Route::get('/delete-sessions', [StockMutationController::class, 'deleteSessions']);
         });
         Route::prefix('draft-stocks')->group(function () {
             Route::get('/', [DraftStockController::class, 'index']);
@@ -1359,6 +1363,7 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/suppliers-data', [SupplierController::class, 'getSuppliers']);
         Route::get('/selected-supplier/{supplier}', [SupplierController::class, 'selectedSupplier']);
         Route::get('/asset-items-data', [ItemCollectionController::class, 'getAssetData']);
+        Route::get('/user-branches-data/{branch}', [UserController::class, 'getUserBranches']);
 
     });
 

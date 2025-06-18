@@ -148,13 +148,14 @@ use Throwable;
      */
     public function destroy(ItemCatalog $itemCatalog): void
     {
-
-        $itemCatalog->load('transaction');
+        $itemCatalog->load('stock.transaction', 'stock.initialInventoryBalance');
         $oldStock = $this->stockRepository->findByItemCatalog($itemCatalog);
         DB::transaction(function () use ($oldStock, $itemCatalog) {
             if (!empty($oldStock) && $itemCatalog->status === 'Tersedia') {
-                DraftStock::where('id', $itemCatalog->draft_stock_id)->increment('qty');
-                $oldStock->decrement('qty');
+                DraftStock::where(
+                    'id', $itemCatalog->stock?->transaction_id ?? $itemCatalog->stock?->initial_inventory_balance_id
+                )->increment('qty');
+                $oldStock->decrement('available_qty', $itemCatalog->available_qty + $itemCatalog->broken_qty);
                 $itemCatalog->delete();
                 Asset::where('id', $itemCatalog->asset_id)->delete();
             }
