@@ -164,9 +164,7 @@ use Throwable;
     public function generateAutomaticItemCode(DraftStock $draftStock): string
     {
         $draftStock->load('transaction.branch.parent', 'transaction.item', 'initialInventoryBalance.item');
-        if ($draftStock->transaction?->item?->is_code_listed || $draftStock->initialInventoryBalance->item?->is_code_listed) {
-            return "";
-        }
+
         $latestItemCatalog = $this->itemCatalogRepository
             ->getLatestItem(
                 $draftStock->transaction?->item_id
