@@ -5,7 +5,6 @@ namespace App\Support\Inventory\StockManagement\DraftStock\Service;
 namespace App\Support\Inventory\DraftStock\Service;
 
 use AllowDynamicProperties;
-use App\Models\DraftStock;
 use App\Support\Inventory\StockManagement\DraftStock\Repository\DraftStockRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -59,17 +58,16 @@ use Illuminate\Pagination\LengthAwarePaginator;
     private static function formattedData(Request $request, LengthAwarePaginator $itemData): LengthAwarePaginator
     {
         $data = $itemData->getCollection()->map(function ($query) use ($request) {
-            $draftStock = DraftStock::leftJoin('transactions', 'draft_stocks.transaction_id', '=', 'transactions.id')
-                ->leftJoin('item_collections', 'transactions.item_id', '=', 'item_collections.id')
-                ->leftJoin('initial_inventory_balance', 'draft_stocks.initial_balance_inventory_id', '=', 'initial_inventory_balance.id')
-                ->where('transactions.item_id', $query->id)
-                ->select('draft_stocks.*')->sum('draft_stocks.qty');
+            $totalDraftStockQty = DraftStockRepository::draftStockQtySumByItemId($query->id);
 
             return [
                 'id' => $query->id,
                 'name' => $query->name,
-                'qty' => $draftStock,
+                'qty' => $totalDraftStockQty,
             ];
+        })->filter(function ($item) {
+            $totalDraftStockQty = DraftStockRepository::draftStockQtySumByItemId($item['id']);
+            return $totalDraftStockQty > 0;
         });
 
         $itemData->setCollection($data);
