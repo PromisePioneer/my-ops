@@ -167,6 +167,11 @@ use Throwable;
     {
         $draftStock->load('transaction.branch.parent', 'transaction.item', 'initialInventoryBalance.item');
 
+
+        if ($draftStock->transaction->item->is_code_listed === 0 || $draftStock->initialInventoryBalance->item->is_code_listed === 0) {
+            return '';
+        }
+
         $latestItemCatalog = $this->itemCatalogRepository
             ->getLatestItem(
                 $draftStock->transaction?->item_id
