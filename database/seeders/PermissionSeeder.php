@@ -42,6 +42,7 @@ class PermissionSeeder extends Seeder
         $this->BoQ();
         $this->stock();
         $this->stockWithdrawal();
+        $this->mustReorderItem();
 
         // journal
         $this->generalJournal();
@@ -1065,6 +1066,17 @@ class PermissionSeeder extends Seeder
             'Tambah Data Pemakaian Barang',
             'Hapus Data Pemakaian Barang',
             'Filter Data Pemakaian Barang Berdasarkan Cabang',
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
+    }
+
+    private function mustReorderItem(): void
+    {
+        $permissions = [
+            'Lihat Menu Stok Yang Harus Di Order',
         ];
 
         foreach ($permissions as $permission) {

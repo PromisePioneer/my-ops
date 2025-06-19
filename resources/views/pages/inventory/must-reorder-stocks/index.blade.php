@@ -153,15 +153,15 @@
                     }
                 },
                 async searchData() {
-                    this.carriedStocks = [];
+                    this.mustReorderStocks = [];
                     this.isLoading = true;
                     try {
-                        const resp = await axios.get('/inventory/stock-withdrawal-items/search', {
+                        const resp = await axios.get('/inventory/must-reorder-stocks/search', {
                             params: {
                                 search: this.search
                             }
                         });
-                        this.carriedStocks = resp.data;
+                        this.mustReorderStocks = resp.data;
                     } catch (e) {
                         console.log(e)
                     } finally {
@@ -184,13 +184,13 @@
                 },
                 async filter() {
                     try {
-                        const resp = await axios.get('/inventory/stock-withdrawal-items/filter', {
+                        const resp = await axios.get('/inventory/must-reorder-stocks/filter', {
                             params: {
                                 branch_id: $('#branch-id-filter').val()
                             }
                         });
 
-                        this.carriedStocks = resp.data;
+                        this.mustReorderStocks = resp.data;
                     } catch (e) {
                         console.log(e)
                     }
