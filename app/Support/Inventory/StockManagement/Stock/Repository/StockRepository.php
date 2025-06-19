@@ -6,8 +6,9 @@ use App\Models\DraftStock;
 use App\Models\ItemCatalog;
 use App\Models\ItemCategory;
 use App\Models\ItemCollection;
+use App\Models\Master\Common\Branch;
 use App\Models\Stock;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class StockRepository
 {
@@ -58,41 +59,18 @@ class StockRepository
     }
 
 
-    public static function getSumStockQtyByItemId($itemId)
+    public static function getSumStockQtyByItemId(Request $request, $itemId)
     {
-        return Stock::leftJoin('transactions', 'transactions.id', 'stocks.transaction_id')
-            ->leftJoin('initial_inventory_balance', 'initial_inventory_balance.id', 'stocks.initial_balance_inventory_id')
-            ->when(!empty(Auth::user()->branch_id), function ($query) {
-                $query->where('stocks.branch_id', Auth::user()->branch_id);
-            })
-            ->where('transactions.item_id', $itemId)
-            ->orWhere('transactions.item_id', $itemId)
-            ->sum('stocks.available_qty');
+        $branch = Branch::with('children')->find($request->user()->branch_id);
+        return Stock::with('transaction', 'initialInventoryBalance')
+            ->where(function ($query) use ($itemId, $request, $branch) {
+                $query->whereHas('transaction', function ($query) use ($itemId, $request, $branch) {
+                    $query->when(!empty($request->user()->branch_id), function ($query) use ($itemId, $request, $branch) {
+                        $query->whereIn('stocks.branch_id', $branch->children->pluck('id')->toArray());
+                    })->where('item_id', $itemId);
+                });
+            });
     }
-
-
-    public static function getSumBrokenQty($itemId)
-    {
-        return Stock::leftJoin('transactions', 'transactions.id', 'stocks.transaction_id')
-            ->leftJoin('initial_inventory_balance', 'initial_inventory_balance.id', 'stocks.initial_balance_inventory_id')
-            ->when(!empty(Auth::user()->branch_id), function ($query) {
-                $query->where('stocks.branch_id', Auth::user()->branch_id);
-            })
-            ->where('transactions.item_id', $itemId)
-            ->orWhere('transactions.item_id', $itemId)
-            ->sum('stocks.broken_qty');
-    }
-
-
-    public static function getSumOnHoldQty($itemId)
-    {
-        return Stock::leftJoin('transactions', 'transactions.id', 'stocks.transaction_id')
-            ->leftJoin('initial_inventory_balance', 'initial_inventory_balance.id', 'stocks.initial_balance_inventory_id')
-            ->where('transactions.item_id', $itemId)
-            ->orWhere('transactions.item_id', $itemId)
-            ->sum('stocks.on_hold_qty');
-    }
-
     public function getStockByCategoryAndBranch(int|string $branchId, int|string $categoryId)
     {
         $itemCategory = ItemCategory::find($categoryId);

@@ -22,9 +22,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
     }
 
 
-    public function getQty(): ?int
+    public function getQty(Request $request): ?int
     {
-        return $this->draftStockRepostitory->getQty();
+        return $this->draftStockRepostitory->getQty($request);
     }
 
     public function data(Request $request): LengthAwarePaginator
@@ -58,15 +58,15 @@ use Illuminate\Pagination\LengthAwarePaginator;
     private static function formattedData(Request $request, LengthAwarePaginator $itemData): LengthAwarePaginator
     {
         $data = $itemData->getCollection()->map(function ($query) use ($request) {
-            $totalDraftStockQty = DraftStockRepository::draftStockQtySumByItemId($query->id);
+            $totalDraftStockQty = DraftStockRepository::draftStockQtySumByItemId($request, $query->id);
 
             return [
                 'id' => $query->id,
                 'name' => $query->name,
                 'qty' => $totalDraftStockQty,
             ];
-        })->filter(function ($item) {
-            $totalDraftStockQty = DraftStockRepository::draftStockQtySumByItemId($item['id']);
+        })->filter(function ($item) use ($request) {
+            $totalDraftStockQty = DraftStockRepository::draftStockQtySumByItemId($request, $item['id']);
             return $totalDraftStockQty > 0;
         });
 

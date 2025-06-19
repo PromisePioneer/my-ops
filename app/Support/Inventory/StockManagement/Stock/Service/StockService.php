@@ -15,8 +15,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 #[AllowDynamicProperties] class StockService
 {
     private static int $perPage = 10;
-
-
     public function __construct()
     {
         $this->itemCollectionRepository = new ItemCollectionRepository();
@@ -24,10 +22,10 @@ use Illuminate\Pagination\LengthAwarePaginator;
         $this->stockRepository = new StockRepository();
     }
 
-    public function data(): LengthAwarePaginator
+    public function data(Request $request): LengthAwarePaginator
     {
         $goods = $this->itemCollectionRepository->itemCollectionStock()->paginate(self::$perPage);
-        return self::formattedGoodsData($goods);
+        return self::formattedGoodsData($request, $goods);
     }
 
 
@@ -38,28 +36,28 @@ use Illuminate\Pagination\LengthAwarePaginator;
             ->when(!empty($search), function ($query) use ($search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })->paginate(self::$perPage);
-        return self::formattedGoodsData($goods);
+        return self::formattedGoodsData($request, $goods);
     }
 
 
     public function filter(Request $request): LengthAwarePaginator
     {
         $query = ItemCollection::with('stock');
-        return self::formattedGoodsData(StockQueryFilter::apply($query, $request)->paginate(self::$perPage));
+        return self::formattedGoodsData($request, StockQueryFilter::apply($query, $request)->paginate(self::$perPage));
     }
 
 
-    private static function formattedGoodsData(LengthAwarePaginator $goodsData): LengthAwarePaginator
+    private static function formattedGoodsData(Request $request, LengthAwarePaginator $goodsData): LengthAwarePaginator
     {
-        $data = $goodsData->getCollection()->map(function ($item) {
-            $totalReadyStock = StockRepository::getSumStockQtyByItemId($item->id);
-            $totalOnHoldQty = StockRepository::getSumOnHoldQty($item->id);
-            $totalBrokenQty = StockRepository::getSumBrokenQty($item->id);
+        $data = $goodsData->getCollection()->map(function ($item) use ($request) {
+            $totalReadyStock = StockRepository::getSumStockQtyByItemId($request, $item->id)->sum('available_qty');
+            $totalOnHoldQty = StockRepository::getSumStockQtyByItemId($request, $item->id)->sum('on_hold_qty');
+            $totalBrokenQty = StockRepository::getSumStockQtyByItemId($request, $item->id)->sum('broken_qty');
 
             return [
                 'id' => $item->id,
                 'type' => $item->type,
-                'total_stock' => $totalReadyStock,
+                'total_stock' => "$totalReadyStock {$item->unitType->name}",
                 'category_name' => $item->category?->name,
                 'total_on_hold_qty' => "$totalOnHoldQty {$item->unitType->name}",
                 'total_broken_qty' => "$totalBrokenQty {$item->unitType->name}",
@@ -74,21 +72,21 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 
     // masih salah
-    public function getMustReorderStocks()
+    public function getMustReorderStocks(Request $request): ?int
     {
-        return $this->calculateDraftStockAndStock();
+        return $this->calculateDraftStockAndStock($request);
     }
 
 
-    public function calculateDraftStockAndStock(): ?int
+    public function calculateDraftStockAndStock(Request $request): ?int
     {
         $itemCollections = ItemCollection::query()->get();
         $totalItemMustReorder = 0;
 
 
         foreach ($itemCollections as $itemCollection) {
-            $totalStock = DraftStockRepository::draftStockQtySumByItemId($itemCollection->id)
-                + StockRepository::getSumStockQtyByItemId($itemCollection->id);
+            $totalStock = DraftStockRepository::draftStockQtySumByItemId($request, $itemCollection->id)
+                + StockRepository::getSumStockQtyByItemId($request, $itemCollection->id)->sum('available_qty');
 
 
             if ($totalStock < $itemCollection->reorder_level) {
@@ -123,6 +121,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
             return [
                 'id' => $item->id,
+                'branch_name' => "{$item->branch->parent->name} -  {$item->branch->name}",
                 'transaction_number' => $item->transaction?->transaction_number ?? 'Persediaan Awal',
                 'available_qty' => "$item->available_qty $unitType",
                 'broken_qty' => "$item->broken_qty $unitType",

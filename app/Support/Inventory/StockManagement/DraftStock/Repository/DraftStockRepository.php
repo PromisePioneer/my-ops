@@ -4,6 +4,7 @@ namespace App\Support\Inventory\StockManagement\DraftStock\Repository;
 
 use App\Models\DraftStock;
 use App\Models\ItemCollection;
+use App\Models\Master\Common\Branch;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
@@ -11,9 +12,21 @@ use Illuminate\Http\Request;
 class DraftStockRepository
 {
 
-    public function getQty(): int|null
+    public function getQty(Request $request): int|null
     {
-        return DraftStock::with('transaction')->sum('qty');
+        $branch = Branch::with('children')->where('id', $request->user()->branch_id)->first();
+
+
+        return DraftStock::with('transaction', 'initialInventoryBalance')
+            ->where(function ($query) use ($request, $branch) {
+                $query->whereHas('transaction', function ($query) use ($request, $branch) {
+                    if (!empty($request->user()->branch_id)) {
+                        $query->whereIn('branch_id', $branch->children->pluck('id'));
+                    }
+                })->orWhereHas('initialInventoryBalance', function ($query) use ($request, $branch) {
+                });
+            })
+            ->sum('qty');
     }
 
     public function getDraftStockQuery(): EloquentBuilder|Builder
@@ -50,12 +63,19 @@ class DraftStockRepository
     }
 
 
-    public static function draftStockQtySumByItemId($itemId)
+    public static function draftStockQtySumByItemId(Request $request, int $itemId)
     {
-        return DraftStock::leftJoin('transactions', 'transactions.id', 'draft_stocks.transaction_id')
-            ->leftJoin('initial_inventory_balance', 'initial_inventory_balance.id', 'draft_stocks.initial_balance_inventory_id')
-            ->where('initial_inventory_balance.item_id', $itemId)
-            ->orWhere('transactions.item_id', $itemId)
-            ->sum('draft_stocks.qty');
+        $branch = Branch::with('children')->find($request->user()->branch_id);
+        return DraftStock::with('transaction.item', 'initialInventoryBalance')
+            ->where(function ($query) use ($request, $itemId, $branch) {
+                $query->whereHas('transaction.item', function (EloquentBuilder $query) use ($itemId, $branch, $request) {
+                    if (!empty($request->user()->branch_id)) {
+                        $query->where('id', $itemId)->whereIn('branch_id', $branch->children->pluck('id'));
+                    }
+                    if (empty($request->user()->branch_id)) {
+                        $query->where('id', $itemId);
+                    }
+                });
+            })->sum('qty');
     }
 }

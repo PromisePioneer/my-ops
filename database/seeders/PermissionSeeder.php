@@ -1082,6 +1082,7 @@ class PermissionSeeder extends Seeder
             'Lihat Menu Pemakaian Barang',
             'Tambah Data Pemakaian Barang',
             'Hapus Data Pemakaian Barang',
+            'Filter Data Pemakaian Barang Berdasarkan Cabang',
         ];
 
         foreach ($permissions as $permission) {

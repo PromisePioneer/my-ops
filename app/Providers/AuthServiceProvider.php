@@ -8,7 +8,6 @@ use App\Models\AccountCategory;
 use App\Models\AccountTransaction;
 use App\Models\Area;
 use App\Models\Asset;
-use App\Models\AttendanceManualRequest;
 use App\Models\AttendanceSummary;
 use App\Models\Boq;
 use App\Models\BranchDefaultWorkTime;
@@ -33,6 +32,7 @@ use App\Models\PSB;
 use App\Models\PurchaseOrder;
 use App\Models\RoleDefaultWorkTime;
 use App\Models\SP;
+use App\Models\StockWithdrawal;
 use App\Models\TaxSetting;
 use App\Models\Transaction;
 use App\Models\User;
@@ -59,7 +59,6 @@ use App\Policies\LeaveAndPermissionPolicy;
 use App\Policies\NationalHolidayPolicy;
 use App\Policies\OfferingLetterPolicy;
 use App\Policies\PermissionPolicy;
-use App\Policies\ProductPolicy;
 use App\Policies\PSBPolicy;
 use App\Policies\PurchaseOrderPolicy;
 use App\Policies\RoleDefaultWorkTimePolicy;
@@ -67,6 +66,7 @@ use App\Policies\RolePolicy;
 use App\Policies\ServiceCategoriesPolicy;
 use App\Policies\SKLPolicy;
 use App\Policies\SpPolicy;
+use App\Policies\StockWithdrawalPolicy;
 use App\Policies\TaxSettingPolicy;
 use App\Policies\TransactionPolicy;
 use App\Policies\UnitTypePolicy;
@@ -120,6 +120,7 @@ class AuthServiceProvider extends ServiceProvider
         RoleDefaultWorkTime::class => RoleDefaultWorkTimePolicy::class,
         BranchDefaultWorkTime::class => BranchDefaultWorkTimePolicy::class,
         BranchRoleDefaultWorkTime::class => BranchRoleDefaultWorkTimePolicy::class,
+        StockWithdrawal::class => StockWithdrawalPolicy::class,
     ];
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Support\Inventory\StockManagement\StockWithdrawal\Service;
 
+use App\Models\Master\Common\Branch;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
@@ -10,6 +11,7 @@ class StockWithdrawalQueryFilter
 {
     public static function apply(Builder|EloquentBuilder $query, Request $request): EloquentBuilder|Builder
     {
+        $branch = Branch::with('children', $request->input('branch_id'));
         if ($request->filled('branch_id')) {
             $query->whereHas('branch', function ($query) use ($request) {
                 $query->where('id', $request->input('branch_id'));

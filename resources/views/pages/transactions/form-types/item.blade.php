@@ -1,11 +1,9 @@
 <div class="row mb-10">
-    @if(empty(Auth::user()->branch_id))
         <div class="col-md-6">
             <label for="branch_id" class="required form-label">Cabang</label>
             <x-select2.index name="branch_id" id="selected-branch" class="form-select form-select-solid"
                              elementSelector="branches-select2"/>
         </div>
-    @endif
 </div>
 
 

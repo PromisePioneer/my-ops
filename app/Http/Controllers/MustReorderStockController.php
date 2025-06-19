@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 #[AllowDynamicProperties] class MustReorderStockController extends Controller
 {
@@ -23,8 +24,8 @@ use Illuminate\Http\JsonResponse;
     }
 
 
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
-        return response()->json($this->mustReorderStockService->data());
+        return response()->json($this->mustReorderStockService->data($request));
     }
 }

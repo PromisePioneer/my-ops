@@ -8,6 +8,7 @@ use App\Support\Inventory\StockManagement\Stock\Repository\StockRepository;
 use App\Support\Master\Operational\ItemCollections\Repositories\ItemCollectionRepository;
 use Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 #[AllowDynamicProperties] class MustReorderStockService
 {
@@ -21,10 +22,10 @@ use Illuminate\Http\Request;
     }
 
 
-    public function data()
+    public function data(Request $request): Collection
     {
         $stocks = $this->itemCollectionRepository->getMustReorderItem()->get();
-        return self::formattedData($stocks);
+        return self::formattedData($request, $stocks);
     }
 
 
@@ -39,12 +40,12 @@ use Illuminate\Http\Request;
     }
 
 
-    public function formattedData($stocks)
+    public function formattedData(Request $request, $stocks)
     {
         $branchId = Auth::user()->branch_id;
-        return $stocks->map(function ($item) {
-            $totalDraftStockQty = DraftStockRepository::draftStockQtySumByItemId($item->id);
-            $stockQty = StockRepository::getSumStockQtyByItemId($item->id);
+        return $stocks->map(function ($item) use ($request) {
+            $totalDraftStockQty = DraftStockRepository::draftStockQtySumByItemId($request, $item->id);
+            $stockQty = StockRepository::getSumStockQtyByItemId($request, $item->id)->sum('available_qty');
             return [
                 'id' => $item->id,
                 'type' => $item->type,
@@ -54,9 +55,9 @@ use Illuminate\Http\Request;
                 'reorder_level' => $item->reorder_level,
                 'total_stock' => $totalDraftStockQty + $stockQty,
             ];
-        })->filter(function ($item) {
-            $totalDraftStockQty = DraftStockRepository::draftStockQtySumByItemId($item['id']);
-            $stockQty = StockRepository::getSumStockQtyByItemId($item['id']);
+        })->filter(function ($item) use ($request) {
+            $totalDraftStockQty = DraftStockRepository::draftStockQtySumByItemId($request, $item['id']);
+            $stockQty = StockRepository::getSumStockQtyByItemId($request, $item['id'])->sum('available_qty');
             $totalStock = $totalDraftStockQty + $stockQty;
             return $totalStock < $item['reorder_level'];
         })->values();

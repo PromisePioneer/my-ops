@@ -32,10 +32,10 @@ use Illuminate\View\View;
     /**
      * @throws AuthorizationException
      */
-    public function data(): JsonResponse
+    public function data(Request $request): JsonResponse
     {
         $this->authorize('view', Stock::class);
-        return response()->json($this->stockService->data());
+        return response()->json($this->stockService->data($request));
     }
 
 
@@ -177,9 +177,9 @@ use Illuminate\View\View;
     }
 
 
-    public function getMustReorderStocks(): JsonResponse
+    public function getMustReorderStocks(Request $request): JsonResponse
     {
-        return response()->json($this->stockService->getMustReorderStocks());
+        return response()->json($this->stockService->getMustReorderStocks($request));
     }
 
 

@@ -53,7 +53,11 @@ class BranchRepository implements BranchRepositoryInterface
     public function getAllBranch(Request $request): Collection
     {
         $search = $request->input('search');
-        $branch = Branch::with('parent', 'children')->whereNull('parent_id');
+        $branch = Branch::with('parent', 'children')
+            ->when(!empty($request->user()->branch_id), function ($query) use ($request) {
+                $query->where('id', $request->user()->branch_id);
+            })
+            ->whereNull('parent_id');
 
 
         if (!empty($search)) {

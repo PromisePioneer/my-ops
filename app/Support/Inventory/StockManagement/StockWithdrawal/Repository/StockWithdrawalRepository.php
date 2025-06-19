@@ -11,6 +11,7 @@ class StockWithdrawalRepository
 {
     public function getStockWithdrawalQuery(): Builder|EloquentBuilder
     {
+
         return StockWithdrawal::with('branch', 'stocker', 'pic', 'stockWithdrawalByEmployees', 'stockWithdrawalItems');
     }
 

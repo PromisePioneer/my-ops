@@ -3,17 +3,15 @@
 namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
-use App\Http\Requests\ReturnedItemRequest;
 use App\Http\Requests\StockWithdrawalRequest;
 use App\Models\ItemCatalog;
-use App\Models\ReturnedItem;
 use App\Models\Stock;
 use App\Models\StockWithdrawal;
 use App\Models\StockWithdrawalItem;
 use App\Support\HelperService\HandleFileUploadService;
 use App\Support\Inventory\StockWithdrawal\Service\StockWithdrawalService;
-use App\Support\Master\Accounting\Assets\Service\AssetService;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,24 +27,35 @@ use Throwable;
     {
         $this->stockWithdrawalService = new StockWithdrawalService();
         $this->handleUploadService = new HandleFileUploadService();
-        $this->assetService = new AssetService();
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function index(): View
     {
+        $this->authorize('view', StockWithdrawal::class);
         return view('pages.inventory.stock-withdrawals.index');
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function data(Request $request): JsonResponse
     {
+        $this->authorize('view', StockWithdrawal::class);
         return response()->json($this->stockWithdrawalService->data($request));
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function show(StockWithdrawal $stockWithdrawal): JsonResponse
     {
+        $this->authorize('view', StockWithdrawal::class);
         $stockWithdrawal->load('stockWithdrawalItems', 'stockWithdrawalByEmployees', 'stockWithdrawalItems.stock.transaction.item', 'stockWithdrawalByEmployees.user.roles', 'pic.roles', 'stocker.roles');
 
         $stockWithdrawalItem = $stockWithdrawal->stockWithdrawalItems->map(function ($item) {
@@ -77,25 +86,41 @@ use Throwable;
     }
 
 
-    public function search(Request $request)
+    /**
+     * @throws AuthorizationException
+     */
+    public function search(Request $request): JsonResponse
     {
-
+        $this->authorize('view', StockWithdrawal::class);
+        return response()->json($this->stockWithdrawalService->search($request));
     }
 
-    public function filter()
+    /**
+     * @throws AuthorizationException
+     */
+    public function filter(Request $request): JsonResponse
     {
-
+        $this->authorize('view', StockWithdrawal::class);
+        return response()->json($this->stockWithdrawalService->filter($request));
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function create(): View
     {
+        $this->authorize('create', StockWithdrawal::class);
         return view('pages.inventory.stock-withdrawals.create');
     }
 
 
+    /**
+     * @throws AuthorizationException
+     */
     public function sessionStore(Request $request): void
     {
+        $this->authorize('create', StockWithdrawal::class);
         $stockWithdrawal = [
             'code' => $request->get('code'),
             'qty' => $request->get('qty'),
@@ -112,6 +137,7 @@ use Throwable;
      */
     public function store(StockWithdrawalRequest $request): JsonResponse
     {
+        $this->authorize('create', StockWithdrawal::class);
         $this->stockWithdrawalService->store($request);
         return response()->json([
             'message' => 'Data berhasil disimpan'
@@ -125,6 +151,7 @@ use Throwable;
     public function destroy(StockWithdrawal $stockWithdrawal): void
     {
         DB::transaction(function () use ($stockWithdrawal) {
+            $this->authorize('delete', $stockWithdrawal);
             foreach ($stockWithdrawal->stockWithdrawalItems as $item) {
                 if ($item->returnedItem) {
                     throw new Exception('Data tidak dapat dihapus, dikarenakan barang sudah ada yg di kembalikan atau terpakai', 403);
@@ -140,25 +167,6 @@ use Throwable;
             }
             $stockWithdrawal->delete();
         });
-    }
-
-
-    public function confirmedByPIC(StockWithdrawal $stockWithdrawal): JsonResponse
-    {
-        $this->stockWithdrawalService->confirmedByPIC($stockWithdrawal);
-
-        return response()->json([
-            'message' => 'data berhasil dikonfirmasi'
-        ]);
-    }
-
-
-    public function confirmedByStocker(StockWithdrawal $stockWithdrawal): JsonResponse
-    {
-        $this->stockWithdrawalService->confirmedByStocker($stockWithdrawal);
-        return response()->json([
-            'message' => 'data berhasil dikonfirmasi'
-        ]);
     }
 
 
@@ -184,137 +192,6 @@ use Throwable;
         ]);
     }
 
-
-    /**
-     * @throws Throwable
-     */
-    public function returningItems(ReturnedItemRequest $request, StockWithdrawalItem $stockWithdrawalItem): void
-    {
-        $stockWithdrawalItem->load('stock', 'stockWithdrawal');
-        DB::transaction(function () use ($request, $stockWithdrawalItem) {
-            $itemCatalog = ItemCatalog::with('stock.transaction.item')
-                ->where('code', $stockWithdrawalItem->code)
-                ->first();
-
-
-            if (!empty($itemCatalog->asset_id) && empty($itemCatalog->asset->depreciation)) {
-                $this->assetService->confirm($itemCatalog->asset, $stockWithdrawalItem->stockWithdrawal->date);
-            }
-
-            $this->category4Store($stockWithdrawalItem, $request);
-
-            if (!empty($stockWithdrawalItem->code)) {
-                $this->category1Store($itemCatalog, $stockWithdrawalItem, $request);
-                $this->ifCategory3Store($itemCatalog, $stockWithdrawalItem, $request);
-                $this->ifNotMeterAndNotCategory3Store($itemCatalog, $stockWithdrawalItem, $request);
-
-
-                $itemCatalog->update(['status' => $request->status === 'Terpakai' ? 'Terpakai' : 'Tersedia']);
-            }
-        });
-    }
-
-
-    public function category1Store(ItemCatalog $itemCatalog, StockWithdrawalItem $stockWithdrawalItem, ReturnedItemRequest $request): void
-    {
-
-        $item = $itemCatalog->stock->transaction?->item ?? $itemCatalog->stock->initialInventoryBalance->item;
-        if ($item->unitType->name === 'Meter' && $item->category->name === 'Kategori 1') {
-            ReturnedItem::create([
-                'stock_withdrawal_item_id' => $stockWithdrawalItem->id,
-                'status' => $request->status,
-                'remaining_qty' => $request->remaining_qty,
-                'item_condition' => $request->item_condition,
-                'broken_qty' => $request->broken_qty,
-                'attachment' => $this->handleUploadService->upload(
-                    $request,
-                    'documents/returned-items/attachment/',
-                    'attachment',
-                ),
-            ]);
-            if ($request->status === 'Habis') {
-                $itemCatalog->stock->decrement('on_hold_qty', $stockWithdrawalItem->qty);
-            }
-
-
-            if ($request->status === 'Sisa') {
-                $itemCatalog->stock->decrement('on_hold_qty', $stockWithdrawalItem->qty);
-                $itemCatalog->increment('available_qty', $request->remaining_qty - $request->broken_qty);
-                $itemCatalog->stock->increment('available_qty', $request->remaining_qty - $request->broken_qty);
-                if ($request->item_condition === 'Rusak') {
-                    $itemCatalog->stock->increment('broken_qty', $request->broken_qty);
-                }
-            }
-
-
-            $itemCatalog->update(['status' => 'Tersedia']);
-        }
-    }
-
-    public function ifCategory3Store(
-        ItemCatalog         $itemCatalog,
-        StockWithdrawalItem $stockWithdrawalItem,
-        ReturnedItemRequest $request
-    ): void
-    {
-        $item = $itemCatalog->stock->transaction?->item ?? $itemCatalog->stock->initialInventoryBalance->item;
-        if ($item->unitType->name !== 'Meter' && $item->category->name === 'Kategori 3') {
-            ReturnedItem::create([
-                'stock_withdrawal_item_id' => $stockWithdrawalItem->id,
-                'status' => $request->status,
-                'remaining_qty' => 1,
-                'item_condition' => $request->item_condition ?? 'Baik',
-                'broken_qty' => $request->item_condition === 'Rusak' ? 1 : 0,
-                'attachment' => $this->handleUploadService->upload(
-                    $request,
-                    'documents/returned-items/attachment/',
-                    'attachment',
-                ),
-            ]);
-
-            $itemCatalog->increment('available_qty');
-            $itemCatalog->stock->decrement('on_hold_qty');
-            $itemCatalog->stock->increment('available_qty');
-            $itemCatalog->update(['status' => 'Tersedia']);
-
-        }
-    }
-
-
-    public function category4Store($stockWithdrawalItem, $request): void
-    {
-        if (empty($stockWithdrawalItem->code)) {
-            $stock = Stock::where('id', $stockWithdrawalItem->stock_id)->first();
-            ReturnedItem::create([
-                'stock_withdrawal_item_id' => $stockWithdrawalItem->id,
-                'status' => $request->status,
-                'remaining_qty' => $request->remaining_qty,
-                'item_condition' => $request->item_condition,
-                'broken_qty' => $request->broken_qty,
-                'attachment' => $this->handleUploadService->upload(
-                    $request,
-                    'documents/returned-items/attachment/',
-                    'attachment',
-                ),
-            ]);
-
-
-            if ($request->status === 'Habis') {
-                $stock->decrement('on_hold_qty', $stockWithdrawalItem->qty);
-            }
-
-            if ($request->status === 'Sisa') {
-                $stock->decrement('on_hold_qty', $stockWithdrawalItem->qty);
-                $stock->increment('available_qty', $request->remaining_qty - $request->broken_qty);
-
-                if ($request->item_condition === 'Rusak') {
-                    $stock->increment('broken_qty', $request->broken_qty);
-                }
-            }
-        }
-    }
-
-
     public function getSessions(): JsonResponse
     {
         $stock = session()->get('stock_withdrawal_item') ?? [];
@@ -332,49 +209,4 @@ use Throwable;
     {
         Session::forget("stock_withdrawal_item.$request->index");
     }
-
-    private function ifNotMeterAndNotCategory3Store(?ItemCatalog $itemCatalog, StockWithdrawalItem $stockWithdrawalItem, ReturnedItemRequest $request): void
-    {
-        $item = $itemCatalog->stock->transaction?->item ?? $itemCatalog->stock->initialInventoryBalance->item;
-        if ($item->unitType->name !== 'Meter' && $item->category->name !== 'Kategori 3') {
-            ReturnedItem::create([
-                'stock_withdrawal_item_id' => $stockWithdrawalItem->id,
-                'status' => $request->status,
-                'remaining_qty' => 1,
-                'item_condition' => $request->item_condition ?? 'Baik',
-                'broken_qty' => $request->item_condition === 'Rusak' ? 1 : 0,
-                'attachment' => $this->handleUploadService->upload(
-                    $request,
-                    'documents/returned-items/attachment/',
-                    'attachment',
-                ),
-            ]);
-
-            if ($request->status === 'Terpakai') {
-                $itemCatalog->stock->decrement('on_hold_qty');
-                $itemCatalog->update(['status' => 'Terpakai']);
-            }
-
-
-            if ($request->status === 'Dikembalikan' && $request->item_condition === 'Baik') {
-                $itemCatalog->stock->increment('available_qty');
-                $itemCatalog->stock->decrement('on_hold_qty');
-                $itemCatalog->increment('available_qty');
-                $itemCatalog->update(['status' => 'Tersedia']);
-            }
-
-
-            if ($request->status === 'Dikembalikan' && $request->item_condition === 'Rusak') {
-                $itemCatalog->stock->decrement('on_hold_qty');
-                $itemCatalog->increment('broken_qty');
-                $itemCatalog->stock->increment('broken_qty');
-                $itemCatalog->update([
-                    'status' => 'Tersedia',
-                    'condition' => 'Rusak',
-                ]);
-            }
-        }
-    }
-
-
 }

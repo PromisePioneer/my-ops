@@ -753,7 +753,6 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/return/{stockWithdrawal}', [StockWithdrawalController::class, 'return']);
             Route::get('/stock-withdrawal-items/{stockWithdrawal}', [StockWithdrawalController::class, 'getStockWithdrawalItems']);
             Route::get('/stock-withdrawal-item/{stockWithdrawalItem}', [StockWithdrawalController::class, 'getStockWithdrawalItem']);
-            Route::post('/stock-withdrawal-item/return/{stockWithdrawalItem}', [StockWithdrawalController::class, 'returningItems']);
 
         });
         Route::prefix('/stock-withdrawal-items')->group(function () {
@@ -768,6 +767,7 @@ Route::group(['middleware' => ['auth']], static function () {
 
         Route::prefix('/returned-items')->group(function () {
             Route::get('/{stockWithdrawal}', [ReturnedItemController::class, 'getReturnedItemByStockWithdrawalId']);
+            Route::post('/stock-withdrawal-item/return/{stockWithdrawalItem}', [ReturnedItemController::class, 'store']);
         });
 
 

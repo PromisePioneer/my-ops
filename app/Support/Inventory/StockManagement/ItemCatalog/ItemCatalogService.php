@@ -167,8 +167,7 @@ use Throwable;
     {
         $draftStock->load('transaction.branch.parent', 'transaction.item', 'initialInventoryBalance.item');
 
-
-        if ($draftStock->transaction->item->is_code_listed === 1 || $draftStock->initialInventoryBalance->item->is_code_listed === 1) {
+        if ($draftStock->transaction?->item?->is_code_listed === 1 || $draftStock->initialInventoryBalance?->item?->is_code_listed === 1) {
             return '';
         }
 
@@ -208,6 +207,7 @@ use Throwable;
             $unitType = $itemCatalog->transaction?->item?->unitType?->name ?? $itemCatalog->initialInventoryBalance?->item?->unitType?->name;
             return [
                 'id' => $itemCatalog->id,
+                'branch_name' => "{$itemCatalog->stock->branch->parent->name} - {$itemCatalog->stock->branch->name}",
                 'code' => $itemCatalog->code,
                 'condition' => $itemCatalog->condition,
                 'status' => $itemCatalog->status,
