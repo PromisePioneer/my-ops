@@ -811,6 +811,8 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('/must-reorder-stocks')->group(function () {
             Route::get('/', [MustReorderStockController::class, 'index']);
             Route::get('/data', [MustReorderStockController::class, 'data']);
+            Route::get('/filter', [MustReorderStockController::class, 'filter']);
+            Route::get('/search', [MustReorderStockController::class, 'search']);
         });
     });
 

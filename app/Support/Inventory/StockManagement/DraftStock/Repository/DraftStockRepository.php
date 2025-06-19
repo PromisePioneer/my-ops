@@ -65,11 +65,11 @@ class DraftStockRepository
 
     public static function draftStockQtySumByItemId(Request $request, int $itemId)
     {
-        $branch = Branch::with('children')->find($request->user()->branch_id);
+        $branch = Branch::with('children')->find($request->user()->branch_id ?? $request->input('branch_id'));
         return DraftStock::with('transaction.item', 'initialInventoryBalance')
             ->where(function ($query) use ($request, $itemId, $branch) {
                 $query->whereHas('transaction.item', function (EloquentBuilder $query) use ($itemId, $branch, $request) {
-                    if (!empty($request->user()->branch_id)) {
+                    if (!empty($request->user()->branch_id || $request->input('branch_id'))) {
                         $query->where('id', $itemId)->whereIn('branch_id', $branch->children->pluck('id'));
                     }
                     if (empty($request->user()->branch_id)) {

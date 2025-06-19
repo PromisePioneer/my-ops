@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Support\Inventory\StockManagement\Stock\Service;
+namespace App\Support\Inventory\StockManagement\MustReorderStock\Service;
 
 use AllowDynamicProperties;
 use App\Support\Inventory\StockManagement\DraftStock\Repository\DraftStockRepository;
 use App\Support\Inventory\StockManagement\Stock\Repository\StockRepository;
 use App\Support\Master\Operational\ItemCollections\Repositories\ItemCollectionRepository;
-use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -31,18 +30,24 @@ use Illuminate\Support\Collection;
 
     public function search(Request $request)
     {
+        $search = $request->input('search');
+        $query = $this->itemCollectionRepository->getMustReorderItem();
+        if (!empty($search)) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
 
+        return self::formattedData($request, $query->get());
     }
 
-    public function filter()
+    public function filter(Request $request)
     {
-
+        $stocks = $this->itemCollectionRepository->getMustReorderItem()->get();
+        return self::formattedData($request, $stocks);
     }
 
 
     public function formattedData(Request $request, $stocks)
     {
-        $branchId = Auth::user()->branch_id;
         return $stocks->map(function ($item) use ($request) {
             $totalDraftStockQty = DraftStockRepository::draftStockQtySumByItemId($request, $item->id);
             $stockQty = StockRepository::getSumStockQtyByItemId($request, $item->id)->sum('available_qty');

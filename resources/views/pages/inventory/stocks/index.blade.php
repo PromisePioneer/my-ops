@@ -23,12 +23,14 @@
                                             class="d-flex align-items-center flex-row-fluid justify-content-between">
                                         <a :href="`/inventory/draft-stocks`"
                                            class="fs-6 fw-bolder btn-link"
-                                        >Belum berkode</a>
+                                        >
+                                            Belum berkode
+                                        </a>
                                         <span class="text-gray-800 fw-bold d-block fs-4"
                                               x-text="draftStockQty"></span>
                                     </div>
                                 </div>
-
+                                @can('Lihat Menu Stok Yang Harus Di Order')
                                 <div class="mb-4 border border-dashed border-gray-400 p-5">
                                     <div
                                             class="d-flex align-items-center flex-row-fluid justify-content-between">
@@ -39,6 +41,7 @@
                                               x-text="mustReorderStock"></span>
                                     </div>
                                 </div>
+                                @endcan
                                 <div class="mb-4 border border-dashed border-gray-400 p-5">
                                     <div
                                             class="d-flex align-items-center flex-row-fluid justify-content-between">
