@@ -168,7 +168,7 @@ use Throwable;
         $draftStock->load('transaction.branch.parent', 'transaction.item', 'initialInventoryBalance.item');
 
 
-        if ($draftStock->transaction->item->is_code_listed === 0 || $draftStock->initialInventoryBalance->item->is_code_listed === 0) {
+        if ($draftStock->transaction->item->is_code_listed === 1 || $draftStock->initialInventoryBalance->item->is_code_listed === 1) {
             return '';
         }
 
