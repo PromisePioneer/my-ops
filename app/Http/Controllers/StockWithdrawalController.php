@@ -12,6 +12,7 @@ use App\Models\StockWithdrawal;
 use App\Models\StockWithdrawalItem;
 use App\Support\HelperService\HandleFileUploadService;
 use App\Support\Inventory\StockWithdrawal\Service\StockWithdrawalService;
+use App\Support\Master\Accounting\Assets\Service\AssetService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,6 +29,7 @@ use Throwable;
     {
         $this->stockWithdrawalService = new StockWithdrawalService();
         $this->handleUploadService = new HandleFileUploadService();
+        $this->assetService = new AssetService();
     }
 
 
@@ -188,11 +190,16 @@ use Throwable;
      */
     public function returningItems(ReturnedItemRequest $request, StockWithdrawalItem $stockWithdrawalItem): void
     {
-        $stockWithdrawalItem->load('stock');
+        $stockWithdrawalItem->load('stock', 'stockWithdrawal');
         DB::transaction(function () use ($request, $stockWithdrawalItem) {
             $itemCatalog = ItemCatalog::with('stock.transaction.item')
                 ->where('code', $stockWithdrawalItem->code)
                 ->first();
+
+
+            if (!empty($itemCatalog->asset_id) && empty($itemCatalog->asset->depreciation)) {
+                $this->assetService->confirm($itemCatalog->asset, $stockWithdrawalItem->stockWithdrawal->date);
+            }
 
             $this->category4Store($stockWithdrawalItem, $request);
 

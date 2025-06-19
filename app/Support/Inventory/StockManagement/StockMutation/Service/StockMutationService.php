@@ -4,6 +4,7 @@ namespace App\Support\Inventory\StockManagement\StockMutation\Service;
 
 use AllowDynamicProperties;
 use App\Http\Requests\StockMutationRequest;
+use App\Models\Account;
 use App\Models\AssetDepreciation;
 use App\Models\ItemCatalog;
 use App\Models\Master\Common\Branch;
@@ -39,6 +40,18 @@ use function App\Helper\formatDate;
 
     public function search(Request $request)
     {
+        $stockMutations = $this->stockMutationRepository->getData();
+        $search = $request->input('search');
+        if (!empty($search)) {
+            $stockMutations->whereHas('sender', function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })->orWhereHas('receiver', function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })->orWhere('stock_mutation_number', 'like', '%' . $search . '%');
+        }
+
+        $query = $stockMutations->paginate(self::$perPage);
+        return self::formattedData($query);
     }
 
     public function filter(Request $request)
@@ -51,8 +64,8 @@ use function App\Helper\formatDate;
             return [
                 'id' => $query->id,
                 'date' => formatDate($query->date),
-                'old_branch_name' => $query->oldBranch->name,
-                'new_branch_name' => $query->newBranch->parent->name,
+                'old_branch_name' => "{$query->oldBranch->parent->name} - {$query->oldBranch->name}",
+                'new_branch_name' => "{$query->newBranch->parent->name} -  {$query->newBranch->name}",
                 'sender_name' => $query->sender->name,
                 'receiver_name' => $query->receiver->name,
                 'sender_signature' => $query->sender_signature,
@@ -187,22 +200,23 @@ use function App\Helper\formatDate;
                 }
             }
 
-            $fromBranch = Branch::find($request->from_branch)->parent_id;
-            $toBranch = Branch::find($request->to_branch)->parent_id;
-            // debit old branch
+            $fromBranch = Branch::with('parent')->find($request->from_branch);
+            $toBranch = Branch::with('parent')->find($request->to_branch);
+            $findAccumulationAssetAccount = Account::where('code', '130')->first()->id;
+
+            if (Branch::find($request->from_branch)->parent_id === Branch::find($request->to_branch)->parent_id)
             $this->accountTransactionService->createDebitTransaction(
                 Branch::find($request->from_branch)->parent_id,
-                "MUTASI {$itemName} DARI {$fromBranch} KE {$toBranch}",
+                "MUTASI {$itemName} DARI {$fromBranch->parent->name} KE {$toBranch->parent->name}",
                 $itemCatalog->stock->transaction->credit_account_id,
                 $itemCatalog->stock->transaction->unit_price,
             );
             $this->accountTransactionService->createDebitTransaction(
                 Branch::find($request->from_branch)->parent_id,
                 "Akumulasi Penyusutan Aset {$itemName}",
-                $itemCatalog->stock->transaction->credit_account_id,
+                $findAccumulationAssetAccount,
                 $totalDepreciation,
             );
-
         }
         session()->forget('stock_mutation_items');
     }

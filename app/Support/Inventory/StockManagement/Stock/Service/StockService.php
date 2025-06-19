@@ -165,6 +165,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
                 $filteredCatalogs = $stock->itemCatalog
                     ->where('status', 'Tersedia')
+                    ->where('available_qty', '>', 0)
                     ->whereNotIn('code', $code)->whereNotIn('code', $code2);
 
                 foreach ($filteredCatalogs as $itemCatalog) {

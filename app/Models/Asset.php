@@ -32,7 +32,7 @@ class Asset extends Model
         return $this->belongsTo(Branch::class, 'branch_id');
     }
 
-    public function assetDepreciations(): HasMany
+    public function depreciation(): HasMany
     {
         return $this->hasMany(AssetDepreciation::class, 'asset_id');
     }

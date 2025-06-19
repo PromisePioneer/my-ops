@@ -27,7 +27,7 @@
                                         :
                                     </td>
                                     <td>
-                                        <span x-text="editVal.date"></span>
+                                        <span x-text="editVal?.date"></span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -38,7 +38,7 @@
                                         :
                                     </td>
                                     <td>
-                                        <span x-text="editVal.sender.name"></span>
+                                        <span x-text="editVal.sender?.name"></span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -49,7 +49,7 @@
                                         :
                                     </td>
                                     <td>
-                                        <span x-text="editVal.receiver.name"></span>
+                                        <span x-text="editVal.receiver?.name"></span>
                                     </td>
                                 </tr>
                             </table>

@@ -111,7 +111,6 @@ use Throwable;
             ),
             'price' => $draftStock->transaction?->unit_price ?? $draftStock->initialInventoryBalance?->unit_price,
         ]);
-        $this->assetService->confirm($asset);
 
         return $asset;
     }
