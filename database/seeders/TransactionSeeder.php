@@ -91,7 +91,7 @@ class TransactionSeeder extends Seeder
             'transaction_number' => '12345435',
             'branch_id' => Branch::where('name', 'Kantor')->where('parent_id', 1)->first()->id,
             'supplier_id' => Supplier::where('tax_type', 'NON PKP')->first()->id,
-            'date' => Carbon::now()->format('Y-m-d'),
+            'date' => Carbon::parse('07-07-2020 00:00:00')->format('Y-m-d'),
             'item_id' => ItemCollection::where('name', 'KU 96 Core')->first()->id,
             'qty' => $qty4,
             'type' => 'Barang',

@@ -126,12 +126,7 @@ use function App\Helper\formatDate;
         if (session()->has('stock_withdrawal_item')) {
             foreach (session('stock_withdrawal_item') as $item) {
                 if (!empty($item['code'])) {
-                    $itemCatalog = ItemCatalog::with('asset')->where('code', $item['code'])->first();
-
-                    if (!empty($itemCatalog->asset_id)) {
-                        $this->assetService->depreciation($itemCatalog->asset);
-                    }
-
+                    $itemCatalog = ItemCatalog::with('asset.depreciation')->where('code', $item['code'])->first();
                     $stock = Stock::where('id', $item['stock_id'])->first();
                     $itemCatalog->decrement('available_qty', $item['qty']);
                     $itemCatalog->update(['status' => 'Dibawa']);

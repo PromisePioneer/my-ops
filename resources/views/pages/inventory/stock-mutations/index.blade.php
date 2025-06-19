@@ -47,10 +47,7 @@
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">
-                                    <div class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                        <input class="form-check-input" type="checkbox"
-                                               @click="toggleAllCheckBox()">
-                                    </div>
+                                    #
                                 </th>
                                 <th class="min-w-125px">Tanggal</th>
                                 <th class="min-w-125px">Cabang Awal</th>
@@ -85,17 +82,7 @@
                             <template x-for="(stock, index) in stockMutation?.data" :key="stock.id">
                                 <tbody class="fw-bold">
                                 <tr>
-                                    <td>
-                                        <template x-if="!stock.sender_signature">
-
-                                            <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                                 @click="selectCheckBox($event)">
-                                                <input class="form-check-input" type="checkbox" :value="stock.id"
-                                                       :id="'checkbox-' + stock.id"
-                                                />
-                                            </div>
-                                        </template>
-                                    </td>
+                                    <td x-text="startIndex + index++"></td>
                                     <td x-text="stock.date"></td>
                                     <td x-text="stock.old_branch_name"></td>
                                     <td x-text="stock.new_branch_name"></td>
@@ -136,6 +123,7 @@
                 isLoading: false,
                 loggedUserId: "{{ Auth::id() }}",
                 stockMutation: [],
+                startIndex: null,
                 search: '',
                 editVal: {},
                 selectedCheckBox: [],
@@ -143,30 +131,6 @@
                 detailModal: new bootstrap.Modal(document.getElementById('modal-stock-mutations-detail')),
                 async init() {
                     await this.getStockMutations();
-                },
-                toggleAllCheckBox() {
-                    this.selectAll = !this.selectAll;
-                    this.singleChecked = false;
-                    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-                    this.selectedCheckBox = [];
-                    checkboxes.forEach((checkbox) => {
-                        checkbox.checked = this.selectAll;
-                        if (this.selectAll) {
-                            this.selectedCheckBox.push(checkbox.value);
-                        }
-                    });
-                    this.selectedCheckBox.shift();
-                },
-                selectCheckBox(event) {
-                    const checkboxId = event.target.value;
-                    if (event.target.checked) {
-                        this.selectedCheckBox.push(checkboxId);
-                    } else {
-                        const index = this.selectedCheckBox.indexOf(checkboxId);
-                        if (index !== -1) {
-                            this.selectedCheckBox.splice(index, 1);
-                        }
-                    }
                 },
                 async getStockMutations() {
                     try {
@@ -180,7 +144,19 @@
                     }
                 },
                 async searchData() {
-
+                    this.isLoading = true;
+                    try {
+                        const resp = await axios.get('/inventory/stock-mutations/search', {
+                            params: {
+                                search: this.search
+                            }
+                        });
+                        this.stockMutation = resp.data;
+                    } catch (e) {
+                        console.log(e)
+                    } finally {
+                        this.isLoading = false;
+                    }
                 },
                 async showDetail(id) {
                     try {
