@@ -46,10 +46,14 @@ use function App\Helper\formatDate;
     public function data(Request $request): LengthAwarePaginator
     {
         $data = StockWithdrawalQueryFilter::apply(
-            $this->stockWithdrawalRepository->getStockWithdrawalQuery()
-            , $request
-        )->paginate(self::$perPage);
-        return self::formattedData($data);
+            $this->stockWithdrawalRepository->getStockWithdrawalQuery(),
+            $request
+        );
+
+        $aclFilter = StockWithdrawalACLFilter::apply($data, $request)->paginate(self::$perPage);
+
+
+        return self::formattedData($aclFilter);
     }
 
 
@@ -60,17 +64,18 @@ use function App\Helper\formatDate;
         if (!empty($search)) {
             $query = $this->stockWithdrawalRepository->searchQuery($query, $search);
         }
+        $aclFilter = StockWithdrawalACLFilter::apply($query, $request)->paginate(self::$perPage);
 
-        $data = $query->paginate(self::$perPage);
-        return self::formattedData($data);
+        return self::formattedData($aclFilter);
     }
 
 
     public function filter(Request $request): LengthAwarePaginator
     {
         $query = $this->stockWithdrawalRepository->getStockWithdrawalQuery();
-        $query = StockWithdrawalQueryFilter::apply($query, $request)->paginate(self::$perPage);
-        return self::formattedData($query);
+        $query = StockWithdrawalQueryFilter::apply($query, $request);
+        $aclFilter = StockWithdrawalACLFilter::apply($query, $request)->paginate(self::$perPage);
+        return self::formattedData($aclFilter);
     }
 
 
@@ -195,45 +200,6 @@ use function App\Helper\formatDate;
         $data->setCollection($carriedStock);
         return $data;
     }
-
-
-    public function confirmedByPIC(StockWithdrawal $stockWithdrawal): void
-    {
-        $stockWithdrawal->load('stockWithdrawalItems', 'stockWithdrawalByEmployees', 'stockWithdrawalItems.stock.item', 'stockWithdrawalByEmployees.user.roles');
-
-
-        $hash = Hash::make($stockWithdrawal->id);
-
-        $image = QrCode::format('png')->size(200)->generate($hash);
-
-        $signaturePath = 'documents/stock-withdrawal/pic-signature/' . $hash . '.png';
-        Storage::disk('public')->put($signaturePath, $image);
-
-        $stockWithdrawal->update([
-            'pic_id' => Auth::id(),
-            'pic_signature_after_withdraw' => $signaturePath,
-        ]);
-    }
-
-
-    public function confirmedByStocker(StockWithdrawal $stockWithdrawal): void
-    {
-        $stockWithdrawal->load('stockWithdrawalItems', 'stockWithdrawalByEmployees', 'stockWithdrawalItems.stock.item', 'stockWithdrawalByEmployees.user.roles');
-
-        $hash = Hash::make($stockWithdrawal->id);
-        $image = QrCode::format('png')->size(200)
-            ->generate($hash);
-
-        $signaturePath = 'documents/stock-withdrawal/stocker-signature/' . $hash . '.png';
-        Storage::disk('public')->put($signaturePath, $image);
-
-        $stockWithdrawal->update([
-            'stocker_id' => Auth::id(),
-            'stocker_signature_after_withdraw' => $signaturePath,
-            'status' => 'Dibawa'
-        ]);
-    }
-
 
     public function getStockWithdrawalItems(StockWithdrawal $stockWithdrawal)
     {

@@ -22,9 +22,9 @@ use Illuminate\View\View;
         return view('pages.inventory.draft-stocks.index');
     }
 
-    public function getQty(): JsonResponse
+    public function getQty(Request $request): JsonResponse
     {
-        return response()->json($this->draftStockService->getQty());
+        return response()->json($this->draftStockService->getQty($request));
     }
 
     public function data(Request $request): JsonResponse

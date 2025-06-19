@@ -68,6 +68,7 @@
                                 <thead>
                                 <tr>
                                     <th class="min-w-125px text-center">No. Transaksi</th>
+                                    <th class="min-w-125px text-center">Cabang</th>
                                     <th class="min-w-125px text-center">Tersedia</th>
                                     <th class="min-w-125px text-center">Dibawa</th>
                                     <th class="min-w-125px text-center">Rusak</th>
@@ -98,6 +99,7 @@
                                 <template x-for="(stock, index) in stocks.data">
                                     <tbody class="text-center">
                                     <tr>
+                                        <td x-text="stock.branch_name"></td>
                                         <td x-text="stock.transaction_number"></td>
                                         <td x-text="stock.available_qty"></td>
                                         <td x-text="stock.on_hold_qty"></td>
@@ -122,6 +124,7 @@
                         <thead>
                         <tr>
                             <th class="w-10px pe-2">No</th>
+                            <th class="min-w-125px text-center">Cabang</th>
                             <th class="min-w-125px text-center">Kode</th>
                             <th class="min-w-125px text-center"> Tersedia</th>
                             <th class="min-w-125px text-center"> Rusak</th>
@@ -157,6 +160,7 @@
                             <tbody class="text-center">
                             <tr>
                                 <td x-text="startIndex + index++"></td>
+                                <td x-text="item.branch_name"></td>
                                 <td x-text="item.code"></td>
                                 <td x-text="item.available_qty"></td>
                                 <td x-text="item.broken_qty"></td>

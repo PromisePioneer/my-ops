@@ -25,6 +25,7 @@
         </div>
         <div class="card-body">
             <div class="row">
+            @can('Filter Data Pemakaian Barang Berdasarkan Cabang')
                 <div class="mb-4">
                     <select class="form-select form-select-solid form-select-sm main-branches-select2"
                             name="branch_id"
@@ -33,6 +34,7 @@
                         <option></option>
                     </select>
                 </div>
+                @endcan
                 <div class="mb-4">
                     <input type="date" name="date" id="date" x-model="date"
                            class="form-control form-control-solid form-control-sm date-picker"

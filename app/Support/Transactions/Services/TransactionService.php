@@ -125,7 +125,7 @@ use function App\Helper\formatDate;
         Transaction::create([
             'type' => $request->input('type'),
             'transaction_number' => $this->generateTransactionNumber($request),
-            'branch_id' => $request->user()->branch_id ?? $request->input('branch_id'),
+            'branch_id' => $request->input('branch_id'),
             'date' => $request->input('date'),
             'contact_id' => $request->input('supplier_id'),
             'detail' => $request->input('detail'),
@@ -160,7 +160,7 @@ use function App\Helper\formatDate;
 
         $transaction->update([
             'transaction_number' => $this->generateTransactionNumber($request),
-            'branch_id' => $request->user()->branch_id ?? $request->input('branch_id'),
+            'branch_id' => $request->input('branch_id'),
             'date' => $request->input('date'),
             'detail' => $request->input('detail'),
             'qty' => $request->input('qty'),

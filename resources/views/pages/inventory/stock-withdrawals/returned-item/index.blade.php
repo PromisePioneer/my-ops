@@ -275,7 +275,7 @@
                         async ifUnitTypeMeterStore() {
                             this.buttonLoading = true;
                             try {
-                                await axios.post(`/inventory/stock-withdrawals/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.formIfUnitTypeMeter));
+                                await axios.post(`/inventory/returned-items/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.formIfUnitTypeMeter));
                                 await showAlert('success', 'Data berhasil disimpan');
                                 await this.init();
                             } catch (error) {
@@ -288,7 +288,7 @@
                         async itemStatusWithoutCategory3AndUnitTypeMeterStore() {
                             this.buttonLoading = true;
                             try {
-                                await axios.post(`/inventory/stock-withdrawals/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.formSingleAndWithoutCategory3));
+                                await axios.post(`/inventory/returned-items/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.formSingleAndWithoutCategory3));
                                 await showAlert('success', 'Data berhasil disimpan');
                                 await this.init();
                                 await this.modalSingleAndWithoutCategory3.hide();
@@ -302,7 +302,7 @@
                         async itemCategory3Store() {
                             this.buttonLoading = true;
                             try {
-                                await axios.post(`/inventory/stock-withdrawals/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.formCategory3));
+                                await axios.post(`/inventory/returned-items/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}}`, new FormData(this.formCategory3));
                                 await showAlert('success', 'Data berhasil disimpan');
                                 await this.init();
                                 await this.modalCategory3.hide();
@@ -316,7 +316,7 @@
                         async itemCategory4Store() {
                             this.buttonLoading = true;
                             try {
-                                await axios.post(`/inventory/stock-withdrawals/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.formCategory4));
+                                await axios.post(`/inventory/returned-items/stock-withdrawal-item/return/${this.stockWithdrawalItem.withdrawal_item.id}`, new FormData(this.formCategory4));
                                 await showAlert('success', 'Data berhasil disimpan');
                                 await this.init();
                                 await this.modalCategory4.hide();
