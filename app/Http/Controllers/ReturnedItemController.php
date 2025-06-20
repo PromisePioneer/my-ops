@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use AllowDynamicProperties;
 use App\Http\Requests\ReturnedItemRequest;
-use App\Models\StockWithdrawal;
 use App\Models\StockWithdrawalItem;
 use App\Support\Inventory\ReturnedItem\Service\ReturnedItemService;
 use Illuminate\Http\JsonResponse;
@@ -15,11 +14,6 @@ use Illuminate\Http\JsonResponse;
     public function __construct()
     {
         $this->returnedItemService = new ReturnedItemService();
-    }
-
-    public function getReturnedItemByStockWithdrawalId(StockWithdrawal $stockWithdrawal): JsonResponse
-    {
-        return response()->json($this->returnedItemService->getReturnedItemByStockWithdrawalId($stockWithdrawal));
     }
 
 
