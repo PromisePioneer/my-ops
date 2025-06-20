@@ -86,61 +86,7 @@ use function App\Helper\formatDate;
     }
 
 
-    /**
-     * @throws Throwable
-     */
-    public function sendItem(StockMutation $stockMutation): JsonResponse
-    {
-        $this->stockMutationService->sendItem($stockMutation);
-        return response()->json(['message' => 'item berhasil dikirim']);
-    }
 
-
-    /**
-     * @throws Throwable
-     */
-    public function cancelDelivery(StockMutation $stockMutation): JsonResponse
-    {
-        $this->stockMutationService->cancelDelivery($stockMutation);
-        return response()->json(['message' => 'pengiriman item berhasil dibatalkan']);
-    }
-
-
-    /**
-     * @throws Throwable
-     */
-    public function receiveItem(StockMutation $stockMutation): JsonResponse
-    {
-        $this->stockMutationService->receiveItem($stockMutation);
-        return response()->json(['message' => 'item berhasil diterima']);
-    }
-
-
-    public function bastDocument(StockMutation $stockMutation): Response
-    {
-
-        $stockMutation->load('stockMutationItems', 'stockMutationItems.stock.item', 'sender', 'receiver', 'newBranch.parent');
-
-        $view = view('pages.inventory.stock-mutations.bast-document', compact('stockMutation'));
-
-
-        $pdf = Browsershot::html($view)
-//            ->setChromePath('C:\Users\Javanicus\scoop\apps\chromium\current\chrome.exe')
-            ->setChromePath('/usr/bin/chromium')
-            ->noSandbox()
-            ->waitUntilNetworkIdle()
-            ->ignoreHttpsErrors()
-            ->format('A4')
-            ->setEnvironmentOptions([
-                'CHROME_CONFIG_HOME' => storage_path('app/chrome/.config')
-            ])->pdf();
-
-
-        return new Response($pdf, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="example.pdf',
-        ]);
-    }
 
 
     public function getSessions(): JsonResponse
