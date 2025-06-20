@@ -627,11 +627,13 @@
                                     Mesin Absen
                                 </x-dropdown-menu-item>
                             @endcan
+                                @canany('Lihat Menu Jam Kerja Berdasarkan Cabang', 'Tambah Data Jam Kerja Berdasarkan Cabang')
                             <x-dropdown-menu-item
                                 :active="request()->segment(2) === 'work-time-settings'"
                                 href="{{ url('adms/work-time-settings') }}">
                                 Pengaturan Jam Kerja
                             </x-dropdown-menu-item>
+                                @endcanany
                             @can('Lihat Menu Pengaturan Jadwal Libur')
                                 <x-dropdown-menu-item
                                     :active="request()->segment(2) === 'employee-schedules'"
