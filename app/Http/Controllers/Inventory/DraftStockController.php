@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Inventory;
 
 use AllowDynamicProperties;
+use App\Http\Controllers\Controller;
 use App\Models\DraftStock;
 use App\Models\ItemCollection;
 use App\Support\Inventory\DraftStock\Service\DraftStockService;

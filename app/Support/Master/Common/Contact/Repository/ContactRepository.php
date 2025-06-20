@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Builder;
     }
 
 
-    public function getSuppliers(): Builder
+    public function getSuppliers(): Contact
     {
         return $this->contact
             ->query()
@@ -32,7 +32,7 @@ use Illuminate\Database\Eloquent\Builder;
     }
 
 
-    public function getClients(): Builder
+    public function getClients(): Contact
     {
         return $this->contact->query()
             ->where('type', 'Client')

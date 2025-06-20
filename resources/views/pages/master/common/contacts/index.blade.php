@@ -22,8 +22,11 @@
                             <button type="button" class="btn btn-light-primary btn-sm" @click="add()"
                                     data-bs-toggle="modal"
                                     data-bs-target="#contact-modal">
-                                <x-icons.add-item/>
-                                Tambah
+                                <i class="ki-duotone ki-message-add fs-2">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i> Tambah
                             </button>
                         </div>
                     </div>
@@ -36,7 +39,12 @@
                         <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                 x-show="selectedCheckBox.length > 0"
                                 x-transition x-cloak>
-                            <x-icons.trash/>
+                            <i class="ki-duotone ki-trash-square fs-2">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                                <span class="path4"></span>
+                            </i>
                             Hapus
                         </button>
                     </form>
@@ -52,7 +60,6 @@
                                     </div>
                                 </th>
                                 <th class="min-w-125px">Nama</th>
-                                <th class="min-w-125px">Tipe</th>
                                 <th class="min-w-125px">Actions</th>
                             </thead>
                             <template x-if="isLoading">
@@ -88,11 +95,21 @@
                                         </div>
                                     </td>
                                     <td x-text="contact.name"></td>
-                                    <td x-text="contact.type"></td>
                                     <td>
                                         <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                 data-bs-target="#contact-modal" @click="edit(contact.id)">
-                                            <x-icons.edit/>
+                                            <i class="ki-duotone ki-pencil fs-3">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                            </i>
+                                        </button>
+                                        <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#modal-contact" @click="show(contact.id)">
+                                            <i class="ki-duotone ki-information fs-3">
+                                                <span class="path1"></span>
+                                                <span class="path2"></span>
+                                                <span class="path3"></span>
+                                            </i>
                                         </button>
                                     </td>
                                 </tr>

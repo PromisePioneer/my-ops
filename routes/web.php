@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Accounting\AccountTransaction\AccountTransactionController;
 use App\Http\Controllers\Accounting\Asset\AssetDepreciationController;
 use App\Http\Controllers\Accounting\JournalAdjustment\InitialJournalController;
 use App\Http\Controllers\Accounting\JournalAdjustment\JournalAdjustmentController;
@@ -9,25 +10,23 @@ use App\Http\Controllers\Accounting\Journals\GeneralJournalController;
 use App\Http\Controllers\Accounting\Journals\GeneralLedgerController;
 use App\Http\Controllers\Accounting\Journals\IncomeStatementController;
 use App\Http\Controllers\Accounting\Journals\TrialBalanceController;
+use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\BAAController;
 use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\BastController;
 use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\ExpenditureController;
 use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\FabController;
 use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\InvoiceController;
 use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\OfferingLetterController;
 use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\PurchaseOrderController;
-use App\Http\Controllers\Accounting\VendorPayrollController;
-use App\Http\Controllers\AccountTransactionController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
-use App\Http\Controllers\BAAController;
-use App\Http\Controllers\BranchDefaultWorkTimeController;
-use App\Http\Controllers\BranchRoleDefaultWorkTimeController;
-use App\Http\Controllers\DraftStockController;
-use App\Http\Controllers\DraftStockDetailController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
+use App\Http\Controllers\HRIS\Attendances\BranchDefaultWorkTimeController;
+use App\Http\Controllers\HRIS\Attendances\BranchRoleDefaultWorkTimeController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
 use App\Http\Controllers\HRIS\Attendances\FpDevicesController;
 use App\Http\Controllers\HRIS\Attendances\IclockController;
+use App\Http\Controllers\HRIS\Attendances\RoleDefaultWorkTimeController;
+use App\Http\Controllers\HRIS\Attendances\WorkTimeSettingController;
 use App\Http\Controllers\HRIS\Correspondence\ContractManagementController;
 use App\Http\Controllers\HRIS\Correspondence\LeaveAndPermissionController;
 use App\Http\Controllers\HRIS\Correspondence\SKController;
@@ -57,13 +56,20 @@ use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollAllowanceCont
 use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollController;
 use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollHistoryController;
 use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollScheduleController;
-use App\Http\Controllers\HRIS\PermissionController;
-use App\Http\Controllers\HRIS\RoleHierarchyController;
-use App\Http\Controllers\InitialInventoryBalanceController;
-use App\Http\Controllers\ItemCatalogController;
+use App\Http\Controllers\HRIS\RolePermissions\PermissionController;
+use App\Http\Controllers\HRIS\RolePermissions\RoleHierarchyController;
+use App\Http\Controllers\Inventory\DraftStockController;
+use App\Http\Controllers\Inventory\DraftStockDetailController;
+use App\Http\Controllers\Inventory\ItemCatalogController;
+use App\Http\Controllers\Inventory\MustReorderStockController;
+use App\Http\Controllers\Inventory\ReturnedItemController;
+use App\Http\Controllers\Inventory\StockController;
+use App\Http\Controllers\Inventory\StockMutationController;
+use App\Http\Controllers\Inventory\StockWithdrawalController;
+use App\Http\Controllers\Inventory\StockWithdrawalItemController;
 use App\Http\Controllers\Master\Accounting\AccountCategoryController;
 use App\Http\Controllers\Master\Accounting\AccountController;
-use App\Http\Controllers\Master\Accounting\Asset\AssetController;
+use App\Http\Controllers\Master\Accounting\AssetController;
 use App\Http\Controllers\Master\Accounting\InitialBalanceController;
 use App\Http\Controllers\Master\Accounting\TaxSettingController;
 use App\Http\Controllers\Master\Common\BranchController;
@@ -75,27 +81,18 @@ use App\Http\Controllers\Master\Common\NationalHolidayController;
 use App\Http\Controllers\Master\Common\RoleController;
 use App\Http\Controllers\Master\Common\ServiceCategoryManagerController;
 use App\Http\Controllers\Master\Common\SKLController;
+use App\Http\Controllers\Master\Common\UnitTypeController;
 use App\Http\Controllers\Master\Common\WorkTimeController;
 use App\Http\Controllers\Master\Operational\ItemCategoryController;
 use App\Http\Controllers\Master\Operational\ItemCollectionController;
-use App\Http\Controllers\Master\Operational\PSBController;
 use App\Http\Controllers\Master\Operational\SupplierController;
-use App\Http\Controllers\MustReorderStockController;
-use App\Http\Controllers\ReturnedItemController;
-use App\Http\Controllers\RoleDefaultWorkTimeController;
-use App\Http\Controllers\StockController;
-use App\Http\Controllers\StockMutationController;
-use App\Http\Controllers\StockWithdrawalController;
-use App\Http\Controllers\StockWithdrawalItemController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\UnitTypeController;
+use App\Http\Controllers\Transaction\InitialInventoryBalanceController;
+use App\Http\Controllers\Transaction\TransactionController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
 use App\Http\Controllers\UserProfile\UserProfileController;
 use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
 use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
-use App\Http\Controllers\WarehouseController;
-use App\Http\Controllers\WorkTimeSettingController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Jmrashed\Zkteco\Lib\ZKTeco;
@@ -369,12 +366,10 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/', [ContactController::class, 'index']);
                 Route::get('/data', [ContactController::class, 'data']);
                 Route::get('/search', [ContactController::class, 'search']);
-                Route::get('/branch/data', [ContactController::class, 'branchData']);
-                Route::get('filter/branch/data/{branch}', [ContactController::class, 'filterByBranch']);
                 Route::post('/', [ContactController::class, 'store']);
-                Route::get('/edit/{contact}', [ContactController::class, 'edit']);
+                Route::get('/{contact}', [ContactController::class, 'edit']);
                 Route::post('/destroy', [ContactController::class, 'destroy']);
-                Route::post('/update/{contact}', [ContactController::class, 'update']);
+                Route::post('/{contact}', [ContactController::class, 'update']);
             });
             Route::prefix('service-categories')->group(function () {
                 Route::get('/', [ServiceCategoryManagerController::class, 'index']);
@@ -551,28 +546,6 @@ Route::group(['middleware' => ['auth']], static function () {
             });
 
 
-            Route::prefix('suppliers')->group(function () {
-                Route::get('/', [SupplierController::class, 'index']);
-                Route::get('/data', [SupplierController::class, 'data']);
-                Route::get('/search', [SupplierController::class, 'search']);
-                Route::post('/', [SupplierController::class, 'store']);
-                Route::get('/{supplier}', [SupplierController::class, 'edit']);
-                Route::post('/destroy', [SupplierController::class, 'destroy']);
-                Route::post('/{supplier}', [SupplierController::class, 'update']);
-            });
-
-            Route::prefix('psb')->group(function () {
-                Route::get('/', [PSBController::class, 'index']);
-                Route::get('/data', [PSBController::class, 'data']);
-                Route::get('/area/data', [PSBController::class, 'getAreaData']);
-                Route::get('/search', [PSBController::class, 'search']);
-                Route::post('/', [PSBController::class, 'store']);
-                Route::get('/{psb}', [PSBController::class, 'edit']);
-                Route::post('/{psb}', [PSBController::class, 'update']);
-                Route::post('/destroy', [PSBController::class, 'destroy']);
-            });
-
-
             Route::prefix('/work-time')->group(function () {
                 Route::get('/', [WorkTimeController::class, 'index']);
                 Route::get('/data', [WorkTimeController::class, 'data']);
@@ -588,30 +561,6 @@ Route::group(['middleware' => ['auth']], static function () {
 
         });
     });
-
-
-    Route::prefix('finances-master-data')->group(function () {
-
-
-    });
-
-
-    Route::prefix('operational-master-data')->group(function () {
-
-
-        Route::prefix('warehouses')->group(function () {
-            Route::get('/', [WarehouseController::class, 'index']);
-            Route::get('/data', [WarehouseController::class, 'data']);
-            Route::get('/search', [WarehouseController::class, 'search']);
-            Route::post('/', [WarehouseController::class, 'store']);
-            Route::get('/{warehouse}', [WarehouseController::class, 'edit']);
-            Route::post('/destroy', [WarehouseController::class, 'destroy']);
-            Route::post('/{warehouse}', [WarehouseController::class, 'update']);
-        });
-
-
-    });
-
 
     //utility
     Route::prefix('utility')->group(function () {
