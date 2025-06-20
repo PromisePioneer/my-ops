@@ -131,7 +131,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-4">
                                 <label for="name" class="required form-label">Nomor Rekening</label>
                                 <input type="text" id="bank_account_number" name="bank_account_number"
@@ -139,7 +139,7 @@
                                        placeholder="Nomor Rekening" :value="editVal?.bank_account_number"/>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-4">
                                 <label for="name" class="required form-label">A/N Rekening</label>
                                 <input type="text" id="bank_account_name" name="bank_account_name"
@@ -147,9 +147,6 @@
                                        placeholder="Atas Nama" :value="editVal?.bank_account_name"/>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="row">
                         <div class="col-md-6">
                             <div class="mb-4">
                                 <label for="name" class="required form-label">Bank</label>
@@ -158,7 +155,10 @@
                                        placeholder="Bank" :value="editVal?.bank_name"/>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
                             <div class="mb-4">
                                 <label for="name" class="required form-label">Pajak</label>
                                 <select name="tax_type" id="tax_type" class="form-select form-select-solid">
@@ -172,6 +172,9 @@
                             </div>
                         </div>
                     </div>
+
+
+                    <div class="row"></div>
 
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-light-primary btn-sm" :disabled="buttonLoading">

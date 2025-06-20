@@ -16,26 +16,32 @@ class Contact extends Model
     protected $table = 'contacts';
 
     protected $fillable = [
-        'pic_name',
-        'pic_position',
-        'company_name',
-        'company_code',
+        'name',
+        'code',
+        'position',
+        'address',
+        'city',
+        'province',
+        'country',
+        'postal_code',
+        'fax',
         'email',
         'phone_number',
-        'identity_type',
-        'identity_number',
-        'fax',
+        'bank_account_number',
+        'bank_account_name',
+        'bank_name',
         'npwp',
-        'complete_address',
-        'other_info',
+        'description',
+        'type',
+        'tax_type'
     ];
 
     public function toSearchableArray(): array
     {
         return [
             'id' => $this->id,
-            'pic_name' => $this->pic_name,
-            'company_name' => $this->company_name,
+            'name' => $this->name,
+            'code' => $this->code,
         ];
     }
 

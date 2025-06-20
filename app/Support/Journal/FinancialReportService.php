@@ -10,7 +10,6 @@ use function App\Helper\currencyFormat;
 class FinancialReportService
 {
 
-
     public function data(Request $request)
     {
         $data = AccountCategory::with('children', 'accounts', 'accounts.accountTransaction', 'accounts.children')

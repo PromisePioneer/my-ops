@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Accounting\AccountTransaction\AccountTransactionController;
 use App\Http\Controllers\Accounting\Asset\AssetDepreciationController;
 use App\Http\Controllers\Accounting\JournalAdjustment\InitialJournalController;
 use App\Http\Controllers\Accounting\JournalAdjustment\JournalAdjustmentController;
@@ -9,24 +10,23 @@ use App\Http\Controllers\Accounting\Journals\GeneralJournalController;
 use App\Http\Controllers\Accounting\Journals\GeneralLedgerController;
 use App\Http\Controllers\Accounting\Journals\IncomeStatementController;
 use App\Http\Controllers\Accounting\Journals\TrialBalanceController;
+use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\BAAController;
 use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\BastController;
 use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\ExpenditureController;
 use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\FabController;
 use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\InvoiceController;
 use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\OfferingLetterController;
 use App\Http\Controllers\Accounting\Transaction\IncomeTransactions\PurchaseOrderController;
-use App\Http\Controllers\Accounting\VendorPayrollController;
-use App\Http\Controllers\AccountTransactionController;
 use App\Http\Controllers\Area\AreaController;
 use App\Http\Controllers\Area\AreaDetailController;
-use App\Http\Controllers\BAAController;
-use App\Http\Controllers\BranchDefaultWorkTimeController;
-use App\Http\Controllers\BranchRoleDefaultWorkTimeController;
-use App\Http\Controllers\DraftStockController;
 use App\Http\Controllers\HRIS\Attendances\AttendanceSummaryController;
+use App\Http\Controllers\HRIS\Attendances\BranchDefaultWorkTimeController;
+use App\Http\Controllers\HRIS\Attendances\BranchRoleDefaultWorkTimeController;
 use App\Http\Controllers\HRIS\Attendances\EmployeeScheduleController;
 use App\Http\Controllers\HRIS\Attendances\FpDevicesController;
 use App\Http\Controllers\HRIS\Attendances\IclockController;
+use App\Http\Controllers\HRIS\Attendances\RoleDefaultWorkTimeController;
+use App\Http\Controllers\HRIS\Attendances\WorkTimeSettingController;
 use App\Http\Controllers\HRIS\Correspondence\ContractManagementController;
 use App\Http\Controllers\HRIS\Correspondence\LeaveAndPermissionController;
 use App\Http\Controllers\HRIS\Correspondence\SKController;
@@ -56,13 +56,20 @@ use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollAllowanceCont
 use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollController;
 use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollHistoryController;
 use App\Http\Controllers\HRIS\Payroll\PayrollConfigurations\PayrollScheduleController;
-use App\Http\Controllers\HRIS\PermissionController;
-use App\Http\Controllers\HRIS\RoleHierarchyController;
-use App\Http\Controllers\InitialInventoryBalanceController;
-use App\Http\Controllers\ItemCatalogController;
+use App\Http\Controllers\HRIS\RolePermissions\PermissionController;
+use App\Http\Controllers\HRIS\RolePermissions\RoleHierarchyController;
+use App\Http\Controllers\Inventory\DraftStockController;
+use App\Http\Controllers\Inventory\DraftStockDetailController;
+use App\Http\Controllers\Inventory\ItemCatalogController;
+use App\Http\Controllers\Inventory\MustReorderStockController;
+use App\Http\Controllers\Inventory\ReturnedItemController;
+use App\Http\Controllers\Inventory\StockController;
+use App\Http\Controllers\Inventory\StockMutationController;
+use App\Http\Controllers\Inventory\StockWithdrawalController;
+use App\Http\Controllers\Inventory\StockWithdrawalItemController;
 use App\Http\Controllers\Master\Accounting\AccountCategoryController;
 use App\Http\Controllers\Master\Accounting\AccountController;
-use App\Http\Controllers\Master\Accounting\Asset\AssetController;
+use App\Http\Controllers\Master\Accounting\AssetController;
 use App\Http\Controllers\Master\Accounting\InitialBalanceController;
 use App\Http\Controllers\Master\Accounting\TaxSettingController;
 use App\Http\Controllers\Master\Common\BranchController;
@@ -74,26 +81,18 @@ use App\Http\Controllers\Master\Common\NationalHolidayController;
 use App\Http\Controllers\Master\Common\RoleController;
 use App\Http\Controllers\Master\Common\ServiceCategoryManagerController;
 use App\Http\Controllers\Master\Common\SKLController;
+use App\Http\Controllers\Master\Common\UnitTypeController;
 use App\Http\Controllers\Master\Common\WorkTimeController;
 use App\Http\Controllers\Master\Operational\ItemCategoryController;
 use App\Http\Controllers\Master\Operational\ItemCollectionController;
-use App\Http\Controllers\Master\Operational\PSBController;
 use App\Http\Controllers\Master\Operational\SupplierController;
-use App\Http\Controllers\MustReorderStockController;
-use App\Http\Controllers\RoleDefaultWorkTimeController;
-use App\Http\Controllers\StockController;
-use App\Http\Controllers\StockMutationController;
-use App\Http\Controllers\StockWithdrawalController;
-use App\Http\Controllers\StockWithdrawalItemController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\UnitTypeController;
+use App\Http\Controllers\Transaction\InitialInventoryBalanceController;
+use App\Http\Controllers\Transaction\TransactionController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
 use App\Http\Controllers\UserProfile\UserProfileController;
 use App\Http\Controllers\UserProfile\Utilities\CompanyProfileController;
 use App\Http\Controllers\UserProfile\Utilities\LetterHeadController;
 use App\Http\Controllers\UserProfile\Utilities\NotificationsController;
-use App\Http\Controllers\WarehouseController;
-use App\Http\Controllers\WorkTimeSettingController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Jmrashed\Zkteco\Lib\ZKTeco;
@@ -367,12 +366,10 @@ Route::group(['middleware' => ['auth']], static function () {
                 Route::get('/', [ContactController::class, 'index']);
                 Route::get('/data', [ContactController::class, 'data']);
                 Route::get('/search', [ContactController::class, 'search']);
-                Route::get('/branch/data', [ContactController::class, 'branchData']);
-                Route::get('filter/branch/data/{branch}', [ContactController::class, 'filterByBranch']);
                 Route::post('/', [ContactController::class, 'store']);
-                Route::get('/edit/{contact}', [ContactController::class, 'edit']);
+                Route::get('/{contact}', [ContactController::class, 'edit']);
                 Route::post('/destroy', [ContactController::class, 'destroy']);
-                Route::post('/update/{contact}', [ContactController::class, 'update']);
+                Route::post('/{contact}', [ContactController::class, 'update']);
             });
             Route::prefix('service-categories')->group(function () {
                 Route::get('/', [ServiceCategoryManagerController::class, 'index']);
@@ -549,28 +546,6 @@ Route::group(['middleware' => ['auth']], static function () {
             });
 
 
-            Route::prefix('suppliers')->group(function () {
-                Route::get('/', [SupplierController::class, 'index']);
-                Route::get('/data', [SupplierController::class, 'data']);
-                Route::get('/search', [SupplierController::class, 'search']);
-                Route::post('/', [SupplierController::class, 'store']);
-                Route::get('/{supplier}', [SupplierController::class, 'edit']);
-                Route::post('/destroy', [SupplierController::class, 'destroy']);
-                Route::post('/{supplier}', [SupplierController::class, 'update']);
-            });
-
-            Route::prefix('psb')->group(function () {
-                Route::get('/', [PSBController::class, 'index']);
-                Route::get('/data', [PSBController::class, 'data']);
-                Route::get('/area/data', [PSBController::class, 'getAreaData']);
-                Route::get('/search', [PSBController::class, 'search']);
-                Route::post('/', [PSBController::class, 'store']);
-                Route::get('/{psb}', [PSBController::class, 'edit']);
-                Route::post('/{psb}', [PSBController::class, 'update']);
-                Route::post('/destroy', [PSBController::class, 'destroy']);
-            });
-
-
             Route::prefix('/work-time')->group(function () {
                 Route::get('/', [WorkTimeController::class, 'index']);
                 Route::get('/data', [WorkTimeController::class, 'data']);
@@ -586,30 +561,6 @@ Route::group(['middleware' => ['auth']], static function () {
 
         });
     });
-
-
-    Route::prefix('finances-master-data')->group(function () {
-
-
-    });
-
-
-    Route::prefix('operational-master-data')->group(function () {
-
-
-        Route::prefix('warehouses')->group(function () {
-            Route::get('/', [WarehouseController::class, 'index']);
-            Route::get('/data', [WarehouseController::class, 'data']);
-            Route::get('/search', [WarehouseController::class, 'search']);
-            Route::post('/', [WarehouseController::class, 'store']);
-            Route::get('/{warehouse}', [WarehouseController::class, 'edit']);
-            Route::post('/destroy', [WarehouseController::class, 'destroy']);
-            Route::post('/{warehouse}', [WarehouseController::class, 'update']);
-        });
-
-
-    });
-
 
     //utility
     Route::prefix('utility')->group(function () {
@@ -717,8 +668,10 @@ Route::group(['middleware' => ['auth']], static function () {
 
     Route::prefix('inventory')->group(function () {
         Route::prefix('stocks')->group(function () {
+            Route::get('/get-stock-detail/{stock}', [StockController::class, 'showStock']);
             Route::get('/', [StockController::class, 'index']);
             Route::get('/data', [StockController::class, 'data']);
+            Route::get('/data/{itemCollection}', [StockController::class, 'findByItemId']);
             Route::get('/search', [StockController::class, 'goodsSearch']);
             Route::get('/filter', [StockController::class, 'goodsFilter']);
             Route::get('/show/{itemCollection}', [StockController::class, 'show']);
@@ -727,6 +680,8 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/stock-based-on-draft-stock/{draftStock}', [StockController::class, 'findByDraftStockAndItemName']);
             Route::get('/must-reorder', [StockController::class, 'getMustReorderStocks']);
             Route::get('/{branch}/{itemCollection}', [StockController::class, 'findByItemAndBranch']);
+            Route::get('/data/branch/category', [StockController::class, 'getStockByCategoryAndBranch']);
+            Route::get('/search/category/branch', [StockController::class, 'searchByCategoryAndBranch']);
         });
         Route::prefix('/stock-withdrawals')->group(function () {
             Route::get('/', [StockWithdrawalController::class, 'index']);
@@ -735,6 +690,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/filter', [StockWithdrawalController::class, 'filter']);
             Route::get('/create', [StockWithdrawalController::class, 'create']);
             Route::post('/store', [StockWithdrawalController::class, 'store']);
+            Route::get('/session-store', [StockWithdrawalController::class, 'sessionStore']);
+            Route::get('/get-sessions', [StockWithdrawalController::class, 'getSessions']);
+            Route::get('/flush-sessions', [StockWithdrawalController::class, 'flushSessions']);
+            Route::get('/delete-sessions', [StockWithdrawalController::class, 'deleteSessions']);
             Route::get('/edit/{stockWithdrawal}', [StockWithdrawalController::class, 'edit']);
             Route::get('/show/{stockWithdrawal}', [StockWithdrawalController::class, 'show']);
             Route::delete('/destroy/{stockWithdrawal}', [StockWithdrawalController::class, 'destroy']);
@@ -743,7 +702,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/return/{stockWithdrawal}', [StockWithdrawalController::class, 'return']);
             Route::get('/stock-withdrawal-items/{stockWithdrawal}', [StockWithdrawalController::class, 'getStockWithdrawalItems']);
             Route::get('/stock-withdrawal-item/{stockWithdrawalItem}', [StockWithdrawalController::class, 'getStockWithdrawalItem']);
-            Route::post('/stock-withdrawal-item/return/{stockWithdrawalItem}', [StockWithdrawalController::class, 'returningItems']);
+
         });
         Route::prefix('/stock-withdrawal-items')->group(function () {
             Route::get('/', [StockWithdrawalItemController::class, 'index']);
@@ -751,6 +710,13 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/filter', [StockWithdrawalItemController::class, 'filter']);
             Route::get('/search', [StockWithdrawalItemController::class, 'search']);
             Route::get('/count', [StockWithdrawalItemController::class, 'getCount']);
+            Route::get('/consumed-or-applied-stock/{stockWithdrawalItem}', [StockWithdrawalItemController::class, 'getConsumedOrAppliedStock']);
+        });
+
+
+        Route::prefix('/returned-items')->group(function () {
+            Route::get('/{stockWithdrawal}', [ReturnedItemController::class, 'getReturnedItemByStockWithdrawalId']);
+            Route::post('/stock-withdrawal-item/return/{stockWithdrawalItem}', [ReturnedItemController::class, 'store']);
         });
 
 
@@ -763,6 +729,10 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/', [StockMutationController::class, 'store']);
             Route::get('/show/{stockMutation}', [StockMutationController::class, 'show']);
             Route::post('/destroy', [StockMutationController::class, 'destroy']);
+            Route::get('/session-store', [StockMutationController::class, 'sessionStore']);
+            Route::get('/get-sessions', [StockMutationController::class, 'getSessions']);
+            Route::get('/flush-sessions', [StockMutationController::class, 'flushSessions']);
+            Route::get('/delete-sessions', [StockMutationController::class, 'deleteSessions']);
         });
         Route::prefix('draft-stocks')->group(function () {
             Route::get('/', [DraftStockController::class, 'index']);
@@ -774,14 +744,15 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/show/{draftStock}', [DraftStockController::class, 'show']);
 
             Route::prefix('detail')->group(function () {
-                Route::get('/{draftStock}', [DraftStockController::class, 'detail']);
-                Route::get('/item-catalog/data/{draftStock}', [ItemCatalogController::class, 'findByDraftStock']);
-                Route::post('/item-catalog/save/{draftStock}', [ItemCatalogController::class, 'store']);
+                Route::get('/data/{itemCollection}', [DraftStockDetailController::class, 'draftStockByItemId']);
+                Route::get('/{itemCollection}', [DraftStockController::class, 'detail']);
             });
         });
         Route::prefix('item-catalog')->group(function () {
+            Route::get('/data/{itemCollection}', [ItemCatalogController::class, 'findByItemId']);
             Route::get('/generate-code/{draftStock}', [ItemCatalogController::class, 'generateAutomaticItemCode']);
             Route::get('/{itemCatalog}', [ItemCatalogController::class, 'edit']);
+            Route::post('/{draftStock}', [ItemCatalogController::class, 'store']);
             Route::post('/destroy/{itemCatalog}', [ItemCatalogController::class, 'destroy']);
         });
 
@@ -789,6 +760,8 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::prefix('/must-reorder-stocks')->group(function () {
             Route::get('/', [MustReorderStockController::class, 'index']);
             Route::get('/data', [MustReorderStockController::class, 'data']);
+            Route::get('/filter', [MustReorderStockController::class, 'filter']);
+            Route::get('/search', [MustReorderStockController::class, 'search']);
         });
     });
 
@@ -1337,12 +1310,11 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/kas-accounts-data', [AccountController::class, 'kasAccounts']);
         Route::get('/stock-accounts-data', [AccountController::class, 'stockAccounts']);
         Route::get('/branches-data', [BranchController::class, 'getAllBranch']);
-        Route::get('/stock-with-codes-data', [StockController::class, 'getStockWithCodes']);
-        Route::get('/stock-without-codes-data', [StockController::class, 'getStockWithoutCode']);
         Route::get('/user-has-areas-data', [UserController::class, 'getUserHasArea']);
         Route::get('/suppliers-data', [SupplierController::class, 'getSuppliers']);
         Route::get('/selected-supplier/{supplier}', [SupplierController::class, 'selectedSupplier']);
         Route::get('/asset-items-data', [ItemCollectionController::class, 'getAssetData']);
+        Route::get('/user-branches-data/{branch}', [UserController::class, 'getUserBranches']);
 
     });
 

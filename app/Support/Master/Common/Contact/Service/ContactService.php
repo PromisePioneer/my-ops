@@ -21,7 +21,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
     public function data(): LengthAwarePaginator
     {
-        $contacts = $this->contactRepository->handle()->paginate(self::$perPage);
+        $contacts = $this->contactRepository->data()->paginate(self::$perPage);
         return self::formattedData($contacts);
     }
 
@@ -30,7 +30,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
     {
         $search = $request->input('search');
         $contacts = Contact::search($search)->query(function () {
-            $this->contactRepository->handle();
+            $this->contactRepository->data();
         })->paginate(self::$perPage);
 
         return self::formattedData($contacts);
@@ -41,9 +41,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
         $contacts = $data->getCollection()->map(function ($item) {
             return [
                 'id' => $item->id,
-                'pic' => $item->pic_name,
-                'company_name' => $item->company_name . '-' . $item->company_code,
-                'phone_number' => $item->phone_number,
+                'name' => $item->name . '-' . $item->code,
             ];
         });
 
@@ -55,7 +53,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
     public function getContacts(Request $request)
     {
         $search = $request->input('search');
-        $contacts = Contact::search($search)->query(fn() => $this->contactRepository->handle())->get();
+        $contacts = Contact::search($search)->query(fn() => $this->contactRepository->data())->get();
 
         return $contacts->map(function ($contact) {
             return [
