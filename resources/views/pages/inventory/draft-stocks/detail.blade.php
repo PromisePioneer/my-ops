@@ -1,16 +1,14 @@
 @extends('layouts.template')
-@section('page-title', 'Pengkodean ' . $draftStock->transaction?->item->name ?? $draftStock->initialInventoryBalance->item->name)
+@section('page-title', 'Pengkodean ' . $itemCollection->name )
 @section('content')
+
     <div x-data="generateStockCode()">
         @include('pages.inventory.draft-stocks.generate-code')
         <div class="card shadow-sm mb-10">
             <div class="card-body">
                 <div class="d-flex">
                     <h3 class="card-title mb-10">
-                        {{ $draftStock->transaction->item->name
-                        ?? $draftStock->transaction?->item->name
-                        ?? $draftStock->initialInventoryBalance->item->name
-                        }}
+                        {{ $itemCollection->name}}
                         tidak ada kode</h3>
                     <div class="ms-auto">
                         <a href="{{ url('inventory/draft-stocks') }}" class="btn btn-sm btn-light-danger">
@@ -126,7 +124,7 @@
                         <tr>
                             <th class="w-10px pe-2">No</th>
                             <th class="min-w-125px text-center">Kode</th>
-                            @if($draftStock->transaction?->item->unitType->name == 'Meter')
+                            @if($itemCollection->unitType->name == 'Meter')
                                 <th class="min-w-125px text-center">Qty (Meter) Per Haspel / Unit</th>
                             @endif
                             <th class="min-w-125px text-center">Kondisi</th>
@@ -217,7 +215,7 @@
                 buttonLoading: false,
                 draftStock: {},
                 isLoading: false,
-                draftStockId: "{{ $draftStock->id }}",
+                itemId: "{{ $itemCollection->id ?? $itemCollection->initialInventoryBalance?->item->name }}",
                 itemCatalog: [],
                 startIndex: null,
                 stocks: [],

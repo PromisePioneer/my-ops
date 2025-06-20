@@ -96,7 +96,7 @@
                 transactionType: "{{ $transaction?->type ?? '' }}",
                 unitPrice: "{{ $transaction->unit_price ?? '' }}",
                 branchId: "{{ $transaction->branch_id ?? '' }}",
-                supplierId: "{{ $transaction->supplier_id ?? '' }}",
+                supplierId: "{{ $transaction->contact_id ?? '' }}",
                 itemId: "{{ $transaction->item_id ?? '' }}",
                 debitAccountId: "{{ $transaction->debit_account_id ?? '' }}",
                 creditAccountId: "{{ $transaction->credit_account_id ?? '' }}",
@@ -138,7 +138,7 @@
                     await selectedValue('selected-item', `/select2/selected-item/${this.itemId}`);
                     await selectedValue('selected-debit-account', `/select2/selected-account/${this.debitAccountId}`);
                     await selectedValue('selected-credit-account', `/select2/selected-account/${this.creditAccountId}`);
-                    await selectedValue('selected-supplier', `/select2/selected-supplier/${this.supplierId}`);
+                    await selectedValue('selected-supplier', `/select2/selected-contact/${this.supplierId}`);
                     const getSuppliers = await axios.get(`/select2/selected-supplier/${this.supplierId}`);
                     this.PKP = getSuppliers.data.tax_type === 'PKP';
 

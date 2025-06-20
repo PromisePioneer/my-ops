@@ -30,7 +30,7 @@ class InitialInventoryBalanceRequest extends FormRequest
                 'exists:branches,id'
             ],
             'date' => ['required', 'date_format:Y-m-d'],
-            'supplier_id' => ['required', 'exists:suppliers,id'],
+            'supplier_id' => ['required', 'exists:contacts,id'],
             'detail' => ['required'],
             'item_id' => ['required', 'exists:item_collections,id'],
             'unit_price' => ['required'],

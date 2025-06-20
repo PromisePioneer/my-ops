@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Master\Common\Branch;
+use App\Models\Master\Common\Contact;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -87,6 +88,6 @@ class Transaction extends Model
 
     public function supplier(): BelongsTo
     {
-        return $this->belongsTo(Supplier::class, 'supplier_id');
+        return $this->belongsTo(Contact::class, 'contact_id');
     }
 }

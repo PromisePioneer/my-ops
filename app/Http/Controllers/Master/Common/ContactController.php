@@ -120,6 +120,17 @@ use Illuminate\View\View;
         return response()->json($this->contactService->getContacts($request));
     }
 
+
+    public function getSuppliers(Request $request): JsonResponse
+    {
+        return response()->json($this->contactService->getSuppliers($request));
+    }
+
+    public function getClients(Request $request): JsonResponse
+    {
+        return response()->json($this->contactService->getClients($request));
+    }
+
     public function selectedContact(Contact $contact): JsonResponse
     {
         return response()->json($this->contactService->selectedContact($contact));

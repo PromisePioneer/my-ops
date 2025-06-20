@@ -50,33 +50,4 @@ class Contact extends Model
     {
         return $this->HasOne(OfferingLetter::class);
     }
-
-    public function getData(Request $request): array
-    {
-        $search = $request->input('search');
-        $query = self::orderby('pic_name', 'asc');
-        if ($search !== '') {
-            $query->where('pic_name', 'like', '%' . $request->search . '%')
-                ->where('pic_name', 'like', '%' . $request->search . '%');
-        }
-        $contact = $query->get(['id', 'pic_name', 'company_name', 'company_code']);
-
-        return $contact->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'text' => $item->pic_name . ' - ' . $item->company_name,
-            ];
-        })->toArray();
-    }
-
-    public function getSelectedData(int $contactId): array
-    {
-        $contact = self::where('id', $contactId)->first();
-
-        return [
-            'id' => $contact->id,
-            'name' => $contact->pic_name . ' - ' . $contact->company_name,
-            'company_name' => $contact->company_name
-        ];
-    }
 }
