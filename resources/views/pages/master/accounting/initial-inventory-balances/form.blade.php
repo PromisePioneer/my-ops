@@ -173,12 +173,13 @@
                 form: document.getElementById('form-initial-inventory-balance'),
                 itemModal: new bootstrap.Modal(document.getElementById('modal-item')),
                 itemForm: document.getElementById('form-item'),
-                supplierModal: new bootstrap.Modal(document.getElementById('modal-supplier')),
-                supplierForm: document.getElementById('form-supplier'),
+                supplierModal: new bootstrap.Modal(document.getElementById('contact-modal')),
+                supplierForm: document.getElementById('contact-form'),
+                contactType: null,
                 async init() {
                     inputMask('unit_price', 'decimal');
                     await select2('.branches-select2', 'Pilih Cabang', '/select2/branches-data');
-                    await select2('.suppliers-select2', 'Pilih Supplier', '/select2/suppliers-data');
+                    await select2('.suppliers-select2', 'Pilih Supplier', '/select2/suppliers-data', true, false, 'contact-modal');
                     await select2('.asset-accounts-select2', 'Pilih Akun Aset', '/select2/asset-accounts-data');
                     await select2('.stock-accounts-select2', 'Pilih Akun Persediaan', '/select2/stock-accounts-data');
                     await select2('.items-select2', 'Pilih Barang', '/select2/goods-data', true, false, 'modal-item');
@@ -196,7 +197,7 @@
                         await selectedValue('selected-stock-account', `/select2/selected-account/${this.stockAccountId}`);
                     }
                 },
-                async saveSupplier() {
+                async saveContact() {
                     this.buttonLoading = true;
                     try {
                         await axios.post('/master/common/contact', new FormData(this.supplierForm))

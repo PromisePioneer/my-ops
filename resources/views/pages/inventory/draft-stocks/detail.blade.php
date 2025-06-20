@@ -37,7 +37,7 @@
                                 <template x-for="(draftStock, index) in draftStocks.data">
                                     <tbody class="text-center">
                                     <tr>
-                                        <td x-text="draftStock.transaction_number"></td>
+                                        <td x-text="draftStock.transaction_number ?? 'Persediaan Awal'"></td>
                                         <td x-text="draftStock.qty"></td>
                                         <td>
                                             <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
@@ -67,8 +67,8 @@
                             <table class="table table-bordered mb-10">
                                 <thead>
                                 <tr>
-                                    <th class="min-w-125px text-center">No. Transaksi</th>
                                     <th class="min-w-125px text-center">Cabang</th>
+                                    <th class="min-w-125px text-center">No. Transaksi</th>
                                     <th class="min-w-125px text-center">Tersedia</th>
                                     <th class="min-w-125px text-center">Dibawa</th>
                                     <th class="min-w-125px text-center">Rusak</th>
@@ -137,7 +137,7 @@
                         <template x-if="isLoading">
                             <tbody class="fw-bolder">
                             <tr>
-                                <td colspan="6">
+                                <td colspan="9">
                                     <div style="text-align: center;">
                                         <div class="spinner-border" role="status">
                                             <span class="visually-hidden">Loading...</span>
@@ -150,7 +150,7 @@
                         <template x-if="!isLoading && itemCatalog.data?.length === 0">
                             <tbody>
                             <tr>
-                                <td colspan="6">
+                                <td colspan="9">
                                     <center>Data Tidak Ditemukan</center>
                                 </td>
                             </tr>

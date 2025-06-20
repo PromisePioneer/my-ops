@@ -33,9 +33,9 @@ class ContactRequest extends FormRequest
             'bank_name' => ['required'],
             'npwp' => ['nullable'],
             'description' => ['nullable'],
-            'type' => ['required', Rule::in(ContactType::CLIENT, ContactType::SUPPLIER)],
+            'type' => ['required', Rule::in(ContactType::CLIENT->value, ContactType::SUPPLIER->value)],
             'tax_type' => [
-                Rule::requiredIf($request->input('type') === ContactType::SUPPLIER),
+                Rule::requiredIf($request->input('type') === ContactType::SUPPLIER->value),
                 Rule::in(TaxType::NON_PKP, TaxType::PKP)
             ],
         ];

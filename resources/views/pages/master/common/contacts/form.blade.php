@@ -23,7 +23,7 @@
                         <div class="col-md-4">
                             <label for="name" class="required form-label">Kode</label>
                             <input type="text" id="code" name="code" class="form-control form-control-solid"
-                                   placeholder="Kode Supplier" :value="editVal?.code"/>
+                                   placeholder="Kode" :value="editVal?.code"/>
                         </div>
                         <div class="col-md-4">
                             <label for="name" class="required form-label">Nama</label>
