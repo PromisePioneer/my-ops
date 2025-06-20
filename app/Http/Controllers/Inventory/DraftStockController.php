@@ -23,9 +23,9 @@ use Illuminate\View\View;
         return view('pages.inventory.draft-stocks.index');
     }
 
-    public function getQty(Request $request): JsonResponse
+    public function getQty(): JsonResponse
     {
-        return response()->json($this->draftStockService->getQty($request));
+        return response()->json($this->draftStockService->getQty());
     }
 
     public function data(Request $request): JsonResponse
@@ -51,12 +51,6 @@ use Illuminate\View\View;
 
     public function detail(ItemCollection $itemCollection): View
     {
-        $itemCollection->load('transaction', 'initialInventoryBalance');
-        $ifTransactionExists = $itemCollection->transaction->where('status', 'Diterima')->first();
-        if (!$ifTransactionExists) {
-            return view('errors.404');
-        }
-
         return view('pages.inventory.draft-stocks.detail', compact('itemCollection'));
     }
 

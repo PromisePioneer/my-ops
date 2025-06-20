@@ -85,7 +85,6 @@ use App\Http\Controllers\Master\Common\UnitTypeController;
 use App\Http\Controllers\Master\Common\WorkTimeController;
 use App\Http\Controllers\Master\Operational\ItemCategoryController;
 use App\Http\Controllers\Master\Operational\ItemCollectionController;
-use App\Http\Controllers\Master\Operational\SupplierController;
 use App\Http\Controllers\Transaction\InitialInventoryBalanceController;
 use App\Http\Controllers\Transaction\TransactionController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
@@ -1272,48 +1271,62 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/main-branches-data', [BranchController::class, 'getMainBranches']);
         Route::get('/sub-branches-data/{branch}', [BranchController::class, 'getSubBranches']);
         Route::get('/selected-branch/{branch}', [BranchController::class, 'selectedBranch']);
+        Route::get('/branches-data', [BranchController::class, 'getAllBranch']);
+
         Route::get('/companies-data', [CompanyController::class, 'getCompanies']);
         Route::get('/selected-company/{company}', [CompanyController::class, 'selectedCompany']);
+
         Route::get('/roles-data', [RoleController::class, 'getRoles']);
         Route::get('/selected-role/{role}', [RoleController::class, 'selectedRole']);
+
         Route::get('/work-times-data', [WorkTimeController::class, 'getWorkTimes']);
         Route::get('/selected-work-time/{workTime}', [WorkTimeController::class, 'selectedWorkTime']);
+
         Route::get('/departments-data', [DepartmentController::class, 'getDepartments']);
         Route::get('/selected-department/{department}', [DepartmentController::class, 'selectedDepartment']);
+
         Route::get('/accounts-data', [AccountController::class, 'getAccounts']);
         Route::get('/selected-account/{account}', [AccountController::class, 'selectedAccount']);
-        Route::get('/work-times-data', [WorkTimeController::class, 'getWorkTimes']);
-        Route::get('/selected-work-time/{workTime}', [WorkTimeController::class, 'selectedWorkTime']);
+
         Route::get('/unit-types-data', [UnitTypeController::class, 'getUnitTypes']);
         Route::get('/selected-unit-type/{unitType}', [UnitTypeController::class, 'selectedUnitType']);
+
         Route::get('/users-data', [UserController::class, 'getUsers']);
         Route::get('/selected-user/{user}', [UserController::class, 'selectedUser']);
+
         Route::get('/contacts-data', [ContactController::class, 'getContacts']);
+        Route::get('/suppliers-data', [ContactController::class, 'getSuppliers']);
+        Route::get('/contact-data', [ContactController::class, 'getClients']);
         Route::get('/selected-contact/{contact}', [ContactController::class, 'selectedContact']);
+
         Route::get('/service-categories-data', [ServiceCategoryManagerController::class, 'getServiceCategories']);
         Route::get('/selected-service-category/{serviceCategory}', [ServiceCategoryManagerController::class, 'selectedServiceCategory']);
 
         Route::get('/skl-data', [SKLController::class, 'getSKL']);
         Route::get('/selected-skl/{skl}', [SKLController::class, 'selectedSKL']);
+
         Route::get('/purchase-orders-data', [PurchaseOrderController::class, 'getPurchaseOrders']);
         Route::get('/selected-purchase-order/{purchaseOrder}', [PurchaseOrderController::class, 'selectedPurchaseOrder']);
+
         Route::get('/baa-data', [BAAController::class, 'getBAA']);
         Route::get('/selected-baa/{baa}', [BAAController::class, 'selectedBAA']);
+
         Route::get('/fab-data', [FabController::class, 'getFab']);
         Route::get('/selected-fab/{fab}', [FabController::class, 'selectedFab']);
+
         Route::get('/item-categories-data', [ItemCategoryController::class, 'getItemCategories']);
         Route::get('/selected-item-category/{itemCategory}', [ItemCategoryController::class, 'selectedItemCategory']);
+
         Route::get('/goods-data', [ItemCollectionController::class, 'getGoods']);
         Route::get('/selected-item/{item}', [ItemCollectionController::class, 'selectedItem']);
+        Route::get('/asset-items-data', [ItemCollectionController::class, 'getAssetData']);
+
         Route::get('/asset-accounts-data', [AccountController::class, 'assetAccounts']);
         Route::get('/kas-and-leverages-accounts-data', [AccountController::class, 'kasAndLeverageAccounts']);
         Route::get('/kas-accounts-data', [AccountController::class, 'kasAccounts']);
         Route::get('/stock-accounts-data', [AccountController::class, 'stockAccounts']);
-        Route::get('/branches-data', [BranchController::class, 'getAllBranch']);
+
         Route::get('/user-has-areas-data', [UserController::class, 'getUserHasArea']);
-        Route::get('/suppliers-data', [SupplierController::class, 'getSuppliers']);
-        Route::get('/selected-supplier/{supplier}', [SupplierController::class, 'selectedSupplier']);
-        Route::get('/asset-items-data', [ItemCollectionController::class, 'getAssetData']);
         Route::get('/user-branches-data/{branch}', [UserController::class, 'getUserBranches']);
 
     });

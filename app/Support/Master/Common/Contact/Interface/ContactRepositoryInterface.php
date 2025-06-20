@@ -8,5 +8,7 @@ interface ContactRepositoryInterface
 {
     public function data(): Builder;
 
-    public function ();
+    public function getSuppliers(): Builder;
+
+    public function getClients(): Builder;
 }
