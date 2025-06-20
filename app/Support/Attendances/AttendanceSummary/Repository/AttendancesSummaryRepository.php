@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\Attendances\Repository;
+namespace App\Support\Attendances\AttendanceSummary\Repository;
 
 use App\Models\User;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support;
+namespace App\Support\Attendances\NationalHoliday;
 
 use App\Models\NationalHoliday;
 use Carbon\Carbon;

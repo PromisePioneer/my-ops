@@ -64,7 +64,7 @@ use Throwable;
                 'item_name' => $item->stock->transaction?->item?->name ?? $item->stock->initialInventoryBalance?->item->name,
                 'code' => $item->code,
                 'qty' => $item->qty,
-                'status' => $item->status,
+                'status' => $item->returnedItem ? 'Sudah Dikembalikan / Terpakai / Habis' : 'Belum Dikembalikan',
             ];
         });
 

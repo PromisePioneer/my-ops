@@ -83,6 +83,21 @@ class StockRepository
                     })->orWhereHas('initialInventoryBalance.item.category', function ($query) use ($categoryId) {
                         $query->where('id', $categoryId);
                     });
+                })->first()?->itemCatalog()->where(function ($query) use ($branchId) {
+                    $code = [];
+                    $code2 = [];
+                    if (session()->has('stock_withdrawal_item')) {
+                        foreach (session()->get('stock_withdrawal_item') as $withDrawalItem) {
+                            $code[] = $withDrawalItem['code'];
+                        }
+                    }
+
+                    if (session()->has('stock_mutation_items')) {
+                        foreach (session()->get('stock_mutation_items') as $mutationItem) {
+                            $code2[] = $mutationItem['code'];
+                        }
+                    }
+                    $query->whereNotIn('code', $code)->whereNotIn('code', $code2)->where('available_qty', '>', 0);
                 });
         }
 

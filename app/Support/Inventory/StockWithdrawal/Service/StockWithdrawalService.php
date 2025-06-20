@@ -21,11 +21,7 @@ use Carbon\Carbon;
 use Illuminate\Http\FileHelpers;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use Storage;
 use Throwable;
 use function App\Helper\formatDate;
 
@@ -93,9 +89,16 @@ use function App\Helper\formatDate;
                         'user_id' => $stockWithdrawalByEmployee->user_id,
                         'name' => $stockWithdrawalByEmployee->user->name,
                     ];
-
                 }),
                 'stocker' => $stockWithdrawal->stocker?->name ?? null,
+                'withdrawal_item' => $stockWithdrawal->stockWithdrawalItems->map(function ($stockWithdrawalItem) {
+                    return [
+                        'id' => $stockWithdrawalItem->id,
+                        'code' => $stockWithdrawalItem->code,
+                        'item_name' => $stockWithdrawalItem->stock->transaction?->item->name ?? $stockWithdrawalItem->stock->initialInventoryBalance?->item->name,
+                        'quantity' => $stockWithdrawalItem->qty,
+                    ];
+                }),
                 'pic_signature_after_withdraw' => $stockWithdrawal->pic_signature_after_withdraw,
                 'stocker_signature_after_withdraw' => $stockWithdrawal->stocker_signature_after_withdraw,
                 'status' => $stockWithdrawal->status
@@ -114,8 +117,7 @@ use function App\Helper\formatDate;
     {
         DB::transaction(function () use ($request) {
             $stockWithdrawal = StockWithdrawal::create([
-                'branch_id' => Branch::where('id', $request->branch_id ?? $request->user()->branch_id)
-                    ->first()?->parent_id,
+                'branch_id' => Branch::where('id', $request->branch_id ?? $request->user()->branch_id)->first(),
                 'date' => Carbon::now()->format('Y-m-d'),
                 'description' => $request->input('description'),
                 'stocker_id' => $request->user()->id,

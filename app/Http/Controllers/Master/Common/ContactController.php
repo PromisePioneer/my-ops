@@ -55,27 +55,7 @@ use Illuminate\View\View;
     public function store(ContactRequest $request): JsonResponse
     {
         $this->authorize('create', Contact::class);
-        Contact::create([
-            'name' => $request->name,
-            'code' => $request->code,
-            'position' => $request->position,
-            'address' => $request->address,
-            'city' => $request->city,
-            'province' => $request->province,
-            'country' => $request->country,
-            'postal_code' => $request->postal_code,
-            'fax' => $request->fax,
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-            'bank_account_number' => $request->bank_account_number,
-            'bank_account_name' => $request->bank_account_name,
-            'bank_name' => $request->bank_name,
-            'npwp' => $request->npwp,
-            'description' => $request->description,
-            'type' => $request->type,
-            'tax_type' => $request->tax_type
-        ]);
-
+        $this->contactService->store($request);
         return response()->json([
             'message' => 'data berhasil disimpan',
         ], 200);

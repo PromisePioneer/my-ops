@@ -4,9 +4,10 @@ namespace App\Support\Master\Operational\ItemCollections\Service;
 
 use AllowDynamicProperties;
 use App\Http\Requests\Master\Operational\Item\ItemCollectionRequest;
-use App\Models\Account;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\UnitType;
+use App\Support\Master\Accounting\Accounts\Repositories\AccountRepository;
+use App\Support\Master\Common\UnitType\Repository\UnitTypeRepository;
 use App\Support\Master\Operational\ItemCollections\Repositories\ItemCollectionRepository;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -21,12 +22,16 @@ use Throwable;
     public function __construct()
     {
         $this->itemCollectionRepository = new ItemCollectionRepository();
+        $this->itemCollection = new ItemCollection();
+        $this->unitTypeRepository = new UnitTypeRepository();
+        $this->unitType = new UnitType();
+        $this->accountRepository = new AccountRepository();
     }
 
     public function data(): LengthAwarePaginator
     {
         $data = $this->itemCollectionRepository->getItemCollection()->paginate(self::$perPage);
-        return $this->formattedData($data);
+        return self::formattedData($data);
     }
 
 
@@ -41,7 +46,7 @@ use Throwable;
     {
         $query = $this->itemCollectionRepository->getItemCollection();
         $filter = ItemCollectionFilter::apply($query, $request)->paginate(self::$perPage);
-        return $this->formattedData($filter);
+        return self::formattedData($filter);
     }
 
     public function archivedFilter(Request $request): LengthAwarePaginator
@@ -55,7 +60,7 @@ use Throwable;
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $itemCollections = ItemCollection::search($search)->query(function ($query) {
+        $itemCollections = $this->itemCollection->search($search)->query(function ($query) {
             $this->itemCollectionRepository->searchItemCollection($query);
         })->paginate(self::$perPage);
         return $this->formattedData($itemCollections);
@@ -64,7 +69,7 @@ use Throwable;
     public function archivedSearch(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $itemCollections = ItemCollection::search($search)->query(function ($query) {
+        $itemCollections = $this->itemCollection->search($search)->query(function ($query) {
             $this->itemCollectionRepository->searchItemCollection($query);
         })->onlyTrashed()->paginate(self::$perPage);
 
@@ -84,7 +89,7 @@ use Throwable;
     }
 
 
-    public function formattedData(LengthAwarePaginator $itemCollections): LengthAwarePaginator
+    private static function formattedData(LengthAwarePaginator $itemCollections): LengthAwarePaginator
     {
         $data = $itemCollections->getCollection()->map(function ($item) {
             return [
@@ -111,77 +116,76 @@ use Throwable;
     public function store(ItemCollectionRequest $request): void
     {
         DB::transaction(function () use ($request) {
-
-            $unitType = UnitType::find($request->unit_type_id);
-            if (empty($unitType)) {
-                $unitTypeId = UnitType::create([
-                    'name' => $request->unit_type_id
-                ]);
-            }
-
-            $assetAccount = $request->asset_account_id;
-
-            if ($request->is_vehicle === 'on') {
-                $assetAccount = Account::where('code', '123')->first()->id;
-            }
-
-            if ($request->tangible_assets_type === 'Tanah') {
-                $assetAccount = Account::where('code', '121')->first()->id;
-            }
+            $unitTypeId = $this->unitTypeStore($request);
+            $assetAccount = $this->ifSpecificAssetAccount($request);
 
             ItemCollection::create([
-                'name' => $request->name,
-                'is_vehicle' => $request->is_vehicle === 'on',
-                'category_id' => $request->category_id,
-                'unit_type_id' => $unitTypeId->id ?? $request->unit_type_id,
-                'code' => $request->code,
+                'name' => $request->input('name'),
+                'is_vehicle' => $request->input('is_vehicle') === 'on',
+                'category_id' => $request->input('category_id'),
+                'unit_type_id' => $unitTypeId->id ?? $request->input('unit_type_id'),
+                'code' => $request->input('code'),
                 'asset_account_id' => $assetAccount,
-                'must_have_code' => $request->must_have_code === 'on',
-                'is_code_listed' => $request->is_code_listed === 'on',
-                'tangible_assets_type' => $request->tangible_assets_type,
-                'reorder_level' => $request->reorder_level,
-                'type' => $request->type,
-                'building_type' => $request->building_type,
-                'non_building_group' => $request->non_building_group
+                'must_have_code' => $request->input('must_have_code') === 'on',
+                'is_code_listed' => $request->input('is_code_listed') === 'on',
+                'tangible_assets_type' => $request->input('tangible_assets_type'),
+                'reorder_level' => $request->input('reorder_level'),
+                'type' => $request->input('type'),
+                'building_type' => $request->input('building_type'),
+                'non_building_group' => $request->input('non_building_group')
             ]);
         });
     }
 
 
-    public function update(ItemCollection $itemCollection, ItemCollectionRequest $request): void
+    private function ifSpecificAssetAccount(ItemCollectionRequest $request)
     {
-        $unitType = UnitType::find($request->unit_type_id);
-        if (empty($unitType)) {
-            $unitTypeId = UnitType::create([
-                'name' => $request->unit_type_id
-            ]);
-        }
-
-        $assetAccount = $request->asset_account_id;
 
         if ($request->is_vehicle === 'on') {
-            $assetAccount = Account::where('code', '123')->first()->id;
+            return $this->accountRepository->findByCode('123')->first()->id;
         }
 
         if ($request->tangible_assets_type === 'Tanah') {
-            $assetAccount = Account::where('code', '121')->first()->id;
+            return $this->accountRepository->findByCode('121')->first()->id;
         }
 
 
-        $itemCollection->update([
-            'name' => $request->name,
-            'is_vehicle' => $request->is_vehicle === 'on',
-            'category_id' => $request->category_id,
-            'unit_type_id' => $unitTypeId->id ?? $request->unit_type_id,
-            'code' => $request->code,
+        return $request->input('asset_account_id');
+    }
+
+
+    private function unitTypeStore(ItemCollectionRequest $request)
+    {
+        $unitType = $this->unitTypeRepository->findById($request->input('unit_type_id'));
+        if (empty($unitType)) {
+            return $this->unitType->query()->create([
+                'name' => $request->input('unit_type_id'),
+            ]);
+        }
+
+        return $request->input('unit_type_id');
+    }
+
+
+    public function update(ItemCollection $itemCollection, ItemCollectionRequest $request): bool
+    {
+        $unitTypeId = $this->unitTypeStore($request);
+        $assetAccount = $this->ifSpecificAssetAccount($request);
+
+        return $itemCollection->update([
+            'name' => $request->input('name'),
+            'is_vehicle' => $request->input('is_vehicle') === 'on',
+            'category_id' => $request->input('category_id'),
+            'unit_type_id' => $unitTypeId->id ?? $request->input('unit_type_id'),
+            'code' => $request->input('code'),
             'asset_account_id' => $assetAccount,
-            'must_have_code' => $request->must_have_code === 'on',
-            'is_code_listed' => $request->is_code_listed === 'on',
-            'tangible_assets_type' => $request->tangible_assets_type,
-            'reorder_level' => $request->reorder_level,
-            'type' => $request->type,
-            'building_type' => $request->building_type,
-            'non_building_group' => $request->non_building_group
+            'must_have_code' => $request->input('must_have_code') === 'on',
+            'is_code_listed' => $request->input('is_code_listed') === 'on',
+            'tangible_assets_type' => $request->input('tangible_assets_type'),
+            'reorder_level' => $request->input('reorder_level'),
+            'type' => $request->input('type'),
+            'building_type' => $request->input('building_type'),
+            'non_building_group' => $request->input('non_building_group')
         ]);
     }
 
@@ -190,7 +194,7 @@ use Throwable;
     {
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
-        $itemCollection->whereIn('id', array_filter($explodeID, 'is_numeric'))->delete();
+        $itemCollection->query()->whereIn('id', array_filter($explodeID, 'is_numeric'))->delete();
     }
 
 
@@ -198,6 +202,6 @@ use Throwable;
     {
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
-        $itemCollection->whereIn('id', array_filter($explodeID, 'is_numeric'))->restore();
+        $itemCollection->query()->whereIn('id', array_filter($explodeID, 'is_numeric'))->restore();
     }
 }

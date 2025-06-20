@@ -20,6 +20,7 @@ use Illuminate\View\View;
     public function __construct()
     {
         $this->branchService = new BranchService();
+        $this->branch = new Branch();
     }
 
     /**
@@ -56,7 +57,7 @@ use Illuminate\View\View;
     public function store(BranchRequest $request): JsonResponse
     {
         $this->authorize('create', Branch::class);
-        Branch::create($request->validated());
+        $this->branch->query()->create($request->validated());
         return response()->json([
             'message' => 'data berhasil disimpan',
         ], 200);
@@ -76,8 +77,8 @@ use Illuminate\View\View;
 
     public function subBranchDetail(Branch $branch): JsonResponse
     {
-        $subBranch = Branch::with('parent')->where('id', $branch->id)->first();
-        return response()->json($subBranch);
+        $branch->load('parent');
+        return response()->json($branch);
     }
 
     /**
@@ -99,7 +100,7 @@ use Illuminate\View\View;
     {
         $data = $request->validated();
         $data['parent_id'] = $request->parent_id;
-        Branch::create($data);
+        $this->branch->query()->create($data);
         return response()->json(['message' => 'data berhasil disimpan']);
     }
 

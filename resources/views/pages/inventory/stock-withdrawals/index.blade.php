@@ -40,9 +40,7 @@
                             <thead>
                             <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th class="w-10px pe-2">#</th>
-                                <th class="min-w-125px">Cabang</th>
-                                <th class="min-w-125px">Tanggal</th>
-                                <th class="min-w-125px">Deskripsi</th>
+                                <th class="min-w-125px">Informasi Pemakaian</th>
                                 <th class="min-w-125px">PIC</th>
                                 <th class="min-w-125px">Stocker</th>
                                 <th class="min-w-125px">Actions</th>
@@ -74,9 +72,11 @@
                                 <tbody class="fw-bold">
                                 <tr>
                                     <td x-text="startIndex + index++"></td>
-                                    <td class="text-center" x-text="stockWithdrawal.branch_name"></td>
+                                    <td>
+                                        <p class="text-center" x-text="stockWithdrawal.date"></p>
+                                        <p class="text-center" x-text="stockWithdrawal.branch_name"></p>
+                                    </td>
                                     <td class="text-center" x-text="stockWithdrawal.date"></td>
-                                    <td class="text-center" x-text="stockWithdrawal.description"></td>
                                     <td>
                                         <div class="row align-items-center">
                                             <ul class="ms-3">

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support;
+namespace App\Support\Journal;
 
 use App\Models\InitialJournal;
 use App\Models\JournalAdjustment;

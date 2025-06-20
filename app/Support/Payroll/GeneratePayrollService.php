@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support;
+namespace App\Support\Payroll;
 
 use AllowDynamicProperties;
 use App\Models\User;

@@ -286,6 +286,8 @@
                             const resp = await axios.get(`${url}`, {
                                 params: {
                                     search: this.search,
+                                    branch_id: this.branchId,
+                                    category_id: this.itemCategoryId
                                 }
                             });
                             this.stockList = resp.data

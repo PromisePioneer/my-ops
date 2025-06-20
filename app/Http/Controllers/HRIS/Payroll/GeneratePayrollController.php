@@ -9,7 +9,7 @@ use App\Models\GeneratePayroll;
 use App\Models\PayrollSchedule;
 use App\Models\User;
 use App\Support\Attendances\AttendanceSummary\AttendanceSummaryService;
-use App\Support\GeneratePayrollService;
+use App\Support\Payroll\GeneratePayrollService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

@@ -273,11 +273,6 @@
                                     Daftar Barang
                                 </x-dropdown-menu-item>
                             @endcan
-                            <x-dropdown-menu-item
-                                :active="request()->segment(3) === 'psb'"
-                                href="{{ url('master/operational/psb') }}">
-                                Data Penarikan
-                            </x-dropdown-menu-item>
                             @can('Lihat Menu Jam Kerja')
                                 <x-dropdown-menu-item
                                     :active="request()->segment(3) === 'work-time'"

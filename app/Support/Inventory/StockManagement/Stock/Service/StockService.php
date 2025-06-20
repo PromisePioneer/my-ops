@@ -3,6 +3,7 @@
 namespace App\Support\Inventory\StockManagement\Stock\Service;
 
 use AllowDynamicProperties;
+use App\Models\ItemCategory;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\Branch;
 use App\Support\Inventory\StockManagement\DraftStock\Repository\DraftStockRepository;
@@ -115,7 +116,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
     public function findByItemId(ItemCollection $itemCollection): LengthAwarePaginator
     {
-        $query = $this->stockRepository->findByItemId($itemCollection)->paginate(self::$perPage);
+        $query = $this->stockRepository->findByItemId($itemCollection)?->paginate(self::$perPage);
         $data = $query->getCollection()->map(function ($item) {
             $unitType = $item->transaction?->item?->unitType?->name ?? $item->initialInventoryBalance->unitType?->name;
 
@@ -137,81 +138,126 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
     public function getStockByCategoryAndBranch(string|int $branchId, string|int $categoryId): LengthAwarePaginator
     {
-        $query = $this->stockRepository
-            ->getStockByCategoryAndBranch($branchId, $categoryId)
-            ->paginate(self::$perPage);
-
-        $transformed = $query->getCollection()->flatMap(function ($stock) {
-            $item = $stock->transaction?->item ?? $stock->initialInventoryBalance?->item;
-            $itemCategoryName = $item?->category?->name;
-            $result = [];
-
-            if ($itemCategoryName !== 'Kategori 4') {
-                $code = [];
-                $code2 = [];
-
-                if (session()->has('stock_withdrawal_item')) {
-                    foreach (session()->get('stock_withdrawal_item') as $withDrawalItem) {
-                        $code[] = $withDrawalItem['code'];
-                    }
-                }
-
-                if (session()->has('stock_mutation_items')) {
-                    foreach (session()->get('stock_mutation_items') as $mutationItem) {
-                        $code2[] = $mutationItem['code'];
-                    }
-                }
-
-                $filteredCatalogs = $stock->itemCatalog
-                    ->where('status', 'Tersedia')
-                    ->where('available_qty', '>', 0)
-                    ->whereNotIn('code', $code)->whereNotIn('code', $code2);
-
-                foreach ($filteredCatalogs as $itemCatalog) {
-                    $result[] = [
-                        'id' => $itemCatalog->id,
-                        'code' => $itemCatalog->code,
-                        'name' => $item->name,
-                        'item_id' => $item->id,
-                        'qty' => $itemCatalog->available_qty,
-                        'stock_id' => $stock->id,
-                        'category_name' => $itemCategoryName,
-                    ];
-                }
-            } else {
-                $qty = 0;
-                if (session()->has('stock_withdrawal_item')) {
-                    foreach (session()->get('stock_withdrawal_item') as $stockWithdrawalItem) {
-                        if ($stock->id === (int)$stockWithdrawalItem['stock_id']) {
-                            $qty += $stockWithdrawalItem['qty'];
-                        }
-                    }
-                }
+        $query = $this->stockRepository->getStockByCategoryAndBranch($branchId, $categoryId)->paginate(self::$perPage);
 
 
-                if (session()->has('stock_mutation_items')) {
-                    foreach (session()->get('stock_mutation_items') as $stockMutationItem) {
-                        if ($stock->id === (int)$stockMutationItem['stock_id']) {
-                            $qty += $stockMutationItem['qty'];
-                        }
-                    }
-                }
-
-                $stockActualQty = $stock->available_qty - $qty;
-
-                $result[] = [
-                    'id' => $stock->id,
+        $itemCategory = ItemCategory::find($categoryId);
+        if ($itemCategory->name !== 'Kategori 4') {
+            $data = $query->getCollection()->map(function ($itemCatalog) {
+                $item = $itemCatalog->stock->transaction?->item ?? $itemCatalog->stock->initialInventoryBalance?->item;
+                return [
+                    'id' => $itemCatalog->id,
+                    'code' => $itemCatalog->code,
                     'name' => $item->name,
-                    'qty' => $stockActualQty,
-                    'category_name' => $itemCategoryName,
+                    'item_id' => $item->id,
+                    'qty' => $itemCatalog->available_qty,
+                    'stock_id' => $itemCatalog->stock_id,
+                    'category_name' => $item->category?->name,
                 ];
+            });
+            $query->setCollection($data);
+            return $query;
+        }
+
+
+        $data = $query->getCollection()->map(function ($stock) {
+
+            $qty = 0;
+            if (session()->has('stock_withdrawal_item')) {
+                foreach (session()->get('stock_withdrawal_item') as $stockWithdrawalItem) {
+                    if ($stock->id === (int)$stockWithdrawalItem['stock_id']) {
+                        $qty += $stockWithdrawalItem['qty'];
+                    }
+                }
             }
 
-            return $result;
+
+            if (session()->has('stock_mutation_items')) {
+                foreach (session()->get('stock_mutation_items') as $stockMutationItem) {
+                    if ($stock->id === (int)$stockMutationItem['stock_id']) {
+                        $qty += $stockMutationItem['qty'];
+                    }
+                }
+            }
+
+            return [
+                'id' => $stock->id,
+                'name' => $stock->transaction?->item->name ?? $stock->initialInventoryBalance?->item->name,
+                'qty' => $stock->available_qty - $qty,
+                'category_name' => 0,
+            ];
         });
 
+        $query->setCollection($data);
+        return $query;
 
-        return $query->setCollection(collect($transformed));
+//        $transformed = $query->getCollection()->flatMap(function ($stock) {
+//            $item = $stock->transaction?->item ?? $stock->initialInventoryBalance?->item;
+//            $itemCategoryName = $item?->category?->name;
+//            $result = [];
+//
+//            if ($itemCategoryName !== 'Kategori 4') {
+//                $code = [];
+//                $code2 = [];
+//                if (session()->has('stock_withdrawal_item')) {
+//                    foreach (session()->get('stock_withdrawal_item') as $withDrawalItem) {
+//                        $code[] = $withDrawalItem['code'];
+//                    }
+//                }
+//
+//                if (session()->has('stock_mutation_items')) {
+//                    foreach (session()->get('stock_mutation_items') as $mutationItem) {
+//                        $code2[] = $mutationItem['code'];
+//                    }
+//                }
+//
+//                $filteredCatalogs = $stock->itemCatalog
+//                    ->where('status', 'Tersedia')
+//                    ->where('available_qty', '>', 0)
+//                    ->whereNotIn('code', $code)->whereNotIn('code', $code2);
+//
+//                foreach ($filteredCatalogs as $itemCatalog) {
+//                    $result[] = [
+//                        'id' => $itemCatalog->id,
+//                        'code' => $itemCatalog->code,
+//                        'name' => $item->name,
+//                        'item_id' => $item->id,
+//                        'qty' => $itemCatalog->available_qty,
+//                        'stock_id' => $stock->id,
+//                        'category_name' => $itemCategoryName,
+//                    ];
+//                }
+//            } else {
+//                $qty = 0;
+//                if (session()->has('stock_withdrawal_item')) {
+//                    foreach (session()->get('stock_withdrawal_item') as $stockWithdrawalItem) {
+//                        if ($stock->id === (int)$stockWithdrawalItem['stock_id']) {
+//                            $qty += $stockWithdrawalItem['qty'];
+//                        }
+//                    }
+//                }
+//
+//
+//                if (session()->has('stock_mutation_items')) {
+//                    foreach (session()->get('stock_mutation_items') as $stockMutationItem) {
+//                        if ($stock->id === (int)$stockMutationItem['stock_id']) {
+//                            $qty += $stockMutationItem['qty'];
+//                        }
+//                    }
+//                }
+//
+//                $stockActualQty = $stock->available_qty - $qty;
+//
+//                $result[] = [
+//                    'id' => $stock->id,
+//                    'name' => $item->name,
+//                    'qty' => $stockActualQty,
+//                    'category_name' => $itemCategoryName,
+//                ];
+//            }
+//
+//            return $result;
+//        });
     }
 
     public function searchByCategoryAndBranch(?string $search, int $branchId, int $categoryId): LengthAwarePaginator
