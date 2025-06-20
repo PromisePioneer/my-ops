@@ -2,15 +2,41 @@
 
 namespace App\Support\Master\Common\Contact\Repository;
 
+use AllowDynamicProperties;
 use App\Models\Master\Common\Contact;
 use App\Support\Master\Common\Contact\Interface\ContactRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 
-class ContactRepository implements ContactRepositoryInterface
+#[AllowDynamicProperties] class ContactRepository implements ContactRepositoryInterface
 {
-    public function handle(): Builder
+
+    public function __construct()
     {
-        return Contact::orderBy('company_name');
+        $this->contact = new Contact();
+    }
+
+    public function data(): Builder
+    {
+        return $this->contact
+            ->query()
+            ->orderBy('name');
+    }
+
+
+    public function getSuppliers(): Builder
+    {
+        return $this->contact
+            ->query()
+            ->where('type', 'Supplier')
+            ->orderBy('name');
+    }
+
+
+    public function getClients(): Builder
+    {
+        return $this->contact->query()
+            ->where('type', 'Client')
+            ->orderBy('name');
     }
 
 }

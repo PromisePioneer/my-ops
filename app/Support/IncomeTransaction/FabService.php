@@ -10,7 +10,7 @@ use App\Models\FabServiceCategory;
 use App\Models\Master\Common\Contact;
 use App\Models\PurchaseOrder;
 use App\Support\AccountTransactions\AccountTransactionService;
-use App\Support\CompanyNameService;
+use App\Support\HelperService\CompanyNameService;
 use App\Support\HelperService\HandleFileUploadService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;

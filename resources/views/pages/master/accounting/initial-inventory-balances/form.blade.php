@@ -35,10 +35,10 @@
                             <div class="col-md-4">
                                 <label for="branch_id" class="required form-label">Cabang</label>
                                 <x-select2.index
-                                    class="form-select form-select-solid"
-                                    name="branch_id"
-                                    id="selected-branch"
-                                    elementSelector="branches-select2"
+                                        class="form-select form-select-solid"
+                                        name="branch_id"
+                                        id="selected-branch"
+                                        elementSelector="branches-select2"
                                 />
                             </div>
                         @endif
@@ -51,10 +51,10 @@
                         <div class="col-md-4">
                             <label for="date" class="required form-label">Supplier</label>
                             <x-select2.index
-                                class="form-select form-select-solid"
-                                name="supplier_id"
-                                id="selected-supplier"
-                                elementSelector="suppliers-select2"
+                                    class="form-select form-select-solid"
+                                    name="supplier_id"
+                                    id="selected-supplier"
+                                    elementSelector="suppliers-select2"
                             />
                         </div>
                     </div>
@@ -75,10 +75,10 @@
                                 Nama Barang
                             </label>
                             <x-select2.index
-                                class="form-select form-select-solid"
-                                name="item_id"
-                                id="selected-item"
-                                elementSelector="items-select2"
+                                    class="form-select form-select-solid"
+                                    name="item_id"
+                                    id="selected-item"
+                                    elementSelector="items-select2"
                             >
                                 <option></option>
                             </x-select2.index>
@@ -102,26 +102,20 @@
 
 
                     <div class="row mb-10">
-                        <div :class="`${qtyInMeter ? 'col-md-4' : 'd-none'}`" x-show="qtyInMeter" x-transition x-cloak>
-                            <label for="name" class="required form-label">Qty (Meter) Dalam 1 Haspel</label>
-                            <input type="number" class="form-control form-control-solid"
-                                   :name="qtyInMeter ? 'qty_in_meter' : ''"
-                                   :value="{{ $transaction->qty_in_meter ?? ''}}" id="qty_in_meter">
-                        </div>
-                        <div :class="`${qtyInMeter ? 'col-md-4' : 'col-md-6'}`">
+                        <div class="col-lg-6">
                             <label for="name" class="required form-label">Dokumentasi</label>
                             <input type="file" class="form-control form-control-solid"
                                    @change="previewAttachmentFile()"
                                    accept=".png, .jpg, .jpeg" x-ref="attachmentFile" name="attachment"
                                    id="attachment">
                         </div>
-                        <div :class="`${qtyInMeter ? 'col-md-4' : 'col-md-6'}`">
+                        <div class="col-lg-6">
                             <label for="name" class="required form-label">Akun Persediaan</label>
                             <x-select2.index
-                                class="form-select form-select-solid"
-                                name="stock_account_id"
-                                id="selected-stock-account"
-                                elementSelector="stock-accounts-select2"
+                                    class="form-select form-select-solid"
+                                    name="stock_account_id"
+                                    id="selected-stock-account"
+                                    elementSelector="stock-accounts-select2"
                             >
                                 <option></option>
                             </x-select2.index>
@@ -131,7 +125,7 @@
 
                     <div class="row mb-4" x-show="attachmentImgSrc.length > 0" x-transition x-cloak>
                         <label
-                            :class="`${attachmentImgSrc.length > 0 ? 'col-form-label required fw-bold fs-6' : 'd-none'}`">
+                                :class="`${attachmentImgSrc.length > 0 ? 'col-form-label required fw-bold fs-6' : 'd-none'}`">
                             Preview
                         </label>
                         <img :src="attachmentImgSrc"
@@ -163,7 +157,7 @@
                 editVal: '',
                 initialInventoryBalanceId: "{{ $initialInventoryBalance->id ?? '' }}",
                 branchId: "{{ $initialInventoryBalance->branch_id ?? '' }}",
-                supplierId: "{{ $initialInventoryBalance->supplier_id ?? '' }}",
+                supplierId: "{{ $initialInventoryBalance->contact_id ?? '' }}",
                 itemId: "{{ $initialInventoryBalance->item_id ?? '' }}",
                 stockAccountId: "{{ $initialInventoryBalance->stock_account_id ?? '' }}",
                 unitPrice: "{{ $initialInventoryBalance->unit_price ?? '' }}",
@@ -176,50 +170,37 @@
                 buildingType: null,
                 PKP: false,
                 attachmentImgSrc: '',
-                qtyInMeter: false,
                 form: document.getElementById('form-initial-inventory-balance'),
                 itemModal: new bootstrap.Modal(document.getElementById('modal-item')),
                 itemForm: document.getElementById('form-item'),
-                supplierModal: new bootstrap.Modal(document.getElementById('modal-supplier')),
-                supplierForm: document.getElementById('form-supplier'),
+                supplierModal: new bootstrap.Modal(document.getElementById('contact-modal')),
+                supplierForm: document.getElementById('contact-form'),
+                contactType: null,
                 async init() {
                     inputMask('unit_price', 'decimal');
                     await select2('.branches-select2', 'Pilih Cabang', '/select2/branches-data');
-                    await select2('.suppliers-select2', 'Pilih Supplier', '/select2/suppliers-data')
+                    await select2('.suppliers-select2', 'Pilih Supplier', '/select2/suppliers-data', true, false, 'contact-modal');
                     await select2('.asset-accounts-select2', 'Pilih Akun Aset', '/select2/asset-accounts-data');
                     await select2('.stock-accounts-select2', 'Pilih Akun Persediaan', '/select2/stock-accounts-data');
                     await select2('.items-select2', 'Pilih Barang', '/select2/goods-data', true, false, 'modal-item');
                     await select2('.unit-types-select2', 'Pilih Satuan', '/select2/unit-types-data', true, true);
                     await select2('.item-category-select2', 'Pilih Kategori Barang', '/select2/item-categories-data');
-                    this.itemOnSelect();
-                    this.supplierOnSelect();
-                },
-                itemOnSelect() {
-                    $('.items-select2').on('select2:select', (e) => {
-                        this.qtyInMeter = e?.params?.data?.unit_type_name === 'Meter';
-                    });
-                },
-                supplierOnSelect() {
-                    $('.suppliers-select2').on('select2:select', (e) => {
-                        this.PKP = e?.params?.data?.tax_type === 'PKP';
-                    });
+
+                    await this.selectedSelect2Value();
+
                 },
                 async selectedSelect2Value() {
                     if (this.initialInventoryBalanceId) {
                         await selectedValue('selected-branch', `/select2/selected-branch/${this.branchId}`);
-                        await selectedValue('selected-supplier', `/select2/selected-supplier/${this.supplierId}`);
+                        await selectedValue('selected-supplier', `/select2/selected-contact/${this.supplierId}`);
                         await selectedValue('selected-item', `/select2/selected-item/${this.itemId}`);
                         await selectedValue('selected-stock-account', `/select2/selected-account/${this.stockAccountId}`);
-                        const getSuppliers = await axios.get(`/select2/selected-supplier/${this.supplierId}`);
-                        this.PKP = getSuppliers.data.tax_type === 'PKP';
-                        const getItem = await axios.get(`/select2/selected-item/${this.itemId}`);
-                        this.qtyInMeter = getItem.data.unit_type_name === 'Meter';
                     }
                 },
-                async saveSupplier() {
+                async saveContact() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/master/operational/suppliers', new FormData(this.supplierForm))
+                        await axios.post('/master/common/contact', new FormData(this.supplierForm))
                             .then(async () => {
                                 await showAlert('success', 'data berhasil disimpan');
                                 await this.supplierForm.reset();
@@ -265,9 +246,9 @@
                     this.buttonLoading = true;
                     try {
                         if (id === '') {
-                            await axios.post('/master/accounting/initial-inventory-balances', new FormData(this.form))
+                            await axios.post('/master/accounting/initial-inventory-balances/', new FormData(this.form))
                         } else {
-                            await axios.post(`/master/accounting/initial-inventory-balances/update/${id}`, new FormData(this.form))
+                            await axios.post(`/master/accounting/initial-inventory-balances/${id}`, new FormData(this.form))
                         }
                         await showAlert('success', 'Data berhasil disimpan')
                         window.location.href = '/master/accounting/initial-inventory-balances/';

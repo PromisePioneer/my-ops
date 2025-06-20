@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use AllowDynamicProperties;
+use App\Enum\Contact\TaxType;
 use App\Models\AccountTransaction;
 use App\Models\Master\Common\Branch;
-use App\Models\Supplier;
+use App\Models\Master\Common\Contact;
 use Carbon\Carbon;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -12,8 +14,13 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-class TransactionRequest extends FormRequest
+#[AllowDynamicProperties] class TransactionRequest extends FormRequest
 {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->contact = new Contact();
+    }
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -29,7 +36,7 @@ class TransactionRequest extends FormRequest
      */
     public function rules(Request $request): array
     {
-        $supplier = Supplier::where('id', $request->supplier_id)->first();
+        $supplier = $this->contact->query()->find($request->supplier_id);
 
 
         return [
@@ -46,7 +53,7 @@ class TransactionRequest extends FormRequest
                 Rule::requiredIf($this->route('transaction') === null),
                 'mimes:jpg,jpeg,png', 'max:2048'],
             'tax_invoice' => [
-                Rule::requiredIf($supplier?->tax_type === 'PKP' && $this->route('transaction') === null),
+                Rule::requiredIf($supplier?->tax_type === TaxType::PKP->value && $this->route('transaction') === null),
                 'mimes:jpg,jpeg,png', 'max:2048'],
             'qty_in_meter' => ['numeric'],
         ];

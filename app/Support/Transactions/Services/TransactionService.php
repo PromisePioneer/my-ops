@@ -127,7 +127,7 @@ use function App\Helper\formatDate;
             'transaction_number' => $this->generateTransactionNumber($request),
             'branch_id' => $request->input('branch_id'),
             'date' => $request->input('date'),
-            'supplier_id' => $request->input('supplier_id'),
+            'contact_id' => $request->input('supplier_id'),
             'detail' => $request->input('detail'),
             'qty' => $request->input('qty'),
             'item_id' => $request->input('type') === 'Barang' ? $request->input('item_id') : null,
@@ -171,7 +171,7 @@ use function App\Helper\formatDate;
             'credit_account_id' => $request->input('credit_account_id'),
             'created_by' => $request->user()->id,
             'qty_in_meter' => $request->qty_in_meter,
-            'supplier_id' => $request->input('supplier_id'),
+            'contact_id' => $request->input('supplier_id'),
             'attachment' => $this->handleUploadService->upload(
                 $request,
                 'documents/transaction/item-transactions/',

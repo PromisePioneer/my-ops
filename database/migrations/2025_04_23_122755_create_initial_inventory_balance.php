@@ -17,8 +17,8 @@ return new class extends Migration {
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->date('date');
-            $table->foreignId('supplier_id')
-                ->constrained('suppliers')
+            $table->foreignId('contact_id')
+                ->constrained('contacts')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->foreignId('item_id')

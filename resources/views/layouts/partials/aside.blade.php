@@ -32,16 +32,16 @@
                             </span>
                         </a>
                         <div
-                                class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-275px"
-                                data-kt-menu="true">
+                            class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-275px"
+                            data-kt-menu="true">
                             <div class="menu-item px-3">
                                 <div class="menu-content d-flex align-items-center px-3">
 
                                     <div class="d-flex flex-column">
                                         <div
-                                                class="fw-bolder d-flex align-items-center fs-5">{{ Auth::user()->name }}
+                                            class="fw-bolder d-flex align-items-center fs-5">{{ Auth::user()->name }}
                                             <span
-                                                    class="badge badge-light-primary fw-bolder fs-8 px-2 py-1 ms-2">{{ Auth::user()->roles[0]->name }}</span>
+                                                class="badge badge-light-primary fw-bolder fs-8 px-2 py-1 ms-2">{{ Auth::user()->roles[0]->name }}</span>
                                         </div>
                                         <a href="#"
                                            class="fw-bold text-muted text-hover-primary fs-7">{{ Auth::user()->email }}</a>
@@ -80,8 +80,8 @@
              data-kt-scroll-dependencies="{default: '#kt_aside_toolbar, #kt_aside_footer', lg: '#kt_header, #kt_aside_toolbar, #kt_aside_footer'}"
              data-kt-scroll-wrappers="#kt_aside_menu" data-kt-scroll-offset="5px">
             <div
-                    class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
-                    id="#kt_aside_menu" data-kt-menu="true">
+                class="menu menu-column menu-title-gray-800 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-500"
+                id="#kt_aside_menu" data-kt-menu="true">
 
                 <x-menu-sections>Dashboard</x-menu-sections>
                 <x-single-menu-item :active="request()->segment(1) === 'home'"
@@ -118,71 +118,71 @@
                         @slot('menuItem')
                             @can('Lihat Menu Cabang')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'branch'"
-                                        href="{{ url('master/common/branch') }}">
+                                    :active="request()->segment(3) === 'branch'"
+                                    href="{{ url('master/common/branch') }}">
                                     Cabang
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Kontak')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'contact'"
-                                        href="{{ url('master/common/contact') }}">
-                                    Pelanggan
+                                    :active="request()->segment(3) === 'contact'"
+                                    href="{{ url('master/common/contact') }}">
+                                    Kontak
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu SKL')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'skl'"
-                                        href="{{ url('master/common/skl') }}">
+                                    :active="request()->segment(3) === 'skl'"
+                                    href="{{ url('master/common/skl') }}">
                                     Syarat Ketentuan Layanan
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Satuan')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'unit-types'"
-                                        href="{{ url('master/common/unit-types/') }}">
+                                    :active="request()->segment(3) === 'unit-types'"
+                                    href="{{ url('master/common/unit-types/') }}">
                                     Satuan
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Kategori Layanan')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'service-categories'"
-                                        href="{{ url('master/common/service-categories') }}">
+                                    :active="request()->segment(3) === 'service-categories'"
+                                    href="{{ url('master/common/service-categories') }}">
                                     Kategori Layanan
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Departemen')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'department'"
-                                        href="{{ url('master/common/department') }}">
+                                    :active="request()->segment(3) === 'department'"
+                                    href="{{ url('master/common/department') }}">
                                     Department
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Jabatan')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'roles'"
-                                        href="{{ url('master/common/roles') }}">
+                                    :active="request()->segment(3) === 'roles'"
+                                    href="{{ url('master/common/roles') }}">
                                     Jabatan
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Paket Broadband')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'broadband-packets'"
-                                        href="{{ url('master/common/broadband-packets') }}">
+                                    :active="request()->segment(3) === 'broadband-packets'"
+                                    href="{{ url('master/common/broadband-packets') }}">
                                     Paket Broadband
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Data Perusahaan')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'companies'"
-                                        href="{{ url('master/common/companies') }}">
+                                    :active="request()->segment(3) === 'companies'"
+                                    href="{{ url('master/common/companies') }}">
                                     Data Perusahaan
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Area')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'area'"
-                                        href="{{ url('master/common/area') }}">
+                                    :active="request()->segment(3) === 'area'"
+                                    href="{{ url('master/common/area') }}">
                                     Area
                                 </x-dropdown-menu-item>
                             @endcan
@@ -204,43 +204,43 @@
                         @slot('menuItem')
                             @can('Lihat Menu Kategori Akun')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'account-categories'"
-                                        href="{{ url('master/accounting/account-categories') }}">
+                                    :active="request()->segment(3) === 'account-categories'"
+                                    href="{{ url('master/accounting/account-categories') }}">
                                     Kategori Akun
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Akun')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'accounts'"
-                                        href="{{ url('master/accounting/accounts') }}">
+                                    :active="request()->segment(3) === 'accounts'"
+                                    href="{{ url('master/accounting/accounts') }}">
                                     Daftar Akun
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Saldo Awal')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'initial-balances'"
-                                        href="{{ url('master/accounting/initial-balances') }}">
+                                    :active="request()->segment(3) === 'initial-balances'"
+                                    href="{{ url('master/accounting/initial-balances') }}">
                                     Saldo Awal
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Saldo Awal Persediaan')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'initial-inventory-balances'"
-                                        href="{{ url('master/accounting/initial-inventory-balances') }}">
+                                    :active="request()->segment(3) === 'initial-inventory-balances'"
+                                    href="{{ url('master/accounting/initial-inventory-balances') }}">
                                     Saldo Awal Persediaan
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Pengaturan Pajak')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'tax-settings'"
-                                        href="{{ url('master/accounting/tax-settings') }}">
+                                    :active="request()->segment(3) === 'tax-settings'"
+                                    href="{{ url('master/accounting/tax-settings') }}">
                                     Pengaturan Pajak
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Aset')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'assets'"
-                                        href="{{ url('master/accounting/assets') }}">
+                                    :active="request()->segment(3) === 'assets'"
+                                    href="{{ url('master/accounting/assets') }}">
                                     Daftar Aset
                                 </x-dropdown-menu-item>
                             @endcan
@@ -261,34 +261,27 @@
                         @slot('menuItem')
                             @can('Lihat Menu Kategori Barang')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'item-categories'"
-                                        href="{{ url('master/operational/item-categories') }}">
+                                    :active="request()->segment(3) === 'item-categories'"
+                                    href="{{ url('master/operational/item-categories') }}">
                                     Kategori Barang
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Daftar Barang')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'items'"
-                                        href="{{ url('/master/operational/items') }}">
+                                    :active="request()->segment(3) === 'items'"
+                                    href="{{ url('/master/operational/items') }}">
                                     Daftar Barang
                                 </x-dropdown-menu-item>
                             @endcan
-                            @can('Lihat Menu Supplier')
-                                <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'suppliers'"
-                                        href="{{ url('master/operational/suppliers') }}">
-                                    Supplier
-                                </x-dropdown-menu-item>
-                            @endcan
                             <x-dropdown-menu-item
-                                    :active="request()->segment(3) === 'psb'"
-                                    href="{{ url('master/operational/psb') }}">
+                                :active="request()->segment(3) === 'psb'"
+                                href="{{ url('master/operational/psb') }}">
                                 Data Penarikan
                             </x-dropdown-menu-item>
                             @can('Lihat Menu Jam Kerja')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(3) === 'work-time'"
-                                        href="{{ url('master/operational/work-time') }}">
+                                    :active="request()->segment(3) === 'work-time'"
+                                    href="{{ url('master/operational/work-time') }}">
                                     Jam Kerja
                                 </x-dropdown-menu-item>
                             @endcan
@@ -309,23 +302,23 @@
                     @endslot
                     @slot('menuItem')
                         <x-dropdown-menu-item
-                                :active="request()->is('inventory/stocks')"
-                                href="{{ url('inventory/stocks') }}">
+                            :active="request()->is('inventory/stocks')"
+                            href="{{ url('inventory/stocks') }}">
                             Stok Barang
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                                :active="request()->is('inventory/draft-stocks*')"
-                                href="{{ url('inventory/draft-stocks') }}">
+                            :active="request()->is('inventory/draft-stocks*')"
+                            href="{{ url('inventory/draft-stocks') }}">
                             Pengkodean Barang
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                                :active="request()->is('inventory/stock-withdrawals*')"
-                                href="{{ url('inventory/stock-withdrawals') }}">
+                            :active="request()->is('inventory/stock-withdrawals*')"
+                            href="{{ url('inventory/stock-withdrawals') }}">
                             Pemakaian Barang
                         </x-dropdown-menu-item>
                         <x-dropdown-menu-item
-                                :active="request()->is('inventory/stock-mutations*')"
-                                href="{{ url('inventory/stock-mutations') }}">
+                            :active="request()->is('inventory/stock-mutations*')"
+                            href="{{ url('inventory/stock-mutations') }}">
                             Mutasi Barang
                         </x-dropdown-menu-item>
                     @endslot
@@ -350,29 +343,29 @@
                         @slot('menuItem')
                             @can('Lihat Menu Jurnal Umum')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'general-journal'"
-                                        href="{{ url('/journals/general-journal/') }}">
+                                    :active="request()->segment(2) === 'general-journal'"
+                                    href="{{ url('/journals/general-journal/') }}">
                                     Jurnal Umum
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Neraca Saldo')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'trial-balance'"
-                                        href="{{ url('/journals/trial-balance/') }}">
+                                    :active="request()->segment(2) === 'trial-balance'"
+                                    href="{{ url('/journals/trial-balance/') }}">
                                     Neraca Saldo
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Buku Besar')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'general-ledger'"
-                                        href="{{ url('/journals/general-ledger/') }}">
+                                    :active="request()->segment(2) === 'general-ledger'"
+                                    href="{{ url('/journals/general-ledger/') }}">
                                     Buku Besar
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Buku Besar')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'financial-report'"
-                                        href="{{ url('/journals/financial-report/') }}">
+                                    :active="request()->segment(2) === 'financial-report'"
+                                    href="{{ url('/journals/financial-report/') }}">
                                     Laporan Keuangan
                                 </x-dropdown-menu-item>
                             @endcan
@@ -414,43 +407,43 @@
                         @slot('menuItem')
                             @can('Lihat Menu Penawaran')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'offering-letters'"
-                                        href="{{ url('/income-transactions/offering-letters') }}">
+                                    :active="request()->segment(2) === 'offering-letters'"
+                                    href="{{ url('/income-transactions/offering-letters') }}">
                                     Penawaran
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu PO')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'po'"
-                                        href="{{ url('/income-transactions/po') }}">
+                                    :active="request()->segment(2) === 'po'"
+                                    href="{{ url('/income-transactions/po') }}">
                                     Purchase Order
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Fab')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'fab'"
-                                        href="{{ url('/income-transactions/fab') }}">
+                                    :active="request()->segment(2) === 'fab'"
+                                    href="{{ url('/income-transactions/fab') }}">
                                     FAB
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu BAA')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'baa'"
-                                        href="{{ url('/income-transactions/baa') }}">
+                                    :active="request()->segment(2) === 'baa'"
+                                    href="{{ url('/income-transactions/baa') }}">
                                     BAA
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Bast')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'bast'"
-                                        href="{{ url('/income-transactions/bast') }}">
+                                    :active="request()->segment(2) === 'bast'"
+                                    href="{{ url('/income-transactions/bast') }}">
                                     BAST
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Invoice')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'invoice'"
-                                        href="{{ url('/income-transactions/invoice') }}">
+                                    :active="request()->segment(2) === 'invoice'"
+                                    href="{{ url('/income-transactions/invoice') }}">
                                     Invoice
                                 </x-dropdown-menu-item>
                             @endcan
@@ -473,14 +466,14 @@
                         @slot('menuItem')
                             @can('Lihat Menu Pengeluaran')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'expenditure'"
-                                        href="{{ url('/expenditure-transactions/expenditure') }}">
+                                    :active="request()->segment(2) === 'expenditure'"
+                                    href="{{ url('/expenditure-transactions/expenditure') }}">
                                     Pengeluaran
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Invoice Pengeluaran')
                                 <x-dropdown-menu-item
-                                        href="#">
+                                    href="#">
                                     Invoice
                                 </x-dropdown-menu-item>
                             @endcan
@@ -507,8 +500,8 @@
                         @slot('menuItem')
                             @can('Lihat Menu Profil Perusahaan')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'company-profile'"
-                                        href="{{ url('utility/company-profile') }}">
+                                    :active="request()->segment(2) === 'company-profile'"
+                                    href="{{ url('utility/company-profile') }}">
                                     Profil Perusahaan
                                 </x-dropdown-menu-item>
                             @endcan
@@ -533,19 +526,14 @@
                         @endslot
                         @slot('menuItem')
                             <x-dropdown-menu-item
-                                    :active="request()->is('payroll/setting*')"
-                                    href="{{ url('payroll/setting') }}">
+                                :active="request()->is('payroll/setting*')"
+                                href="{{ url('payroll/setting') }}">
                                 Pengaturan
                             </x-dropdown-menu-item>
                             <x-dropdown-menu-item
-                                    :active="request()->segment(3) === 'employee'"
-                                    href="{{ url('payroll/generate-payroll/employee') }}">
+                                :active="request()->segment(3) === 'employee'"
+                                href="{{ url('payroll/generate-payroll/employee') }}">
                                 Karyawan
-                            </x-dropdown-menu-item>
-                            <x-dropdown-menu-item
-                                    :active="request()->segment(3) === 'vendor'"
-                                    href="{{ url('payroll/generate-payroll/vendor') }}">
-                                Vendor
                             </x-dropdown-menu-item>
                         @endslot
                     </x-dropdown-menu>
@@ -566,50 +554,50 @@
                         @slot('menuItem')
                             @can('Lihat Menu Data Karyawan')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'users'"
-                                        href="{{ url('manage-users/users') }}">
+                                    :active="request()->segment(2) === 'users'"
+                                    href="{{ url('manage-users/users') }}">
                                     Data Karyawan
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Permission')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'permissions'"
-                                        href="{{ url('manage-users/permissions') }}">
+                                    :active="request()->segment(2) === 'permissions'"
+                                    href="{{ url('manage-users/permissions') }}">
                                     Hak Akses
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Manajemen Cuti')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'leaves'"
-                                        href="{{ url('manage-users/leaves') }}">
+                                    :active="request()->segment(2) === 'leaves'"
+                                    href="{{ url('manage-users/leaves') }}">
                                     Manajemen Cuti
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu SP')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'sp'"
-                                        href="{{ url('manage-users/sp') }}">
+                                    :active="request()->segment(2) === 'sp'"
+                                    href="{{ url('manage-users/sp') }}">
                                     Surat Peringatan
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Kontrak Karyawan')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'contract-management'"
-                                        href="{{ url('manage-users/contract-management') }}">
+                                    :active="request()->segment(2) === 'contract-management'"
+                                    href="{{ url('manage-users/contract-management') }}">
                                     Kontrak Karyawan
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu SK')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'sk'"
-                                        href="{{ url('manage-users/sk') }}">
+                                    :active="request()->segment(2) === 'sk'"
+                                    href="{{ url('manage-users/sk') }}">
                                     SK Karyawan
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu SK')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'role-hierarchy'"
-                                        href="{{ url('manage-users/role-hierarchy') }}">
+                                    :active="request()->segment(2) === 'role-hierarchy'"
+                                    href="{{ url('manage-users/role-hierarchy') }}">
                                     Struktur Jabatan
                                 </x-dropdown-menu-item>
                             @endcan
@@ -627,34 +615,34 @@
                         @slot('menuItem')
                             @can('Lihat Menu Hari Libur Nasional')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'national-holiday'"
-                                        href="{{ url('adms/national-holiday') }}">
+                                    :active="request()->segment(2) === 'national-holiday'"
+                                    href="{{ url('adms/national-holiday') }}">
                                     Libur Nasional
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Mesin Absen')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'fp-devices'"
-                                        href="{{ url('adms/fp-devices') }}">
+                                    :active="request()->segment(2) === 'fp-devices'"
+                                    href="{{ url('adms/fp-devices') }}">
                                     Mesin Absen
                                 </x-dropdown-menu-item>
                             @endcan
                             <x-dropdown-menu-item
-                                    :active="request()->segment(2) === 'work-time-settings'"
-                                    href="{{ url('adms/work-time-settings') }}">
+                                :active="request()->segment(2) === 'work-time-settings'"
+                                href="{{ url('adms/work-time-settings') }}">
                                 Pengaturan Jam Kerja
                             </x-dropdown-menu-item>
                             @can('Lihat Menu Pengaturan Jadwal Libur')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'employee-schedules'"
-                                        href="{{ url('adms/employee-schedules') }}">
+                                    :active="request()->segment(2) === 'employee-schedules'"
+                                    href="{{ url('adms/employee-schedules') }}">
                                     Pengaturan Jadwal Libur
                                 </x-dropdown-menu-item>
                             @endcan
                             @can('Lihat Menu Riwayat Absensi')
                                 <x-dropdown-menu-item
-                                        :active="request()->segment(2) === 'attendances-summary'"
-                                        href="{{ url('adms/attendances-summary') }}">
+                                    :active="request()->segment(2) === 'attendances-summary'"
+                                    href="{{ url('adms/attendances-summary') }}">
                                     Riwayat Absensi
                                 </x-dropdown-menu-item>
                             @endcan

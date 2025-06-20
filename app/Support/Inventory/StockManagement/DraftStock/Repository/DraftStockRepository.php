@@ -75,6 +75,13 @@ class DraftStockRepository
                     if (empty($request->user()->branch_id)) {
                         $query->where('id', $itemId);
                     }
+                })->orWhereHas('initialInventoryBalance', function (EloquentBuilder $query) use ($itemId, $branch, $request) {
+                    if (!empty($request->user()->branch_id || $request->input('branch_id'))) {
+                        $query->where('id', $itemId)->whereIn('branch_id', $branch->children->pluck('id'));
+                    }
+                    if (empty($request->user()->branch_id)) {
+                        $query->where('id', $itemId);
+                    }
                 });
             })->sum('qty');
     }

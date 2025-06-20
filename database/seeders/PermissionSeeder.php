@@ -35,9 +35,6 @@ class PermissionSeeder extends Seeder
         $this->assetData();
         $this->initialInventoryBalance();
 
-
-        //operational master data
-        $this->supplier();
         $this->goodsCategory();
         $this->itemCollections();
 
@@ -600,21 +597,6 @@ class PermissionSeeder extends Seeder
             'Filter Jurnal Umum Berdasarkan Cabang',
             'Filter Jurnal Umum Berdasarkan Tahun',
             'FIlter Jurnal Umum Berdasarkan Bulan',
-        ];
-
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
-        }
-    }
-
-
-    public function supplier(): void
-    {
-        $permissions = [
-            'Lihat Menu Supplier',
-            'Tambah Data Supplier',
-            'Edit Data Supplier',
-            'Hapus Data Supplier',
         ];
 
         foreach ($permissions as $permission) {

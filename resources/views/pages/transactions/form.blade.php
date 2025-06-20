@@ -11,7 +11,7 @@
     @endpush
     <div x-data="generateTransactions()">
         @include('pages.master.operational.items.form')
-        @include('pages.master.operational.supplier.form')
+        @include('pages.master.common.contacts.form')
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
                 <a class="btn btn-light-danger btn-sm mb-6" href="{{ url('/transactions') }}">
@@ -96,7 +96,7 @@
                 transactionType: "{{ $transaction?->type ?? '' }}",
                 unitPrice: "{{ $transaction->unit_price ?? '' }}",
                 branchId: "{{ $transaction->branch_id ?? '' }}",
-                supplierId: "{{ $transaction->supplier_id ?? '' }}",
+                supplierId: "{{ $transaction->contact_id ?? '' }}",
                 itemId: "{{ $transaction->item_id ?? '' }}",
                 debitAccountId: "{{ $transaction->debit_account_id ?? '' }}",
                 creditAccountId: "{{ $transaction->credit_account_id ?? '' }}",
@@ -105,13 +105,14 @@
                 itemModal: new bootstrap.Modal(document.getElementById('modal-item')),
                 formDelete: document.getElementById('form-delete'),
                 formConfirm: document.getElementById('form-confirm'),
-                supplierModal: new bootstrap.Modal(document.getElementById('modal-supplier')),
-                supplierForm: document.getElementById('form-supplier'),
+                supplierModal: new bootstrap.Modal(document.getElementById('contact-modal')),
+                supplierForm: document.getElementById('contact-form'),
+                contactType: null,
                 qtyInMeter: false,
                 async init() {
                     inputMask('unit_price', 'decimal');
                     await select2('.branches-select2', 'Pilih Cabang', '/select2/branches-data');
-                    await select2('.suppliers-select2', 'Pilih Supplier', '/select2/suppliers-data', true, false, 'modal-supplier');
+                    await select2('.suppliers-select2', 'Pilih Supplier', '/select2/suppliers-data', true, false, 'contact-modal');
                     await select2('.items-select2', 'Pilih Barang', '/select2/goods-data', true, false, 'modal-item');
                     await select2('.stock-accounts-select2', 'Pilih Akun Persediaan', '/select2/stock-accounts-data');
                     await select2('.kas-and-leverage-accounts-select2', 'Pilih Akun Kas / Utang', '/select2/kas-and-leverages-accounts-data');
@@ -138,7 +139,7 @@
                     await selectedValue('selected-item', `/select2/selected-item/${this.itemId}`);
                     await selectedValue('selected-debit-account', `/select2/selected-account/${this.debitAccountId}`);
                     await selectedValue('selected-credit-account', `/select2/selected-account/${this.creditAccountId}`);
-                    await selectedValue('selected-supplier', `/select2/selected-supplier/${this.supplierId}`);
+                    await selectedValue('selected-supplier', `/select2/selected-contact/${this.supplierId}`);
                     const getSuppliers = await axios.get(`/select2/selected-supplier/${this.supplierId}`);
                     this.PKP = getSuppliers.data.tax_type === 'PKP';
 
@@ -174,13 +175,14 @@
                         reader.readAsDataURL(file);
                     });
                 },
-                async saveSupplier() {
+                async saveContact() {
                     this.buttonLoading = true;
                     try {
-                        await axios.post('/master/operational/suppliers', new FormData(this.supplierForm))
+                        await axios.post('/master/common/contact', new FormData(this.supplierForm))
                             .then(async () => {
                                 await showAlert('success', 'data berhasil disimpan');
                                 await this.supplierForm.reset();
+                                await this.supplierModal.hide();
                             })
                     } catch (error) {
                         const respError = error.response.data.errors;
