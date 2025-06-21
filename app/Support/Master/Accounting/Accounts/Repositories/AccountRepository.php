@@ -62,4 +62,9 @@ use Illuminate\Database\Eloquent\Builder;
     {
         return $this->account->query()->where('code', $code);
     }
+
+    public function findById(int $id)
+    {
+        return $this->account->query()->find($id);
+    }
 }

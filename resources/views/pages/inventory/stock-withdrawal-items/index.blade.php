@@ -59,11 +59,9 @@
                                         <th class="w-10px pe-2">
                                             #
                                         </th>
-                                        <th class="min-w-125px text-center">Cabang</th>
-                                        <th class="min-w-125px text-center">Nama</th>
-                                        <th class="min-w-125px text-center">Kode</th>
-                                        <th class="min-w-125px text-center">PIC</th>
+                                        <th class="min-w-125px text-center">Informasi</th>
                                         <th class="min-w-125px text-center">Stocker</th>
+                                        <th class="min-w-125px text-center">Action</th>
                                     </thead>
 
                                     <template x-if="isLoading">
@@ -92,13 +90,25 @@
                                         <tbody class="fw-bold text-center">
                                         <tr>
                                             <td x-text="startIndex + index++"></td>
-                                            <td x-text="stock.branch_name"></td>
-                                            <td x-text="stock.item_name"></td>
-                                            <td x-text="stock.code ?? '-'"></td>
-                                            <td x-text="stock.pic ?? '-'"></td>
-                                            <td x-text="stock.stocker ?? '-'"></td>
                                             <td>
-                                                <span class="badge badge-warning" x-text="stock.status"></span>
+                                                <p x-text="`Cabang ${stock.branch_name}`"></p>
+                                                <p x-text="`${stock.item_name} ${stock.qty} ${stock.unit_type}`"></p>
+                                                <p x-text="`Kode : ${stock.code ?? '-'}`"></p>
+                                            </td>
+                                            <td class="text-start">
+                                                <p x-text="`Stocker : ${stock.stocker}`"></p>
+                                                <p>Yang Membawa :</p>
+                                                <ol>
+                                                    <template x-for="pic in stock.pic" :key="pic.id">
+                                                        <li x-text="pic.name"></li>
+                                                    </template>
+                                                </ol>
+                                            </td>
+                                            <td>
+                                                <a :href="`/inventory/stock-withdrawals/return/${stock.stock_withdrawal_id}`"
+                                                   class="btn btn-light-info btn-sm">
+                                                    <x-icons.info/>
+                                                </a>
                                             </td>
                                         </tr>
                                         </tbody>

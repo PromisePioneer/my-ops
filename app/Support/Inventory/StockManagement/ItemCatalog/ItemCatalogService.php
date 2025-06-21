@@ -36,7 +36,6 @@ use Throwable;
     public function formattedData(LengthAwarePaginator $catalog): LengthAwarePaginator
     {
         $data = $catalog->getCollection()->map(function ($query) {
-
             return [
                 'id' => $query->id,
                 'item_name' => $query->transaction?->item?->name

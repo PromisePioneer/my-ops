@@ -2,16 +2,24 @@
 
 namespace App\Support\Inventory\StockManagement\Stock\Repository;
 
+use AllowDynamicProperties;
 use App\Models\DraftStock;
 use App\Models\ItemCatalog;
 use App\Models\ItemCategory;
 use App\Models\ItemCollection;
 use App\Models\Master\Common\Branch;
 use App\Models\Stock;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
-class StockRepository
+#[AllowDynamicProperties] class StockRepository
 {
+    public function __construct()
+    {
+        $this->stock = new Stock();
+    }
+
+
     public function findByDraftStock(DraftStock $draftStock)
     {
         return Stock::where('transaction_id', $draftStock->transaction_id)->first();
@@ -75,7 +83,7 @@ class StockRepository
     {
         $itemCategory = ItemCategory::find($categoryId);
         if ($itemCategory->name !== 'Kategori 4') {
-            return Stock::with('transaction.item', 'initialInventoryBalance.item', 'itemCatalog')
+            $stock = Stock::with('transaction.item', 'initialInventoryBalance.item', 'itemCatalog')
                 ->where('branch_id', $branchId)
                 ->where(function ($query) use ($categoryId) {
                     $query->whereHas('transaction.item.category', function ($query) use ($categoryId) {
@@ -83,7 +91,10 @@ class StockRepository
                     })->orWhereHas('initialInventoryBalance.item.category', function ($query) use ($categoryId) {
                         $query->where('id', $categoryId);
                     });
-                })->first()?->itemCatalog()->where(function ($query) use ($branchId) {
+                })->first();
+
+            if (!empty($stock)) {
+                return $stock->itemCatalog()->where(function ($query) use ($branchId) {
                     $code = [];
                     $code2 = [];
                     if (session()->has('stock_withdrawal_item')) {
@@ -99,6 +110,7 @@ class StockRepository
                     }
                     $query->whereNotIn('code', $code)->whereNotIn('code', $code2)->where('available_qty', '>', 0);
                 });
+            }
         }
 
         return Stock::with('transaction.item', 'initialInventoryBalance.item', 'itemCatalog')
@@ -111,5 +123,28 @@ class StockRepository
                     $query->where('id', $categoryId);
                 });
             });
+    }
+
+
+    public function findByTransactionIdAndBranch(?int $transactionId, ?int $initialInventoryBalanceId, int $branchId): Builder
+    {
+        return $this->stock->query()
+            ->where(function ($query) use ($transactionId, $initialInventoryBalanceId) {
+                if ($transactionId) {
+                    $query->whereHas('transaction', function ($query) use ($transactionId) {
+                        $query->where('id', $transactionId);
+                    });
+                }
+                if ($initialInventoryBalanceId) {
+                    $query->whereHas('transaction', function ($query) use ($transactionId) {
+                        $query->where('id', $transactionId);
+                    });
+                }
+            })->where('branch_id', $branchId);
+    }
+
+    public function findByStockIdAndBranchId(int $stockId, int $branchId): Builder
+    {
+        return $this->stock->query()->where('id', $stockId)->where('branch_id', $branchId);
     }
 }

@@ -85,6 +85,7 @@ use App\Http\Controllers\Master\Common\UnitTypeController;
 use App\Http\Controllers\Master\Common\WorkTimeController;
 use App\Http\Controllers\Master\Operational\ItemCategoryController;
 use App\Http\Controllers\Master\Operational\ItemCollectionController;
+use App\Http\Controllers\StockMutationAndWithdrawalRecordController;
 use App\Http\Controllers\Transaction\InitialInventoryBalanceController;
 use App\Http\Controllers\Transaction\TransactionController;
 use App\Http\Controllers\UserProfile\AttendanceRecordController;
@@ -727,6 +728,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/create', [StockMutationController::class, 'create']);
             Route::post('/', [StockMutationController::class, 'store']);
             Route::get('/show/{stockMutation}', [StockMutationController::class, 'show']);
+            Route::post('/receive/{stockMutation}', [StockMutationController::class, 'receive']);
             Route::post('/destroy', [StockMutationController::class, 'destroy']);
             Route::get('/session-store', [StockMutationController::class, 'sessionStore']);
             Route::get('/get-sessions', [StockMutationController::class, 'getSessions']);
@@ -761,6 +763,11 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [MustReorderStockController::class, 'data']);
             Route::get('/filter', [MustReorderStockController::class, 'filter']);
             Route::get('/search', [MustReorderStockController::class, 'search']);
+        });
+
+        Route::prefix('/stock-mutation-and-withdrawal-records')->group(function () {
+            Route::get('/{itemCatalog?}/{stock?}', [StockMutationAndWithdrawalRecordController::class, 'index']);
+            Route::get('/stock-withdrawals/data/{itemCatalog?}/{stock?}', [StockMutationAndWithdrawalRecordController::class, 'stockWithdrawalData']);
         });
     });
 

@@ -2,13 +2,20 @@
 
 namespace App\Support\Inventory\StockManagement\DraftStock\Repository;
 
+use AllowDynamicProperties;
 use App\Models\DraftStock;
 use App\Models\ItemCatalog;
 use App\Models\ItemCollection;
 use Illuminate\Database\Eloquent\Builder;
 
-class ItemCatalogRepository
+#[AllowDynamicProperties] class ItemCatalogRepository
 {
+
+    public function __construct()
+    {
+        return $this->itemCatalog = new ItemCatalog();
+    }
+
     public function findByDraftStock(DraftStock $draftStock): Builder
     {
         return ItemCatalog::with('transaction', 'transaction.item', 'createdBy', 'initialInventoryBalance', 'initialInventoryBalance.item')
@@ -37,5 +44,11 @@ class ItemCatalogRepository
                 $query->whereHas('stock.transaction', fn($query) => $query->where('item_id', $itemCollection->id))
                     ->orWhereHas('stock.initialInventoryBalance', fn($query) => $query->where('item_id', $itemCollection->id));
             });
+    }
+
+
+    public function findByCode(?string $code): Builder
+    {
+        return $this->itemCatalog->query()->with('stock')->where('code', $code);
     }
 }

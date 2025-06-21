@@ -92,7 +92,7 @@
                                                 </tr>
                                                 </tbody>
                                             </template>
-                                            <template x-if="!isLoading && stockList.data.length === 0">
+                                            <template x-if="!isLoading && stockList?.data.length === 0">
                                                 <tbody class="fw-bold text-center">
                                                 <tr>
                                                     <td colspan="4">
@@ -101,7 +101,7 @@
                                                 </tr>
                                                 </tbody>
                                             </template>
-                                            <template x-for="(stock, index) in stockList.data" :key="index">
+                                            <template x-for="(stock, index) in stockList?.data" :key="index">
                                                 <tbody class="text-center">
                                                 <tr>
                                                     <td x-text="stock.name"></td>
@@ -346,6 +346,7 @@
                     }).on('select2:select', async (e) => {
                         this.itemCategoryId = e.params.data.id;
                         this.category4 = e.params.data.text === 'Kategori 4'
+                        console.log(this.category4);
                         await this.getStockList();
                         await this.getSessions();
                     });
@@ -411,6 +412,7 @@
                     const resp = await axios.get(`/inventory/stocks/get-stock-detail/${id}`);
                     this.stockDetail = resp.data;
                     this.stockQty = resp.data.available_qty
+                    console.log(this.stockDetail);
                     await this.getSessions();
                     await this.getStockList();
                 },

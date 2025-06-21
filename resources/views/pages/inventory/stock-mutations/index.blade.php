@@ -219,7 +219,7 @@
                 async receiveItem(id) {
                     showConfirmModal("Anda yakin?", "Terima Pengiriman? Mohon di pastikan barang sudah sesuai", "Ya, Terima!", async () => {
                         try {
-                            await axios.post(`/inventory/stock-mutations/receive-delivery/${id}`);
+                            await axios.post(`/inventory/stock-mutations/receive/${id}`);
                             await showAlert('success', 'Pengiriman berhasil diterima');
                             await this.init();
                             await this.detailModal.hide();

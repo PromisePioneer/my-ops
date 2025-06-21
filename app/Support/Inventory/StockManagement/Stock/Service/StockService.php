@@ -139,12 +139,12 @@ use Illuminate\Pagination\LengthAwarePaginator;
     public function getStockByCategoryAndBranch(string|int $branchId, string|int $categoryId): LengthAwarePaginator
     {
         $query = $this->stockRepository->getStockByCategoryAndBranch($branchId, $categoryId)->paginate(self::$perPage);
-
-
         $itemCategory = ItemCategory::find($categoryId);
+
         if ($itemCategory->name !== 'Kategori 4') {
             $data = $query->getCollection()->map(function ($itemCatalog) {
-                $item = $itemCatalog->stock->transaction?->item ?? $itemCatalog->stock->initialInventoryBalance?->item;
+                $item = $itemCatalog?->stock?->transaction?->item
+                    ?? $itemCatalog?->stock?->initialInventoryBalance?->item;
                 return [
                     'id' => $itemCatalog->id,
                     'code' => $itemCatalog->code,
@@ -161,7 +161,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 
         $data = $query->getCollection()->map(function ($stock) {
-
             $qty = 0;
             if (session()->has('stock_withdrawal_item')) {
                 foreach (session()->get('stock_withdrawal_item') as $stockWithdrawalItem) {
@@ -184,80 +183,13 @@ use Illuminate\Pagination\LengthAwarePaginator;
                 'id' => $stock->id,
                 'name' => $stock->transaction?->item->name ?? $stock->initialInventoryBalance?->item->name,
                 'qty' => $stock->available_qty - $qty,
-                'category_name' => 0,
+                'category_name' => $stock->transaction->item->category?->name ?? $stock->initialInventoryBalance->category?->name,
             ];
         });
 
-        $query->setCollection($data);
+        $query->setCollection($data ?? []);
         return $query;
 
-//        $transformed = $query->getCollection()->flatMap(function ($stock) {
-//            $item = $stock->transaction?->item ?? $stock->initialInventoryBalance?->item;
-//            $itemCategoryName = $item?->category?->name;
-//            $result = [];
-//
-//            if ($itemCategoryName !== 'Kategori 4') {
-//                $code = [];
-//                $code2 = [];
-//                if (session()->has('stock_withdrawal_item')) {
-//                    foreach (session()->get('stock_withdrawal_item') as $withDrawalItem) {
-//                        $code[] = $withDrawalItem['code'];
-//                    }
-//                }
-//
-//                if (session()->has('stock_mutation_items')) {
-//                    foreach (session()->get('stock_mutation_items') as $mutationItem) {
-//                        $code2[] = $mutationItem['code'];
-//                    }
-//                }
-//
-//                $filteredCatalogs = $stock->itemCatalog
-//                    ->where('status', 'Tersedia')
-//                    ->where('available_qty', '>', 0)
-//                    ->whereNotIn('code', $code)->whereNotIn('code', $code2);
-//
-//                foreach ($filteredCatalogs as $itemCatalog) {
-//                    $result[] = [
-//                        'id' => $itemCatalog->id,
-//                        'code' => $itemCatalog->code,
-//                        'name' => $item->name,
-//                        'item_id' => $item->id,
-//                        'qty' => $itemCatalog->available_qty,
-//                        'stock_id' => $stock->id,
-//                        'category_name' => $itemCategoryName,
-//                    ];
-//                }
-//            } else {
-//                $qty = 0;
-//                if (session()->has('stock_withdrawal_item')) {
-//                    foreach (session()->get('stock_withdrawal_item') as $stockWithdrawalItem) {
-//                        if ($stock->id === (int)$stockWithdrawalItem['stock_id']) {
-//                            $qty += $stockWithdrawalItem['qty'];
-//                        }
-//                    }
-//                }
-//
-//
-//                if (session()->has('stock_mutation_items')) {
-//                    foreach (session()->get('stock_mutation_items') as $stockMutationItem) {
-//                        if ($stock->id === (int)$stockMutationItem['stock_id']) {
-//                            $qty += $stockMutationItem['qty'];
-//                        }
-//                    }
-//                }
-//
-//                $stockActualQty = $stock->available_qty - $qty;
-//
-//                $result[] = [
-//                    'id' => $stock->id,
-//                    'name' => $item->name,
-//                    'qty' => $stockActualQty,
-//                    'category_name' => $itemCategoryName,
-//                ];
-//            }
-//
-//            return $result;
-//        });
     }
 
     public function searchByCategoryAndBranch(?string $search, int $branchId, int $categoryId): LengthAwarePaginator

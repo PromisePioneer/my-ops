@@ -10,10 +10,8 @@ use App\Models\StockMutation;
 use App\Support\Inventory\StockManagement\StockMutation\Service\StockMutationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
-use Spatie\Browsershot\Browsershot;
 use Throwable;
 use function App\Helper\formatDate;
 
@@ -77,6 +75,13 @@ use function App\Helper\formatDate;
     }
 
 
+    public function receive(StockMutation $stockMutation): JsonResponse
+    {
+        $this->stockMutationService->receive($stockMutation);
+        return response()->json(['message' => 'stock  berhasil di terima']);
+    }
+
+
     public function destroy(Request $request, StockMutation $stockMutation): JsonResponse
     {
         $implodeID = implode(',', $request->get('id'));
@@ -84,9 +89,6 @@ use function App\Helper\formatDate;
         $stockMutation->whereIn('id', $explodeID)->delete();
         return response()->json(['message' => 'data berhasil dihapus']);
     }
-
-
-
 
 
     public function getSessions(): JsonResponse

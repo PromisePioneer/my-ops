@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->integer('available_qty');
             $table->integer('broken_qty');
             $table->enum('condition', ['Rusak', 'Baik'])->default('Baik');
-            $table->enum('status', ['Tersedia', 'Terpakai', 'Dibawa'])->default('Tersedia');
+            $table->enum('status', ['Tersedia', 'Terpakai', 'Dibawa', 'Proses Mutasi'])->default('Tersedia');
             $table->foreignId('created_by')->constrained('users');
             $table->timestamps();
         });

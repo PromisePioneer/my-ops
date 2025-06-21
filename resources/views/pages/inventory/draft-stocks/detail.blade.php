@@ -6,12 +6,12 @@
         <div class="row">
             <div class="col-lg-5">
                 <div class="card shadow-sm mb-10">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            Belum berkode
+                        </h3>
+                    </div>
                     <div class="card-body">
-                        <div class="d-flex">
-                            <h3 class="card-title mb-10">
-                                {{ $itemCollection->name }}
-                                tidak ada kode</h3>
-                        </div>
                         <div class="table-responsive">
                             <table class="table table-bordered mb-10">
                                 <thead>
@@ -57,12 +57,12 @@
             </div>
             <div class="col-lg-7">
                 <div class="card shadow-sm mb-10">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            Stok
+                        </h3>
+                    </div>
                     <div class="card-body">
-                        <div class="d-flex">
-                            <h3 class="card-title mb-10">
-                                Stok
-                            </h3>
-                        </div>
                         <div class="table-responsive">
                             <table class="table table-bordered mb-10">
                                 <thead>
@@ -123,15 +123,9 @@
                     <table class="table table-bordered">
                         <thead>
                         <tr>
-                            <th class="w-10px pe-2">No</th>
-                            <th class="min-w-125px text-center">Cabang</th>
-                            <th class="min-w-125px text-center">Kode</th>
-                            <th class="min-w-125px text-center"> Tersedia</th>
-                            <th class="min-w-125px text-center"> Rusak</th>
-                            <th class="min-w-125px text-center">Kondisi</th>
-                            <th class="min-w-125px text-center">Status</th>
-                            <th class="min-w-125px text-center">Diinput Oleh</th>
-                            <th class="min-w-125px text-center">Action</th>
+                            <th class="min-w-125px text-center">Informasi</th>
+                            <th class="min-w-125px text-center">Kuantitas</th>
+                            <th class="min-w-125px">Action</th>
                         </tr>
                         </thead>
                         <template x-if="isLoading">
@@ -157,38 +151,40 @@
                             </tbody>
                         </template>
                         <template x-for="(item, index) in itemCatalog?.data" :key="item.id">
-                            <tbody class="text-center">
+                            <tbody>
                             <tr>
-                                <td x-text="startIndex + index++"></td>
-                                <td x-text="item.branch_name"></td>
-                                <td x-text="item.code"></td>
-                                <td x-text="item.available_qty"></td>
-                                <td x-text="item.broken_qty"></td>
-                                <td class="text-uppercase">
-                                    <template x-if="item.condition === 'Rusak'">
-                                        <span class="badge bg-light-danger text-danger">Rusak</span>
-                                    </template>
-                                    <template x-if="item.condition === 'Baik'">
-                                        <span class="badge bg-light-success text-success">Baik</span>
-                                    </template>
-                                    <template x-if="item.condition === 'Diperbaiki'">
-                                        <span class="badge bg-light-warning text-warning">Sdg Diperbaiki</span>
-                                    </template>
+                                <td class="p-10 text-center">
+                                    <p x-text="`${item.branch_name}`"></p>
+                                    <p class="fw-bold" x-text="`${item.code}`"></p>
+                                    <p class="text-uppercase">
+                                        <template x-if="item.status === 'Tersedia'">
+                                            <span class="badge bg-light-success text-success">Tersedia</span>
+                                        </template>
+                                        <template x-if="item.status === 'Dibawa'">
+                                            <span class="badge bg-light-warning text-warning">Dibawa</span>
+                                        </template>
+                                        <template x-if="item.status === 'Proses Mutasi'">
+                                            <span class="badge bg-light-info text-info">Proses Mutasi</span>
+                                        </template>
+                                    </p>
                                 </td>
-                                <td x-text="item.status"></td>
-                                <td x-text="item.created_by"></td>
-                                <td>
-                                    <template x-if="item.status === 'Tersedia'">
-                                        <button class="btn btn-light-danger btn-sm" @click="destroy(item.id)">
-                                            <i class="ki-duotone ki-trash fs-3">
-                                                <span class="path1"></span>
-                                                <span class="path2"></span>
-                                                <span class="path3"></span>
-                                                <span class="path4"></span>
-                                                <span class="path5"></span>
-                                            </i>
-                                        </button>
-                                    </template>
+                                <td class="p-10 text-center">
+                                    <p x-text="`Baik : ${item.available_qty}`"></p>
+                                    <p x-text="`Rusak : ${item.broken_qty}`"></p>
+                                </td>
+                                <td class="d-flex flex-column align-items-start text-center">
+                                    <button :disabled="item.status !== 'Tersedia'"
+                                            class="btn btn-light-info btn-sm mb-4"
+                                            @click="destroy(item.id)">
+                                        <x-icons.info/>
+                                        Riwayat Mutasi & Pemakaian
+                                    </button>
+                                    <button :disabled="item.status !== 'Tersedia'"
+                                            class="btn btn-light-danger btn-sm mb-4"
+                                            @click="destroy(item.id)">
+                                        <x-icons.trash/>
+                                        Hapus
+                                    </button>
                                 </td>
                             </tr>
                             </tbody>
@@ -224,7 +220,6 @@
                 isLoading: false,
                 itemId: "{{ $itemCollection->id }}",
                 itemCatalog: [],
-                startIndex: null,
                 stocks: [],
                 editVal: '',
                 autoGenerateCode: null,

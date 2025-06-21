@@ -31,6 +31,7 @@ return new class extends Migration {
                 ->cascadeOnUpdate()
                 ->cascadeOnUpdate();
             $table->text('description');
+            $table->enum('status', ['Dikirim', 'Diterima']);
             $table->timestamps();
         });
     }

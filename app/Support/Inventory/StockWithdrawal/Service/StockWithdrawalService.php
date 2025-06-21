@@ -117,7 +117,7 @@ use function App\Helper\formatDate;
     {
         DB::transaction(function () use ($request) {
             $stockWithdrawal = StockWithdrawal::create([
-                'branch_id' => Branch::where('id', $request->branch_id ?? $request->user()->branch_id)->first(),
+                'branch_id' => Branch::where('id', $request->branch_id ?? $request->user()->branch_id)->first()->id,
                 'date' => Carbon::now()->format('Y-m-d'),
                 'description' => $request->input('description'),
                 'stocker_id' => $request->user()->id,
@@ -133,6 +133,7 @@ use function App\Helper\formatDate;
         if (session()->has('stock_withdrawal_item')) {
             foreach (session('stock_withdrawal_item') as $item) {
                 if (!empty($item['code'])) {
+
                     $itemCatalog = ItemCatalog::with('asset.depreciation')->where('code', $item['code'])->first();
                     $stock = Stock::where('id', $item['stock_id'])->first();
                     $itemCatalog->decrement('available_qty', $item['qty']);

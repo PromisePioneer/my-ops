@@ -81,4 +81,10 @@ use Illuminate\Http\Request;
         return Branch::with('defaultWorkTime')->whereNull('parent_id')->orderBy('name');
     }
 
+
+    public function findById(int $id)
+    {
+        return $this->branch->query()->with('parent')->find($id);
+    }
+
 }
