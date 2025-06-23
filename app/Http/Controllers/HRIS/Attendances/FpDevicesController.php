@@ -17,10 +17,9 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
 
 #[AllowDynamicProperties] class FpDevicesController extends Controller
 {
-    private static int $perPage = 10;
     public function __construct()
     {
-        $this->FpDevices = new FpDevice();
+        $this->fpDevice = new FpDevice();
         $this->branch = new Branch();
         $this->fpDeviceService = new FpDeviceService();
     }
@@ -47,7 +46,7 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
 
     public function store(FpDeviceRequest $request): JsonResponse
     {
-        FpDevice::create($request->validated());
+        $this->fpDevice->query()->create($request->validated());
 
         return response()->json([
             'message' => 'data berhasil disimpan',
@@ -72,7 +71,7 @@ use Jmrashed\Zkteco\Lib\ZKTeco;
     {
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
-        $fpDevice->whereIn('id', $explodeID)->delete();
+        $fpDevice->query()->whereIn('id', $explodeID)->delete();
 
         return response()->json([
             'message' => 'data berhasil dihapus',

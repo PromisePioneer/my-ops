@@ -40,7 +40,8 @@
                     </div>
                     <div class="mb-10" x-show="leavesStatus !== 'Cuti Penting'">
                         <label for="name" class="required form-label">Tanggal Selesai</label>
-                        <input type="date" id="end_date" name="end_date" class="form-control form-control-solid date"
+                        <input type="date" id="end_date" :name="`${leavesStatus !== 'Cuti Penting' ? 'end_date' : ''}`"
+                               class="form-control form-control-solid date"
                                placeholder="Tanggal Selesai" :value="editVal?.end_date"/>
                     </div>
                     <div class="mb-10" x-show="leavesStatus === 'Cuti'">
@@ -86,7 +87,7 @@
                     <div class="mb-10" x-show="leavesStatus !== 'Cuti Penting'" x-transition x-cloak>
                         <label for="name" class="required form-label">Alasan</label>
                         <textarea type="date" id="reason" name="reason" class="form-control form-control-solid"
-                                  data-kt-autosize="true" placeholder="ALasan" x-text="editVal?.reason"></textarea>
+                                  data-kt-autosize="true" placeholder="Alasan" x-text="editVal?.reason"></textarea>
                     </div>
                 </div>
 

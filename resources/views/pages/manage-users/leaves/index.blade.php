@@ -4,56 +4,8 @@
     <div x-data="leavesData()">
         @include('pages.manage-users.leaves.confirm')
         @include('pages.manage-users.leaves.form')
+        @include('pages.manage-users.leaves.drawer.filter')
         <div class="d-flex flex-column flex-xl-row">
-            <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
-                <div class="card card-flush">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <h2 class="mb-0">Filter</h2>
-                        </div>
-                    </div>
-                    <div class="card-body pt-0">
-                        <div class="d-flex flex-column text-gray-600">
-                            <div class="d-flex align-items-center py-2">
-                                @can('Filter Data Manajemen Cuti Berdasarkan Cabang')
-                                    <select class="form-select form-select-solid main-branches-select2"
-                                            name="branch_id" id="branch_id">
-                                    </select>
-                                @endcan
-                            </div>
-                            <div class="d-flex align-items-center py-2">
-                                <select class="form-select-solid form-select" name="confirmation_status"
-                                        id="confirmation_status" x-model="selectedConfirmationStatus">
-                                    <option selected>Pilih Status</option>
-                                    <option :value="`Diproses`">Diproses</option>
-                                    <option :value="`Diterima`">Diterima</option>
-                                    <option :value="`Ditolak`">Ditolak</option>
-                                </select>
-                            </div>
-                            <div class="d-flex align-items-center py-2">
-                                <input type="number" name="year" id="year"
-                                       class="form-control form-control-solid"
-                                       placeholder="Filter Berdasarkan Tahun">
-                            </div>
-                            <div class="d-flex align-items-center py-2">
-                                <select class="form-select form-select-solid"
-                                        name="month" id="month" data-control="select2"
-                                        data-placeholder="Pilih Bulan" data-allow-clear="true">
-                                    <option></option>
-                                    <template x-for="month in months" :key="index">
-                                        <option :value="month.number" x-text="month.name"></option>
-                                    </template>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer pt-4 text-end">
-                        <button type="button" @click="filter()" class="btn btn-light btn-active-primary btn-sm">
-                            Filter
-                        </button>
-                    </div>
-                </div>
-            </div>
             <div class="flex-lg-row-fluid ms-lg-10">
                 <div class="card card-xl-stretch mb-5 mb-xl-8">
                     <div class="card-header border-0 pt-6">
@@ -68,11 +20,18 @@
                         </div>
                         <div class="card-toolbar">
                             <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                                <button class="btn btn-light-primary btn-sm"
+                                <button class="btn btn-light-primary btn-sm me-2"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modal-leaves"
                                 >
+                                    <x-icons.add-item/>
                                     Tambah
+                                </button>
+                            </div>
+                            <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
+                                <button class="btn btn-light-info btn-sm" id="kt_drawer_example_basic_button">
+                                    <x-icons.filter/>
+                                    Filter
                                 </button>
                             </div>
                         </div>
@@ -81,16 +40,11 @@
                         <div class="col-12">
                             <form id="form-delete" @submit.prevent="destroy()">
                                 <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
-                                @can('Tambah Data Manajemen Cuti')
+                                @can('Hapus Data Manajemen Cuti')
                                     <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                             x-show="selectedCheckBox.length > 0"
                                             x-transition x-cloak>
-                                        <i class="ki-duotone ki-trash-square fs-2">
-                                            <span class="path1"></span>
-                                            <span class="path2"></span>
-                                            <span class="path3"></span>
-                                            <span class="path4"></span>
-                                        </i>
+                                        <x-icons.trash/>
                                         Hapus
                                     </button>
                                 @endcan
@@ -101,7 +55,7 @@
                                 <table class="table align-middle table-row-dashed fs-6 gy-5 table-bordered"
                                        id="kt_table_users">
                                     <thead>
-                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                    <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                         <th class="w-10px pe-2">
                                             <div
                                                 class="form-check form-check-sm form-check-custom form-check-solid me-3">
@@ -110,16 +64,13 @@
                                             </div>
                                         </th>
                                         <th class="min-w-125px">Nama</th>
-                                        <th class="min-w-125px">Tanggal</th>
-                                        <th class="min-w-125px">Alasan Cuti</th>
-                                        <th class="min-w-125px">Tipe</th>
-                                        <th class="min-w-125px">Status</th>
-                                        <th class="min-w-125px">File Sakit</th>
-                                        <th class="min-w-125px">TGL Pengajuan</th>
-                                        <th class="min-w-125px">Action</th>
+                                        <th class="min-w-125px">File</th>
+                                        <th class="min-w-125px">Alasan</th>
+                                        <th class="min-w-125px">Tgl.Pengajuan</th>
+                                        <th class="min-w-150px">Action</th>
                                     </thead>
-                                    <tbody class=" fw-bold">
                                     <template x-if="isLoading">
+                                        <tbody class="fw-bold">
                                         <tr>
                                             <td colspan="9">
                                                 <div style="text-align: center;">
@@ -129,15 +80,19 @@
                                                 </div>
                                             </td>
                                         </tr>
+                                        </tbody>
                                     </template>
                                     <template x-if="!isLoading && leaves.data?.length === 0">
-                                        <tr>
+                                        <tbody>
+                                        <tr class="fw-bold">
                                             <td colspan="9">
                                                 <center>Data Tidak Ditemukan</center>
                                             </td>
                                         </tr>
+                                        </tbody>
                                     </template>
                                     <template x-for="(leave, index) in leaves?.data" :key="index">
+                                        <tbody class="fw-bold">
                                         <tr>
                                             <td>
                                                 <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -146,24 +101,21 @@
                                                            :id="'checkbox-' + leave.id"/>
                                                 </div>
                                             </td>
-                                            <td>
+                                            <td class="text-center">
                                                 <a :href="`${Number(viewDetailUserPermission) === 1 ? `/manage-users/users/detail/${leave.user_id}` : '#'}`"
                                                    x-text="leave.user_name"></a>
-                                            </td>
-                                            <td x-text="`${leave.start_date} - ${leave.end_date}`"></td>
-                                            <td x-text="leave.reason ?? leave.important_leaves"></td>
-                                            <td>
-                                                <span x-text="leave.leaves_status"></span>
-                                            </td>
-                                            <td>
+                                                <p class="mb-1" x-text="`${leave.start_date} - ${leave.end_date}`"></p>
                                                 <template x-if="leave.confirmation_status === 'Diproses'">
-                                                    <span class="badge bg-warning">Diproses</span>
+                                                    <span class="badge bg-light-warning text-warning fs-7"
+                                                          x-text="`${leave.leaves_status} (Diproses)`"></span>
                                                 </template>
                                                 <template x-if="leave.confirmation_status === 'Diterima'">
-                                                    <span class="badge bg-success">Diterima</span>
+                                                    <span class="badge bg-light-success text-success fs-7"
+                                                          x-text="`${leave.leaves_status} (Diterima)`"></span>
                                                 </template>
                                                 <template x-if="leave.confirmation_status === 'Ditolak'">
-                                                    <span class="badge bg-danger">Ditolak</span>
+                                                    <span class="badge bg-light-danger text-danger fs-7"
+                                                          x-text="`${leave.leaves_status} (Ditolak)`"></span>
                                                 </template>
                                             </td>
                                             <td>
@@ -171,10 +123,12 @@
                                                     <img :src="getImageURL(leave.sick_letter)" height="100"/>
                                                 </a>
                                             </td>
-                                            <td x-text="leave.created_at"></td>
+                                            <td class="text-center"
+                                                x-text="leave.reason ?? '-'"></td>
+                                            <td class="text-center" x-text="leave.created_at"></td>
                                             <template
                                                 x-if="leave.confirmation_status === 'Diterima' || leave.confirmation_status === 'Ditolak'">
-                                                <td>
+                                                <td class="text-center">
                                                     <button class="btn btn-light-primary btn-sm" disabled>
                                                         <i class="ki-duotone ki-pencil fs-2">
                                                             <span class="path1"></span>
@@ -187,27 +141,24 @@
                                                 </td>
                                             </template>
                                             <template x-if="leave.confirmation_status === 'Diproses'">
-                                                <td>
+                                                <td class="text-center">
                                                     <template
                                                         x-if="Number(confirmPermission) === 1 && Number(userSessionId) !== leave.user_id">
-                                                        <button class="btn btn-info btn-sm" data-bs-toggle="modal"
+                                                        <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
                                                                 data-bs-target="#modal-confirm"
                                                                 @click="edit(leave.id)">
-                                                            <i class="bi bi-gear-fill"></i>
+                                                            <x-icons.gear/>
                                                         </button>
                                                     </template>
                                                     <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                             data-bs-target="#modal-leaves" @click="edit(leave.id)">
-                                                        <i class="ki-duotone ki-pencil fs-2">
-                                                            <span class="path1"></span>
-                                                            <span class="path2"></span>
-                                                        </i>
+                                                        <x-icons.edit/>
                                                     </button>
                                                 </td>
                                             </template>
                                         </tr>
+                                        </tbody>
                                     </template>
-                                    </tbody>
                                 </table>
                             </div>
                             <ul class="pagination float-end mb-4">
@@ -226,6 +177,7 @@
         </div>
     </div>
     @include('components.toast')
+    @include('components.select2.script')
 @endsection
 @push('script')
     <script>
@@ -258,10 +210,9 @@
                 months: [],
                 async init() {
                     this.getMonth();
-                    await this.getMainBranches();
+                    await select2('.main-branches-select2', 'Pilih Cabang', '/select2/main-branches-data');
+                    await select2('.users-select2', 'Pilih Karyawan', '/manage-users/leaves/users/data');
                     await this.getLeavesData();
-                    await this.getUserData();
-                    console.log(this.userSessionId)
                 },
                 getMonth() {
                     this.months.push(
@@ -488,6 +439,7 @@
                             await axios.post(`/manage-users/leaves/destroy`, new FormData(this.formDelete)).then(async () => {
                                 await showAlert('success', 'Data sukses dihapus');
                                 this.leavesLeft = 0;
+                                this.selectedCheckBox = [];
                                 const resp = await axios.get(`${this.leaves.path}?page=${this.leaves.current_page}`, {
                                     params: {
                                         search: this.search,

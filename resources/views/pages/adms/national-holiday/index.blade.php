@@ -30,9 +30,9 @@
             <div class="card-body py-3">
                 <div class="py-5">
                     <div class="table-responsive">
-                        <table class="table table-bordered fs-6 gy-5 table-striped" id="kt_table_users">
+                        <table class="table table-bordered fs-6 gy-5" id="kt_table_users">
                             <thead>
-                            <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                            <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
                                 <th>#</th>
                                 <th>Nama</th>
                                 <th>Tanggal</th>
@@ -64,7 +64,7 @@
                                 <tr>
                                     <td x-text="startIndex + index++"></td>
                                     <td x-text="holiday.name"></td>
-                                    <td x-text="holiday.date"></td>
+                                    <td class="text-center" x-text="holiday.date"></td>
                                 </tr>
                                 </tbody>
                             </template>
@@ -123,7 +123,7 @@
                     showConfirmModal("Generate Data?", "Anda yakin ? ", "Ya", async () => {
                         try {
                             await axios.post(`/adms/national-holiday`);
-                            await showAlert('success', 'Data sukses dihapus');
+                            await showAlert('success', 'Data sukses disimpan');
                             await this.init();
                         } catch (error) {
                             console.error(error);

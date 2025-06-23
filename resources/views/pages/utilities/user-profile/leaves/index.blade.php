@@ -32,10 +32,9 @@
                         <table class="table align-middle table-bordered fs-6 gy-5 table-striped" id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0 text-center">
-                                <th class="min-w-125px">Tanggal</th>
-                                <th class="min-w-125px">Status (Cuti / Izin / Sakit)</th>
+                                <th class="min-w-125px">Tanggal & Status</th>
+                                <th class="min-w-125px">File</th>
                                 <th class="min-w-125px">Keterangan</th>
-                                <th class="min-w-125px">Status Konfirmasi</th>
                                 <th class="min-w-125px">Action</th>
                             </thead>
                             <tbody class="fw-bold">
@@ -60,20 +59,27 @@
                             <template x-for="(leave, index) in leaves?.data"
                                       :key="index">
                                 <tr class="text-center">
-                                    <td x-text="`${leave.start_date} - ${leave.end_date}`"></td>
-                                    <td x-text="leave.leaves_status"></td>
-                                    <td x-text="leave.reason ?? leave.important_leaves"></td>
-                                    <td>
+                                    <td class="text-center">
+                                        <p class="mb-1" x-text="`${leave.start_date} - ${leave.end_date}`"></p>
                                         <template x-if="leave.confirmation_status === 'Diproses'">
-                                            <span class="badge bg-warning">Diproses</span>
+                                                    <span class="badge bg-light-warning text-warning fs-7"
+                                                          x-text="`${leave.leaves_status} (Diproses)`"></span>
                                         </template>
                                         <template x-if="leave.confirmation_status === 'Diterima'">
-                                            <span class="badge bg-success">Diterima</span>
+                                                    <span class="badge bg-light-success text-success fs-7"
+                                                          x-text="`${leave.leaves_status} (Diterima)`"></span>
                                         </template>
                                         <template x-if="leave.confirmation_status === 'Ditolak'">
-                                            <span class="badge bg-danger">Ditolak</span>
+                                                    <span class="badge bg-light-danger text-danger fs-7"
+                                                          x-text="`${leave.leaves_status} (Ditolak)`"></span>
                                         </template>
                                     </td>
+                                    <td>
+                                        <a href="#" @click="openImage(leave.sick_letter)">
+                                            <img :src="getImageURL(leave.sick_letter)" height="100"/>
+                                        </a>
+                                    </td>
+                                    <td x-text="leave.reason ?? leave.important_leaves"></td>
                                     <template
                                         x-if="leave.confirmation_status === 'Diproses' && Number(editPermission) === 1">
                                         <td>
@@ -143,6 +149,23 @@
                         this.leavesLeft = resp.data;
                     } catch (e) {
                         console.log(e)
+                    }
+                },
+                getImageURL(imagePath) {
+                    return imagePath ? "{{  Storage::url('') }}" + imagePath : '';
+                },
+                openImage(imagePath) {
+                    const lightbox = new FsLightbox();
+                    console.log(lightbox);
+                    if (imagePath === null) {
+                        const placeholders = 'assets/media/avatars/blank.png'
+                        const image = "{{ asset('') }}" + placeholders
+                        lightbox.props.sources = [image, image];
+                        lightbox.open();
+                    } else {
+                        const image = "{{ Storage::url('') }}" + imagePath;
+                        lightbox.props.sources = [image];
+                        lightbox.open();
                     }
                 },
                 async getOwnLeaves() {

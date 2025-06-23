@@ -27,7 +27,7 @@
                             <div class="col-lg-6">
                                 <label class="form-label fs-6 fw-bolder text-gray-700 mb-3 required">Karyawan</label>
                                 <div class="mb-5">
-                                    <select name="user_id" id="selectedUser"
+                                    <select name="user_id" id="selected-user"
                                             class="form-select form-select-solid users-select2"
                                             data-placeholder="Select an option">
                                         <option selected>Pilih Karyawan</option>
@@ -61,7 +61,7 @@
                                         Yang Memberi Sanksi
                                     </label>
                                     <select name="punished_by" class="form-select form-select-solid sp-pic"
-                                            id="selectedPunishedBy">
+                                            id="selected-punished-by">
                                         <option></option>
                                     </select>
                                 </div>
@@ -115,24 +115,31 @@
             </div>
         </div>
     </div>
+    @include('components.select2.script')
     @include('components.toast')
 @endsection
 @push('script')
     <script>
         $('.date').flatpickr();
+
         function generateSP() {
             return {
                 fields: [],
                 listOfReason: [],
                 spId: '{{ $sp->id  }}',
+                userId: "{{ $sp->user_id }}",
+                punishedBy: "{{ $sp->punished_by }}",
                 form: document.getElementById('form'),
                 buttonLoading: false,
                 async init() {
                     await this.getListOfReason();
-                    await this.getUserData();
-                    await this.selectedUserData();
-                    await this.selectedPunishBy();
-                    await this.getSPPic();
+                    await select2('.users-select2', 'Pilih Karyawan', '/select2/users-data')
+                    await select2('.sp-pic', 'Pilih yang memberi sanksi', '/manage-users/sp/sp-pic/data')
+                    await this.selectedValue();
+                },
+                async selectedValue() {
+                    await selectedValue('selected-user', `/select2/selected-user/${this.userId}`);
+                    await selectedValue('selected-punished-by', `/select2/selected-user/${this.punishedBy}`);
                 },
                 add() {
                     this.fields.push({
@@ -164,58 +171,6 @@
                     } finally {
                         this.buttonLoading = false;
                     }
-                },
-                async getUserData() {
-                    $(".users-select2").select2({
-                        ajax: {
-                            url: '/manage-users/sp/users/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async getSPPic() {
-                    $(".sp-pic").select2({
-                        allowClear: true,
-                        placeholder: "Pilih yang memberi sanksi",
-                        ajax: {
-                            url: '/manage-users/sp/sp-pic/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async selectedPunishBy() {
-                    const selectedPunishedBy = $('#selectedPunishedBy');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/manage-users/sp/punished-by/selected/${this.spId}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedPunishedBy.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
-                async selectedUserData() {
-                    const selectedUser = $('#selectedUser');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/manage-users/sp/users/data/selected/${this.spId}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedUser.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
                 },
             }
         }

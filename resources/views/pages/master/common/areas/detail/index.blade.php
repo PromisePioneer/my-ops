@@ -133,6 +133,7 @@
         </div>
     </div>
     @include('components.toast')
+    @include('components.select2.script')
 @endsection
 @push('script')
     <script>
@@ -145,19 +146,20 @@
                 buttonLoading: false,
                 isLoading: false,
                 id: "{{ $area->id }}",
+                branchId: "{{ $area->branch_id }}",
                 search: '',
                 usersArea: [],
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
-                modalForm: new bootstrap.Modal(document.getElementById('modal-detail-area')),
+                modal: new bootstrap.Modal(document.getElementById('modal-detail-area')),
                 form: document.getElementById('form-detail-area'),
                 formDelete: document.getElementById('form-delete'),
                 days: [],
                 editVal: '',
                 async init() {
                     await this.getAssociatedUsers();
-                    await this.getUserData();
+                    await select2('.users-select2', 'Pilih KCA/WKCA/Teknisi', `/select2/unassign-technicians-data/${this.branchId}`)
                     this.days.push(
                         {value: 'Minggu', label: 'Minggu'},
                         {value: 'Senin', label: 'Senin'},
@@ -217,20 +219,6 @@
                         }
                     }
                 },
-                async getUserData() {
-                    $(".users-select2").select2({
-                        placeholder: 'Pilih KCA/WKCA/Teknisi',
-                        allowClear: true,
-                        ajax: {
-                            url: `/master/common/area-detail/users/data/${this.id}`,
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
                 async paginate(url) {
                     if (url) {
                         const resp = await axios.get(`${url}`);
@@ -240,7 +228,6 @@
                 async show(id) {
                     const resp = await axios.get(`/master/common/area-detail/show/${id}`);
                     this.editVal = resp.data;
-                    console.log(this.editVal);
                 },
 
                 async save() {
@@ -249,7 +236,7 @@
                         await axios.post(`/master/common/area-detail/${this.id}`, new FormData(this.form))
                         await showAlert('success', 'Data berhasil disimpan')
                         this.form.reset();
-                        this.modalForm.hide();
+                        this.modal.hide();
                         await this.init();
                     } catch (error) {
                         const respError = error.response.data.errors;

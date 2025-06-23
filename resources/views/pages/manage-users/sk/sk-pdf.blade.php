@@ -148,14 +148,15 @@
             <tr>
                 <td style="width: 5%; padding: 5px;"><b>Jabatan Lama</b></td>
                 <td style="width: 1%; padding: 5px;">:</td>
-                <td style="width: 20%; padding: 5px;"><b>{{ $sk->oldRole?->name ?? '-' }}
-                        Cab {{ $sk->oldBranch?->name }}</b>
+                <td style="width: 20%; padding: 5px;">
+                    <b>{{ $sk->oldRole?->name ?? '-' }} {{ $sk->oldBranch ? $sk->oldBranch?->name : '' }}</b>
                 </td>
             </tr>
             <tr>
                 <td style="width: 5%; padding: 5px;"><b>Jabatan Baru</b></td>
                 <td style="width: 1%; padding: 5px;">:</td>
-                <td style="width: 20%; padding: 5px;"><b>{{ $sk->newRole?->name }} Cab {{  $sk->newBranch?->name }}</b>
+                <td style="width: 20%; padding: 5px;">
+                    <b>{{ $sk->newRole?->name }} {{ $sk->newBranch ?  $sk->newBranch?->name : '' }}</b>
                 </td>
             </tr>
             </tbody>

@@ -98,6 +98,8 @@
         </div>
     </div>
     @include('components.toast')
+    @include('components.select2.script')
+    @include('components.select2.index')
 @endsection
 @push('script')
     <script>
@@ -113,9 +115,9 @@
                 currentSP: null,
                 buttonLoading: false,
                 async init() {
-                    await this.getUserData();
+                    await select2('.users-select2', 'Pilih Karyawan', '/select2/users-data')
+                    await select2('.sp-pic', 'Pilih yang memberi sanksi', '/manage-users/sp/sp-pic/data')
                     await this.getCurrentSp();
-                    await this.getSPPic();
                     this.SPType.push(
                         {name: 'ST'},
                         {name: "SP-1"},
@@ -167,34 +169,6 @@
                             self.SPType.splice(0, 2);
                         }
                     })
-                },
-                async getUserData() {
-                    $(".users-select2").select2({
-                        placeholder: "Pilih karyawan",
-                        allowClear: true,
-                        ajax: {
-                            url: '/manage-users/sp/users/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async getSPPic() {
-                    $(".sp-pic").select2({
-                        allowClear: true,
-                        placeholder: "Pilih yang memberi sanksi",
-                        ajax: {
-                            url: '/manage-users/sp/sp-pic/data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true
-                        }
-                    });
                 },
             }
         }

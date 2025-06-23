@@ -2,21 +2,32 @@
 
 namespace App\Support\User\Role\Repository;
 
+use AllowDynamicProperties;
 use App\Models\Master\Common\Branch;
 use App\Models\Role;
 use Illuminate\Database\Eloquent\Builder;
 
-class RoleRepository
+#[AllowDynamicProperties] class RoleRepository
 {
+    public function __construct()
+    {
+        $this->role = new Role();
+    }
+
+
     public function getRoleWithWorkTime(): Builder
     {
-        return Role::with('defaultWorkTime')->orderBy('name');
+        return $this->role->query()
+            ->with('defaultWorkTime')
+            ->orderBy('name');
     }
 
 
     public function getBranchRoles(Branch $branch): Builder
     {
-        return Role::with(['branchRoleDefaultWorkTime' => function ($query) use ($branch) {
+        return $this->role
+            ->query()
+            ->with(['branchRoleDefaultWorkTime' => function ($query) use ($branch) {
             $query->where('branch_id', $branch->id);
         }])->whereNotIn('name', [
             'Main Commissioner',
@@ -53,5 +64,11 @@ class RoleRepository
             'Director',
             'Vendor'
         ])->orderBy('name');
+    }
+
+
+    public function findById(int $id)
+    {
+        return $this->role->query()->find($id);
     }
 }

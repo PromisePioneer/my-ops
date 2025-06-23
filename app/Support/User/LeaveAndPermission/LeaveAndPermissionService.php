@@ -8,9 +8,11 @@ use App\Models\LeaveAndPermission;
 use App\Models\User;
 use App\Support\HelperService\HandleFileUploadService;
 use App\Support\HelperService\UserSelect2QueryFilter;
+use App\Support\User\LeaveAndPermission\Repository\LeaveAndPermissionRepository;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use function App\Helper\formatDate;
 
 #[AllowDynamicProperties] class LeaveAndPermissionService
@@ -20,13 +22,14 @@ use function App\Helper\formatDate;
     public function __construct()
     {
         $this->leaveAndPermission = new LeaveAndPermission();
-        $this->leaveRepository = new LeaveRepository();
+        $this->leaveAndPermissionRepository = new LeaveAndPermissionRepository();
         $this->handleFileUploadService = new HandleFileUploadService();
+        $this->user = new User();
     }
 
     public function data(Request $request): LengthAwarePaginator
     {
-        $query = $this->leaveRepository->leavesMainQuery();
+        $query = $this->leaveAndPermissionRepository->leavesMainQuery();
         $permissions = LeaveACLFilter::apply($query, $request);
         $query = $permissions->paginate(self::$perPage);
         return self::formattedData($query);
@@ -35,7 +38,7 @@ use function App\Helper\formatDate;
 
     public function filter(Request $request): LengthAwarePaginator
     {
-        $query = $this->leaveRepository->leavesMainQuery();
+        $query = $this->leaveAndPermissionRepository->leavesMainQuery();
         $filter = LeaveQueryFilter::apply($query, $request);
         $permissions = LeaveACLFilter::apply($filter, $request);
         $data = $permissions->paginate(self::$perPage);
@@ -46,13 +49,9 @@ use function App\Helper\formatDate;
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $query = $this->leaveRepository->leavesMainQuery();
+        $query = $this->leaveAndPermissionRepository->leavesMainQuery();
         if (!empty($search)) {
-            $query = $query->where(function ($query) use ($search) {
-                $query->whereHas('user', function ($query) use ($search) {
-                    $query->where('name', 'like', '%' . $search . '%');
-                });
-            });
+            $query = $this->leaveAndPermissionRepository->searchQuery($query, $search);
         }
 
         $leaveACLFilter = LeaveACLFilter::apply($query, $request);
@@ -97,11 +96,11 @@ use function App\Helper\formatDate;
             : $request->input('end_date');
 
         LeaveAndPermission::create([
-            'start_date' => $request->start_date,
+            'start_date' => $request->input('start_date'),
             'end_date' => $endDate,
-            'user_id' => $request->user_id ?? $request->user()->id,
-            'reason' => $request->reason,
-            'leaves_status' => $request->leaves_status,
+            'user_id' => $request->input('user_id') ?? $request->user()->id,
+            'reason' => $request->input('reason'),
+            'leaves_status' => $request->input('leaves_status'),
             'important_leaves' => $request->input('important_leaves'),
             'sick_letter' => $this->handleFileUploadService->upload(
                 $request,
@@ -109,8 +108,6 @@ use function App\Helper\formatDate;
                 'sick_letter'
             ),
         ]);
-
-
     }
 
 
@@ -122,11 +119,11 @@ use function App\Helper\formatDate;
 
 
         $leaveAndPermission->update([
-            'start_date' => $request->start_date,
+            'start_date' => $request->input('start_date'),
             'end_date' => $endDate,
             'user_id' => $request->user_id ?? $request->user()->id,
-            'reason' => $request->reason,
-            'leaves_status' => $request->leaves_status,
+            'reason' => $request->input('reason'),
+            'leaves_status' => $request->input('leaves_status'),
             'sick_letter' => $this->handleFileUploadService->upload(
                 $request,
                 'documents/leaves-and-permissions/sick-letter',
@@ -137,12 +134,11 @@ use function App\Helper\formatDate;
     }
 
 
-    public function getUserData(Request $request)
+    public function getUserData(Request $request): Collection
     {
         $search = $request->input('search');
-        $users = User::search($search)->query(function ($query) use ($request) {
-            $newQuery = $query->where('active', true);
-            UserSelect2QueryFilter::apply($newQuery, $request);
+        $users = $this->user->search($search)->query(function ($query) use ($request) {
+            UserSelect2QueryFilter::apply($query, $request);
         })->get();
 
         return $users->map(function ($item) {
@@ -153,18 +149,14 @@ use function App\Helper\formatDate;
         });
     }
 
-    public function getOwnleaves(Request $request): LengthAwarePaginator
+    public function getOwnLeaves(Request $request): LengthAwarePaginator
     {
-        $leaves = LeaveAndPermission::with('accBy', 'user', 'user.userHasArea', 'user.branch', 'user.roles.department')
-            ->where('user_id', $request->user()->id)
-            ->orderBy('created_at')
-            ->paginate(self::$perPage);
-
+        $leaves = $this->leaveAndPermissionRepository->getOwnLeaves($request)->paginate(self::$perPage);
         return self::formattedData($leaves);
     }
 
 
-    public function importantLeavesDays(LeaveAndPermissionRequest $request)
+    public function importantLeavesDays(LeaveAndPermissionRequest $request): int
     {
         if ($request->input('important_leaves') === 'Menikah') {
             return 3;

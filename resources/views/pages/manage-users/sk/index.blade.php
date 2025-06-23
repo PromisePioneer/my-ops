@@ -136,6 +136,7 @@
             </div>
         </div>
         @include('components.toast')
+        @include('components.select2.script')
     </div>
 @endsection
 @push('script')
@@ -153,6 +154,9 @@
                 form: document.getElementById('form-sk'),
                 async init() {
                     await this.getSkData();
+                    await select2('.users-select2', 'Pilih Karyawan', '/select2/users-data');
+                    await select2('.roles-select2', 'Pilih Jabatan', '/select2/roles-data');
+                    await select2('.main-branches-select2', 'Pilih Cabang', '/select2/main-branches-data');
                 },
                 async searchData() {
                     this.isLoading = true
@@ -173,9 +177,6 @@
                     $('#selected-user').val("");
                     $('#selected-role').val("");
                     $('#selected-branch').val("");
-                    await this.getUserData();
-                    await this.getRolesData();
-                    await this.getMainBranches();
                 },
                 async paginationEndPoint(url) {
                     const resp = await axios.get(`${url}`);
@@ -204,12 +205,9 @@
                 async edit(id) {
                     const resp = await axios.get(`/manage-users/sk/${id}`);
                     this.editVal = resp.data;
-                    await this.getUserData();
-                    await this.getRolesData();
-                    await this.getMainBranches();
-                    await this.selectedRole();
-                    await this.selectedUser();
-                    await this.selectedBranch();
+                    await selectedValue('selected-user', `/select2/selected-user/${this.editVal.user_id}`);
+                    await selectedValue('selected-role', `/select2/selected-role/${this.editVal.new_role_id}`);
+                    await selectedValue('selected-branch', `/select2/selected-branch/${this.editVal.new_branch_id}`);
                 },
                 async update(id) {
                     this.buttonLoading = true;
@@ -238,89 +236,6 @@
                         this.isLoading = false;
                     }
                 },
-                async getUserData() {
-                    $(".users-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih karyawan",
-                        ajax: {
-                            url: '/select2/users-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async getMainBranches() {
-                    $(".main-branches-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Cabang",
-                        ajax: {
-                            url: '/select2/main-branches-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async getRolesData() {
-                    $(".roles-select2").select2({
-                        placeholder: "Pilih Jabatan",
-                        allowClear: true,
-                        ajax: {
-                            url: '/select2/roles-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: (params) => ({search: params.term}),
-                            processResults: (data) => ({results: data}),
-                            cache: true
-                        }
-                    });
-                },
-                async selectedUser() {
-                    const selectedUser = $('#selected-user');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-user/${this.editVal.user_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedUser.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
-
-                async selectedRole() {
-                    const selectedRole = $('#selected-role');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-role/${this.editVal.new_role_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedRole.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
-                async selectedBranch() {
-                    const selectedBranch = $('#selected-branch');
-                    const response = await $.ajax({
-                        type: 'GET',
-                        dataType: "JSON",
-                        url: `/select2/selected-branch/${this.editVal.new_branch_id}`,
-                    });
-                    const option = new Option(response.name, response.id, true, true);
-                    selectedBranch.append(option).trigger('change').trigger({
-                        type: 'select2:select',
-                        params: {results: response}
-                    });
-                },
-
             }
         }
     </script>

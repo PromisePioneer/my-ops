@@ -9,7 +9,7 @@ use App\Models\Master\Common\Branch;
 use App\Models\Role;
 use App\Models\SK;
 use App\Models\User;
-use App\Support\User\SK\SKService;
+use App\Support\User\SK\Service\SKService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -50,10 +50,6 @@ use Throwable;
         return response()->json($this->user->getUser($request));
     }
 
-    public function getRoleData(Request $request): JsonResponse
-    {
-        return response()->json($this->role->getData($request));
-    }
 
     /**
      * @throws Throwable

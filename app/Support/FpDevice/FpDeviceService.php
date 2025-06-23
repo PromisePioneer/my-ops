@@ -2,24 +2,27 @@
 
 namespace App\Support\FpDevice;
 
+use AllowDynamicProperties;
 use App\Models\FpDevice;
+use App\Support\FpDevice\Repository\FpDeviceRepository;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class FpDeviceService
+#[AllowDynamicProperties] class FpDeviceService
 {
 
     private static int $perPage = 10;
 
+    public function __construct()
+    {
+        $this->fpDeviceRepository = new FpDeviceRepository();
+        $this->fpDevice = new FpDevice();
+    }
+
     public function data(Request $request): LengthAwarePaginator
     {
-        $data = FpDevice::with(['branch', 'attendanceJobProgress' => function ($query) {
-            $query->latest('created_at');
-        }])->when($request->user()->hasRole('Branch Manager'), function ($query) use ($request) {
-            $query->where('branch_id', $request->user()->branch_id);
-        })
-            ->paginate(self::$perPage);
+        $data = $this->fpDeviceRepository->data($request)->paginate(self::$perPage);
         return self::formattedData($data);
     }
 
@@ -27,7 +30,7 @@ class FpDeviceService
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $data = FpDevice::search($search)->query(function ($query) use ($request) {
+        $data = $this->fpDevice->search($search)->query(function ($query) use ($request) {
             $fpDevice = $query->orderBy('name');
             FpDeviceQueryFilter::apply($fpDevice, $request);
         })->paginate(self::$perPage);
@@ -38,10 +41,8 @@ class FpDeviceService
 
     public function filter(Request $request): LengthAwarePaginator
     {
-        $query = FpDevice::with('branch');
-        $data = FpDeviceQueryFilter::apply($query, $request)
-            ->paginate(self::$perPage);
-
+        $query = $this->fpDevice->with('branch');
+        $data = FpDeviceQueryFilter::apply($query, $request)->paginate(self::$perPage);
         return self::formattedData($data);
     }
 

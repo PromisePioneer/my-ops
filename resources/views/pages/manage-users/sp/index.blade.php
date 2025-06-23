@@ -213,6 +213,7 @@
         </div>
     </div>
     @include('components.toast')
+    @include('components.select2.script')
 @endsection
 @push('script')
     <script>
@@ -228,7 +229,7 @@
                 months: [],
                 async init() {
                     await this.getSpData();
-                    await this.getMainBranches();
+                    await select2('.main-branches-select2', 'Pilih Cabang', '/select2/main-branches-data')
                     this.getMonth();
                 },
                 async searchData() {
@@ -267,20 +268,6 @@
                             this.isLoading = false
                         }
                     }
-                },
-                async getMainBranches() {
-                    $(".main-branches-select2").select2({
-                        allowClear: true,
-                        placeholder: "Pilih Cabang",
-                        ajax: {
-                            url: '/select2/main-branches-data',
-                            dataType: "json",
-                            type: "GET",
-                            data: params => ({search: params.term}),
-                            processResults: data => ({results: data}),
-                            cache: true
-                        }
-                    });
                 },
                 getMonth() {
                     this.months.push(

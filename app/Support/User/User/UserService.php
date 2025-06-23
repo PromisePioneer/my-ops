@@ -16,6 +16,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Throwable;
+use function App\Helper\formatDate;
 
 #[AllowDynamicProperties] class UserService
 {
@@ -68,12 +69,13 @@ use Throwable;
                 'id' => $user->id,
                 'nik' => $user->nip,
                 'name' => $user->name,
+                'email' => $user->email,
                 'roles' => $user->roles[0]?->name ?? '',
                 'branch' => $user->branch?->name,
                 'company' => $user->company?->name ?? '',
-                'join_date' => $user->join_date,
+                'join_date' => formatDate($user->join_date),
                 'profile_pic' => $user->profile_pic,
-                'active' => $user->active,
+                'last_login' => $user->last_login ? Carbon::parse($user->last_login)->diffForHumans() : null,
             ];
         });
 
@@ -184,8 +186,10 @@ use Throwable;
     public function getUsers(Request $request)
     {
         $search = $request->input('search');
-        $user = User::search($search)->query(function ($query) {
-            $query->where('active', true);
+        $user = User::search($search)->query(function ($query) use ($request) {
+            if ($request->user()->hasRole('Branch Manager')) {
+                $query->where('branch_id', $request->user()->branch_id);
+            }
         })->get();
 
 
@@ -207,13 +211,24 @@ use Throwable;
         ];
     }
 
+    public function getUnassignedTechnician(Request $request, Branch $branch): array
+    {
+        $users = $this->userRepository->getUnassignedTechnician($request, $branch->id)->get();
+
+        return $users->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'text' => '(' . $item->nip . ')' . ' ' . '(' . $item->roles->pluck('name')->implode(', ') . ')' . ' ' . $item->name,
+            ];
+        })->toArray();
+    }
+
 
     public function getUserHasArea(Request $request)
     {
         $search = $request->input('search');
         $user = User::search($search)->query(function ($query) use ($request) {
-            $newQuery = $query->where('active', true);
-            UserSelect2QueryFilter::apply($newQuery, $request);
+            UserSelect2QueryFilter::apply($query, $request);
         })->get();
 
         return $user->map(function ($query) {

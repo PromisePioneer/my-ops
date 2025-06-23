@@ -15,11 +15,7 @@ class EmployeeScheduleACLFilter
                 $query->whereIn('name', ['NOC Supervisor', 'NOC Staff']);
             })->where(function ($query) {
                 $query->whereNull('branch_id')->orWhere('branch_id', 1);
-            })->where('active', 1);
-        }
-
-        if ($request->user()->hasAnyRole(['Super Admin', 'Operational Manager', 'FA & Tax Manager', 'Director', 'Main Commissioner'])) {
-            $query->where('active', 1);
+            });
         }
 
 
@@ -27,8 +23,7 @@ class EmployeeScheduleACLFilter
             $query->whereHas('userHasArea', function ($query) use ($request) {
                 $query->where('area_id', $request->user()->userHasArea->area_id);
             })->where(function ($query) use ($request) {
-                $query->where('branch_id', $request->user()->branch_id)
-                    ->where('active', 1);
+                $query->where('branch_id', $request->user()->branch_id);
             });
         }
 
@@ -36,8 +31,7 @@ class EmployeeScheduleACLFilter
             $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Customer Service Leader', 'Customer Service Staff', 'After Sales Customer Service']);
             })->where(function ($query) use ($request) {
-                $query->whereNull('branch_id')->orWhereIn('branch_id', [1])
-                    ->where('active', 1);
+                $query->whereNull('branch_id')->orWhereIn('branch_id', [1]);
             });
         }
 
@@ -73,7 +67,7 @@ class EmployeeScheduleACLFilter
             $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Finance & Accounting Supervisor', 'Finance & Accounting Staff', 'Tax Admin Supervisor', 'Billing Admin Supervisor', 'Customer Payment Supervisor', 'FA Senior Staff', 'Stocker Staff', 'Inventory Controller Supervisor']);
             })->where(function ($query) use ($request) {
-                $query->whereNull('branch_id')->orWhereIn('branch_id', [1])->where('active', 1);;
+                $query->whereNull('branch_id')->orWhereIn('branch_id', [1]);
             });
         }
 
@@ -81,7 +75,7 @@ class EmployeeScheduleACLFilter
             $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Stocker Staff', 'Inventory Controller Supervisor']);
             })->where(function ($query) use ($request) {
-                $query->where('branch_id', [1])->where('active', 1);
+                $query->where('branch_id', [1]);
             });
         }
 
@@ -89,7 +83,7 @@ class EmployeeScheduleACLFilter
         if ($request->user()->hasRole('Head Of Electrical Engineer')) {
             $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['Head Of Electrical Engineer', 'Senior Electrical Engineer']);
-            })->whereNull('branch_id')->where('active', 1);
+            })->whereNull('branch_id');
         }
 
 
@@ -107,15 +101,14 @@ class EmployeeScheduleACLFilter
 
 
         if ($request->user()->hasRole('Branch Manager')) {
-            $query->where('branch_id', $request->user()->branch_id)
-                ->where('active', 1);
+            $query->where('branch_id', $request->user()->branch_id);
         }
 
 
         if ($request->user()->hasRole('KU Head Engineer')) {
             $query->whereHas('roles', function ($query) use ($request) {
                 $query->whereIn('name', ['KU Head Engineer', 'KU Engineer']);
-            })->where('active', 1);
+            });
         }
 
 

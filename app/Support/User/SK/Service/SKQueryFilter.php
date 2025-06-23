@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\User\SK;
+namespace App\Support\User\SK\Service;
 
 use Illuminate\Contracts\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Builder;

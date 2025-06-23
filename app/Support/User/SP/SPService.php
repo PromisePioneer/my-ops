@@ -99,6 +99,9 @@ use function App\Helper\convertToRoman;
         return $sp;
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function store(SPRequest $request): void
     {
         $currentSP = SP::where('user_id', $request->user_id)
@@ -136,12 +139,14 @@ use function App\Helper\convertToRoman;
 
             if ($currentSP?->sp_type === 'SP-3') {
                 $user = User::where('id', $sp->user_id)->first();
-                $user->active = false;
                 $user->save();
             }
         });
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function update(SPRequest $request, SP $sp): void
     {
 
@@ -177,49 +182,11 @@ use function App\Helper\convertToRoman;
         ];
     }
 
-
-    public function getEmployeeData(Request $request)
-    {
-        $search = $request->input('search');
-
-        $query = User::where('active', '=', 1)
-            ->orderBy('name')
-            ->select('id', 'name', 'nip');
-
-        if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('nip', 'like', '%' . $search . '%');
-            });
-        }
-
-
-        if ($request->user()->hasRole('Branch Manager')) {
-            $query->whereNot('id', $request->user()->id)
-                ->where('branch_id', $request->user()->branch_id);
-        }
-
-        if ($request->user()->hasRole('Operational Manager', 'Super Admin')) {
-            $query->get();
-        }
-
-        $users = $query->get();
-
-        return $users->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'text' => $item->nip . ' ' . $item->name,
-            ];
-        })->toArray();
-
-    }
-
-    public function getSPPic(Request $request)
+    public function getSPPic(Request $request): array
     {
         $search = $request->input('search');
 
         $query = User::with('roles')
-            ->where('active', '=', 1)
             ->orderBy('name')
             ->select('id', 'name', 'nip');
 

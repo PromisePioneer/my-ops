@@ -38,7 +38,7 @@
                         </div>
                         <div class="col-lg-6">
                             <label for="user_id" class="required form-label">Cabang</label>
-                            <select name="branch_id" id="selected-branch"
+                            <select name="new_branch_id" id="selected-branch"
                                     class="form-select form-select-solid main-branches-select2"
                                     data-dropdown-parent="#modal-sk">
                                 <option></option>

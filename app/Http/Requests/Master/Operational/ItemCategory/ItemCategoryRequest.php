@@ -24,6 +24,8 @@ class ItemCategoryRequest extends FormRequest
     {
         return [
             'name' => ['required'],
+            'description' => ['required'],
+            'notes' => ['required'],
         ];
     }
 

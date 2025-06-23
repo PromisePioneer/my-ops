@@ -3,86 +3,8 @@
 @section('content')
     <div x-data="userData()">
         @include('pages.manage-users.user.modal.import')
+        @include('pages.manage-users.user.drawer.filter')
         <div class="d-flex flex-column flex-xl-row">
-            @canany([
-                    'Filter Data Karyawan Berdasarkan Cabang',
-                     'Filter Data Karyawan Berdasarkan Perusahaan',
-                     'Filter Data Karyawan Berdasarkan Tahun',
-                     'Filter Data Karyawan Berdasarkan Bulan',
-                     'Filter Data Karyawan Berdasarkan Aktif Dan Tidak Aktif',
-            ])
-                <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
-                    <div class="card card-flush">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <h2 class="mb-0">Data Karyawan</h2>
-                            </div>
-                        </div>
-                        <div class="card-body pt-0">
-                            <div class="d-flex flex-column text-gray-600">
-                                <div class="d-flex align-items-center py-2">
-                                    @can('Filter Data Karyawan Berdasarkan Cabang')
-                                        <select class="form-select form-select-solid main-branches-select2"
-                                                name="branch_id" id="branch_id">
-                                        </select>
-                                    @endcan
-                                </div>
-                                <div class="d-flex align-items-center py-2">
-                                    @can('Filter Data Karyawan Berdasarkan Jabatan')
-                                        <select name="role_id" id="role_id"
-                                                class="form-select form-select-solid roles-select2">
-                                            <option></option>
-                                        </select>
-                                    @endcan
-                                </div>
-                                <div class="d-flex align-items-center py-2">
-                                    @can('Filter Data Karyawan Berdasarkan Perusahaan')
-                                        <select name="company_id" id="company_id"
-                                                class="form-select form-select-solid companies-select2">
-                                            <option></option>
-                                        </select>
-                                    @endcan
-                                </div>
-                                <div class="d-flex align-items-center py-2">
-                                    @can('Filter Data Karyawan Berdasarkan Tahun')
-                                        <input type="number" name="year" id="year"
-                                               class="form-control form-control-solid"
-                                               placeholder="Filter Berdasarkan Tahun"/>
-                                    @endcan
-                                </div>
-                                <div class="d-flex align-items-center py-2">
-                                    @can('Filter Data Karyawan Berdasarkan Bulan')
-                                        <select class="form-select form-select-solid"
-                                                name="month" id="month" data-control="select2"
-                                                data-placeholder="Pilih Bulan">
-                                            <option></option>
-                                            <template x-for="month in months" :key="index">
-                                                <option :value="month.number" x-text="month.name"></option>
-                                            </template>
-                                        </select>
-                                    @endcan
-                                </div>
-                                <div class="d-flex align-items-center py-2">
-                                    @can('Filter Data Karyawan Berdasarkan Aktif Dan Tidak Aktif')
-                                        <select class="form-select form-select-solid" name="active" id="active"
-                                                data-control="select2"
-                                                data-placeholder="Select an option" data-allow-clear="true">
-                                            <option></option>
-                                            <option value="1">Aktif</option>
-                                            <option value="0">Tidak Aktif</option>
-                                        </select>
-                                    @endcan
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer pt-4 text-end">
-                            <button type="button" @click="filter()" class="btn btn-light btn-active-primary btn-sm">
-                                Filter
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            @endcanany
             <div class="flex-lg-row-fluid ms-lg-10">
                 <div class="card card-flush mb-6 mb-xl-9">
                     <div class="card-header pt-5">
@@ -102,12 +24,18 @@
                                     Import
                                 </button>
                             @endcan
-                                <button class="btn btn-light btn-active-info btn-sm" @click="reload()">
-                               <span class="svg-icon">
-                                     <i class="bi bi-arrow-clockwise"></i>
-                               </span>
-                                    Reload
+                                @canany([
+                                'Filter Data Karyawan Berdasarkan Cabang',
+                                 'Filter Data Karyawan Berdasarkan Perusahaan',
+                                 'Filter Data Karyawan Berdasarkan Tahun',
+                                 'Filter Data Karyawan Berdasarkan Bulan',
+                                 'Filter Data Karyawan Berdasarkan Aktif Dan Tidak Aktif',
+                                ])
+                                    <button id="kt_drawer_example_basic_button" class="btn btn-light btn-active-info btn-sm mx-1">
+                                        <x-icons.filter/>
+                                        Filter
                                 </button>
+                                @endcanany
                         </div>
                         <div class="card-toolbar">
                             <div class="d-flex align-items-center position-relative my-1"
@@ -132,7 +60,8 @@
                     <div class="card-body pt-0">
                         <div class="col-12 ">
                             <form id="form-delete" @submit.prevent="destroy()">
-                                <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                                <input type="hidden" :name="`id[]`"
+                                       :value="selectedCheckBox.filter((val) => val !== 'on')">
                                 <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                         x-show="selectedCheckBox.length > 0"
                                         x-transition x-cloak>
@@ -146,122 +75,117 @@
                                 </button>
                             </form>
                         </div>
-                        <div id="kt_roles_view_table_wrapper" class="dataTables_wrapper dt-bootstrap4 no-footer">
-                            <div class="table-responsive">
-                                <table class="table align-middle table-bordered fs-6 "
-                                       id="kt_roles_view_table">
-                                    <thead>
-                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                        <th class="w-10px pe-2">
-                                            <div
+                        <div class="table-responsive">
+                            <table class="table align-middle table-bordered fs-6"
+                                   id="kt_roles_view_table">
+                                <thead>
+                                <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                    <th class="w-10px pe-2">
+                                        <div
                                                 class="form-check form-check-sm form-check-custom form-check-solid me-3">
-                                                <input class="form-check-input" type="checkbox"
-                                                       @click="toggleAllCheckBox()"
-                                                       :disabled="Number(deletePermission) !== 1">
-                                            </div>
-                                        </th>
-                                        <th>Cabang</th>
-                                        <th>Perusahaan</th>
-                                        <th>NIK</th>
-                                        <th>Karyawan</th>
-                                        <th>Tanggal Masuk</th>
-                                        <template
+                                            <input class="form-check-input" type="checkbox"
+                                                   @click="toggleAllCheckBox()"
+                                                   :disabled="Number(deletePermission) !== 1">
+                                        </div>
+                                    </th>
+                                    <th class="min-w-125px">NIK & Email</th>
+                                    <th class="min-w-125px">Karyawan</th>
+                                    <th class="min-w-125px">Tanggal Masuk</th>
+                                    <th class="min-w-125px">Terakhir Login</th>
+                                    <template
                                             x-if="Number(editPermission === 1) || Number(activationPermission) === 1">
-                                            <th class="text-end min-w-100px sorting_disabled" rowspan="1" colspan="1"
-                                                aria-label="Actions" style="width: 135.25px;">
-                                                Actions
-                                            </th>
-                                        </template>
-                                    </tr>
-                                    </thead>
+                                        <th class="text-center min-w-100px sorting_disabled" rowspan="1" colspan="1"
+                                            aria-label="Actions" style="width: 135.25px;">
+                                            Actions
+                                        </th>
+                                    </template>
+                                </tr>
+                                </thead>
+                                <template x-if="isLoading">
                                     <tbody class="fw-bold text-gray-600">
-                                    <template x-if="isLoading">
-                                        <tr>
-                                            <td colspan="7">
-                                                <div style="text-align: center;">
-                                                    <div class="spinner-border" role="status">
-                                                        <span class="visually-hidden">Loading...</span>
-                                                    </div>
+                                    <tr>
+                                        <td colspan="7">
+                                            <div style="text-align: center;">
+                                                <div class="spinner-border" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                    </template>
-                                    <template x-if="!isLoading && users.data?.length === 0">
-                                        <tr>
-                                            <td colspan="7">
-                                                <center>Data Tidak Ditemukan</center>
-                                            </td>
-                                        </tr>
-                                    </template>
-                                    <template x-for="user in users.data" :key="user.id">
-                                        <tr :class="`${user.active === 1 ? '' : 'bg-light-danger'}`">
-                                            <td>
-                                                <div class="form-check form-check-sm form-check-custom form-check-solid"
-                                                     @click="selectCheckBox($event)">
-                                                    <input class="form-check-input" type="checkbox" :value="user.id"
-                                                           :id="'checkbox-' + user.id"
-                                                           :disabled="Number(deletePermission) !== 1"/>
-                                                </div>
-                                            </td>
-                                            <td x-text="user.branch ?? 'Pusat'"></td>
-                                            <td x-text="user.company"></td>
-                                            <td x-text="user.nik"></td>
-                                            <td class="d-flex align-items-center">
-                                                <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
-                                                    <a href="#">
-                                                        <div class="symbol-label">
-                                                            <a href="#" @click="openImage(user.profile_pic)">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                                <template x-if="!isLoading && users.data?.length === 0">
+                                    <tbody class="fw-bold">
+                                    <tr>
+                                        <td colspan="7">
+                                            <center>Data Tidak Ditemukan</center>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+                                <template x-for="user in users.data" :key="user.id">
+                                    <tbody class="fw-bold">
+                                    <tr>
+                                        <td>
+                                            <div class="form-check form-check-sm form-check-custom form-check-solid"
+                                                 @click="selectCheckBox($event)">
+                                                <input class="form-check-input" type="checkbox" :value="user.id"
+                                                       :id="'checkbox-' + user.id"
+                                                       :disabled="Number(deletePermission) !== 1"/>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p x-text="user.nik"></p>
+                                            <p x-text="user.email"></p>
+                                        </td>
+                                        <td class="d-flex align-items-center">
+                                            <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
+                                                <a href="#">
+                                                    <div class="symbol-label">
+                                                        <a href="#" @click="openImage(user.profile_pic)">
                                                             <img :src="getImageURL(user.profile_pic ?? null)"
                                                                  alt="Image" class="w-100">
-                                                            </a>
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                                <div class="d-flex flex-column">
-                                                    <a :href="Number(viewDetailPermission) === 1 ? `/manage-users/users/detail/${user.id}` : '#'"
-                                                       class="text-gray-800 text-hover-primary mb-1">
-                                                        <span x-text="user.name"></span>
-                                                    </a>
-                                                    <span class="badge badge-light-info fw-bolder fs-8"
-                                                          x-text="user.roles ?? ''">
+                                                        </a>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <a :href="Number(viewDetailPermission) === 1 ? `/manage-users/users/detail/${user.id}` : '#'"
+                                                   class="text-gray-800 text-hover-primary mb-1">
+                                                    <span x-text="user.name"></span>
+                                                </a>
+                                                <span class="badge badge-light-info fw-bolder fs-8"
+                                                      x-text="user.roles ?? ''">
                                                     </span>
-                                                </div>
-                                            </td>
-                                            @include('pages.manage-users.user.modal.import')
-                                            <td x-text="user.join_date"></td>
-                                            <td class="text-end">
-                                                <template x-if="editPermission">
-                                                    <a :href="`/manage-users/users/edit/${user.id}`"
-                                                       class="btn btn-light btn-active-primary btn-sm">
-                                                        <i class="bi bi-pencil-square"></i>
-                                                    </a>
-                                                </template>
-                                                <template x-if="Number(activationPermission) === 1">
-                                                    <button
-                                                        :class="`${user.active ? 'btn btn-light btn-active-danger btn-sm' : 'btn btn-light btn-active-success btn-sm'}`"
-                                                        @click="changeActiveStatus(user.id)">
-                                                        <i :class="`${user.active ? 'bi bi-x-circle-fill' : 'bi bi-check-circle'}`"></i>
-                                                    </button>
-                                                </template>
-                                            </td>
-                                        </tr>
-                                    </template>
+                                            </div>
+                                        </td>
+                                        <td class="text-center" x-text="user.join_date"></td>
+                                        <td x-text="user.last_login"></td>
+                                        <td class="text-center">
+                                            <template x-if="editPermission">
+                                                <a :href="`/manage-users/users/edit/${user.id}`"
+                                                   class="btn btn-light btn-active-primary btn-sm">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                            </template>
+                                        </td>
+                                    </tr>
                                     </tbody>
-                                </table>
-                            </div>
-                            <div class="text-center mt-10">
-                                <div class="col-sm-12  d-flex align-items-center justify-content-end">
-                                    <template x-for="pagination in users.links">
-                                        <ul class="pagination">
-                                            <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
-                                                <button
+                                </template>
+                            </table>
+                        </div>
+                        <div class="text-center mt-10">
+                            <div class="col-sm-12  d-flex align-items-center justify-content-end">
+                                <template x-for="pagination in users.links">
+                                    <ul class="pagination">
+                                        <li :class="`${pagination.active ? 'page-item active' : 'page-item'}`">
+                                            <button
                                                     class="page-link"
                                                     @click="paginate(pagination.url)"
                                                     x-html="pagination.label"></button>
-                                            </li>
-                                        </ul>
-                                    </template>
-                                </div>
+                                        </li>
+                                    </ul>
+                                </template>
                             </div>
                         </div>
                     </div>

@@ -56,41 +56,26 @@ use Throwable;
         return response()->json($this->SPService->search($request));
     }
 
-    /**
-     * @throws AuthorizationException
-     */
-    public function getUserData(Request $request): JsonResponse
+    public function filter(Request $request): JsonResponse
     {
-        $this->authorize('create', SP::class);
-        return response()->json($this->SPService->getEmployeeData($request));
-    }
-
-    public function filter(Request $request)
-    {
-        $branchId = $request->branch_id;
-        $year = $request->year;
-        $month = $request->month;
-
-        return response()->json($this->SPService->filter($request, $branchId, $year, $month));
+        return response()->json($this->SPService->filter($request));
     }
 
     /**
      * @throws AuthorizationException
      */
-    public function getSPPIC(Request $request): JsonResponse
+    public function getPIC(Request $request): JsonResponse
     {
         $this->authorize('create', SP::class);
         return response()->json($this->SPService->getSPPic($request));
     }
 
     /**
-     * @throws AuthorizationException
      * @throws Throwable
      */
     public function store(SPRequest $request): JsonResponse
     {
         $this->SPService->store($request);
-
         return response()->json(['message' => 'Data berhasil disimpan.']);
     }
 
@@ -103,9 +88,6 @@ use Throwable;
         return view('pages.manage-users.sp.create');
     }
 
-    /**
-     * @throws AuthorizationException
-     */
     public function update(SPRequest $request, SP $sp): JsonResponse
     {
         $this->SPService->update($request, $sp);

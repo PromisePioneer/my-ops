@@ -215,4 +215,10 @@ use Maatwebsite\Excel\Facades\Excel;
     {
         return response()->json($this->userService->getUserByBranch($request));
     }
+
+
+    public function getUnassignedTechnician(Request $request, Branch $branch): JsonResponse
+    {
+        return response()->json($this->userService->getUnassignedTechnician($request, $branch));
+    }
 }

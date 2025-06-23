@@ -258,13 +258,9 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/data', [SpController::class, 'data']);
             Route::get('/search', [SpController::class, 'search']);
             Route::get('/filter', [SPController::class, 'filter']);
-            Route::get('/users/data', [SpController::class, 'getUserData']);
-            Route::get('/sp-pic/data', [SPController::class, 'getSPPIC']);
-            Route::get('/branch/data', [SpController::class, 'getBranchData']);
+            Route::get('/sp-pic/data', [SPController::class, 'getPIC']);
             Route::get('/create', [SpController::class, 'create']);
             Route::post('/', [SpController::class, 'store']);
-            Route::get('/punished-by/selected/{sp}', [SpController::class, 'selectedPunishedBy']);
-            Route::get('/users/data/selected/{sp}', [SpController::class, 'selectedUserdata']);
             Route::get('/list-of-reason/{sp}', [SpController::class, 'getListOfReason']);
             Route::get('/{sp}', [SpController::class, 'edit']);
             Route::post('/{sp}', [SpController::class, 'update']);
@@ -1343,6 +1339,8 @@ Route::group(['middleware' => ['auth']], static function () {
         Route::get('/suppliers-data', [SupplierController::class, 'getSuppliers']);
         Route::get('/selected-supplier/{supplier}', [SupplierController::class, 'selectedSupplier']);
         Route::get('/asset-items-data', [ItemCollectionController::class, 'getAssetData']);
+
+        Route::get('/unassign-technicians-data/{branch}', [UserController::class, 'getUnassignedTechnician']);
 
     });
 

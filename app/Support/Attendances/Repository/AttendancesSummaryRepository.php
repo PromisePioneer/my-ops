@@ -8,7 +8,7 @@ class AttendancesSummaryRepository
 {
     public function getAttendancesSummary($startDate, $endDate)
     {
-        return User::select('id', 'nip', 'name', 'profile_pic', 'active', 'absent_id')
+        return User::select('id', 'nip', 'name', 'profile_pic', 'absent_id')
             ->with([
                 'attendancesSummary' => function ($query) use ($startDate, $endDate) {
                     $query->select('date', 'employee_id', 'date', 'clock_in', 'clock_out', 'work_time_id')
@@ -32,7 +32,6 @@ class AttendancesSummaryRepository
                 'weekHoliday:user_id,day',
                 'company:id,name',
             ])
-            ->where('active', 1)
             ->orderBy('name');
     }
 }

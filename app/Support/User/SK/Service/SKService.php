@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Support\User\SK;
+namespace App\Support\User\SK\Service;
 
+use AllowDynamicProperties;
 use App\Http\Requests\User\SKRequest;
-use App\Models\Role;
 use App\Models\SK;
-use App\Models\User;
+use App\Support\User\Role\Repository\RoleRepository;
+use App\Support\User\SK\Repository\SKRepository;
+use App\Support\User\User\UserRepository;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -14,18 +16,24 @@ use Throwable;
 use function App\Helper\convertToRoman;
 use function App\Helper\formatDate;
 
-class SKService
+#[AllowDynamicProperties] class SKService
 {
     private static int $perPage = 10;
 
-
-    private static function generateSKNumber(SKRequest $request): string
+    public function __construct()
     {
-        $sk = SK::latest()->first();
+        $this->userRepository = new UserRepository();
+        $this->skRepository = new SKRepository();
+        $this->roleRepository = new RoleRepository();
+        $this->sk = new SK();
+    }
 
-        $skMonth = convertToRoman(Carbon::parse($request->date)->format('m'));
-        $skYear = Carbon::parse($request->date)->format('Y');
 
+    public function generateSKNumber(SKRequest $request): string
+    {
+        $sk = $this->sk->query()->latest()->first();
+        $skMonth = convertToRoman(Carbon::parse($request->input('date'))->format('m'));
+        $skYear = Carbon::parse($request->input('date'))->format('Y');
         if ($sk) {
             $convertInvNumberToArray = explode('/', $sk->sk_number);
             $startingNumber = $convertInvNumberToArray[0];
@@ -42,8 +50,7 @@ class SKService
 
     public function data(): LengthAwarePaginator
     {
-        $sk = SK::with('user', 'oldBranch', 'newBranch', 'oldRole', 'newRole')
-            ->paginate(self::$perPage);
+        $sk = $this->skRepository->data()->paginate(self::$perPage);
         return self::formattedData($sk);
     }
 
@@ -66,7 +73,7 @@ class SKService
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $query = SK::search($search)->query(static function ($query) {
+        $query = $this->sk->search($search)->query(static function ($query) {
             $query->join('users', 'users.id', '=', 'sk.user_id');
         })->paginate(self::$perPage);
         return self::formattedData($query);
@@ -75,7 +82,7 @@ class SKService
 
     public function filter(Request $request): LengthAwarePaginator
     {
-        $query = SK::with('user', 'oldBranch', 'newBranch', 'oldRole', 'newRole');
+        $query = $this->skRepository->data();
         $sk = SKQueryFilter::apply($query, $request)->paginate(self::$perPage);
         return self::formattedData($sk);
     }
@@ -86,23 +93,21 @@ class SKService
     public function store(SKRequest $request): void
     {
         DB::transaction(callback: static function () use ($request) {
-            $user = User::with('roles')->where('id', $request->user_id)->first();
+            $user = $this->userRepository->findById($request->input('user_id'));
             SK::create([
                 'sk_number' => self::generateSKNumber($request),
-                'user_id' => $request->user_id,
-                'sk_type' => $request->sk_type,
-                'date' => $request->date,
-                'old_branch_id' => $user->branch_id,
-                'new_branch_id' => $user->branch_id,
+                'user_id' => $request->input('user_id'),
+                'sk_type' => $request->input('sk_type'),
+                'date' => $request->input('date'),
+                'old_branch_id' => $user->branch_id ?? null,
+                'new_branch_id' => $request->input('new_branch_id'),
                 'old_role_id' => $user->roles?->first()?->id,
-                'new_role_id' => $request->role_id,
+                'new_role_id' => $request->input('role_id'),
             ]);
 
-
-            $user = User::where('id', $request->user_id)->first();
-            $newRole = Role::where('id', $request->role_id)->first()->name;
+            $newRole = $this->roleRepository->findById($request->input('role_id'))->name;
             $user->syncRoles($newRole);
-            $user->branch_id = $request->branch_id;
+            $user->branch_id = $request->input('new_branch_id');
             $user->save();
         });
     }
@@ -112,23 +117,21 @@ class SKService
      */
     public function update(SKRequest $request, SK $sk): void
     {
-        DB::transaction(function () use ($request, $sk) {
-            $user = User::with('roles')->where('id', $request->user_id)->first();
+        DB::transaction(callback: function () use ($request, $sk) {
+            $user = $this->userRepository->findById($request->input('user_id'));
             $sk->update([
-                'user_id' => $request->user_id,
-                'sk_type' => $request->sk_type,
-                'date' => $request->date,
-                'old_branch_id' => $user->branch_id,
-                'new_branch_id' => $user->branch_id,
+                'user_id' => $request->input('user_id'),
+                'sk_type' => $request->input('sk_type'),
+                'date' => $request->input('date'),
+                'old_branch_id' => $user->branch_id ?? null,
+                'new_branch_id' => $request->input('new_branch_id'),
                 'old_role_id' => $user->roles?->first()?->id,
-                'new_role_id' => $request->role_id,
+                'new_role_id' => $request->input('role_id'),
             ]);
 
-
-            $user = User::where('id', $request->user_id)->first();
-            $newRole = Role::where('id', $request->role_id)->first()->name;
+            $newRole = $this->roleRepository->findById($request->input('role_id'))->name;
             $user->syncRoles($newRole);
-            $user->branch_id = $request->branch_id;
+            $user->branch_id = $request->input('new_branch_id');
             $user->save();
         });
     }

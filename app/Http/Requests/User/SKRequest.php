@@ -26,7 +26,7 @@ class SKRequest extends FormRequest
         return [
             'user_id' => ['required', 'exists:users,id'],
             'sk_type' => ['required', Rule::in('Promosi', 'Demosi', 'Mutasi')],
-            'branch_id' => ['required', 'exists:branches,id'],
+            'new_branch_id' => ['required', 'exists:branches,id'],
             'role_id' => ['required', 'exists:roles,id'],
         ];
     }
@@ -39,8 +39,8 @@ class SKRequest extends FormRequest
             'user_id.exists' => 'Karyawan tidak ditemukan',
             'sk_type.required' => 'Jenis SK tidak boleh kosong',
             'sk_type.in' => 'Jenis SK tidak valid',
-            'branch_id.required' => 'Cabang tidak boleh kosong',
-            'branch_id.exists' => 'Cabang tidak ditemukan',
+            'new_branch_id.required' => 'Cabang tidak boleh kosong',
+            'new_branch_id.exists' => 'Cabang tidak ditemukan',
             'role_id.required' => 'Role tidak boleh kosong',
             'role_id.exists' => 'Role tidak ditemukan',
         ];
