@@ -26,6 +26,8 @@ class StockWithdrawalRepository
     {
         $query->whereHas('branch', function ($query) use ($search) {
             $query->where('name', 'like', '%' . $search . '%');
+        })->orWhereHas('branch.parent', function ($query) use ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
         })->orWhereHas('stocker', function ($query) use ($search) {
             $query->where('name', 'like', '%' . $search . '%');
         })->orWhereHas('pic', function ($query) use ($search) {
