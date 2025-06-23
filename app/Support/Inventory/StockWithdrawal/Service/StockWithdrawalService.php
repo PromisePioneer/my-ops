@@ -80,7 +80,7 @@ use function App\Helper\formatDate;
         $data = $stockWithdrawal->getCollection()->map(function ($stockWithdrawal) {
             return [
                 'id' => $stockWithdrawal->id,
-                'branch_name' => $stockWithdrawal->branch->name,
+                'branch_name' => "{$stockWithdrawal->branch->parent->name} -  {$stockWithdrawal->branch->name}",
                 'date' => formatDate($stockWithdrawal->date),
                 'description' => $stockWithdrawal->description,
                 'pic' => $stockWithdrawal->stockWithdrawalByEmployees->map(function ($stockWithdrawalByEmployee) {
@@ -92,11 +92,12 @@ use function App\Helper\formatDate;
                 }),
                 'stocker' => $stockWithdrawal->stocker?->name ?? null,
                 'withdrawal_item' => $stockWithdrawal->stockWithdrawalItems->map(function ($stockWithdrawalItem) {
+                    $item = $stockWithdrawalItem->stock->transaction?->item ?? $stockWithdrawalItem->stock->initialInventoryBalance?->item;
                     return [
                         'id' => $stockWithdrawalItem->id,
                         'code' => $stockWithdrawalItem->code,
-                        'item_name' => $stockWithdrawalItem->stock->transaction?->item->name ?? $stockWithdrawalItem->stock->initialInventoryBalance?->item->name,
-                        'quantity' => $stockWithdrawalItem->qty,
+                        'item_name' => $item->name,
+                        'quantity' => "{$stockWithdrawalItem->qty} {$item->unitType->name}",
                     ];
                 }),
                 'pic_signature_after_withdraw' => $stockWithdrawal->pic_signature_after_withdraw,

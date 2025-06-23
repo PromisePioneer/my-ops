@@ -124,8 +124,11 @@
                         <thead>
                         <tr>
                             <th class="min-w-125px text-center">Informasi</th>
-                            <th class="min-w-125px text-center">Kuantitas</th>
-                            <th class="min-w-125px">Action</th>
+                            <th class="min-w-125px text-center">Kode</th>
+                            <th class="min-w-125px text-center">Baik</th>
+                            <th class="min-w-125px text-center">Rusak</th>
+                            <th class="min-w-125px text-center">Status</th>
+                            <th class="min-w-125px text-center">Actions</th>
                         </tr>
                         </thead>
                         <template x-if="isLoading">
@@ -151,12 +154,16 @@
                             </tbody>
                         </template>
                         <template x-for="(item, index) in itemCatalog?.data" :key="item.id">
-                            <tbody>
+                            <tbody class="p-0">
                             <tr>
-                                <td class="p-10 text-center">
+                                <td class="text-center">
                                     <p x-text="`${item.branch_name}`"></p>
-                                    <p class="fw-bold" x-text="`${item.code}`"></p>
-                                    <p class="text-uppercase">
+                                </td>
+                                <td class="text-center" x-text="item.code"></td>
+                                <td class="text-center" x-text="item.available_qty"></td>
+                                <td class="text-center" x-text="item.broken_qty"></td>
+                                <td>
+                                    <p class="text-uppercase text-center">
                                         <template x-if="item.status === 'Tersedia'">
                                             <span class="badge bg-light-success text-success">Tersedia</span>
                                         </template>
@@ -168,22 +175,16 @@
                                         </template>
                                     </p>
                                 </td>
-                                <td class="p-10 text-center">
-                                    <p x-text="`Baik : ${item.available_qty}`"></p>
-                                    <p x-text="`Rusak : ${item.broken_qty}`"></p>
-                                </td>
-                                <td class="d-flex flex-column align-items-start text-center">
-                                    <button :disabled="item.status !== 'Tersedia'"
+                                <td>
+                                    <a :disabled="item.status !== 'Tersedia'"
                                             class="btn btn-light-info btn-sm mb-4"
-                                            @click="destroy(item.id)">
+                                    >
                                         <x-icons.info/>
-                                        Riwayat Mutasi & Pemakaian
-                                    </button>
+                                    </a>
                                     <button :disabled="item.status !== 'Tersedia'"
                                             class="btn btn-light-danger btn-sm mb-4"
                                             @click="destroy(item.id)">
                                         <x-icons.trash/>
-                                        Hapus
                                     </button>
                                 </td>
                             </tr>
@@ -316,8 +317,7 @@
                                     await this.init();
                                 });
                         } catch (error) {
-                            console.error(error);
-                            await showAlert('error', 'Terjadi kesalahan');
+                            await showAlert('error', error.response.data.message);
                         }
                     });
                 },

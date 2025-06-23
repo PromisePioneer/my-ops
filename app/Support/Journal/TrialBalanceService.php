@@ -37,6 +37,7 @@ class TrialBalanceService
             }
 
             $credit = $this->getFilteredTransactionSum($account, 'credit', $request);
+
             $childCredit = $account->children->sum(function ($child) use ($request) {
                 return $this->getFilteredTransactionSum($child, 'credit', $request);
             });
@@ -78,23 +79,20 @@ class TrialBalanceService
 
     public function filter(Request $request): array
     {
-
         $query = $this->query();
-
-
         return [
             'trial_balance' => $this->formattedData($query, $request),
-            'total_debit' => currencyFormat($this->getTotalDebit($request)->sum('amount')),
-            'total_credit' => currencyFormat($this->getTotalCredit($request)->sum('amount')),
+            'total_debit' => currencyFormat($this->getTotalDebit($request)),
+            'total_credit' => currencyFormat($this->getTotalCredit($request)),
         ];
     }
 
-    public function getTotalDebit(Request $request): Builder
+    public function getTotalDebit(Request $request): string
     {
         return $this->getFilteredTotal('debit', $request);
     }
 
-    private function getFilteredTotal(string $type, Request $request): Builder
+    private function getFilteredTotal(string $type, Request $request): string
     {
         $query = AccountTransaction::with('account')
             ->whereHas('account', function ($query) use ($type) {
@@ -113,10 +111,10 @@ class TrialBalanceService
             $query->whereMonth('date', $request->month);
         }
 
-        return $query;
+        return $query->sum('amount');
     }
 
-    public function getTotalCredit(Request $request): Builder
+    public function getTotalCredit(Request $request): string
     {
         return $this->getFilteredTotal('credit', $request);
     }

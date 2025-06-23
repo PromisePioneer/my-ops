@@ -9,6 +9,8 @@ use App\Models\DraftStock;
 use App\Models\ItemCatalog;
 use App\Models\ItemCollection;
 use App\Models\Stock;
+use App\Models\StockMutationItem;
+use App\Models\StockWithdrawalItem;
 use App\Support\HelperService\UsefulLifeService;
 use App\Support\Inventory\StockManagement\DraftStock\Repository\ItemCatalogRepository;
 use App\Support\Inventory\StockManagement\Stock\Repository\StockRepository;
@@ -151,6 +153,14 @@ use Throwable;
         $itemCatalog->load('stock.transaction', 'stock.initialInventoryBalance');
         $oldStock = $this->stockRepository->findByItemCatalog($itemCatalog);
         DB::transaction(function () use ($oldStock, $itemCatalog) {
+            $stockMutationItem = StockMutationItem::where('code', $itemCatalog->code)->first();
+            $stockWithdrawalItem = StockWithdrawalItem::where('code', $itemCatalog->code)->first();
+
+
+            if ($stockWithdrawalItem || $stockMutationItem) {
+                throw new \Exception('Tidak bisa dihapus, karena barang sudah di mutasi / di pakai');
+            }
+
             if (!empty($oldStock) && $itemCatalog->status === 'Tersedia') {
                 DraftStock::where(
                     'id', $itemCatalog->stock?->transaction_id ?? $itemCatalog->stock?->initial_inventory_balance_id
