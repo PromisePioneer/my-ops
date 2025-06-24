@@ -58,4 +58,9 @@ class UserRepository
             ->find($id);
     }
 
+    public function getTrashedUsers(): Builder
+    {
+        return $this->user->onlyTrashed();
+    }
+
 }

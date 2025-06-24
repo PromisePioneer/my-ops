@@ -170,11 +170,7 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::get('/', [UserController::class, 'index']);
             Route::get('/data', [UserController::class, 'data']);
             Route::get('/roles/data', [UserController::class, 'rolesData']);
-            Route::get('/branch/data', [UserController::class, 'branchData']);
-            Route::get('/filter/branch/data/{branch}', [UserController::class, 'filterByBranch']);
             Route::get('/search', [UserController::class, 'search']);
-            Route::get('/placement/data', [UserController::class, 'getPlacementData']);
-            Route::get('/placement/selected/{user}', [UserController::class, 'getSelectedPlacement']);
             Route::get('/create', [UserController::class, 'create']);
             Route::post('/', [UserController::class, 'store']);
             Route::post('/destroy', [UserController::class, 'destroy']);
@@ -183,11 +179,12 @@ Route::group(['middleware' => ['auth']], static function () {
             Route::post('/import', [UserController::class, 'import']);
             Route::get('/detail/{user}', [UserController::class, 'detail']);
             Route::get('/department/data', [UserController::class, 'getDepartmentData']);
-            Route::get('/absent/data/{user}', [UserController::class, 'getAbsentData']);
             Route::post('/update/{user}', [UserController::class, 'update']);
             Route::post('/change-status/{user}', [UserController::class, 'changeStatusActive']);
             Route::get('/filter', [UserController::class, 'filter']);
-            Route::get('companies/selected/{user}', [UserController::class, 'getSelectedCompany']);
+            Route::get('trashed', [UserController::class, 'trashed']);
+            Route::get('trashed/data', [UserController::class, 'trashedData']);
+            Route::get('/trashed/search', [UserController::class, 'trashedSearch']);
         });
         Route::prefix('identity-information')->group(function () {
             Route::get('/{user}', [IdentityInformationController::class, 'index']);

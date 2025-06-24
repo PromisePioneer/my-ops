@@ -6,7 +6,6 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\UserRequest;
 use App\Imports\UserImport;
-use App\Models\Attendances;
 use App\Models\Company;
 use App\Models\Department;
 use App\Models\Master\Common\Branch;
@@ -58,6 +57,12 @@ use Maatwebsite\Excel\Facades\Excel;
     {
         $this->authorize('view', User::class);
         return response()->json($this->userService->search($request));
+    }
+
+
+    public function trashedSearch(Request $request): JsonResponse
+    {
+        return response()->json($this->userService->trashedSearch($request));
     }
 
     /**
@@ -126,8 +131,8 @@ use Maatwebsite\Excel\Facades\Excel;
         $this->authorize('delete', User::class);
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
+        $user->whereIn('id', $explodeID)->update(['absent_id' => null]);
         $user->whereIn('id', $explodeID)->delete();
-
         return response()->json(['message' => 'data berhasil dihapus']);
     }
 
@@ -221,4 +226,19 @@ use Maatwebsite\Excel\Facades\Excel;
     {
         return response()->json($this->userService->getUnassignedTechnician($request, $branch));
     }
+
+
+    public function trashed(): View
+    {
+        return view('pages.manage-users.user.trashed.index');
+    }
+
+
+    public function trashedData(): JsonResponse
+    {
+        return response()->json($this->userService->trashedData());
+    }
+
+
+
 }

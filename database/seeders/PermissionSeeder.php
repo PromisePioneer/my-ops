@@ -308,7 +308,6 @@ class PermissionSeeder extends Seeder
             'Filter Data Karyawan Berdasarkan Perusahaan',
             'Filter Data Karyawan Berdasarkan Tahun',
             'Filter Data Karyawan Berdasarkan Bulan',
-            'Filter Data Karyawan Berdasarkan Aktif Dan Tidak Aktif',
             'Tambah Data Karyawan',
             'Edit Data Karyawan',
             'Hapus Data Karyawan',

@@ -92,7 +92,7 @@ use function App\Helper\formatDate;
      */
     public function store(SKRequest $request): void
     {
-        DB::transaction(callback: static function () use ($request) {
+        DB::transaction(callback:  function () use ($request) {
             $user = $this->userRepository->findById($request->input('user_id'));
             SK::create([
                 'sk_number' => self::generateSKNumber($request),

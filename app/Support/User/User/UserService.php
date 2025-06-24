@@ -27,6 +27,7 @@ use function App\Helper\formatDate;
         $this->branchService = new BranchService();
         $this->userRepository = new UserRepository();
         $this->userQueryFilter = new UserQueryFilter();
+        $this->user = new User();
     }
 
 
@@ -36,6 +37,13 @@ use function App\Helper\formatDate;
             ->paginate(self::$perPage);
         return self::formattedData($data);
     }
+
+    public function trashedData(): LengthAwarePaginator
+    {
+        $data = $this->userRepository->getTrashedUsers()->paginate(self::$perPage);
+        return self::formattedData($data);
+    }
+
 
 
     public function search(Request $request): LengthAwarePaginator
@@ -50,11 +58,23 @@ use function App\Helper\formatDate;
         return self::formattedData($data);
     }
 
+    public function trashedSearch(Request $request): LengthAwarePaginator
+    {
+        $search = $request->input('search');
+        $query = User::search($search)->query(function () use ($request) {
+            $getUsers = $this->user->where('deleted_at', '!=', null);
+            UserQueryFilter::apply($getUsers, $request);
+        });
+        $data = $query->paginate(self::$perPage);
+        return self::formattedData($data);
+    }
+
+
 
     public function filter(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $users = User::search($search)->query(function ($query) use ($request) {
+        $users = User::withsearch($search)->query(function ($query) use ($request) {
             $getUsers = $this->userRepository->getUsers($query, $request);
             UserQueryFilter::apply($getUsers, $request);
         })->paginate(self::$perPage);

@@ -65,17 +65,6 @@
                     </select>
                 @endcan
             </div>
-            <div class="d-flex align-items-center py-2 ">
-                @can('Filter Data Karyawan Berdasarkan Aktif Dan Tidak Aktif')
-                    <select class="form-select form-select-solid" name="active" id="active"
-                            data-control="select2"
-                            data-placeholder="Select an option" data-allow-clear="true">
-                        <option></option>
-                        <option value="1">Aktif</option>
-                        <option value="0">Tidak Aktif</option>
-                    </select>
-                @endcan
-            </div>
             <div class="separator my-4"></div>
             <div class="d-flex align-items-end justify-content-end">
                 <button class="btn btn-light-primary btn-sm" @click="filter()">Filter</button>

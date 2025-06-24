@@ -36,6 +36,10 @@
                                         Filter
                                 </button>
                                 @endcanany
+                                <a href="{{ url('/manage-users/users/trashed') }}" class="btn btn-light btn-active-info btn-sm mx-1">
+                                    <x-icons.archived />
+                                    Arsip
+                                </a>
                         </div>
                         <div class="card-toolbar">
                             <div class="d-flex align-items-center position-relative my-1"

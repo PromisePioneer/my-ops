@@ -46,15 +46,6 @@
             </span>
                             </div>
                         </div>
-                        <div class="fv-row mb-10 float-end">
-                            <div class="form-check form-check-custom form-check-solid">
-                                <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault"
-                                       @click="clickToSeePassword()"/>
-                                <label class="form-check-label fw-bold" for="flexCheckDefault">
-                                    Lihat Password
-                                </label>
-                            </div>
-                        </div>
                         <div class="text-center">
                             <button :disabled="buttonLoading" type="submit" id="kt_sign_in_submit"
                                     class="btn btn-lg btn-primary w-100 mb-5">
