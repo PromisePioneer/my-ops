@@ -123,7 +123,7 @@ use Throwable;
         $explodeID = explode(',', $implodeID);
         $storageFile = $leaveAndPermission->whereIn('id', $explodeID)->get();
         foreach ($storageFile as $file) {
-            if (Storage::disk('public')->exists($file->attachment)) {
+            if (!empty($file->attachment) && Storage::disk('public')->exists($file->attachment)) {
                 Storage::disk('public')->delete($file->attachment);
             }
         }
