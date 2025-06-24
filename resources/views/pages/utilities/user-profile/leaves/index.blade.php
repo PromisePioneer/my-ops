@@ -91,7 +91,7 @@
                                             <span class="text-danger">Tanggal akan ditentukan jika surat resmi terbukti benar dan sesuai.</span>
                                         </template>
                                         <template
-                                            x-if="leave.start_date === null && leave.end_date === null && leave.important_leaves === 'Musibah'  && leave.confirmation_status === 'Diproses'">
+                                            x-if="leave.start_date === null && leave.end_date === null && leave.important_leaves === 'Mendapat Musibah'  && leave.confirmation_status === 'Diproses'">
                                                     <span class="text-danger">
                                                         Tanggal akan ditetapkan sesuai dengan pertimbangan perusahaan.
                                                     </span>
