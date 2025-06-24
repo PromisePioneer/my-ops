@@ -81,7 +81,7 @@
                             </option>
                             <option value="Anggota Keluarga Meninggal Dunia"
                                     :selected="editVal?.important_leaves === 'Anggota Keluarga Meninggal Dunia'">
-                                Suami / istri / orang tua / mertua / anak / menantu meninggal dunia
+                                Suami / istri / orang tua / mertua / anak / nenek / kakek / menantu / anak menantu meninggal dunia
                             </option>
                             <option value="Anggota Keluarga Dalam Satu Rumah Meninggal Dunia"
                                     :selected="editVal?.important_leaves === 'Anggota Keluarga Dalam Satu Rumah Meninggal Dunia'">
