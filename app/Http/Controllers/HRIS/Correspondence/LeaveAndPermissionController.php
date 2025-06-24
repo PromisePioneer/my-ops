@@ -6,20 +6,16 @@ use AllowDynamicProperties;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\ManageUserLeaveAndPermissionRequest;
 use App\Http\Requests\UserProfile\LeaveAndPermissionRequest;
-use App\Models\EmployeeSchedule;
 use App\Models\LeaveAndPermission;
 use App\Models\Master\Common\Branch;
 use App\Models\User;
-use App\Support\HelperService\HandleFileUploadService;
 use App\Support\User\LeaveAndPermission\CalculateUserLeaves;
 use App\Support\User\LeaveAndPermission\LeaveAndPermissionService;
-use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Storage;
 use Throwable;
 
 #[AllowDynamicProperties] class LeaveAndPermissionController extends Controller
@@ -81,38 +77,13 @@ use Throwable;
     /**
      * @throws AuthorizationException|Throwable
      */
-    public function changeStatus(
+    public function confirm(
         ManageUserLeaveAndPermissionRequest $request,
         LeaveAndPermission                  $leaveAndPermission
     ): JsonResponse
     {
         $this->authorize('confirm', $leaveAndPermission);
-        DB::transaction(function () use ($request, $leaveAndPermission) {
-            $empSchedule = EmployeeSchedule::whereBetween('start_date', [$request->start_date, $request->end_date])
-                ->orWhereBetween('end_date', [$request->start_date, $request->end_date])
-                ->get();
-
-            $period = [];
-
-            foreach ($empSchedule as $schedule) {
-                $period = array_merge(
-                    $period,
-                    CarbonPeriod::create($schedule->start_date, $schedule->end_date)->toArray()
-                );
-            }
-
-            foreach ($period as $p) {
-                EmployeeSchedule::whereBetween('start_date', [$p->format('Y-m-d'), $p->format('Y-m-d')])
-                    ->orWhereBetween('end_date', [$p->format('Y-m-d'), $p->format('Y-m-d')])
-                    ->delete();
-            }
-
-            $data = $request->validated();
-            $data['acc_by'] = $request->user()->id;
-            $leaveAndPermission->update($data);
-        });
-
-
+        $this->leaveAndPermissionService->confirm($request, $leaveAndPermission);
         return response()->json([
             'message' => 'Data berhasil di simpan',
         ]);
@@ -150,6 +121,13 @@ use Throwable;
     {
         $implodeID = implode(',', $request->get('id'));
         $explodeID = explode(',', $implodeID);
+        $storageFile = $leaveAndPermission->whereIn('id', $explodeID)->get();
+        foreach ($storageFile as $file) {
+            if (Storage::disk('public')->exists($file->attachment)) {
+                Storage::disk('public')->delete($file->attachment);
+            }
+        }
+
         $leaveAndPermission->whereIn('id', $explodeID)->delete();
 
         return response()->json([

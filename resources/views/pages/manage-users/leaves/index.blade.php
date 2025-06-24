@@ -4,56 +4,8 @@
     <div x-data="leavesData()">
         @include('pages.manage-users.leaves.confirm')
         @include('pages.manage-users.leaves.form')
+        @include('pages.manage-users.leaves.drawer.filter')
         <div class="d-flex flex-column flex-xl-row">
-            <div class="flex-column flex-lg-row-auto w-100 w-lg-300px mb-10">
-                <div class="card card-flush">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <h2 class="mb-0">Filter</h2>
-                        </div>
-                    </div>
-                    <div class="card-body pt-0">
-                        <div class="d-flex flex-column text-gray-600">
-                            <div class="d-flex align-items-center py-2">
-                                @can('Filter Data Manajemen Cuti Berdasarkan Cabang')
-                                    <select class="form-select form-select-solid main-branches-select2"
-                                            name="branch_id" id="branch_id">
-                                    </select>
-                                @endcan
-                            </div>
-                            <div class="d-flex align-items-center py-2">
-                                <select class="form-select-solid form-select" name="confirmation_status"
-                                        id="confirmation_status" x-model="selectedConfirmationStatus">
-                                    <option selected>Pilih Status</option>
-                                    <option :value="`Diproses`">Diproses</option>
-                                    <option :value="`Diterima`">Diterima</option>
-                                    <option :value="`Ditolak`">Ditolak</option>
-                                </select>
-                            </div>
-                            <div class="d-flex align-items-center py-2">
-                                <input type="number" name="year" id="year"
-                                       class="form-control form-control-solid"
-                                       placeholder="Filter Berdasarkan Tahun">
-                            </div>
-                            <div class="d-flex align-items-center py-2">
-                                <select class="form-select form-select-solid"
-                                        name="month" id="month" data-control="select2"
-                                        data-placeholder="Pilih Bulan" data-allow-clear="true">
-                                    <option></option>
-                                    <template x-for="month in months" :key="index">
-                                        <option :value="month.number" x-text="month.name"></option>
-                                    </template>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer pt-4 text-end">
-                        <button type="button" @click="filter()" class="btn btn-light btn-active-primary btn-sm">
-                            Filter
-                        </button>
-                    </div>
-                </div>
-            </div>
             <div class="flex-lg-row-fluid ms-lg-10">
                 <div class="card card-xl-stretch mb-5 mb-xl-8">
                     <div class="card-header border-0 pt-6">
@@ -68,19 +20,24 @@
                         </div>
                         <div class="card-toolbar">
                             <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                                <button class="btn btn-light-primary btn-sm"
+                                <button class="btn btn-light-primary btn-sm me-2"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modal-leaves"
                                 >
                                     Tambah
                                 </button>
                             </div>
+                            <button id="kt_drawer_example_basic_button" class="btn btn-light-info btn-sm">
+                                <x-icons.filter/>
+                                Filter
+                            </button>
                         </div>
                     </div>
                     <div class="card-body py-3">
                         <div class="col-12">
                             <form id="form-delete" @submit.prevent="destroy()">
-                                <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
+                                <input type="hidden" :name="`id[]`"
+                                       :value="selectedCheckBox.filter((val) => val !== 'on' )">
                                 @can('Tambah Data Manajemen Cuti')
                                     <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                             x-show="selectedCheckBox.length > 0"
@@ -112,9 +69,7 @@
                                         <th class="min-w-125px">Nama</th>
                                         <th class="min-w-125px">Tanggal</th>
                                         <th class="min-w-125px">Alasan Cuti</th>
-                                        <th class="min-w-125px">Tipe</th>
-                                        <th class="min-w-125px">Status</th>
-                                        <th class="min-w-125px">File Sakit</th>
+                                        <th class="min-w-125px">File</th>
                                         <th class="min-w-125px">TGL Pengajuan</th>
                                         <th class="min-w-125px">Action</th>
                                     </thead>
@@ -147,28 +102,50 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <a :href="`${Number(viewDetailUserPermission) === 1 ? `/manage-users/users/detail/${leave.user_id}` : '#'}`"
-                                                   x-text="leave.user_name"></a>
-                                            </td>
-                                            <td x-text="`${leave.start_date} - ${leave.end_date}`"></td>
-                                            <td x-text="leave.reason ?? leave.important_leaves"></td>
-                                            <td>
-                                                <span x-text="leave.leaves_status"></span>
-                                            </td>
-                                            <td>
+                                                <div class="mb-4">
+                                                    <a
+                                                        :href="`${Number(viewDetailUserPermission) === 1 ? `/manage-users/users/detail/${leave.user_id}` : '#'}`"
+                                                        x-text="leave.user_name"></a>
+                                                </div>
                                                 <template x-if="leave.confirmation_status === 'Diproses'">
-                                                    <span class="badge bg-warning">Diproses</span>
+                                                    <div>
+                                                        <p class="badge bg-light-warning text-warning fs-7"
+                                                           x-text="`${leave.leaves_status} (Diproses)`"></p>
+                                                    </div>
                                                 </template>
                                                 <template x-if="leave.confirmation_status === 'Diterima'">
-                                                    <span class="badge bg-success">Diterima</span>
+                                                    <p class="badge bg-light-success text-success fs-7"
+                                                       x-text="`${leave.leaves_status} (Diterima)`"></p>
                                                 </template>
                                                 <template x-if="leave.confirmation_status === 'Ditolak'">
-                                                    <span class="badge bg-danger">Ditolak</span>
+                                                    <div>
+                                                        <p class="badge bg-light-danger text-danger fs-7"
+                                                           x-text="`${leave.leaves_status} (Ditolak)`"></p>
+                                                        <span class="badge bg-light-danger text-danger fs-7"
+                                                              x-text="`Alasan : ${leave.confirmation_reason}`"></span>
+                                                    </div>
                                                 </template>
                                             </td>
                                             <td>
-                                                <a href="#" @click="openImage(leave.sick_letter)">
-                                                    <img :src="getImageURL(leave.sick_letter)" height="100"/>
+                                                <template
+                                                    x-if="leave.start_date === null && leave.end_date === null && leave.important_leaves === 'Memenuhi Panggilan Instansi Pemerintah' && leave.confirmation_status === 'Diproses'">
+                                                    <span class="text-danger">Tanggal akan ditentukan jika surat resmi terbukti benar dan sesuai.</span>
+                                                </template>
+                                                <template
+                                                    x-if="leave.start_date === null && leave.end_date === null && leave.important_leaves === 'Musibah'  && leave.confirmation_status === 'Diproses'">
+                                                    <span class="text-danger">
+                                                        Tanggal akan ditetapkan sesuai dengan pertimbangan perusahaan.
+                                                    </span>
+                                                </template>
+                                                <template x-if="leave.start_date && leave.end_date">
+                                                    <span x-text="`${leave.start_date} - ${leave.end_date}`"></span>
+                                                </template>
+                                            </td>
+                                            <td x-text="leave.reason ?? leave.important_leaves"></td>
+                                            <td>
+                                                <a href="#" @click="openImage(leave.attachment)">
+                                                    <img :src="getImageURL(leave.attachment)" height="100"
+                                                         class="img-fluid"/>
                                                 </a>
                                             </td>
                                             <td x-text="leave.created_at"></td>
@@ -243,8 +220,10 @@
                 isLoading: false,
                 editVal: '',
                 leavesStatus: false,
+                confirmationStatus: null,
                 leaves: [],
                 search: '',
+                importantLeaveType: null,
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
@@ -261,7 +240,6 @@
                     await this.getMainBranches();
                     await this.getLeavesData();
                     await this.getUserData();
-                    console.log(this.userSessionId)
                 },
                 getMonth() {
                     this.months.push(
@@ -278,6 +256,9 @@
                         {name: "November", number: '11'},
                         {name: "Desember", number: '12'},
                     )
+                },
+                async add() {
+                    this.editVal = null;
                 },
                 async getMainBranches() {
                     $(".main-branches-select2").select2({
@@ -441,7 +422,8 @@
                 async edit(id) {
                     const resp = await axios.get(`/manage-users/leaves/edit/${id}`);
                     this.editVal = resp.data;
-                    this.leavesStatus = this.editVal.leaves_status
+                    this.leavesStatus = this.editVal.leaves_status;
+                    this.importantLeaveType = this.editVal.important_leaves;
                     await this.selectedUserData(this.editVal.user_id);
                 },
                 async confirm(id) {
@@ -504,6 +486,11 @@
                             await showAlert('error', 'Terjadi kesalahan');
                         }
                     });
+                },
+                ifNotImportantLeave() {
+                    if (this.leavesStatus !== 'Cuti Penting') {
+                        this.importantLeaveType = null;
+                    }
                 },
                 getImageURL(imagePath) {
                     return imagePath ? "{{  Storage::url('') }}" + imagePath : '';
