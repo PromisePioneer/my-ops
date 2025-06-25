@@ -24,27 +24,30 @@
                                         data-bs-toggle="modal"
                                         data-bs-target="#modal-leaves"
                                 >
-                                    <x-icons.add-item/>
                                     Tambah
                                 </button>
                             </div>
-                            <div class="d-flex justify-content-end " data-kt-user-table-toolbar="base">
-                                <button class="btn btn-light-info btn-sm" id="kt_drawer_example_basic_button">
-                                    <x-icons.filter/>
-                                    Filter
-                                </button>
-                            </div>
+                            <button id="kt_drawer_example_basic_button" class="btn btn-light-info btn-sm">
+                                <x-icons.filter/>
+                                Filter
+                            </button>
                         </div>
                     </div>
                     <div class="card-body py-3">
                         <div class="col-12">
                             <form id="form-delete" @submit.prevent="destroy()">
-                                <input type="hidden" :name="`id[]`" :value="selectedCheckBox">
-                                @can('Hapus Data Manajemen Cuti')
+                                <input type="hidden" :name="`id[]`"
+                                       :value="selectedCheckBox.filter((val) => val !== 'on' )">
+                                @can('Tambah Data Manajemen Cuti')
                                     <button type="submit" class="btn btn-light-danger btn-sm mt-5"
                                             x-show="selectedCheckBox.length > 0"
                                             x-transition x-cloak>
-                                        <x-icons.trash/>
+                                        <i class="ki-duotone ki-trash-square fs-2">
+                                            <span class="path1"></span>
+                                            <span class="path2"></span>
+                                            <span class="path3"></span>
+                                            <span class="path4"></span>
+                                        </i>
                                         Hapus
                                     </button>
                                 @endcan
@@ -55,7 +58,7 @@
                                 <table class="table align-middle table-row-dashed fs-6 gy-5 table-bordered"
                                        id="kt_table_users">
                                     <thead>
-                                    <tr class="text-center text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                    <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
                                         <th class="w-10px pe-2">
                                             <div
                                                 class="form-check form-check-sm form-check-custom form-check-solid me-3">
@@ -64,13 +67,14 @@
                                             </div>
                                         </th>
                                         <th class="min-w-125px">Nama</th>
+                                        <th class="min-w-125px">Tanggal</th>
+                                        <th class="min-w-125px">Alasan Cuti</th>
                                         <th class="min-w-125px">File</th>
-                                        <th class="min-w-125px">Alasan</th>
-                                        <th class="min-w-125px">Tgl.Pengajuan</th>
-                                        <th class="min-w-150px">Action</th>
+                                        <th class="min-w-125px">TGL Pengajuan</th>
+                                        <th class="min-w-125px">Action</th>
                                     </thead>
+                                    <tbody class=" fw-bold">
                                     <template x-if="isLoading">
-                                        <tbody class="fw-bold">
                                         <tr>
                                             <td colspan="9">
                                                 <div style="text-align: center;">
@@ -80,19 +84,15 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        </tbody>
                                     </template>
                                     <template x-if="!isLoading && leaves.data?.length === 0">
-                                        <tbody>
-                                        <tr class="fw-bold">
+                                        <tr>
                                             <td colspan="9">
                                                 <center>Data Tidak Ditemukan</center>
                                             </td>
                                         </tr>
-                                        </tbody>
                                     </template>
                                     <template x-for="(leave, index) in leaves?.data" :key="index">
-                                        <tbody class="fw-bold">
                                         <tr>
                                             <td>
                                                 <div class="form-check form-check-sm form-check-custom form-check-solid"
@@ -101,34 +101,57 @@
                                                            :id="'checkbox-' + leave.id"/>
                                                 </div>
                                             </td>
-                                            <td class="text-center">
-                                                <a :href="`${Number(viewDetailUserPermission) === 1 ? `/manage-users/users/detail/${leave.user_id}` : '#'}`"
-                                                   x-text="leave.user_name"></a>
-                                                <p class="mb-1" x-text="`${leave.start_date} - ${leave.end_date}`"></p>
+                                            <td>
+                                                <div class="mb-4">
+                                                    <a
+                                                        :href="`${Number(viewDetailUserPermission) === 1 ? `/manage-users/users/detail/${leave.user_id}` : '#'}`"
+                                                        x-text="leave.user_name"></a>
+                                                </div>
                                                 <template x-if="leave.confirmation_status === 'Diproses'">
-                                                    <span class="badge bg-light-warning text-warning fs-7"
-                                                          x-text="`${leave.leaves_status} (Diproses)`"></span>
+                                                    <div>
+                                                        <p class="badge bg-light-warning text-warning fs-7"
+                                                           x-text="`${leave.leaves_status} (Diproses)`"></p>
+                                                    </div>
                                                 </template>
                                                 <template x-if="leave.confirmation_status === 'Diterima'">
-                                                    <span class="badge bg-light-success text-success fs-7"
-                                                          x-text="`${leave.leaves_status} (Diterima)`"></span>
+                                                    <p class="badge bg-light-success text-success fs-7"
+                                                       x-text="`${leave.leaves_status} (Diterima)`"></p>
                                                 </template>
                                                 <template x-if="leave.confirmation_status === 'Ditolak'">
-                                                    <span class="badge bg-light-danger text-danger fs-7"
-                                                          x-text="`${leave.leaves_status} (Ditolak)`"></span>
+                                                    <div>
+                                                        <p class="badge bg-light-danger text-danger fs-7"
+                                                           x-text="`${leave.leaves_status} (Ditolak)`"></p>
+                                                        <span class="badge bg-light-danger text-danger fs-7"
+                                                              x-text="`Alasan : ${leave.confirmation_reason}`"></span>
+                                                    </div>
                                                 </template>
                                             </td>
                                             <td>
-                                                <a href="#" @click="openImage(leave.sick_letter)">
-                                                    <img :src="getImageURL(leave.sick_letter)" height="100"/>
+                                                <template
+                                                    x-if="leave.start_date === null && leave.end_date === null && leave.important_leaves === 'Memenuhi Panggilan Instansi Pemerintah' && leave.confirmation_status === 'Diproses'">
+                                                    <span class="text-danger">Tanggal akan ditentukan jika surat resmi terbukti benar dan sesuai.</span>
+                                                </template>
+                                                <template
+                                                    x-if="leave.start_date === null && leave.end_date === null && leave.important_leaves === 'Mendapat Musibah'  && leave.confirmation_status === 'Diproses'">
+                                                    <span class="text-danger">
+                                                        Tanggal akan ditetapkan sesuai dengan pertimbangan perusahaan.
+                                                    </span>
+                                                </template>
+                                                <template x-if="leave.start_date && leave.end_date">
+                                                    <span x-text="`${leave.start_date} - ${leave.end_date}`"></span>
+                                                </template>
+                                            </td>
+                                            <td x-text="leave.reason ?? leave.important_leaves"></td>
+                                            <td>
+                                                <a href="#" @click="openImage(leave.attachment)">
+                                                    <img :src="getImageURL(leave.attachment)" height="100"
+                                                         class="img-fluid"/>
                                                 </a>
                                             </td>
-                                            <td class="text-center"
-                                                x-text="leave.reason ?? '-'"></td>
-                                            <td class="text-center" x-text="leave.created_at"></td>
+                                            <td x-text="leave.created_at"></td>
                                             <template
                                                 x-if="leave.confirmation_status === 'Diterima' || leave.confirmation_status === 'Ditolak'">
-                                                <td class="text-center">
+                                                <td>
                                                     <button class="btn btn-light-primary btn-sm" disabled>
                                                         <i class="ki-duotone ki-pencil fs-2">
                                                             <span class="path1"></span>
@@ -141,24 +164,27 @@
                                                 </td>
                                             </template>
                                             <template x-if="leave.confirmation_status === 'Diproses'">
-                                                <td class="text-center">
+                                                <td>
                                                     <template
                                                         x-if="Number(confirmPermission) === 1 && Number(userSessionId) !== leave.user_id">
-                                                        <button class="btn btn-light-info btn-sm" data-bs-toggle="modal"
+                                                        <button class="btn btn-info btn-sm" data-bs-toggle="modal"
                                                                 data-bs-target="#modal-confirm"
                                                                 @click="edit(leave.id)">
-                                                            <x-icons.gear/>
+                                                            <i class="bi bi-gear-fill"></i>
                                                         </button>
                                                     </template>
                                                     <button class="btn btn-light-primary btn-sm" data-bs-toggle="modal"
                                                             data-bs-target="#modal-leaves" @click="edit(leave.id)">
-                                                        <x-icons.edit/>
+                                                        <i class="ki-duotone ki-pencil fs-2">
+                                                            <span class="path1"></span>
+                                                            <span class="path2"></span>
+                                                        </i>
                                                     </button>
                                                 </td>
                                             </template>
                                         </tr>
-                                        </tbody>
                                     </template>
+                                    </tbody>
                                 </table>
                             </div>
                             <ul class="pagination float-end mb-4">
@@ -177,7 +203,6 @@
         </div>
     </div>
     @include('components.toast')
-    @include('components.select2.script')
 @endsection
 @push('script')
     <script>
@@ -195,8 +220,10 @@
                 isLoading: false,
                 editVal: '',
                 leavesStatus: false,
+                confirmationStatus: null,
                 leaves: [],
                 search: '',
+                importantLeaveType: null,
                 selectedCheckBox: [],
                 selectAll: false,
                 singleChecked: false,
@@ -210,9 +237,9 @@
                 months: [],
                 async init() {
                     this.getMonth();
-                    await select2('.main-branches-select2', 'Pilih Cabang', '/select2/main-branches-data');
-                    await select2('.users-select2', 'Pilih Karyawan', '/manage-users/leaves/users/data');
+                    await this.getMainBranches();
                     await this.getLeavesData();
+                    await this.getUserData();
                 },
                 getMonth() {
                     this.months.push(
@@ -229,6 +256,9 @@
                         {name: "November", number: '11'},
                         {name: "Desember", number: '12'},
                     )
+                },
+                async add() {
+                    this.editVal = null;
                 },
                 async getMainBranches() {
                     $(".main-branches-select2").select2({
@@ -392,7 +422,8 @@
                 async edit(id) {
                     const resp = await axios.get(`/manage-users/leaves/edit/${id}`);
                     this.editVal = resp.data;
-                    this.leavesStatus = this.editVal.leaves_status
+                    this.leavesStatus = this.editVal.leaves_status;
+                    this.importantLeaveType = this.editVal.important_leaves;
                     await this.selectedUserData(this.editVal.user_id);
                 },
                 async confirm(id) {
@@ -439,7 +470,6 @@
                             await axios.post(`/manage-users/leaves/destroy`, new FormData(this.formDelete)).then(async () => {
                                 await showAlert('success', 'Data sukses dihapus');
                                 this.leavesLeft = 0;
-                                this.selectedCheckBox = [];
                                 const resp = await axios.get(`${this.leaves.path}?page=${this.leaves.current_page}`, {
                                     params: {
                                         search: this.search,
@@ -456,6 +486,11 @@
                             await showAlert('error', 'Terjadi kesalahan');
                         }
                     });
+                },
+                ifNotImportantLeave() {
+                    if (this.leavesStatus !== 'Cuti Penting') {
+                        this.importantLeaveType = null;
+                    }
                 },
                 getImageURL(imagePath) {
                     return imagePath ? "{{  Storage::url('') }}" + imagePath : '';

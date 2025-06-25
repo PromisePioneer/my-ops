@@ -174,6 +174,7 @@
             return {
                 users: [],
                 isLoading: false,
+                search: '',
                 async init() {
                     await this.getTrashedData();
                 },
@@ -191,7 +192,11 @@
                 async searchData() {
                     this.isLoading = true;
                     try {
-                        const resp = await axios.get('/manage-users/users/trashed/search');
+                        const resp = await axios.get('/manage-users/users/trashed/search', {
+                            params: {
+                                search: this.search
+                            }
+                        });
                         this.users = resp.data;
                     } catch (e) {
                         console.log(e)

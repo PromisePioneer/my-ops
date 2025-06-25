@@ -32,9 +32,11 @@
                         <table class="table align-middle table-bordered fs-6 gy-5 table-striped" id="kt_table_users">
                             <thead>
                             <tr class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0 text-center">
-                                <th class="min-w-125px">Tanggal & Status</th>
+                                <th class="min-w-125px">Nama</th>
+                                <th class="min-w-125px">Tanggal</th>
+                                <th class="min-w-125px">Alasan Cuti</th>
                                 <th class="min-w-125px">File</th>
-                                <th class="min-w-125px">Keterangan</th>
+                                <th class="min-w-125px">TGL Pengajuan</th>
                                 <th class="min-w-125px">Action</th>
                             </thead>
                             <tbody class="fw-bold">
@@ -59,27 +61,52 @@
                             <template x-for="(leave, index) in leaves?.data"
                                       :key="index">
                                 <tr class="text-center">
-                                    <td class="text-center">
-                                        <p class="mb-1" x-text="`${leave.start_date} - ${leave.end_date}`"></p>
+                                    <td>
+                                        <div class="mb-4">
+                                            <a href="#"
+                                               x-text="leave.user_name"></a>
+                                        </div>
                                         <template x-if="leave.confirmation_status === 'Diproses'">
-                                                    <span class="badge bg-light-warning text-warning fs-7"
-                                                          x-text="`${leave.leaves_status} (Diproses)`"></span>
+                                            <div>
+                                                <p class="badge bg-light-warning text-warning fs-7"
+                                                   x-text="`${leave.leaves_status} (Diproses)`"></p>
+                                            </div>
                                         </template>
                                         <template x-if="leave.confirmation_status === 'Diterima'">
-                                                    <span class="badge bg-light-success text-success fs-7"
-                                                          x-text="`${leave.leaves_status} (Diterima)`"></span>
+                                            <p class="badge bg-light-success text-success fs-7"
+                                               x-text="`${leave.leaves_status} (Diterima)`"></p>
                                         </template>
                                         <template x-if="leave.confirmation_status === 'Ditolak'">
-                                                    <span class="badge bg-light-danger text-danger fs-7"
-                                                          x-text="`${leave.leaves_status} (Ditolak)`"></span>
+                                            <div>
+                                                <p class="badge bg-light-danger text-danger fs-7"
+                                                   x-text="`${leave.leaves_status} (Ditolak)`"></p>
+                                                <span class="badge bg-light-danger text-danger fs-7"
+                                                      x-text="`Alasan : ${leave.confirmation_reason}`"></span>
+                                            </div>
                                         </template>
                                     </td>
                                     <td>
-                                        <a href="#" @click="openImage(leave.sick_letter)">
-                                            <img :src="getImageURL(leave.sick_letter)" height="100"/>
-                                        </a>
+                                        <template
+                                            x-if="leave.start_date === null && leave.end_date === null && leave.important_leaves === 'Memenuhi Panggilan Instansi Pemerintah' && leave.confirmation_status === 'Diproses'">
+                                            <span class="text-danger">Tanggal akan ditentukan jika surat resmi terbukti benar dan sesuai.</span>
+                                        </template>
+                                        <template
+                                            x-if="leave.start_date === null && leave.end_date === null && leave.important_leaves === 'Mendapat Musibah'  && leave.confirmation_status === 'Diproses'">
+                                                    <span class="text-danger">
+                                                        Tanggal akan ditetapkan sesuai dengan pertimbangan perusahaan.
+                                                    </span>
+                                        </template>
+                                        <template x-if="leave.start_date && leave.end_date">
+                                            <span x-text="`${leave.start_date} - ${leave.end_date}`"></span>
+                                        </template>
                                     </td>
                                     <td x-text="leave.reason ?? leave.important_leaves"></td>
+                                    <td>
+                                        <a href="#" @click="openImage(leave.attachment)">
+                                            <img :src="getImageURL(leave.attachment)" height="100" class="img-fluid"/>
+                                        </a>
+                                    </td>
+                                    <td x-text="leave.created_at"></td>
                                     <template
                                         x-if="leave.confirmation_status === 'Diproses' && Number(editPermission) === 1">
                                         <td>
@@ -123,12 +150,14 @@
                 isLoading: false,
                 leaves: [],
                 startIndex: 0,
-                leavesStatus: false,
+                leavesStatus: null,
                 modalForm: new bootstrap.Modal(document.getElementById('modal-form')),
                 editVal: '',
                 search: '',
                 form: document.getElementById('form'),
                 leavesLeft: 0,
+                confirmationStatus: null,
+                importantLeaveType: null,
                 userId: "{{ Auth::id() }}",
                 sickLetter: null,
                 async init() {
@@ -138,6 +167,8 @@
                 add() {
                     this.form.reset();
                     this.editVal = '';
+                    this.leavesStatus = this.editVal.leaves_status;
+                    this.importantLeaveType = this.editVal.important_leaves;
                 },
                 async getLeavesLeft() {
                     try {
@@ -149,6 +180,11 @@
                         this.leavesLeft = resp.data;
                     } catch (e) {
                         console.log(e)
+                    }
+                },
+                ifNotImportantLeave() {
+                    if (this.leavesStatus !== 'Cuti Penting') {
+                        this.importantLeaveType = null;
                     }
                 },
                 getImageURL(imagePath) {
@@ -198,7 +234,8 @@
                 async edit(id) {
                     const resp = await axios.get(`/manage-users/leaves/edit/${id}`);
                     this.editVal = resp.data;
-                    this.leavesStatus = this.editVal.leaves_status
+                    this.leavesStatus = this.editVal.leaves_status;
+                    this.importantLeaveType = this.editVal.important_leaves;
                 },
                 async save(id =null) {
                     this.buttonLoading = true;

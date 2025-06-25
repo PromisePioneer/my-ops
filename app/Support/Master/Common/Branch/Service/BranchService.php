@@ -65,6 +65,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
         return $branches->map(function ($item) {
             return [
                 'id' => $item->id,
+                'code' => $item->code,
                 'text' => $item->name,
             ];
         });

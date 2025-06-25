@@ -19,6 +19,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
     }
 
 
+
     public function data(): LengthAwarePaginator
     {
         $contacts = $this->contactRepository->handle()->paginate(self::$perPage);

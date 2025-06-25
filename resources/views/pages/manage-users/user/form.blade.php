@@ -4,7 +4,17 @@
     <div x-data="generateUser()">
         <div class="card p-10">
             <div class="card-header border-0 pt-10">
-                <a class="btn btn-info btn-sm mb-6" href="{{ url('manage-users/users/') }}">Kembali</a>
+                <div class="card-title">
+                    <a class="btn btn-info btn-sm mb-6" href="{{ url('manage-users/users/') }}">Kembali</a>
+                </div>
+                <div class="card-toolbar">
+                    <div class="d-flex align-items-center">
+
+                        <label class="col-form-label required fw-bold fs-6 me-3">NIK</label>
+                        <input class="form-control form-control-solid" :value="`${branchCode}${joinDate}${absentId}`"
+                               disabled/>
+                    </div>
+                </div>
             </div>
             <div class="card-body py-3">
                 <form id="form" @submit.prevent="save()">
@@ -15,7 +25,8 @@
                                 <div class="col-md-6" x-model="userPlacement">
                                     <label class="col-form-label required fw-bold fs-6">Penempatan</label>
                                     <select name="placement" id="selectedPlacement"
-                                            class="form-select form-select-solid user-placement-select2">
+                                            class="form-select form-select-solid user-placement-select2"
+                                            @change="placementChange()">
                                         <option value="0" selected>Pilih</option>
                                         <option value="Cabang" :selected="userPlacement === 'Cabang'">Cabang</option>
                                         <option value="Pusat" :selected="userPlacement === 'Pusat'">Pusat</option>
@@ -37,7 +48,7 @@
                                 <input type="number" class="form-control form-control-solid" name="absent_id"
                                        id="absent_id" minlength="3" maxlength="3"
                                        placeholder="ID Absen"
-                                       value="{{ $user->absent_id ?? $randomAbsentId }}">
+                                       value="{{ $user->absent_id ?? $randomAbsentId }}" x-model="absentId">
                             </div>
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">Nama</label>
@@ -56,9 +67,10 @@
                             </div>
                             <div class="col-lg-6">
                                 <label class="col-form-label required fw-bold fs-6">Tanggal Masuk</label>
-                                <input type="date" name="join_date"
+                                <input type="date" name="join_date" id="join_date"
                                        class="form-control form-control-lg form-control-solid date"
-                                       placeholder="Tanggal Masuk" value="{{ $user->join_date ?? '' }}"/>
+                                       placeholder="Tanggal Masuk" value="{{ $user->join_date ?? '' }}"
+                                       @change="formatDate()" x-model="joinDate"/>
                             </div>
                         </div>
 
@@ -163,8 +175,11 @@
             return {
                 buttonLoading: false,
                 roles: null,
+                branchCode: "{{ $user->branch?->code ?? null }}",
+                joinDate: null,
                 users: null,
                 id: "{{ $user->id ?? null }}",
+                absentId: "{{ $user->absent_id ?? null }}",
                 companyId: '{{ $user->company_id ?? null }}',
                 form: document.getElementById('form'),
                 userPlacement: "{{ $user->placement ?? null }}",
@@ -176,6 +191,15 @@
                     await this.selectedCompany();
                     await this.getRoleData();
                     await this.getUserData();
+
+                    this.joinDate = "{{ $user->join_date ?? null }}"
+                    this.formatDate(this.joinDate);
+                    this.branchCode = "{{ $user->branch?->code ?? null }}"
+                },
+                placementChange() {
+                    if (this.userPlacement === 'Pusat') {
+                        this.branchCode = '100';
+                    }
                 },
                 async save() {
                     this.buttonLoading = true
@@ -195,6 +219,16 @@
                         this.buttonLoading = false;
                     }
                 },
+                formatDate(joinDate = null) {
+                    const joinDateValue = joinDate ?? document.getElementById('join_date')?.value;
+                    if (joinDateValue) {
+                        const date = new Date(joinDateValue);
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const year = date.getFullYear();
+                        this.joinDate = `${day}${month}${year}`;
+                    }
+                },
                 async getMainBranches() {
                     $(".main-branches-select2").select2({
                         allowClear: true,
@@ -207,6 +241,8 @@
                             processResults: data => ({results: data}),
                             cache: true
                         }
+                    }).on('select2:select', (e) => {
+                        this.branchCode = e.params?.data?.code;
                     });
                 },
                 async selectedBranch() {
@@ -248,6 +284,7 @@
                     this.roles = resp.data;
                 },
                 async getUserData() {
+                    if (!this.id) return;
                     const users = await axios.get(`/manage-users/users/show/${this.id}`);
                     this.users = users.data;
                 },

@@ -45,7 +45,6 @@ use function App\Helper\formatDate;
     }
 
 
-
     public function search(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
@@ -61,14 +60,12 @@ use function App\Helper\formatDate;
     public function trashedSearch(Request $request): LengthAwarePaginator
     {
         $search = $request->input('search');
-        $query = User::search($search)->query(function () use ($request) {
-            $getUsers = $this->user->where('deleted_at', '!=', null);
-            UserQueryFilter::apply($getUsers, $request);
+        $query = User::search($search)->query(function ($query) use ($request) {
+            UserQueryFilter::apply($query->onlyTrashed(), $request);
         });
         $data = $query->paginate(self::$perPage);
         return self::formattedData($data);
     }
-
 
 
     public function filter(Request $request): LengthAwarePaginator
